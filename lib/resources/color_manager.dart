@@ -11,6 +11,8 @@ class ColorManager{
   static Color splashScreenMiddle = HexColor.fromHex('#FF7C709C');
   static Color splashScreenBottom = HexColor.fromHex('#FF4E3D71');
 
+  static Color welcomeScreenBloc = HexColor.fromHex('#FF645D9C');
+
   static Color splashVar1 = HexColor.fromHex('#66599B');
   static Color splashVar2 = HexColor.fromHex('#4A386B');
   static Color splashVar3 = HexColor.fromHex('#56467E');
