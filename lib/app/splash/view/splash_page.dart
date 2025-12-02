@@ -30,17 +30,15 @@ class SplashPage extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+                begin: Alignment(0.08, 0), // start point : বাম-উপর
+                end: Alignment(0.82, 1),   // end point : ডান-নিচে
                 colors: [
-                  //ColorManager.splashScreenTop,
-                  //ColorManager.splashScreenMiddle,
-                  //ColorManager.splashScreenBottom
-                  ColorManager.splashVar1,
-                  ColorManager.splashVar2,
-                  ColorManager.splashVar3
-                  // Middle blend
-                  // Bottom purple
+                  ColorManager.splashVar1,//Color.fromRGBO(102, 89, 151, 1), // first color : rgb(102, 89, 151)
+                  ColorManager.splashVar2//Color.fromRGBO(74, 56, 107, 1),  // second color : rgb(74, 56, 107)
+                ],
+                stops: [
+                  0.0, // first color stop point
+                  1.0, // second color stop point
                 ],
               ),
             ),
