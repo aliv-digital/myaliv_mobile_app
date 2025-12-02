@@ -11,8 +11,8 @@ class ColorManager{
   static Color splashScreenMiddle = HexColor.fromHex('#FF7C709C');
   static Color splashScreenBottom = HexColor.fromHex('#FF4E3D71');
 
-  static Color splashVar1 = HexColor.fromHex('#4D3C6F');
-  static Color splashVar2 = HexColor.fromHex('#635491');
+  static Color splashVar1 = HexColor.fromHex('#66599B');
+  static Color splashVar2 = HexColor.fromHex('#4A386B');
   static Color splashVar3 = HexColor.fromHex('#56467E');
 
   static Color aliveOrange = HexColor.fromHex('#F46938');
