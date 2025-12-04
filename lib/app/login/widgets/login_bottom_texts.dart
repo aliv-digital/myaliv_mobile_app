@@ -13,7 +13,9 @@ class LoginBottomTexts extends StatelessWidget {
           'still need to activate your account?',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 1.43,
             color: LoginColors.textBlack,
           ),
         ),
@@ -25,12 +27,14 @@ class LoginBottomTexts extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           onPressed: () {},
-          child: const Text(
+          child: Text(
             'manage my password',
             style: TextStyle(
               fontSize: 14,
               color: LoginColors.linkBlue,
-              fontWeight: FontWeight.w600,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w400,
+              height: 1.43,
             ),
           ),
         ),

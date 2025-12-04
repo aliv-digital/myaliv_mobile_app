@@ -9,6 +9,7 @@ class LoginSocialButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+
         Row(
           children: const [
             Expanded(
@@ -21,8 +22,12 @@ class LoginSocialButtons extends StatelessWidget {
             Text(
               'or sign in with',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
                 color: LoginColors.hintGrey,
+                height: 1.38,
+                letterSpacing: -0.08,
+                fontFamily: 'CircularPro'
               ),
             ),
             SizedBox(width: 8),
@@ -34,7 +39,7 @@ class LoginSocialButtons extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 30),
         Row(
           children: [
             Expanded(
@@ -53,7 +58,10 @@ class LoginSocialButtons extends StatelessWidget {
                     'face id',
                     style: TextStyle(
                       fontSize: 14,
+                      height: 1.43,
+                      fontWeight: FontWeight.w700,
                       color: LoginColors.alivPurple,
+                      fontFamily: 'CircularPro'
                     ),
                   ),
                 ),
@@ -75,8 +83,11 @@ class LoginSocialButtons extends StatelessWidget {
                   child: const Text(
                     'fingerprint',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: LoginColors.alivPurple,
+                        fontSize: 14,
+                        height: 1.43,
+                        fontWeight: FontWeight.w700,
+                        color: LoginColors.alivPurple,
+                        fontFamily: 'CircularPro'
                     ),
                   ),
                 ),

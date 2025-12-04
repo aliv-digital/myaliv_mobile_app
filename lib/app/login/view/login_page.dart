@@ -39,106 +39,118 @@ class _LoginView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
-            // error/snackbar চাইলে এখানে
+            // error/snack bar
           },
           child: Column(
             children: [
               // ---------- Scrollable content ----------
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.only(),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 12),
-                            const LoginHeader(),
-                            const SizedBox(height: 48),
-                            const LoginPhoneRow(),
-                            const SizedBox(height: 20),
-                            const LoginPasswordField(),
-                            const SizedBox(height: 8),
+                        child: const LoginHeader(),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 47,right: 47),
+                          child: Column(
+                            //mainAxisAlignment: MainAxisAlignment.start,
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            //crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              //const SizedBox(height: 12),
 
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: const Size(0, 0),
-                                  tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                onPressed: () {},
-                                child: const Text(
-                                  'forgot password?',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: LoginColors.linkBlue,
+                              const SizedBox(height: 48),
+                              const LoginPhoneRow(),
+                              const SizedBox(height: 20),
+                              const LoginPasswordField(),
+                              const SizedBox(height: 15),
+
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: const Size(0, 0),
+                                    tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  onPressed: () {},
+                                  child: Text(
+                                    'forgot password?',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: LoginColors.linkBlue,
+                                      height: 1.38,
+                                      fontFamily: 'CircularPro',
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: -0.08
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
 
-                            const SizedBox(height: 16),
+                              const SizedBox(height: 15),
 
-                            // sign in button
-                            BlocBuilder<LoginBloc, LoginState>(
-                              builder: (context, state) {
-                                final loading =
-                                    state.status == LoginStatus.loading;
+                              // sign in button
+                              BlocBuilder<LoginBloc, LoginState>(
+                                builder: (context, state) {
+                                  final loading =
+                                      state.status == LoginStatus.loading;
 
-                                return SizedBox(
-                                  height: 54,
-                                  width: width,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                      LoginColors.alivPurple,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(26),
+                                  return SizedBox(
+                                    height: 54,
+                                    width: width,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                        LoginColors.alivPurple,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.circular(26),
+                                        ),
+                                        elevation: 0,
                                       ),
-                                      elevation: 0,
+                                      onPressed: loading
+                                          ? null
+                                          : () => context
+                                          .read<LoginBloc>()
+                                          .add(const LoginSubmitted()),
+                                      child: loading
+                                          ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                          AlwaysStoppedAnimation<
+                                              Color>(
+                                              Colors.white),
+                                        ),
+                                      )
+                                          : const Text(
+                                        'sign in',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     ),
-                                    onPressed: loading
-                                        ? null
-                                        : () => context
-                                        .read<LoginBloc>()
-                                        .add(const LoginSubmitted()),
-                                    child: loading
-                                        ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                        AlwaysStoppedAnimation<
-                                            Color>(
-                                            Colors.white),
-                                      ),
-                                    )
-                                        : const Text(
-                                      'sign in',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                                  );
+                                },
+                              ),
 
-                            const SizedBox(height: 24),
-                            const LoginSocialButtons(),
-                            const SizedBox(height: 40),
-                            const LoginBottomTexts(),
-                            const SizedBox(height: 24),
-                          ],
+                              const SizedBox(height: 30),
+                              const LoginSocialButtons(),
+                              const SizedBox(height: 60),
+                              const LoginBottomTexts(),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         ),
                       ),
                     ],

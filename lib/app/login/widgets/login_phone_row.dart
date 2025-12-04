@@ -73,8 +73,9 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                   Text(
                     _dialCode,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      fontFamily: 'CircularPro',
                       color: LoginColors.textBlack,
                     ),
                   ),
@@ -101,6 +102,12 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                 buildWhen: (p, c) => p.phone != c.phone,
                 builder: (context, state) {
                   return TextField(
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'CircularPro',
+                      color: LoginColors.textBlack,
+                    ),
                     keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
