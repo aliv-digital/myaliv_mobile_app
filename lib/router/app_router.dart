@@ -11,7 +11,7 @@ class AppRouter {
 
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.welcome,   // initial Screen
+    initialLocation: AppRoutes.logIn,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.splash,

@@ -1,61 +1,35 @@
+// lib/login/login_state.dart
 import 'package:equatable/equatable.dart';
 
-enum AuthStatus { initial, loading, success, failure }
+enum LoginStatus { initial, loading, success, failure }
 
-class AuthState extends Equatable {
-  final String phoneNumber;
+class LoginState extends Equatable {
+  final String phone;
   final String password;
-  final AuthStatus status;
-  final String? error;
-  final String? userId;  // Add userId for success state
+  final LoginStatus status;
+  final String? errorMessage;
 
-  // AuthState constructor
-  const AuthState({
-    this.phoneNumber = '',
+  const LoginState({
+    this.phone = '',
     this.password = '',
-    this.status = AuthStatus.initial,
-    this.error,
-    this.userId,  // For success state
+    this.status = LoginStatus.initial,
+    this.errorMessage,
   });
 
-  // initial state method
-  static AuthState initial() {
-    return const AuthState();  // initial state
-  }
-
-  // success state method
-  AuthState success({required String userId}) {
-    return AuthState(
-      status: AuthStatus.success,
-      userId: userId,
-    );
-  }
-
-  // failure state method
-  AuthState failure({required String error}) {
-    return AuthState(
-      status: AuthStatus.failure,
-      error: error,
-    );
-  }
-
-  // copyWith method
-  AuthState copyWith({
-    String? phoneNumber,
+  LoginState copyWith({
+    String? phone,
     String? password,
-    AuthStatus? status,
-    String? error,
-    String? userId,
+    LoginStatus? status,
+    String? errorMessage,
   }) {
-    return AuthState(
-      phoneNumber: phoneNumber ?? this.phoneNumber,
+    return LoginState(
+      phone: phone ?? this.phone,
       password: password ?? this.password,
       status: status ?? this.status,
-      error: error ?? this.error,
-      userId: userId ?? this.userId,
+      errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [phoneNumber, password, status, error, userId];
+  List<Object?> get props => [phone, password, status, errorMessage];
 }

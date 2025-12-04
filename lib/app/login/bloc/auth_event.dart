@@ -1,18 +1,29 @@
+// lib/login/login_event.dart
 import 'package:equatable/equatable.dart';
 
-abstract class AuthEvent extends Equatable {
-  const AuthEvent();
+abstract class LoginEvent extends Equatable {
+  const LoginEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class SignInPressed extends AuthEvent {
-  final String phoneNumber;
-  final String password;
-
-  const SignInPressed({required this.phoneNumber, required this.password});
+class LoginPhoneChanged extends LoginEvent {
+  final String phone;
+  const LoginPhoneChanged(this.phone);
 
   @override
-  List<Object> get props => [phoneNumber, password];
+  List<Object?> get props => [phone];
+}
+
+class LoginPasswordChanged extends LoginEvent {
+  final String password;
+  const LoginPasswordChanged(this.password);
+
+  @override
+  List<Object?> get props => [password];
+}
+
+class LoginSubmitted extends LoginEvent {
+  const LoginSubmitted();
 }
