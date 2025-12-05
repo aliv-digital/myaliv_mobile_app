@@ -56,7 +56,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: LoginColors.lightGreyBorder,
+                  color: AuthModuleColors.lightGreyBorder,
                   width: 1.2,
                 ),
                 color: Colors.white,
@@ -76,7 +76,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       fontFamily: 'CircularPro',
-                      color: LoginColors.textBlack,
+                      color: AuthModuleColors.textBlack,
                     ),
                   ),
                 ],
@@ -92,7 +92,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: LoginColors.lightGreyBorder,
+                  color: AuthModuleColors.lightGreyBorder,
                   width: 1.2,
                 ),
               ),
@@ -106,7 +106,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       fontFamily: 'CircularPro',
-                      color: LoginColors.textBlack,
+                      color: AuthModuleColors.textBlack,
                     ),
                     keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
@@ -114,12 +114,10 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                       hintText: 'eg: 242-899-9999',
                       hintStyle: TextStyle(
                         fontSize: 14,
-                        color: LoginColors.hintGrey,
+                        color: AuthModuleColors.hintGrey,
                       ),
                     ),
-                    onChanged: (value) => context
-                        .read<LoginBloc>()
-                        .add(LoginPhoneChanged(value)),
+                    onChanged: (value) => context.read<LoginBloc>().add(LoginPhoneChanged(value)),
                   );
                 },
               ),

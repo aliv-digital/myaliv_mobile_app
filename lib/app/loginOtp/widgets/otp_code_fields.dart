@@ -94,7 +94,7 @@ class _OtpBox extends StatelessWidget {
           fontSize: 20,
           fontFamily: 'CircularPro',
           fontWeight: FontWeight.w600,
-          color: LoginColors.textBlack,
+          color: AuthModuleColors.textBlack,
         ),
         decoration: InputDecoration(
           isCollapsed: true,                  //reduce extra height
@@ -107,10 +107,10 @@ class _OtpBox extends StatelessWidget {
               width: 1,
             ),
           ),
-          focusedBorder: const OutlineInputBorder(
+          focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(6)),
             borderSide: BorderSide(
-              color: LoginColors.alivPurple,
+              color: AuthModuleColors.alivPurple,
               width: 1.4,
             ),
           ),

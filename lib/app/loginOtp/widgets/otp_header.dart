@@ -29,7 +29,7 @@ class OtpHeader extends StatelessWidget {
             fontSize: 24,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
-            color: LoginColors.textBlack,
+            color: AuthModuleColors.textBlack,
           ),
         ),
         const SizedBox(height: 16),

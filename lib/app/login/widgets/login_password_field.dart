@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -32,7 +31,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color:
-                  hasError ? LoginColors.errorRed : LoginColors.lightGreyBorder,
+                  hasError ? AuthModuleColors.errorRed : AuthModuleColors.lightGreyBorder,
                   width: 1.2,
                 ),
               ),
@@ -42,7 +41,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                   const Icon(
                     Icons.lock_outline,
                     size: 20,
-                    color: LoginColors.hintGrey,
+                    color: AuthModuleColors.hintGrey,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -54,12 +53,10 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                         hintStyle: TextStyle(
                           fontSize: 16,
                           letterSpacing: 3,
-                          color: LoginColors.hintGrey,
+                          color: AuthModuleColors.hintGrey,
                         ),
                       ),
-                      onChanged: (value) => context
-                          .read<LoginBloc>()
-                          .add(LoginPasswordChanged(value)),
+                      onChanged: (value) => context.read<LoginBloc>().add(LoginPasswordChanged(value)),
                     ),
                   ),
                   GestureDetector(
@@ -67,7 +64,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                     child: Icon(
                       _obscure ? Icons.visibility_off : Icons.visibility,
                       size: 20,
-                      color: LoginColors.hintGrey,
+                      color: AuthModuleColors.hintGrey,
                     ),
                   ),
                 ],
@@ -79,7 +76,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                 'invalid credentials!',
                 style: TextStyle(
                   fontSize: 12,
-                  color: LoginColors.errorRed,
+                  color: AuthModuleColors.errorRed,
                 ),
               ),
           ],

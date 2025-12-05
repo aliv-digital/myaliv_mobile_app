@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../theme/login_theme.dart';
 
 class LoginBottomTexts extends StatelessWidget {
@@ -16,7 +15,7 @@ class LoginBottomTexts extends StatelessWidget {
             fontSize: 14,
             fontWeight: FontWeight.w400,
             height: 1.43,
-            color: LoginColors.textBlack,
+            color: AuthModuleColors.textBlack,
           ),
         ),
         const SizedBox(height: 6),
@@ -31,7 +30,7 @@ class LoginBottomTexts extends StatelessWidget {
             'manage my password',
             style: TextStyle(
               fontSize: 14,
-              color: LoginColors.linkBlue,
+              color: AuthModuleColors.linkBlue,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w400,
               height: 1.43,

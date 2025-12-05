@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
-
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_state.dart';
 import '../bloc/auth_event.dart';
@@ -84,7 +84,7 @@ class _LoginView extends StatelessWidget {
                                     'forgot password?',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: LoginColors.linkBlue,
+                                      color: AuthModuleColors.linkBlue,
                                       height: 1.38,
                                       fontFamily: 'CircularPro',
                                       fontWeight: FontWeight.w400,
@@ -101,36 +101,12 @@ class _LoginView extends StatelessWidget {
                                 builder: (context, state) {
                                   final loading = state.status == LoginStatus.loading;
 
-                                  return SizedBox(
-                                    height: 52,
-                                    width: width,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: ColorManager.defaultButtonColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(26),
-                                        ),
-                                        elevation: 0,
-                                      ),
-                                      onPressed: loading ? null : () => context.read<LoginBloc>().add(const LoginSubmitted()),
-                                      child: loading ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<
-                                              Color>(Colors.white)
-                                        )
-                                      ) : const Text(
-                                        'sign in',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
+                                  return DefaultButton(
+                                      label: 'sign in',
+                                      isLoading: loading,
+                                      onPressed: (){
+                                        context.read<LoginBloc>().add(const LoginSubmitted());
+                                      }
                                   );
                                 },
                               ),

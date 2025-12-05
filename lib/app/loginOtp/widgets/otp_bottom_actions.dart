@@ -47,7 +47,7 @@ class OtpBottomActions extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     fontFamily: 'CircularPro',
                     height: 1.43,
-                    color: LoginColors.textBlack,
+                    color: AuthModuleColors.textBlack,
                   ),
                 ),
                 GestureDetector(

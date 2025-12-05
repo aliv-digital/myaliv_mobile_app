@@ -45,7 +45,7 @@ class _LogoTitle extends StatelessWidget {
             fontSize: 17,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
-            color: LoginColors.textBlack,
+            color: AuthModuleColors.textBlack,
           ),
         ),
       ],

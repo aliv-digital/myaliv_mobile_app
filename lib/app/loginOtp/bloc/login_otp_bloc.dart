@@ -46,10 +46,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     }
   }
 
-  Future<void> _onResendRequested(
-      LoginOtpResendRequested event,
-      Emitter<LoginOtpState> emit,
-      ) async {
+  Future<void> _onResendRequested(LoginOtpResendRequested event,Emitter<LoginOtpState> emit) async {
     emit(state.copyWith(resendStatus: LoginOtpResendStatus.loading));
     try {
       await repository.resendCode();

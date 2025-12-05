@@ -11,11 +11,11 @@ class LoginSocialButtons extends StatelessWidget {
       children: [
 
         Row(
-          children: const [
+          children:  [
             Expanded(
               child: Divider(
                 thickness: 0.6,
-                color: LoginColors.lightGreyBorder,
+                color: AuthModuleColors.lightGreyBorder,
               ),
             ),
             SizedBox(width: 8),
@@ -24,7 +24,7 @@ class LoginSocialButtons extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: LoginColors.hintGrey,
+                color: AuthModuleColors.hintGrey,
                 height: 1.38,
                 letterSpacing: -0.08,
                 fontFamily: 'CircularPro'
@@ -34,7 +34,7 @@ class LoginSocialButtons extends StatelessWidget {
             Expanded(
               child: Divider(
                 thickness: 0.6,
-                color: LoginColors.lightGreyBorder,
+                color: AuthModuleColors.lightGreyBorder,
               ),
             ),
           ],
@@ -47,20 +47,19 @@ class LoginSocialButtons extends StatelessWidget {
                 height: 44,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side:
-                    const BorderSide(color: LoginColors.alivPurple, width: 1),
+                    side: BorderSide(color: AuthModuleColors.alivPurple, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(22),
                     ),
                   ),
                   onPressed: () {},
-                  child: const Text(
+                  child: Text(
                     'face id',
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.43,
                       fontWeight: FontWeight.w700,
-                      color: LoginColors.alivPurple,
+                      color: AuthModuleColors.alivPurple,
                       fontFamily: 'CircularPro'
                     ),
                   ),
@@ -73,19 +72,19 @@ class LoginSocialButtons extends StatelessWidget {
                 height: 44,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: LoginColors.alivPurple, width: 1),
+                    side: BorderSide(color: AuthModuleColors.alivPurple, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(22),
                     ),
                   ),
                   onPressed: () {},
-                  child: const Text(
+                  child: Text(
                     'fingerprint',
                     style: TextStyle(
                         fontSize: 14,
                         height: 1.43,
                         fontWeight: FontWeight.w700,
-                        color: LoginColors.alivPurple,
+                        color: AuthModuleColors.alivPurple,
                         fontFamily: 'CircularPro'
                     ),
                   ),

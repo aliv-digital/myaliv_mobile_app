@@ -18,6 +18,9 @@ class ColorManager{
   // default button color for almost every action
   static Color defaultButtonColor = HexColor.fromHex('#645D9C');
 
+
+
+
   static Color textLinkColor = HexColor.fromHex('#CC5146A8');
   static Color orangeColor = HexColor.fromHex('#FA762C');
 
