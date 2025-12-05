@@ -12,6 +12,14 @@ class ColorManager{
   static Color splashScreenBottom = HexColor.fromHex('#FF4E3D71');
 
   static Color welcomeScreenBloc = HexColor.fromHex('#FF645D9C');
+  static Color otpBoxBorderDefaultColor = HexColor.fromHex('#E0E0E0');
+  static Color  otpScreenTxtGray = HexColor.fromHex('#58677D');
+
+  // default button color for almost every action
+  static Color defaultButtonColor = HexColor.fromHex('#645D9C');
+
+  static Color textLinkColor = HexColor.fromHex('#CC5146A8');
+  static Color orangeColor = HexColor.fromHex('#FA762C');
 
   static Color splashVar1 = HexColor.fromHex('#66599B');
   static Color splashVar2 = HexColor.fromHex('#4A386B');
@@ -68,7 +76,7 @@ class ColorManager{
   //static Color boxShadow = const Color.fromRGBO(53, 0, 105, 0.06);
   static Color blueColor = HexColor.fromHex('#FF0084FF');
   static Color yellowColor = HexColor.fromHex('#EEBA00');
-  static Color orangeColor = HexColor.fromHex('#E9730E');
+  //static Color orangeColor = HexColor.fromHex('#E9730E');
   static Color redColor = HexColor.fromHex('#FF0000');
   static Color primaryGrey = HexColor.fromHex('#CBBFD7');
 

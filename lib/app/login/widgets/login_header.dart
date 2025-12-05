@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import '../../../resources/widgets/defaultBackButton.dart';
 import '../theme/login_theme.dart';
 
 class LoginHeader extends StatelessWidget {
@@ -10,9 +11,13 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: const [
+      children: [
         SizedBox(height: 45),
-        _BackButtonRow(),
+        DefaultBackButton(
+          onPressed: () {
+            // custom logic
+          },
+        ),
         //SizedBox(height: 24),
         _LogoTitle(),
       ],
@@ -20,26 +25,6 @@ class LoginHeader extends StatelessWidget {
   }
 }
 
-class _BackButtonRow extends StatelessWidget {
-  const _BackButtonRow();
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: IconButton(
-        padding: EdgeInsets.only(left: 16),
-        constraints: const BoxConstraints(),
-        icon: SvgPicture.asset(
-          AssetConstant.backButtonSVG,
-          width: 16,
-          height: 14,
-        ),
-        onPressed: () => Navigator.of(context).maybePop(),
-      ),
-    );
-  }
-}
 
 class _LogoTitle extends StatelessWidget {
   const _LogoTitle();

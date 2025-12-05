@@ -1,6 +1,7 @@
 // lib/login/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_state.dart';
@@ -59,7 +60,7 @@ class _LoginView extends StatelessWidget {
                           child: Column(
                             //mainAxisAlignment: MainAxisAlignment.start,
                             // crossAxisAlignment: CrossAxisAlignment.start,
-                            //crossAxisAlignment: CrossAxisAlignment.stretch,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               //const SizedBox(height: 12),
 
@@ -98,40 +99,30 @@ class _LoginView extends StatelessWidget {
                               // sign in button
                               BlocBuilder<LoginBloc, LoginState>(
                                 builder: (context, state) {
-                                  final loading =
-                                      state.status == LoginStatus.loading;
+                                  final loading = state.status == LoginStatus.loading;
 
                                   return SizedBox(
-                                    height: 54,
+                                    height: 52,
                                     width: width,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                        LoginColors.alivPurple,
+                                        backgroundColor: ColorManager.defaultButtonColor,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                           BorderRadius.circular(26),
                                         ),
                                         elevation: 0,
                                       ),
-                                      onPressed: loading
-                                          ? null
-                                          : () => context
-                                          .read<LoginBloc>()
-                                          .add(const LoginSubmitted()),
-                                      child: loading
-                                          ? const SizedBox(
+                                      onPressed: loading ? null : () => context.read<LoginBloc>().add(const LoginSubmitted()),
+                                      child: loading ? const SizedBox(
                                         width: 20,
                                         height: 20,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2,
-                                          valueColor:
-                                          AlwaysStoppedAnimation<
-                                              Color>(
-                                              Colors.white),
-                                        ),
-                                      )
-                                          : const Text(
+                                          valueColor: AlwaysStoppedAnimation<
+                                              Color>(Colors.white)
+                                        )
+                                      ) : const Text(
                                         'sign in',
                                         style: TextStyle(
                                           fontSize: 16,

@@ -73,8 +73,7 @@ class LoginSocialButtons extends StatelessWidget {
                 height: 44,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side:
-                    const BorderSide(color: LoginColors.alivPurple, width: 1),
+                    side: const BorderSide(color: LoginColors.alivPurple, width: 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(22),
                     ),
