@@ -86,8 +86,8 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                               BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                                 builder: (context, state) {
                                   return TermsAndPrivacyText(
-                                    isTermsLoading: false,//state.isTermsLoading,
-                                    isPrivacyLoading: false,//state.isPrivacyLoading,
+                                    isTermsLoading: state.isTermsLoading,
+                                    isPrivacyLoading: state.isPrivacyLoading,
                                     onTermsTap: () {
                                       //context.read<LegalBloc>().add(LoadTermsPressed());
                                     },
