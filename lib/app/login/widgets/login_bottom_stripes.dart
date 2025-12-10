@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LoginBottomStripes extends StatelessWidget {
-  const LoginBottomStripes({super.key});
+class BottomStripes extends StatelessWidget {
+  const BottomStripes({super.key});
 
   @override
   Widget build(BuildContext context) {

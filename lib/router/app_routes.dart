@@ -5,6 +5,7 @@ class AppRoutes {
   static const logIn = '/log-in';
   static const loginOtp = '/otp';
   static const forgetPassword = '/forget-password';
+  static const forgetPasswordOtp = '/forget-password-Otp';
 
 
 }

@@ -126,7 +126,7 @@ class _LoginView extends StatelessWidget {
               ),
 
               // ---------- Fixed bottom stripes ----------
-              const LoginBottomStripes(),
+              const BottomStripes(),
             ],
           ),
         ),

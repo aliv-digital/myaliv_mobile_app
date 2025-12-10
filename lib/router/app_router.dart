@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/forgetPassOtp/view/forgetPass_screen.dart';
 import 'package:myaliv_mobile_app/app/forgetPassword/view/forget_password_screen.dart';
 import 'package:myaliv_mobile_app/app/login/view/login_page.dart';
 import 'package:myaliv_mobile_app/app/loginOtp/view/login_otp_screen.dart';
@@ -11,9 +12,8 @@ import 'app_routes.dart';
 
 class AppRouter {
 
-
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.forgetPassword,   // initial Screen
+    initialLocation: AppRoutes.forgetPasswordOtp,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -34,7 +34,11 @@ class AppRouter {
       GoRoute(
           path: AppRoutes.forgetPassword,
           builder: (context,state) => const ForgetPasswordScreen()
-      )
+      ),
+      GoRoute(
+        path: AppRoutes.forgetPasswordOtp,
+        builder: (context, state) => const ForgetPasswordOtpScreen(),
+      ),
     ],
   );
 }
