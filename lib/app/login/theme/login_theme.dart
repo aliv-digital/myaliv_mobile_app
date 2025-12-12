@@ -10,4 +10,6 @@ class AuthModuleColors {
   static const hintGrey = Color(0xFFB0B0B5);
   static Color linkBlue = HexColor.fromHex('#13AEE1');//Color(0xFF2CACEA);#13AEE1
   static const textBlack = Color(0xFF000000);
+  static Color textInputBorderColor = HexColor.fromHex('#E0E0E0');
+  static Color lockColor = HexColor.fromHex('#707070');//#707070 #707070
 }

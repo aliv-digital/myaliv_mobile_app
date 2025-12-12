@@ -19,8 +19,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
-        final hasError =
-            state.status == LoginStatus.failure && state.errorMessage != null;
+        final hasError = state.status == LoginStatus.failure && state.errorMessage != null;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,10 +27,9 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
             Container(
               height: 60,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color:
-                  hasError ? AuthModuleColors.errorRed : AuthModuleColors.lightGreyBorder,
+                  color: hasError ? AuthModuleColors.errorRed : AuthModuleColors.lightGreyBorder,
                   width: 1.2,
                 ),
               ),

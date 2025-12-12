@@ -54,7 +54,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
               width: 82,
               height: 60,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: AuthModuleColors.lightGreyBorder,
                   width: 1.2,
@@ -90,7 +90,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
             child: Container(
               height: 60,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: AuthModuleColors.lightGreyBorder,
                   width: 1.2,
