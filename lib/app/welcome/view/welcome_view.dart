@@ -49,7 +49,7 @@ class WelcomeView extends StatelessWidget {
                     children: [
                       Positioned.fill(
                         child: Image.asset(
-                          AssetConstant.welcomeImageSVG,  // Background image
+                          AssetConstant.welcomeImagePNG,  // Background image
                           fit: BoxFit.cover,
                         ),
                       ),

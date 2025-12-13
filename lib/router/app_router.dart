@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/createPassword/view/create_password_page.dart';
-import 'package:myaliv_mobile_app/app/forgetPassOtp/view/forgetPass_screen.dart';
-import 'package:myaliv_mobile_app/app/forgetPassword/view/forget_password_screen.dart';
-import 'package:myaliv_mobile_app/app/login/view/login_page.dart';
-import 'package:myaliv_mobile_app/app/loginOtp/view/login_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/splash/bloc/splash_state.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
+import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
+import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
+import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
+import '../app/Aliv-Mobile/login/view/login_page.dart';
+import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
 import '../app/splash/view/splash_page.dart';
 import 'app_routes.dart';
 
@@ -14,7 +15,7 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.createPassword,   // initial Screen
+    initialLocation: AppRoutes.guestSplash,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -44,6 +45,10 @@ class AppRouter {
         path: AppRoutes.createPassword,
         builder: (context, state) => const CreatePasswordScreen(),
       ),
+      GoRoute(
+          path: AppRoutes.guestSplash,
+          builder: (context,state) => const GuestSplashScreen()
+      )
     ],
   );
 }

@@ -1,13 +1,13 @@
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import '../../../resources/widgets/defaultBackButton.dart';
+import 'package:flutter_svg/svg.dart';
+import '../../../../resources/color_manager.dart';
+import '../../../../resources/constants/asset_constants.dart';
+import '../../../../resources/widgets/defaultBackButton.dart';
 import '../../login/theme/login_theme.dart';
 
-
-class ForgetPasswordHeader extends StatelessWidget {
-  const ForgetPasswordHeader({super.key});
+class CreatePasswordHeader extends StatelessWidget {
+  const CreatePasswordHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class ForgetPasswordHeader extends StatelessWidget {
             // custom logic
           },
         ),
-        SizedBox(height: 64),
+        SizedBox(height: 62),
         _LogoTitle(),
       ],
     );
@@ -40,9 +40,9 @@ class _LogoTitle extends StatelessWidget {
           width: 95.42,
           height: 48.86,
         ),
-        SizedBox(height: 44),
+        SizedBox(height: 46),
         Text(
-          'verify your number',
+          'create password',
           style: TextStyle(
             fontSize: 17,
             fontFamily: 'CircularPro',
@@ -52,8 +52,8 @@ class _LogoTitle extends StatelessWidget {
         ),
         SizedBox(height: 5),
         SizedBox(
-          width: 294,
-          child: Text('please enter your mobile to create your new password',
+          width: 307,
+          child: Text('Set the new password for your account so you can login and access MyALIV App',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,

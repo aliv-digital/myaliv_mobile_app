@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
-import '../../../resources/widgets/defaultButton.dart';
+import '../../../../resources/widgets/defaultButton.dart';
 import '../../login/theme/login_theme.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
 import '../bloc/forgetPass_otp_event.dart';

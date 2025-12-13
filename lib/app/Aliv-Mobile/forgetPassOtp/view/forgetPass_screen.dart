@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/forgetPassOtp/widgets/forgetOtp_bottom_action.dart';
-import 'package:myaliv_mobile_app/app/forgetPassOtp/widgets/forgetOtp_code_fields.dart';
-import 'package:myaliv_mobile_app/app/forgetPassOtp/widgets/forgetOtp_header.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
-import '../../loginOtp/widgets/otp_header.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
 import '../bloc/forgetPass_otp_state.dart';
 import '../repository/forgetPass_otp_repository.dart';
+import '../widgets/forgetOtp_bottom_action.dart';
+import '../widgets/forgetOtp_code_fields.dart';
+import '../widgets/forgetOtp_header.dart';
 
 
 class ForgetPasswordOtpScreen extends StatelessWidget {

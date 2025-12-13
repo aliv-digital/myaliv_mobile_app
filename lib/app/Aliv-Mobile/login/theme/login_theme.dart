@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../resources/extentions/hex_color.dart';
 
-import '../../../resources/extentions/hex_color.dart';
 
 class AuthModuleColors {
   static Color alivPurple = HexColor.fromHex('#CC5146A8');//Color(0xFF5D4FB2);

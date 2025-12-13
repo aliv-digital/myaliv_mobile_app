@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/login/theme/login_theme.dart';
+
+import '../../login/theme/login_theme.dart';
 
 class TermsAndPrivacyText extends StatelessWidget {
   final VoidCallback? onTermsTap;

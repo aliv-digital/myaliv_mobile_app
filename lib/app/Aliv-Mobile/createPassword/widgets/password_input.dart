@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/login/theme/login_theme.dart';
+
+import '../../login/theme/login_theme.dart';
+
 
 class PasswordInput extends StatelessWidget {
   const PasswordInput({

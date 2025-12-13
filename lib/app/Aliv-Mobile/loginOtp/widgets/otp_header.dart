@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import '../../../resources/widgets/defaultBackButton.dart';
+import '../../../../resources/widgets/defaultBackButton.dart';
 import '../../login/theme/login_theme.dart';
 
-class ForgetPasswordOtpHeader extends StatelessWidget {
-  const ForgetPasswordOtpHeader({super.key});
+class OtpHeader extends StatelessWidget {
+  const OtpHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 24, top: 53),
-          onPressed: () {},
+          padding: EdgeInsets.only(left: 24,top: 53),
+          onPressed: () {}
         ),
         const SizedBox(height: 16),
         SvgPicture.asset(
@@ -41,10 +41,11 @@ class ForgetPasswordOtpHeader extends StatelessWidget {
             color: ColorManager.otpScreenTxtGray,
             height: 1.4,
             fontWeight: FontWeight.w400,
-            fontFamily: 'CircularPro',
+            fontFamily: 'CircularPro'
           ),
         ),
       ],
     );
   }
 }
+

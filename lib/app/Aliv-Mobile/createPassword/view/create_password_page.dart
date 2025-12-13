@@ -35,6 +35,8 @@ class _CreatePasswordView extends StatelessWidget {
           listenWhen: (p, c) =>
           p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
+            if(state.status == CreatePasswordStatus.success){
+            }
             // এখানে তোমার snackbar logic থাকবে (invalid/failure/success)
           },
           child: Column(
