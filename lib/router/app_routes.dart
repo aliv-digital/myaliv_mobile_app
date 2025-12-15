@@ -8,6 +8,7 @@ class AppRoutes {
   static const forgetPasswordOtp = '/forget-password-Otp';
   static const createPassword = '/create-password';
   static const guestSplash = '/guest-splash';
+  static const whyAliv = '/why-aliv';
 
 
 
