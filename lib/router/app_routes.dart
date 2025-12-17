@@ -9,7 +9,7 @@ class AppRoutes {
   static const createPassword = '/create-password';
   static const guestSplash = '/guest-splash';
   static const whyAliv = '/why-aliv';
-
+  static const guestTopUp = '/guest-top-up';
 
 
 }

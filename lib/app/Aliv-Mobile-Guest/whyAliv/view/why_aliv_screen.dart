@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/app_bar.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_one.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_two.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/text_body.dart';
+import '../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/why_aliv_bloc.dart';
 import '../bloc/why_aliv_event.dart';
 import '../bloc/why_aliv_state.dart';
@@ -54,7 +54,7 @@ class _WhyAlivView extends StatelessWidget {
           },
           child: Column(
             children: [
-              WhyAlivAppBar(
+              DefaultAppBar(
                 title: WhyAlivStrings.whyAlivAppbarTitle,
                 onBack: () {},
               ),

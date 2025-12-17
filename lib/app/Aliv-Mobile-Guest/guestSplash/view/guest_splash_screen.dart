@@ -57,7 +57,7 @@ class GuestSplashView extends StatelessWidget {
                         ),
                       ),
 
-                      // ✅ Back Button (top-left) - same position like screenshot
+
                       Positioned(
                         top: 12,
                         left: 12,

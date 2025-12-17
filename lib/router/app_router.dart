@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
-import 'package:myaliv_mobile_app/app/splash/bloc/splash_state.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
+import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
@@ -16,7 +15,7 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.whyAliv,   // initial Screen
+    initialLocation: AppRoutes.guestTopUp,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -53,6 +52,10 @@ class AppRouter {
       GoRoute(
           path: AppRoutes.whyAliv,
           builder: (context,state) => const WhyAlivScreen()
+      ),
+      GoRoute(
+        path: AppRoutes.guestTopUp,
+        builder: (context, state) => const GuestTopUpScreen(),
       )
     ],
   );

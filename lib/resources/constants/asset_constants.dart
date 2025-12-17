@@ -8,5 +8,6 @@ class AssetConstant{
   static const bottomStripeSVG = 'assets/images/bottom_stripes.svg';
   static const backButtonSVG = 'assets/icons/back_button.svg';
   static const otpPhoneSVG = 'assets/images/otp_mobile.svg';
+  static const whiteBackArrowIconPNG = 'assets/icons/white_back_arrow.png';
 
 }
