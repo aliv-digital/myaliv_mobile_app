@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
+import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
@@ -15,7 +16,7 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.guestTopUp,   // initial Screen
+    initialLocation: AppRoutes.confirmGuestTopUp,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -56,6 +57,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestTopUp,
         builder: (context, state) => const GuestTopUpScreen(),
+      ),
+      GoRoute(
+          path: AppRoutes.confirmGuestTopUp,
+          builder: (context,state) => GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12)
       )
     ],
   );

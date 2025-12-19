@@ -10,6 +10,7 @@ class AppRoutes {
   static const guestSplash = '/guest-splash';
   static const whyAliv = '/why-aliv';
   static const guestTopUp = '/guest-top-up';
+  static const confirmGuestTopUp = '/confirm-guest-top-up';
 
 
 }
