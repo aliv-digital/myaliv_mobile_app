@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
@@ -16,8 +17,17 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.confirmGuestTopUp,   // initial Screen
+    initialLocation: AppRoutes.guestTopUpReceipt,   // initial Screen
     routes: [
+      GoRoute(
+        path: AppRoutes.guestTopUpReceipt,
+        builder: (context, state) => const GuestTopUpReceiptScreen(
+            phoneNumber: '234235454',
+            amount:12,
+            dateText: '12-23-2025',
+            timeText: '08:34'
+        ),
+      ),
       GoRoute(
         path: AppRoutes.splash,
         builder: (context, state) => const SplashPage(),
