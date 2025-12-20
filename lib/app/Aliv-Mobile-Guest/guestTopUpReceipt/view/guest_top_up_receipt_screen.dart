@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/widgets/receipt_failure_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 
 import '../bloc/guest_top_up_receipt_bloc.dart';
@@ -73,6 +72,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
               slivers: [
                 SliverToBoxAdapter(
                   child: DefaultAppBar(
+                    showBackArrow: false,
                       title: 'my receipt',
                       onBack:(){}
                   ),
@@ -83,8 +83,10 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                       padding: EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
                       child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
                         builder: (context, state) {
+                          final data = state.data;
+                          if (data == null) return const SizedBox.shrink();
                           return ReceiptSuccessCard(
-                            data: state.data!,
+                            data: data,
                             onBackHome: () {  },
                             pageBackground: ReceiptTheme.circleBackground,
                           );

@@ -3,13 +3,15 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../app/Aliv-Mobile-Guest/whyAliv/theme/why_aliv_theme.dart';
 
 class DefaultAppBar extends StatelessWidget {
-  const DefaultAppBar({super.key,
+    const DefaultAppBar({super.key,
     required this.title,
     required this.onBack,
+    this.showBackArrow = true
   });
 
   final String title;
   final VoidCallback onBack;
+  final bool showBackArrow;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,8 @@ class DefaultAppBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
-          IconButton(
+          if (showBackArrow)
+            IconButton(
             onPressed: onBack,
             icon: Image.asset(AssetConstant.whiteBackArrowIconPNG),
             color: Colors.white,

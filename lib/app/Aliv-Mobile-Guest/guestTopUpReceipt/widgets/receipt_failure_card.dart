@@ -16,7 +16,6 @@ class ReceiptFailureCard extends StatelessWidget {
   final VoidCallback onBackHome;
   final Color pageBackground;
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +52,7 @@ class ReceiptFailureCard extends StatelessWidget {
               height: iconSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: ReceiptTheme.circleBackground, // light red circle
+                //  color: ReceiptTheme.circleBackground, // light red circle
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -65,8 +64,8 @@ class ReceiptFailureCard extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
+                      Icons.error_outlined,
+                      color: Colors.deepPurpleAccent,
                       size: 32,
                     ),
                   ),

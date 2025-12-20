@@ -65,33 +65,16 @@ class PaymentFailedTicket extends StatelessWidget {
                     children: [
                       // top icon
                       Container(
-                        width: 46,
-                        height: 46,
+                        width: 56,
+                        height: 56,
                         decoration: BoxDecoration(
                           color: iconBg,
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: titleColor,
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            '!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
-                              height: 1,
-                            ),
-                          ),
-                        ),
+                        child: Icon(Icons.error_outline,color: Colors.red,size: 32),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
                       Text(
                         title,
