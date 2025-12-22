@@ -10,6 +10,9 @@ import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
 import '../bloc/guest_splash_state.dart';
 import '../repository/guest_splash_repository.dart';
+import '../widgets/guest_purchase_plan_bottom_sheet.dart';
+
+
 
 class GuestSplashScreen extends StatelessWidget {
   const GuestSplashScreen({super.key});
@@ -45,7 +48,6 @@ class GuestSplashView extends StatelessWidget {
           } else if (state is GuestSplashLoadedState) {
             return Column(
               children: [
-                // Top Half - Background Image with ALIV Logo (stacked section)
                 Expanded(
                   flex: 1,
                   child: Stack(
@@ -56,8 +58,6 @@ class GuestSplashView extends StatelessWidget {
                           fit: BoxFit.cover,
                         ),
                       ),
-
-
                       Positioned(
                         top: 12,
                         left: 12,
@@ -82,7 +82,6 @@ class GuestSplashView extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       Positioned(
                         bottom: 80,
                         left: MediaQuery.of(context).size.width / 2 - 96,
@@ -97,7 +96,6 @@ class GuestSplashView extends StatelessWidget {
                   ),
                 ),
 
-                // Bottom Half - Purple Color Block with Buttons
                 Expanded(
                   flex: 0,
                   child: Container(
@@ -130,10 +128,27 @@ class GuestSplashView extends StatelessWidget {
                           onPressed: () {},
                         ),
                         const SizedBox(height: 18),
+
+                        // ✅ TRIGGER HERE
                         CustomButton(
                           label: 'purchase a plan',
-                          onPressed: () {},
+                          onPressed: () async {
+                            final result = await showGuestSplashPurchasePlanBottomSheet(context);
+
+                            if (!context.mounted) return;
+
+                            if (result != null) {
+                              // ✅ এখানে তুমি navigation দেবে
+                              // Example:
+                              // Navigator.pushNamed(context, AppRoutes.purchasePlan, arguments: result);
+
+                              // Temporary debug:
+                              debugPrint('PurchasePlan -> ${result.fullPhone}');
+                            }
+                          },
                         ),
+
+
                         const SizedBox(height: 18),
                         CustomButton(
                           label: 'bill pay',

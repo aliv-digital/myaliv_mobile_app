@@ -13,6 +13,7 @@ class AppRoutes {
   static const confirmGuestTopUp = '/confirm-guest-top-up';
   static const guestTopUpReceipt = '/guest-top-up-receipt';
 
+  static const guestPurchasePlan = '/guest-purchase-plan';
 
 
 }
