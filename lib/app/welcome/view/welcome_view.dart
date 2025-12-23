@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart'; // Replace with your asset constants
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/welcome_bloc.dart';
 import '../bloc/welcome_event.dart';
 import '../bloc/welcome_state.dart';
@@ -34,6 +36,13 @@ class WelcomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,  // Background transparent
+        statusBarIconBrightness: Brightness.light, // ANDROID → white icons
+        statusBarBrightness: Brightness.dark,       // iOS → white icons
+      ),
+    );
     return Scaffold(
       body: BlocBuilder<WelcomeBloc, WelcomeState>(
         builder: (context, state) {
@@ -95,6 +104,7 @@ class WelcomeView extends StatelessWidget {
                         CustomButton(
                           label: 'ALIV Mobile',
                           onPressed: () {
+                            context.push(AppRoutes.logIn);
                             // Handle the button press
                           },
                         ),
@@ -109,6 +119,7 @@ class WelcomeView extends StatelessWidget {
                         CustomButton(
                           label: 'ALIV Mobile Guest',
                           onPressed: () {
+                            context.push(AppRoutes.guestSplash);
                             // Handle the button press
                           },
                         ),

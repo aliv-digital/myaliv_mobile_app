@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/defaultButton.dart';
@@ -60,7 +61,7 @@ class _GuestTopUpView extends StatelessWidget {
               DefaultAppBar(
                 title: GuestTopUpStrings.guestTopUpAppbarTitle,
                 onBack: () {
-
+                  context.pop();
                 },
               ),
               Expanded(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import '../../../../router/app_routes.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
@@ -29,6 +32,13 @@ class _ForgetPasswordScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,  // Background transparent
+        statusBarIconBrightness: Brightness.dark, // ANDROID → white icons
+        statusBarBrightness: Brightness.dark,       // iOS → white icons
+      ),
+    );
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -77,7 +87,8 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                                       label: 'send',
                                       isLoading: loading,
                                       onPressed: (){
-                                        context.read<ForgetPasswordBloc>().add(const ForgetPasswordSubmitted());
+                                        //context.read<ForgetPasswordBloc>().add(const ForgetPasswordSubmitted());
+                                        context.push(AppRoutes.forgetPasswordOtp);
                                       }
                                   );
                                 },

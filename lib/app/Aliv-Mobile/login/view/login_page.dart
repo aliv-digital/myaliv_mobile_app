@@ -1,8 +1,11 @@
 // lib/login/login_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_state.dart';
 import '../bloc/auth_event.dart';
@@ -33,6 +36,13 @@ class _LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,  // Background transparent
+        statusBarIconBrightness: Brightness.dark, // ANDROID → white icons
+        statusBarBrightness: Brightness.dark,       // iOS → white icons
+      ),
+    );
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -79,7 +89,9 @@ class _LoginView extends StatelessWidget {
                                     tapTargetSize:
                                     MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.push(AppRoutes.forgetPassword);
+                                  },
                                   child: Text(
                                     'forgot password?',
                                     style: TextStyle(

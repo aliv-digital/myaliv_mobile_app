@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import '../bloc/guest_purchase_plan_bloc.dart';
 import '../bloc/guest_purchase_plan_event.dart';
 import '../bloc/guest_purchase_plan_state.dart';
@@ -19,14 +20,16 @@ class GuestPurchasePlanScreen extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.dark,
       ),
     );
 
     return BlocProvider(
-      create: (_) => GuestPurchasePlanBloc(GuestPurchasePlanRepository())
-        ..add(GuestPurchasePlanStarted()),
+      create: (_) => GuestPurchasePlanBloc(
+          GuestPurchasePlanRepository())..add(
+          GuestPurchasePlanStarted()
+      ),
       child: const _GuestPurchasePlanView(),
     );
   }
@@ -45,10 +48,16 @@ class _GuestPurchasePlanView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _TopBar(
-              title: 'plans',
-              onBack: () => Navigator.of(context).maybePop(),
+            DefaultAppBar(
+                title: 'plans',
+                onBack: (){
+                  context.pop();
+                }
             ),
+            // _TopBar(
+            //   title: 'plans',
+            //   onBack: () => Navigator.of(context).maybePop(),
+            // ),
             BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
               buildWhen: (p, c) => p.selectedTab != c.selectedTab,
               builder: (context, state) {
@@ -64,7 +73,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
             const SizedBox(height: 6),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
+              padding: const EdgeInsets.only(top: 24,bottom: 15,left: 31),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -73,7 +82,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     fontFamily: 'CircularPro',
                     fontSize: 12.5,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black.withOpacity(0.75),
+                    color: Colors.black.withValues(alpha: 0.75),
                   ),
                 ),
               ),

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 
-class PlanCard extends StatelessWidget {
+// Monthly plan card — keep monthly UI here only
+class MonthlyPlanCard extends StatelessWidget {
   final PlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
   final VoidCallback onPurchaseNow;
 
-  const PlanCard({
+  const MonthlyPlanCard({
     super.key,
     required this.plan,
     required this.expanded,
@@ -25,6 +26,7 @@ class PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Paste your FULL current PlanCard UI here (monthly version)
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
@@ -33,7 +35,7 @@ class PlanCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
@@ -178,6 +180,8 @@ class PlanCard extends StatelessWidget {
     );
   }
 }
+
+
 
 class _PricePill extends StatelessWidget {
   final double price;
@@ -348,10 +352,8 @@ class _AssetIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final path = PlanIconAssets.forType(type);
     final lower = path.toLowerCase();
-
     if (lower.endsWith('.svg')) {
-      return SvgPicture.asset(path,
-          width: size, height: size, fit: BoxFit.contain);
+      return SvgPicture.asset(path, width: size, height: size, fit: BoxFit.contain);
     }
     return Image.asset(path, width: size, height: size, fit: BoxFit.contain);
   }

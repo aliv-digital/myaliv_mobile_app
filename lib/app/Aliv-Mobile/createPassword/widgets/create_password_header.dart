@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../resources/color_manager.dart';
 import '../../../../resources/constants/asset_constants.dart';
 import '../../../../resources/widgets/defaultBackButton.dart';
@@ -17,6 +18,7 @@ class CreatePasswordHeader extends StatelessWidget {
         DefaultBackButton(
           padding: EdgeInsets.only(left: 16,top: 53),
           onPressed: () {
+            context.pop();
             // custom logic
           },
         ),

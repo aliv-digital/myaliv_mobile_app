@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../resources/color_manager.dart';
 import '../../../resources/constants/asset_constants.dart';
 import '../bloc/splash_bloc.dart';
@@ -25,6 +27,9 @@ class SplashPage extends StatelessWidget {
       child: Scaffold(
         body: BlocListener<SplashBloc, SplashState>(
           listener: (context, state) {
+            if(state is SplashLoaded){
+              context.go(AppRoutes.welcome);
+            }
             // Navigation logic here
           },
           child: Container(

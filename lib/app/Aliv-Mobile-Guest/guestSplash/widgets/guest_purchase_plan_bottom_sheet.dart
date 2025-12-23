@@ -329,6 +329,8 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
@@ -512,9 +514,11 @@ class _SheetBody extends StatelessWidget {
                     borderRadius: BorderRadius.circular(28),
                   ),
                 ),
-                onPressed: () => context
-                    .read<GuestSplashBloc>()
-                    .add(GuestSplashPurchasePlanSubmitted()),
+                onPressed: () {
+                 // context.read<GuestSplashBloc>().add(GuestSplashPurchasePlanSubmitted());
+
+                  context.push(AppRoutes.guestPurchasePlan);
+                },
                 child: const Text(
                   'continue',
                   style: TextStyle(

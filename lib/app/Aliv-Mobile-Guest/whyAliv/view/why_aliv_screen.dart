@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_one.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_two.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/text_body.dart';
@@ -56,7 +57,9 @@ class _WhyAlivView extends StatelessWidget {
             children: [
               DefaultAppBar(
                 title: WhyAlivStrings.whyAlivAppbarTitle,
-                onBack: () {},
+                onBack: () {
+                  context.pop();
+                },
               ),
               Expanded(
                 child: CustomScrollView(

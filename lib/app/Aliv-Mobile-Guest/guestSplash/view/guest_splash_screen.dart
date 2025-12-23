@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../welcome/widgets/custom_button.dart';
 import '../bloc/guest_splash_bloc.dart';
@@ -41,6 +43,7 @@ class GuestSplashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorManager.welcomeScreenBloc,
       body: BlocBuilder<GuestSplashBloc, GuestSplashState>(
         builder: (context, state) {
           if (state is GuestSplashInitial) {
@@ -120,16 +123,20 @@ class GuestSplashView extends StatelessWidget {
                         const SizedBox(height: 20),
                         CustomButton(
                           label: 'Why ALIV ?',
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push(AppRoutes.whyAliv);
+                          },
                         ),
                         const SizedBox(height: 18),
                         CustomButton(
                           label: 'top-up',
-                          onPressed: () {},
+                          onPressed: () {
+                            context.push(AppRoutes.guestTopUp);
+                          },
                         ),
                         const SizedBox(height: 18),
 
-                        // ✅ TRIGGER HERE
+                        // TRIGGER HERE
                         CustomButton(
                           label: 'purchase a plan',
                           onPressed: () async {
@@ -138,7 +145,7 @@ class GuestSplashView extends StatelessWidget {
                             if (!context.mounted) return;
 
                             if (result != null) {
-                              // ✅ এখানে তুমি navigation দেবে
+
                               // Example:
                               // Navigator.pushNamed(context, AppRoutes.purchasePlan, arguments: result);
 

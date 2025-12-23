@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../../../resources/widgets/defaultBackButton.dart';
@@ -14,7 +15,9 @@ class ForgetPasswordOtpHeader extends StatelessWidget {
       children: [
         DefaultBackButton(
           padding: EdgeInsets.only(left: 24, top: 53),
-          onPressed: () {},
+          onPressed: () {
+            context.pop();
+          },
         ),
         const SizedBox(height: 16),
         SvgPicture.asset(
