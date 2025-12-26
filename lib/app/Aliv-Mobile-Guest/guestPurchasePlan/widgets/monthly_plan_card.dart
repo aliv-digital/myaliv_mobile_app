@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
+import '../theme/theme.dart';
 
 // Monthly plan card — keep monthly UI here only
 class MonthlyPlanCard extends StatelessWidget {
@@ -22,7 +23,7 @@ class MonthlyPlanCard extends StatelessWidget {
 
   static const Color _brand = Color(0xFF5D5A8B);
   static const Color _muted = Color(0xFF8B8B8B);
-  static const Color _divider = Color(0xFFE9E9EE);
+  //static const Color _divider = Color(0xFFE9E9EE);
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +93,12 @@ class MonthlyPlanCard extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // ✅ Scrollable benefits row + indicator bar
+          // Scrollable benefits row + indicator bar
           _BenefitsRow(benefits: plan.benefits),
 
           // thin divider line like screenshot
           const SizedBox(height: 10),
-          Container(height: 1, color: _divider),
+          //Container(height: 1, color: GuestPurchasePlanTheme.dividerColor),
           const SizedBox(height: 10),
 
           // ===== Expanded description =====
@@ -230,7 +231,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       children: [
         SizedBox(
           height: 66,
@@ -240,31 +241,143 @@ class _BenefitsRowState extends State<_BenefitsRow> {
             physics: const BouncingScrollPhysics(),
             child: Row(
               children: List.generate(widget.benefits.length, (i) {
-                final b = widget.benefits[i];
-
-                return Row(
-                  children: [
-                    SizedBox(
-                      width: 112,
-                      height: 66,
-                      child: _BenefitItem(benefit: b),
-                    ),
-                    if (i != widget.benefits.length - 1)
-                      Container(
-                        width: 1,
-                        height: 36,
-                        margin: const EdgeInsets.symmetric(horizontal: 12),
-                        color: const Color(0xFFE6E6EC),
+                final myBenefit = widget.benefits[i];
+                // Data
+                if(myBenefit.type == PlanBenefitType.data){
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: 112,
+                        height: 66,
+                        child: _BenefitItem(
+                          benefit: myBenefit,
+                          labelColor: GuestPurchasePlanTheme.dataColor,
+                        ),
                       ),
-                  ],
-                );
+                      if (i != widget.benefits.length - 1)
+                        Container(
+                          width: 1,
+                          height: 36,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: GuestPurchasePlanTheme.dividerColor,
+                        ),
+                    ],
+                  );
+                }
+                else if(myBenefit.type == PlanBenefitType.intlTalkText){
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: 112,
+                        height: 66,
+                        child: _BenefitItem(
+                          benefit: myBenefit,
+                          labelColor: GuestPurchasePlanTheme.intlTalkTextColor,
+                        ),
+                      ),
+                      if (i != widget.benefits.length - 1)
+                        Container(
+                          width: 1,
+                          height: 36,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: GuestPurchasePlanTheme.dividerColor,
+                        ),
+                    ],
+                  );
+                }
+                else if(myBenefit.type == PlanBenefitType.sms){
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: 112,
+                        height: 66,
+                        child: _BenefitItem(
+                          benefit: myBenefit,
+                          labelColor: GuestPurchasePlanTheme.smsColor,
+                        ),
+                      ),
+                      if (i != widget.benefits.length - 1)
+                        Container(
+                          width: 1,
+                          height: 36,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: GuestPurchasePlanTheme.dividerColor,
+                        ),
+                    ],
+                  );
+                }
+                else if(myBenefit.type == PlanBenefitType.bonusData){
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: 112,
+                        height: 66,
+                        child: _BenefitItem(
+                          benefit: myBenefit,
+                          labelColor: GuestPurchasePlanTheme.bonusDataColor,
+                        ),
+                      ),
+                      if (i != widget.benefits.length - 1)
+                        Container(
+                          width: 1,
+                          height: 36,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: GuestPurchasePlanTheme.dividerColor,
+                        ),
+                    ],
+                  );
+                }
+                else if(myBenefit.type == PlanBenefitType.mms){
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: 112,
+                        height: 66,
+                        child: _BenefitItem(
+                          benefit: myBenefit,
+                          labelColor: GuestPurchasePlanTheme.mmsColor,
+                        ),
+                      ),
+                      if (i != widget.benefits.length - 1)
+                        Container(
+                          width: 1,
+                          height: 36,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: GuestPurchasePlanTheme.dividerColor,
+                        ),
+                    ],
+                  );
+                }
+                else if(myBenefit.type == PlanBenefitType.talkMins){
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: 112,
+                        height: 66,
+                        child: _BenefitItem(
+                          benefit: myBenefit,
+                          labelColor: GuestPurchasePlanTheme.talkMinsColor,
+                        ),
+                      ),
+                      if (i != widget.benefits.length - 1)
+                        Container(
+                          width: 1,
+                          height: 36,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: GuestPurchasePlanTheme.dividerColor,
+                        ),
+                    ],
+                  );
+                }
+                return SizedBox.shrink();
+
               }),
             ),
           ),
         ),
         const SizedBox(height: 10),
 
-        // ✅ Horizontal scroll indicator (like screenshot)
+        // Horizontal scroll indicator (like screenshot)
         _ScrollIndicator(controller: _controller),
       ],
     );
@@ -361,52 +474,64 @@ class _AssetIcon extends StatelessWidget {
 
 class _BenefitItem extends StatelessWidget {
   final PlanBenefit benefit;
-  const _BenefitItem({required this.benefit});
+  final Color labelColor;
+  const _BenefitItem({required this.benefit,required this.labelColor});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: _AssetIcon(type: benefit.type, size: 16),
-        ),
-        const SizedBox(width: 6),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 2),
+        //   child: _AssetIcon(type: benefit.type, size: 14),
+        // ),
+        // const SizedBox(width: 4),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(top: 1),
+            padding: const EdgeInsets.only(top: 0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: 28,
-                  child: Text(
-                    benefit.label,
-                    maxLines: 2,
-                    overflow: TextOverflow.visible,
-                    style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 11.5,
-                      height: 1.0,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF5D5A8B),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: _AssetIcon(type: benefit.type, size: 14),
                     ),
-                  ),
+                    SizedBox(
+                      //height: ,
+                      child: Text(
+                        benefit.label,
+                        maxLines: 2,
+                        overflow: TextOverflow.visible,
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 12,
+                          height: 1.0,
+                          fontWeight: FontWeight.w500,
+                          color: labelColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 SizedBox(
                   height: 16,
                   child: Text(
+                    textAlign: TextAlign.center,
                     benefit.value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
-                      fontSize: 14,
+                      fontSize: 16,
                       height: 1.0,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black,
                     ),
                   ),
@@ -418,12 +543,12 @@ class _BenefitItem extends StatelessWidget {
                     benefit.sub,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'CircularPro',
-                      fontSize: 10.2,
+                      fontSize: 12,
                       height: 1.0,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF8B8B8B),
+                      color: GuestPurchasePlanTheme.subTitleTextColor,
                     ),
                   ),
                 ),
@@ -435,3 +560,4 @@ class _BenefitItem extends StatelessWidget {
     );
   }
 }
+

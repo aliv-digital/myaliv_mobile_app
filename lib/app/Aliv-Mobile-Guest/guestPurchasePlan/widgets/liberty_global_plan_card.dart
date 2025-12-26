@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 
 
-class RoamingPlanCard extends StatelessWidget {
+class LibertyGlobalPlanCard extends StatelessWidget {
   final PlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
-  final VoidCallback onViewDetails; // ✅ use as toggle from button
+  final VoidCallback onViewDetails; // toggle expand/collapse
   final VoidCallback onPurchaseNow;
 
-  const RoamingPlanCard({
+  const LibertyGlobalPlanCard({
     super.key,
     required this.plan,
     required this.expanded,
@@ -26,13 +25,13 @@ class RoamingPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // roaming card center benefit: prefer data benefit if exists
-    final PlanBenefit? dataBenefit = plan.benefits
-        .where((b) => b.type == PlanBenefitType.data)
+    // ✅ liberty global center metric: prefer intl talk benefit
+    final PlanBenefit? intlTalk = plan.benefits
+        .where((b) => b.type == PlanBenefitType.intlTalkText)
         .cast<PlanBenefit?>()
         .firstWhere((b) => b != null, orElse: () => null);
 
-    final PlanBenefit center = dataBenefit ?? plan.benefits.first;
+    final PlanBenefit center = intlTalk ?? plan.benefits.first;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -59,19 +58,23 @@ class RoamingPlanCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   child: Row(
                     children: [
-                      Text(
-                        plan.title,
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
+                      Flexible(
+                        child: Text(
+                          plan.title, // liberty global haiti
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: 'CircularPro',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 6),
                       AnimatedRotation(
                         duration: const Duration(milliseconds: 180),
-                        turns: expanded ? 0.5 : 0.0, // down -> up
+                        turns: expanded ? 0.5 : 0.0,
                         child: const Icon(Icons.keyboard_arrow_down, size: 22),
                       ),
                     ],
@@ -87,7 +90,7 @@ class RoamingPlanCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              plan.subtitle, // e.g. 7 days
+              plan.subtitle, // 365 days
               style: const TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 12,
@@ -99,10 +102,10 @@ class RoamingPlanCard extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          // ===== Center metric (data only) =====
+          // ===== Center metric (intl talk) =====
           _CenterMetric(benefit: center),
 
-          // ===== Expanded description (like other cards) =====
+          // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
@@ -126,7 +129,7 @@ class RoamingPlanCard extends StatelessWidget {
             ),
           ),
 
-          // ===== Buttons (view/hide + purchase) =====
+          // ===== Buttons =====
           Row(
             children: [
               Expanded(
@@ -140,7 +143,6 @@ class RoamingPlanCard extends StatelessWidget {
                       ),
                       backgroundColor: const Color(0xFFF1F1F6),
                     ),
-                    // ✅ this MUST toggle expanded
                     onPressed: onViewDetails,
                     child: Text(
                       expanded ? 'hide details' : 'view details',
@@ -219,7 +221,7 @@ class _CenterMetric extends StatelessWidget {
   const _CenterMetric({required this.benefit});
 
   static const Color _muted = Color(0xFF8B8B8B);
-  static const Color _accent = Color(0xFFFF5A3C);
+  static const Color _accent = Color(0xFF00A9D8); // blue-ish like screenshot
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +239,7 @@ class _CenterMetric extends StatelessWidget {
               Image.asset(iconPath, width: 16, height: 16),
             const SizedBox(width: 6),
             Text(
-              benefit.label.toLowerCase(),
+              benefit.label, // "int'l talk"
               style: const TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 13,
@@ -249,7 +251,7 @@ class _CenterMetric extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          benefit.value,
+          benefit.value, // "30"
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 22,
@@ -260,7 +262,7 @@ class _CenterMetric extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          benefit.sub,
+          benefit.sub, // "talk mins"
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 13,

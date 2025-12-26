@@ -1,3 +1,4 @@
+import '../models/add_on_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
 import '../models/plan_model.dart';
 
@@ -23,4 +24,9 @@ class GuestPurchasePlanViewDetailsPressed extends GuestPurchasePlanEvent {
 class GuestPurchasePlanPurchaseNowPressed extends GuestPurchasePlanEvent {
   final PlanModel plan;
   GuestPurchasePlanPurchaseNowPressed(this.plan);
+}
+
+class GuestPurchasePlanToggleAddon extends GuestPurchasePlanEvent {
+  final AddOnModel addon;
+  GuestPurchasePlanToggleAddon(this.addon);
 }

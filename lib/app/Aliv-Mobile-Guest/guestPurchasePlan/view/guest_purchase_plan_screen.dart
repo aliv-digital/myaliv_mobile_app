@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/mifi_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/monthly_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roameasy_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roaming_plan_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import '../bloc/guest_purchase_plan_bloc.dart';
 import '../bloc/guest_purchase_plan_event.dart';
 import '../bloc/guest_purchase_plan_state.dart';
+import '../models/add_on_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
+import '../widgets/add_on_card.dart';
+import '../widgets/daily_plan_card.dart';
+import '../widgets/liberty_global_plan_card.dart';
 import '../widgets/plan_card.dart';
 import '../widgets/plan_tabs.dart';
+import '../widgets/weekly_plan_card.dart';
 
 
 
@@ -58,14 +67,18 @@ class _GuestPurchasePlanView extends StatelessWidget {
             //   title: 'plans',
             //   onBack: () => Navigator.of(context).maybePop(),
             // ),
+
+            // scrollable tab for plans
             BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
               buildWhen: (p, c) => p.selectedTab != c.selectedTab,
               builder: (context, state) {
+                debugPrint('selected tab: ${state.selectedTab}');
                 return PlanTabs(
                   selected: state.selectedTab,
-                  onChanged: (tab) => context
-                      .read<GuestPurchasePlanBloc>()
-                      .add(GuestPurchasePlanTabChanged(tab)),
+                  onChanged: (tab) {
+
+                    context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanTabChanged(tab));
+                  },
                 );
               },
             ),
@@ -93,8 +106,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
             Expanded(
               child: BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
                 builder: (context, state) {
-                  if (state.status == GuestPurchasePlanStatus.loading ||
-                      state.status == GuestPurchasePlanStatus.initial) {
+                  if (state.status == GuestPurchasePlanStatus.loading || state.status == GuestPurchasePlanStatus.initial) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
@@ -113,32 +125,193 @@ class _GuestPurchasePlanView extends StatelessWidget {
 
                   return ListView.builder(
                     padding: const EdgeInsets.only(bottom: 14),
-                    itemCount: state.plans.length,
+
+                    //  addOns হলে addOns list, নাহলে plans list
+                    itemCount: state.selectedTab == PlanTab.addOns ? state.addOns.length : state.plans.length,
+
                     itemBuilder: (context, index) {
+                      // ADD ONS TAB
+                      if (state.selectedTab == PlanTab.addOns) {
+                        final AddOnModel addon = state.addOns[index];
+                        final bool selected = state.selectedAddOnIds.contains(addon.id);
+
+                        return AddOnCard(
+                          addon: addon,
+                          selected: selected,
+                          onToggle: () {
+                            context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanToggleAddon(addon));
+                          },
+                        );
+                      }
+
+                      // REST TABS (your existing)
                       final plan = state.plans[index];
                       final expanded = state.expandedPlanIds.contains(plan.id);
 
-                      return PlanCard(
-                        plan: plan,
-                        expanded: expanded,
-                        onToggle: () => context.read<GuestPurchasePlanBloc>()
-                            .add(GuestPurchasePlanToggleExpanded(plan.id)),
+                      if (state.selectedTab == PlanTab.monthly) {
+                        return Padding(
+                          padding: EdgeInsets.only(left: 15,right: 15),
+                          child: MonthlyPlanCard(
+                            plan: plan,
+                            expanded: expanded,
+                            onToggle: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanToggleExpanded(plan.id));
+                            },
+                            onViewDetails: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanToggleExpanded(plan.id));
+                            },
+                            onPurchaseNow: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                            },
+                          ),
+                        );
+                      }
 
-                        // ✅ view details চাপলেও expand/collapse হবে (buttons always visible)
-                        onViewDetails: () => context.read<GuestPurchasePlanBloc>()
-                            .add(GuestPurchasePlanToggleExpanded(plan.id)),
+                      if (state.selectedTab == PlanTab.daily) {
+                        return DailyPlanCard(
+                          plan: plan,
+                          expanded: expanded,
+                          onToggle: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onViewDetails: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onPurchaseNow: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                          },
+                        );
+                      }
 
-                        onPurchaseNow: () {
-                          context.read<GuestPurchasePlanBloc>()
-                              .add(GuestPurchasePlanPurchaseNowPressed(plan));
-                          // navigate purchase flow here
-                        },
-                      );
+                      if (state.selectedTab == PlanTab.weekly) {
+                        return WeeklyPlanCard(
+                          plan: plan,
+                          expanded: expanded,
+                          onToggle: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onViewDetails: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onPurchaseNow: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                          },
+                        );
+                      }
+
+                      if (state.selectedTab == PlanTab.roaming) {
+                        return RoamingPlanCard(
+                          plan: plan,
+                          expanded: expanded,
+                          onToggle: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onViewDetails: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onPurchaseNow: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                          },
+                        );
+                      }
+
+                      if (state.selectedTab == PlanTab.roameasy) {
+                        return RoamEasyPlanCard(
+                          plan: plan,
+                          expanded: expanded,
+                          onToggle: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onViewDetails: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onPurchaseNow: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                          },
+                        );
+                      }
+
+                      if (state.selectedTab == PlanTab.mifi) {
+                        return MifiPlanCard(
+                          plan: plan,
+                          expanded: expanded,
+                          onToggle: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onViewDetails: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onPurchaseNow: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                          },
+                        );
+                      }
+
+                      if (state.selectedTab == PlanTab.libertyGlobal) {
+                        return LibertyGlobalPlanCard(
+                          plan: plan,
+                          expanded: expanded,
+                          onToggle: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onViewDetails: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanToggleExpanded(plan.id));
+                          },
+                          onPurchaseNow: () {
+                            context
+                                .read<GuestPurchasePlanBloc>()
+                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                          },
+                        );
+                      }
+
+                      return const SizedBox.shrink();
                     },
                   );
+
                 },
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -146,46 +319,4 @@ class _GuestPurchasePlanView extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  final String title;
-  final VoidCallback onBack;
 
-  const _TopBar({
-    required this.title,
-    required this.onBack,
-  });
-
-  static const Color _topBar = Color(0xFF5D5A8B);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 52,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      color: _topBar,
-      child: Row(
-        children: [
-          InkWell(
-            onTap: onBack,
-            borderRadius: BorderRadius.circular(22),
-            child: const Padding(
-              padding: EdgeInsets.all(8),
-              child: Icon(Icons.arrow_back, color: Colors.white, size: 22),
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            title,
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

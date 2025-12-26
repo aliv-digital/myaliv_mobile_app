@@ -5,14 +5,14 @@ import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 
 
-class RoamingPlanCard extends StatelessWidget {
+class MifiPlanCard extends StatelessWidget {
   final PlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
-  final VoidCallback onViewDetails; // ✅ use as toggle from button
+  final VoidCallback onViewDetails; // toggle expand/collapse
   final VoidCallback onPurchaseNow;
 
-  const RoamingPlanCard({
+  const MifiPlanCard({
     super.key,
     required this.plan,
     required this.expanded,
@@ -26,7 +26,7 @@ class RoamingPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // roaming card center benefit: prefer data benefit if exists
+    // ✅ mifi card center metric: data benefit prefer
     final PlanBenefit? dataBenefit = plan.benefits
         .where((b) => b.type == PlanBenefitType.data)
         .cast<PlanBenefit?>()
@@ -60,7 +60,7 @@ class RoamingPlanCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        plan.title,
+                        plan.title, // e.g. mifi 75
                         style: const TextStyle(
                           fontFamily: 'CircularPro',
                           fontSize: 18,
@@ -71,7 +71,7 @@ class RoamingPlanCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       AnimatedRotation(
                         duration: const Duration(milliseconds: 180),
-                        turns: expanded ? 0.5 : 0.0, // down -> up
+                        turns: expanded ? 0.5 : 0.0,
                         child: const Icon(Icons.keyboard_arrow_down, size: 22),
                       ),
                     ],
@@ -87,7 +87,7 @@ class RoamingPlanCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              plan.subtitle, // e.g. 7 days
+              plan.subtitle, // e.g. 30 days
               style: const TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 12,
@@ -102,7 +102,7 @@ class RoamingPlanCard extends StatelessWidget {
           // ===== Center metric (data only) =====
           _CenterMetric(benefit: center),
 
-          // ===== Expanded description (like other cards) =====
+          // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
@@ -126,7 +126,7 @@ class RoamingPlanCard extends StatelessWidget {
             ),
           ),
 
-          // ===== Buttons (view/hide + purchase) =====
+          // ===== Buttons =====
           Row(
             children: [
               Expanded(
@@ -140,7 +140,6 @@ class RoamingPlanCard extends StatelessWidget {
                       ),
                       backgroundColor: const Color(0xFFF1F1F6),
                     ),
-                    // ✅ this MUST toggle expanded
                     onPressed: onViewDetails,
                     child: Text(
                       expanded ? 'hide details' : 'view details',
@@ -237,7 +236,7 @@ class _CenterMetric extends StatelessWidget {
               Image.asset(iconPath, width: 16, height: 16),
             const SizedBox(width: 6),
             Text(
-              benefit.label.toLowerCase(),
+              benefit.label.toLowerCase(), // "data"
               style: const TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 13,
@@ -249,7 +248,7 @@ class _CenterMetric extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          benefit.value,
+          benefit.value, // e.g. "50"
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 22,
@@ -260,7 +259,7 @@ class _CenterMetric extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          benefit.sub,
+          benefit.sub, // e.g. "gb"
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 13,
