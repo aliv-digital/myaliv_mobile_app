@@ -15,4 +15,8 @@ class GuestPurchasePlanTheme{
 
 
   static Color subTitleTextColor = HexColor.fromHex('#707070');
+  static Color scrollBarBackgroundColor = HexColor.fromHex('#F2F2F7');
+
+  static Color alivPrimaryColor = HexColor.fromHex('#FF645D9C');
+  static Color viewDetailsButtonColor = HexColor.fromHex('#F2F1F9');
 }

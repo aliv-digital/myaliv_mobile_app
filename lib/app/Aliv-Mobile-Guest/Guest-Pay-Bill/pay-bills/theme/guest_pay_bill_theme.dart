@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+
+class GuestPayBillTheme {
+  // Colors (tune these if your app already has tokens)
+  static const Color primary = Color(0xFF5A5796);
+  static const Color pageBg = Colors.white;
+
+  static const Color fieldBg = Color(0xFFF1F1F8);
+  static const Color helperText = Color(0xFF2E57E8);
+
+  static const Color labelText = Color(0xFF1C1C1E);
+  static const Color placeholder = Color(0xFF9A9AA3);
+
+  static const Color border = Color(0x00000000); // no border look
+  static const Color disabledBtn = Color(0xFFCDCDDD);
+  static const Color chipTextOnPrimary = Colors.white;
+
+  static const double radius = 10;
+
+  static TextStyle labelStyle() => const TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    color: labelText,
+  );
+
+  static TextStyle helperStyle() => const TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    color: helperText,
+  );
+
+  static InputDecoration fieldDecoration({
+    required String hint,
+    Widget? suffix,
+    Widget? prefix,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(
+        color: placeholder,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+      ),
+      filled: true,
+      fillColor: fieldBg,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radius),
+        borderSide: const BorderSide(color: border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radius),
+        borderSide: const BorderSide(color: border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radius),
+        borderSide: const BorderSide(color: border),
+      ),
+      suffixIcon: suffix,
+      prefixIcon: prefix,
+    );
+  }
+}
