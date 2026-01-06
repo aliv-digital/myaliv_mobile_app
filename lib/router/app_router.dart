@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/g
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
@@ -21,8 +22,17 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.guestPayBillConfirm,//guestPurchasePlan,   // initial Screen
+    initialLocation: AppRoutes.guestPayBillReceipt,//guestPayBillConfirm,//guestPurchasePlan,   // initial Screen
     routes: [
+      GoRoute(
+        path: AppRoutes.guestPayBillReceipt,
+        builder: (context, state) => const GuestPayBillReceiptScreen(
+            phoneNumber: '234235454',
+            amount:12,
+            dateText: '12-23-2025',
+            timeText: '08:34'
+        ),
+      ),
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
         builder: (context, state) => const GuestPayBillConfirmScreen(
