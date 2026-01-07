@@ -18,5 +18,7 @@ class AppRoutes {
   static const guestPayBillConfirm = '/guest-pay-bill-confirm';
   static const guestPayBillReceipt = '/guest-pay-bill-receipt';
 
+  static const guestPurchasePlanAddOns = '/guest-purchase-plan-add-ons';
+
 
 }
