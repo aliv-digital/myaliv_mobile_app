@@ -25,7 +25,7 @@ class PurchaseItemRow extends StatelessWidget {
               Text(
                 item.label,
                 style: GuestPurchasePlanConfirmationTheme.t(
-                  11,
+                  10,
                   weight: FontWeight.w700,
                   color: GuestPurchasePlanConfirmationTheme.textGrey,
                 ),
@@ -35,7 +35,7 @@ class PurchaseItemRow extends StatelessWidget {
                 item.title,
                 style: GuestPurchasePlanConfirmationTheme.t(
                   18,
-                  weight: FontWeight.w900,
+                  weight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: 2),

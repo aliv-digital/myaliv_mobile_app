@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import '../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../Guest-Pay-Bill/confirm-pay-bill/widgets/payment_breakdown_card.dart';
 import '../bloc/guest_purchase_plan_confirmation_bloc.dart';
 import '../bloc/guest_purchase_plan_confirmation_event.dart';
 import '../bloc/guest_purchase_plan_confirmation_state.dart';
@@ -8,8 +10,7 @@ import '../repository/guest_purchase_plan_confirmation_repository.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
 import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
-import '../widgets/total_ticket_card.dart';
-import '../widgets/bottom_pay_bar.dart';
+
 
 class GuestPurchasePlanConfirmationScreen extends StatelessWidget {
   const GuestPurchasePlanConfirmationScreen({
@@ -38,9 +39,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPurchasePlanConfirmationBloc,
-        GuestPurchasePlanConfirmationState>(
-      listenWhen: (p, c) => p.openTermsRequestId != c.openTermsRequestId || p.payNowRequestId != c.payNowRequestId,
+    return BlocListener<GuestPurchasePlanConfirmationBloc, GuestPurchasePlanConfirmationState>(
+      listenWhen: (p, c) =>
+      p.openTermsRequestId != c.openTermsRequestId ||
+          p.payNowRequestId != c.payNowRequestId,
       listener: (context, state) {
         if (state.openTermsRequestId > 0) {
           // Future: open terms page / bottom sheet
@@ -56,9 +58,28 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: GuestPurchasePlanConfirmationTheme.bg,
+
+        /// fixed bottom (AddOns pattern)
+        bottomNavigationBar: BlocBuilder<GuestPurchasePlanConfirmationBloc, GuestPurchasePlanConfirmationState>(
+          builder: (context, state) {
+            if (state.status != GuestPurchasePlanConfirmationStatus.ready || state.data == null) {
+              return const SizedBox.shrink();
+            }
+
+            final total = state.data!.totals.total;
+
+            return DefaultBottomPayBar(
+              isVatExclusive: false,
+              onPayNow: () => context.read<GuestPurchasePlanConfirmationBloc>().add(
+                const GuestPurchasePlanConfirmationPayNowPressed(),
+              ),
+              amountText: total.toString(),
+            );
+          },
+        ),
+
         body: SafeArea(
-          child: BlocBuilder<GuestPurchasePlanConfirmationBloc,
-              GuestPurchasePlanConfirmationState>(
+          child: BlocBuilder<GuestPurchasePlanConfirmationBloc, GuestPurchasePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -81,9 +102,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                             ? const SizedBox.shrink()
                             : CustomScrollView(
                           slivers: [
-                            /// IMPORTANT:
-                            /// - list/summary starts immediately after app bar
-                            /// - No extra top padding except a small one for breathing space
+                            /// Purchase summary card (starts right after app bar)
                             SliverToBoxAdapter(
                               child: Padding(
                                 padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
@@ -96,9 +115,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                               ),
                             ),
 
+                            /// Terms notice (your exact padding)
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(18, 12, 18, 0),
+                                padding: const EdgeInsets.only(left: 29, right: 29, top: 17, bottom: 17),
                                 child: TermsNotice(
                                   onTermsTap: () => context
                                       .read<GuestPurchasePlanConfirmationBloc>()
@@ -107,33 +127,27 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                               ),
                             ),
 
+                            /// Payment breakdown card
                             SliverToBoxAdapter(
                               child: Padding(
                                 padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
-                                child: TotalTicketCard(totals: data.totals),
+                                child: PaymentBreakdownCard(
+                                  subTotal: data.totals.subTotal,
+                                  vat: data.totals.vat,
+                                  total: data.totals.total,
+                                ),
                               ),
                             ),
 
-                            /// Bottom spacing so last card doesn't hide behind bottom bar
-                            SliverToBoxAdapter(
-                              child: SizedBox(
-                                height: 110, // enough space for BottomPayBar overlay
-                              ),
+                            /// Small bottom spacing (bottomNavigationBar already fixed)
+                            const SliverToBoxAdapter(
+                              child: SizedBox(height: 24),
                             ),
                           ],
                         ),
                       ),
                     ),
                   ),
-
-                  /// Bottom pay bar (fixed)
-                  if (data != null)
-                    BottomPayBar(
-                      total: data.totals.total,
-                      onPayNow: () => context
-                          .read<GuestPurchasePlanConfirmationBloc>()
-                          .add(const GuestPurchasePlanConfirmationPayNowPressed()),
-                    ),
                 ],
               );
             },

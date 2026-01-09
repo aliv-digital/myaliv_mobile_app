@@ -27,7 +27,7 @@ class TermsNotice extends StatelessWidget {
             child: GestureDetector(
               onTap: onTermsTap,
               child: Text(
-                'Terms &\nConditions.',
+                'Terms & Conditions.',
                 style: GuestPurchasePlanConfirmationTheme.t(
                   12,
                   weight: FontWeight.w900,

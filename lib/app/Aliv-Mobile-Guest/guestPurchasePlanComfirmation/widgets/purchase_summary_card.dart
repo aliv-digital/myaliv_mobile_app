@@ -34,14 +34,14 @@ class PurchaseSummaryCard extends StatelessWidget {
           children: [
             Text(
               data.headerTitle,
-              style: GuestPurchasePlanConfirmationTheme.t(15, weight: FontWeight.w900),
+              style: GuestPurchasePlanConfirmationTheme.t(18, weight: FontWeight.w700),
             ),
             const SizedBox(height: 2),
             Text(
               data.phoneNumber,
               style: GuestPurchasePlanConfirmationTheme.t(
-                12,
-                weight: FontWeight.w700,
+                16,
+                weight: FontWeight.w500,
                 color: GuestPurchasePlanConfirmationTheme.textGrey,
               ),
             ),
