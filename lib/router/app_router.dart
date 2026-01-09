@@ -11,6 +11,7 @@ import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_scr
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
@@ -24,8 +25,17 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.guestPurchasePlanConfirmation,//guestPayBillConfirm,//guestPurchasePlan,   // initial Screen
+    initialLocation: AppRoutes.guestPurchasePlanReceipt,//guestPayBillConfirm,//guestPurchasePlan,   // initial Screen
     routes: [
+      GoRoute(
+        path: AppRoutes.guestPurchasePlanReceipt,
+        builder: (context, state) => const GuestPurchasePlanReceiptScreen(
+          phoneNumber: '242-801-1616',
+          amount: 75,
+          dateText: 'Mar 12,2023',
+          timeText: '446332'
+        )
+      ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
         builder: (context, state) => const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545',)
