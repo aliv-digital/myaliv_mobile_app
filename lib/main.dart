@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'My Alive',
+      title: 'My Aliv',
       routerConfig: appRouter.router,
       theme: ThemeData(useMaterial3: true),
     );

@@ -14,6 +14,12 @@ import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
+import '../app/Home/home/all_best_plan_screen.dart';
+import '../app/Home/home/home_screen.dart';
+import '../app/Home/widgets/bottom_shell.dart';
+import '../app/Menu/menu_screen.dart';
+import '../app/Plans/plans_screen.dart';
+import '../app/Usage/usage_screen.dart';
 import '../app/splash/view/splash_page.dart';
 import 'app_routes.dart';
 
@@ -21,7 +27,7 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.guestPayBillConfirm,//guestPurchasePlan,   // initial Screen
+    initialLocation: AppRoutes.splash,//guestPurchasePlan,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
@@ -94,7 +100,38 @@ class AppRouter {
       GoRoute(
           path: AppRoutes.confirmGuestTopUp,
           builder: (context,state) => GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12)
-      )
+      ),
+      // GoRoute(
+      //   path: AppRoutes.home,
+      //   builder: (context, state) => const HomeScreen(),
+      // ),
+      ShellRoute(
+        builder: (context, state, child) {
+          return BottomShell(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.usage,
+            builder: (context, state) => const UsageScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.plans,
+            builder: (context, state) => const PlansScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.menu,
+            builder: (context, state) => const MenuScreen(),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.allBestPlans,
+        builder: (context, state) => const AllBestPlansScreen(),
+      ),
     ],
   );
 }

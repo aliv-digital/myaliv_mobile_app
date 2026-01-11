@@ -28,6 +28,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: state.password,
       );
       emit(state.copyWith(status: LoginStatus.success));
+
     } catch (e) {
       emit(
         state.copyWith(

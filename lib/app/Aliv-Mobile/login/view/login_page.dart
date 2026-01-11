@@ -51,7 +51,11 @@ class _LoginView extends StatelessWidget {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             // error/snack bar
-          },
+
+            if (state.status == LoginStatus.success) {
+              context.go(AppRoutes.home); // ✅ GO TO HOME
+            }
+            },
           child: Column(
             children: [
               // ---------- Scrollable content ----------

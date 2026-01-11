@@ -19,6 +19,7 @@ dependencies:
   equatable: ^2.0.7
   country_picker: ^2.0.27
   flutter_svg: ^2.2.3
+  iconsax_plus: ^1.0.0
 
 dev_dependencies:
   flutter_test:

@@ -10,8 +10,9 @@ class LoginRepository {
     await Future.delayed(const Duration(seconds: 1));
 
     debugPrint('phone: $phone, password: $password');
+
     // demo: সবসময় invalid করবে
-    throw Exception('invalid credentials!');
+    // throw Exception('invalid credentials!');
   }
 }
 
