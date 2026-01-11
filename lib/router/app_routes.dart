@@ -22,5 +22,7 @@ class AppRoutes {
   static const guestPurchasePlanConfirmation = '/guest-purchase-plan-confirmation';
   static const guestPurchasePlanReceipt = '/guest-purchase-plan-receipt';
 
+  static const profilePrepaidScreen = '/profile-prepaid-screen';
+  static const profilePostpaidScreen = '/profile-postpaid-screen';
 
 }
