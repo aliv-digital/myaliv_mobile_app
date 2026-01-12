@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import '../../../../../../router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/my_profile_prepaid_bloc.dart';
 import '../bloc/my_profile_prepaid_event.dart';
@@ -57,6 +59,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 break;
               case MyProfilePrepaidNavAction.editEmail:
                 debugPrint("edit email");
+                context.push(AppRoutes.editEmailPrepaidScreen);
                 break;
               case MyProfilePrepaidNavAction.changePassword:
                 break;

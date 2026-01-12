@@ -21,8 +21,8 @@ class MyProfilePrepaidHeader extends StatelessWidget {
 
         // Avatar
         Container(
-          width: 76,
-          height: 76,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,

@@ -26,4 +26,6 @@ class AppRoutes {
   static const profilePostpaidScreen = '/profile-postpaid-screen';
   static const myProfilePrepaidScreen = '/my-profile-prepaid-screen';
   static const myProfilePostpaidScreen = '/my-profile-postpaid-screen';
+  static const editEmailPrepaidScreen = '/edit-email-prepaid-screen';
+  static const editEmailPostpaidScreen = '/edit-email-postpaid-screen';
 }
