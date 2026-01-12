@@ -62,6 +62,8 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 context.push(AppRoutes.editEmailPrepaidScreen);
                 break;
               case MyProfilePrepaidNavAction.changePassword:
+                debugPrint("change password");
+                context.push(AppRoutes.enterPassWordPrepaidScreen);
                 break;
               case MyProfilePrepaidNavAction.none:
                 break;

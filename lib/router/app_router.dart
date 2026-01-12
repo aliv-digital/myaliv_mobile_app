@@ -4,7 +4,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
@@ -29,8 +31,17 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.editEmailPrepaidScreen,//guestPayBillConfirm,//guestPurchasePlan,
+    initialLocation: AppRoutes.changePasswordPrepaidScreen,//guestPayBillConfirm,//guestPurchasePlan,
     routes: [
+
+      GoRoute(
+          path: AppRoutes.changePasswordPrepaidScreen,
+          builder: (context,state) => const ChangePasswordPrepaidScreen()
+      ),
+      GoRoute(
+          path: AppRoutes.enterPassWordPrepaidScreen,
+          builder: (context,state) => const EnterPasswordPrepaidScreen()
+      ),
       GoRoute(
           path: AppRoutes.editEmailPrepaidScreen,
           builder: (context,state) => const EditEmailPrepaidScreen()
