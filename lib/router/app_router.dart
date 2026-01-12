@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/view/home_plan_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
@@ -27,7 +28,7 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash,//guestPurchasePlan,   // initial Screen
+    initialLocation: AppRoutes.home,   // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
@@ -120,7 +121,7 @@ class AppRouter {
           ),
           GoRoute(
             path: AppRoutes.plans,
-            builder: (context, state) => const PlansScreen(),
+            builder: (context, state) => const HomePlanScreen(),
           ),
           GoRoute(
             path: AppRoutes.menu,
