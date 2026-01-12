@@ -64,10 +64,6 @@ class _HomePlanView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // DefaultAppBar(
-            //   title: 'plans',
-            //   onBack: () => context.pop(),
-            // ),
 
             // Tabs
             BlocBuilder<HomePlanBloc, HomePlanState>(
