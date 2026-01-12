@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-
 import '../bloc/profile_postpaid_bloc.dart';
 import '../bloc/profile_postpaid_event.dart';
 import '../bloc/profile_postpaid_state.dart';

@@ -17,6 +17,7 @@ class AssetConstant{
   static const talkTextIconPNG = 'assets/icons/talk_text_icon.svg';
   static const mmsIconPNG = 'assets/icons/mms_icon.svg';
 
-
+  static const emailIconSVG = 'assets/icons/email.svg';
+  static const passwordIconSVG = 'assets/icons/password.svg';
 
 }
