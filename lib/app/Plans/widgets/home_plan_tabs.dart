@@ -65,8 +65,9 @@ class HomePlanTabs extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'CircularPro',
                           fontSize: 16,
-                          fontWeight:
-                          isActive ? FontWeight.w700 : FontWeight.w500,
+                          fontWeight: isActive
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                           color: isActive ? _brand : _textInactive,
                         ),
                       ),

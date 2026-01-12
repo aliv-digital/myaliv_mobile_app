@@ -23,21 +23,19 @@ import '../app/Usage/usage_screen.dart';
 import '../app/splash/view/splash_page.dart';
 import 'app_routes.dart';
 
-
 class AppRouter {
-
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.home,   // initial Screen
+    initialLocation: AppRoutes.home, // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
         builder: (context, state) => const GuestPayBillConfirmScreen(
-            args: GuestPayBillConfirmArgs(
-              serviceName: 'ALIV Postpaid',
-              identifierLabel: 'mobile no.',
-              identifierValue: '242-801-0000',
-              amount: 200.00,
-            )
+          args: GuestPayBillConfirmArgs(
+            serviceName: 'ALIV Postpaid',
+            identifierLabel: 'mobile no.',
+            identifierValue: '242-801-0000',
+            amount: 200.00,
+          ),
         ),
       ),
       GoRoute(
@@ -51,10 +49,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestTopUpReceipt,
         builder: (context, state) => const GuestTopUpReceiptScreen(
-            phoneNumber: '234235454',
-            amount:12,
-            dateText: '12-23-2025',
-            timeText: '08:34'
+          phoneNumber: '234235454',
+          amount: 12,
+          dateText: '12-23-2025',
+          timeText: '08:34',
         ),
       ),
       GoRoute(
@@ -66,16 +64,16 @@ class AppRouter {
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
-          path: AppRoutes.welcome,
-          builder: (context,state) => const WelcomeScreen()
+        path: AppRoutes.welcome,
+        builder: (context, state) => const WelcomeScreen(),
       ),
       GoRoute(
         path: AppRoutes.loginOtp,
-        builder: (context,state) => const LoginOtpScreen()
+        builder: (context, state) => const LoginOtpScreen(),
       ),
       GoRoute(
-          path: AppRoutes.forgetPassword,
-          builder: (context,state) => const ForgetPasswordScreen()
+        path: AppRoutes.forgetPassword,
+        builder: (context, state) => const ForgetPasswordScreen(),
       ),
       GoRoute(
         path: AppRoutes.forgetPasswordOtp,
@@ -86,20 +84,21 @@ class AppRouter {
         builder: (context, state) => const CreatePasswordScreen(),
       ),
       GoRoute(
-          path: AppRoutes.guestSplash,
-          builder: (context,state) => const GuestSplashScreen()
+        path: AppRoutes.guestSplash,
+        builder: (context, state) => const GuestSplashScreen(),
       ),
       GoRoute(
-          path: AppRoutes.whyAliv,
-          builder: (context,state) => const WhyAlivScreen()
+        path: AppRoutes.whyAliv,
+        builder: (context, state) => const WhyAlivScreen(),
       ),
       GoRoute(
         path: AppRoutes.guestTopUp,
         builder: (context, state) => const GuestTopUpScreen(),
       ),
       GoRoute(
-          path: AppRoutes.confirmGuestTopUp,
-          builder: (context,state) => GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12)
+        path: AppRoutes.confirmGuestTopUp,
+        builder: (context, state) =>
+            GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12),
       ),
       // GoRoute(
       //   path: AppRoutes.home,
