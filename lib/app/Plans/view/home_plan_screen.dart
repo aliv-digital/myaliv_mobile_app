@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../resources/widgets/default_app_bar.dart';
+import '../../Aliv-Mobile-Guest/whyAliv/theme/why_aliv_theme.dart';
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
 import '../bloc/home_plan_state.dart';
@@ -15,7 +17,6 @@ import '../widgets/monthly_plan_card.dart';
 import '../widgets/roameasy_plan_card.dart';
 import '../widgets/roaming_plan_card.dart';
 import '../widgets/weekly_plan_card.dart';
-
 
 class HomePlanScreen extends StatelessWidget {
   const HomePlanScreen({super.key});
@@ -46,6 +47,20 @@ class _HomePlanView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bg,
+      appBar: AppBar(
+        title: Text(
+          'plans',
+          style: const TextStyle(
+            fontSize: 17,
+            height: 1.25,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: false,
+        backgroundColor: WhyAlivTheme.appBarColor,
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -112,18 +127,24 @@ class _HomePlanView extends StatelessWidget {
 
                   return ListView.builder(
                     padding: const EdgeInsets.only(bottom: 14),
-                    itemCount: isAddOns ? state.addOns.length : state.plans.length,
+                    itemCount: isAddOns
+                        ? state.addOns.length
+                        : state.plans.length,
                     itemBuilder: (context, index) {
                       // ADD ONS
                       if (isAddOns) {
                         final HomePlanAddOnModel addon = state.addOns[index];
-                        final bool selected = state.selectedAddOnIds.contains(addon.id);
+                        final bool selected = state.selectedAddOnIds.contains(
+                          addon.id,
+                        );
 
                         return HomePlanAddOnCard(
                           addon: addon,
                           selected: selected,
                           onToggle: () {
-                            context.read<HomePlanBloc>().add(HomePlanToggleAddon(addon));
+                            context.read<HomePlanBloc>().add(
+                              HomePlanToggleAddon(addon),
+                            );
                           },
                         );
                       }
@@ -133,11 +154,15 @@ class _HomePlanView extends StatelessWidget {
                       final expanded = state.expandedPlanIds.contains(plan.id);
 
                       void toggleExpanded() {
-                        context.read<HomePlanBloc>().add(HomePlanToggleExpanded(plan.id));
+                        context.read<HomePlanBloc>().add(
+                          HomePlanToggleExpanded(plan.id),
+                        );
                       }
 
                       void purchaseNow() {
-                        context.read<HomePlanBloc>().add(HomePlanPurchaseNowPressed(plan));
+                        context.read<HomePlanBloc>().add(
+                          HomePlanPurchaseNowPressed(plan),
+                        );
                       }
 
                       switch (state.selectedTab) {
@@ -208,7 +233,7 @@ class _HomePlanView extends StatelessWidget {
                           );
 
                         case HomePlanTab.addOns:
-                        // already handled above
+                          // already handled above
                           return const SizedBox.shrink();
                       }
                     },
