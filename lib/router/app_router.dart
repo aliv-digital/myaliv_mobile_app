@@ -31,7 +31,7 @@ import 'app_routes.dart';
 class AppRouter {
 
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.changePasswordPrepaidScreen,//guestPayBillConfirm,//guestPurchasePlan,
+    initialLocation: AppRoutes.profilePrepaidScreen,//guestPayBillConfirm,//guestPurchasePlan,
     routes: [
 
       GoRoute(

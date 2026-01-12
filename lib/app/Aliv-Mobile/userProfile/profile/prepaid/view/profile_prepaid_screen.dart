@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/profile_prepaid_bloc.dart';
 import '../bloc/profile_prepaid_event.dart';
 import '../bloc/profile_prepaid_state.dart';
@@ -39,52 +42,78 @@ class _ProfilePrepaidView extends StatelessWidget {
           Navigator.of(context).maybePop();
         }
 
-        // Future navigation (route set করলে কাজ করবে)
-        if (state.openRouteRequestId > 0 && (state.routeToOpen?.isNotEmpty ?? false)) {
-          // go_router use করলে এখানে:
-          // context.push(state.routeToOpen!);
-          // আপাতত placeholder:
+        if (state.openRouteRequestId > 0 &&
+            (state.routeToOpen?.isNotEmpty ?? false)) {
+          // placeholder
           // ignore: avoid_print
           print('Navigate to: ${state.routeToOpen}');
         }
       },
       child: Scaffold(
         backgroundColor: ProfilePrepaidTheme.bg,
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: DefaultAppBar(
-                  title: 'profile',
-                  onBack: () => context.read<ProfilePrepaidBloc>().add(const ProfilePrepaidBackPressed()),
-                  showBackArrow: true,
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
-                  builder: (context, state) {
-                    if (state.status == ProfilePrepaidStatus.loading) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
+          child: Column(
+            children: [
+              // ---------- Scrollable content ----------
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: DefaultAppBar(
+                        title: 'profile',
+                        onBack: () => context
+                            .read<ProfilePrepaidBloc>()
+                            .add(const ProfilePrepaidBackPressed()),
+                        showBackArrow: true,
+                      ),
+                    ),
 
-                    return Column(
-                      children: [
-                        const Divider(height: 1, thickness: 1, color: ProfilePrepaidTheme.divider),
-                        ...state.items.map((item) {
-                          return ProfileMenuItemTile(
-                            title: item.title,
-                            enabled: item.enabled,
-                            onTap: () => context.read<ProfilePrepaidBloc>().add(ProfilePrepaidItemPressed(item)),
+                    SliverToBoxAdapter(
+                      child: BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
+                        builder: (context, state) {
+                          if (state.status == ProfilePrepaidStatus.loading) {
+                            return const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
+                          return Column(
+                            children: [
+                              const Divider(
+                                height: 1,
+                                thickness: 1,
+                                color: ProfilePrepaidTheme.divider,
+                              ),
+                              ...state.items.map((item) {
+                                return ProfileMenuItemTile(
+                                  title: item.title,
+                                  enabled: item.enabled,
+                                  onTap: () {
+                                    if (item.id == 'my_profile') {
+                                      context.push(AppRoutes.myProfilePrepaidScreen);
+                                    }
+                                    context
+                                        .read<ProfilePrepaidBloc>()
+                                        .add(ProfilePrepaidItemPressed(item));
+                                  },
+                                );
+                              }),
+                            ],
                           );
-                        }),
-                      ],
-                    );
-                  },
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+              // ---------- Fixed bottom stripes ----------
+              const BottomStripes(),
             ],
           ),
         ),
