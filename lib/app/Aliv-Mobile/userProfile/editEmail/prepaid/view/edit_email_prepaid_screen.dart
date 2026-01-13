@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/edit_email_prepaid_bloc.dart';
 import '../bloc/edit_email_prepaid_event.dart';
@@ -68,11 +70,13 @@ class _EditEmailPrepaidView extends StatelessWidget {
                         title: 'edit email',
                         showHome: true,
                         onHomeTap: () {
-                          context
-                              .read<EditEmailPrepaidBloc>()
-                              .add(const EditEmailPrepaidHomePressed());
+                          context.go(AppRoutes.home);
+                          // context
+                          //     .read<EditEmailPrepaidBloc>()
+                          //     .add(const EditEmailPrepaidHomePressed());
                         },
                         onBack: () {
+                          context.pop();
                           // context
                           //     .read<EditEmailPrepaidBloc>()
                           //     .add(const EditEmailPrepaidBackPressed());

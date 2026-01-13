@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+
+import '../../../router/app_routes.dart';
 
 class AppMenuDrawer extends StatelessWidget {
   const AppMenuDrawer({super.key});
@@ -51,14 +54,14 @@ class AppMenuDrawer extends StatelessWidget {
             ),
             const Divider(),
 
-            _item(IconsaxPlusLinear.user, 'profile'),
-            _item(IconsaxPlusLinear.wallet_check, 'purchases'),
-            _item(IconsaxPlusLinear.user_add, 'refer a friend'),
-            _item(IconsaxPlusLinear.notification, 'notifications'),
-            _item(IconsaxPlusLinear.document_1, 'REV bill pay'),
-            _item(IconsaxPlusLinear.setting_5, 'settings'),
-            _item(IconsaxPlusLinear.support, 'support'),
-            _item(IconsaxPlusLinear.global, 'ALIVFibr', external: true),
+            _item(IconsaxPlusLinear.user, 'profile',context),
+            _item(IconsaxPlusLinear.wallet_check, 'purchases',context),
+            _item(IconsaxPlusLinear.user_add, 'refer a friend',context),
+            _item(IconsaxPlusLinear.notification, 'notifications',context),
+            _item(IconsaxPlusLinear.document_1, 'REV bill pay',context),
+            _item(IconsaxPlusLinear.setting_5, 'settings',context),
+            _item(IconsaxPlusLinear.support, 'support',context),
+            _item(IconsaxPlusLinear.global, 'ALIVFibr', external: true,context),
 
             const Spacer(),
 
@@ -93,14 +96,18 @@ class AppMenuDrawer extends StatelessWidget {
     );
   }
 
-  Widget _item(IconData icon, String label, {bool external = false}) {
+  Widget _item(IconData icon, String label, BuildContext context,{bool external = false}) {
     return ListTile(
       leading: Icon(icon),
       title: Text(label, style: const TextStyle(fontFamily: 'CircularPro')),
       trailing: external
           ? const Icon(Icons.open_in_new, size: 18)
           : const Icon(Icons.chevron_right),
-      onTap: () {},
+      onTap: () {
+        if(label == 'profile'){
+          context.push(AppRoutes.profilePrepaidScreen);
+        }
+      },
     );
   }
 }

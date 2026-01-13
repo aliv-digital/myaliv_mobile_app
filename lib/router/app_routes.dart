@@ -38,4 +38,7 @@ class AppRoutes {
   static const changePasswordPrepaidScreen = '/change-password-prepaid-screen';
   static const changePasswordPostpaidScreen = '/change-password-postpaid-screen';
 
+  static const otpProfilePrepaidScreen = '/otp-profile-prepaid-screen';
+  static const otpProfilePostpaidScreen = '/otp-profile-postpaid-screen';
+
 }

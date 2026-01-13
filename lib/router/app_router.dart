@@ -21,6 +21,7 @@ import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
+import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
@@ -38,6 +39,10 @@ class AppRouter {
     initialLocation: AppRoutes.splash, // initial Screen
     routes: [
 
+      GoRoute(
+          path: AppRoutes.otpProfilePrepaidScreen,
+          builder: (context,state) => const OtpProfilePrepaidScreen()
+      ),
       GoRoute(
           path: AppRoutes.changePasswordPrepaidScreen,
           builder: (context,state) => const ChangePasswordPrepaidScreen()

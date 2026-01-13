@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 
 import '../../../../login/widgets/login_bottom_stripes.dart';
@@ -69,7 +70,9 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                       child: DefaultAppBar(
                         title: 'change password',
                         showHome: false,
-                        onBack: () => Navigator.of(context).maybePop(),
+                        onBack: (){
+                          context.pop();
+                        },
                       ),
                     ),
 

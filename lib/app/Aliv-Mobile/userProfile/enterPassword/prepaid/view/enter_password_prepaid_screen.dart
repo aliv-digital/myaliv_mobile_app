@@ -71,9 +71,10 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                         title: 'Call Log Security',
                         showHome: false,
                         onBack: () {
-                          context
-                              .read<EnterPasswordPrepaidBloc>()
-                              .add(const EnterPasswordPrepaidBackPressed());
+                          context.pop();
+                          // context
+                          //     .read<EnterPasswordPrepaidBloc>()
+                          //     .add(const EnterPasswordPrepaidBackPressed());
                         },
                       ),
                     ),
@@ -126,7 +127,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                         onTap: () {
                                           context.read<EnterPasswordPrepaidBloc>().add(const EnterPasswordPrepaidContinuePressed());
 
-                                          context.push(AppRoutes.changePasswordPrepaidScreen);
+                                          context.push(AppRoutes.otpProfilePrepaidScreen);
                                         }
                                       );
                                     },
