@@ -1,53 +1,346 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import '../../app/Aliv-Mobile-Guest/whyAliv/theme/why_aliv_theme.dart';
 
+/// DefaultAppBar (Reusable)
+/// - Back optional
+/// - Right actions: skip/text button OR custom widget OR icons (home/notification)
 class DefaultAppBar extends StatelessWidget {
-    const DefaultAppBar({super.key,
+  const DefaultAppBar({
+    super.key,
     required this.title,
-    required this.onBack,
-    this.showBackArrow = true
+
+    // Layout
+    this.height = 56,
+    this.backgroundColor = const Color(0xFF655C9A),
+    this.horizontalPadding = 12,
+    this.titleAlignment = AppBarTitleAlignment.left,
+    this.centerTitle = false,
+
+    // Back
+    this.showBackArrow = true,
+    this.onBack,
+    this.backIconAssetPath = AssetConstant.whiteBackArrowIconPNG,
+    this.backIconSize = 24,
+    this.backSplashRadius = 22,
+    this.leading,
+
+    // Right side (actions)
+    this.trailing,
+    this.actionText,
+    this.onActionTextTap,
+    this.actionTextStyle,
+
+    // ✅ Home (NEW)
+    this.showHome = false,
+    this.homeIcon = Icons.home_outlined,
+    this.onHomeTap,
+    this.homeCount,
+
+    // Notification
+    this.showNotification = false,
+    this.notificationIcon = Icons.notifications_none_rounded,
+    this.onNotificationTap,
+    this.notificationCount,
+
+    // Divider / shadow
+    this.showBottomDivider = false,
+    this.bottomDividerColor = const Color(0x1AFFFFFF),
+    this.elevationShadow = false,
   });
 
   final String title;
-  final VoidCallback onBack;
+
+  // Layout
+  final double height;
+  final Color backgroundColor;
+  final double horizontalPadding;
+  final AppBarTitleAlignment titleAlignment;
+  final bool centerTitle;
+
+  // Back / Leading
   final bool showBackArrow;
+  final VoidCallback? onBack;
+  final String backIconAssetPath;
+  final double backIconSize;
+  final double backSplashRadius;
+  final Widget? leading;
+
+  // Trailing / Actions
+  final Widget? trailing;
+  final String? actionText;
+  final VoidCallback? onActionTextTap;
+  final TextStyle? actionTextStyle;
+
+  // ✅ Home (NEW)
+  final bool showHome;
+  final IconData homeIcon;
+  final VoidCallback? onHomeTap;
+  final int? homeCount;
+
+  // Notification
+  final bool showNotification;
+  final IconData notificationIcon;
+  final VoidCallback? onNotificationTap;
+  final int? notificationCount;
+
+  // Divider / shadow
+  final bool showBottomDivider;
+  final Color bottomDividerColor;
+  final bool elevationShadow;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      width: double.infinity,
-      color: WhyAlivTheme.appBarColor,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Row(
-        children: [
-          if (showBackArrow)
-            IconButton(
-            onPressed: onBack,
-            icon: Image.asset(AssetConstant.whiteBackArrowIconPNG),
-            color: Colors.white,
-            iconSize: 24,
-            splashRadius: 22,
-          ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 17,
-                height: 1.25,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+    final titleStyle = const TextStyle(
+      fontSize: 17,
+      height: 1.25,
+      fontFamily: 'CircularPro',
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    );
+
+    return Material(
+      color: backgroundColor,
+      elevation: elevationShadow ? 6 : 0,
+      child: Container(
+        height: height,
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  _buildLeading(context),
+
+                  Expanded(
+                    child: Align(
+                      alignment: _titleAlign(),
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: titleStyle,
+                        textAlign: centerTitle ? TextAlign.center : TextAlign.left,
+                      ),
+                    ),
+                  ),
+
+                  _buildTrailing(context),
+                ],
               ),
             ),
+            if (showBottomDivider)
+              Container(
+                height: 1,
+                width: double.infinity,
+                color: bottomDividerColor,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Alignment _titleAlign() {
+    if (centerTitle || titleAlignment == AppBarTitleAlignment.center) {
+      return Alignment.center;
+    }
+    return Alignment.centerLeft;
+  }
+
+  Widget _buildLeading(BuildContext context) {
+    if (leading != null) return leading!;
+
+    if (!showBackArrow) {
+      return const SizedBox(width: 44);
+    }
+
+    return IconButton(
+      onPressed: onBack ?? () => Navigator.of(context).maybePop(),
+      icon: Image.asset(backIconAssetPath),
+      color: Colors.white,
+      iconSize: backIconSize,
+      splashRadius: backSplashRadius,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+    );
+  }
+
+  Widget _buildTrailing(BuildContext context) {
+    if (trailing != null) {
+      return SizedBox(
+        width: 88,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: trailing,
+        ),
+      );
+    }
+
+    final actions = <Widget>[];
+
+    // ✅ Home (notification এর মতো)
+    if (showHome) {
+      actions.add(_HomeButton(
+        icon: homeIcon,
+        count: homeCount,
+        onTap: onHomeTap,
+      ));
+    }
+
+    // Notification
+    if (showNotification) {
+      actions.add(_NotificationButton(
+        icon: notificationIcon,
+        count: notificationCount,
+        onTap: onNotificationTap,
+      ));
+    }
+
+    // Text action (e.g., "skip")
+    if (actionText != null && actionText!.trim().isNotEmpty) {
+      actions.add(
+        GestureDetector(
+          onTap: onActionTextTap,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            child: Text(
+              actionText!,
+              style: actionTextStyle ??
+                  const TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+            ),
           ),
-        ],
+        ),
+      );
+    }
+
+    if (actions.isEmpty) {
+      return const SizedBox(width: 88);
+    }
+
+    return SizedBox(
+      width: 88,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: actions,
+        ),
       ),
     );
   }
 }
 
+class _HomeButton extends StatelessWidget {
+  const _HomeButton({
+    required this.icon,
+    required this.count,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final int? count;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final showBadge = (count ?? 0) > 0;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(icon, color: Colors.white, size: 24),
+            if (showBadge)
+              Positioned(
+                right: -2,
+                top: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE62B2F),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: Colors.white, width: 1.2),
+                  ),
+                  child: Text(
+                    count! > 99 ? '99+' : '$count',
+                    style: const TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationButton extends StatelessWidget {
+  const _NotificationButton({
+    required this.icon,
+    required this.count,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final int? count;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final showBadge = (count ?? 0) > 0;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(icon, color: Colors.white, size: 24),
+            if (showBadge)
+              Positioned(
+                right: -2,
+                top: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE62B2F),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: Colors.white, width: 1.2),
+                  ),
+                  child: Text(
+                    count! > 99 ? '99+' : '$count',
+                    style: const TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum AppBarTitleAlignment { left, center }

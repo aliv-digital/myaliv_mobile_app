@@ -22,7 +22,20 @@ class AppRoutes {
   static const guestPurchasePlan = '/guest-purchase-plan';
   static const guestPayBill = '/guest-pay-bill';
   static const guestPayBillConfirm = '/guest-pay-bill-confirm';
+  static const guestPayBillReceipt = '/guest-pay-bill-receipt';
 
+  static const guestPurchasePlanAddOns = '/guest-purchase-plan-add-ons';
+  static const guestPurchasePlanConfirmation = '/guest-purchase-plan-confirmation';
+  static const guestPurchasePlanReceipt = '/guest-purchase-plan-receipt';
 
+  static const profilePrepaidScreen = '/profile-prepaid-screen';
+  static const profilePostpaidScreen = '/profile-postpaid-screen';
+  static const myProfilePrepaidScreen = '/my-profile-prepaid-screen';
+  static const myProfilePostpaidScreen = '/my-profile-postpaid-screen';
+  static const editEmailPrepaidScreen = '/edit-email-prepaid-screen';
+  static const editEmailPostpaidScreen = '/edit-email-postpaid-screen';
+  static const enterPassWordPrepaidScreen = '/enter-pass-word-prepaid-screen';
+  static const changePasswordPrepaidScreen = '/change-password-prepaid-screen';
+  static const changePasswordPostpaidScreen = '/change-password-postpaid-screen';
 
 }

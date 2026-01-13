@@ -3,11 +3,18 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
@@ -20,6 +27,9 @@ import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Menu/menu_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
 import '../app/Usage/usage_screen.dart';
+import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/profile/postpaid/view/profile_postpaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
 import '../app/splash/view/splash_page.dart';
 import 'app_routes.dart';
 
@@ -27,6 +37,57 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.home, // initial Screen
     routes: [
+
+      GoRoute(
+          path: AppRoutes.changePasswordPrepaidScreen,
+          builder: (context,state) => const ChangePasswordPrepaidScreen()
+      ),
+      GoRoute(
+          path: AppRoutes.enterPassWordPrepaidScreen,
+          builder: (context,state) => const EnterPasswordPrepaidScreen()
+      ),
+      GoRoute(
+          path: AppRoutes.editEmailPrepaidScreen,
+          builder: (context,state) => const EditEmailPrepaidScreen()
+      ),
+      GoRoute(
+          path: AppRoutes.myProfilePrepaidScreen,
+          builder: (context,state) => const MyProfilePrepaidScreen()
+      ),
+      GoRoute(
+        path: AppRoutes.profilePostpaidScreen,
+        builder: (context, state) => const ProfilePostpaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profilePrepaidScreen,
+        builder: (context, state) => const ProfilePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.guestPurchasePlanReceipt,
+        builder: (context, state) => const GuestPurchasePlanReceiptScreen(
+          phoneNumber: '242-801-1616',
+          amount: 75,
+          dateText: 'Mar 12,2023',
+          timeText: '446332'
+        )
+      ),
+      GoRoute(
+        path: AppRoutes.guestPurchasePlanConfirmation,
+        builder: (context, state) => const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545',)
+      ),
+      GoRoute(
+          path: AppRoutes.guestPurchasePlanAddOns,
+          builder: (context,state) => const GuestPurchasePlanAddOnsScreen()
+      ),
+      GoRoute(
+        path: AppRoutes.guestPayBillReceipt,
+        builder: (context, state) => const GuestPayBillReceiptScreen(
+            phoneNumber: '234235454',
+            amount:12,
+            dateText: '12-23-2025',
+            timeText: '08:34'
+        ),
+      ),
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
         builder: (context, state) => const GuestPayBillConfirmScreen(

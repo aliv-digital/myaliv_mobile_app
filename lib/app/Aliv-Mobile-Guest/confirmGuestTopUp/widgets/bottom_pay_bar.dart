@@ -7,11 +7,13 @@ class BottomPayBar extends StatelessWidget {
     required this.onPayNow,
     this.isLoading = false,
     this.buttonText = 'pay now',
+    this.isVatExclusive = false,
     this.backgroundColor = Colors.white,
     this.buttonColor = const Color(0xFF6B63A7),
   });
 
   final String amountText;
+  final bool isVatExclusive;
   final VoidCallback onPayNow;
 
   final bool isLoading;
@@ -50,8 +52,8 @@ class BottomPayBar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'vat exclusive',
+                    Text(
+                      isVatExclusive? 'vat exclusive' : 'vat inclusive',
                       style: TextStyle(
                         fontSize: 12,
                         fontFamily: 'CircularPro',
@@ -74,7 +76,7 @@ class BottomPayBar extends StatelessWidget {
                   onPressed: isLoading ? null : onPayNow,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonColor,
-                    disabledBackgroundColor: buttonColor.withOpacity(0.7),
+                    disabledBackgroundColor: buttonColor.withValues(alpha: 0.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
@@ -87,8 +89,8 @@ class BottomPayBar extends StatelessWidget {
                       strokeWidth: 2.4,
                       color: Colors.white,
                     ),
-                  )
-                      : Text(
+                  ) :
+                  Text(
                     buttonText,
                     style: const TextStyle(
                       color: Colors.white,
