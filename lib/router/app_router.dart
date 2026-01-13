@@ -35,7 +35,7 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.home, // initial Screen
+    initialLocation: AppRoutes.splash, // initial Screen
     routes: [
 
       GoRoute(
@@ -161,10 +161,7 @@ class AppRouter {
         builder: (context, state) =>
             GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12),
       ),
-      // GoRoute(
-      //   path: AppRoutes.home,
-      //   builder: (context, state) => const HomeScreen(),
-      // ),
+
       ShellRoute(
         builder: (context, state, child) {
           return BottomShell(child: child);
