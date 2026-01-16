@@ -14,7 +14,8 @@ class DefaultButton extends StatelessWidget {
 
   /// text color override করার দরকার হলে
   final Color? textColor;
-
+  final FontWeight fontWeight;
+  final double fontSize;
   /// border radius override করতে চাইলে
   final BorderRadiusGeometry borderRadius;
 
@@ -24,6 +25,8 @@ class DefaultButton extends StatelessWidget {
     required this.isLoading,
     required this.onPressed,
     this.height = 52,
+    this.fontSize = 17,
+    this.fontWeight = FontWeight.w700,
     this.backgroundColor,
     this.textColor,
     this.borderRadius = const BorderRadius.all(Radius.circular(100)),
@@ -57,9 +60,9 @@ class DefaultButton extends StatelessWidget {
           ),
         ) : Text(
           label, style: TextStyle(
-            fontSize: 17,
+            fontSize: fontSize,
             fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
+            fontWeight: fontWeight,
             color: fgColor,
             height: 1.80
           ),

@@ -22,6 +22,11 @@ class AssetConstant{
   ///home
   static const noPlanIcon = 'assets/icons/no_plan.svg';
 
+  static const giftBoxSVG = 'assets/images/giftBox.svg';
+  static const rewardsBackgroundSVG = 'assets/images/rewards_background.svg';
+  static const rewardsCardBackgroundPNG = 'assets/images/rewards_background.png';
+
+  static const giftBoxPNG = 'assets/images/gift_box.png';
 
 
 
