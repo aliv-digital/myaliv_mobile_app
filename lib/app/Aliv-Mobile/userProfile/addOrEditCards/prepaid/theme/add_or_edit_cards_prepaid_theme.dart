@@ -7,6 +7,7 @@ class AddOrEditCardsPrepaidTheme {
   static const Color cardBg = Colors.white;
   static const Color textDark = Color(0xFF1F1F1F);
   static const Color textMuted = Color(0xFF6B7280);
+  static const String myFontFamily = 'CircularPro';
 
   static const Color dashedBorder = Color(0xFF8E8CC9);
 
