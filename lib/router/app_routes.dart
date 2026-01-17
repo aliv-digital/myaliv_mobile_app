@@ -49,4 +49,7 @@ class AppRoutes {
   static const purchasesPrepaidScreen = '/purchases-prepaid-screen';
   static const purchasesPostpaidScreen = '/purchases-postpaid-screen';
 
+  static const addOrEditCardsPrepaidScreen = '/add-or-edit-cards-prepaid-screen';
+
+
 }
