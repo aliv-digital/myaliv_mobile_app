@@ -22,7 +22,9 @@ import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
+import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
@@ -37,9 +39,17 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.rewardPrepaidScreen, // initial Screen
-    routes: [
+    initialLocation: AppRoutes.purchasesPrepaidScreen, // initial Screen
 
+    routes: [
+      GoRoute(
+        path: AppRoutes.purchasesPrepaidScreen,
+        builder: (context, state) => const PurchasesPrepaidScreen(),
+      ),
+      GoRoute(
+          path: AppRoutes.rewardDetailsPrepaidScreen,
+          builder: (context,state) => const RewardDetailsPrepaidScreen()
+      ),
       GoRoute(
           path: AppRoutes.rewardPrepaidScreen,
           builder: (context,state) => const RewardPrepaidScreen()

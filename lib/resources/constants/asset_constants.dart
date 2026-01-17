@@ -29,5 +29,7 @@ class AssetConstant{
   static const giftBoxPNG = 'assets/images/gift_box.png';
 
 
+  static const visaCardSVG = 'assets/images/visa_card.svg';
+  static const masterCardSVG = 'assets/images/master_card.svg';
 
 }

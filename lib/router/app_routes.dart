@@ -44,4 +44,9 @@ class AppRoutes {
   static const rewardPrepaidScreen = '/reward-prepaid-screen';
   static const rewardPostpaidScreen = '/reward-postpaid-screen';
 
+  static const rewardDetailsPrepaidScreen = '/reward-details-prepaid-screen';
+
+  static const purchasesPrepaidScreen = '/purchases-prepaid-screen';
+  static const purchasesPostpaidScreen = '/purchases-postpaid-screen';
+
 }
