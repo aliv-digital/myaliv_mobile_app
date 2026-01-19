@@ -106,6 +106,8 @@ class AppMenuDrawer extends StatelessWidget {
       onTap: () {
         if(label == 'profile'){
           context.push(AppRoutes.profilePrepaidScreen);
+        }else if(label == 'purchases'){
+          context.push(AppRoutes.purchasesPrepaidScreen);
         }
       },
     );

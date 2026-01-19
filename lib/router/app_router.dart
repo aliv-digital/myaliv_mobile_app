@@ -3,6 +3,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/view/add_or_edit_cards_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
@@ -22,6 +23,11 @@ import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
+import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
+import '../app/Aliv-Mobile/userProfile/topup/postpaid/view/top_up_prepaid_number_postpaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/topup/prepaid/view/top_up_prepaid_screen.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
@@ -37,8 +43,33 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.splash, // initial Screen
-    routes: [
 
+    routes: [
+      GoRoute(
+        path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
+        builder: (context, state) => const TopUpPrepaidNumberPostPaid(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.topUpPrepaidScreen,
+        builder: (context, state) => const TopUpPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.addOrEditCardsPrepaidScreen,
+        builder: (context, state) => const AddOrEditCardsPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.purchasesPrepaidScreen,
+        builder: (context, state) => const PurchasesPrepaidScreen(),
+      ),
+      GoRoute(
+          path: AppRoutes.rewardDetailsPrepaidScreen,
+          builder: (context,state) => const RewardDetailsPrepaidScreen()
+      ),
+      GoRoute(
+          path: AppRoutes.rewardPrepaidScreen,
+          builder: (context,state) => const RewardPrepaidScreen()
+      ),
       GoRoute(
           path: AppRoutes.otpProfilePrepaidScreen,
           builder: (context,state) => const OtpProfilePrepaidScreen()

@@ -41,4 +41,17 @@ class AppRoutes {
   static const otpProfilePrepaidScreen = '/otp-profile-prepaid-screen';
   static const otpProfilePostpaidScreen = '/otp-profile-postpaid-screen';
 
+  static const rewardPrepaidScreen = '/reward-prepaid-screen';
+  static const rewardPostpaidScreen = '/reward-postpaid-screen';
+
+  static const rewardDetailsPrepaidScreen = '/reward-details-prepaid-screen';
+
+  static const purchasesPrepaidScreen = '/purchases-prepaid-screen';
+  static const purchasesPostpaidScreen = '/purchases-postpaid-screen';
+
+  static const addOrEditCardsPrepaidScreen = '/add-or-edit-cards-prepaid-screen';
+
+  static const topUpPrepaidScreen = '/top-up-prepaid-screen';
+  static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
+
 }

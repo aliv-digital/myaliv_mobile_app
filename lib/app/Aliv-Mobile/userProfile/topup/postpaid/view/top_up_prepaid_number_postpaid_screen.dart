@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/top_up_prepaid_number_postpaid_bloc.dart';
+import '../bloc/top_up_prepaid_number_postpaid_event.dart';
+import '../bloc/top_up_prepaid_number_postpaid_state.dart';
+import '../theme/top_up_prepaid_number_postpaid_theme.dart';
+
+import '../widgets/sections/top_up_prepaid_number_postpaid_number_section.dart';
+import '../widgets/sections/top_up_prepaid_number_postpaid_confirm_number_section.dart';
+import '../widgets/sections/top_up_prepaid_number_postpaid_amount_section.dart';
+import '../widgets/sections/top_up_prepaid_number_postpaid_apply_section.dart';
+
+/// Screen: TopUpPrepaidNumberPostPaid
+/// - Uses CustomScrollView
+/// - SliverAppBar no padding
+/// - Rest content padded via SliverPadding
+class TopUpPrepaidNumberPostPaid extends StatelessWidget {
+  const TopUpPrepaidNumberPostPaid({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => TopUpPrepaidNumberPostPaidBloc()..add(const TopUpPrepaidNumberPostPaidStarted()),
+      child: const _TopUpPrepaidNumberPostPaidView(),
+    );
+  }
+}
+
+class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
+  const _TopUpPrepaidNumberPostPaidView();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<TopUpPrepaidNumberPostPaidBloc, TopUpPrepaidNumberPostPaidState>(
+      listenWhen: (p, c) => p.errorMessage != c.errorMessage || p.applyStatus != c.applyStatus,
+      listener: (context, state) {
+        if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+        }
+
+        if (state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.success) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Applied successfully')));
+        }
+      },
+      child: Scaffold(
+        backgroundColor: TopUpPrepaidNumberPostPaidTheme.pageBg,
+        body: SafeArea(
+          child: BlocBuilder<TopUpPrepaidNumberPostPaidBloc, TopUpPrepaidNumberPostPaidState>(
+            builder: (context, state) {
+              final bloc = context.read<TopUpPrepaidNumberPostPaidBloc>();
+
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    pinned: true,
+                    backgroundColor: TopUpPrepaidNumberPostPaidTheme.primary,
+                    elevation: 0,
+                    leading: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                    ),
+                    title: const Text(
+                      'top up a prepaid number',
+                      style: TextStyle(
+                        fontFamily: TopUpPrepaidNumberPostPaidTheme.fontFamily,
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  if (state.loadStatus == TopUpPrepaidNumberPostPaidLoadStatus.loading)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                      sliver: SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TopUpPrepaidNumberPostPaidNumberSection(
+                              onChanged: (v) => bloc.add(TopUpPrepaidNumberPostPaidNumberChanged(v)),
+                            ),
+                            const SizedBox(height: 16),
+
+                            TopUpPrepaidNumberPostPaidConfirmNumberSection(
+                              onChanged: (v) => bloc.add(TopUpPrepaidNumberPostPaidConfirmNumberChanged(v)),
+                            ),
+                            const SizedBox(height: 18),
+
+                            TopUpPrepaidNumberPostPaidAmountSection(
+                              value: state.amountText,
+                              onChanged: (v) => bloc.add(TopUpPrepaidNumberPostPaidAmountChanged(v)),
+                            ),
+                            const SizedBox(height: 22),
+
+                            TopUpPrepaidNumberPostPaidApplySection(
+                              enabled: state.canApply,
+                              loading: state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.loading,
+                              onTap: () => bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed()),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
