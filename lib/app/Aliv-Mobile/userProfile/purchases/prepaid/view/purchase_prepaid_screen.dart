@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/purchase_prepaid_bloc.dart';
 import '../bloc/purchase_prepaid_event.dart';
@@ -106,10 +108,32 @@ class _PurchasePrepaidView extends StatelessWidget {
   void _handleNavigation(BuildContext context, PurchasePrepaidAction action) {
     // TODO: integrate GoRouter routes here
     // Example:
-    // switch (action) {
-    //   case PurchasePrepaidAction.addEditCreditCards:
-    //     context.push(AppRoutes.addEditCards);
-    //     break;
+    switch (action) {
+      case PurchasePrepaidAction.addEditCreditCards:
+        context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+        break;
+      case PurchasePrepaidAction.topUpPrepaidNumber:
+        context.push(AppRoutes.topUpPrepaidNumberPostpaidScreen);
+        break;
+      case PurchasePrepaidAction.buyPlans:
+        // TODO: Handle this case.
+        break;
+      case PurchasePrepaidAction.futurePlans:
+        // TODO: Handle this case.
+        break;
+      case PurchasePrepaidAction.myLimits:
+        // TODO: Handle this case.
+        break;
+      case PurchasePrepaidAction.reviewInvoices:
+        // TODO: Handle this case.
+        break;
+      case PurchasePrepaidAction.transactionHistory:
+        // TODO: Handle this case.
+        break;
+      case PurchasePrepaidAction.makePayment:
+        // TODO: Handle this case.
+        break;
+    }
     //   case PurchasePrepaidAction.topUpPrepaidNumber:
     //     // TODO: Handle this case.
     //     throw UnimplementedError();
