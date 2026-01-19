@@ -51,5 +51,7 @@ class AppRoutes {
 
   static const addOrEditCardsPrepaidScreen = '/add-or-edit-cards-prepaid-screen';
 
+  static const topUpPrepaidScreen = '/top-up-prepaid-screen';
+  static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
 
 }

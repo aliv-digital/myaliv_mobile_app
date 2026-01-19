@@ -5,6 +5,7 @@ import '../bloc/add_or_edit_cards_prepaid_bloc.dart';
 import '../bloc/add_or_edit_cards_prepaid_event.dart';
 import '../bloc/add_or_edit_cards_prepaid_state.dart';
 import '../theme/add_or_edit_cards_prepaid_theme.dart';
+import '../widgets/app_toast.dart';
 import '../widgets/bottomsheet/confirm_remove_card_bottom_sheet.dart';
 import '../widgets/dashed_add_card_button.dart';
 import '../widgets/payment_method_section.dart';
@@ -36,7 +37,10 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
             SnackBar(content: Text(state.errorMessage!)),
           );
         }
-
+       // if (state.toastMessage != null) {
+        //  AppToast.showSuccess(context, state.toastMessage!);
+        //  context.read<AddOrEditCardsPrepaidBloc>().add(const AddOrEditCardsPrepaidToastConsumed());
+        //}
         // one-shot navigation (route তুমি পরে connect করবে)
         if (state.navTarget != AddOrEditCardsPrepaidNavTarget.none) {
           // TODO: integrate router/go_router here

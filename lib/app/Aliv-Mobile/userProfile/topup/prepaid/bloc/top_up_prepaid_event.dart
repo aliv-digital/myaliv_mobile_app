@@ -1,0 +1,32 @@
+import 'package:equatable/equatable.dart';
+
+abstract class TopUpPrepaidEvent extends Equatable {
+  const TopUpPrepaidEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class TopUpPrepaidStarted extends TopUpPrepaidEvent {
+  const TopUpPrepaidStarted();
+}
+
+class TopUpPrepaidTabChanged extends TopUpPrepaidEvent {
+  final int index;
+  const TopUpPrepaidTabChanged(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}
+
+class TopUpPrepaidAmountChanged extends TopUpPrepaidEvent {
+  final String value;
+  const TopUpPrepaidAmountChanged(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}
+
+class TopUpPrepaidTopUpPressed extends TopUpPrepaidEvent {
+  const TopUpPrepaidTopUpPressed();
+}
