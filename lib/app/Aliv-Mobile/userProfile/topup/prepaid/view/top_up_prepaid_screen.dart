@@ -167,7 +167,7 @@ class _MyNumberTab extends StatelessWidget {
             enabled: state.canSubmit,
             loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
             onTap: () {
-              bloc.add(const TopUpPrepaidTopUpPressed());
+              //bloc.add(const TopUpPrepaidTopUpPressed());
               context.push(AppRoutes.confirmTopUpPrepaidScreen);
             }
           ),
