@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/top_up_prepaid_bloc.dart';
 import '../bloc/top_up_prepaid_event.dart';
@@ -164,7 +166,10 @@ class _MyNumberTab extends StatelessWidget {
           TopUpPrepaidPrimaryButton(
             enabled: state.canSubmit,
             loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
-            onTap: () => bloc.add(const TopUpPrepaidTopUpPressed()),
+            onTap: () {
+              bloc.add(const TopUpPrepaidTopUpPressed());
+              context.push(AppRoutes.confirmTopUpPrepaidScreen);
+            }
           ),
 
           // Keep spacing similar to screenshot (keyboard will push anyway)

@@ -115,8 +115,11 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                             ),
                             const SizedBox(height: 18),
                             DashedAddCardButton(
-                              onTap: () => bloc.add(
-                                  const AddOrEditCardsPrepaidAddNewCardPressed()),
+                              onTap: () async {
+
+                                 bloc.add(
+                                    const AddOrEditCardsPrepaidAddNewCardPressed());
+                              },
                             ),
                           ],
                         ),

@@ -17,6 +17,10 @@ class PurchasePrepaidRepository {
         action: PurchasePrepaidAction.buyPlans,
       ),
       PurchasePrepaidMenuItem(
+        title: 'top up',
+        action: PurchasePrepaidAction.topUp,
+      ),
+      PurchasePrepaidMenuItem(
         title: 'future plans',
         action: PurchasePrepaidAction.futurePlans,
       ),

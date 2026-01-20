@@ -54,4 +54,10 @@ class AppRoutes {
   static const topUpPrepaidScreen = '/top-up-prepaid-screen';
   static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
 
+  static const confirmTopUpPrepaidScreen = '/confirm-top-up-prepaid-screen';
+  static const confirmTopUpPostpaidScreen = '/confirm-top-up-postpaid-screen';
+
+  static const topUpPaymentPrepaidScreen = '/top-up-payment-prepaid-screen';
+  static const topUpPaymentPostpaidScreen = '/top-up-payment-postpaid-screen';
+
 }

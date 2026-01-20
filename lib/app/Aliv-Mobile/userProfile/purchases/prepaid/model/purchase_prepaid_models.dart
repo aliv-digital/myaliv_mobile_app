@@ -9,6 +9,7 @@ enum PurchasePrepaidAction {
   reviewInvoices,
   transactionHistory,
   makePayment,
+  topUp,
 }
 
 class PurchasePrepaidMenuItem extends Equatable {
