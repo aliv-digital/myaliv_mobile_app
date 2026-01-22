@@ -74,7 +74,7 @@ class AppRoutes {
 
   static const enterPasswordAutoRenewPrepaidScreen = '/enter-password-auto-renew-prepaid-screen';
 
-
+  static const otpAutoRenewPrepaidScreen = '/otp-auto-renew-prepaid-screen';
 
 
 }
