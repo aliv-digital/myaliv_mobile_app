@@ -60,4 +60,8 @@ class AppRoutes {
   static const topUpPaymentPrepaidScreen = '/top-up-payment-prepaid-screen';
   static const topUpPaymentPostpaidScreen = '/top-up-payment-postpaid-screen';
 
+
+  static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
+  static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
+
 }

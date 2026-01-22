@@ -31,5 +31,6 @@ class AssetConstant{
 
   static const visaCardSVG = 'assets/images/visa_card.svg';
   static const masterCardSVG = 'assets/images/master_card.svg';
+  static const pdfIconSVG = 'assets/icons/pdf.svg';
 
 }
