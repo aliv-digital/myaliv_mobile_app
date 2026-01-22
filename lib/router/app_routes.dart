@@ -64,4 +64,8 @@ class AppRoutes {
   static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
   static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
 
+  static const enterPasswordPostpaidScreen = '/enter-password-postpaid-screen';
+
+
+
 }

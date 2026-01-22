@@ -22,6 +22,7 @@ import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
+import '../app/Aliv-Mobile/reviewInvoices/enterPassword/postpaid/view/enter_password_postpaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/view/review_invoice_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_prepaid_screen.dart';
@@ -45,9 +46,13 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.reviewInvoicePostPaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.enterPasswordPostpaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
+      GoRoute(
+        path: AppRoutes.enterPasswordPostpaidScreen,
+        builder: (context, state) => const EnterPasswordPostpaidScreen(),
+      ),
       GoRoute(
         path: AppRoutes.reviewInvoicePostPaidScreen,
         builder: (context, state) => const ReviewInvoicePostpaidScreen(),
