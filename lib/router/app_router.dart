@@ -20,6 +20,7 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_pl
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
@@ -49,9 +50,13 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.autoRenewAuthPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.enterPasswordAutoRenewPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
+      GoRoute(
+        path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
+        builder: (context, state) => const EnterPasswordAutoRenewPrepaidScreen(),
+      ),
       GoRoute(
         path: AppRoutes.autoRenewAuthPrepaidScreen,
         builder: (context, state) => const AutoRenewAuthPrepaidScreen(),
