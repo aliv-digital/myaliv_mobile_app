@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -27,6 +26,9 @@ class AutoRenewPrepaidScreen extends StatelessWidget {
 
 class _AutoRenewPrepaidView extends StatelessWidget {
   const _AutoRenewPrepaidView();
+
+  // ✅ DefaultAppBar actual height is 56 in your logs
+  static const double _appBarHeight = 56.0;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,7 @@ class _AutoRenewPrepaidView extends StatelessWidget {
         }
 
         if (state.navTarget == AutoRenewNavTarget.home) {
-          // TODO: go_router home route
+          // TODO: integrate router/go_router for home navigation
           bloc.add(const AutoRenewNavigationConsumed());
           return;
         }
@@ -76,54 +78,51 @@ class _AutoRenewPrepaidView extends StatelessWidget {
               final bloc = context.read<AutoRenewPrepaidBloc>();
 
               return CustomScrollView(
-                physics: const BouncingScrollPhysics(),
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: DefaultAppBar(
-                      showHome: true,
-                      title: 'auto renew',
-                      onBack: () => Navigator.of(context).maybePop(),
-                      onHomeTap: () => bloc.add(const AutoRenewHomePressed()),
+                  /// ✅ Pinned DefaultAppBar in sliver (like your SliverAppBar pinned)
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _PinnedHeaderDelegate(
+                      height: _appBarHeight, // ✅ MUST match actual rendered height
+                      child: DefaultAppBar(
+                        showHome: true,
+                        title: 'auto renew',
+                        onBack: () => Navigator.of(context).maybePop(),
+                        onHomeTap: () => bloc.add(const AutoRenewHomePressed()),
+                      ),
                     ),
                   ),
 
                   if (state.loadStatus == AutoRenewLoadStatus.loading)
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 80),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
                     )
                   else
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
                       sliver: SliverToBoxAdapter(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             AutoRenewPaymentMethodSection(
                               methods: state.methods,
                               selectedMethodId: state.selectedMethodId,
-                              onSelect: (id) => bloc.add(AutoRenewMethodSelected(id)),
+                              onSelect: (id) =>
+                                  bloc.add(AutoRenewMethodSelected(id)),
                             ),
-
-                            // ✅ Keep buttons "up" after section (not bottom pinned)
                             const SizedBox(height: 18),
-
                             DashedAddCardButton(
                               onTap: () =>
                                   bloc.add(const AutoRenewAddNewCardPressed()),
                             ),
                             const SizedBox(height: 14),
-
                             _ProceedButton(
                               enabled: state.canProceed,
                               loading: state.savingSelection,
                               onTap: () =>
                                   bloc.add(const AutoRenewProceedPressed()),
                             ),
-
-                            // ✅ small bottom padding only (not pushing to bottom)
-                            const SizedBox(height: 18),
                           ],
                         ),
                       ),
@@ -170,8 +169,8 @@ class _ProceedButton extends StatelessWidget {
             strokeWidth: 2,
             color: Colors.white,
           ),
-        )
-            : const Text(
+        ) :
+        const Text(
           'proceed',
           style: TextStyle(
             fontFamily: AutoRenewPrepaidTheme.fontFamily,
@@ -182,5 +181,33 @@ class _ProceedButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// ✅ Pinned header delegate for sticky DefaultAppBar inside slivers
+class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double height;
+  final Widget child;
+
+  _PinnedHeaderDelegate({
+    required this.height,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // ✅ Ensure the header always reports EXACT same size as extents
+    return SizedBox(height: height, child: child);
+  }
+
+  @override
+  bool shouldRebuild(covariant _PinnedHeaderDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.child != child;
   }
 }
