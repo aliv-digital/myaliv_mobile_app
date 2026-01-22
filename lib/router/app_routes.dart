@@ -66,6 +66,8 @@ class AppRoutes {
 
   static const enterPasswordPostpaidScreen = '/enter-password-postpaid-screen';
 
+  static const otpPostPaidScreen = '/otp-postpaid-screen';
+
 
 
 }
