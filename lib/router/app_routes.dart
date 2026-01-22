@@ -68,6 +68,8 @@ class AppRoutes {
 
   static const otpPostPaidScreen = '/otp-postpaid-screen';
 
+  static const autoRenewPrepaidScreen = '/auto-renew-prepaid-screen';
+
 
 
 }
