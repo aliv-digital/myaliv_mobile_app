@@ -33,4 +33,9 @@ class AssetConstant{
   static const masterCardSVG = 'assets/images/master_card.svg';
   static const pdfIconSVG = 'assets/icons/pdf.svg';
 
+  static const announcePNG = 'assets/images/announce.png';
+  static const redeemPNG = 'assets/images/redeem.png';
+
+  static const smsSVG = 'assets/icons/sms.svg';
+
 }

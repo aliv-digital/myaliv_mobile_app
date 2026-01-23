@@ -27,6 +27,8 @@ import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
+import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/refer_friend_prepaid_screen.dart';
+import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_friend_response_prepaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/enterPassword/postpaid/view/enter_password_postpaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/view/review_invoice_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
@@ -51,9 +53,17 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.otpAutoRenewPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.splash,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
+      GoRoute(
+        path: AppRoutes.referFriendResponsePrepaidScreen,
+        builder: (context, state) => const ReferFriendResponsePrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.referFriendPrepaidScreen,
+        builder: (context, state) => const ReferFriendPrepaidScreen(),
+      ),
       GoRoute(
           path: AppRoutes.otpAutoRenewPrepaidScreen,
           builder: (context,state) => const OtpAutoRenewPrepaidScreen()
@@ -71,11 +81,11 @@ class AppRouter {
         builder: (context, state) => const AutoRenewPrepaidScreen(),
       ),
       GoRoute(
-        path: AppRoutes.otpPostPaidScreen,
+        path: AppRoutes.otpReviewInvoicePostPaidScreen,
         builder: (context, state) => const OtpPostpaidScreen(),
       ),
       GoRoute(
-        path: AppRoutes.enterPasswordPostpaidScreen,
+        path: AppRoutes.enterPasswordReviewInvoicePostpaidScreen,
         builder: (context, state) => const EnterPasswordPostpaidScreen(),
       ),
       GoRoute(

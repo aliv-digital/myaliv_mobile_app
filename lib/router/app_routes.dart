@@ -64,9 +64,9 @@ class AppRoutes {
   static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
   static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
 
-  static const enterPasswordPostpaidScreen = '/enter-password-postpaid-screen';
+  static const enterPasswordReviewInvoicePostpaidScreen = '/enter-password-postpaid-screen';
 
-  static const otpPostPaidScreen = '/otp-postpaid-screen';
+  static const otpReviewInvoicePostPaidScreen = '/otp-postpaid-screen';
 
   static const autoRenewPrepaidScreen = '/auto-renew-prepaid-screen';
 
@@ -75,6 +75,14 @@ class AppRoutes {
   static const enterPasswordAutoRenewPrepaidScreen = '/enter-password-auto-renew-prepaid-screen';
 
   static const otpAutoRenewPrepaidScreen = '/otp-auto-renew-prepaid-screen';
+
+  static const referFriendPrepaidScreen = '/refer-friend-prepaid-screen';
+
+  static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
+
+
+
+
 
 
 }

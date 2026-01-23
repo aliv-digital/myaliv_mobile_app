@@ -131,8 +131,8 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                             .read<EnterPasswordAutoRenewPrepaidBloc>()
                                             .add(const EnterPasswordAutoRenewPrepaidContinuePressed());
 
-                                        // ✅ Update this route if your name differs
-                                        context.push(AppRoutes.otpProfilePostpaidScreen);
+                                        // Update this route if your name differs
+                                        context.push(AppRoutes.otpAutoRenewPrepaidScreen);
                                       },
                                     );
                                   },

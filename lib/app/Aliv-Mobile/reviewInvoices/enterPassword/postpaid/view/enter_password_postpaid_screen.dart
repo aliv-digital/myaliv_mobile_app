@@ -53,7 +53,8 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
           p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == EnterPasswordPostpaidStatus.success) {
-              // TODO: success navigation (go_router) তুমি বসাবে
+             // continue
+              context.push(AppRoutes.otpReviewInvoicePostPaidScreen);
             }
             if (state.status == EnterPasswordPostpaidStatus.failure &&
                 (state.errorMessage ?? '').isNotEmpty) {
@@ -117,19 +118,16 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                   p.status != c.status ||
                                       p.isValid != c.isValid,
                                   builder: (context, state) {
-                                    final isLoading =
-                                        state.status == EnterPasswordPostpaidStatus.submitting;
+                                    final isLoading = state.status == EnterPasswordPostpaidStatus.submitting;
 
                                     return EnterPasswordPostpaidContinueButton(
                                       isLoading: isLoading,
                                       enabled: state.isValid && !isLoading,
                                       onTap: () {
-                                        context
-                                            .read<EnterPasswordPostpaidBloc>()
-                                            .add(const EnterPasswordPostpaidContinuePressed());
+                                        context.read<EnterPasswordPostpaidBloc>().add(
+                                            const EnterPasswordPostpaidContinuePressed()
+                                        );
 
-                                        // ✅ Update this route if your name differs
-                                        context.push(AppRoutes.otpProfilePostpaidScreen);
                                       },
                                     );
                                   },

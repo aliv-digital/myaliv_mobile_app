@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -120,8 +123,10 @@ class _AutoRenewPrepaidView extends StatelessWidget {
                             _ProceedButton(
                               enabled: state.canProceed,
                               loading: state.savingSelection,
-                              onTap: () =>
-                                  bloc.add(const AutoRenewProceedPressed()),
+                              onTap: () {
+                                //bloc.add(const AutoRenewProceedPressed());
+                                context.push(AppRoutes.autoRenewAuthPrepaidScreen);
+                              }
                             ),
                           ],
                         ),

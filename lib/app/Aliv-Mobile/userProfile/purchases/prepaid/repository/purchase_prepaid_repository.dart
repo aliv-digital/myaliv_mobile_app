@@ -29,6 +29,10 @@ class PurchasePrepaidRepository {
         action: PurchasePrepaidAction.myLimits,
       ),
       PurchasePrepaidMenuItem(
+        title: 'auto renew',
+        action: PurchasePrepaidAction.autoRenew,
+      ),
+      PurchasePrepaidMenuItem(
         title: 'review invoices',
         action: PurchasePrepaidAction.reviewInvoices,
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/auto_renew_auth_prepaid_bloc.dart';
 import '../bloc/auto_renew_auth_prepaid_event.dart';
 import '../bloc/auto_renew_auth_prepaid_state.dart';
@@ -98,7 +100,10 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                         child: _Body(
                           state: state,
                           onNameChanged: (v) => bloc.add(AutoRenewAuthNameChanged(v)),
-                          onSubmit: () => bloc.add(const AutoRenewAuthSubmitPressed()),
+                          onSubmit: () {
+                            //bloc.add(const AutoRenewAuthSubmitPressed());
+                            context.push(AppRoutes.enterPasswordAutoRenewPrepaidScreen);
+                          },
                         ),
                       ),
                     ),
