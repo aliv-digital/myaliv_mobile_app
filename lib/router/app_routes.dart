@@ -94,10 +94,8 @@ class AppRoutes {
   static const privacyScreen = '/privacy-screen';
   static const helpScreen = '/help-screen';
   static const fingerPrintSecurityScreen = '/finger-print-security-screen';
+  static const notificationScreen = '/notifications';
 
-  static const faceIdSecurityScreen = '/face-id-security-screen';
-
-  static const revPaymentMethodPrepaidScreen = '/rev-payment-method-prepaid-screen';
 
 
 

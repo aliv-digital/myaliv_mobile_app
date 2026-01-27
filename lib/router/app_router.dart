@@ -35,6 +35,7 @@ import '../app/Home/home/data/home_ui_config.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Menu/menu_screen.dart';
+import '../app/Notifications/notification_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
 import '../app/Usage/upgrade_credit_limit.dart';
 import '../app/Usage/usage_screen.dart';
@@ -254,6 +255,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.allBestPlans,
         builder: (context, state) => const AllBestPlansScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.notificationScreen,
+        builder: (context, state) => const NotificationsScreen(),
       ),
     ],
   );
