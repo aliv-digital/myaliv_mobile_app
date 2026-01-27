@@ -108,6 +108,8 @@ class AppMenuDrawer extends StatelessWidget {
           context.push(AppRoutes.profilePrepaidScreen);
         }else if(label == 'purchases'){
           context.push(AppRoutes.purchasesPrepaidScreen);
+        }else if(label == 'refer a friend'){
+          context.push(AppRoutes.referFriendPrepaidScreen);
         }
       },
     );

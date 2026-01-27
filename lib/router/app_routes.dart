@@ -56,4 +56,35 @@ class AppRoutes {
   static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
   static const callLogs = '/call_logs';
 
+  static const confirmTopUpPrepaidScreen = '/confirm-top-up-prepaid-screen';
+  static const confirmTopUpPostpaidScreen = '/confirm-top-up-postpaid-screen';
+
+  static const topUpPaymentPrepaidScreen = '/top-up-payment-prepaid-screen';
+  static const topUpPaymentPostpaidScreen = '/top-up-payment-postpaid-screen';
+
+
+  static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
+  static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
+
+  static const enterPasswordReviewInvoicePostpaidScreen = '/enter-password-postpaid-screen';
+
+  static const otpReviewInvoicePostPaidScreen = '/otp-postpaid-screen';
+
+  static const autoRenewPrepaidScreen = '/auto-renew-prepaid-screen';
+
+  static const autoRenewAuthPrepaidScreen = '/auto-renew-auth-prepaid-screen';
+
+  static const enterPasswordAutoRenewPrepaidScreen = '/enter-password-auto-renew-prepaid-screen';
+
+  static const otpAutoRenewPrepaidScreen = '/otp-auto-renew-prepaid-screen';
+
+  static const referFriendPrepaidScreen = '/refer-friend-prepaid-screen';
+
+  static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
+
+
+
+
+
+
 }

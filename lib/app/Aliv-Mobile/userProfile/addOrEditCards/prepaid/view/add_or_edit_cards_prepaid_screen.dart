@@ -5,7 +5,7 @@ import '../bloc/add_or_edit_cards_prepaid_bloc.dart';
 import '../bloc/add_or_edit_cards_prepaid_event.dart';
 import '../bloc/add_or_edit_cards_prepaid_state.dart';
 import '../theme/add_or_edit_cards_prepaid_theme.dart';
-import '../widgets/app_toast.dart';
+import '../widgets/bottomsheet/add_card_bottom_sheet.dart';
 import '../widgets/bottomsheet/confirm_remove_card_bottom_sheet.dart';
 import '../widgets/dashed_add_card_button.dart';
 import '../widgets/payment_method_section.dart';
@@ -31,30 +31,45 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     return BlocListener<AddOrEditCardsPrepaidBloc, AddOrEditCardsPrepaidState>(
       listenWhen: (p, c) =>
       p.errorMessage != c.errorMessage || p.navTarget != c.navTarget,
-      listener: (context, state) {
+      listener: (context, state) async {
+        final bloc = context.read<AddOrEditCardsPrepaidBloc>();
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
           );
         }
-       // if (state.toastMessage != null) {
-        //  AppToast.showSuccess(context, state.toastMessage!);
-        //  context.read<AddOrEditCardsPrepaidBloc>().add(const AddOrEditCardsPrepaidToastConsumed());
-        //}
-        // one-shot navigation (route তুমি পরে connect করবে)
-        if (state.navTarget != AddOrEditCardsPrepaidNavTarget.none) {
-          // TODO: integrate router/go_router here
 
-          context
-              .read<AddOrEditCardsPrepaidBloc>()
-              .add(const AddOrEditCardsPrepaidNavigationConsumed());
+        // ✅ Handle one-shot navigation targets
+        if (state.navTarget == AddOrEditCardsPrepaidNavTarget.addCard) {
+          // Demo অনুযায়ী last4 "1234" (repo তেও ending 1234)
+          final result = await AddCardBottomSheet.show(
+            context,
+            last4: '1234',
+          );
+
+          if (result != null) {
+            bloc.add(
+              AddOrEditCardsPrepaidSaveCardPressed(
+                month: result.month,
+                year: result.year,
+              ),
+            );
+          }
+
+          bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
+          return;
+        }
+
+        if (state.navTarget == AddOrEditCardsPrepaidNavTarget.home) {
+          // TODO: integrate router/go_router for home navigation
+          bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
+          return;
         }
       },
       child: Scaffold(
         backgroundColor: AddOrEditCardsPrepaidTheme.pageBg,
         body: SafeArea(
-          child: BlocBuilder<AddOrEditCardsPrepaidBloc,
-              AddOrEditCardsPrepaidState>(
+          child: BlocBuilder<AddOrEditCardsPrepaidBloc, AddOrEditCardsPrepaidState>(
             builder: (context, state) {
               final bloc = context.read<AddOrEditCardsPrepaidBloc>();
 
@@ -80,8 +95,8 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                       IconButton(
                         onPressed: () =>
                             bloc.add(const AddOrEditCardsPrepaidHomePressed()),
-                        icon: const Icon(Icons.home_outlined,
-                            color: Colors.white),
+                        icon:
+                        const Icon(Icons.home_outlined, color: Colors.white),
                       ),
                     ],
                   ),
@@ -103,20 +118,20 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                               cards: state.cards,
                               deletingIds: state.deletingIds,
                               onDelete: (id) async {
-                                // ✅ SHOW CONFIRM SHEET FIRST
-                                final confirmed = await RemoveSavedCardConfirmBottomSheet.show(context);
-
-                                // ✅ confirm হলে THEN delete event fire
+                                final confirmed =
+                                await RemoveSavedCardConfirmBottomSheet.show(context);
                                 if (confirmed) {
-                                  bloc.add(
-                                      AddOrEditCardsPrepaidDeletePressed(id));
+                                  bloc.add(AddOrEditCardsPrepaidDeletePressed(id));
                                 }
                               },
                             ),
                             const SizedBox(height: 18),
                             DashedAddCardButton(
-                              onTap: () => bloc.add(
-                                  const AddOrEditCardsPrepaidAddNewCardPressed()),
+                              onTap: () {
+                                bloc.add(
+                                  const AddOrEditCardsPrepaidAddNewCardPressed(),
+                                );
+                              },
                             ),
                           ],
                         ),
