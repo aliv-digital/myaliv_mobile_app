@@ -82,6 +82,7 @@ class AppRoutes {
 
   static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
 
+  static const notificationScreen = '/notifications';
 
 
 

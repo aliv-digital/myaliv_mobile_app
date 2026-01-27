@@ -8,6 +8,7 @@ import '../bloc/top_up_prepaid_event.dart';
 import '../bloc/top_up_prepaid_state.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
+import '../widgets/send_top_up_placeholder_tab.dart';
 import '../widgets/top_up_prepaid_tabs.dart';
 import '../widgets/top_up_prepaid_balance_row.dart';
 import '../widgets/top_up_prepaid_amount_box.dart';
@@ -120,7 +121,7 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                           const TopUpPrepaidPlaceholderTab(title: 'auto top up'),
 
                           // Tab 2: placeholder (future)
-                          const TopUpPrepaidPlaceholderTab(title: 'send top up'),
+                           SendTopUpPlaceholderTab(title: 'send top up'),
                         ],
                       ),
                     ),

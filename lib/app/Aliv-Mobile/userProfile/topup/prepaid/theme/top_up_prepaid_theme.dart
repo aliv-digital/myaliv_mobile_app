@@ -14,6 +14,8 @@ class TopUpPrepaidTheme {
 
   static const Color pillBg = Color(0xFFF1F2F4);
   static const Color divider = Color(0xFFE6E6EA);
+  static const Color purple = Color(0xFF6C63A6);
+  static const Color lightBg = Color(0xFFF1F0FA);
 
   static const double radius = 14;
 
