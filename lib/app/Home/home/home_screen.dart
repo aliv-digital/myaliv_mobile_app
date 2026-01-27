@@ -9,21 +9,32 @@ import '../../../router/app_routes.dart';
 import '../model/demo_plans.dart';
 import '../widgets/action_tile.dart';
 import '../widgets/active_plan.dart';
+import '../widgets/active_plan_card_postpaid.dart';
 import '../widgets/active_plan_usage_section.dart';
+import '../widgets/home_header.dart';
 import '../widgets/phone_dropdown.dart';
 import '../widgets/plan_card.dart';
+import '../widgets/postpaid_billing_card.dart';
+import '../widgets/prepaid_balance_card.dart';
 import '../widgets/timer.dart';
+import 'data/home_ui_config.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  /// FLAG → toggle UI
-  final bool hasActivePlan = true;
+  // /// FLAG → toggle UI
+  // final bool hasActivePlan = true;
+  // final bool isPrepaid = false;
 
   static const Color purple = Color(0xFF6C63A6);
   static const Color bg = Color(0xFFF6F9FC);
   static const Color yellow = Color(0xFFF4D13D);
   static const Color blueBackground = Color(0xFFF1F7FA);
+
+  final HomeUiConfig config = const HomeUiConfig(
+    userType: UserType.postpaid, // 🔥 switch here for demo
+    hasActivePlan: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -37,15 +48,41 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 100),
               child: Column(
                 children: [
-                  _topHeader(),
+                  // _topHeader(),
+                  // const SizedBox(height: 12),
+                  // _balanceCard(),
+                  // const SizedBox(height: 20),
+                  // hasActivePlan ? ActivePlanCard() : _noActivePlan(context),
+                  // const SizedBox(height: 24),
+                  // hasActivePlan
+                  //     ? const ActivePlanUsageSection()
+                  //     : const SizedBox.shrink(),
+                  //
+                  // const SizedBox(height: 24),
+                  // _bestPlans(context),
+                  // const SizedBox(height: 24),
+                  // _quickActions(context),
+                  // const SizedBox(height: 24),
+                  // _limitedOffer(),
+                  HomeHeader(config: config),
                   const SizedBox(height: 12),
-                  _balanceCard(),
+
+                  /// 🔥 DIFFERENT CARD BASED ON USER TYPE
+                  config.isPrepaid
+                      ? const PrepaidBalanceCard()
+                      : const PostpaidBillingCard(),
+
                   const SizedBox(height: 20),
-                  hasActivePlan ? ActivePlanCard() : _noActivePlan(context),
+
+                  config.hasActivePlan
+                      ? config.userType == UserType.prepaid
+                            ? PrepaidActivePlanCard()
+                            : PostpaidActivePlanCard(config: config,)
+                      : _noActivePlan(context),
+
                   const SizedBox(height: 24),
-                  hasActivePlan
-                      ? const ActivePlanUsageSection()
-                      : const SizedBox.shrink(),
+
+                  if (config.hasActivePlan) const ActivePlanUsageSection(),
 
                   const SizedBox(height: 24),
                   _bestPlans(context),
@@ -103,6 +140,61 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'active | prepaid',
                     style: TextStyle(
+                      fontFamily: 'CircularPro',
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              const Icon(IconsaxPlusLinear.notification, color: Colors.white),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Welcome back, Jade!',
+            style: TextStyle(
+              fontFamily: 'CircularPro',
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 10),
+          const PhoneDropdown(),
+        ],
+      ),
+    );
+  }
+
+  Widget _topHeaderPostpaid() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // top row
+          Row(
+            children: [
+              const Text(
+                'aliv',
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  const Icon(Icons.circle, size: 8, color: Colors.greenAccent),
+                  const SizedBox(width: 6),
+                  Text(
+                    config.userType == UserType.prepaid
+                        ? 'active | prepaid'
+                        : 'active | postpaid',
+                    style: const TextStyle(
                       fontFamily: 'CircularPro',
                       color: Colors.white,
                       fontSize: 12,

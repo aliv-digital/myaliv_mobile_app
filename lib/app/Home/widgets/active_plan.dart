@@ -3,10 +3,10 @@ import 'package:iconsax_plus/iconsax_plus.dart';
 
 import 'auto_renew_toggle.dart';
 
-class ActivePlanCard extends StatelessWidget {
+class PrepaidActivePlanCard extends StatelessWidget {
   final bool showRenewButton;
 
-  const ActivePlanCard({
+  const PrepaidActivePlanCard({
     super.key,
     this.showRenewButton = true, // 🔥 default OFF
   });
