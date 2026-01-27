@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/pre
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
@@ -29,10 +30,12 @@ import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_detail
 import '../app/Aliv-Mobile/userProfile/topup/postpaid/view/top_up_prepaid_number_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/topup/prepaid/view/top_up_prepaid_screen.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
+import '../app/Home/home/data/home_ui_config.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Menu/menu_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
+import '../app/Usage/upgrade_credit_limit.dart';
 import '../app/Usage/usage_screen.dart';
 import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/profile/postpaid/view/profile_postpaid_screen.dart';
@@ -63,32 +66,32 @@ class AppRouter {
         builder: (context, state) => const PurchasesPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.rewardDetailsPrepaidScreen,
-          builder: (context,state) => const RewardDetailsPrepaidScreen()
+        path: AppRoutes.rewardDetailsPrepaidScreen,
+        builder: (context, state) => const RewardDetailsPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.rewardPrepaidScreen,
-          builder: (context,state) => const RewardPrepaidScreen()
+        path: AppRoutes.rewardPrepaidScreen,
+        builder: (context, state) => const RewardPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.otpProfilePrepaidScreen,
-          builder: (context,state) => const OtpProfilePrepaidScreen()
+        path: AppRoutes.otpProfilePrepaidScreen,
+        builder: (context, state) => const OtpProfilePrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.changePasswordPrepaidScreen,
-          builder: (context,state) => const ChangePasswordPrepaidScreen()
+        path: AppRoutes.changePasswordPrepaidScreen,
+        builder: (context, state) => const ChangePasswordPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.enterPassWordPrepaidScreen,
-          builder: (context,state) => const EnterPasswordPrepaidScreen()
+        path: AppRoutes.enterPassWordPrepaidScreen,
+        builder: (context, state) => const EnterPasswordPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.editEmailPrepaidScreen,
-          builder: (context,state) => const EditEmailPrepaidScreen()
+        path: AppRoutes.editEmailPrepaidScreen,
+        builder: (context, state) => const EditEmailPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.myProfilePrepaidScreen,
-          builder: (context,state) => const MyProfilePrepaidScreen()
+        path: AppRoutes.myProfilePrepaidScreen,
+        builder: (context, state) => const MyProfilePrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.profilePostpaidScreen,
@@ -99,29 +102,34 @@ class AppRouter {
         builder: (context, state) => const ProfilePrepaidScreen(),
       ),
       GoRoute(
+        path: AppRoutes.callLogs,
+        builder: (context, state) => const CallLogsScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.guestPurchasePlanReceipt,
         builder: (context, state) => const GuestPurchasePlanReceiptScreen(
           phoneNumber: '242-801-1616',
           amount: 75,
           dateText: 'Mar 12,2023',
-          timeText: '446332'
-        )
+          timeText: '446332',
+        ),
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
-        builder: (context, state) => const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545',)
+        builder: (context, state) =>
+            const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
       ),
       GoRoute(
-          path: AppRoutes.guestPurchasePlanAddOns,
-          builder: (context,state) => const GuestPurchasePlanAddOnsScreen()
+        path: AppRoutes.guestPurchasePlanAddOns,
+        builder: (context, state) => const GuestPurchasePlanAddOnsScreen(),
       ),
       GoRoute(
         path: AppRoutes.guestPayBillReceipt,
         builder: (context, state) => const GuestPayBillReceiptScreen(
-            phoneNumber: '234235454',
-            amount:12,
-            dateText: '12-23-2025',
-            timeText: '08:34'
+          phoneNumber: '234235454',
+          amount: 12,
+          dateText: '12-23-2025',
+          timeText: '08:34',
         ),
       ),
       GoRoute(
@@ -207,10 +215,31 @@ class AppRouter {
             path: AppRoutes.home,
             builder: (context, state) => const HomeScreen(),
           ),
+          // GoRoute(
+          //   path: AppRoutes.usage,
+          //   builder: (context, state) => const UsageScreen(),
+          // ),
           GoRoute(
             path: AppRoutes.usage,
-            builder: (context, state) => const UsageScreen(),
+            builder: (context, state) {
+              final config =
+                  (state.extra as HomeUiConfig?) ??
+                  const HomeUiConfig(
+                    userType: UserType.postpaid,
+                    hasActivePlan: true,
+                  );
+
+              return UsageScreen(config: config);
+            },
           ),
+
+          GoRoute(
+            path: AppRoutes.upgradeCreditLimit,
+            builder: (context, state) {
+              return const UpgradeCreditLimitScreen();
+            },
+          ),
+
           GoRoute(
             path: AppRoutes.plans,
             builder: (context, state) => const HomePlanScreen(),

@@ -19,9 +19,9 @@ class ProfilePrepaidScreen extends StatelessWidget {
     return RepositoryProvider(
       create: (_) => ProfilePrepaidRepository(),
       child: BlocProvider(
-        create: (ctx) => ProfilePrepaidBloc(
-          repository: ctx.read<ProfilePrepaidRepository>(),
-        )..add(const ProfilePrepaidStarted()),
+        create: (ctx) =>
+            ProfilePrepaidBloc(repository: ctx.read<ProfilePrepaidRepository>())
+              ..add(const ProfilePrepaidStarted()),
         child: const _ProfilePrepaidView(),
       ),
     );
@@ -35,7 +35,7 @@ class _ProfilePrepaidView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<ProfilePrepaidBloc, ProfilePrepaidState>(
       listenWhen: (p, c) =>
-      p.backRequestId != c.backRequestId ||
+          p.backRequestId != c.backRequestId ||
           p.openRouteRequestId != c.openRouteRequestId,
       listener: (context, state) {
         if (state.backRequestId > 0) {
@@ -60,53 +60,63 @@ class _ProfilePrepaidView extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
                         title: 'profile',
-                        onBack: () => context
-                            .read<ProfilePrepaidBloc>()
-                            .add(const ProfilePrepaidBackPressed()),
+                        onBack: () => context.read<ProfilePrepaidBloc>().add(
+                          const ProfilePrepaidBackPressed(),
+                        ),
                         showBackArrow: true,
                       ),
                     ),
 
                     SliverToBoxAdapter(
-                      child: BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
-                        builder: (context, state) {
-                          if (state.status == ProfilePrepaidStatus.loading) {
-                            return const Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
-
-                          return Column(
-                            children: [
-                              const Divider(
-                                height: 1,
-                                thickness: 1,
-                                color: ProfilePrepaidTheme.divider,
-                              ),
-                              ...state.items.map((item) {
-                                return ProfileMenuItemTile(
-                                  title: item.title,
-                                  enabled: item.enabled,
-                                  onTap: () {
-                                    if (item.id == 'my_profile') {
-                                      context.push(AppRoutes.myProfilePrepaidScreen);
-                                    }
-                                    context
-                                        .read<ProfilePrepaidBloc>()
-                                        .add(ProfilePrepaidItemPressed(item));
-                                  },
+                      child:
+                          BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
+                            builder: (context, state) {
+                              if (state.status ==
+                                  ProfilePrepaidStatus.loading) {
+                                return const Padding(
+                                  padding: EdgeInsets.only(top: 16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
                                 );
-                              }),
-                            ],
-                          );
-                        },
-                      ),
+                              }
+
+                              return Column(
+                                children: [
+                                  const Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: ProfilePrepaidTheme.divider,
+                                  ),
+                                  ...state.items.map((item) {
+                                    return ProfileMenuItemTile(
+                                      title: item.title,
+                                      enabled: item.enabled,
+                                      onTap: () {
+                                        if (item.id == 'my_profile') {
+                                          context.push(
+                                            AppRoutes.myProfilePrepaidScreen,
+                                          );
+                                        }
+                                        if (item.id == 'call_logs') {
+                                          context.push(AppRoutes.callLogs);
+                                        }
+
+                                        context.read<ProfilePrepaidBloc>().add(
+                                          ProfilePrepaidItemPressed(item),
+                                        );
+                                      },
+                                    );
+                                  }),
+                                ],
+                              );
+                            },
+                          ),
                     ),
                   ],
                 ),

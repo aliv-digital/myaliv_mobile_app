@@ -1,0 +1,13 @@
+import '../../app/Home/home/data/home_ui_config.dart';
+
+class AppSession {
+  final UserType userType;
+  final bool hasActivePlan;
+
+  AppSession({
+    required this.userType,
+    required this.hasActivePlan,
+  });
+
+  bool get isPostpaid => userType == UserType.postpaid;
+}

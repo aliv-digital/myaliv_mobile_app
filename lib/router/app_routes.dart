@@ -2,6 +2,7 @@ class AppRoutes {
   static const home = '/home';
 
   static const usage = '/usage';
+  static const upgradeCreditLimit = '/upgrade-credit-limit';
   static const plans = '/plans';
   static const menu = '/menu';
   
@@ -53,5 +54,6 @@ class AppRoutes {
 
   static const topUpPrepaidScreen = '/top-up-prepaid-screen';
   static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
+  static const callLogs = '/call_logs';
 
 }
