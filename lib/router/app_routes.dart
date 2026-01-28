@@ -80,6 +80,10 @@ class AppRoutes {
 
   static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
 
+  static const revBillPayPrepaidScreen = '/rev-bill-pay-prepaid-screen';
+
+  static const revConfirmationPrepaidScreen = '/rev-confirmation-prepaid-screen';
+
 
 
 
