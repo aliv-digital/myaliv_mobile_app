@@ -84,6 +84,8 @@ class AppRoutes {
 
   static const revConfirmationPrepaidScreen = '/rev-confirmation-prepaid-screen';
 
+  static const settingsScreen = '/settings-screen';
+
 
 
 
