@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
 import '../bloc/forgetPass_otp_state.dart';
@@ -26,8 +27,14 @@ class _OtpProfilePrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
+      resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<OtpProfilePrepaidBloc, OtpProfilePrepaidState>(
           listener: (context, state) {
@@ -43,12 +50,14 @@ class _OtpProfilePrepaidView extends StatelessWidget {
           },
           child: Column(
             children: [
-              // scrollable content
+              // ---------- Scrollable content ----------
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
                       const SliverToBoxAdapter(
                         child: OtpProfilePrepaidHeader(),
@@ -73,8 +82,15 @@ class _OtpProfilePrepaidView extends StatelessWidget {
                 ),
               ),
 
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
+              // ✅ Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
+              ),
             ],
           ),
         ),

@@ -25,8 +25,14 @@ class _LoginOtpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // ✅ Default behavior back (keyboard উঠলে body resize হবে + auto scroll works)
+      resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<LoginOtpBloc, LoginOtpState>(
           listener: (context, state) {
@@ -35,42 +41,42 @@ class _LoginOtpView extends StatelessWidget {
                 SnackBar(content: Text(state.errorMessage!)),
               );
             }
-            // success হলে next screen এ যাওয়ার logic এখানে দিতে পারো
           },
           child: Column(
             children: [
-              // scrollable content
+              // ---------- Scrollable content ----------
               Expanded(
-                child: Padding(
-                  //padding: const EdgeInsets.symmetric(horizontal: 24),
-                  padding: const EdgeInsets.only(),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: OtpHeader(),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 41,right: 41),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: const [
-                              SizedBox(height: 24),
-                              OtpCodeFields(),
-                              SizedBox(height: 54),
-                              OtpBottomActions(),
-                              SizedBox(height: 24),
-                            ],
-                          ),
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(child: OtpHeader()),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 41, right: 41),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: const [
+                            SizedBox(height: 24),
+                            OtpCodeFields(),
+                            SizedBox(height: 54),
+                            OtpBottomActions(),
+                            SizedBox(height: 24),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
+
+              // ✅ Bottom stripes will VANISH when keyboard opens (no moving up)
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+              ),
             ],
           ),
         ),

@@ -44,16 +44,21 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: EnterPasswordPostpaidTheme.bg,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
           listenWhen: (p, c) =>
           p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == EnterPasswordPostpaidStatus.success) {
-             // continue
+              // continue
               context.push(AppRoutes.otpReviewInvoicePostPaidScreen);
             }
             if (state.status == EnterPasswordPostpaidStatus.failure &&
@@ -66,7 +71,8 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
               Expanded(
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
@@ -74,9 +80,6 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                         showHome: false,
                         onBack: () {
                           context.pop();
-                          // context
-                          //     .read<EnterPasswordPostpaidBloc>()
-                          //     .add(const EnterPasswordPostpaidBackPressed());
                         },
                       ),
                     ),
@@ -91,7 +94,8 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                 const EnterPasswordPostpaidHeader(),
                                 const SizedBox(height: 22),
 
-                                BlocBuilder<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
+                                BlocBuilder<EnterPasswordPostpaidBloc,
+                                    EnterPasswordPostpaidState>(
                                   buildWhen: (p, c) =>
                                   p.password != c.password ||
                                       p.obscure != c.obscure,
@@ -113,21 +117,22 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                 const EnterPasswordPostpaidTermsText(),
                                 const SizedBox(height: 18),
 
-                                BlocBuilder<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
+                                BlocBuilder<EnterPasswordPostpaidBloc,
+                                    EnterPasswordPostpaidState>(
                                   buildWhen: (p, c) =>
                                   p.status != c.status ||
                                       p.isValid != c.isValid,
                                   builder: (context, state) {
-                                    final isLoading = state.status == EnterPasswordPostpaidStatus.submitting;
+                                    final isLoading = state.status ==
+                                        EnterPasswordPostpaidStatus.submitting;
 
                                     return EnterPasswordPostpaidContinueButton(
                                       isLoading: isLoading,
                                       enabled: state.isValid && !isLoading,
                                       onTap: () {
-                                        context.read<EnterPasswordPostpaidBloc>().add(
-                                            const EnterPasswordPostpaidContinuePressed()
-                                        );
-
+                                        context
+                                            .read<EnterPasswordPostpaidBloc>()
+                                            .add(const EnterPasswordPostpaidContinuePressed());
                                       },
                                     );
                                   },
@@ -156,7 +161,14 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                   ],
                 ),
               ),
-              const BottomStripes(),
+
+              // Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+              ),
             ],
           ),
         ),

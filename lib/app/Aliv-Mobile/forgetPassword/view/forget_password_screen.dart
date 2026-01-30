@@ -14,7 +14,6 @@ import '../widgets/forgetpass_phone_row.dart';
 import '../widgets/termsAndConditions.dart';
 
 
-
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});
 
@@ -34,15 +33,20 @@ class _ForgetPasswordScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,  // Background transparent
-        statusBarIconBrightness: Brightness.dark, // ANDROID → white icons
-        statusBarBrightness: Brightness.dark,       // iOS → white icons
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.dark,
       ),
     );
-    final width = MediaQuery.of(context).size.width;
+
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
+      resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<ForgetPasswordBloc, ForgetPasswordState>(
           listener: (context, state) {
@@ -56,44 +60,41 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                   padding: const EdgeInsets.only(),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
-                      SliverToBoxAdapter(
-                        child: const ForgetPasswordHeader(),
+                      const SliverToBoxAdapter(
+                        child: ForgetPasswordHeader(),
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: EdgeInsets.only(left: 40,right: 54),
+                          padding: const EdgeInsets.only(left: 40, right: 54),
                           child: Column(
-                            //mainAxisAlignment: MainAxisAlignment.start,
-                            // crossAxisAlignment: CrossAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              //const SizedBox(height: 12),
-
                               const SizedBox(height: 9.61),
                               const ForgetPasswordPhoneRow(),
                               const SizedBox(height: 20),
 
-
-
-                              //const SizedBox(height: 15),
-
-                              // send in button
+                              // send button
                               BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                                 builder: (context, state) {
-                                  final loading = state.status == ForgetPasswordStatus.loading;
+                                  final loading = state.status ==
+                                      ForgetPasswordStatus.loading;
 
                                   return DefaultButton(
-                                      label: 'send',
-                                      isLoading: loading,
-                                      onPressed: (){
-                                        //context.read<ForgetPasswordBloc>().add(const ForgetPasswordSubmitted());
-                                        context.push(AppRoutes.forgetPasswordOtp);
-                                      }
+                                    label: 'send',
+                                    isLoading: loading,
+                                    onPressed: () {
+                                      //context.read<ForgetPasswordBloc>().add(const ForgetPasswordSubmitted());
+                                      context.push(AppRoutes.forgetPasswordOtp);
+                                    },
                                   );
                                 },
                               ),
+
                               const SizedBox(height: 147),
+
                               BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                                 builder: (context, state) {
                                   return TermsAndPrivacyText(
@@ -108,7 +109,6 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                                   );
                                 },
                               ),
-                              //const SizedBox(height: 230)
                             ],
                           ),
                         ),
@@ -118,8 +118,15 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                 ),
               ),
 
-              // ---------- Fixed bottom stripes ----------
-              const ForgetPasswordBottomStripes(),
+              // ✅ Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const ForgetPasswordBottomStripes(),
+              ),
             ],
           ),
         ),

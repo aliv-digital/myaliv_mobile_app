@@ -86,6 +86,12 @@ class AppRoutes {
 
   static const settingsScreen = '/settings-screen';
 
+  static const securityScreen = '/security-screen';
+  static const privacyScreen = '/privacy-screen';
+  static const helpScreen = '/help-screen';
+  static const fingerPrintSecurityScreen = '/finger-print-security-screen';
+
+  static const faceIdSecurityScreen = '/face-id-security-screen';
 
 
 

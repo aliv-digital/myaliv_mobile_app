@@ -43,9 +43,14 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: EnterPasswordPrepaidTheme.bg,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<EnterPasswordPrepaidBloc, EnterPasswordPrepaidState>(
           listenWhen: (p, c) =>
@@ -64,7 +69,8 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
               Expanded(
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
@@ -72,13 +78,9 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                         showHome: false,
                         onBack: () {
                           context.pop();
-                          // context
-                          //     .read<EnterPasswordPrepaidBloc>()
-                          //     .add(const EnterPasswordPrepaidBackPressed());
                         },
                       ),
                     ),
-
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(28, 34, 28, 18),
                       sliver: SliverToBoxAdapter(
@@ -86,68 +88,65 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 420),
                             child: Column(
-                                children: [
-                                  const EnterPasswordPrepaidHeader(),
-                                  const SizedBox(height: 22),
+                              children: [
+                                const EnterPasswordPrepaidHeader(),
+                                const SizedBox(height: 22),
+                                BlocBuilder<EnterPasswordPrepaidBloc,
+                                    EnterPasswordPrepaidState>(
+                                  buildWhen: (p, c) =>
+                                  p.password != c.password ||
+                                      p.obscure != c.obscure,
+                                  builder: (context, state) {
+                                    return EnterPasswordPrepaidPasswordInput(
+                                      value: state.password,
+                                      obscure: state.obscure,
+                                      onChanged: (v) => context
+                                          .read<EnterPasswordPrepaidBloc>()
+                                          .add(EnterPasswordPrepaidPasswordChanged(v)),
+                                      onToggle: () => context
+                                          .read<EnterPasswordPrepaidBloc>()
+                                          .add(const EnterPasswordPrepaidToggleObscure()),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                const EnterPasswordPrepaidTermsText(),
+                                const SizedBox(height: 18),
+                                BlocBuilder<EnterPasswordPrepaidBloc,
+                                    EnterPasswordPrepaidState>(
+                                  buildWhen: (p, c) =>
+                                  p.status != c.status ||
+                                      p.isValid != c.isValid,
+                                  builder: (context, state) {
+                                    final isLoading = state.status ==
+                                        EnterPasswordPrepaidStatus.submitting;
 
-                                  BlocBuilder<EnterPasswordPrepaidBloc,
-                                      EnterPasswordPrepaidState>(
-                                    buildWhen: (p, c) =>
-                                    p.password != c.password ||
-                                        p.obscure != c.obscure,
-                                    builder: (context, state) {
-                                      return EnterPasswordPrepaidPasswordInput(
-                                        value: state.password,
-                                        obscure: state.obscure,
-                                        onChanged: (v) => context
+                                    return EnterPasswordPrepaidContinueButton(
+                                      isLoading: isLoading,
+                                      enabled: state.isValid && !isLoading,
+                                      onTap: () {
+                                        context
                                             .read<EnterPasswordPrepaidBloc>()
-                                            .add(EnterPasswordPrepaidPasswordChanged(v)),
-                                        onToggle: () => context
-                                            .read<EnterPasswordPrepaidBloc>()
-                                            .add(const EnterPasswordPrepaidToggleObscure()),
-                                      );
-                                    },
-                                  ),
+                                            .add(const EnterPasswordPrepaidContinuePressed());
 
-                                  const SizedBox(height: 16),
-                                  const EnterPasswordPrepaidTermsText(),
-                                  const SizedBox(height: 18),
-
-                                  BlocBuilder<EnterPasswordPrepaidBloc,
-                                      EnterPasswordPrepaidState>(
-                                    buildWhen: (p, c) =>
-                                    p.status != c.status ||
-                                        p.isValid != c.isValid,
-                                    builder: (context, state) {
-                                      final isLoading =
-                                          state.status == EnterPasswordPrepaidStatus.submitting;
-                                      return EnterPasswordPrepaidContinueButton(
-                                        isLoading: isLoading,
-                                        enabled: state.isValid && !isLoading,
-                                        onTap: () {
-                                          context.read<EnterPasswordPrepaidBloc>().add(const EnterPasswordPrepaidContinuePressed());
-
-                                          context.push(AppRoutes.otpProfilePrepaidScreen);
-                                        }
-                                      );
-                                    },
-                                  ),
-
-                                  const SizedBox(height: 22),
-                                  const EnterPasswordPrepaidOrDivider(),
-                                  const SizedBox(height: 18),
-
-                                  EnterPasswordPrepaidBiometricButtons(
-                                    onFaceId: () => context
-                                        .read<EnterPasswordPrepaidBloc>()
-                                        .add(const EnterPasswordPrepaidFaceIdPressed()),
-                                    onFingerprint: () => context
-                                        .read<EnterPasswordPrepaidBloc>()
-                                        .add(const EnterPasswordPrepaidFingerprintPressed()),
-                                  ),
-
-                                  const SizedBox(height: 180),
-                                ]
+                                        context.push(AppRoutes.otpProfilePrepaidScreen);
+                                      },
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 22),
+                                const EnterPasswordPrepaidOrDivider(),
+                                const SizedBox(height: 18),
+                                EnterPasswordPrepaidBiometricButtons(
+                                  onFaceId: () => context
+                                      .read<EnterPasswordPrepaidBloc>()
+                                      .add(const EnterPasswordPrepaidFaceIdPressed()),
+                                  onFingerprint: () => context
+                                      .read<EnterPasswordPrepaidBloc>()
+                                      .add(const EnterPasswordPrepaidFingerprintPressed()),
+                                ),
+                                const SizedBox(height: 180),
+                              ],
                             ),
                           ),
                         ),
@@ -157,7 +156,15 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                 ),
               ),
 
-              const BottomStripes(),
+              // ✅ Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
+              ),
             ],
           ),
         ),

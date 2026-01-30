@@ -33,8 +33,13 @@ import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_f
 import '../app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/view/rev_confirmation_prepaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/enterPassword/postpaid/view/enter_password_postpaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/view/review_invoice_postpaid_screen.dart';
+import '../app/Aliv-Mobile/settings/faceIdSecurity/view/face_id_security_screen.dart';
+import '../app/Aliv-Mobile/settings/fingerPrintSecurity/view/fingerprint_security_screen.dart';
+import '../app/Aliv-Mobile/settings/help/view/help_screen.dart';
+import '../app/Aliv-Mobile/settings/privacy/view/privacy_screen.dart';
+import '../app/Aliv-Mobile/settings/security/view/security_screen.dart';
 import '../app/Aliv-Mobile/settings/settingScreen/view/settings_screen.dart';
-import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
+import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
@@ -56,9 +61,29 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.settingsScreen,//guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.otpProfilePrepaidScreen,//guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
+      GoRoute(
+        path: AppRoutes.faceIdSecurityScreen,
+        builder: (context, state) => const FaceIdSecurityScreen(),
+      ),
+      GoRoute(
+        path:AppRoutes.fingerPrintSecurityScreen,
+        builder: (context, state) => const FingerPrintSecurityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.helpScreen,
+        builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+         path: AppRoutes.privacyScreen,
+         builder: (context,state) => const PrivacyScreen()
+      ),
+      GoRoute(
+        path: AppRoutes.securityScreen,
+        builder: (context, state) => const SecurityScreen(),
+      ),
       GoRoute(
         path: AppRoutes.settingsScreen,
         builder: (context, state) => const SettingsScreen(),

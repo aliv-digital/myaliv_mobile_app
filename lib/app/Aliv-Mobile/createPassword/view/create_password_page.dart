@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/create_password_bloc.dart';
 import '../bloc/create_password_event.dart';
@@ -27,17 +28,23 @@ class _CreatePasswordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<CreatePasswordBloc, CreatePasswordState>(
           listenWhen: (p, c) =>
           p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
-            if(state.status == CreatePasswordStatus.success){
+            if (state.status == CreatePasswordStatus.success) {
+              // success action
             }
-            // এখানে তোমার snackbar logic থাকবে (invalid/failure/success)
+            // snackbar logic (invalid/failure/success)
           },
           child: Column(
             children: [
@@ -51,9 +58,8 @@ class _CreatePasswordView extends StatelessWidget {
                     const SliverToBoxAdapter(
                       child: CreatePasswordHeader(),
                     ),
-
                     SliverPadding(
-                      padding: const EdgeInsets.only(right: 54,left: 40),
+                      padding: const EdgeInsets.only(right: 54, left: 40),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,14 +68,20 @@ class _CreatePasswordView extends StatelessWidget {
 
                             // password
                             BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
-                              buildWhen: (p, c) => p.obscurePassword != c.obscurePassword || p.password != c.password,
+                              buildWhen: (p, c) =>
+                              p.obscurePassword != c.obscurePassword ||
+                                  p.password != c.password,
                               builder: (context, state) {
                                 return PasswordInput(
                                   hint: 'password',
                                   obscureText: state.obscurePassword,
-                                  onChanged: (v) => context.read<CreatePasswordBloc>().add(PasswordChanged(v)),
+                                  onChanged: (v) => context
+                                      .read<CreatePasswordBloc>()
+                                      .add(PasswordChanged(v)),
                                   onToggle: () {
-                                    context.read<CreatePasswordBloc>().add(const TogglePasswordVisibility());
+                                    context.read<CreatePasswordBloc>().add(
+                                      const TogglePasswordVisibility(),
+                                    );
                                   },
                                 );
                               },
@@ -79,14 +91,20 @@ class _CreatePasswordView extends StatelessWidget {
 
                             // confirm
                             BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
-                              buildWhen: (p, c) => p.obscureConfirm != c.obscureConfirm || p.confirmPassword != c.confirmPassword,
+                              buildWhen: (p, c) =>
+                              p.obscureConfirm != c.obscureConfirm ||
+                                  p.confirmPassword != c.confirmPassword,
                               builder: (context, state) {
                                 return PasswordInput(
                                   hint: 're-enter password',
                                   obscureText: state.obscureConfirm,
-                                  onChanged: (v) => context.read<CreatePasswordBloc>().add(ConfirmPasswordChanged(v)),
+                                  onChanged: (v) => context
+                                      .read<CreatePasswordBloc>()
+                                      .add(ConfirmPasswordChanged(v)),
                                   onToggle: () {
-                                    context.read<CreatePasswordBloc>().add(const ToggleConfirmPasswordVisibility());
+                                    context.read<CreatePasswordBloc>().add(
+                                      const ToggleConfirmPasswordVisibility(),
+                                    );
                                   },
                                 );
                               },
@@ -113,7 +131,8 @@ class _CreatePasswordView extends StatelessWidget {
                             BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                               buildWhen: (p, c) => p.status != c.status,
                               builder: (context, state) {
-                                final isLoading = state.status == CreatePasswordStatus.submitting;
+                                final isLoading =
+                                    state.status == CreatePasswordStatus.submitting;
 
                                 return DefaultButton(
                                   label: 'continue',
@@ -135,8 +154,16 @@ class _CreatePasswordView extends StatelessWidget {
                   ],
                 ),
               ),
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
+
+              // ✅ Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
+              ),
             ],
           ),
         ),
