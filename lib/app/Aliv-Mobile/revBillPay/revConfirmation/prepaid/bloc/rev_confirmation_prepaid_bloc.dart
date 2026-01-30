@@ -13,6 +13,10 @@ class RevConfirmationPrepaidBloc
     on<RevConfirmationStarted>(_onStarted);
     on<RevPromoCodeChanged>(_onPromoChanged);
     on<RevPromoApplyPressed>(_onApplyPromo);
+
+    // ✅ NEW: Terms checkbox
+    on<RevTermsToggled>(_onTermsToggled);
+
     on<RevContinuePressed>(_onContinue);
     on<RevNavConsumed>(_onNavConsumed);
   }
@@ -31,6 +35,9 @@ class RevConfirmationPrepaidBloc
         subtotal: data.amount,
         vat: data.vat,
         discount: 0,
+        // keep termsAccepted as-is (default false)
+        // clear any previous error
+        showTermsError: false,
       ),
     );
   }
@@ -78,10 +85,30 @@ class RevConfirmationPrepaidBloc
     }
   }
 
+  // ✅ NEW
+  void _onTermsToggled(
+      RevTermsToggled event,
+      Emitter<RevConfirmationPrepaidState> emit,
+      ) {
+    emit(
+      state.copyWith(
+        termsAccepted: event.value,
+        // user interacted → clear error instantly
+        showTermsError: false,
+      ),
+    );
+  }
+
   void _onContinue(
       RevContinuePressed event,
       Emitter<RevConfirmationPrepaidState> emit,
       ) {
+    // ✅ guard: must accept terms
+    if (!state.termsAccepted) {
+      emit(state.copyWith(showTermsError: true));
+      return;
+    }
+
     emit(state.copyWith(navTarget: RevConfirmNavTarget.continueNext));
   }
 

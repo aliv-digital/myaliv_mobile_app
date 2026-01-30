@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
+import '../../../../../../router/app_routes.dart';
 import '../bloc/rev_prepaid_bloc.dart';
 import '../bloc/rev_prepaid_event.dart';
 import '../bloc/rev_prepaid_state.dart';
@@ -124,9 +126,11 @@ class _RevPrepaidView extends StatelessWidget {
                           RevPrimaryButton(
                             text: 'proceed',
                             enabled: state.canProceed,
-                            onTap: () => context.read<RevPrepaidBloc>().add(
+                            onTap: () {context.read<RevPrepaidBloc>().add(
                               const RevProceedPressed()
-                            )
+                            );
+                            context.push(AppRoutes.revConfirmationPrepaidScreen);
+                            }
                           )
                         ]
                       )

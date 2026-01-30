@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../router/app_routes.dart';
 import '../bloc/help_bloc.dart';
 import '../bloc/help_event.dart';
 import '../bloc/help_state.dart';
@@ -49,9 +51,10 @@ class _HelpView extends StatelessWidget {
                   bottom: false,
                   child: HelpAppBar(
                     title: 'help',
-                    onHomeTap: () =>
-                        context.read<HelpBloc>().add(const HelpHomePressed()),
-                  ),
+                    onHomeTap: () {
+                      context.read<HelpBloc>().add(const HelpHomePressed());
+                      context.go(AppRoutes.home);
+                    }),
                 ),
                 Expanded(
                   child: SingleChildScrollView(

@@ -93,6 +93,7 @@ class AppRoutes {
 
   static const faceIdSecurityScreen = '/face-id-security-screen';
 
+  static const revPaymentMethodPrepaidScreen = '/rev-payment-method-prepaid-screen';
 
 
 

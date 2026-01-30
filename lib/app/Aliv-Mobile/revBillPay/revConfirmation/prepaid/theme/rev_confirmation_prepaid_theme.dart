@@ -20,6 +20,11 @@ class RevConfirmationPrepaidTheme {
 
   static const Color continueBtnBg = appBarBg;
 
+  // ✅ Checkbox styling
+  static const Color checkboxBorder = Color(0xFF8B84C8); // matches pill border family
+  static const Color checkboxActive = appBarBg; // filled when checked
+  static const Color checkboxCheckColor = Colors.white;
+
   static const double appBarHeight = 56;
 
   static TextStyle get title => const TextStyle(

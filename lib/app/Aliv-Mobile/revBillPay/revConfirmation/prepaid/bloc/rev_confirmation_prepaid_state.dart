@@ -19,6 +19,12 @@ class RevConfirmationPrepaidState extends Equatable {
 
   final RevConfirmNavTarget navTarget;
 
+  // ✅ NEW: Terms checkbox
+  final bool termsAccepted;
+
+  // ✅ NEW: UI flag to show validation feedback once (snackbar etc.)
+  final bool showTermsError;
+
   const RevConfirmationPrepaidState({
     required this.title,
     required this.customerName,
@@ -30,6 +36,8 @@ class RevConfirmationPrepaidState extends Equatable {
     required this.promoCode,
     required this.promoStatus,
     required this.navTarget,
+    required this.termsAccepted,
+    required this.showTermsError,
   });
 
   factory RevConfirmationPrepaidState.initial() {
@@ -44,6 +52,10 @@ class RevConfirmationPrepaidState extends Equatable {
       promoCode: '',
       promoStatus: RevPromoStatus.idle,
       navTarget: RevConfirmNavTarget.none,
+
+      // ✅ defaults
+      termsAccepted: false,
+      showTermsError: false,
     );
   }
 
@@ -55,9 +67,11 @@ class RevConfirmationPrepaidState extends Equatable {
 
   String get headerAmountPillText => subtotalText;
 
-  bool get canApplyPromo => promoCode.trim().isNotEmpty && promoStatus != RevPromoStatus.applying;
+  bool get canApplyPromo =>
+      promoCode.trim().isNotEmpty && promoStatus != RevPromoStatus.applying;
 
-  bool get canContinue => true; // design shows it enabled
+  // ✅ safer: only allow continue if terms accepted
+  bool get canContinue => termsAccepted;
 
   RevConfirmationPrepaidState copyWith({
     String? title,
@@ -70,6 +84,10 @@ class RevConfirmationPrepaidState extends Equatable {
     String? promoCode,
     RevPromoStatus? promoStatus,
     RevConfirmNavTarget? navTarget,
+
+    // ✅ NEW
+    bool? termsAccepted,
+    bool? showTermsError,
   }) {
     return RevConfirmationPrepaidState(
       title: title ?? this.title,
@@ -82,6 +100,9 @@ class RevConfirmationPrepaidState extends Equatable {
       promoCode: promoCode ?? this.promoCode,
       promoStatus: promoStatus ?? this.promoStatus,
       navTarget: navTarget ?? this.navTarget,
+
+      termsAccepted: termsAccepted ?? this.termsAccepted,
+      showTermsError: showTermsError ?? this.showTermsError,
     );
   }
 
@@ -97,5 +118,7 @@ class RevConfirmationPrepaidState extends Equatable {
     promoCode,
     promoStatus,
     navTarget,
+    termsAccepted,
+    showTermsError,
   ];
 }

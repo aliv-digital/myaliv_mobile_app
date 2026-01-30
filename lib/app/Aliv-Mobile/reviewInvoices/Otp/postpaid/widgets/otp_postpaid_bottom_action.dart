@@ -87,21 +87,21 @@ class OTPPostpaidBottomActions extends StatelessWidget {
         const SizedBox(height: 113),
 
         // change phone number (bottom orange text)
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).maybePop();
-          },
-          child: Text(
-            'change phone number',
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.43,
-              fontFamily: 'CircularPro',
-              color: ColorManager.orangeColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        // GestureDetector(
+        //   onTap: () {
+        //     Navigator.of(context).maybePop();
+        //   },
+        //   child: Text(
+        //     'change phone number',
+        //     style: TextStyle(
+        //       fontSize: 14,
+        //       height: 1.43,
+        //       fontFamily: 'CircularPro',
+        //       color: ColorManager.orangeColor,
+        //       fontWeight: FontWeight.w500,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

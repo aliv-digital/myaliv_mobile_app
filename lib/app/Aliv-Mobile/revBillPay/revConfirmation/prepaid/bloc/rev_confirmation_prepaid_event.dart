@@ -27,6 +27,15 @@ class RevContinuePressed extends RevConfirmationPrepaidEvent {
   const RevContinuePressed();
 }
 
+// ✅ NEW: checkbox toggle
+class RevTermsToggled extends RevConfirmationPrepaidEvent {
+  final bool value;
+  const RevTermsToggled(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}
+
 class RevNavConsumed extends RevConfirmationPrepaidEvent {
   const RevNavConsumed();
 }

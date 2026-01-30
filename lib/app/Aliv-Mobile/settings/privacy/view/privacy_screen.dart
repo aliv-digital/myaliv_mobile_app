@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../router/app_routes.dart';
 import '../bloc/privacy_bloc.dart';
 import '../bloc/privacy_event.dart';
 import '../bloc/privacy_state.dart';
@@ -49,9 +51,11 @@ class _PrivacyView extends StatelessWidget {
                   bottom: false,
                   child: PrivacyAppBar(
                     title: 'privacy',
-                    onHomeTap: () =>
-                        context.read<PrivacyBloc>().add(const PrivacyHomePressed()),
-                  ),
+                    onHomeTap: () {
+                      context.read<PrivacyBloc>().add(
+                          const PrivacyHomePressed());
+                      context.go(AppRoutes.home);
+                    }),
                 ),
                 Expanded(
                   child: SingleChildScrollView(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/security_bloc.dart';
 import '../bloc/security_event.dart';
@@ -49,7 +51,10 @@ class _SecurityView extends StatelessWidget {
                   bottom: false,
                   child: SecurityAppBar(
                     title: 'security',
-                    onHomeTap: () => context.read<SecurityBloc>().add(const SecurityHomePressed()),
+                    onHomeTap: () {
+                      context.read<SecurityBloc>().add(const SecurityHomePressed());
+                      context.go(AppRoutes.home);
+                    },
                   ),
                 ),
                 Expanded(

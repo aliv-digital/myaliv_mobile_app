@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/settings_bloc.dart';
@@ -71,7 +73,9 @@ class _SettingsView extends StatelessWidget {
                                 SettingsNavTile(
                                     iconAsset: AssetConstant.securityIconSVG,
                                     title: 'security',
-                                    onTap: (){}
+                                    onTap: (){
+                                      context.push(AppRoutes.securityScreen);
+                                    }
                                 ),
 
                               ],
@@ -86,20 +90,23 @@ class _SettingsView extends StatelessWidget {
                                     title: 'privacy',
                                     onTap: (){
                                       context.read<SettingsBloc>().add(const PrivacyPressed());
+                                      context.push(AppRoutes.privacyScreen);
                                     }
                                 ),
-                                SettingsNavTile(
-                                    iconAsset: AssetConstant.securityIconSVG,
-                                    title: 'security',
-                                    onTap: (){
-                                      context.read<SettingsBloc>().add(const SecurityPressed());
-                                    }
-                                ),
+                                // SettingsNavTile(
+                                //     iconAsset: AssetConstant.securityIconSVG,
+                                //     title: 'security',
+                                //     onTap: (){
+                                //       context.push(AppRoutes.securityScreen);
+                                //       context.read<SettingsBloc>().add(const SecurityPressed());
+                                //     }
+                                // ),
 
                                 SettingsNavTile(
                                     iconAsset: AssetConstant.lifeRingIconSVG,
                                     title: 'help',
                                     onTap: (){
+                                      context.push(AppRoutes.helpScreen);
                                       context.read<SettingsBloc>().add(const HelpPressed());
                                     }
                                 ),
@@ -116,6 +123,7 @@ class _SettingsView extends StatelessWidget {
                                   title: 'login with fingerprint',
                                   value: state.fingerprintEnabled,
                                   onChanged: (v) {
+                                    context.push(AppRoutes.fingerPrintSecurityScreen);
                                     context.read<SettingsBloc>().add(FingerprintToggled(v));
                                   },
                                   iconAsset: AssetConstant.fingerprintIconSVG,
@@ -124,6 +132,7 @@ class _SettingsView extends StatelessWidget {
                                   title: 'login with face scan',
                                   value: state.faceScanEnabled,
                                   onChanged: (v) {
+                                    context.push(AppRoutes.faceIdSecurityScreen);
                                     context.read<SettingsBloc>().add(FaceScanToggled(v));
                                   },
                                   iconAsset: AssetConstant.faceViewFinderIconSVG,
