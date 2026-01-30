@@ -117,6 +117,7 @@ class _LoginView extends StatelessWidget {
                                   isLoading: loading,
                                   onPressed: () {
                                     context.read<LoginBloc>().add(const LoginSubmitted());
+                                    context.push(AppRoutes.loginOtp);
                                   },
                                 );
                               },
