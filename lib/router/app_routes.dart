@@ -83,6 +83,8 @@ class AppRoutes {
   static const revBillPayPrepaidScreen = '/rev-bill-pay-prepaid-screen';
 
   static const revConfirmationPrepaidScreen = '/rev-confirmation-prepaid-screen';
+  static const makePaymentConfirmationPostpaidScreen = '/make-payment-confirmation-postpaid-screen';
+  static const makePaymentPostpaidScreen = '/make-payment-postpaid-screen';
 
   static const settingsScreen = '/settings-screen';
 

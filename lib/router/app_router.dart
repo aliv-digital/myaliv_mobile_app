@@ -10,6 +10,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/pre
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
@@ -96,6 +98,15 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.revConfirmationPrepaidScreen,
         builder: (context, state) => const RevConfirmationPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.makePaymentConfirmationPostpaidScreen,
+        builder: (context, state) =>
+            const MakePaymentConfirmationPostPaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.makePaymentPostpaidScreen,
+        builder: (context, state) => const MakePaymentPostPaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.revBillPayPrepaidScreen,
