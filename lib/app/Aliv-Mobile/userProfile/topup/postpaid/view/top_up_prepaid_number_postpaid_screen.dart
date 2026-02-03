@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/top_up_prepaid_number_postpaid_bloc.dart';
 import '../bloc/top_up_prepaid_number_postpaid_event.dart';
@@ -102,7 +104,10 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                             TopUpPrepaidNumberPostPaidApplySection(
                               enabled: state.canApply,
                               loading: state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.loading,
-                              onTap: () => bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed()),
+                              onTap: () {
+                                bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed());
+                                context.push(AppRoutes.confirmTopUpPrepaidScreen);
+                              },
                             ),
                           ],
                         ),

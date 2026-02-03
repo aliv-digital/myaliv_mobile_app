@@ -4,8 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart'; // Replace with your asset constants
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../bloc/welcome_bloc.dart';
 import '../bloc/welcome_event.dart';
 import '../bloc/welcome_state.dart';
@@ -17,16 +18,9 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,  // Background transparent
-        statusBarIconBrightness: Brightness.light, // ANDROID → white icons
-        statusBarBrightness: Brightness.dark,       // iOS → white icons
-      ),
-    );
     return BlocProvider(
       create: (context) => WelcomeBloc(WelcomeRepository())..add(WelcomeLoaded()),
-      child: WelcomeView(),
+      child: const WelcomeView(),
     );
   }
 }
@@ -34,103 +28,145 @@ class WelcomeScreen extends StatelessWidget {
 class WelcomeView extends StatelessWidget {
   const WelcomeView({super.key});
 
+  static const double _horizontal = 25;
+
+  // ✅ Figma-like image crop/zoom
+  static const double _imageZoom = 1.14;
+
+  // ✅ Bottom panel sizing (device independent feel)
+  // - ratio-based but clamped so it never becomes too tall/too short
+  static const double _panelMinH = 290;
+  static const double _panelMaxH = 330;
+  static const double _panelRatio = 0.40;
+
+  // ✅ Panel paddings (Figma-like)
+  static const double _panelTopPadding = 22;
+  static const double _panelBottomGap = 16;
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,  // Background transparent
-        statusBarIconBrightness: Brightness.light, // ANDROID → white icons
-        statusBarBrightness: Brightness.dark,       // iOS → white icons
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+
+        // ✅ single color bottom area
+        systemNavigationBarColor: ColorManager.welcomeScreenBloc,
+        systemNavigationBarDividerColor: ColorManager.welcomeScreenBloc,
+        systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
+
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+
     return Scaffold(
+      backgroundColor: ColorManager.welcomeScreenBloc,
+      extendBody: true,
       body: BlocBuilder<WelcomeBloc, WelcomeState>(
         builder: (context, state) {
           if (state is WelcomeInitial) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is WelcomeLoadedState) {
-            return Column(
-              children: [
-                // Top Half - Background Image with ALIV Logo (stacked section)
-                Expanded(
-                  flex: 1,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Image.asset(
-                          AssetConstant.welcomeImagePNG,  // Background image
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 80,  // Adjust this to vertically center the logo
-                        left: MediaQuery.of(context).size.width / 2 - 96,
-                        right: MediaQuery.of(context).size.width / 2 - 96,
-                        child: SvgPicture.asset(
-                          AssetConstant.splashLogoSVG,  // ALIV logo
-                          width: 192,
-                          height: 98,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                // Bottom Half - Purple Color Block with Buttons
-                Expanded(
-                  flex: 0,
-                  child: Container(
-                    height: 317,
-                    width: double.infinity,
-                    color: ColorManager.welcomeScreenBloc,  // Purple color block for the bottom section
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // "Welcome to ALIV" text
-                        Text(
-                          'Welcome to ALIV',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: -0.30,
+          if (state is WelcomeLoadedState) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final h = constraints.maxHeight;
+                final w = constraints.maxWidth;
+
+                final bottomH = (h * _panelRatio).clamp(_panelMinH, _panelMaxH);
+                final topH = h - bottomH;
+
+                return Column(
+                  children: [
+                    // -------- Top image area (fixed by calculation) --------
+                    SizedBox(
+                      height: topH,
+                      width: w,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: ClipRect(
+                              child: Transform.scale(
+                                scale: _imageZoom,
+                                // ✅ Slightly up for nicer crop like Figma
+                                alignment: const Alignment(0, -0.05),
+                                child: Image.asset(
+                                  AssetConstant.welcomeImagePNG,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 20),
 
-                        // Buttons with spacing
-                        CustomButton(
-                          label: 'ALIV Mobile',
-                          onPressed: () {
-                            context.push(AppRoutes.logIn);
-                            // Handle the button press
-                          },
-                        ),
-                        SizedBox(height: 18),
-                        CustomButton(
-                          label: 'ALIVfbr',
-                          onPressed: () {
-                            // Handle the button press
-                          },
-                        ),
-                        SizedBox(height: 18),
-                        CustomButton(
-                          label: 'ALIV Mobile Guest',
-                          onPressed: () {
-                            context.push(AppRoutes.guestSplash);
-                            // Handle the button press
-                          },
-                        ),
-                      ],
+                          // ✅ Logo placement responsive (no magic bottom pixels)
+                          Align(
+                            alignment: const Alignment(0, 0.62),
+                            child: SvgPicture.asset(
+                              AssetConstant.splashLogoSVG,
+                              width: 192,
+                              height: 98,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
+
+                    // -------- Bottom purple panel (fixed by calculation) --------
+                    SizedBox(
+                      height: bottomH,
+                      width: double.infinity,
+                      child: Container(
+                        color: ColorManager.welcomeScreenBloc,
+                        padding: EdgeInsets.fromLTRB(
+                          _horizontal,
+                          _panelTopPadding,
+                          _horizontal,
+                          safeBottom + _panelBottomGap,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'welcome to ALIV',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: -0.30,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            CustomButton(
+                              label: 'ALIV Mobile',
+                              onPressed: () => context.push(AppRoutes.logIn),
+                            ),
+                            const SizedBox(height: 18),
+
+                            CustomButton(
+                              label: 'ALIVfbr',
+                              onPressed: () {},
+                            ),
+                            const SizedBox(height: 18),
+
+                            CustomButton(
+                              label: 'ALIV Mobile Guest',
+                              onPressed: () => context.push(AppRoutes.guestSplash),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           }
-          return Container(); // Default return case
+
+          return const SizedBox.shrink();
         },
       ),
     );

@@ -3,6 +3,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/view/rev_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/Otp/postpaid/view/otp_postpaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/view/add_or_edit_cards_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
@@ -10,6 +11,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
@@ -30,9 +33,17 @@ import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
 import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/refer_friend_prepaid_screen.dart';
 import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_friend_response_prepaid_screen.dart';
+import '../app/Aliv-Mobile/revBillPay/paymentMethod/prepaid/view/rev_payment_method_prepaid_screen.dart';
+import '../app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/view/rev_confirmation_prepaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/enterPassword/postpaid/view/enter_password_postpaid_screen.dart';
 import '../app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/view/review_invoice_postpaid_screen.dart';
-import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
+import '../app/Aliv-Mobile/settings/faceIdSecurity/view/face_id_security_screen.dart';
+import '../app/Aliv-Mobile/settings/fingerPrintSecurity/view/fingerprint_security_screen.dart';
+import '../app/Aliv-Mobile/settings/help/view/help_screen.dart';
+import '../app/Aliv-Mobile/settings/privacy/view/privacy_screen.dart';
+import '../app/Aliv-Mobile/settings/security/view/security_screen.dart';
+import '../app/Aliv-Mobile/settings/settingScreen/view/settings_screen.dart';
+import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
@@ -57,9 +68,54 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.splash,//guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
+      GoRoute(
+        path: AppRoutes.revPaymentMethodPrepaidScreen,
+        builder: (context, state) => const REVPaymentMethodPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.faceIdSecurityScreen,
+        builder: (context, state) => const FaceIdSecurityScreen(),
+      ),
+      GoRoute(
+        path:AppRoutes.fingerPrintSecurityScreen,
+        builder: (context, state) => const FingerPrintSecurityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.helpScreen,
+        builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+         path: AppRoutes.privacyScreen,
+         builder: (context,state) => const PrivacyScreen()
+      ),
+      GoRoute(
+        path: AppRoutes.securityScreen,
+        builder: (context, state) => const SecurityScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.settingsScreen,
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.revConfirmationPrepaidScreen,
+        builder: (context, state) => const RevConfirmationPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.makePaymentConfirmationPostpaidScreen,
+        builder: (context, state) =>
+            const MakePaymentConfirmationPostPaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.makePaymentPostpaidScreen,
+        builder: (context, state) => const MakePaymentPostPaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.revBillPayPrepaidScreen,
+        builder: (context, state) => const RevPrepaidScreen(),
+      ),
       GoRoute(
         path: AppRoutes.referFriendResponsePrepaidScreen,
         builder: (context, state) => const ReferFriendResponsePrepaidScreen(),

@@ -134,7 +134,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.push(AppRoutes.callLogs);
         break;
       case PurchasePrepaidAction.makePayment:
-        // TODO: Handle this case.
+        context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);
         break;
       case PurchasePrepaidAction.topUp:
         context.push(AppRoutes.topUpPrepaidScreen);

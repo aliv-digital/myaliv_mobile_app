@@ -14,21 +14,11 @@ import '../bloc/guest_splash_state.dart';
 import '../repository/guest_splash_repository.dart';
 import '../widgets/guest_purchase_plan_bottom_sheet.dart';
 
-
-
 class GuestSplashScreen extends StatelessWidget {
   const GuestSplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-      ),
-    );
-
     return BlocProvider(
       create: (context) =>
       GuestSplashBloc(GuestSplashRepository())..add(GuestSplashLoaded()),
@@ -40,10 +30,36 @@ class GuestSplashScreen extends StatelessWidget {
 class GuestSplashView extends StatelessWidget {
   const GuestSplashView({super.key});
 
+  static const double _horizontal = 25;
+  static const double _topPadding = 24;
+
+  // ✅ tweak this if needed (Figma bottom gap feel)
+  static const double _designBottomGap = 24;
+
   @override
   Widget build(BuildContext context) {
+    // ✅ ensure status + navigation areas match the screen color (single color look)
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+
+        // ✅ bottom nav / gesture area same color
+        systemNavigationBarColor: ColorManager.welcomeScreenBloc,
+        systemNavigationBarDividerColor: ColorManager.welcomeScreenBloc,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+
+    final safeBottom = MediaQuery.paddingOf(context).bottom;
+
     return Scaffold(
       backgroundColor: ColorManager.welcomeScreenBloc,
+
+      // ✅ draw body behind nav bar so it blends perfectly
+      extendBody: true,
+
       body: BlocBuilder<GuestSplashBloc, GuestSplashState>(
         builder: (context, state) {
           if (state is GuestSplashInitial) {
@@ -51,8 +67,9 @@ class GuestSplashView extends StatelessWidget {
           } else if (state is GuestSplashLoadedState) {
             return Column(
               children: [
+                // -------- Top image area (flexible) --------
                 Expanded(
-                  flex: 1,
+                  flex: 55,
                   child: Stack(
                     children: [
                       Positioned.fill(
@@ -65,6 +82,7 @@ class GuestSplashView extends StatelessWidget {
                         top: 12,
                         left: 12,
                         child: SafeArea(
+                          bottom: false,
                           child: InkWell(
                             onTap: () => Navigator.of(context).maybePop(),
                             borderRadius: BorderRadius.circular(20),
@@ -99,14 +117,18 @@ class GuestSplashView extends StatelessWidget {
                   ),
                 ),
 
+                // -------- Bottom panel (flexible + consistent spacing) --------
                 Expanded(
-                  flex: 0,
+                  flex: 45,
                   child: Container(
-                    height: 350,
                     width: double.infinity,
                     color: ColorManager.welcomeScreenBloc,
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 24),
+                    padding: EdgeInsets.fromLTRB(
+                      _horizontal,
+                      _topPadding,
+                      _horizontal,
+                      safeBottom + _designBottomGap,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -121,46 +143,42 @@ class GuestSplashView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
+
                         CustomButton(
                           label: 'Why ALIV ?',
-                          onPressed: () {
-                            context.push(AppRoutes.whyAliv);
-                          },
-                        ),
-                        const SizedBox(height: 18),
-                        CustomButton(
-                          label: 'top-up',
-                          onPressed: () {
-                            context.push(AppRoutes.guestTopUp);
-                          },
+                          onPressed: () => context.push(AppRoutes.whyAliv),
                         ),
                         const SizedBox(height: 18),
 
-                        // TRIGGER HERE
+                        CustomButton(
+                          label: 'top-up',
+                          onPressed: () => context.push(AppRoutes.guestTopUp),
+                        ),
+                        const SizedBox(height: 18),
+
                         CustomButton(
                           label: 'purchase a plan',
                           onPressed: () async {
-                            final result = await showGuestSplashPurchasePlanBottomSheet(context);
+                            final result =
+                            await showGuestSplashPurchasePlanBottomSheet(
+                                context);
 
                             if (!context.mounted) return;
 
                             if (result != null) {
-
-                              // Example:
-                              // Navigator.pushNamed(context, AppRoutes.purchasePlan, arguments: result);
-
-                              // Temporary debug:
                               debugPrint('PurchasePlan -> ${result.fullPhone}');
                             }
                           },
                         ),
-
-
                         const SizedBox(height: 18),
+
                         CustomButton(
                           label: 'bill pay',
-                          onPressed: () {},
+                          onPressed: () => context.push(AppRoutes.guestPayBill),
                         ),
+
+                        // ✅ fills remaining space so layout looks consistent on all devices
+                        const Spacer(),
                       ],
                     ),
                   ),
