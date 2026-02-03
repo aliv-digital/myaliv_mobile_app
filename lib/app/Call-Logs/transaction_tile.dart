@@ -88,6 +88,7 @@ class TransactionTile extends StatelessWidget {
     );
   }
 }
+
 class _TransactionIcon extends StatelessWidget {
   final TransactionType type;
 
@@ -117,11 +118,7 @@ class _TransactionIcon extends StatelessWidget {
         color: const Color(0xFFF2F1FB),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(
-        icon,
-        size: 20,
-        color: const Color(0xFF6C63A6),
-      ),
+      child: Icon(icon, size: 20, color: const Color(0xFF6C63A6)),
     );
   }
 }
