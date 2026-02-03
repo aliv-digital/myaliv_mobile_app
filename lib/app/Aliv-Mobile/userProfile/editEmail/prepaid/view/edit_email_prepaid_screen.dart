@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/edit_email_prepaid_bloc.dart';
 import '../bloc/edit_email_prepaid_event.dart';
@@ -40,9 +41,14 @@ class _EditEmailPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: EditEmailPrepaidTheme.bg,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<EditEmailPrepaidBloc, EditEmailPrepaidState>(
           listenWhen: (p, c) =>
@@ -71,15 +77,9 @@ class _EditEmailPrepaidView extends StatelessWidget {
                         showHome: true,
                         onHomeTap: () {
                           context.go(AppRoutes.home);
-                          // context
-                          //     .read<EditEmailPrepaidBloc>()
-                          //     .add(const EditEmailPrepaidHomePressed());
                         },
                         onBack: () {
                           context.pop();
-                          // context
-                          //     .read<EditEmailPrepaidBloc>()
-                          //     .add(const EditEmailPrepaidBackPressed());
                         },
                       ),
                     ),
@@ -107,37 +107,27 @@ class _EditEmailPrepaidView extends StatelessWidget {
                           sliver: SliverToBoxAdapter(
                             child: Center(
                               child: ConstrainedBox(
-                                constraints:
-                                const BoxConstraints(maxWidth: 420),
+                                constraints: const BoxConstraints(maxWidth: 420),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Full name
                                     const SizedBox(height: 6),
                                     EditEmailPrepaidInfoField(
                                       label: 'full name',
                                       value: data.fullName,
                                     ),
-
                                     const SizedBox(height: 18),
-
-                                    // Phone number
                                     EditEmailPrepaidInfoField(
                                       label: 'phone number',
                                       value: data.phoneNumber,
                                     ),
-
                                     const SizedBox(height: 18),
-
-                                    // Gender
                                     EditEmailPrepaidInfoField(
                                       label: 'gender',
                                       value: data.gender,
                                     ),
-
                                     const SizedBox(height: 18),
 
-                                    // Email label + input
                                     Text(
                                       'email address',
                                       style: EditEmailPrepaidTheme.fieldLabel,
@@ -162,10 +152,6 @@ class _EditEmailPrepaidView extends StatelessWidget {
                                     ),
 
                                     const SizedBox(height: 20),
-
-
-
-                                    //const SizedBox(height: 180),
                                   ],
                                 ),
                               ),
@@ -174,16 +160,17 @@ class _EditEmailPrepaidView extends StatelessWidget {
                         );
                       },
                     ),
+
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 40,right: 40),
-                        child:  BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
+                        padding: const EdgeInsets.only(left: 40, right: 40),
+                        child: BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
                           buildWhen: (p, c) =>
                           p.status != c.status ||
                               p.isEmailValid != c.isEmailValid,
                           builder: (context, state) {
-                            final isLoading = state.status ==
-                                EditEmailPrepaidStatus.submitting;
+                            final isLoading =
+                                state.status == EditEmailPrepaidStatus.submitting;
 
                             return EditEmailPrepaidSaveButton(
                               isLoading: isLoading,
@@ -195,13 +182,20 @@ class _EditEmailPrepaidView extends StatelessWidget {
                           },
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
 
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
+              // ✅ Bottom stripes vanish (not move up) when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
+              ),
             ],
           ),
         ),

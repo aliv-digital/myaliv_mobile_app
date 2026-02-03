@@ -42,12 +42,18 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: ChangePasswordPrepaidTheme.bg,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
-          listenWhen: (p, c) => p.status != c.status || p.errorMessage != c.errorMessage,
+          listenWhen: (p, c) =>
+          p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == ChangePasswordPrepaidStatus.success) {
               // TODO: success navigation/snackbar (তুমি বসাবে)
@@ -64,18 +70,18 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
               Expanded(
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
                         title: 'change password',
                         showHome: false,
-                        onBack: (){
+                        onBack: () {
                           context.pop();
                         },
                       ),
                     ),
-
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(28, 26, 28, 18),
                       sliver: SliverToBoxAdapter(
@@ -88,7 +94,8 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                 const ChangePasswordPrepaidHeaderText(),
                                 const SizedBox(height: 18),
 
-                                BlocBuilder<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
+                                BlocBuilder<ChangePasswordPrepaidBloc,
+                                    ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
                                   p.newPassword != c.newPassword ||
                                       p.obscureNew != c.obscureNew,
@@ -109,7 +116,8 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
 
                                 const SizedBox(height: 14),
 
-                                BlocBuilder<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
+                                BlocBuilder<ChangePasswordPrepaidBloc,
+                                    ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
                                   p.confirmPassword != c.confirmPassword ||
                                       p.obscureConfirm != c.obscureConfirm,
@@ -134,8 +142,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                   buildWhen: (p, c) =>
                                   p.status != c.status || p.isValid != c.isValid,
                                   builder: (context, state) {
-                                    final isLoading =
-                                        state.status == ChangePasswordPrepaidStatus.submitting;
+                                    final isLoading = state.status == ChangePasswordPrepaidStatus.submitting;
 
                                     return ChangePasswordPrepaidSubmitButton(
                                       label: 'change password',
@@ -159,8 +166,13 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                 ),
               ),
 
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
+              // ✅ Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+              ),
             ],
           ),
         ),

@@ -70,7 +70,7 @@ class OtpBottomActions extends StatelessWidget {
 
         const SizedBox(height: 113),
 
-        // change phone number (bottom orange text)
+        // change phone number (bottom orange text) ok
         GestureDetector(
           onTap: () {
             Navigator.of(context).maybePop();

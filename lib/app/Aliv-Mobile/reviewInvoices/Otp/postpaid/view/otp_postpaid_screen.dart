@@ -26,8 +26,14 @@ class _OTPPostpaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // ✅ keep default keyboard behavior (auto resize + auto scroll)
+      resizeToAvoidBottomInset: true,
+
       body: SafeArea(
         child: BlocListener<OTPPostpaidBloc, OTPPostpaidState>(
           listener: (context, state) {
@@ -43,12 +49,14 @@ class _OTPPostpaidView extends StatelessWidget {
           },
           child: Column(
             children: [
-              // scrollable content
+              // ---------- Scrollable content ----------
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
+                    keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
                       const SliverToBoxAdapter(
                         child: OTPPostpaidHeader(),
@@ -73,8 +81,15 @@ class _OTPPostpaidView extends StatelessWidget {
                 ),
               ),
 
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
+              // ✅ Bottom stripes vanish when keyboard opens
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
+              ),
             ],
           ),
         ),

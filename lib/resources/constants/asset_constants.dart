@@ -38,4 +38,11 @@ class AssetConstant{
 
   static const smsSVG = 'assets/icons/sms.svg';
 
+  static const faceViewFinderIconSVG = 'assets/icons/face_view_finder.svg';
+  static const fingerprintIconSVG = 'assets/icons/fingerprint.svg';
+  static const lifeRingIconSVG = 'assets/icons/life_ring.svg';
+  static const lockIconSVG = 'assets/icons/lock.svg';
+  static const securityIconSVG = 'assets/icons/security.svg';
+
+
 }
