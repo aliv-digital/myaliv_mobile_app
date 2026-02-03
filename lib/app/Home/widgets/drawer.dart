@@ -114,6 +114,8 @@ class AppMenuDrawer extends StatelessWidget {
           context.push(AppRoutes.settingsScreen);
         } else if(label == 'REV bill pay'){
           context.push(AppRoutes.revBillPayPrepaidScreen);
+        }else if(label == 'notifications'){
+          context.push(AppRoutes.notificationScreen);
         }
       },
     );

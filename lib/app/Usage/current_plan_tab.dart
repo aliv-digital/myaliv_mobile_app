@@ -17,7 +17,7 @@ class CurrentPlanTab extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       children: [
         // 🔴 Active plan card (reuse your existing widget)
-        const ActivePlanCard(showRenewButton: false),
+        const PrepaidActivePlanCard(showRenewButton: false),
 
         const SizedBox(height: 12),
 
