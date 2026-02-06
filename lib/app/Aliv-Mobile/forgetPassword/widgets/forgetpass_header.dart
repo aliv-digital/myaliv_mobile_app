@@ -16,14 +16,14 @@ class ForgetPasswordHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 16,top: 53),
+          padding: EdgeInsets.only(left: 16, top: 12),
           onPressed: () {
             context.pop();
             // custom logic
           },
         ),
-        SizedBox(height: 64),
-        _LogoTitle(),
+        const SizedBox(height: 22),
+        const _LogoTitle(),
       ],
     );
   }

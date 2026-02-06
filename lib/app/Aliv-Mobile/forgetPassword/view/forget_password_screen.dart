@@ -68,7 +68,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 40, right: 54),
+                          padding: const EdgeInsets.only(left: 47, right: 47),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
