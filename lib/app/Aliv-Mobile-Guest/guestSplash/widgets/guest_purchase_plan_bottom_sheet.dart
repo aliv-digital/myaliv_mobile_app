@@ -331,6 +331,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../theme/guest_splash_theme.dart';
 
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
@@ -494,12 +495,7 @@ class _SheetBody extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
                   state.purchaseErrorMessage!,
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    color: Colors.red,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: GuestSplashTheme.errorText,
                 ),
               ),
 
@@ -521,12 +517,7 @@ class _SheetBody extends StatelessWidget {
                 },
                 child: const Text(
                   'continue',
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
+                  style: GuestSplashTheme.continueButtonText,
                 ),
               ),
             ),
@@ -573,12 +564,7 @@ class _Header extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
+          style: GuestSplashTheme.sheetTitle,
         ),
       ],
     );
@@ -593,12 +579,7 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 13,
-        fontFamily: 'CircularPro',
-        fontWeight: FontWeight.w700,
-        color: Colors.black,
-      ),
+      style: GuestSplashTheme.fieldLabel,
     );
   }
 }
@@ -640,16 +621,11 @@ class _PhoneRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(flag, style: const TextStyle(fontSize: 18)),
+                Text(flag, style: GuestSplashTheme.flagEmoji),
                 const SizedBox(width: 6),
                 Text(
                   dial,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+                  style: GuestSplashTheme.dialCode,
                 ),
               ],
             ),
@@ -675,20 +651,10 @@ class _PhoneRow extends StatelessWidget {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hint,
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB7B7B7),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w400,
-                ),
+                hintStyle: GuestSplashTheme.phoneHint,
                 isCollapsed: true,
               ),
-              style: const TextStyle(
-                fontSize: 14,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+              style: GuestSplashTheme.phoneInput,
             ),
           ),
         ),

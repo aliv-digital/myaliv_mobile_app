@@ -12,6 +12,7 @@ import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
 import '../bloc/guest_splash_state.dart';
 import '../repository/guest_splash_repository.dart';
+import '../theme/guest_splash_theme.dart';
 import '../widgets/guest_purchase_plan_bottom_sheet.dart';
 
 class GuestSplashScreen extends StatelessWidget {
@@ -31,10 +32,12 @@ class GuestSplashView extends StatelessWidget {
   const GuestSplashView({super.key});
 
   static const double _horizontal = 25;
-  static const double _topPadding = 24;
+  static const double _titleOffsetFromPurpleTop = 44;
 
   // ✅ tweak this if needed (Figma bottom gap feel)
   static const double _designBottomGap = 24;
+  // ✅ mask the image bottom edge to avoid color mismatch seam
+  static const double _imageBottomMaskHeight = 24;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +56,9 @@ class GuestSplashView extends StatelessWidget {
     );
 
     final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final titleTopPadding =
+        (_titleOffsetFromPurpleTop - _imageBottomMaskHeight)
+            .clamp(0.0, double.infinity);
 
     return Scaffold(
       backgroundColor: ColorManager.welcomeScreenBloc,
@@ -84,7 +90,9 @@ class GuestSplashView extends StatelessWidget {
                         child: SafeArea(
                           bottom: false,
                           child: InkWell(
-                            onTap: () => Navigator.of(context).maybePop(),
+                            onTap: () {
+                              context.pop();
+                            },
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               width: 36,
@@ -113,19 +121,37 @@ class GuestSplashView extends StatelessWidget {
                           height: 98,
                         ),
                       ),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: _imageBottomMaskHeight,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                ColorManager.welcomeScreenBloc.withValues(alpha: 0.0),
+                                ColorManager.welcomeScreenBloc,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
 
                 // -------- Bottom panel (flexible + consistent spacing) --------
                 Expanded(
-                  flex: 45,
+                  flex: 44,
                   child: Container(
                     width: double.infinity,
                     color: ColorManager.welcomeScreenBloc,
                     padding: EdgeInsets.fromLTRB(
                       _horizontal,
-                      _topPadding,
+                      titleTopPadding,
                       _horizontal,
                       safeBottom + _designBottomGap,
                     ),
@@ -134,13 +160,7 @@ class GuestSplashView extends StatelessWidget {
                       children: [
                         const Text(
                           'Please Select Option',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: -0.30,
-                          ),
+                          style: GuestSplashTheme.title,
                         ),
                         const SizedBox(height: 20),
 
@@ -148,13 +168,13 @@ class GuestSplashView extends StatelessWidget {
                           label: 'Why ALIV ?',
                           onPressed: () => context.push(AppRoutes.whyAliv),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 20),
 
                         CustomButton(
                           label: 'top-up',
                           onPressed: () => context.push(AppRoutes.guestTopUp),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 20),
 
                         CustomButton(
                           label: 'purchase a plan',
@@ -170,7 +190,7 @@ class GuestSplashView extends StatelessWidget {
                             }
                           },
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 20),
 
                         CustomButton(
                           label: 'bill pay',
