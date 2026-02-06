@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
 import '../../login/widgets/login_bottom_stripes.dart';
@@ -8,6 +7,7 @@ import '../bloc/create_password_bloc.dart';
 import '../bloc/create_password_event.dart';
 import '../bloc/create_password_state.dart';
 import '../repository/create_password_repository.dart';
+import '../theme/create_password_theme.dart';
 import '../widgets/create_password_header.dart';
 import '../widgets/password_input.dart';
 
@@ -116,13 +116,7 @@ class _CreatePasswordView extends StatelessWidget {
                               'your password should contain letters and/or\n'
                                   'numbers and be at least 4 characters long.',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                height: 1.35,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w400,
-                                color: ColorManager.otpScreenTxtGray,
-                              ),
+                              style: CreatePasswordTheme.helperText,
                             ),
 
                             const SizedBox(height: 30),
