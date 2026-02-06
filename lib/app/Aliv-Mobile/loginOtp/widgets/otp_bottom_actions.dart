@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import '../../../../resources/widgets/defaultButton.dart';
-import '../../login/theme/login_theme.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
 import '../bloc/login_otp_event.dart';
+import '../theme/login_otp_theme.dart';
 
 class OtpBottomActions extends StatelessWidget {
   const OtpBottomActions({super.key});
@@ -42,25 +41,13 @@ class OtpBottomActions extends StatelessWidget {
               children: [
                 const Text(
                   "didn't receive a code? ",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'CircularPro',
-                    height: 1.43,
-                    color: AuthModuleColors.textBlack,
-                  ),
+                  style: LoginOtpTheme.helperText,
                 ),
                 GestureDetector(
                   onTap: resendLoading ? null : () => context.read<LoginOtpBloc>().add(const LoginOtpResendRequested()),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: ColorManager.textLinkColor,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'CircularPro',
-                      height: 1.43
-                    ),
+                    style: LoginOtpTheme.resendText,
                   ),
                 ),
               ],

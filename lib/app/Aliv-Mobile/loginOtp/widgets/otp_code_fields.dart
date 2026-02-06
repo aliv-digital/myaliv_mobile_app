@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import '../../login/theme/login_theme.dart';
+import '../theme/login_otp_theme.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
 import '../bloc/login_otp_event.dart';
@@ -90,12 +91,7 @@ class _OtpBox extends StatelessWidget {
         textAlignVertical: TextAlignVertical.center, // vertical center
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: const TextStyle(
-          fontSize: 20,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w600,
-          color: AuthModuleColors.textBlack,
-        ),
+        style: LoginOtpTheme.otpInput,
         decoration: InputDecoration(
           isCollapsed: true,                  //reduce extra height
           contentPadding: EdgeInsets.only(left: 15,right: 15,top: 10,bottom: 15),   // no extra padding না

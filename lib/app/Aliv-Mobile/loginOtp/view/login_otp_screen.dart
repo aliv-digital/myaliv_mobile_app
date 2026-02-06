@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../resources/color_manager.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
+import '../theme/login_otp_theme.dart';
 import '../widgets/otp_header.dart';
 import '../widgets/otp_code_fields.dart';
 import '../widgets/otp_bottom_actions.dart';
@@ -43,7 +43,7 @@ class _LoginOtpView extends StatelessWidget {
                 SnackBar(
                   content: Text(
                     state.errorMessage!,
-                    style: const TextStyle(fontFamily: 'CircularPro'),
+                    style: LoginOtpTheme.snackBarText,
                   ),
                 ),
               );
@@ -113,13 +113,7 @@ class _ChangePhoneNumberAction extends StatelessWidget {
       child: Text(
         'change phone number',
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          height: 1.43,
-          fontFamily: 'CircularPro',
-          color: ColorManager.orangeColor,
-          fontWeight: FontWeight.w500,
-        ),
+        style: LoginOtpTheme.changePhoneText,
       ),
     );
   }
