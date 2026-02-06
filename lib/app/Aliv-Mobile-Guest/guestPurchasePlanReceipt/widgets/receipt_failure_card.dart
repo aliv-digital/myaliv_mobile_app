@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/theme/theme.dart';
 import '../bloc/guest_purchase_plan_receipt_state.dart';
 import 'receipt_ticket_divider.dart';
 import 'receipt_back_button.dart';
@@ -149,7 +149,7 @@ class ReceiptFailureCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6),
               child: ReceiptTicketDivider(
                 height: dividerH,
-                dashColor: ReceiptTheme.redDashColor,
+                dashColor: GuestPurchasePlanReceiptTheme.redDashColor,
               ),
             ),
 
@@ -217,6 +217,5 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
         oldClipper.notchCenterY != notchCenterY;
   }
 }
-
 
 

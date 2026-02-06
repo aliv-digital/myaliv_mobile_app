@@ -53,9 +53,6 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
 class _GuestTopUpReceiptView extends StatelessWidget {
   const _GuestTopUpReceiptView();
 
-  static const _purple = Color(0xFF655C9A);
-  static const _bg = Color(0xFFF1F2FA);
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
@@ -66,7 +63,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: _bg,
+        backgroundColor: ReceiptTheme.screenBackground,
         body: SafeArea(
             child: CustomScrollView(
               slivers: [
@@ -114,7 +111,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                         );
                         // return ReceiptFailureCard(
                         //   data: data,
-                        //   pageBackground: _bg,
+                        //   pageBackground: ReceiptTheme.screenBackground,
                         //   onBackHome: () => context.read<GuestTopUpReceiptBloc>().add(
                         //     const GuestTopUpReceiptBackToHomePressed(),
                         //   ),

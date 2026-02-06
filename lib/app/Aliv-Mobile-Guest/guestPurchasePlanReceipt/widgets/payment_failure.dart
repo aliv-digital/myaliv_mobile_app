@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/theme/theme.dart';
 
 class PaymentFailedTicket extends StatelessWidget {
   const PaymentFailedTicket({
@@ -163,7 +163,7 @@ class _PillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: ReceiptTheme.failedButtonBackgroundColor,
+      color: GuestPurchasePlanReceiptTheme.failedButtonBackgroundColor,
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         borderRadius: BorderRadius.circular(999),
@@ -175,7 +175,7 @@ class _PillButton extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              color: ReceiptTheme.successButtonTextColor,
+              color: GuestPurchasePlanReceiptTheme.successButtonTextColor,
               fontSize: 13,
               fontWeight: FontWeight.w400,
               fontFamily: 'CircularPro',

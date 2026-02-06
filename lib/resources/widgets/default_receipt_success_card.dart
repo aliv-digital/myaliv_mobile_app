@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/widgets/receipt_back_button.dart';
 import '../../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/widgets/receipt_detail_row.dart';
@@ -106,8 +106,8 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                fontFamily: 'CircularPro',
-                color: ReceiptTheme.textGrey,
+                fontFamily: AppConstants.defaultFontFamily,
+                color: const Color(0xFF707070),
                 fontWeight: FontWeight.w400,
               ),
             ),

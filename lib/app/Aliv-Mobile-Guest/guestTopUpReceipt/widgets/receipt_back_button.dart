@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
 
 class ReceiptBackButton extends StatelessWidget {
   const ReceiptBackButton({
@@ -9,8 +10,6 @@ class ReceiptBackButton extends StatelessWidget {
 
   final VoidCallback onTap;
   final String text;
-
-  static const _purple = Color(0xFF655C9A);
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +23,9 @@ class ReceiptBackButton extends StatelessWidget {
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
         ),
-        child: const Text(
-          'back to home page',
-          style: TextStyle(
-            color: _purple,
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'CircularPro'
-          ),
+        child: Text(
+          text,
+          style: ReceiptTheme.backButtonText,
         ),
       ),
     );
