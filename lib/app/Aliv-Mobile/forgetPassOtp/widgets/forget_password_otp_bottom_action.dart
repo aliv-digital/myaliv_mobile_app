@@ -5,9 +5,9 @@ import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/defaultButton.dart';
 import '../../login/theme/login_theme.dart';
-import '../bloc/forgetPass_otp_bloc.dart';
-import '../bloc/forgetPass_otp_event.dart';
-import '../bloc/forgetPass_otp_state.dart';
+import '../bloc/forget_password_otp_bloc.dart';
+import '../bloc/forget_password_otp_event.dart';
+import '../bloc/forget_password_otp_state.dart';
 
 
 class ForgetPasswordOtpBottomActions extends StatelessWidget {
@@ -15,8 +15,6 @@ class ForgetPasswordOtpBottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     return Column(
       children: [
         // verify button
@@ -72,24 +70,6 @@ class ForgetPasswordOtpBottomActions extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 113),
-
-        // change phone number (bottom orange text)
-        GestureDetector(
-          onTap: () {
-            Navigator.of(context).maybePop();
-          },
-          child: Text(
-            'change phone number',
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.43,
-              fontFamily: 'CircularPro',
-              color: ColorManager.orangeColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
       ],
     );
   }

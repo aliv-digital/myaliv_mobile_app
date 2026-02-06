@@ -14,12 +14,12 @@ class ForgetPasswordOtpHeader extends StatelessWidget {
     return Column(
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 24, top: 53),
+          padding: EdgeInsets.only(left: 16, top: 12),
           onPressed: () {
             context.pop();
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 22),
         SvgPicture.asset(
           AssetConstant.otpPhoneSVG,
           width: 162,

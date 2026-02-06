@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import '../../login/theme/login_theme.dart';
-import '../bloc/forgetPass_otp_bloc.dart';
-import '../bloc/forgetPass_otp_event.dart';
-import '../bloc/forgetPass_otp_state.dart';
+import '../bloc/forget_password_otp_bloc.dart';
+import '../bloc/forget_password_otp_event.dart';
+import '../bloc/forget_password_otp_state.dart';
 
 
 class ForgetPasswordOtpCodeFields extends StatefulWidget {
