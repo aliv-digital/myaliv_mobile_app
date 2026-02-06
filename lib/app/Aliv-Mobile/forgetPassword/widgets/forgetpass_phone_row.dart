@@ -2,6 +2,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../login/theme/login_theme.dart';
+import '../theme/forget_password_theme.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
@@ -77,12 +78,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
                     const SizedBox(width: 6),
                     Text(
                       _dialCode,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'CircularPro',
-                        color: AuthModuleColors.textBlack,
-                      ),
+                      style: ForgetPasswordTheme.dialCode,
                     ),
                     const SizedBox(width: 4),
                     const Icon(
@@ -114,21 +110,12 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
                 buildWhen: (p, c) => p.phone != c.phone,
                 builder: (context, state) {
                   return TextField(
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'CircularPro',
-                      color: AuthModuleColors.textBlack,
-                    ),
+                    style: ForgetPasswordTheme.phoneInput,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'eg: 242 899 9999',
-                      hintStyle: TextStyle(
-                        fontSize: 14,
-                        color: AuthModuleColors.hintGrey,
-                        fontFamily: 'CircularPro',
-                      ),
+                      hintStyle: ForgetPasswordTheme.phoneHint,
                     ),
                     onChanged: (value) => context.read<ForgetPasswordBloc>().add(ForgetPasswordPhoneChanged(value)),
                   );
