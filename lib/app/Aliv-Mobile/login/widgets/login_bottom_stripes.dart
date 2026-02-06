@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class BottomStripes extends StatelessWidget {
   const BottomStripes({super.key});
 
+  static const double kHeight = 28;
+
   @override
   Widget build(BuildContext context) {
     return Column(

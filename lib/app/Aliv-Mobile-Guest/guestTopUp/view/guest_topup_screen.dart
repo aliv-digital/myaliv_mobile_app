@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/defaultButton.dart';
 import '../bloc/guest_topup_bloc.dart';
 import '../bloc/guest_topup_event.dart';
@@ -117,7 +118,9 @@ class _GuestTopUpView extends StatelessWidget {
 
                           builder: (context, state) {
                             return DefaultButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.push(AppRoutes.confirmTopUpPrepaidScreen);
+                              },
                               label: 'next',
                               isLoading: false,
                             );

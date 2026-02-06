@@ -12,13 +12,13 @@ class LoginBottomTexts extends StatelessWidget {
           'still need to activate your account?',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w400,
             height: 1.43,
             color: AuthModuleColors.textBlack,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         TextButton(
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -29,7 +29,7 @@ class LoginBottomTexts extends StatelessWidget {
           child: Text(
             'manage my password',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               color: AuthModuleColors.linkBlue,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w400,

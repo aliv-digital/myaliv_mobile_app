@@ -3,7 +3,7 @@ import '../../../../resources/extentions/hex_color.dart';
 
 
 class AuthModuleColors {
-  static Color alivPurple = HexColor.fromHex('#CC5146A8');//Color(0xFF5D4FB2);
+  static Color alivPurple = HexColor.fromHex('#645D9C');
   static Color loginRoundOutLinedBorderButton = HexColor.fromHex('#CC5146A8');
   static const lightGreyBorder = Color(0xFFE5E5EA);
   static const errorRed = Color(0xFFFF3B30);
