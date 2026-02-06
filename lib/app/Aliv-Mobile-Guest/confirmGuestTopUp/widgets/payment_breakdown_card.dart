@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 
 class PaymentBreakdownCard extends StatelessWidget {
   const PaymentBreakdownCard({
@@ -94,11 +95,9 @@ class _RowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
+    final style = TopUpConfirmTheme.breakdownText.copyWith(
       color: textColor,
-      fontSize: 15,
       fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
-      height: 1.1,
     );
 
     return Row(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 
 class AmountPill extends StatelessWidget {
   const AmountPill({
@@ -23,11 +24,7 @@ class AmountPill extends StatelessWidget {
       ),
       child: Text(
         amountText,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 13,
-          fontWeight: FontWeight.w700,
-        ),
+        style: TopUpConfirmTheme.amountPillText.copyWith(color: textColor),
       ),
     );
   }

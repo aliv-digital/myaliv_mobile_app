@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_payment_break_down_card.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
 import '../bloc/confirm_topup_event.dart';
 import '../bloc/confirm_topup_state.dart';
 import '../repository/confirm_topup_repository.dart';
+import '../theme/theme.dart';
 import '../widgets/bottom_pay_bar.dart';
-import '../widgets/payment_breakdown_card.dart';
 import '../widgets/terms_and_conditions_text.dart';
 import '../widgets/topup_summary_card.dart';
 
@@ -59,13 +60,23 @@ class _GuestConfirmTopUpView extends StatelessWidget {
       listener: (context, state) {
         if (state.status == GuestConfirmTopUpStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Payment successful')),
+            SnackBar(
+              content: Text(
+                'Payment successful',
+                style: TopUpConfirmTheme.snackBarText,
+              ),
+            ),
           );
         }
 
         if (state.status == GuestConfirmTopUpStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage ?? 'Payment failed')),
+            SnackBar(
+              content: Text(
+                state.errorMessage ?? 'Payment failed',
+                style: TopUpConfirmTheme.snackBarText,
+              ),
+            ),
           );
         }
 
@@ -139,10 +150,21 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   buildWhen: (p, c) =>
                   p.subTotal != c.subTotal || p.vat != c.vat || p.total != c.total,
                   builder: (context, state) {
-                    return PaymentBreakdownCard(
-                      subTotal: state.subTotal,
-                      vat: state.vat,
-                      total: state.total,
+                    return DefaultPaymentBreakDownCard(
+                      items: [
+                        PaymentBreakdownLineItem(
+                          label: 'sub total',
+                          value: '\$ ${state.subTotal.toStringAsFixed(2)}',
+                        ),
+                        PaymentBreakdownLineItem(
+                          label: 'vat',
+                          value: '\$ ${state.vat.toStringAsFixed(2)}',
+                        ),
+                        PaymentBreakdownLineItem(
+                          label: 'total',
+                          value: '\$ ${state.total.toStringAsFixed(2)}',
+                        ),
+                      ],
                     );
                   },
                 ),

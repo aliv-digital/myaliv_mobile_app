@@ -49,23 +49,12 @@ class TopUpSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontFamily:'CircularPro',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    height: 1.05,
-                  ),
+                  style: TopUpConfirmTheme.summaryTitle,
                 ),
                 const SizedBox(height: 6),
                 Text(
                   phoneNumber,
-                  style: TextStyle(
-                    color: TopUpConfirmTheme.textNumberColor,
-                    fontFamily: 'CircularPro',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: TopUpConfirmTheme.summaryPhone,
                 ),
               ],
             ),
@@ -85,12 +74,7 @@ class TopUpSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   actionLabel,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TopUpConfirmTheme.summaryAction,
                 ),
                 const Spacer(),
                 _AmountPill(text: amountText),
@@ -139,11 +123,7 @@ class _AmountPill extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          color: _pillText,
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-        ),
+        style: TopUpConfirmTheme.summaryAmountPill.copyWith(color: _pillText),
       ),
     );
   }
