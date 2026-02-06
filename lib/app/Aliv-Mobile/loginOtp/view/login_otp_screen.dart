@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../resources/color_manager.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
@@ -22,6 +23,7 @@ class LoginOtpScreen extends StatelessWidget {
 
 class _LoginOtpView extends StatelessWidget {
   const _LoginOtpView();
+  static const double _bottomActionOffset = 22;
 
   @override
   Widget build(BuildContext context) {
@@ -38,47 +40,85 @@ class _LoginOtpView extends StatelessWidget {
           listener: (context, state) {
             if (state.status == LoginOtpStatus.failure && state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
+                SnackBar(
+                  content: Text(
+                    state.errorMessage!,
+                    style: const TextStyle(fontFamily: 'CircularPro'),
+                  ),
+                ),
               );
             }
           },
-          child: Column(
+          child: Stack(
             children: [
-              // ---------- Scrollable content ----------
-              Expanded(
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    const SliverToBoxAdapter(child: OtpHeader()),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 41, right: 41),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: const [
-                            SizedBox(height: 24),
-                            OtpCodeFields(),
-                            SizedBox(height: 54),
-                            OtpBottomActions(),
-                            SizedBox(height: 24),
-                          ],
+              Column(
+                children: [
+                  // ---------- Scrollable content ----------
+                  Expanded(
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      slivers: [
+                        const SliverToBoxAdapter(child: OtpHeader()),
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 41, right: 41),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: const [
+                                SizedBox(height: 24),
+                                OtpCodeFields(),
+                                SizedBox(height: 54),
+                                OtpBottomActions(),
+                                SizedBox(height: 24),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
 
-              // ✅ Bottom stripes will VANISH when keyboard opens (no moving up)
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+                  // ✅ Bottom stripes will VANISH when keyboard opens (no moving up)
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 180),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+                  ),
+                ],
               ),
+              if (!keyboardOpen)
+                const Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: BottomStripes.kHeight + _bottomActionOffset,
+                  child: _ChangePhoneNumberAction(),
+                ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChangePhoneNumberAction extends StatelessWidget {
+  const _ChangePhoneNumberAction();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).maybePop(),
+      child: Text(
+        'change phone number',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 14,
+          height: 1.43,
+          fontFamily: 'CircularPro',
+          color: ColorManager.orangeColor,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
