@@ -11,13 +11,7 @@ class HeadingTwo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
-        fontSize: 16,
-        height: 1.25,
-        fontFamily: 'CircularPro',
-        fontWeight: FontWeight.w700,
-        color: WhyAlivTheme.headingColor,
-      ),
+      style: WhyAlivTheme.headingTwo,
     );
   }
 }
