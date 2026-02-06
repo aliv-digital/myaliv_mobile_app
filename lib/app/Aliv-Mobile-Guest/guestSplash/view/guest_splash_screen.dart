@@ -31,16 +31,33 @@ class GuestSplashScreen extends StatelessWidget {
 class GuestSplashView extends StatelessWidget {
   const GuestSplashView({super.key});
 
-  static const double _horizontal = 25;
-  static const double _titleOffsetFromPurpleTop = 44;
-
-  // ✅ tweak this if needed (Figma bottom gap feel)
-  static const double _designBottomGap = 24;
-  // ✅ mask the image bottom edge to avoid color mismatch seam
-  static const double _imageBottomMaskHeight = 24;
+  // Design reference: tuned on A52 logical height (~915)
+  static const double _designBaseHeight = 915;
+  static const double _horizontalBase = 25;
+  static const double _titleOffsetFromPurpleTopBase = 44;
+  static const double _designBottomGapBase = 24;
+  static const double _imageBottomMaskHeightBase = 24;
+  static const double _logoWidthBase = 192;
+  static const double _logoHeightBase = 98;
+  static const double _logoBottomOffsetBase = 80;
+  static const double _backButtonSizeBase = 36;
+  static const double _backIconSizeBase = 26;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final scale = (size.height / _designBaseHeight).clamp(0.85, 1.2);
+    final horizontal = _horizontalBase * scale;
+    final titleOffsetFromPurpleTop = _titleOffsetFromPurpleTopBase * scale;
+    final designBottomGap = _designBottomGapBase * scale;
+    final imageBottomMaskHeight = _imageBottomMaskHeightBase * scale;
+    final titleTopPadding = (titleOffsetFromPurpleTop - imageBottomMaskHeight).clamp(0.0, double.infinity);
+    final logoWidth = _logoWidthBase * scale;
+    final logoHeight = _logoHeightBase * scale;
+    final logoBottomOffset = _logoBottomOffsetBase * scale;
+    final backButtonSize = _backButtonSizeBase * scale;
+    final backIconSize = _backIconSizeBase * scale;
+
     // ✅ ensure status + navigation areas match the screen color (single color look)
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -56,9 +73,6 @@ class GuestSplashView extends StatelessWidget {
     );
 
     final safeBottom = MediaQuery.paddingOf(context).bottom;
-    final titleTopPadding =
-        (_titleOffsetFromPurpleTop - _imageBottomMaskHeight)
-            .clamp(0.0, double.infinity);
 
     return Scaffold(
       backgroundColor: ColorManager.welcomeScreenBloc,
@@ -95,30 +109,30 @@ class GuestSplashView extends StatelessWidget {
                             },
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
-                              width: 36,
-                              height: 36,
+                              width: backButtonSize,
+                              height: backButtonSize,
                               decoration: BoxDecoration(
                                 color: Colors.white.withValues(alpha: 0.6),
                                 shape: BoxShape.circle,
                               ),
                               alignment: Alignment.center,
-                              child: const Icon(
+                              child: Icon(
                                 Icons.chevron_left,
                                 color: Colors.black,
-                                size: 26,
+                                size: backIconSize,
                               ),
                             ),
                           ),
                         ),
                       ),
                       Positioned(
-                        bottom: 80,
-                        left: MediaQuery.of(context).size.width / 2 - 96,
-                        right: MediaQuery.of(context).size.width / 2 - 96,
+                        bottom: logoBottomOffset,
+                        left: size.width / 2 - (logoWidth / 2),
+                        right: size.width / 2 - (logoWidth / 2),
                         child: SvgPicture.asset(
                           AssetConstant.splashLogoSVG,
-                          width: 192,
-                          height: 98,
+                          width: logoWidth,
+                          height: logoHeight,
                         ),
                       ),
                       Positioned(
@@ -126,7 +140,7 @@ class GuestSplashView extends StatelessWidget {
                         right: 0,
                         bottom: 0,
                         child: Container(
-                          height: _imageBottomMaskHeight,
+                          height: imageBottomMaskHeight,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
@@ -150,10 +164,10 @@ class GuestSplashView extends StatelessWidget {
                     width: double.infinity,
                     color: ColorManager.welcomeScreenBloc,
                     padding: EdgeInsets.fromLTRB(
-                      _horizontal,
+                      horizontal,
                       titleTopPadding,
-                      _horizontal,
-                      safeBottom + _designBottomGap,
+                      horizontal,
+                      safeBottom + designBottomGap,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
