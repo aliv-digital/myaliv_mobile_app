@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -12,6 +13,7 @@ import '../bloc/guest_topup_event.dart';
 import '../bloc/guest_topup_state.dart';
 import '../data/guest_topup_data.dart';
 import '../repository/guest_topup_repository.dart';
+import '../theme/guest_topup_theme.dart';
 import '../widgets/phone_number_input.dart';
 
 
@@ -29,8 +31,36 @@ class GuestTopUpScreen extends StatelessWidget {
   }
 }
 
-class _GuestTopUpView extends StatelessWidget {
+class _GuestTopUpView extends StatefulWidget {
   const _GuestTopUpView();
+
+  @override
+  State<_GuestTopUpView> createState() => _GuestTopUpViewState();
+}
+
+class _GuestTopUpViewState extends State<_GuestTopUpView> {
+
+  static const CountryInfo _defaultCountry = CountryInfo(
+    flagEmoji: '🇧🇸',
+    dialCode: '1',
+  );
+
+  CountryInfo _selectedCountry = _defaultCountry;
+
+  void _pickCountry() {
+    showCountryPicker(
+      context: context,
+      showPhoneCode: true,
+      onSelect: (country) {
+        setState(() {
+          _selectedCountry = CountryInfo(
+            flagEmoji: country.flagEmoji,
+            dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
+          );
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +83,7 @@ class _GuestTopUpView extends StatelessWidget {
               SnackBar(
                 content: Text(
                   state.errorMessage ?? 'll',
+                  style: GuestTopUpTheme.snackBarText,
                 ),
               ),
             );
@@ -78,7 +109,10 @@ class _GuestTopUpView extends StatelessWidget {
                           ),
                         child: LabeledInputField(
                             label: 'please enter an active prepaid number to top up',
-                            hintText: 'eg: 242-899-9999',
+                            hintText: 'eg: 2428999999',
+                            country: _selectedCountry,
+                            enableCountryPicker: true,
+                            onPickCountry: _pickCountry,
                             onChanged: (v){}
                         ),
                       ),
@@ -93,7 +127,10 @@ class _GuestTopUpView extends StatelessWidget {
                         ),
                         child: LabeledInputField(
                             label: 'confirm mobile number',
-                            hintText: 'eg: 242-899-9999',
+                            hintText: 'eg: 2428999999',
+                            country: _selectedCountry,
+                            enableCountryPicker: false,
+                            onPickCountry: _pickCountry,
                             onChanged: (v){}
                         ),
                       ),
@@ -101,7 +138,7 @@ class _GuestTopUpView extends StatelessWidget {
 
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 44,bottom: 44),
+                        padding: EdgeInsets.only(top: 44, bottom: 44),
                         child: GradientInputField(
                             label: 'enter top up amount',
                             hint: '00.00',
@@ -184,6 +221,3 @@ class _GuestTopUpView extends StatelessWidget {
 //     );
 //   }
 // }
-
-
-
