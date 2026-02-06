@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/forget_password_otp_bloc.dart';
 import '../bloc/forget_password_otp_state.dart';
 import '../repository/forget_password_otp_repository.dart';
+import '../theme/forget_password_otp_theme.dart';
 import '../widgets/forget_password_otp_bottom_action.dart';
 import '../widgets/forget_password_otp_code_fields.dart';
 import '../widgets/forget_password_otp_header.dart';
@@ -44,7 +44,12 @@ class _ForgetPasswordOtpView extends StatelessWidget {
             if (state.status == ForgetPasswordOtpStatus.failure &&
                 state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
+                SnackBar(
+                  content: Text(
+                    state.errorMessage!,
+                    style: ForgetPasswordOtpTheme.snackBarText,
+                  ),
+                ),
               );
             }
             // success হলে next screen এ যাওয়ার logic এখানে দিতে পারো
@@ -119,13 +124,7 @@ class _ChangePhoneNumberAction extends StatelessWidget {
       child: Text(
         'change phone number',
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          height: 1.43,
-          fontFamily: 'CircularPro',
-          color: ColorManager.orangeColor,
-          fontWeight: FontWeight.w500,
-        ),
+        style: ForgetPasswordOtpTheme.changePhoneText,
       ),
     );
   }

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../../../resources/widgets/defaultBackButton.dart';
-import '../../login/theme/login_theme.dart';
+import '../theme/forget_password_otp_theme.dart';
 
 class ForgetPasswordOtpHeader extends StatelessWidget {
   const ForgetPasswordOtpHeader({super.key});
@@ -28,24 +27,13 @@ class ForgetPasswordOtpHeader extends StatelessWidget {
         const SizedBox(height: 21),
         const Text(
           'verification code',
-          style: TextStyle(
-            fontSize: 24,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            color: AuthModuleColors.textBlack,
-          ),
+          style: ForgetPasswordOtpTheme.title,
         ),
         const SizedBox(height: 16),
         Text(
           'we have sent a verification code to your email\nand via sms',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            color: ColorManager.otpScreenTxtGray,
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'CircularPro',
-          ),
+          style: ForgetPasswordOtpTheme.subtitle,
         ),
       ],
     );
