@@ -110,7 +110,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                     final policy = state.fairUsePolicy!;
 
                     return ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                      padding: const EdgeInsets.fromLTRB(25, 14, 25, 16),
                       children: [
                         ActivePlanCard(
                           plan: plan,
@@ -118,15 +118,15 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                               .read<GuestPurchasePlanAddOnsBloc>()
                               .add(GuestPurchasePlanAddOnsAutoRenewToggled(v)),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 16),
                         FairUsePolicyCard(policy: policy, onTap: () {  },),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 16),
 
                         // Add-on list
                         ...state.addOns.map((item) {
                           final selected = state.selectedAddOnIds.contains(item.id);
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.only(bottom: 16),
                             child: AddOnTile(
                               item: item,
                               selected: selected,
@@ -152,4 +152,3 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
     );
   }
 }
-

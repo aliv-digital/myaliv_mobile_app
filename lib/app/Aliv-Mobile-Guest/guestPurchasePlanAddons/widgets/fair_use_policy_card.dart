@@ -24,7 +24,7 @@ class FairUsePolicyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           // Screenshot এর মতো light background feel (page bg এর সাথে blend)
-          padding: const EdgeInsets.fromLTRB(6, 4, 6, 10),
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,12 +45,7 @@ class FairUsePolicyCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 policy.description,
-                style: GuestPurchasePlanAddOnsTheme.t(
-                  12,
-                  weight: FontWeight.w700,
-                  color: GuestPurchasePlanAddOnsTheme.textBlack,
-                  height: 1.25,
-                ),
+                style: GuestPurchasePlanAddOnsTheme.addOnHelper,
               ),
             ],
           ),
