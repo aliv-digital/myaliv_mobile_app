@@ -8,6 +8,7 @@ import '../bloc/guest_purchase_plan_add_ons_state.dart';
 import '../repository/guest_purchase_plan_add_ons_repository.dart';
 import '../theme/guest_purchase_plan_add_ons_theme.dart';
 import '../widgets/active_plan_card.dart';
+import '../widgets/active_plan_card_v2.dart';
 import '../widgets/add_on_tile.dart';
 import '../widgets/fair_use_policy_card.dart';
 
@@ -112,7 +113,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                     return ListView(
                       padding: const EdgeInsets.fromLTRB(25, 14, 25, 16),
                       children: [
-                        ActivePlanCard(
+                        ActivePlanCardV2(
                           plan: plan,
                           onAutoRenewChanged: (v) => context
                               .read<GuestPurchasePlanAddOnsBloc>()
