@@ -236,17 +236,14 @@ class _CenterMetric extends StatelessWidget {
             else
               Image.asset(iconPath, width: 16, height: 16),
             const SizedBox(width: 2),
-            Transform.translate(
-              offset: const Offset(0, -2),
-              child: Text(
-                benefit.label,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12,
-                  height: 1.0,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF00A9D8),
-                ),
+            Text(
+              benefit.label,
+              style: const TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 12,
+                height: 1.0,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF00A9D8),
               ),
             ),
           ],
