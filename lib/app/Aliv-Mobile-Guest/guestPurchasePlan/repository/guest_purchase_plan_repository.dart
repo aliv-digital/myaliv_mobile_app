@@ -279,6 +279,48 @@ class GuestPurchasePlanRepository {
                   sub: 'gb'),
             ],
           ),
+          PlanModel(
+            id: 'r2',
+            title: 'roam 20',
+            subtitle: '7 days',
+            price: 20.00,
+            description: 'Roaming plan for travel usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '0.25',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'r3',
+            title: 'roam 20',
+            subtitle: '7 days',
+            price: 20.00,
+            description: 'Roaming plan for travel usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '0.25',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'r4',
+            title: 'roam 20',
+            subtitle: '7 days',
+            price: 20.00,
+            description: 'Roaming plan for travel usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '0.25',
+                  sub: 'gb'),
+            ],
+          ),
         ];
 
       case PlanTab.roameasy:
