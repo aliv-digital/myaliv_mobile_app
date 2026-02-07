@@ -21,7 +21,7 @@ class MonthlyPlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  //final Color _brand = GuestPurchasePlanTheme.alivPrimaryColor;
+  //final Color _brand = GuestPurchasePlanTheme.brandPurple;
   //static const Color _muted = Color(0xFF8B8B8B);
   //static const Color _divider = Color(0xFFE9E9EE);
 
@@ -30,7 +30,7 @@ class MonthlyPlanCard extends StatelessWidget {
     // Paste your FULL current PlanCard UI here (monthly version)
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -90,7 +90,7 @@ class MonthlyPlanCard extends StatelessWidget {
                           fontFamily: 'CircularPro',
                           fontSize: 10,
                           fontWeight: FontWeight.w400,
-                          color: GuestPurchasePlanTheme.subTitleTextColor,
+                          color: GuestPurchasePlanTheme.subtitleColor,
                         ),
                       ),
                     ],
@@ -152,7 +152,7 @@ class MonthlyPlanCard extends StatelessWidget {
                         fontFamily: 'CircularPro',
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
-                        color: GuestPurchasePlanTheme.alivPrimaryColor,
+                        color: GuestPurchasePlanTheme.brandPurple,
                       ),
                     ),
                   ),
@@ -164,7 +164,7 @@ class MonthlyPlanCard extends StatelessWidget {
                   height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: GuestPurchasePlanTheme.alivPrimaryColor,
+                      backgroundColor: GuestPurchasePlanTheme.brandPurple,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
@@ -203,7 +203,7 @@ class _PricePill extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
         border: Border.all(
-            color: GuestPurchasePlanTheme.alivPrimaryColor,
+            color: GuestPurchasePlanTheme.brandPurple,
             width: 1
         ),
         borderRadius: BorderRadius.circular(8),
@@ -214,7 +214,7 @@ class _PricePill extends StatelessWidget {
           fontFamily: 'CircularPro',
           fontSize: 16,
           fontWeight: FontWeight.w700,
-          color: GuestPurchasePlanTheme.alivPrimaryColor,
+          color: GuestPurchasePlanTheme.brandPurple,
         ),
       ),
     );
@@ -468,7 +468,7 @@ class _BenefitItem extends StatelessWidget {
       fontSize: 12,
       height: 1.0,
       fontWeight: FontWeight.w400,
-      color: GuestPurchasePlanTheme.subTitleTextColor,
+      color: GuestPurchasePlanTheme.subtitleColor,
     );
 
     // measure widths

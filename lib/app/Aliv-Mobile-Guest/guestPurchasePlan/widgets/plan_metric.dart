@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 
 class PlanMetric extends StatelessWidget {
   final IconData icon;
@@ -19,39 +20,24 @@ class PlanMetric extends StatelessWidget {
     return Expanded(
       child: Row(
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF5D5A8B)),
+          Icon(icon, size: 16, color: GuestPurchasePlanTheme.brandPurple),
           const SizedBox(width: 6),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF5D5A8B),
-                ),
+                style: GuestPurchasePlanTheme.metricTitle,
               ),
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
-                ),
+                style: GuestPurchasePlanTheme.metricValue,
               ),
               const SizedBox(height: 2),
               Text(
                 sub,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF8B8B8B),
-                ),
+                style: GuestPurchasePlanTheme.metricSub,
               ),
             ],
           ),

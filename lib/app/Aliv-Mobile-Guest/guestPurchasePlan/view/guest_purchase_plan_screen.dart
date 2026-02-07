@@ -18,6 +18,7 @@ import '../widgets/liberty_global_plan_card.dart';
 import '../widgets/plan_card.dart';
 import '../widgets/plan_tabs.dart';
 import '../widgets/weekly_plan_card.dart';
+import '../theme/theme.dart';
 
 
 
@@ -47,13 +48,10 @@ class GuestPurchasePlanScreen extends StatelessWidget {
 class _GuestPurchasePlanView extends StatelessWidget {
   const _GuestPurchasePlanView();
 
-  static const Color _topBar = Color(0xFF5D5A8B);
-  static const Color _bg = Color(0xFFF6F6F8);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: GuestPurchasePlanTheme.screenBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -85,23 +83,49 @@ class _GuestPurchasePlanView extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            Padding(
-              padding: const EdgeInsets.only(top: 24,bottom: 15,left: 31),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'choose a prepaid monthly primary plan',
-                  style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black.withValues(alpha: 0.75),
-                  ),
-                ),
-              ),
-            ),
+            BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
+              buildWhen: (p, c) => p.selectedTab != c.selectedTab,
+              builder: (context, state) {
+                String title;
+                switch (state.selectedTab) {
+                  case PlanTab.daily:
+                    title = 'choose a prepaid daily primary plan';
+                    break;
+                  case PlanTab.weekly:
+                    title = 'choose a prepaid weekly primary plan';
+                    break;
+                  case PlanTab.monthly:
+                    title = 'choose a prepaid monthly primary plan';
+                    break;
+                  case PlanTab.roaming:
+                    title = 'choose a prepaid roaming primary plan';
+                    break;
+                  case PlanTab.roameasy:
+                    title = 'choose a prepaid roameasy primary plan';
+                    break;
+                  case PlanTab.mifi:
+                    title = 'choose a prepaid mifi primary plan';
+                    break;
+                  case PlanTab.libertyGlobal:
+                    title = 'choose a prepaid liberty global primary plan';
+                    break;
+                  case PlanTab.addOns:
+                    title = 'choose add ons for your plan';
+                    break;
+                }
 
-            const SizedBox(height: 8),
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(32, 20, 30, 0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      title,
+                      style: GuestPurchasePlanTheme.sectionTitle,
+                    ),
+                  ),
+                );
+              },
+            ),
 
             Expanded(
               child: BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
@@ -114,11 +138,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     return Center(
                       child: Text(
                         state.errorMessage ?? 'Something went wrong',
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: GuestPurchasePlanTheme.errorText,
                       ),
                     );
                   }
@@ -174,24 +194,27 @@ class _GuestPurchasePlanView extends StatelessWidget {
                       }
 
                       if (state.selectedTab == PlanTab.daily) {
-                        return DailyPlanCard(
-                          plan: plan,
-                          expanded: expanded,
-                          onToggle: () {
-                            context
-                                .read<GuestPurchasePlanBloc>()
-                                .add(GuestPurchasePlanToggleExpanded(plan.id));
-                          },
-                          onViewDetails: () {
-                            context
-                                .read<GuestPurchasePlanBloc>()
-                                .add(GuestPurchasePlanToggleExpanded(plan.id));
-                          },
-                          onPurchaseNow: () {
-                            context
-                                .read<GuestPurchasePlanBloc>()
-                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
-                          },
+                        return Padding(
+                          padding: EdgeInsets.only(left: 15, right: 15),
+                          child: DailyPlanCard(
+                            plan: plan,
+                            expanded: expanded,
+                            onToggle: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanToggleExpanded(plan.id));
+                            },
+                            onViewDetails: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanToggleExpanded(plan.id));
+                            },
+                            onPurchaseNow: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                            },
+                          ),
                         );
                       }
 
@@ -318,5 +341,3 @@ class _GuestPurchasePlanView extends StatelessWidget {
     );
   }
 }
-
-
