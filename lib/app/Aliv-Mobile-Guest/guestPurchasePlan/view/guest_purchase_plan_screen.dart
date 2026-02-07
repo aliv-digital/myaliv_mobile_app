@@ -110,17 +110,21 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     title = 'choose a prepaid liberty global primary plan';
                     break;
                   case PlanTab.addOns:
-                    title = 'choose add ons for your plan';
+                    title =
+                        'add-ons can only be added to your active primary plan and '
+                        'expires when it ends.';
                     break;
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 20, 30, 0),
+                  padding: const EdgeInsets.fromLTRB(31, 20, 16, 0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       title,
-                      style: GuestPurchasePlanTheme.sectionTitle,
+                      style: state.selectedTab == PlanTab.addOns
+                          ? GuestPurchasePlanTheme.addOnHelper
+                          : GuestPurchasePlanTheme.sectionTitle,
                     ),
                   ),
                 );
@@ -155,12 +159,15 @@ class _GuestPurchasePlanView extends StatelessWidget {
                         final AddOnModel addon = state.addOns[index];
                         final bool selected = state.selectedAddOnIds.contains(addon.id);
 
-                        return AddOnCard(
-                          addon: addon,
-                          selected: selected,
-                          onToggle: () {
-                            context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanToggleAddon(addon));
-                          },
+                        return Padding(
+                          padding: EdgeInsets.only(left: 15, right: 15),
+                          child: AddOnCard(
+                            addon: addon,
+                            selected: selected,
+                            onToggle: () {
+                              context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanToggleAddon(addon));
+                            },
+                          ),
                         );
                       }
 

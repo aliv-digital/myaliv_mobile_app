@@ -27,12 +27,22 @@ class AddOnCard extends StatelessWidget {
       onTap: onToggle,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: GuestPurchasePlanTheme.addOnCardBackground,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1.2),
+          border: Border.all(
+            color: selected ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -47,9 +57,10 @@ class AddOnCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: GuestPurchasePlanTheme.addOnTitle,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
 
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (isSvg)
                         SvgPicture.asset(iconPath, width: 16, height: 16)
@@ -60,7 +71,7 @@ class AddOnCard extends StatelessWidget {
                         addon.label, // data balance
                         style: GuestPurchasePlanTheme.addOnLabel,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           addon.value, // 1gb
@@ -103,9 +114,9 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
       decoration: BoxDecoration(
-        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1.2),
+        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
         borderRadius: BorderRadius.circular(8),
         color: Colors.white,
       ),
@@ -132,12 +143,12 @@ class _CheckBoxSquare extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(6),
       child: Container(
-        width: 22,
-        height: 22,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
           color: checked ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1.2),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
         ),
         alignment: Alignment.center,
         child: checked

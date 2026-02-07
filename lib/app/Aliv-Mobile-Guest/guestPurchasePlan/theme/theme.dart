@@ -48,27 +48,36 @@ class GuestPurchasePlanTheme {
     color: Colors.black,
   );
 
+  // Add-ons helper copy under the title
+  static final TextStyle addOnHelper = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 14,
+    height: 1.4,
+    fontWeight: FontWeight.w600,
+    color: Colors.black,
+  );
+
   // Add-on label (e.g., data balance)
   static final TextStyle addOnLabel = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w700,
-    color: HexColor.fromHex('#FF5A3C'),
+    fontWeight: FontWeight.w500,
+    color: HexColor.fromHex('#FF6C36'),
   );
 
-  // Add-on value (e.g., 1GB)
+  // Add-on value (e.g., 1gb)
   static final TextStyle addOnValue = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w900,
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 
   // Add-on price pill
   static final TextStyle addOnPrice = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w800,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
     color: brandPurple,
   );
 

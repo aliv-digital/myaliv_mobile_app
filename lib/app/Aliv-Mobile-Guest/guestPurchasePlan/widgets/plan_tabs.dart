@@ -43,7 +43,7 @@ class PlanTabs extends StatelessWidget {
           SizedBox(
             height: 44,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
               separatorBuilder: (_, _) => const SizedBox(width: 26),
