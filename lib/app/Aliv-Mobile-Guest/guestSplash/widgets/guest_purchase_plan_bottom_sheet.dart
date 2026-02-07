@@ -399,7 +399,7 @@ class _GuestSplashPurchasePlanSheetView extends StatelessWidget {
           padding: EdgeInsets.only(bottom: bottomInset),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
@@ -472,6 +472,8 @@ class _SheetBody extends StatelessWidget {
               onChanged: (v) => context
                   .read<GuestSplashBloc>()
                   .add(GuestSplashPurchasePlanPhoneChanged(v)),
+              showPicker: true,
+              showArrow: true,
             ),
 
             const SizedBox(height: 16),
@@ -485,6 +487,8 @@ class _SheetBody extends StatelessWidget {
               onChanged: (v) => context
                   .read<GuestSplashBloc>()
                   .add(GuestSplashPurchasePlanConfirmPhoneChanged(v)),
+              showPicker: false,
+              showArrow: false,
             ),
 
             const SizedBox(height: 14),
@@ -551,17 +555,18 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
           borderRadius: BorderRadius.circular(22),
           onTap: onBack,
           child: const Padding(
             padding: EdgeInsets.all(6),
-            child: Icon(Icons.arrow_back, size: 22),
+            child: Icon(Icons.arrow_back, size: 24),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(height: 12),
         Text(
           title,
           style: GuestSplashTheme.sheetTitle,
@@ -589,12 +594,16 @@ class _PhoneRow extends StatelessWidget {
   final String hint;
   final VoidCallback onPickCountry;
   final ValueChanged<String> onChanged;
+  final bool showPicker;
+  final bool showArrow;
 
   const _PhoneRow({
     required this.country,
     required this.hint,
     required this.onPickCountry,
     required this.onChanged,
+    required this.showPicker,
+    required this.showArrow,
   });
 
   static const Color _borderColor = Color(0xFFE3E3E3);
@@ -607,11 +616,11 @@ class _PhoneRow extends StatelessWidget {
     return Row(
       children: [
         InkWell(
-          onTap: onPickCountry,
+          onTap: showPicker ? onPickCountry : null,
           borderRadius: BorderRadius.circular(10),
           child: Container(
             height: 52,
-            width: 82,
+            width: 96,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               border: Border.all(color: _borderColor, width: 1),
@@ -627,6 +636,14 @@ class _PhoneRow extends StatelessWidget {
                   dial,
                   style: GuestSplashTheme.dialCode,
                 ),
+                if (showArrow) ...[
+                  const SizedBox(width: 2),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: Color(0xFF9E9E9E),
+                  ),
+                ],
               ],
             ),
           ),
