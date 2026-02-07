@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
+import '../theme/theme.dart';
 
 
 class LibertyGlobalPlanCard extends StatelessWidget {
@@ -20,9 +21,6 @@ class LibertyGlobalPlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _muted = Color(0xFF8B8B8B);
-
   @override
   Widget build(BuildContext context) {
     // ✅ liberty global center metric: prefer intl talk benefit
@@ -35,7 +33,7 @@ class LibertyGlobalPlanCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -56,26 +54,47 @@ class LibertyGlobalPlanCard extends StatelessWidget {
                 child: InkWell(
                   onTap: onToggle,
                   borderRadius: BorderRadius.circular(10),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible(
-                        child: Text(
-                          plan.title, // liberty global haiti
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: 'CircularPro',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.black,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              plan.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: 'CircularPro',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 0),
+                          AnimatedRotation(
+                            duration: const Duration(milliseconds: 180),
+                            turns: expanded ? 0.5 : 0.0,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 28,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      AnimatedRotation(
-                        duration: const Duration(milliseconds: 180),
-                        turns: expanded ? 0.5 : 0.0,
-                        child: const Icon(Icons.keyboard_arrow_down, size: 22),
+                      Text(
+                        plan.subtitle,
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: GuestPurchasePlanTheme.subtitleColor,
+                        ),
                       ),
                     ],
                   ),
@@ -85,25 +104,12 @@ class LibertyGlobalPlanCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 6),
-
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              plan.subtitle, // 365 days
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: _muted,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
           // ===== Center metric (intl talk) =====
           _CenterMetric(benefit: center),
+
+          const SizedBox(height: 16),
 
           // ===== Expanded description =====
           AnimatedCrossFade(
@@ -112,18 +118,15 @@ class LibertyGlobalPlanCard extends StatelessWidget {
             expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  plan.description,
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 12.2,
-                    height: 1.35,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF2C2C2C),
-                  ),
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                plan.description,
+                style: const TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 12.2,
+                  height: 1.35,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF2C2C2C),
                 ),
               ),
             ),
@@ -134,38 +137,38 @@ class LibertyGlobalPlanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: SizedBox(
-                  height: 42,
+                  height: 40,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.grey.shade300),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(22),
                       ),
-                      backgroundColor: const Color(0xFFF1F1F6),
+                      backgroundColor: GuestPurchasePlanTheme.viewDetailsButtonColor,
                     ),
                     onPressed: onViewDetails,
                     child: Text(
                       expanded ? 'hide details' : 'view details',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 13,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w600,
-                        color: _brand,
+                        color: GuestPurchasePlanTheme.brandPurple,
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: SizedBox(
-                  height: 42,
+                  height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _brand,
+                      backgroundColor: GuestPurchasePlanTheme.brandPurple,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(22),
                       ),
                     ),
                     onPressed: onPurchaseNow,
@@ -173,7 +176,7 @@ class LibertyGlobalPlanCard extends StatelessWidget {
                       'purchase now',
                       style: TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 13,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
@@ -193,23 +196,21 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
-  static const Color _brand = Color(0xFF5D5A8B);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        border: Border.all(color: _brand, width: 1.2),
+        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'CircularPro',
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: _brand,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: GuestPurchasePlanTheme.brandPurple,
         ),
       ),
     );
@@ -219,9 +220,6 @@ class _PricePill extends StatelessWidget {
 class _CenterMetric extends StatelessWidget {
   final PlanBenefit benefit;
   const _CenterMetric({required this.benefit});
-
-  static const Color _muted = Color(0xFF8B8B8B);
-  static const Color _accent = Color(0xFF00A9D8); // blue-ish like screenshot
 
   @override
   Widget build(BuildContext context) {
@@ -237,38 +235,42 @@ class _CenterMetric extends StatelessWidget {
               SvgPicture.asset(iconPath, width: 16, height: 16)
             else
               Image.asset(iconPath, width: 16, height: 16),
-            const SizedBox(width: 6),
-            Text(
-              benefit.label, // "int'l talk"
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: _accent,
+            const SizedBox(width: 2),
+            Transform.translate(
+              offset: const Offset(0, -2),
+              child: Text(
+                benefit.label,
+                style: const TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 12,
+                  height: 1.0,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF00A9D8),
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 2),
         Text(
-          benefit.value, // "30"
+          benefit.value,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 22,
+            fontSize: 16,
             height: 1.0,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
-          benefit.sub, // "talk mins"
+          benefit.sub,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 13,
+            fontSize: 12,
             height: 1.0,
-            fontWeight: FontWeight.w400,
-            color: _muted,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF707070),
           ),
         ),
       ],

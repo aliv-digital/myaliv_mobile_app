@@ -319,24 +319,27 @@ class _GuestPurchasePlanView extends StatelessWidget {
                       }
 
                       if (state.selectedTab == PlanTab.libertyGlobal) {
-                        return LibertyGlobalPlanCard(
-                          plan: plan,
-                          expanded: expanded,
-                          onToggle: () {
-                            context
-                                .read<GuestPurchasePlanBloc>()
-                                .add(GuestPurchasePlanToggleExpanded(plan.id));
-                          },
-                          onViewDetails: () {
-                            context
-                                .read<GuestPurchasePlanBloc>()
-                                .add(GuestPurchasePlanToggleExpanded(plan.id));
-                          },
-                          onPurchaseNow: () {
-                            context
-                                .read<GuestPurchasePlanBloc>()
-                                .add(GuestPurchasePlanPurchaseNowPressed(plan));
-                          },
+                        return Padding(
+                          padding: EdgeInsets.only(left: 15, right: 15),
+                          child: LibertyGlobalPlanCard(
+                            plan: plan,
+                            expanded: expanded,
+                            onToggle: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanToggleExpanded(plan.id));
+                            },
+                            onViewDetails: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanToggleExpanded(plan.id));
+                            },
+                            onPurchaseNow: () {
+                              context
+                                  .read<GuestPurchasePlanBloc>()
+                                  .add(GuestPurchasePlanPurchaseNowPressed(plan));
+                            },
+                          ),
                         );
                       }
 
