@@ -30,38 +30,24 @@ class GuestSplashScreen extends StatelessWidget {
 class GuestSplashView extends StatelessWidget {
   const GuestSplashView({super.key});
 
-  // Design reference: tuned on A52 logical height (~915)
-  static const double _designBaseHeight = 915;
-  static const double _horizontalBase = 25;
-  static const double _titleOffsetFromPurpleTop = 44;
-  static const double _designBottomGapBase = 24;
-  static const double _imageBottomMaskHeightBase = 24;
-  static const int _topSectionFlex = 60;
-  static const int _bottomSectionFlex = 40;
-  static const double _logoWidthBase = 192;
-  static const double _logoHeightBase = 98;
-  static const double _logoBottomOffsetBase = 92;
-  static const double _backButtonSizeBase = 36;
-  static const double _backIconSizeBase = 26;
+  // Fixed design tokens from Figma.
+  static const double _heroHeight = 460;
+  static const double _heroBottomPurpleMaskHeight = 36;
+  static const double _horizontalPadding = 24;
+  static const double _titleTopPadding = 6;
+  static const double _bottomTailSpace = 103;
+  static const double _titleToFirstButtonGap = 27;
+  static const double _buttonVerticalGap = 20;
+  static const double _logoTopOffset = _heroHeight - _logoHeight - 80;
+  static const double _logoWidth = 193;
+  static const double _logoHeight = 99;
+  static const double _backButtonSize = 36;
+  static const double _backIconSize = 26;
+  static const double _backButtonTopOffset = 46;
+  static const double _backButtonLeftOffset = 12;
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final scale = (size.height / _designBaseHeight).clamp(0.85, 1.2);
-    final horizontal = _horizontalBase * scale;
-    final designBottomGap = _designBottomGapBase * scale;
-    final imageBottomMaskHeight = _imageBottomMaskHeightBase * scale;
-    // Keep title exactly 44px from the first visible purple start.
-    // The top image already draws 24px purple mask, so subtract that here.
-    const titleTopPadding =
-        _titleOffsetFromPurpleTop - _imageBottomMaskHeightBase;
-    final logoWidth = _logoWidthBase * scale;
-    final logoHeight = _logoHeightBase * scale;
-    // Keep logo exactly 40px above the purple boundary line.
-    const logoBottomOffset = _logoBottomOffsetBase;
-    final backButtonSize = _backButtonSizeBase * scale;
-    final backIconSize = _backIconSizeBase * scale;
-
     //  ensure status + navigation areas match the screen color (single color look)
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -89,139 +75,143 @@ class GuestSplashView extends StatelessWidget {
           if (state is GuestSplashInitial) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is GuestSplashLoadedState) {
-            return Column(
-              children: [
-                // -------- Top image area (flexible) --------
-                Expanded(
-                  flex: _topSectionFlex,
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Image.asset(
-                          AssetConstant.guestImagePNG,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      Positioned(
-                        top: 12,
-                        left: 12,
-                        child: SafeArea(
-                          bottom: false,
-                          child: InkWell(
-                            onTap: () {
-                              context.pop();
-                            },
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              width: backButtonSize,
-                              height: backButtonSize,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.6),
-                                shape: BoxShape.circle,
-                              ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.chevron_left,
-                                color: Colors.black,
-                                size: backIconSize,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: logoBottomOffset,
-                        left: size.width / 2 - (logoWidth / 2),
-                        right: size.width / 2 - (logoWidth / 2),
-                        child: SvgPicture.asset(
-                          AssetConstant.splashLogoSVG,
-                          width: logoWidth,
-                          height: logoHeight,
-                        ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          height: imageBottomMaskHeight,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                GuestSplashTheme.purple.withValues(alpha: 0.0),
-                                GuestSplashTheme.purple,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final minPurpleHeight =
+                    (constraints.maxHeight - _heroHeight).clamp(
+                  0.0,
+                  double.infinity,
+                );
 
-                // -------- Bottom panel (flexible + consistent spacing) --------
-                Expanded(
-                  flex: _bottomSectionFlex,
-                  child: Container(
-                    width: double.infinity,
-                    color: GuestSplashTheme.purple,
-                    padding: EdgeInsets.fromLTRB(
-                      horizontal,
-                      titleTopPadding,
-                      horizontal,
-                      safeBottom + designBottomGap,
-                    ),
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(minHeight: constraints.maxHeight),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Please Select Option',
-                          style: GuestSplashTheme.title,
+                        SizedBox(
+                          height: _heroHeight,
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: Image.asset(
+                                  AssetConstant.guestImagePNG,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                top: _backButtonTopOffset,
+                                left: _backButtonLeftOffset,
+                                child: SafeArea(
+                                  bottom: false,
+                                  child: InkWell(
+                                    onTap: () {
+                                      context.pop();
+                                    },
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Container(
+                                      width: _backButtonSize,
+                                      height: _backButtonSize,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.6),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: const Icon(
+                                        Icons.chevron_left,
+                                        color: Colors.black,
+                                        size: _backIconSize,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: _logoTopOffset,
+                                left:
+                                    constraints.maxWidth / 2 - (_logoWidth / 2),
+                                right:
+                                    constraints.maxWidth / 2 - (_logoWidth / 2),
+                                child: SvgPicture.asset(
+                                  AssetConstant.splashLogoSVG,
+                                  width: _logoWidth,
+                                  height: _logoHeight,
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: -6,
+                                child: Container(
+                                  height: _heroBottomPurpleMaskHeight,
+                                  color: GuestSplashTheme.purple,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 27),
-
-                        GuestSplashButton(
-                          label: 'why ALIV ?',
-                          onPressed: () => context.push(AppRoutes.whyAliv),
+                        Container(
+                          width: double.infinity,
+                          constraints:
+                              BoxConstraints(minHeight: minPurpleHeight),
+                          color: GuestSplashTheme.purple,
+                          padding: EdgeInsets.fromLTRB(
+                            _horizontalPadding,
+                            _titleTopPadding,
+                            _horizontalPadding,
+                            safeBottom,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Please Select Option',
+                                style: GuestSplashTheme.title,
+                              ),
+                              const SizedBox(height: _titleToFirstButtonGap),
+                              GuestSplashButton(
+                                label: 'why ALIV ?',
+                                onPressed: () =>
+                                    context.push(AppRoutes.whyAliv),
+                              ),
+                              const SizedBox(height: _buttonVerticalGap),
+                              GuestSplashButton(
+                                label: 'top-up',
+                                onPressed: () =>
+                                    context.push(AppRoutes.guestTopUp),
+                              ),
+                              const SizedBox(height: _buttonVerticalGap),
+                              GuestSplashButton(
+                                label: 'purchase a plan',
+                                onPressed: () async {
+                                  final result =
+                                      await showGuestSplashPurchasePlanBottomSheet(
+                                    context,
+                                  );
+                                  if (!context.mounted) return;
+                                  if (result != null) {
+                                    debugPrint(
+                                        'PurchasePlan -> ${result.fullPhone}');
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: _buttonVerticalGap),
+                              GuestSplashButton(
+                                label: 'bill pay',
+                                onPressed: () =>
+                                    context.push(AppRoutes.guestPayBill),
+                              ),
+                              const SizedBox(height: _bottomTailSpace),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 20),
-
-                        GuestSplashButton(
-                          label: 'top-up',
-                          onPressed: () => context.push(AppRoutes.guestTopUp),
-                        ),
-                        const SizedBox(height: 20),
-
-                        GuestSplashButton(
-                          label: 'purchase a plan',
-                          onPressed: () async {
-                            final result =
-                                await showGuestSplashPurchasePlanBottomSheet(
-                                    context);
-
-                            if (!context.mounted) return;
-
-                            if (result != null) {
-                              debugPrint('PurchasePlan -> ${result.fullPhone}');
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 20),
-
-                        GuestSplashButton(
-                          label: 'bill pay',
-                          onPressed: () => context.push(AppRoutes.guestPayBill),
-                        ),
-
-                        // ✅ fills remaining space so layout looks consistent on all devices
-                        const Spacer(),
                       ],
                     ),
                   ),
-                ),
-              ],
+                );
+              },
             );
           }
 
