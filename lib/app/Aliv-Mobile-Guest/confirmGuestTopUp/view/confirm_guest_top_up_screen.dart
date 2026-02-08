@@ -168,6 +168,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   builder: (context, state) {
                     return DefaultPaymentBreakDownCard(
                       placeDividerBeforeLastItem: true,
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
                       items: [
                         PaymentBreakdownLineItem(
                           label: 'sub total',
