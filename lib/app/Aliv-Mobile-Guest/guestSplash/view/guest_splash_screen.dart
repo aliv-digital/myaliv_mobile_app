@@ -43,7 +43,7 @@ class GuestSplashView extends StatelessWidget {
   static const double _logoHeight = 99;
   static const double _backButtonSize = 36;
   static const double _backIconSize = 26;
-  static const double _backButtonTopOffset = 46;
+  static const double _backButtonTopOffset = 12;
   static const double _backButtonLeftOffset = 12;
 
   @override
@@ -98,6 +98,7 @@ class GuestSplashView extends StatelessWidget {
                                 child: Image.asset(
                                   AssetConstant.guestImagePNG,
                                   fit: BoxFit.cover,
+                                  alignment: const Alignment(0, -0.9),
                                 ),
                               ),
                               Positioned(
