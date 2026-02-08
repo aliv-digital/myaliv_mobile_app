@@ -64,7 +64,8 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.guestSplash,//guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes
+        .guestSplash, //guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
@@ -76,7 +77,7 @@ class AppRouter {
         builder: (context, state) => const FaceIdSecurityScreen(),
       ),
       GoRoute(
-        path:AppRoutes.fingerPrintSecurityScreen,
+        path: AppRoutes.fingerPrintSecurityScreen,
         builder: (context, state) => const FingerPrintSecurityScreen(),
       ),
       GoRoute(
@@ -84,9 +85,8 @@ class AppRouter {
         builder: (context, state) => const HelpScreen(),
       ),
       GoRoute(
-         path: AppRoutes.privacyScreen,
-         builder: (context,state) => const PrivacyScreen()
-      ),
+          path: AppRoutes.privacyScreen,
+          builder: (context, state) => const PrivacyScreen()),
       GoRoute(
         path: AppRoutes.securityScreen,
         builder: (context, state) => const SecurityScreen(),
@@ -122,11 +122,11 @@ class AppRouter {
       ),
       GoRoute(
           path: AppRoutes.otpAutoRenewPrepaidScreen,
-          builder: (context,state) => const OtpAutoRenewPrepaidScreen()
-      ),
+          builder: (context, state) => const OtpAutoRenewPrepaidScreen()),
       GoRoute(
         path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
-        builder: (context, state) => const EnterPasswordAutoRenewPrepaidScreen(),
+        builder: (context, state) =>
+            const EnterPasswordAutoRenewPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.autoRenewAuthPrepaidScreen,
@@ -160,7 +160,6 @@ class AppRouter {
         path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
         builder: (context, state) => const TopUpPrepaidNumberPostPaid(),
       ),
-
       GoRoute(
         path: AppRoutes.topUpPrepaidScreen,
         builder: (context, state) => const TopUpPrepaidScreen(),
@@ -175,32 +174,25 @@ class AppRouter {
       ),
       GoRoute(
           path: AppRoutes.rewardDetailsPrepaidScreen,
-          builder: (context,state) => const RewardDetailsPrepaidScreen()
-      ),
+          builder: (context, state) => const RewardDetailsPrepaidScreen()),
       GoRoute(
           path: AppRoutes.rewardPrepaidScreen,
-          builder: (context,state) => const RewardPrepaidScreen()
-      ),
+          builder: (context, state) => const RewardPrepaidScreen()),
       GoRoute(
           path: AppRoutes.otpProfilePrepaidScreen,
-          builder: (context,state) => const OtpProfilePrepaidScreen()
-      ),
+          builder: (context, state) => const OtpProfilePrepaidScreen()),
       GoRoute(
           path: AppRoutes.changePasswordPrepaidScreen,
-          builder: (context,state) => const ChangePasswordPrepaidScreen()
-      ),
+          builder: (context, state) => const ChangePasswordPrepaidScreen()),
       GoRoute(
           path: AppRoutes.enterPassWordPrepaidScreen,
-          builder: (context,state) => const EnterPasswordPrepaidScreen()
-      ),
+          builder: (context, state) => const EnterPasswordPrepaidScreen()),
       GoRoute(
           path: AppRoutes.editEmailPrepaidScreen,
-          builder: (context,state) => const EditEmailPrepaidScreen()
-      ),
+          builder: (context, state) => const EditEmailPrepaidScreen()),
       GoRoute(
           path: AppRoutes.myProfilePrepaidScreen,
-          builder: (context,state) => const MyProfilePrepaidScreen()
-      ),
+          builder: (context, state) => const MyProfilePrepaidScreen()),
       GoRoute(
         path: AppRoutes.profilePostpaidScreen,
         builder: (context, state) => const ProfilePostpaidScreen(),
@@ -210,30 +202,28 @@ class AppRouter {
         builder: (context, state) => const ProfilePrepaidScreen(),
       ),
       GoRoute(
-        path: AppRoutes.guestPurchasePlanReceipt,
-        builder: (context, state) => const GuestPurchasePlanReceiptScreen(
-          phoneNumber: '242-801-1616',
-          amount: 75,
-          dateText: 'Mar 12,2023',
-          timeText: '446332'
-        )
-      ),
+          path: AppRoutes.guestPurchasePlanReceipt,
+          builder: (context, state) => const GuestPurchasePlanReceiptScreen(
+              phoneNumber: '242-801-1616',
+              amount: 75,
+              dateText: 'Mar 12,2023',
+              timeText: '446332')),
       GoRoute(
-        path: AppRoutes.guestPurchasePlanConfirmation,
-        builder: (context, state) => const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545',)
-      ),
+          path: AppRoutes.guestPurchasePlanConfirmation,
+          builder: (context, state) =>
+              const GuestPurchasePlanConfirmationScreen(
+                phoneNumber: '23434545',
+              )),
       GoRoute(
           path: AppRoutes.guestPurchasePlanAddOns,
-          builder: (context,state) => const GuestPurchasePlanAddOnsScreen()
-      ),
+          builder: (context, state) => const GuestPurchasePlanAddOnsScreen()),
       GoRoute(
         path: AppRoutes.guestPayBillReceipt,
         builder: (context, state) => const GuestPayBillReceiptScreen(
             phoneNumber: '234235454',
-            amount:12,
+            amount: 12,
             dateText: '12-23-2025',
-            timeText: '08:34'
-        ),
+            timeText: '08:34'),
       ),
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
@@ -257,7 +247,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestTopUpReceipt,
         builder: (context, state) => const GuestTopUpReceiptScreen(
-          phoneNumber: '234235454',
+          phoneNumber: '234-235-454',
           amount: 12,
           dateText: '12-23-2025',
           timeText: '08:34',
@@ -306,9 +296,8 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmGuestTopUp,
         builder: (context, state) =>
-            GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12),
+            GuestConfirmTopUpScreen(phoneNumber: '245-346-452356', amount: 15),
       ),
-
       ShellRoute(
         builder: (context, state, child) {
           return BottomShell(child: child);

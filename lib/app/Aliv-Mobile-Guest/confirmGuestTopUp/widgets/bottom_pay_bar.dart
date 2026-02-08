@@ -25,6 +25,8 @@ class BottomPayBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final numericAmount = amountText.replaceAll('\$', '').trim();
+
     return Material(
       color: backgroundColor,
       elevation: 10,
@@ -44,9 +46,21 @@ class BottomPayBar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        amountText,
-                        style: TopUpConfirmTheme.payBarAmount,
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '\$',
+                              style: TopUpConfirmTheme.payBarAmount.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' $numericAmount',
+                              style: TopUpConfirmTheme.payBarAmount,
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(

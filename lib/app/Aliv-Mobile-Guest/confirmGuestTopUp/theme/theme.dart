@@ -66,7 +66,7 @@ class TopUpConfirmTheme{
 
   // Terms link text
   static final TextStyle termsLink = TextStyle(
-    fontSize: 12.5,
+    fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w800,
     height: 1.25,

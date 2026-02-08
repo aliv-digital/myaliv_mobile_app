@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -32,11 +33,11 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
         create: (ctx) => GuestConfirmTopUpBloc(
           repository: ctx.read<GuestConfirmTopUpRepository>(),
         )..add(
-          GuestConfirmTopUpStarted(
-            phoneNumber: phoneNumber,
-            amount: amount,
+            GuestConfirmTopUpStarted(
+              phoneNumber: phoneNumber,
+              amount: amount,
+            ),
           ),
-        ),
         child: const _GuestConfirmTopUpView(),
       ),
     );
@@ -46,7 +47,6 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
 class _GuestConfirmTopUpView extends StatelessWidget {
   const _GuestConfirmTopUpView();
 
-  static const _purple = Color(0xFF655C9A);
   static const _bg = Color(0xFFF1F2FA);
 
   void _openTerms(BuildContext context) {
@@ -58,7 +58,8 @@ class _GuestConfirmTopUpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
       listenWhen: (prev, curr) =>
-      prev.status != curr.status || prev.termsRequestId != curr.termsRequestId,
+          prev.status != curr.status ||
+          prev.termsRequestId != curr.termsRequestId,
       listener: (context, state) {
         if (state.status == GuestConfirmTopUpStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -88,36 +89,38 @@ class _GuestConfirmTopUpView extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: _bg,
-        bottomNavigationBar: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+        bottomNavigationBar:  BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
           builder: (context, state) {
             return BottomPayBar(
-              amountText: '\$ ${state.total.toStringAsFixed(2)}',
-              isLoading: state.status == GuestConfirmTopUpStatus.loading,
-              onPayNow: () {
-                // context.read<GuestConfirmTopUpBloc>().add(
-                //   const GuestConfirmTopUpPayNowPressed(),
-                // );
-                context.push(AppRoutes.guestTopUpReceipt);
-              }
-            );
+                amountText: '\$ ${state.total.toStringAsFixed(2)}',
+                isLoading: state.status == GuestConfirmTopUpStatus.loading,
+                onPayNow: () {
+                  // context.read<GuestConfirmTopUpBloc>().add(
+                  //   const GuestConfirmTopUpPayNowPressed(),
+                  // );
+                  context.push(AppRoutes.guestTopUpReceipt);
+                });
           },
         ),
         body: SafeArea(
             child: CustomScrollView(
           slivers: [
-
             SliverToBoxAdapter(
-              child: DefaultAppBar(title: 'confirmation and payment', onBack: (){
-                context.pop();
-              }),
+              child: DefaultAppBar(
+                backgroundColor: HexColor.fromHex('FF645D9C'),
+                  title: 'confirmation and payment',
+                  onBack: () {
+                    context.pop();
+                  }),
             ),
             // 1) Top card
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 29,right:29,top: 31),
-                child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+                padding: const EdgeInsets.only(left: 29, right: 29, top: 31),
+                child:
+                    BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                   buildWhen: (p, c) =>
-                  p.phoneNumber != c.phoneNumber || p.total != c.total,
+                      p.phoneNumber != c.phoneNumber || p.total != c.total,
                   builder: (context, state) {
                     return TopUpSummaryCard(
                       phoneNumber: state.phoneNumber,
@@ -134,13 +137,16 @@ class _GuestConfirmTopUpView extends StatelessWidget {
             // 2) Terms text
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 29,right: 29,top: 17,bottom: 17),
-                child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+                padding: const EdgeInsets.only(
+                    left: 29, right: 29, top: 17, bottom: 17),
+                child:
+                    BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                   builder: (context, state) {
                     return TermsAndConditionsText(
-                      onTapTerms: () => context.read<GuestConfirmTopUpBloc>().add(
-                        const GuestConfirmTopUpTermsPressed(),
-                      ),
+                      onTapTerms: () =>
+                          context.read<GuestConfirmTopUpBloc>().add(
+                                const GuestConfirmTopUpTermsPressed(),
+                              ),
                     );
                   },
                 ),
@@ -152,12 +158,16 @@ class _GuestConfirmTopUpView extends StatelessWidget {
             // 3) Payment breakdown
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 29,right: 29),
-                child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+                padding: const EdgeInsets.only(left: 29, right: 29),
+                child:
+                    BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                   buildWhen: (p, c) =>
-                  p.subTotal != c.subTotal || p.vat != c.vat || p.total != c.total,
+                      p.subTotal != c.subTotal ||
+                      p.vat != c.vat ||
+                      p.total != c.total,
                   builder: (context, state) {
                     return DefaultPaymentBreakDownCard(
+                      placeDividerBeforeLastItem: true,
                       items: [
                         PaymentBreakdownLineItem(
                           label: 'sub total',
@@ -181,8 +191,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
             // bottom spacing যাতে bottom bar এর সাথে collide না করে
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
-        )
-        ),
+        )),
       ),
     );
   }

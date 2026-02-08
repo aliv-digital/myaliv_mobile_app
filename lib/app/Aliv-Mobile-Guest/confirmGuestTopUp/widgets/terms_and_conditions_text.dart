@@ -19,7 +19,15 @@ class TermsAndConditionsText extends StatelessWidget {
         text: TextSpan(
           style: TopUpConfirmTheme.termsBase,
           children: [
-            const TextSpan(text: 'By pressing “pay now” you agree to the '),
+            const TextSpan(
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: 'CircularPro',
+                height: 1.43,
+                fontWeight: FontWeight.w400,
+              ),
+              text: 'By pressing “pay now” you agree to the ',
+            ),
             TextSpan(
               text: 'Terms &\nConditions.',
               style: TopUpConfirmTheme.termsLink,

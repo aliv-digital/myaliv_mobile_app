@@ -119,11 +119,15 @@ class _AmountPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: TopUpConfirmTheme.boxColor,//Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(width: 2, color: _pillBorder),
+        border: Border.all(width: 1, color: _pillBorder),
       ),
       child: Text(
         text,
-        style: TopUpConfirmTheme.summaryAmountPill.copyWith(color: _pillText),
+        style: TopUpConfirmTheme.summaryAmountPill.copyWith(
+            color: _pillText,
+            fontSize: 16,
+            fontWeight: FontWeight.w400
+        ),
       ),
     );
   }
