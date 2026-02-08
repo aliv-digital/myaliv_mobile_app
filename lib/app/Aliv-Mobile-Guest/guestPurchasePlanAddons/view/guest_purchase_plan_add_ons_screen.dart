@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/guest_purchase_plan_add_ons_bloc.dart';
@@ -26,8 +28,9 @@ class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
           repository: ctx.read<GuestPurchasePlanAddOnsRepository>(),
         )..add(const GuestPurchasePlanAddOnsStarted()),
         child: _GuestPurchasePlanAddOnsView(
-          onSkip: () {},
-          onProceed: () {},
+          onSkip: () => context.push(AppRoutes.guestPurchasePlanConfirmation),
+          onProceed: () =>
+              context.push(AppRoutes.guestPurchasePlanConfirmation),
         ),
       ),
     );
@@ -77,12 +80,15 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
           child: Column(
             children: [
               DefaultAppBar(
-                  title: 'add-ons',
-                  showBackArrow: false,
-                  actionText: 'skip',
-                  onActionTextTap: () => context
-                      .read<GuestPurchasePlanAddOnsBloc>()
-                      .add(const GuestPurchasePlanAddOnsSkipPressed())),
+                title: 'add-ons',
+                showBackArrow: false,
+                actionText: 'skip',
+                onActionTextTap: () {
+                  debugPrint('[GuestPurchasePlanAddOns] skip tapped');
+                  //context.read<GuestPurchasePlanAddOnsBloc>().add(const GuestPurchasePlanAddOnsSkipPressed());
+                  context.push(AppRoutes.guestPurchasePlanConfirmation);
+                },
+              ),
               Expanded(
                 child: BlocBuilder<GuestPurchasePlanAddOnsBloc,
                     GuestPurchasePlanAddOnsState>(
