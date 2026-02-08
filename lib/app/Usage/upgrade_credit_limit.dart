@@ -8,7 +8,7 @@ import '../../router/app_routes.dart';
 class UpgradeCreditLimitScreen extends StatelessWidget {
   const UpgradeCreditLimitScreen({super.key});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color bg = Color(0xFFF4F6FB);
   static const Color fieldBg = Color(0xFFF1F0FA);
   static const Color textMuted = Color(0xFF7A7A7A);

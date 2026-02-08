@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import 'data/transactions.dart';
@@ -8,9 +9,9 @@ class TransactionTile extends StatelessWidget {
 
   const TransactionTile({super.key, required this.item});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color credit = Color(0xFF27AE60);
-  static const Color debit = Color(0xFFE5532D);
+  static const Color debit = Color(0xFFE94408);
   static const Color iconBg = Color(0xFFF2F1FB);
 
   @override
@@ -20,10 +21,10 @@ class TransactionTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
@@ -40,7 +41,7 @@ class TransactionTile extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   if (item.subtitle != null) ...[
@@ -49,7 +50,9 @@ class TransactionTile extends StatelessWidget {
                       item.subtitle!,
                       style: const TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 12,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+
                         color: Color(0xFF7A7A7A),
                       ),
                     ),
@@ -67,7 +70,7 @@ class TransactionTile extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'CircularPro',
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: amountColor,
                   ),
                 ),
@@ -76,12 +79,15 @@ class TransactionTile extends StatelessWidget {
                   DateFormat('dd MMM yyyy').format(item.date),
                   style: const TextStyle(
                     fontFamily: 'CircularPro',
-                    fontSize: 11,
-                    color: Color(0xFF7A7A7A),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF707070),
                   ),
                 ),
               ],
             ),
+            const SizedBox(width: 8),
+
           ],
         ),
       ),
@@ -94,18 +100,18 @@ class _TransactionIcon extends StatelessWidget {
 
   const _TransactionIcon({required this.type});
 
-  IconData get icon {
+  Widget get icon {
     switch (type) {
       case TransactionType.sendMoney:
-        return Icons.replay;
+        return SvgPicture.asset('assets/icons/send_money.svg');
       case TransactionType.planPurchase:
-        return Icons.monetization_on_outlined;
+        return SvgPicture.asset('assets/icons/plan_purchanse.svg');
       case TransactionType.redeemCode:
-        return Icons.attach_money_rounded;
+        return SvgPicture.asset('assets/icons/redeem_code.svg');
       case TransactionType.billPayment:
-        return Icons.payments_outlined;
+        return SvgPicture.asset('assets/icons/bill_payment.svg');
       case TransactionType.topUp:
-        return Icons.refresh_rounded;
+        return SvgPicture.asset('assets/icons/top_up.svg');
     }
   }
 
@@ -116,9 +122,12 @@ class _TransactionIcon extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         color: const Color(0xFFF2F1FB),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Icon(icon, size: 20, color: const Color(0xFF6C63A6)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: icon,
+      ),
     );
   }
 }

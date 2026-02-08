@@ -11,9 +11,9 @@ class PostpaidBillingCard extends StatefulWidget {
 }
 
 class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
-  bool autoPayEnabled = false; // UI-only state
+  bool autoPayEnabled = true; // UI-only state
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color lightPurple = Color(0xFFF1F0FA);
   static const Color border = Color(0xFFE6E6EE);
   static const Color textDark = Color(0xFF1E1E2D);
@@ -48,33 +48,36 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                 const Spacer(),
 
                 /// TEXT + REAL SWITCH (as in design)
-                Row(
-                  children: [
+                SizedBox(
+                  height: 28,
+                  child: Row(
+                    children: [
 
-                    Switch(
-                      value: autoPayEnabled,
-                      onChanged: (value) {
-                        setState(() {
-                          autoPayEnabled = value;
-                        });
-                      },
-                      activeThumbColor: Colors.white,
+                      Switch(
+                        value: autoPayEnabled,
+                        onChanged: (value) {
+                          setState(() {
+                            autoPayEnabled = value;
+                          });
+                        },
+                        activeThumbColor: Colors.white,
 
-                      activeTrackColor: purple,
-                      inactiveThumbColor: Colors.white,
-                      inactiveTrackColor: const Color(0xFFE0E0E8),
-                      materialTapTargetSize:
-                      MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    Text(
-                      autoPayEnabled ? 'On' : 'Off',
-                      style: const TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 14,
-                        color: textMuted,
+                        activeTrackColor: purple,
+                        inactiveThumbColor: Colors.white,
+                        inactiveTrackColor: const Color(0xFFE0E0E8),
+                        materialTapTargetSize:
+                        MaterialTapTargetSize.shrinkWrap,
                       ),
-                    ),
-                  ],
+                      Text(
+                        autoPayEnabled ? 'On' : 'Off',
+                        style: const TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 14,
+                          color: textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -19,7 +19,7 @@ class BottomTabIcon extends StatelessWidget {
       height: 24,
       colorFilter: ColorFilter.mode(
         isActive
-            ? const Color(0xFF6C63A6) // active purple
+            ? const Color(0xFF645D9C) // active purple
             : const Color(0xFFB0AEDA), // inactive
         BlendMode.srcIn,
       ),

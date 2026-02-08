@@ -44,7 +44,7 @@ class _StaticFuturePlan extends StatelessWidget {
 class _StartPlanButton extends StatelessWidget {
   const _StartPlanButton();
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {

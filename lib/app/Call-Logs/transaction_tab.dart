@@ -46,7 +46,7 @@ class TransactionsTab extends StatelessWidget {
     ];
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       children: transactions
           .map((item) => TransactionTile(item: item))
           .toList(),

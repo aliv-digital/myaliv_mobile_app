@@ -11,7 +11,7 @@ class UsageScreen extends StatelessWidget {
 
   const UsageScreen({super.key, required this.config});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 // ---------------- CONFIG ----------------
 
   List<Tab> _tabs() {
@@ -81,7 +81,7 @@ class UsageScreen extends StatelessWidget {
 
 class UsageTabBar extends StatelessWidget {
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color grey = Color(0xFF9E9E9E);
   static const Color dividerBg = Color(0xFFF4F6FB);
   final List<Tab> tabs;

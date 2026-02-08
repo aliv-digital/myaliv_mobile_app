@@ -33,7 +33,7 @@ class TopUpFormInputField extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: TopUpPrepaidTheme.lightBg,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
         ),
         alignment: Alignment.centerLeft,
         child: TextField(
@@ -49,11 +49,11 @@ class TopUpFormInputField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             isCollapsed: true,
-            border: InputBorder.none,
+            border: InputBorder.none,contentPadding: EdgeInsets.zero,
             hintText: hint,
             hintStyle: TextStyle(
               fontFamily: 'CircularPro',
-              fontSize: 14,
+              fontSize: 13,
               color: TopUpPrepaidTheme.textMuted,
             ),
             prefixText: '\$ ',

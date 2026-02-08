@@ -43,7 +43,7 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
 class _GuestConfirmTopUpView extends StatelessWidget {
   const _GuestConfirmTopUpView();
 
-  static const _purple = Color(0xFF655C9A);
+  static const _purple = Color(0xFF645D9C);
   static const _bg = Color(0xFFF1F2FA);
 
   void _openTerms(BuildContext context) {

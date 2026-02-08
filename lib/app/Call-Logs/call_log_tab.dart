@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CallLogsTab extends StatelessWidget {
   const CallLogsTab({super.key});
@@ -6,7 +7,7 @@ class CallLogsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       children: const [
         _CallLogItem(
           number: '242-444-5555',
@@ -49,6 +50,7 @@ class CallLogsTab extends StatelessWidget {
     );
   }
 }
+
 class _CallLogItem extends StatelessWidget {
   final String number;
   final String subtitle;
@@ -72,17 +74,28 @@ class _CallLogItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
-            Icon(
-              isVoicemail ? Icons.call_missed : Icons.call_made,
-              color: isVoicemail ? red : green,
-            ),
+            // Icon(
+            //   isVoicemail ? Icons.call_missed : Icons.call_made,
+            //   color: isVoicemail ? red : green,
+            // ),
+            isVoicemail
+                ? SvgPicture.asset(
+                    height: 14,
+                    width: 14,
+                    'assets/icons/phone-hang-up.svg',
+                  )
+                : SvgPicture.asset(
+                    height: 14,
+                    width: 14,
+                    'assets/icons/phone-outgoing-01.svg',
+                  ),
             const SizedBox(width: 12),
 
             // LEFT TEXT
@@ -94,8 +107,9 @@ class _CallLogItem extends StatelessWidget {
                     number,
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF1C1C1C),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -103,8 +117,9 @@ class _CallLogItem extends StatelessWidget {
                     subtitle,
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
-                      fontSize: 12,
-                      color: Color(0xFF7A7A7A),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF858692),
                     ),
                   ),
                 ],
@@ -119,7 +134,10 @@ class _CallLogItem extends StatelessWidget {
                   time,
                   style: const TextStyle(
                     fontFamily: 'CircularPro',
-                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+
+                    fontSize: 13,
+                    color: const Color(0xFF1C1C1C) /* Black-100% */,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -127,8 +145,10 @@ class _CallLogItem extends StatelessWidget {
                   date,
                   style: const TextStyle(
                     fontFamily: 'CircularPro',
-                    fontSize: 11,
-                    color: Color(0xFF7A7A7A),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+
+                    color: const Color(0xFF1C1C1C) /* Black-100% */,
                   ),
                 ),
               ],

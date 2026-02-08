@@ -215,7 +215,15 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.callLogs,
-        builder: (context, state) => const CallLogsScreen(),
+        builder: (context, state) {
+          final tabParam = state.uri.queryParameters['tab'];
+
+          final initialTab = tabParam == 'call_logs'
+              ? CallLogsTabType.callLogs
+              : CallLogsTabType.transactions;
+
+          return CallLogsScreen(initialTab: initialTab);
+        },
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanReceipt,

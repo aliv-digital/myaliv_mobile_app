@@ -7,15 +7,16 @@ class TopUpPrepaidTheme {
   static const String fontFamily = 'CircularPro';
 
   // ✅ Colors (match your design tone)
-  static const Color primary = Color(0xFF5D5B9A); // purple appbar/button
+  static const Color primary = Color(0xFF645D9C); // purple appbar/button
   static const Color pageBg = Color(0xFFFFFFFF);
   static const Color textDark = Color(0xFF1F1F1F);
   static const Color textMuted = Color(0xFF7C7C7C);
 
   static const Color pillBg = Color(0xFFF1F2F4);
   static const Color divider = Color(0xFFE6E6EA);
-  static const Color purple = Color(0xFF6C63A6);
-  static const Color lightBg = Color(0xFFF1F0FA);
+  static const Color purple = Color(0xFF645D9C);
+  static const Color purple4 = Color(0xFF5045A7);
+  static const Color lightBg = Color(0xFFF1F1F8);
 
   static const double radius = 14;
 
