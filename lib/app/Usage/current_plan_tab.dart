@@ -8,7 +8,7 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color bg = Color(0xFFF4F6FB);
 
   @override
@@ -108,7 +108,7 @@ class CurrentPlanTab extends StatelessWidget {
 class _ActiveAddOns extends StatelessWidget {
   const _ActiveAddOns();
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +147,7 @@ class _AddOnChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF6C63A6)),
+        border: Border.all(color: const Color(0xFF645D9C)),
       ),
       child: Text(
         label,

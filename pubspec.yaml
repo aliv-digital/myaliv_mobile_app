@@ -2,7 +2,7 @@ name: myaliv_mobile_app
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 3.0.0+1
+version: 3.0.0+2
 
 environment:
   sdk: ^3.10.1
@@ -23,6 +23,7 @@ dependencies:
   iconsax_plus: ^1.0.0
   intl: ^0.20.2
   flutter_launcher_icons: ^0.14.4
+  flutter_advanced_switch: ^3.1.0
 
 dev_dependencies:
   flutter_test:

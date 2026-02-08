@@ -22,7 +22,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
       backgroundColor: TopUpPrepaidTheme.pageBg,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -128,7 +128,9 @@ class _SectionLabel extends StatelessWidget {
         style: const TextStyle(
           fontFamily: 'CircularPro',
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
+          color:  Color(0xFF1C1C1C) /* Black-100% */,
+
         ),
       ),
     );
@@ -153,7 +155,10 @@ class _ReadOnlyField extends StatelessWidget {
         value,
         style: const TextStyle(
           fontFamily: 'CircularPro',
-          fontSize: 15,
+          fontSize: 14,
+          color: const Color(0xFF707070),
+          fontWeight: FontWeight.w400,
+          height: 1.43,
         ),
       ),
     );

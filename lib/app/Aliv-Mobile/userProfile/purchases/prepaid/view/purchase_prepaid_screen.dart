@@ -131,7 +131,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.push(AppRoutes.autoRenewPrepaidScreen);
         break;
       case PurchasePrepaidAction.transactionHistory:
-        context.push(AppRoutes.callLogs);
+        context.push('${AppRoutes.callLogs}?tab=transactions',);
         break;
       case PurchasePrepaidAction.makePayment:
         context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);

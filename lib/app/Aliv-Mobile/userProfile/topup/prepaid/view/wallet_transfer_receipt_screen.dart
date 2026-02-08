@@ -13,7 +13,7 @@ class WalletTransferReceiptScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FB),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF6C63A6),
+        backgroundColor: const Color(0xFF645D9C),
         elevation: 0,
         title: const Text(
           'my receipt',
@@ -149,7 +149,7 @@ class _ReceiptCard extends StatelessWidget {
                     fontFamily: 'CircularPro',
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF6C63A6),
+                    color: Color(0xFF645D9C),
                   ),
                 ),
               ),

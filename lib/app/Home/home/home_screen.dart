@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
   // final bool hasActivePlan = true;
   // final bool isPrepaid = false;
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color bg = Color(0xFFF6F9FC);
   static const Color yellow = Color(0xFFF4D13D);
   static const Color blueBackground = Color(0xFFF1F7FA);

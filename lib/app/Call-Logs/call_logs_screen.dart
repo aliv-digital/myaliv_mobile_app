@@ -3,71 +3,128 @@ import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
 
 import 'call_log_tab.dart';
 
-class CallLogsScreen extends StatelessWidget {
-  const CallLogsScreen({super.key});
+enum CallLogsTabType { transactions, callLogs }
 
-  static const Color purple = Color(0xFF6C63A6);
+class CallLogsScreen extends StatefulWidget {
+  final CallLogsTabType initialTab;
+
+  const CallLogsScreen({
+    super.key,
+    this.initialTab = CallLogsTabType.transactions,
+  });
+
+  @override
+  State<CallLogsScreen> createState() => _CallLogsScreenState();
+}
+
+class _CallLogsScreenState extends State<CallLogsScreen>
+    with SingleTickerProviderStateMixin {
+  static const Color purple = Color(0xFF645D9C); //Color(0xFF6C63A6);
   static const Color bg = Color(0xFFF4F6FB);
+
+  late final TabController _tabController;
+  late final ValueNotifier<String> _titleNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final initialIndex = widget.initialTab == CallLogsTabType.transactions
+        ? 0
+        : 1;
+
+    _titleNotifier = ValueNotifier(_titleForIndex(initialIndex));
+
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
+
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) return;
+      _titleNotifier.value = _titleForIndex(_tabController.index);
+    });
+  }
+
+  String _titleForIndex(int index) {
+    return index == 0 ? 'history' : 'call logs';
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _titleNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: bg,
-        appBar: AppBar(
-          backgroundColor: purple,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: AppBar(
+        backgroundColor: purple,
+        centerTitle: false,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 22.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back,color: Colors.white,),
             onPressed: () => Navigator.pop(context),
           ),
-          title: const Text(
-            'call logs',
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 12),
-              child: _MonthSelector(),
-            ),
-          ],
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(52),
-            child: _CallLogsTabBar(),
-          ),
         ),
-        body: const TabBarView(
-          children: [
-            TransactionsTab(),
-            CallLogsTab(),
-          ],
+        title: ValueListenableBuilder<String>(
+          valueListenable: _titleNotifier,
+          builder: (_, title, __) {
+            return Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 17,color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            );
+          },
+        ),
+        actions: const [
+          Padding(padding: EdgeInsets.only(right: 24), child: _MonthSelector()),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: _CallLogsTabBar(controller: _tabController),
         ),
       ),
+      body: TabBarView(
+        controller: _tabController,
+        children: const [TransactionsTab(), CallLogsTab()],
+      ),
     );
+
   }
 }
+
 class _CallLogsTabBar extends StatelessWidget {
-  const _CallLogsTabBar();
+  final TabController controller;
 
-  static const Color purple = Color(0xFF6C63A6);
+  const _CallLogsTabBar({required this.controller});
+
+  static const Color purple = Color(0xFF645D9C);
   static const Color grey = Color(0xFF9E9E9E);
-
+  static const Color blue =  Color(0xFF0143EC);
+  static const Color black =  Color(0xFF21232A);
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       child: TabBar(
+        controller: controller,
         indicatorSize: TabBarIndicatorSize.tab,
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: purple, width: 3),
+          borderSide: BorderSide(color: blue, width: 2),
           insets: EdgeInsets.symmetric(horizontal: 32),
+
         ),
-        labelColor: purple,
+        labelColor: black,
         unselectedLabelColor: grey,
         labelStyle: const TextStyle(
           fontFamily: 'CircularPro',
@@ -85,31 +142,68 @@ class _CallLogsTabBar extends StatelessWidget {
         ],
       ),
     );
+    // return Container(
+    //   color: Colors.white,
+    //   child: TabBar(
+    //     indicatorSize: TabBarIndicatorSize.tab,
+    //     indicator: const UnderlineTabIndicator(
+    //       borderSide: BorderSide(color: purple, width: 3),
+    //       insets: EdgeInsets.symmetric(horizontal: 32),
+    //     ),
+    //     labelColor: purple,
+    //     unselectedLabelColor: grey,
+    //     labelStyle: const TextStyle(
+    //       fontFamily: 'CircularPro',
+    //       fontSize: 14,
+    //       fontWeight: FontWeight.w600,
+    //     ),
+    //     unselectedLabelStyle: const TextStyle(
+    //       fontFamily: 'CircularPro',
+    //       fontSize: 14,
+    //       fontWeight: FontWeight.w400,
+    //     ),
+    //     tabs: const [
+    //       Tab(text: 'transactions'),
+    //       Tab(text: 'call logs'),
+    //     ],
+    //   ),
+    // );
   }
 }
+
 class _MonthSelector extends StatelessWidget {
   const _MonthSelector();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      height: 36,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
-        children: const [
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(width: 8),
+          const Icon(Icons.calendar_today, size: 14),
+          const SizedBox(width: 8),
           Text(
-            'July 2024',
+            '2 July 2024',
             style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 13,
+              color: const Color(0xFF222222),
+              fontSize: 14,
+              fontFamily: 'Circular Pro',
               fontWeight: FontWeight.w500,
+              height: 1.43,
             ),
           ),
-          SizedBox(width: 4),
-          Icon(Icons.keyboard_arrow_down, size: 18),
+           SizedBox(width: 8),
+          const Icon(Icons.keyboard_arrow_down, size: 18),
+          const SizedBox(width: 8),
+
         ],
       ),
     );

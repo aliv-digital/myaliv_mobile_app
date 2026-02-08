@@ -59,7 +59,7 @@ class BottomShell extends StatelessWidget {
             },
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
-            selectedItemColor: const Color(0xFF6C63A6),
+            selectedItemColor: const Color(0xFF645D9C),
             unselectedItemColor: const Color(0xFFB0AEDA),
             selectedLabelStyle: const TextStyle(
               fontFamily: 'CircularPro',

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class GuestPurchasePlanAddOnsTheme {
   // Keep colors centralized so later UI changes are easy.
   static const Color bg = Color(0xFFF1F2FA);
-  static const Color appBarPurple = Color(0xFF655C9A);
+  static const Color appBarPurple = Color(0xFF645D9C);
 
   static const Color cardWhite = Colors.white;
 
@@ -12,7 +12,7 @@ class GuestPurchasePlanAddOnsTheme {
   static const Color planRedDark = Color(0xFFD81E23);
 
   // Borders
-  static const Color outlinePurple = Color(0xFF655C9A);
+  static const Color outlinePurple = Color(0xFF645D9C);
   static const Color shadow = Color(0x14000000);
 
   // Text

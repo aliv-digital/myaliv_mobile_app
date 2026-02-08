@@ -12,23 +12,27 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: TopUpPrepaidTheme.purple,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        centerTitle: false,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 24.0),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-        title: const Text(
+        title: Text(
           'auto renew authorization form',
           style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
             color: Colors.white,
+            fontSize: 17,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,19 +49,21 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
                   fontFamily: 'CircularPro',
                   fontSize: 14,
                   height: 1.5,
-                  color: Colors.black87,
+                  color: const Color(0xFF707070),
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
 
               // ================= SECTION TITLE =================
               const Text(
                 'electronic communication consent',
                 style: TextStyle(
                   fontFamily: 'CircularPro',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
+                  color: const Color(0xFF707070),
                 ),
               ),
 
@@ -75,7 +81,7 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
                   fontFamily: 'CircularPro',
                   fontSize: 14,
                   height: 1.5,
-                  color: Colors.black87,
+                  color:  Color(0xFF707070),
                 ),
               ),
 
@@ -85,21 +91,24 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
               const Text(
                 'James Brown',
                 style: TextStyle(
-                  fontFamily: 'CircularPro',
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w700,
+                  height: 1.43,
                 ),
               ),
 
               const SizedBox(height: 24),
 
               // ================= INPUT LABEL =================
-              const Text(
+              Text(
                 'name',
                 style: TextStyle(
-                  fontFamily: 'CircularPro',
+                  color: const Color(0xFF1C1C1C) /* Black-100% */,
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w700,
+                  height: 1.43,
                 ),
               ),
 
