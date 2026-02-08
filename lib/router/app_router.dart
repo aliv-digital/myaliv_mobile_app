@@ -249,8 +249,8 @@ class AppRouter {
         builder: (context, state) => const GuestTopUpReceiptScreen(
           phoneNumber: '234-235-454',
           amount: 12,
-          dateText: '12-23-2025',
-          timeText: '08:34',
+          dateText: 'Mar 22, 2023',
+          timeText: '08:34 am',
         ),
       ),
       GoRoute(
@@ -296,7 +296,8 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmGuestTopUp,
         builder: (context, state) =>
-            GuestConfirmTopUpScreen(phoneNumber: '245-346-452356', amount: 15),
+            GuestConfirmTopUpScreen(
+                phoneNumber: '245-346-452356', amount: 15),
       ),
       ShellRoute(
         builder: (context, state, child) {

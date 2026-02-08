@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/guest_top_up_receipt_bloc.dart';
 import '../bloc/guest_top_up_receipt_event.dart';
@@ -69,8 +71,9 @@ class _GuestTopUpReceiptView extends StatelessWidget {
               slivers: [
                 SliverToBoxAdapter(
                   child: DefaultAppBar(
+
                     showBackArrow: false,
-                      title: '  my receipt',
+                      title: '   my receipt',
                       onBack:(){}
                   ),
                 ),
@@ -84,44 +87,46 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                           if (data == null) return const SizedBox.shrink();
                           return ReceiptSuccessCard(
                             data: data,
-                            onBackHome: () {  },
+                            onBackHome: () {
+                              context.go(AppRoutes.home);
+                            },
                             pageBackground: ReceiptTheme.circleBackground,
                           );
                         }
                       )
                   )
                 ),
-                SliverToBoxAdapter(
-              //hasScrollBody: false,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
-                    child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
-                      builder: (context, state) {
-                        final data = state.data;
-                        if (data == null) return const SizedBox.shrink();
-
-                        return PaymentFailedTicket(
-                          phone: "242-300-2548",
-                          onPressed: () {
-                            Navigator.pop(context); // বা Home route
-                          },
-                        );
-                        // return ReceiptFailureCard(
-                        //   data: data,
-                        //   pageBackground: ReceiptTheme.screenBackground,
-                        //   onBackHome: () => context.read<GuestTopUpReceiptBloc>().add(
-                        //     const GuestTopUpReceiptBackToHomePressed(),
-                        //   ),
-                        // );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            //     SliverToBoxAdapter(
+            //   //hasScrollBody: false,
+            //   child: Center(
+            //     child: ConstrainedBox(
+            //       constraints: const BoxConstraints(maxWidth: 420),
+            //       child: Padding(
+            //         padding: const EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
+            //         child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
+            //           builder: (context, state) {
+            //             final data = state.data;
+            //             if (data == null) return const SizedBox.shrink();
+            //
+            //             return PaymentFailedTicket(
+            //               phone: "242-300-2548",
+            //               onPressed: () {
+            //                 Navigator.pop(context); // বা Home route
+            //               },
+            //             );
+            //             // return ReceiptFailureCard(
+            //             //   data: data,
+            //             //   pageBackground: ReceiptTheme.screenBackground,
+            //             //   onBackHome: () => context.read<GuestTopUpReceiptBloc>().add(
+            //             //     const GuestTopUpReceiptBackToHomePressed(),
+            //             //   ),
+            //             // );
+            //           },
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
               ],
             )
         )
