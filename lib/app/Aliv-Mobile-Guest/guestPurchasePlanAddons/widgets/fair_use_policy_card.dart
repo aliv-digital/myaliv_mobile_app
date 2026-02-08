@@ -24,7 +24,7 @@ class FairUsePolicyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           // Screenshot এর মতো light background feel (page bg এর সাথে blend)
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 10),
+          padding: const EdgeInsets.fromLTRB(5, 4, 0, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
