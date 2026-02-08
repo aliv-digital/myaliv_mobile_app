@@ -32,7 +32,7 @@ class HomeScreen extends StatelessWidget {
   static const Color blueBackground = Color(0xFFF1F7FA);
 
   final HomeUiConfig config = const HomeUiConfig(
-    userType: UserType.postpaid, // 🔥 switch here for demo
+    userType: UserType.prepaid, // 🔥 switch here for demo
     hasActivePlan: true,
   );
 
@@ -48,31 +48,16 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 100),
               child: Column(
                 children: [
-                  // _topHeader(),
-                  // const SizedBox(height: 12),
-                  // _balanceCard(),
-                  // const SizedBox(height: 20),
-                  // hasActivePlan ? ActivePlanCard() : _noActivePlan(context),
-                  // const SizedBox(height: 24),
-                  // hasActivePlan
-                  //     ? const ActivePlanUsageSection()
-                  //     : const SizedBox.shrink(),
-                  //
-                  // const SizedBox(height: 24),
-                  // _bestPlans(context),
-                  // const SizedBox(height: 24),
-                  // _quickActions(context),
-                  // const SizedBox(height: 24),
-                  // _limitedOffer(),
+
                   HomeHeader(config: config),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
 
                   /// 🔥 DIFFERENT CARD BASED ON USER TYPE
                   config.isPrepaid
                       ? const PrepaidBalanceCard()
                       : const PostpaidBillingCard(),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
 
                   config.hasActivePlan
                       ? config.userType == UserType.prepaid
@@ -102,7 +87,7 @@ class HomeScreen extends StatelessWidget {
   // ================= HEADER BG =================
   Widget _headerBackground() {
     return Container(
-      height: 260,
+      height: 380,
       decoration: const BoxDecoration(
         color: purple,
         borderRadius: BorderRadius.only(

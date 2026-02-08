@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../home/home_screen.dart';
 import 'amount_text.dart';
@@ -22,12 +23,12 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+        padding: const EdgeInsets.fromLTRB(24, 18, 20, 24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: border),
         ),
         child: Column(
@@ -36,13 +37,14 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
             // ================= AUTO PAY ROW =================
             Row(
               children: [
-                const Text(
+                Text(
                   'auto pay',
                   style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 22,
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Circular Pro',
                     fontWeight: FontWeight.w700,
-                    color: textDark,
+                    letterSpacing: -0.32,
                   ),
                 ),
                 const Spacer(),
@@ -52,7 +54,6 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   height: 28,
                   child: Row(
                     children: [
-
                       Switch(
                         value: autoPayEnabled,
                         onChanged: (value) {
@@ -61,19 +62,23 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                           });
                         },
                         activeThumbColor: Colors.white,
-
-                        activeTrackColor: purple,
+                        // activeTrackColor: purple,
                         inactiveThumbColor: Colors.white,
                         inactiveTrackColor: const Color(0xFFE0E0E8),
-                        materialTapTargetSize:
-                        MaterialTapTargetSize.shrinkWrap,
+                        trackColor: WidgetStateProperty.all(
+                          const Color(0xFFE0E0E8),
+                        ),
+                        thumbColor: WidgetStateProperty.all(purple),
+                        splashRadius: 14,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       Text(
                         autoPayEnabled ? 'On' : 'Off',
                         style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 14,
-                          color: textMuted,
+                          color: const Color(0xFF707070),
+                          fontSize: 8,
+                          fontFamily: 'Circular Pro',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
@@ -89,20 +94,20 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Icon
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: lightPurple,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Icons.account_balance_wallet_outlined,
-                    color: purple,
-                    size: 24,
-                  ),
-                ),
-
+                // Container(
+                //   width: 44,
+                //   height: 44,
+                //   decoration: BoxDecoration(
+                //     color: lightPurple,
+                //     borderRadius: BorderRadius.circular(14),
+                //   ),
+                //   child: const Icon(
+                //     Icons.account_balance_wallet_outlined,
+                //     color: purple,
+                //     size: 24,
+                //   ),
+                // ),
+                SvgPicture.asset('assets/icons/wallet.svg'),
                 const SizedBox(width: 14),
 
                 // Text
@@ -113,20 +118,24 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                       Text(
                         'balance due',
                         style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 18,
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontFamily: 'SF Pro',
                           fontWeight: FontWeight.w600,
-                          color: textDark,
+                          height: 1.18,
+                          letterSpacing: 0.06,
                         ),
                       ),
                       SizedBox(height: 6),
                       Text(
                         'payment is due the 15th of each\nmonth',
                         style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 14,
-                          height: 1.4,
-                          color: textMuted,
+                          color: Colors.black,
+                          fontSize: 10,
+                          fontFamily: 'SF Pro',
+                          fontWeight: FontWeight.w400,
+                          height: 1.30,
+                          letterSpacing: 0.06,
                         ),
                       ),
                     ],
@@ -147,7 +156,7 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
               ],
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 12),
 
             // ================= PAY NOW BUTTON =================
             SizedBox(
@@ -157,17 +166,18 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                 onPressed: () {
                   // UI only
                 },
-                icon: const Icon(
-                  Icons.credit_card,
-                  color: Colors.white, // 🔥 NOT WHITE (as per design)
+                icon: SvgPicture.asset(
+                  'assets/icons/card-add.svg',
+                  height: 18,
+                  width: 18,
                 ),
                 label: const Text(
                   'pay now',
                   style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white, // 🔥 NOT WHITE
+                    color: const Color(0xFFF1F1F8),
+                    fontSize: 13,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500, // 🔥 NOT WHITE
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -185,5 +195,3 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
     );
   }
 }
-
-

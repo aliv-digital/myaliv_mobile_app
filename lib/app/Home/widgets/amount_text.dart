@@ -14,26 +14,12 @@ class OutlinedAmountText extends StatelessWidget {
         Text(
           '\$129.00',
           style: TextStyle(
-            fontFamily: 'CircularPro',
+            color: const Color(0xFF5045A7),
             fontSize: 24,
+            fontFamily: 'Circular Pro',
             fontWeight: FontWeight.w700,
-            foreground: Paint()
-              ..style = PaintingStyle.stroke
-              ..strokeWidth = 3
-              ..color = strokeColor,
           ),
-        ),
-
-        // Fill
-        const Text(
-          '\$129.00',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: fillColor,
-          ),
-        ),
+        )
       ],
     );
   }
