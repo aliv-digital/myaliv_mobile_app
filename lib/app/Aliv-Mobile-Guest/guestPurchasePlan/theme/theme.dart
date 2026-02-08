@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
@@ -132,5 +131,64 @@ class GuestPurchasePlanTheme {
     fontSize: 10.5,
     fontWeight: FontWeight.w400,
     color: HexColor.fromHex('#8B8B8B'),
+  );
+
+  // Bottom-sheet shared colors
+  static final Color bottomSheetBackground = HexColor.fromHex('#F1F2FA');
+  static final Color warningBackground = HexColor.fromHex('#FFE8E8');
+  static final Color warningBorder = HexColor.fromHex('#FF8F8F');
+  static final Color warningText = HexColor.fromHex('#FF0000');
+  static final Color planSummaryBackground = HexColor.fromHex('#FFFFFF');
+  static final Color planPriceBorder = HexColor.fromHex('#6258B8');
+  static final Color planPriceText = HexColor.fromHex('#6258B8');
+  static final Color activateNowButton = HexColor.fromHex('#655D9C');
+
+  // Bottom-sheet shared text styles
+  static final TextStyle bottomSheetWarning = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: warningText,
+    height: 1.45,
+  );
+
+  static final TextStyle bottomSheetPlanName = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+    color: Colors.black,
+    height: 1.0,
+  );
+
+  static final TextStyle bottomSheetPlanDuration = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: subtitleColor,
+    height: 1.0,
+  );
+
+  static final TextStyle bottomSheetPrice = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    color: planPriceText,
+    height: 1.0,
+  );
+
+  static final TextStyle bottomSheetPrimaryAction = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 17,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+    height: 1.0,
+  );
+
+  static final TextStyle bottomSheetSecondaryAction = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 17,
+    fontWeight: FontWeight.w400,
+    color: planPriceBorder,
+    height: 1.0,
   );
 }
