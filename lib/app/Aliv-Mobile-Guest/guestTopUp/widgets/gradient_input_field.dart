@@ -94,6 +94,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
 
 class GradientInputField extends StatefulWidget {
@@ -112,8 +113,6 @@ class GradientInputField extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _GradientInputFieldState();
   }
-
-
 }
 
 class _GradientInputFieldState extends State<GradientInputField> {
@@ -140,7 +139,8 @@ class _GradientInputFieldState extends State<GradientInputField> {
 
     _isFormatting = true;
     _controller.text = '\$${cleaned}';
-    _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
+    _controller.selection =
+        TextSelection.collapsed(offset: _controller.text.length);
     _isFormatting = false;
     widget.onChanged(cleaned);
   }
@@ -149,7 +149,9 @@ class _GradientInputFieldState extends State<GradientInputField> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final fieldWidth = (constraints.maxWidth - 136).clamp(200.0, constraints.maxWidth);
+        final fieldWidth =
+            (constraints.maxWidth - 136).clamp(200.0, constraints.maxWidth);
+        final startAtTopLeftAngle = math.atan2(-68 / 2, -fieldWidth / 2);
 
         return Center(
           child: Column(
@@ -163,13 +165,35 @@ class _GradientInputFieldState extends State<GradientInputField> {
                     borderRadius: BorderRadius.circular(14),
                     gradient: SweepGradient(
                       colors: [
+                        // Start: top-left
                         GuestTopUpTheme.yellow,
+                        const Color(0xFF86C96A),
                         GuestTopUpTheme.blue,
+                        // Top-right
                         GuestTopUpTheme.purple,
+                        // Right side -> bottom-right
                         GuestTopUpTheme.lightPink,
                         GuestTopUpTheme.orange,
+                        // Bottom side
+                        GuestTopUpTheme.lightPink,
+                        GuestTopUpTheme.purple,
+                        // Left side -> back to top-left
+                        GuestTopUpTheme.blue,
                         GuestTopUpTheme.yellow,
                       ],
+                      stops: const [
+                        0.00, // yellow (top-left)
+                        0.08, // green blend
+                        0.22, // cyan/blue (top-mid)
+                        0.40, // purple (top-right)
+                        0.54, // pink (right-mid)
+                        0.66, // orange (bottom-right)
+                        0.76, // pink (bottom-mid)
+                        0.86, // purple (bottom-left)
+                        0.93, // blue (left-mid)
+                        1.00, // yellow (top-left close loop)
+                      ],
+                      transform: GradientRotation(startAtTopLeftAngle),
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -180,7 +204,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(2),
+                    padding: const EdgeInsets.all(3),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -192,7 +216,8 @@ class _GradientInputFieldState extends State<GradientInputField> {
                         maxLines: 1,
                         style: GuestTopUpTheme.amountInput,
                         onChanged: _handleInputChange,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         textAlign: TextAlign.center,
                         textAlignVertical: TextAlignVertical.center,
                         decoration: InputDecoration(

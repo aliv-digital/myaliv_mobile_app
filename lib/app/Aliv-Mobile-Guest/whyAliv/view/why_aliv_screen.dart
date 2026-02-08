@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_one.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_two.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/text_body.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/why_aliv_bloc.dart';
 import '../bloc/why_aliv_event.dart';
@@ -58,6 +59,7 @@ class _WhyAlivView extends StatelessWidget {
           child: Column(
             children: [
               DefaultAppBar(
+                backgroundColor: HexColor.fromHex('FF645D9C'),
                 title: WhyAlivStrings.whyAlivAppbarTitle,
                 onBack: () {
                   context.pop();

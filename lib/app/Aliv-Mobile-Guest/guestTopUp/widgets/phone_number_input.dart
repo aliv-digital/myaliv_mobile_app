@@ -19,7 +19,6 @@ class LabeledInputField extends StatelessWidget {
   final VoidCallback onPickCountry;
   final bool enableCountryPicker;
 
-  @override
   static const double _fieldHeight = 54;
   static const double _fieldRadius = 8;
   static const double _countryWidth = 76;

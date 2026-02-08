@@ -27,9 +27,10 @@ class GuestTopUpTheme {
   // Input label text above phone fields
   static final TextStyle inputLabel = TextStyle(
     fontSize: 14,
+    height: 1.43,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
-    color: Color(0xFF111111),
+    color: Colors.black,
   );
 
   // Phone input text

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/defaultButton.dart';
 import '../bloc/guest_topup_bloc.dart';
 import '../bloc/guest_topup_event.dart';
@@ -91,6 +92,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
           child: Column(
             children: [
               DefaultAppBar(
+                backgroundColor: HexColor.fromHex('FF645D9C'),
                 title: GuestTopUpStrings.guestTopUpAppbarTitle,
                 onBack: () {
                   context.pop();
@@ -104,8 +106,8 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                       child: Padding(
                           padding: EdgeInsets.only(
                             top: 25,
-                            left: 16,
-                            right: 16
+                            left: 23,
+                            right: 23
                           ),
                         child: LabeledInputField(
                             label: 'please enter an active prepaid number to top up',
@@ -122,8 +124,8 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                       child: Padding(
                         padding: EdgeInsets.only(
                             top: 20,
-                            left: 16,
-                            right: 16
+                            left: 23,
+                            right: 23
                         ),
                         child: LabeledInputField(
                             label: 'confirm mobile number',
@@ -155,6 +157,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
 
                           builder: (context, state) {
                             return DefaultButton(
+                              backgroundColor: HexColor.fromHex('FF645D9C'),
                               onPressed: () {
                                 context.push(AppRoutes.confirmGuestTopUp);
                               },

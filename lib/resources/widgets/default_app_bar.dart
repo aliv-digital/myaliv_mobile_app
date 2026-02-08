@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 /// DefaultAppBar (Reusable)
 /// - Back optional
@@ -11,7 +12,7 @@ class DefaultAppBar extends StatelessWidget {
 
     // Layout
     this.height = 56,
-    this.backgroundColor = const Color(0xFF655C9A),
+    this.backgroundColor = const Color(0xFF645D9C),
     this.horizontalPadding = 12,
     this.titleAlignment = AppBarTitleAlignment.left,
     this.centerTitle = false,
