@@ -33,7 +33,7 @@ class GuestSplashView extends StatelessWidget {
   // Fixed design tokens from Figma.
   static const double _heroHeight = 460;
   static const double _heroBottomPurpleMaskHeight = 36;
-  static const double _horizontalPadding = 24;
+  static const double _horizontalPadding = 25;
   static const double _titleTopPadding = 6;
   static const double _bottomTailSpace = 103;
   static const double _titleToFirstButtonGap = 27;
