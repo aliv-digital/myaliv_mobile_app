@@ -105,7 +105,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                             /// Purchase summary card (starts right after app bar)
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
+                                padding: const EdgeInsets.fromLTRB(29, 17, 29, 17),
                                 child: PurchaseSummaryCard(
                                   data: data,
                                   onRemoveItem: (id) => context
@@ -118,7 +118,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                             /// Terms notice (your exact padding)
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 29, right: 29, top: 17, bottom: 17),
+                                padding: const EdgeInsets.only(left: 29, right: 29, top: 0, bottom: 0),
                                 child: TermsNotice(
                                   onTermsTap: () => context
                                       .read<GuestPurchasePlanConfirmationBloc>()
@@ -130,7 +130,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                             /// Payment breakdown card
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
+                                padding: const EdgeInsets.fromLTRB(29, 17, 29, 0),
                                 child: PaymentBreakdownCard(
                                   subTotal: data.totals.subTotal,
                                   vat: data.totals.vat,

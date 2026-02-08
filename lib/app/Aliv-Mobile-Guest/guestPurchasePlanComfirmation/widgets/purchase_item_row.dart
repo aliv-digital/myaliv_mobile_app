@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../models/guest_purchase_plan_confirmation_models.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
 
@@ -55,6 +56,8 @@ class PurchaseItemRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
+
+            color: HexColor.fromHex('#EDEBF7'),
             border: Border.all(
               color: GuestPurchasePlanConfirmationTheme.outlinePurple,
               width: 1.4,

@@ -14,7 +14,7 @@ class TermsNotice extends StatelessWidget {
     return RichText(
       text: TextSpan(
         style: GuestPurchasePlanConfirmationTheme.t(
-          12,
+          14,
           weight: FontWeight.w700,
           color: GuestPurchasePlanConfirmationTheme.textBlack,
           height: 1.25,
@@ -29,7 +29,7 @@ class TermsNotice extends StatelessWidget {
               child: Text(
                 'Terms & Conditions.',
                 style: GuestPurchasePlanConfirmationTheme.t(
-                  12,
+                  14,
                   weight: FontWeight.w900,
                   color: GuestPurchasePlanConfirmationTheme.textBlack,
                 ).copyWith(decoration: TextDecoration.underline),
