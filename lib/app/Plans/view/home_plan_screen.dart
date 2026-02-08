@@ -110,6 +110,8 @@ class _HomePlanView extends StatelessWidget {
         child: Column(
           children: [
             DefaultAppBar(
+                notificationCount: 0,
+                showNotification: true,
                 title: 'plans',
                 onBack: () {
                   context.pop();
