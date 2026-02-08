@@ -110,6 +110,7 @@ class _HomePlanView extends StatelessWidget {
         child: Column(
           children: [
             DefaultAppBar(
+                showNotificationDotWhenZero: true,
                 notificationCount: 0,
                 showNotification: true,
                 title: 'plans',
