@@ -3,14 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 
-class HomePlanPlanCard extends StatelessWidget {
+class PlanCard extends StatelessWidget {
   final HomePlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
   final VoidCallback onPurchaseNow;
 
-  const HomePlanPlanCard({
+  const PlanCard({
     super.key,
     required this.plan,
     required this.expanded,
@@ -102,7 +102,7 @@ class HomePlanPlanCard extends StatelessWidget {
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -310,7 +310,8 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
+  Widget _indicatorUI(
+      double trackW, double trackH, double thumbW, double left) {
     return Stack(
       children: [
         Container(
