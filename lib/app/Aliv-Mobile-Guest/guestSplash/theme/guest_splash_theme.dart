@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestSplashTheme {
+  // Primary purple from Figma.
+  static final Color purple = HexColor.fromHex('#645D9C');
+
+  // Primary token used for guest splash option button text.
+  static final Color primaryButtonTextColor = purple;
+
+  // Guest splash option button text style.
+  static final TextStyle optionButtonText = TextStyle(
+    color: primaryButtonTextColor,
+    fontSize: 13,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.lerp(FontWeight.w400, FontWeight.w500, 0.5),
+  );
+
   // Main title: "Please Select Option"
-  static const TextStyle title = TextStyle(
+  static final TextStyle title = TextStyle(
     color: Colors.white,
     fontSize: 20,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.lerp(FontWeight.w400, FontWeight.w500, 0.5),
     letterSpacing: -0.30,
   );
 
@@ -37,7 +52,7 @@ class GuestSplashTheme {
 
   // Field label text: "enter mobile number" etc.
   static const TextStyle fieldLabel = TextStyle(
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     color: Colors.black,

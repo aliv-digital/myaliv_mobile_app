@@ -3,16 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
-import '../../../welcome/widgets/custom_button.dart';
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
 import '../bloc/guest_splash_state.dart';
 import '../repository/guest_splash_repository.dart';
 import '../theme/guest_splash_theme.dart';
+import '../widgets/guest_splash_button.dart';
 import '../widgets/guest_purchase_plan_bottom_sheet.dart';
 
 class GuestSplashScreen extends StatelessWidget {
@@ -22,7 +21,7 @@ class GuestSplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-      GuestSplashBloc(GuestSplashRepository())..add(GuestSplashLoaded()),
+          GuestSplashBloc(GuestSplashRepository())..add(GuestSplashLoaded()),
       child: const GuestSplashView(),
     );
   }
@@ -34,7 +33,7 @@ class GuestSplashView extends StatelessWidget {
   // Design reference: tuned on A52 logical height (~915)
   static const double _designBaseHeight = 915;
   static const double _horizontalBase = 25;
-  static const double _titleOffsetFromPurpleTopBase = 44;
+  static const double _titleOffsetFromPurpleTop = 44;
   static const double _designBottomGapBase = 24;
   static const double _imageBottomMaskHeightBase = 24;
   static const double _logoWidthBase = 192;
@@ -48,26 +47,28 @@ class GuestSplashView extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
     final scale = (size.height / _designBaseHeight).clamp(0.85, 1.2);
     final horizontal = _horizontalBase * scale;
-    final titleOffsetFromPurpleTop = _titleOffsetFromPurpleTopBase * scale;
     final designBottomGap = _designBottomGapBase * scale;
     final imageBottomMaskHeight = _imageBottomMaskHeightBase * scale;
-    final titleTopPadding = (titleOffsetFromPurpleTop - imageBottomMaskHeight).clamp(0.0, double.infinity);
+    // Keep title exactly 44px from the first visible purple start.
+    // The top image already draws 24px purple mask, so subtract that here.
+    const titleTopPadding =
+        _titleOffsetFromPurpleTop - _imageBottomMaskHeightBase;
     final logoWidth = _logoWidthBase * scale;
     final logoHeight = _logoHeightBase * scale;
     final logoBottomOffset = _logoBottomOffsetBase * scale;
     final backButtonSize = _backButtonSizeBase * scale;
     final backIconSize = _backIconSizeBase * scale;
 
-    // ✅ ensure status + navigation areas match the screen color (single color look)
+    //  ensure status + navigation areas match the screen color (single color look)
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
 
-        // ✅ bottom nav / gesture area same color
-        systemNavigationBarColor: ColorManager.welcomeScreenBloc,
-        systemNavigationBarDividerColor: ColorManager.welcomeScreenBloc,
+        //  bottom nav / gesture area same color
+        systemNavigationBarColor: GuestSplashTheme.purple,
+        systemNavigationBarDividerColor: GuestSplashTheme.purple,
         systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
@@ -75,9 +76,9 @@ class GuestSplashView extends StatelessWidget {
     final safeBottom = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
-      backgroundColor: ColorManager.welcomeScreenBloc,
+      backgroundColor: GuestSplashTheme.purple,
 
-      // ✅ draw body behind nav bar so it blends perfectly
+      //  draw body behind nav bar so it blends perfectly
       extendBody: true,
 
       body: BlocBuilder<GuestSplashBloc, GuestSplashState>(
@@ -146,8 +147,8 @@ class GuestSplashView extends StatelessWidget {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                ColorManager.welcomeScreenBloc.withValues(alpha: 0.0),
-                                ColorManager.welcomeScreenBloc,
+                                GuestSplashTheme.purple.withValues(alpha: 0.0),
+                                GuestSplashTheme.purple,
                               ],
                             ),
                           ),
@@ -162,7 +163,7 @@ class GuestSplashView extends StatelessWidget {
                   flex: 44,
                   child: Container(
                     width: double.infinity,
-                    color: ColorManager.welcomeScreenBloc,
+                    color: GuestSplashTheme.purple,
                     padding: EdgeInsets.fromLTRB(
                       horizontal,
                       titleTopPadding,
@@ -172,30 +173,30 @@ class GuestSplashView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Please Select Option',
                           style: GuestSplashTheme.title,
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 27),
 
-                        CustomButton(
-                          label: 'Why ALIV ?',
+                        GuestSplashButton(
+                          label: 'why ALIV ?',
                           onPressed: () => context.push(AppRoutes.whyAliv),
                         ),
                         const SizedBox(height: 20),
 
-                        CustomButton(
+                        GuestSplashButton(
                           label: 'top-up',
                           onPressed: () => context.push(AppRoutes.guestTopUp),
                         ),
                         const SizedBox(height: 20),
 
-                        CustomButton(
+                        GuestSplashButton(
                           label: 'purchase a plan',
                           onPressed: () async {
                             final result =
-                            await showGuestSplashPurchasePlanBottomSheet(
-                                context);
+                                await showGuestSplashPurchasePlanBottomSheet(
+                                    context);
 
                             if (!context.mounted) return;
 
@@ -206,7 +207,7 @@ class GuestSplashView extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
 
-                        CustomButton(
+                        GuestSplashButton(
                           label: 'bill pay',
                           onPressed: () => context.push(AppRoutes.guestPayBill),
                         ),

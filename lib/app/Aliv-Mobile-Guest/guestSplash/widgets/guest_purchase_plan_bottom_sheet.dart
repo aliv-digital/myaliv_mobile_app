@@ -562,7 +562,7 @@ class _Header extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
           onTap: onBack,
           child: const Padding(
-            padding: EdgeInsets.all(6),
+            padding: EdgeInsets.all(0),
             child: Icon(Icons.arrow_back, size: 24),
           ),
         ),
