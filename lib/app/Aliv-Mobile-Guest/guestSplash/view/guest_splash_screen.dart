@@ -36,9 +36,11 @@ class GuestSplashView extends StatelessWidget {
   static const double _titleOffsetFromPurpleTop = 44;
   static const double _designBottomGapBase = 24;
   static const double _imageBottomMaskHeightBase = 24;
+  static const int _topSectionFlex = 60;
+  static const int _bottomSectionFlex = 40;
   static const double _logoWidthBase = 192;
   static const double _logoHeightBase = 98;
-  static const double _logoBottomOffsetBase = 80;
+  static const double _logoBottomOffsetBase = 92;
   static const double _backButtonSizeBase = 36;
   static const double _backIconSizeBase = 26;
 
@@ -55,7 +57,8 @@ class GuestSplashView extends StatelessWidget {
         _titleOffsetFromPurpleTop - _imageBottomMaskHeightBase;
     final logoWidth = _logoWidthBase * scale;
     final logoHeight = _logoHeightBase * scale;
-    final logoBottomOffset = _logoBottomOffsetBase * scale;
+    // Keep logo exactly 40px above the purple boundary line.
+    const logoBottomOffset = _logoBottomOffsetBase;
     final backButtonSize = _backButtonSizeBase * scale;
     final backIconSize = _backIconSizeBase * scale;
 
@@ -90,7 +93,7 @@ class GuestSplashView extends StatelessWidget {
               children: [
                 // -------- Top image area (flexible) --------
                 Expanded(
-                  flex: 55,
+                  flex: _topSectionFlex,
                   child: Stack(
                     children: [
                       Positioned.fill(
@@ -160,7 +163,7 @@ class GuestSplashView extends StatelessWidget {
 
                 // -------- Bottom panel (flexible + consistent spacing) --------
                 Expanded(
-                  flex: 44,
+                  flex: _bottomSectionFlex,
                   child: Container(
                     width: double.infinity,
                     color: GuestSplashTheme.purple,
