@@ -10,11 +10,11 @@ class BottomStripes extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: const [
-        _Stripe(color: Color(0xFFF26C4F), height: 8), // উপরের কমলা
-        _Stripe(color: Color(0xFFE89BB8), height: 6), // হালকা পিংক
-        _Stripe(color: Color(0xFF000000), height: 6), // কালো
-        _Stripe(color: Color(0xFF6ECFF6), height: 6), // লাইট ব্লু
-        _Stripe(color: Color(0xFFFBB03B), height: 8), // নিচের হলুদ/কমলা
+        _Stripe(color: Color(0xFFF26C4F), height: 14), // উপরের কমলা
+        _Stripe(color: Color(0xFFE89BB8), height: 14), // হালকা পিংক
+        _Stripe(color: Color(0xFF000000), height: 14), // কালো
+        _Stripe(color: Color(0xFF6ECFF6), height: 14), // লাইট ব্লু
+        _Stripe(color: Color(0xFFFBB03B), height: 14), // নিচের হলুদ/কমলা
       ],
     );
   }

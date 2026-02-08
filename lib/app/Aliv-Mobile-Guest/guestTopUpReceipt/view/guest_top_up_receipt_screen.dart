@@ -70,7 +70,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                 SliverToBoxAdapter(
                   child: DefaultAppBar(
                     showBackArrow: false,
-                      title: 'my receipt',
+                      title: '  my receipt',
                       onBack:(){}
                   ),
                 ),

@@ -41,11 +41,11 @@ class _LogoTitle extends StatelessWidget {
           width: 96,
           height: 48,
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 30),
         Text(
           'welcome back',
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 17,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w600,
             color: AuthModuleColors.textBlack,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
 import '../bloc/confirm_topup_event.dart';
@@ -91,9 +93,12 @@ class _GuestConfirmTopUpView extends StatelessWidget {
             return BottomPayBar(
               amountText: '\$ ${state.total.toStringAsFixed(2)}',
               isLoading: state.status == GuestConfirmTopUpStatus.loading,
-              onPayNow: () => context.read<GuestConfirmTopUpBloc>().add(
-                const GuestConfirmTopUpPayNowPressed(),
-              ),
+              onPayNow: () {
+                // context.read<GuestConfirmTopUpBloc>().add(
+                //   const GuestConfirmTopUpPayNowPressed(),
+                // );
+                context.push(AppRoutes.guestTopUpReceipt);
+              }
             );
           },
         ),
@@ -102,7 +107,9 @@ class _GuestConfirmTopUpView extends StatelessWidget {
           slivers: [
 
             SliverToBoxAdapter(
-              child: DefaultAppBar(title: 'confirmation and payment', onBack: (){}),
+              child: DefaultAppBar(title: 'confirmation and payment', onBack: (){
+                context.pop();
+              }),
             ),
             // 1) Top card
             SliverToBoxAdapter(

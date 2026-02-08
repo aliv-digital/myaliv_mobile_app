@@ -156,7 +156,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                           builder: (context, state) {
                             return DefaultButton(
                               onPressed: () {
-                                context.push(AppRoutes.confirmTopUpPrepaidScreen);
+                                context.push(AppRoutes.confirmGuestTopUp);
                               },
                               label: 'next',
                               isLoading: false,

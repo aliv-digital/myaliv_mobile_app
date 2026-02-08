@@ -153,7 +153,7 @@ class DefaultAppBar extends StatelessWidget {
     if (leading != null) return leading!;
 
     if (!showBackArrow) {
-      return const SizedBox(width: 44);
+      return const SizedBox.shrink();
     }
 
     return IconButton(
