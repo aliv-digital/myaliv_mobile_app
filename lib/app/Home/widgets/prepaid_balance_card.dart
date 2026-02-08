@@ -10,12 +10,12 @@ class PrepaidBalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(8),
           boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
         ),
         child: Column(
@@ -23,21 +23,26 @@ class PrepaidBalanceCard extends StatelessWidget {
             _row('assets/icons/wallet.svg', 'top up balance', '\$00.00'),
             const SizedBox(height: 12),
             _row('assets/icons/reward.svg', 'reward balance', '\$00.00'),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
-              height: 44,
+              height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(IconsaxPlusLinear.add, color: Colors.white),
-                label: const Text(
+                label: Text(
                   'add topup',
-                  style: TextStyle(fontFamily: 'CircularPro'),
+                  style: TextStyle(
+                    color: const Color(0xFFF1F1F8),
+                    fontSize: 13,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: HomeScreen.purple,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
               ),
@@ -50,18 +55,28 @@ class PrepaidBalanceCard extends StatelessWidget {
 
   Widget _row(String icon, String label, String value) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SvgPicture.asset(icon, width: 22),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(label,
-              style: const TextStyle(fontFamily: 'CircularPro')),
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
         Text(
           value,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 18,
+            color: const Color(0xFF5045A7),
+            fontSize: 24,
+            fontFamily: 'Circular Pro',
             fontWeight: FontWeight.w700,
           ),
         ),

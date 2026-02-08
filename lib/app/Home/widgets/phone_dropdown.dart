@@ -21,7 +21,8 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white54),
+        border: Border.all(color: Colors.white54,width: 1),
+
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -29,8 +30,12 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
           dropdownColor: HomeScreen.purple,
           icon: const Icon(IconsaxPlusLinear.arrow_down, color: Colors.white),
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            color: Colors.white,
+
+            color: const Color(0xFFF1F1F8),
+            fontSize: 14,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
+            height: 1.14,
           ),
           items: const [
             DropdownMenuItem(value: '242-801-1616', child: Text('242-801-1616')),

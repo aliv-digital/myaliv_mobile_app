@@ -68,7 +68,8 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash,//guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes
+        .splash, //guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
@@ -80,7 +81,7 @@ class AppRouter {
         builder: (context, state) => const FaceIdSecurityScreen(),
       ),
       GoRoute(
-        path:AppRoutes.fingerPrintSecurityScreen,
+        path: AppRoutes.fingerPrintSecurityScreen,
         builder: (context, state) => const FingerPrintSecurityScreen(),
       ),
       GoRoute(
@@ -88,8 +89,8 @@ class AppRouter {
         builder: (context, state) => const HelpScreen(),
       ),
       GoRoute(
-         path: AppRoutes.privacyScreen,
-         builder: (context,state) => const PrivacyScreen()
+        path: AppRoutes.privacyScreen,
+        builder: (context, state) => const PrivacyScreen(),
       ),
       GoRoute(
         path: AppRoutes.securityScreen,
@@ -125,12 +126,13 @@ class AppRouter {
         builder: (context, state) => const ReferFriendPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.otpAutoRenewPrepaidScreen,
-          builder: (context,state) => const OtpAutoRenewPrepaidScreen()
+        path: AppRoutes.otpAutoRenewPrepaidScreen,
+        builder: (context, state) => const OtpAutoRenewPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
-        builder: (context, state) => const EnterPasswordAutoRenewPrepaidScreen(),
+        builder: (context, state) =>
+            const EnterPasswordAutoRenewPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.autoRenewAuthPrepaidScreen,
@@ -345,7 +347,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.postpaid,
+                    userType: UserType.prepaid,
                     hasActivePlan: true,
                   );
 
