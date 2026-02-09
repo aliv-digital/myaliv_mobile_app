@@ -5,8 +5,7 @@ import '../repository/settings_repository.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc({required SettingsRepository repository})
-      : _repository = repository,
-        super(SettingsState.initial()) {
+      : _repository = repository, super(SettingsState.initial()) {
     on<SettingsStarted>(_onStarted);
     on<FingerprintToggled>(_onFingerprintToggled);
     on<FaceScanToggled>(_onFaceScanToggled);
