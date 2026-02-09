@@ -250,7 +250,7 @@ class AppRouter {
           phoneNumber: '234-235-454',
           amount: 12,
           dateText: 'Mar 22, 2023',
-          timeText: '08:34 am',
+          timeText: '8:34 am',
         ),
       ),
       GoRoute(
