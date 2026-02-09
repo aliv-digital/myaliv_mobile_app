@@ -9,7 +9,7 @@ class DashedAddCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const radius = 999.0;
+    const radius = 100.0;
 
     return InkWell(
       onTap: onTap,
@@ -25,7 +25,7 @@ class DashedAddCardButton extends StatelessWidget {
             gapLength: 5,
           ),
           child: Container(
-            height: 56, // ✅ match figma better
+            height: 50, // ✅ match figma better
             width: double.infinity,
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -37,10 +37,11 @@ class DashedAddCardButton extends StatelessWidget {
                 Text(
                   'add a new card',
                   style: TextStyle(
-                    color: AutoRenewPrepaidTheme.primary,
-                    fontSize: 14,
-                    fontFamily: AutoRenewPrepaidTheme.fontFamily,
-                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF645D9C),
+                    fontSize: 13,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
+                    height: 1.54,
                   ),
                 ),
               ],

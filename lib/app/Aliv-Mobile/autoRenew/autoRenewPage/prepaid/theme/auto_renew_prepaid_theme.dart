@@ -14,25 +14,27 @@ class AutoRenewPrepaidTheme {
   static const String fontFamily = 'CircularPro';
 
   static TextStyle sectionTitle() => const TextStyle(
-    fontSize: 12,
+    color: Colors.black,
+    fontSize: 13,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w500,
-    color: textDark,
-    fontFamily: fontFamily,
   );
 
   static TextStyle tileTitle({bool selected = false}) => TextStyle(
+       fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+    color: selected ? const Color(0xFF645D9C):Color(0xFF222222),
     fontSize: 14,
-    height: 1.3,
-    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-    color: textDark,
-    fontFamily: fontFamily,
+    fontFamily: 'Circular Pro',
+    height: 1.43,
   );
 
-  static TextStyle tileSubtitle() => const TextStyle(
-    fontSize: 13,
-    height: 1.3,
-    fontWeight: FontWeight.w400,
-    color: textMuted,
-    fontFamily: fontFamily,
+  static TextStyle tileSubtitle({bool selected = false}) => TextStyle(
+    // color: selected ? const Color(0xFF645D9C): const Color(0xCC5146A8),
+    color: selected ? const Color(0xFF645D9C):Color(0xFF222222),
+
+    fontSize: 14,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w500,
+    height: 1.43,
   );
 }

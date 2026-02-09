@@ -95,7 +95,7 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
                       sliver: SliverToBoxAdapter(
                         child: _Body(
                           state: state,
@@ -178,13 +178,13 @@ class _SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56,
+      height: 50,
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor:
           AutoRenewAuthPrepaidTheme.primary.withValues(alpha: enabled ? 1 : 0.45),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           elevation: 0,
         ),
         onPressed: enabled ? onTap : null,
@@ -197,10 +197,10 @@ class _SubmitButton extends StatelessWidget {
             : Text(
           text,
           style: const TextStyle(
-            fontFamily: AutoRenewAuthPrepaidTheme.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: const Color(0xFFF1F1F8),
+            fontSize: 13,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class EnterPasswordPrepaidTheme {
   static const Color bg = Colors.white;
-  static const Color brand = Color(0xFF5D5A8B);
+  static const Color brand = Color(0xFF645D9C);
   static const Color muted = Color(0xFF6B7280);
   static const Color inputBorder = Color(0xFFE6E6EC);
   static const Color link = Color(0xFF00A3FF);

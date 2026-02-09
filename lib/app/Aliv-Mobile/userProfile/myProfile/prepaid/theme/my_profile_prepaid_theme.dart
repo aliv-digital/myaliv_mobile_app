@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyProfilePrepaidTheme {
-  static const Color brand = Color(0xFF6E6AA6); // top bar purple-ish
+  static const Color brand = Color(0xFF645D9C); // top bar purple-ish
   static const Color bg = Color(0xFFF1F2FA);
 
   static const Color cardBg = Colors.white;
