@@ -106,7 +106,11 @@ class _ProfilePrepaidView extends StatelessWidget {
                                         if (item.id == 'call_logs') {
                                           context.push('${AppRoutes.callLogs}?tab=call_logs',);
                                         }
-
+                                        if (item.id == 'rewards') {
+                                          context.push(
+                                            AppRoutes.rewardPrepaidScreen,
+                                          );
+                                        }
                                         context.read<ProfilePrepaidBloc>().add(
                                           ProfilePrepaidItemPressed(item),
                                         );

@@ -84,7 +84,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(28, 34, 28, 18),
+                      padding: const EdgeInsets.fromLTRB(42, 92, 42, 18),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -92,7 +92,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                             child: Column(
                               children: [
                                 const EnterPasswordAutoRenewPrepaidHeader(),
-                                const SizedBox(height: 22),
+                                const SizedBox(height: 28),
                                 BlocBuilder<
                                   EnterPasswordAutoRenewPrepaidBloc,
                                   EnterPasswordAutoRenewPrepaidState
@@ -123,9 +123,9 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 const EnterPasswordAutoRenewPrepaidTermsText(),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 30),
                                 BlocBuilder<
                                   EnterPasswordAutoRenewPrepaidBloc,
                                   EnterPasswordAutoRenewPrepaidState
@@ -160,7 +160,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 22),
                                 const EnterPasswordAutoRenewPrepaidOrDivider(),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 30),
                                 EnterPasswordAutoRenewPrepaidBiometricButtons(
                                   onFaceId: () => context
                                       .read<EnterPasswordAutoRenewPrepaidBloc>()

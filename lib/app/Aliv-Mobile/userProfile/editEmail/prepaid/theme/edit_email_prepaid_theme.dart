@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class EditEmailPrepaidTheme {
   static const Color bg = Color(0xFFFFFFFF);
-  static const Color brand = Color(0xFF5D5A8B);
+  static const Color brand = Color(0xFF645D9C);
   static const Color textMuted = Color(0xFF8B8B8B);
 
   static const Color inputBg = Color(0xFFF1F2FA);

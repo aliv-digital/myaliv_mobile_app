@@ -18,7 +18,7 @@ class ReferFriendPrepaidPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,
+      height: 40,
       width: double.infinity,
       child: ElevatedButton(
         onPressed: enabled ? onTap : null,
@@ -26,7 +26,7 @@ class ReferFriendPrepaidPrimaryButton extends StatelessWidget {
           backgroundColor: ReferFriendPrepaidTheme.brand,
           disabledBackgroundColor: ReferFriendPrepaidTheme.brand.withValues(alpha: 0.35),
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         ),
         child: isLoading
             ? const SizedBox(

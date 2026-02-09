@@ -32,64 +32,67 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
       backgroundColor: ReviewInvoicePostpaidTheme.pageBg,
       body: SafeArea(
         bottom: false,
-        child: BlocConsumer<ReviewInvoicePostpaidBloc, ReviewInvoicePostpaidState>(
-          listenWhen: (prev, curr) =>
-          prev.lastPressed != curr.lastPressed && curr.lastPressed != null,
-          listener: (context, state) {
-            // Future hook: tapped invoice -> state.lastPressed
-          },
-          builder: (context, state) {
-            if (state.status == ReviewInvoicePostpaidStatus.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+        child:
+            BlocConsumer<ReviewInvoicePostpaidBloc, ReviewInvoicePostpaidState>(
+              listenWhen: (prev, curr) =>
+                  prev.lastPressed != curr.lastPressed &&
+                  curr.lastPressed != null,
+              listener: (context, state) {
+                // Future hook: tapped invoice -> state.lastPressed
+              },
+              builder: (context, state) {
+                if (state.status == ReviewInvoicePostpaidStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            if (state.status == ReviewInvoicePostpaidStatus.failure) {
-              return Center(
-                child: Text(
-                  state.errorMessage ?? 'Something went wrong',
-                  style: ReviewInvoicePostpaidTheme.metaValue(context),
-                ),
-              );
-            }
+                if (state.status == ReviewInvoicePostpaidStatus.failure) {
+                  return Center(
+                    child: Text(
+                      state.errorMessage ?? 'Something went wrong',
+                      style: ReviewInvoicePostpaidTheme.metaValue(context),
+                    ),
+                  );
+                }
 
-            return Column(
-              children: [
-                // ✅ Fixed / sticky top appbar
-                DefaultAppBar(
-                  title: 'review invoices',
-                  backgroundColor: ReviewInvoicePostpaidTheme.appBarColor,
-                ),
+                return Column(
+                  children: [
+                    // ✅ Fixed / sticky top appbar
+                    DefaultAppBar(
+                      title: 'review invoices',
+                      backgroundColor: ReviewInvoicePostpaidTheme.appBarColor,
+                    ),
 
-                const SizedBox(height: 14),
+                    const SizedBox(height: 14),
 
-                // ✅ Only this part scrolls
-                Expanded(
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(24, 0, 20, 20),
-                        sliver: SliverList.separated(
-                          itemCount: state.invoices.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final invoice = state.invoices[index];
-                            return InvoiceTile(
-                              invoice: invoice,
-                              onTap: () => context
-                                  .read<ReviewInvoicePostpaidBloc>()
-                                  .add(PostpaidInvoicePressed(invoice)),
-                            );
-                          },
-                        ),
+                    // ✅ Only this part scrolls
+                    Expanded(
+                      child: CustomScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 20, 20),
+                            sliver: SliverList.separated(
+                              itemCount: state.invoices.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final invoice = state.invoices[index];
+                                return InvoiceTile(
+                                  invoice: invoice,
+                                  onTap: () => context
+                                      .read<ReviewInvoicePostpaidBloc>()
+                                      .add(PostpaidInvoicePressed(invoice)),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+                    ),
+                  ],
+                );
+              },
+            ),
       ),
     );
   }

@@ -19,7 +19,7 @@ class PlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  static const Color _brand = Color(0xFF5D5A8B);
+  static const Color _brand = Color(0xFF645D9C);
   static const Color _muted = Color(0xFF8B8B8B);
   static const Color _divider = Color(0xFFE9E9EE);
 
@@ -183,7 +183,7 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
-  static const Color _brand = Color(0xFF5D5A8B);
+  static const Color _brand = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
