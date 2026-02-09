@@ -97,10 +97,22 @@ class _ProfilePrepaidView extends StatelessWidget {
                                     if (item.id == 'my_profile') {
                                       context.push(AppRoutes.myProfilePrepaidScreen);
                                     }
-                                    context
-                                        .read<ProfilePrepaidBloc>()
-                                        .add(ProfilePrepaidItemPressed(item));
-                                  },
+                                    //context.read<ProfilePrepaidBloc>().add(ProfilePrepaidItemPressed(item));
+                                    if (item.id == 'rewards') {
+                                      context.push(AppRoutes.rewardPrepaidScreen);
+                                    }
+                                    if(item.id == 'call_logs'){
+                                      // go to call logs
+                                    }
+                                    if(item.id == 'gift_data'){
+                                      // go to gift data
+                                    }
+                                    if(item.id == 'my_plans'){
+                                      // go to my plans
+                                    }
+
+
+                                    },
                                 );
                               }),
                             ],
