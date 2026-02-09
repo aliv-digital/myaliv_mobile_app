@@ -11,7 +11,7 @@ class SecurityTheme {
 
   // Layout
   static const double appBarHeight = 56;
-  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 18, 16, 24);
+  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
 
   // Typography (match screenshot feel)
   static const TextStyle title = TextStyle(

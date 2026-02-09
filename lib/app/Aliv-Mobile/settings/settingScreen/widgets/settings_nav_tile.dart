@@ -50,17 +50,17 @@ class _IconCircle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 34,
-      width: 34,
+      height: 40,
+      width: 40,
       decoration: BoxDecoration(
         color: SettingsTheme.iconCircleBg,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Center(
         child: SvgPicture.asset(
           svgAsset,
-          width: 18,
-          height: 18,
+          width: 20,
+          height: 20,
           fit: BoxFit.contain,
         ),
       ),

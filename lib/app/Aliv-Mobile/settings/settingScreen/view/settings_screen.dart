@@ -64,7 +64,7 @@ class _SettingsView extends StatelessWidget {
                     ),
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: SettingsTheme.pagePadding.copyWith(bottom: 120),
+                        padding: EdgeInsets.fromLTRB(24, 31, 24, 16),//SettingsTheme.pagePadding.copyWith(bottom: 120),
                         child: Column(
                           children: [
                             // Card 1: security

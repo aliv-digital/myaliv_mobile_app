@@ -95,11 +95,10 @@ class DefaultAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = const TextStyle(
-      fontSize: 17,
-      height: 1.25,
-      fontFamily: 'CircularPro',
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
+        color: Colors.white,
+        fontSize: 17,
+        fontFamily: 'Circular Pro',
+        fontWeight: FontWeight.w700,
     );
 
     return Material(
