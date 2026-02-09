@@ -150,10 +150,15 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
               mobileNumber: state.mobileNumber,
               confirmMobileNumber: state.confirmMobileNumber,
             )
-          : await repo.verifyRev(
-              accountNumber: state.accountNumber,
-              enteredName: state.name,
-            );
+          : state.isAlivFibr
+              ? await repo.verifyAlivFibr(
+                  accountNumberOrUsername: state.accountNumber,
+                  enteredName: state.name,
+                )
+              : await repo.verifyRev(
+                  accountNumber: state.accountNumber,
+                  enteredName: state.name,
+                );
 
       emit(state.copyWith(
         verifyStatus: GuestPayBillVerifyStatus.success,

@@ -172,16 +172,18 @@ class _GuestPayBillView extends StatelessWidget {
                               ],
                             ),
                           ] else ...[
-                            Text('account number',
+                            Text(state.accountIdentifierLabel,
                                 style: GuestPayBillTheme.labelStyle()),
                             const SizedBox(height: _labelToFieldGap),
                             TextField(
-                              keyboardType: TextInputType.number,
+                              keyboardType: state.isAlivFibr
+                                  ? TextInputType.text
+                                  : TextInputType.number,
                               onChanged: (v) => context
                                   .read<GuestPayBillBloc>()
                                   .add(GuestPayBillAccountNumberChanged(v)),
                               decoration: GuestPayBillTheme.fieldDecoration(
-                                hint: 'enter number',
+                                hint: state.accountIdentifierHint,
                               ),
                             ),
                             const SizedBox(height: _sectionGap),
