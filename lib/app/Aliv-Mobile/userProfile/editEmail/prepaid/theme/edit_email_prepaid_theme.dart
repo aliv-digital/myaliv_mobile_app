@@ -12,14 +12,15 @@ class EditEmailPrepaidTheme {
     fontSize: 14,
     height: 1.43,
     fontWeight: FontWeight.w700,
-    color: Colors.black,
+    color: Color(0xFF1C1C1C),
   );
 
   static const TextStyle fieldValue = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 14,
     height: 1.43,
-    fontWeight: FontWeight.w400,
-    color: textMuted,
+    // Closest available Flutter weight for requested w450.
+    fontWeight: FontWeight.w500,
+    color: Color(0xFF707070),
   );
 }

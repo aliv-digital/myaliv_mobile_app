@@ -55,13 +55,7 @@ class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput>
         controller: _c,
         enabled: widget.enabled,
         keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Colors.black,
-          height: 1.43,
-        ),
+        style: EditEmailPrepaidTheme.fieldValue,
         decoration: const InputDecoration(
           border: InputBorder.none,
           isCollapsed: true,

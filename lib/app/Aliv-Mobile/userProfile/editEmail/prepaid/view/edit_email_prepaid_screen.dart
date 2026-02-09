@@ -116,22 +116,22 @@ class _EditEmailPrepaidView extends StatelessWidget {
                                       label: 'full name',
                                       value: data.fullName,
                                     ),
-                                    const SizedBox(height: 18),
+                                    const SizedBox(height: 16),
                                     EditEmailPrepaidInfoField(
                                       label: 'phone number',
                                       value: data.phoneNumber,
                                     ),
-                                    const SizedBox(height: 18),
+                                    const SizedBox(height: 16),
                                     EditEmailPrepaidInfoField(
                                       label: 'gender',
                                       value: data.gender,
                                     ),
-                                    const SizedBox(height: 18),
+                                    const SizedBox(height: 16),
                                     Text(
                                       'email address',
                                       style: EditEmailPrepaidTheme.fieldLabel,
                                     ),
-                                    const SizedBox(height: 10),
+                                    const SizedBox(height: 8),
                                     BlocBuilder<EditEmailPrepaidBloc,
                                         EditEmailPrepaidState>(
                                       buildWhen: (p, c) =>
@@ -149,7 +149,7 @@ class _EditEmailPrepaidView extends StatelessWidget {
                                         );
                                       },
                                     ),
-                                    const SizedBox(height: 20),
+                                    const SizedBox(height: 30),
                                   ],
                                 ),
                               ),
