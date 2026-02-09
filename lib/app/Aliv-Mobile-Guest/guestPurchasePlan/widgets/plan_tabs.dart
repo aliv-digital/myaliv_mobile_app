@@ -36,14 +36,14 @@ class PlanTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: GuestPurchasePlanTheme.tabBarBackground,
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 30),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
             height: 44,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
               separatorBuilder: (_, _) => const SizedBox(width: 26),

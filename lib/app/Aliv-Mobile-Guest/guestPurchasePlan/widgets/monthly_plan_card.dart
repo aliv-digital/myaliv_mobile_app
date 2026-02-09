@@ -200,13 +200,13 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
       decoration: BoxDecoration(
         border: Border.all(
             color: GuestPurchasePlanTheme.brandPurple,
             width: 1
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',

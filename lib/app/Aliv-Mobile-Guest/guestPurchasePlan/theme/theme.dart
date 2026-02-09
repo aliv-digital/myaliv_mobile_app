@@ -26,7 +26,7 @@ class GuestPurchasePlanTheme {
   // Section title above plan list
   static final TextStyle sectionTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: FontWeight.w700,
     color: Colors.black.withValues(alpha: 0.75),
   );
@@ -96,15 +96,15 @@ class GuestPurchasePlanTheme {
   // Plan tab label (active)
   static final TextStyle tabLabelActive = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w700,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
     color: brandPurple,
   );
 
   // Plan tab label (inactive)
   static final TextStyle tabLabelInactive = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: FontWeight.w500,
     color: tabTextInactive,
   );
