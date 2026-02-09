@@ -12,11 +12,20 @@ class PrepaidBalanceCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(16,26,16,18),
+        decoration: ShapeDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              width: 1,
+              color: const Color(0xFFF1F5F9),
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          // borderRadius: BorderRadius.circular(8),
+          // boxShadow: const [
+          //   BoxShadow(color: Colors.black12, blurRadius: 10)
+          // ],
         ),
         child: Column(
           children: [
@@ -24,29 +33,61 @@ class PrepaidBalanceCard extends StatelessWidget {
             const SizedBox(height: 12),
             _row('assets/icons/reward.svg', 'reward balance', '\$00.00'),
             const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(IconsaxPlusLinear.add, color: Colors.white),
-                label: Text(
-                  'add topup',
-                  style: TextStyle(
-                    color: const Color(0xFFF1F1F8),
-                    fontSize: 13,
-                    fontFamily: 'Circular Pro',
-                    fontWeight: FontWeight.w500,
-                  ),
+
+            GestureDetector(
+              onTap: (){},
+              child: Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: HomeScreen.purple
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: HomeScreen.purple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/icons/card-add-pre.svg', width: 21, height: 21,),
+                    SizedBox(
+                      height: 21,
+                      child: Text(
+                        'add topup',textAlign: TextAlign.start,
+                        style: TextStyle(
+                          color: const Color(0xFFF1F1F8),
+                          fontSize: 13,
+                          fontFamily: 'Circular Pro',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 50,
+            //   child: ElevatedButton.icon(
+            //     onPressed: () {},
+            //     icon: SvgPicture.asset('assets/icons/card-add-pre.svg', width: 21, height: 21,),
+            //
+            //     label: Text(
+            //       'add topup',textAlign: TextAlign.start,
+            //       style: TextStyle(
+            //         color: const Color(0xFFF1F1F8),
+            //         fontSize: 13,
+            //         fontFamily: 'Circular Pro',
+            //         fontWeight: FontWeight.w500,
+            //       ),
+            //     ),
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: HomeScreen.purple,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(100),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

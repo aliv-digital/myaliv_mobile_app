@@ -20,8 +20,8 @@ class HomeHeader extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 'assets/icons/aliv_splash_logo.svg',
-                height: 48,
-                width: 24,
+                height: 46,
+                // width: 24,
               ),
               const Spacer(),
               Row(
@@ -64,7 +64,7 @@ class HomeHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             'welcome back, Alicia',
             textAlign: TextAlign.center,
@@ -75,7 +75,7 @@ class HomeHeader extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           const PhoneDropdown(),
         ],
       ),

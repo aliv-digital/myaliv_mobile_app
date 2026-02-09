@@ -22,7 +22,7 @@ const demoPlans = [
     price: '\$120.00',
     title: 'Liberty120',
     subtitle: 'Begins Immediately plan',
-    backgroundColor: 0xFFE6B83E,
+    backgroundColor: 0xFFEDAF04,
     imageUrl:
     'https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg',
   ),
