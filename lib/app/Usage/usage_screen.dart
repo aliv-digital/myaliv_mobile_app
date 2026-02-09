@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 
@@ -52,24 +53,28 @@ class UsageScreen extends StatelessWidget {
           centerTitle: false,
           backgroundColor: purple,
           elevation: 0,
-          title: const Text(
-            'my plans',
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: const Text(
+              'my plans',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           actions: [
             IconButton(
-              icon: const Icon(IconsaxPlusLinear.notification),
+              icon: SvgPicture.asset('assets/icons/bell with red.svg'),
               color: Colors.white,
               onPressed: () {},
             ),
+            SizedBox(width: 13,)
           ],
           bottom:  PreferredSize(
-            preferredSize: Size.fromHeight(52),
+            preferredSize: Size.fromHeight(82),
             child: UsageTabBar(tabs),
           ),
         ),
@@ -94,6 +99,7 @@ class UsageTabBar extends StatelessWidget {
       child: Column(
         children: [
           // Tabs
+          SizedBox(height: 20,),
           TabBar(
             indicatorSize: TabBarIndicatorSize.tab, // 🔥 full tab width
             indicator: const UnderlineTabIndicator(
@@ -120,7 +126,7 @@ class UsageTabBar extends StatelessWidget {
           ),
 
           // Divider background (important!)
-          Container(height: 20, color: dividerBg),
+          Container(height: 24, color: dividerBg),
         ],
       ),
     );

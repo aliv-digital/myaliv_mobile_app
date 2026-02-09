@@ -49,7 +49,7 @@ class AppMenuDrawer extends StatelessWidget {
                             fontFamily: 'Circular Pro',
                             fontWeight: FontWeight.w500,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -84,7 +84,12 @@ class AppMenuDrawer extends StatelessWidget {
                 width: 260,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // close drawer
+                    await Future.delayed(const Duration(milliseconds: 50));
+
+                    context.go(AppRoutes.welcome);
+                  },
                   icon: SvgPicture.asset('assets/icons/logout.svg'),
                   label: const Text(
                     'logout',
@@ -129,18 +134,30 @@ class AppMenuDrawer extends StatelessWidget {
           : external
           ? const Icon(Icons.open_in_new, size: 18)
           : const Icon(Icons.chevron_right),
-      onTap: () {
+      onTap: () async {
         if (label == 'profile') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.profilePrepaidScreen);
         } else if (label == 'purchases') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.purchasesPrepaidScreen);
         } else if (label == 'refer a friend') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.referFriendPrepaidScreen);
         } else if (label == 'settings') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.settingsScreen);
         } else if (label == 'REV bill pay') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.revBillPayPrepaidScreen);
         } else if (label == 'notifications') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.notificationScreen);
         }
       },

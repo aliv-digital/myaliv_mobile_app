@@ -4,7 +4,6 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/purchase_addon_button.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_metric_row.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 
-
 class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
 
@@ -16,18 +15,17 @@ class CurrentPlanTab extends StatelessWidget {
     return Container(
       color: Colors.white,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        // padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
         children: [
           // 🔴 Active plan card (reuse your existing widget)
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
             child: const PrepaidActivePlanCard(showRenewButton: false),
           ),
 
           // const SizedBox(height: 16),
-
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            padding: const EdgeInsets.fromLTRB(24, 0, 20, 16),
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -41,78 +39,124 @@ class CurrentPlanTab extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
                   ),
-                )
+                ),
               ),
             ),
           ),
 
           // const SizedBox(height: 16),
-
-          const _ActiveAddOns(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+            child: const _ActiveAddOns(),
+          ),
 
           const SizedBox(height: 16),
 
-          const _UsageSection(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+            child: const _UsageSection(),
+          ),
 
           const SizedBox(height: 16),
 
-          const PurchaseAddOnButton(),
-
-          const _RoamingPlanSection(),
-          const SizedBox(height: 16),
-
-          const UsageMetricRow(
-            title: 'roaming data',
-            subtitle: '0 of 2 GB',
-            progress: 0.0,
-            percentUsed: 0,
-            gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
-          ),
-          const UsageMetricRow(
-            title: 'local data',
-            subtitle: '0 of 0 MB',
-            progress: 0.0,
-            percentUsed: 0,
-            gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
-          ),
-          const UsageMetricRow(
-            title: 'roaming talk mins',
-            subtitle: '0 of 0 minutes',
-            progress: 0.02,
-            percentUsed: 2,
-            gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
-          ),
-          const UsageMetricRow(
-            title: 'local talk mins',
-            subtitle: '0 of 0 minutes',
-            progress: 0.02,
-            percentUsed: 2,
-            gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
-          ),
-          const UsageMetricRow(
-            title: 'roaming sms',
-            subtitle: '0 of 0 sms',
-            progress: 0.55,
-            percentUsed: 55,
-            gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
-          ),
-          const UsageMetricRow(
-            title: 'local sms',
-            subtitle: '0 of 0 sms',
-            progress: 0.55,
-            percentUsed: 55,
-            gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+            child: const PurchaseAddOnButton(),
           ),
 
-          Text(
-            'Roameasy Begins Immediately Bundle\nCalls Unlimited',
-            style: TextStyle(
-              color: const Color(0xFF222222),
-              fontSize: 12,
-              fontFamily: 'Circular Pro',
-              fontWeight: FontWeight.w700,
+          Container(
+            // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(color: Color(0xFFF1F2FA)),
+            child: const Text(
+              'roaming plan',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          )
+          ),
+          Container(
+            // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const _RoamingPlanSection(),
+          ),
+          const SizedBox(height: 16),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const UsageMetricRow(
+              title: 'roaming data',
+              subtitle: '0 of 2 GB',
+              progress: 0.0,
+              percentUsed: 0,
+              gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const UsageMetricRow(
+              title: 'local data',
+              subtitle: '0 of 0 MB',
+              progress: 0.0,
+              percentUsed: 0,
+              gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const UsageMetricRow(
+              title: 'roaming talk mins',
+              subtitle: '0 of 0 minutes',
+              progress: 0.02,
+              percentUsed: 2,
+              gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const UsageMetricRow(
+              title: 'local talk mins',
+              subtitle: '0 of 0 minutes',
+              progress: 0.02,
+              percentUsed: 2,
+              gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const UsageMetricRow(
+              title: 'roaming sms',
+              subtitle: '0 of 0 sms',
+              progress: 0.55,
+              percentUsed: 55,
+              gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            child: const UsageMetricRow(
+              title: 'local sms',
+              subtitle: '0 of 0 sms',
+              progress: 0.55,
+              percentUsed: 55,
+              gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+            child: Text(
+              'Roameasy Begins Immediately Bundle\nCalls Unlimited',
+              style: TextStyle(
+                color: const Color(0xFF222222),
+                fontSize: 12,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -140,7 +184,7 @@ class _ActiveAddOns extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Wrap(
-          spacing: 12,
+          spacing: 8,
           children: const [
             _AddOnChip('voice'),
             _AddOnChip('sms'),
@@ -187,45 +231,47 @@ class _UsageSection extends StatelessWidget {
       children: const [
         _LimitRow(
           title: 'data',
-          subtitle: '\$25.00 of \$30.00 remaining',
+          subtitle: '2.4 GB of 14 GB',
           percentUsed: 25,
           progressColor: Color(0xFFE07A4E),
         ),
-         Divider(color: divider),
+        Divider(color: divider),
 
-         _LimitRow(
+        _LimitRow(
           title: 'sms',
-          subtitle: 'Unlimited Local',
+          subtitle: 'unlimited Local',
           percentUsed: 0,
           progressColor: Color(0xFF6CB7D4),
         ),
-         Divider(color: divider),
+        Divider(color: divider),
 
-         _LimitRow(
+        _LimitRow(
           title: 'talk mins',
-          subtitle: 'Unlimited Local',
+          subtitle: 'unlimited Local',
           percentUsed: 0,
           progressColor: Color(0xFF6B63C5),
         ),
-         Divider(color: divider),
+        Divider(color: divider),
 
-         _LimitRow(
-          title: 'Bonus Data',
-          subtitle: 'Unlimited WhatsApp Messaging',
+        _LimitRow(
+          title: 'bonus Data',
+          subtitle: 'unlimited WhatsApp Messaging',
           percentUsed: 0,
           progressColor: Color(0xFFBDBDBD),
         ),
-         Divider(color: divider),
+        Divider(color: divider),
 
         _LimitRow(
           title: 'int’l talk mins',
-          subtitle: '330 of 600',
+          subtitle: '0 of 600',
           percentUsed: 55,
           progressColor: Color(0xFF6B63C5),
         ),
+        Divider(color: divider),
+
         _LimitRow(
           title: 'mms',
-          subtitle: '\ 0 of 60 remaining',
+          subtitle: '0 of 60',
           percentUsed: 55,
           progressColor: Color(0xFF6B63C5),
         ),
@@ -313,62 +359,62 @@ class _LimitRow extends StatelessWidget {
               SizedBox(
                 width: 120,
                 child:
-                // ClipRRect(
-                //   borderRadius: BorderRadius.circular(6),
-                //   child: LinearProgressIndicator(
-                //     value: percentUsed / 100,
-                //     minHeight: 6,
-                //     backgroundColor: progressColor.withOpacity(0.2),
-                //     valueColor: AlwaysStoppedAnimation(progressColor),
-                //   ),
-                // ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final width = 120 * percentUsed.clamp(0.0, 1.0);
+                    // ClipRRect(
+                    //   borderRadius: BorderRadius.circular(6),
+                    //   child: LinearProgressIndicator(
+                    //     value: percentUsed / 100,
+                    //     minHeight: 6,
+                    //     backgroundColor: progressColor.withOpacity(0.2),
+                    //     valueColor: AlwaysStoppedAnimation(progressColor),
+                    //   ),
+                    // ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final width = 120 * percentUsed.clamp(0.0, 1.0);
 
-                      return Stack(
-                        children: [
-                          // Background
-                          Container(
-                            height: 6,
-                            width: 120,
-                            color: Color(0x3F808080).withOpacity(0.2),
-                          ),
-
-                          // Gradient progress (width = percentage)
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            height: 6,
-                            width: width.toDouble(),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: title == 'data'
-                                    ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
-                                    : title == 'local data'
-                                    ? [
-                                  const Color(0xFF97E3F8),
-                                  const Color(0xFF00627D),
-                                ]
-                                    : title == 'local talk mins' ||
-                                    title == 'int’l talk mins'
-                                    ? [
-                                  const Color(0xFFCCC7F8),
-                                  const Color(0xFF1F1B41),
-                                ]
-                                    : [
-                                  const Color(0x3F808080),
-                                  const Color(0x3F808080),
-                                ],
+                          return Stack(
+                            children: [
+                              // Background
+                              Container(
+                                height: 6,
+                                width: 120,
+                                color: Color(0x3F808080).withOpacity(0.2),
                               ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+
+                              // Gradient progress (width = percentage)
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                height: 6,
+                                width: width.toDouble(),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: title == 'data'
+                                        ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
+                                        : title == 'local data'
+                                        ? [
+                                            const Color(0xFF97E3F8),
+                                            const Color(0xFF00627D),
+                                          ]
+                                        : title == 'local talk mins' ||
+                                              title == 'int’l talk mins'
+                                        ? [
+                                            const Color(0xFFCCC7F8),
+                                            const Color(0xFF1F1B41),
+                                          ]
+                                        : [
+                                            const Color(0x3F808080),
+                                            const Color(0x3F808080),
+                                          ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -460,23 +506,13 @@ class _RoamingPlanSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 24.0,bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'roaming plan',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontFamily: 'Circular Pro',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 36),
-          UsageRoamingPlanCard(),
-        ],
+      padding: const EdgeInsets.only(
+        top: 24.0,
+        bottom: 16,
+        left: 24,
+        right: 24,
       ),
+      child: UsageRoamingPlanCard(),
     );
   }
 }
