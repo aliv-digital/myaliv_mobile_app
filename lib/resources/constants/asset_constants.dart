@@ -36,6 +36,7 @@ class AssetConstant{
   static const announcePNG = 'assets/images/announce.png';
   static const redeemPNG = 'assets/images/redeem.png';
 
+  static const phonePNG = 'assets/images/phone.png';
   static const smsSVG = 'assets/icons/sms.svg';
 
   static const faceViewFinderIconSVG = 'assets/icons/face_view_finder.svg';
