@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:flutter_svg/svg.dart';
 import '../theme/enter_password_prepaid_theme.dart';
 
@@ -19,13 +20,13 @@ class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48,
+      height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: EnterPasswordPrepaidTheme.inputBorder),
         color: Colors.white,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           SvgPicture.asset(
@@ -45,19 +46,22 @@ class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
                 hintText: 'Password',
                 hintStyle: TextStyle(
                   fontFamily: 'CircularPro',
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFB1B1B1),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.43,
+                  color: Color(0xFF707070),
                 ),
               ),
               style: const TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
+                height: 1.43,
                 color: Colors.black,
               ),
             ),
           ),
+          const SizedBox(width: 11),
           InkWell(
             onTap: onToggle,
             borderRadius: BorderRadius.circular(999),

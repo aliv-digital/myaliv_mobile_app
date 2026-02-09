@@ -9,14 +9,14 @@ class EnterPasswordPrepaidTheme {
 
   static const TextStyle title = TextStyle(
     fontFamily: 'CircularPro',
-    fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontSize: 17,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 
   static const TextStyle subtitle = TextStyle(
     fontFamily: 'CircularPro',
-    fontSize: 13,
+    fontSize: 15,
     height: 1.35,
     fontWeight: FontWeight.w400,
     color: muted,

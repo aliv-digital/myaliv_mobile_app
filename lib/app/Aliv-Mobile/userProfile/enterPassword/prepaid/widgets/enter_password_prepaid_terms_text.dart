@@ -10,7 +10,7 @@ class EnterPasswordPrepaidTermsText extends StatelessWidget {
       TextSpan(
         style: const TextStyle(
           fontFamily: 'CircularPro',
-          fontSize: 11.5,
+          fontSize: 12,
           height: 1.35,
           fontWeight: FontWeight.w400,
           color: EnterPasswordPrepaidTheme.muted,
@@ -23,6 +23,7 @@ class EnterPasswordPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: EnterPasswordPrepaidTheme.link,
               decoration: TextDecoration.underline,
+              decorationColor: EnterPasswordPrepaidTheme.link,
             ),
           ),
           TextSpan(text: ' & '),
@@ -31,6 +32,7 @@ class EnterPasswordPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: EnterPasswordPrepaidTheme.link,
               decoration: TextDecoration.underline,
+              decorationColor: EnterPasswordPrepaidTheme.link,
             ),
           ),
         ],
