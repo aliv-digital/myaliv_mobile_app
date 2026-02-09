@@ -25,12 +25,12 @@ class TopUpSummaryCard extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 120),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x22000000),
-            blurRadius: 18,
-            offset: Offset(0, 10),
+            color: Color(0x18000000),
+            blurRadius: 12,
+            offset: Offset(0, 6),
           ),
         ],
       ),
