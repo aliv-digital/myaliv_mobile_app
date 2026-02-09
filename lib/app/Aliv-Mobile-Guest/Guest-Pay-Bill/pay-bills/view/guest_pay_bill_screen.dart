@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/guest_pay_bill_bloc.dart';
 import '../bloc/guest_pay_bill_event.dart';
@@ -42,7 +44,7 @@ class _GuestPayBillView extends StatelessWidget {
       showPhoneCode: true,
       onSelect: (country) {
         final normalizedPhoneCode =
-            country.phoneCode.split(RegExp(r'[\s-]')).first;
+            country.phoneCode.replaceAll(' ', '').split('-').first;
         context.read<GuestPayBillBloc>().add(
               GuestPayBillCountryChanged(
                 PayBillCountry(
@@ -295,9 +297,16 @@ class _GuestPayBillView extends StatelessWidget {
                             enabled: state.canSubmit,
                             loading: state.submitStatus ==
                                 GuestPayBillSubmitStatus.loading,
-                            onTap: () => context.read<GuestPayBillBloc>().add(
-                                  const GuestPayBillSubmitPressed(),
-                                ),
+                            onTap: () {
+                              context.read<GuestPayBillBloc>().add(
+                                    const GuestPayBillSubmitPressed(),
+                                  );
+                              final confirmArgs = _buildConfirmArgs(state);
+                              context.push(
+                                AppRoutes.guestPayBillConfirm,
+                                extra: confirmArgs,
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -313,4 +322,31 @@ class _GuestPayBillView extends StatelessWidget {
   }
 
   String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+
+  GuestPayBillConfirmArgs _buildConfirmArgs(GuestPayBillState state) {
+    final serviceName = state.selectedService?.label ?? '';
+    final identifierLabel = state.isAlivPostpaid ? 'mobile no.' : 'Acc #';
+
+    final identifierValue = state.isAlivPostpaid
+        ? _formatMobileNumber(state.mobileNumber.trim())
+        : state.accountNumber.trim();
+
+    return GuestPayBillConfirmArgs(
+      serviceName: serviceName,
+      identifierLabel: identifierLabel,
+      identifierValue: identifierValue,
+      amount: state.amountValue,
+    );
+  }
+
+  String _formatMobileNumber(String rawValue) {
+    final digitsOnly = String.fromCharCodes(
+      rawValue.codeUnits.where((unit) => unit >= 48 && unit <= 57),
+    );
+    if (digitsOnly.length != 10) {
+      return rawValue;
+    }
+
+    return '${digitsOnly.substring(0, 3)}-${digitsOnly.substring(3, 6)}-${digitsOnly.substring(6)}';
+  }
 }

@@ -108,7 +108,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             amount: state.args.amount,
                           ),
 
-                          const SizedBox(height: 17),
+                          const SizedBox(height: 16),
 
                           GuestPayBillConfirmTermsRow(
                             onTapTerms: () {
@@ -118,7 +118,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             },
                           ),
 
-                          const SizedBox(height: 17),
+                          const SizedBox(height: 16),
 
                           PaymentBreakdownCard(
                             subTotal: state.subTotal,

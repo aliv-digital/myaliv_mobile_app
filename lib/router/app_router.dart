@@ -227,14 +227,23 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
-        builder: (context, state) => const GuestPayBillConfirmScreen(
-          args: GuestPayBillConfirmArgs(
-            serviceName: 'ALIV Postpaid',
-            identifierLabel: 'mobile no.',
-            identifierValue: '242-801-0000',
-            amount: 200.00,
-          ),
-        ),
+        builder: (context, state) {
+          final confirmArgs = state.extra;
+
+          if (confirmArgs is GuestPayBillConfirmArgs) {
+            return GuestPayBillConfirmScreen(args: confirmArgs);
+          }
+
+          // Fallback for direct route access without navigation args.
+          return const GuestPayBillConfirmScreen(
+            args: GuestPayBillConfirmArgs(
+              serviceName: 'ALIV Postpaid',
+              identifierLabel: 'mobile no.',
+              identifierValue: '242-801-0000',
+              amount: 200.00,
+            ),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.guestPayBill,
@@ -296,8 +305,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmGuestTopUp,
         builder: (context, state) =>
-            GuestConfirmTopUpScreen(
-                phoneNumber: '245-346-452356', amount: 15),
+            GuestConfirmTopUpScreen(phoneNumber: '245-346-452356', amount: 15),
       ),
       ShellRoute(
         builder: (context, state, child) {
