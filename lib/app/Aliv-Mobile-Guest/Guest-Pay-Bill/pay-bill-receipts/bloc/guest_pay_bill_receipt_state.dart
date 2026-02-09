@@ -8,6 +8,7 @@ class GuestPayBillReceiptData extends Equatable {
   final String dateText; // Mar 22, 2023
   final String timeText; // 07:30 am
   final String phoneNumber; // 242-801-1616
+  final String identifierLabel; // mobile no. / account no.
   final String paymentMethod; // credit card
   final double amount; // 15.00
 
@@ -17,20 +18,22 @@ class GuestPayBillReceiptData extends Equatable {
     required this.dateText,
     required this.timeText,
     required this.phoneNumber,
+    required this.identifierLabel,
     required this.paymentMethod,
     required this.amount,
   });
 
   @override
   List<Object?> get props => [
-    leftType,
-    rightType,
-    dateText,
-    timeText,
-    phoneNumber,
-    paymentMethod,
-    amount,
-  ];
+        leftType,
+        rightType,
+        dateText,
+        timeText,
+        phoneNumber,
+        identifierLabel,
+        paymentMethod,
+        amount,
+      ];
 }
 
 class GuestPayBillReceiptState extends Equatable {

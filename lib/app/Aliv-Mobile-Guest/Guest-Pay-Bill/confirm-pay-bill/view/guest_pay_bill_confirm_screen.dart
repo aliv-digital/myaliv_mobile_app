@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/widgets/payment_breakdown_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/guest_pay_bill_confirm_bloc.dart';
 import '../bloc/guest_pay_bill_confirm_event.dart';
@@ -33,11 +36,38 @@ class GuestPayBillConfirmScreen extends StatelessWidget {
 class _GuestPayBillConfirmView extends StatelessWidget {
   const _GuestPayBillConfirmView();
 
+  static String _formatDate(DateTime dateTime) {
+    const months = <String>[
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final month = months[dateTime.month - 1];
+    return '$month ${dateTime.day}, ${dateTime.year}';
+  }
+
+  static String _formatTime(DateTime dateTime) {
+    final hour24 = dateTime.hour;
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final period = hour24 >= 12 ? 'pm' : 'am';
+    final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+    return '$hour12:$minute $period';
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
       listenWhen: (p, c) =>
-      p.errorMessage != c.errorMessage || p.payStatus != c.payStatus,
+          p.errorMessage != c.errorMessage || p.payStatus != c.payStatus,
       listener: (context, state) {
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -46,16 +76,22 @@ class _GuestPayBillConfirmView extends StatelessWidget {
         }
 
         if (state.payStatus == GuestPayBillConfirmPayStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Payment successful')),
+          final now = DateTime.now();
+          final receiptArgs = GuestPayBillReceiptArgs(
+            serviceName: state.args.serviceName,
+            identifierLabel: state.args.identifierLabel,
+            identifierValue: state.args.identifierValue,
+            amount: state.total,
+            dateText: _formatDate(now),
+            timeText: _formatTime(now),
           );
-          Navigator.of(context).maybePop();
+          context.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
         }
       },
       child: Scaffold(
         backgroundColor: GuestPayBillConfirmTheme.pageBg,
         bottomNavigationBar:
-        BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
+            BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
           builder: (context, state) {
             return GuestPayBillConfirmBottomBar(
               amount: state.total,
@@ -108,7 +144,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             amount: state.args.amount,
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 17),
 
                           GuestPayBillConfirmTermsRow(
                             onTapTerms: () {
@@ -118,7 +154,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             },
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 17),
 
                           PaymentBreakdownCard(
                             subTotal: state.subTotal,

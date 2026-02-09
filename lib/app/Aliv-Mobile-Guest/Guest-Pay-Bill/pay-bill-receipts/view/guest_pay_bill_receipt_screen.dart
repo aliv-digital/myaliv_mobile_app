@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../model/guest_pay_bill_receipt_args.dart';
 import '../bloc/guest_pay_bill_receipt_bloc.dart';
 import '../bloc/guest_pay_bill_receipt_event.dart';
 import '../bloc/guest_pay_bill_receipt_state.dart';
@@ -10,31 +13,21 @@ import '../widgets/receipt_success_card.dart';
 import '../widgets/payment_failure.dart';
 
 class GuestPayBillReceiptScreen extends StatelessWidget {
-  const GuestPayBillReceiptScreen({
-    super.key,
-    required this.phoneNumber,
-    required this.amount,
-    required this.dateText,
-    required this.timeText,
-    this.paymentMethod = 'credit card',
-  });
+  const GuestPayBillReceiptScreen({super.key, required this.args});
 
-  final String phoneNumber;
-  final double amount;
-  final String dateText;
-  final String timeText;
-  final String paymentMethod;
+  final GuestPayBillReceiptArgs args;
 
   @override
   Widget build(BuildContext context) {
     final receiptData = GuestPayBillReceiptData(
       leftType: 'service',
-      rightType: 'REV',
-      dateText: dateText,
-      timeText: timeText,
-      phoneNumber: phoneNumber,
-      paymentMethod: paymentMethod,
-      amount: amount,
+      rightType: args.serviceName,
+      dateText: args.dateText,
+      timeText: args.timeText,
+      phoneNumber: args.identifierValue,
+      identifierLabel: args.identifierLabel,
+      paymentMethod: args.paymentMethod,
+      amount: args.amount,
     );
 
     return RepositoryProvider(
@@ -52,7 +45,6 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
 class _GuestPayBillReceiptView extends StatelessWidget {
   const _GuestPayBillReceiptView();
 
-  static const _purple = Color(0xFF655C9A);
   static const _bg = Color(0xFFF1F2FA);
 
   @override
@@ -84,48 +76,51 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                     top: 29,
                     bottom: 30,
                   ),
-                  child: BlocBuilder<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
+                  child: BlocBuilder<GuestPayBillReceiptBloc,GuestPayBillReceiptState>(
                     builder: (context, state) {
                       final data = state.data;
-                      if (data == null) return const SizedBox.shrink();
-
-                      return ReceiptSuccessCard(
-                        data: data,
-                        onBackHome: () {},
-                        pageBackground: GuestPayBillReceiptTheme.circleBackground,
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 24,
-                        right: 24,
-                        top: 29,
-                        bottom: 30,
-                      ),
-                      child: BlocBuilder<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
-                        builder: (context, state) {
-                          final data = state.data;
-                          if (data == null) return const SizedBox.shrink();
-
-                          return PaymentFailedTicket(
-                            phone: "242-300-2548",
-                            onPressed: () {
-                              Navigator.pop(context);
+                        if (data == null) return const SizedBox.shrink();
+                        return ReceiptSuccessCard(
+                          data: data,
+                            onBackHome: () {
+                              context.go(AppRoutes.home);
                             },
+                            pageBackground: GuestPayBillReceiptTheme.circleBackground,
                           );
                         },
                       ),
-                    ),
-                  ),
                 ),
               ),
+
+              // SliverToBoxAdapter(
+              //   child: Center(
+              //     child: ConstrainedBox(
+              //       constraints: const BoxConstraints(maxWidth: 420),
+              //       child: Padding(
+              //         padding: const EdgeInsets.only(
+              //           left: 24,
+              //           right: 24,
+              //           top: 29,
+              //           bottom: 30,
+              //         ),
+              //         child: BlocBuilder<GuestPayBillReceiptBloc,GuestPayBillReceiptState>( 
+              //           builder: (context, state) {
+              //                 final data = state.data;
+              //                 if (data == null) return const SizedBox.shrink();
+
+              //                 return PaymentFailedTicket(
+              //                   phone: "242-300-2548",
+              //                   onPressed: () {
+              //                     Navigator.pop(context);
+              //                   },
+              //                 );
+              //               },
+              //             ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+            
             ],
           ),
         ),

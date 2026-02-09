@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postp
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
@@ -64,7 +65,8 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.profilePrepaidScreen, //guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+    initialLocation: AppRoutes
+        .guestSplash, //guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
@@ -218,11 +220,24 @@ class AppRouter {
           builder: (context, state) => const GuestPurchasePlanAddOnsScreen()),
       GoRoute(
         path: AppRoutes.guestPayBillReceipt,
-        builder: (context, state) => const GuestPayBillReceiptScreen(
-            phoneNumber: '234235454',
-            amount: 12,
-            dateText: '12-23-2025',
-            timeText: '08:34'),
+        builder: (context, state) {
+          final receiptArgs = state.extra;
+
+          if (receiptArgs is GuestPayBillReceiptArgs) {
+            return GuestPayBillReceiptScreen(args: receiptArgs);
+          }
+
+          return const GuestPayBillReceiptScreen(
+            args: GuestPayBillReceiptArgs(
+              serviceName: 'ALIV Postpaid',
+              identifierLabel: 'mobile no.',
+              identifierValue: '242-801-0000',
+              amount: 200.00,
+              dateText: 'Mar 22, 2023',
+              timeText: '07:30 am',
+            ),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
