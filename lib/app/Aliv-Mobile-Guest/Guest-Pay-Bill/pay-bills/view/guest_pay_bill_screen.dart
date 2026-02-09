@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 
 import '../bloc/guest_pay_bill_bloc.dart';
@@ -30,6 +31,7 @@ class GuestPayBillScreen extends StatelessWidget {
 
 class _GuestPayBillView extends StatelessWidget {
   const _GuestPayBillView();
+  static const double _contentTopGapAfterAppBar = 32;
   static const double _labelToFieldGap = 8;
   static const double _sectionGap = 16;
   static const double _submitTopGap = 30;
@@ -70,15 +72,15 @@ class _GuestPayBillView extends StatelessWidget {
           p.verifyStatus != c.verifyStatus,
       listener: (context, state) {
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
 
         if (state.submitStatus == GuestPayBillSubmitStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Payment submitted')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Payment submitted')));
         }
       },
       child: Scaffold(
@@ -89,7 +91,9 @@ class _GuestPayBillView extends StatelessWidget {
               DefaultAppBar(
                 title: 'pay bills',
                 backgroundColor: GuestPayBillTheme.primary,
-                onBack: () => Navigator.of(context).maybePop(),
+                onBack: () {
+                  context.pop();
+                },
               ),
               Expanded(
                 child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(
@@ -99,12 +103,18 @@ class _GuestPayBillView extends StatelessWidget {
                     }
 
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(23, 18, 23, 18),
+                      padding: const EdgeInsets.fromLTRB(
+                        23,
+                        _contentTopGapAfterAppBar,
+                        23,
+                        18,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const GuestPayBillRequiredLabel(
-                              text: 'select service'),
+                            text: 'select service',
+                          ),
                           const SizedBox(height: _labelToFieldGap),
                           GuestPayBillServiceDropdown(
                             services: state.services,
@@ -124,8 +134,10 @@ class _GuestPayBillView extends StatelessWidget {
                           // Dynamic form by service
                           // =========================
                           if (state.isAlivPostpaid) ...[
-                            Text('mobile number',
-                                style: GuestPayBillTheme.labelStyle()),
+                            Text(
+                              'mobile number',
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
                             const SizedBox(height: _labelToFieldGap),
                             Row(
                               children: [
@@ -150,8 +162,10 @@ class _GuestPayBillView extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: _sectionGap),
-                            Text('confirm mobile number',
-                                style: GuestPayBillTheme.labelStyle()),
+                            Text(
+                              'confirm mobile number',
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
                             const SizedBox(height: _labelToFieldGap),
                             Row(
                               children: [
@@ -169,8 +183,9 @@ class _GuestPayBillView extends StatelessWidget {
                                     enabled: state.canVerify,
                                     onChanged: (v) => context
                                         .read<GuestPayBillBloc>()
-                                        .add(GuestPayBillConfirmMobileChanged(
-                                            v)),
+                                        .add(
+                                          GuestPayBillConfirmMobileChanged(v),
+                                        ),
                                     onSubmit: () => context
                                         .read<GuestPayBillBloc>()
                                         .add(const GuestPayBillVerifyPressed()),
@@ -179,8 +194,10 @@ class _GuestPayBillView extends StatelessWidget {
                               ],
                             ),
                           ] else ...[
-                            Text(state.accountIdentifierLabel,
-                                style: GuestPayBillTheme.labelStyle()),
+                            Text(
+                              state.accountIdentifierLabel,
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
                             const SizedBox(height: _labelToFieldGap),
                             TextField(
                               keyboardType: state.isAlivFibr
@@ -212,8 +229,10 @@ class _GuestPayBillView extends StatelessWidget {
                           ],
 
                           const SizedBox(height: _sectionGap),
-                          Text('account status',
-                              style: GuestPayBillTheme.labelStyle()),
+                          Text(
+                            'account status',
+                            style: GuestPayBillTheme.labelStyle(),
+                          ),
                           const SizedBox(height: _labelToFieldGap),
                           GuestPayBillReadOnlyBox(
                             text: state.accountInfo?.status ?? '------',
@@ -222,8 +241,10 @@ class _GuestPayBillView extends StatelessWidget {
                           // REV only
                           if (!state.isAlivPostpaid) ...[
                             const SizedBox(height: _sectionGap),
-                            Text('account balance',
-                                style: GuestPayBillTheme.labelStyle()),
+                            Text(
+                              'account balance',
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
                             const SizedBox(height: _labelToFieldGap),
                             Text(
                               state.accountInfo?.balance == null
@@ -238,12 +259,15 @@ class _GuestPayBillView extends StatelessWidget {
                           ],
 
                           const SizedBox(height: _sectionGap),
-                          Text('enter a custom amount',
-                              style: GuestPayBillTheme.labelStyle()),
+                          Text(
+                            'enter a custom amount',
+                            style: GuestPayBillTheme.labelStyle(),
+                          ),
                           const SizedBox(height: _labelToFieldGap),
                           TextField(
                             keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
+                              decimal: true,
+                            ),
                             onChanged: (v) => context
                                 .read<GuestPayBillBloc>()
                                 .add(GuestPayBillAmountChanged(v)),
@@ -271,9 +295,9 @@ class _GuestPayBillView extends StatelessWidget {
                             enabled: state.canSubmit,
                             loading: state.submitStatus ==
                                 GuestPayBillSubmitStatus.loading,
-                            onTap: () => context
-                                .read<GuestPayBillBloc>()
-                                .add(const GuestPayBillSubmitPressed()),
+                            onTap: () => context.read<GuestPayBillBloc>().add(
+                                  const GuestPayBillSubmitPressed(),
+                                ),
                           ),
                         ],
                       ),
