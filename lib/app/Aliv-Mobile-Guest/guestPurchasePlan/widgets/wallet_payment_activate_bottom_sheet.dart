@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../theme/theme.dart';
 
 class WalletPaymentActivateBottomSheet extends StatelessWidget {
@@ -160,16 +161,22 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
             height: WalletPaymentActivateBottomSheet._pricePillHeight,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
+              color: HexColor.fromHex('#EDEBF7'),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: GuestPurchasePlanTheme.planPriceBorder,
-                width: 2,
+                width: 1,
               ),
             ),
             alignment: Alignment.center,
             child: Text(
               planPriceText,
-              style: GuestPurchasePlanTheme.bottomSheetPrice,
+              style: const TextStyle(
+                color: Color(0xFF5045A7),
+                fontSize: 16,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
