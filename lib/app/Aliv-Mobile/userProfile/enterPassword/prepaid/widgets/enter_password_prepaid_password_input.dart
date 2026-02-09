@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../theme/enter_password_prepaid_theme.dart';
 
 class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
@@ -18,17 +20,17 @@ class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48,
+      height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: EnterPasswordPrepaidTheme.inputBorder),
         color: Colors.white,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          const Icon(Icons.lock_outline, size: 18, color: Color(0xFF6B7280)),
-          const SizedBox(width: 8),
+          const Icon(Icons.lock_outline, size: 20, color: Color(0xFF6B7280)),
+          const SizedBox(width: 12),
           Expanded(
             child: TextField(
               obscureText: obscure,
@@ -39,25 +41,29 @@ class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
                 hintText: 'Password',
                 hintStyle: TextStyle(
                   fontFamily: 'CircularPro',
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFB1B1B1),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.43,
+                  color: Color(0xFF707070),
                 ),
               ),
               style: const TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
+                height: 1.43,
                 color: Colors.black,
               ),
             ),
           ),
+          const SizedBox(width: 11),
           InkWell(
             onTap: onToggle,
             borderRadius: BorderRadius.circular(999),
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(Icons.visibility_off, size: 18, color: Color(0xFF6B7280)),
+            child: SvgPicture.asset(
+              obscure ? AssetConstant.hideIconSVG : AssetConstant.viewIconSVG,
+              width: 20,
+              height: 20,
             ),
           ),
         ],

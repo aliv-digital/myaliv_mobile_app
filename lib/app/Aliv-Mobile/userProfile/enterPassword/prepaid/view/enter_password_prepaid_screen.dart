@@ -83,7 +83,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(28, 34, 28, 18),
+                      padding: const EdgeInsets.fromLTRB(47, 93, 47, 18),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -91,7 +91,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                             child: Column(
                               children: [
                                 const EnterPasswordPrepaidHeader(),
-                                const SizedBox(height: 22),
+                                const SizedBox(height: 27),
                                 BlocBuilder<EnterPasswordPrepaidBloc,
                                     EnterPasswordPrepaidState>(
                                   buildWhen: (p, c) =>
@@ -113,9 +113,9 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 const EnterPasswordPrepaidTermsText(),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 30),
                                 BlocBuilder<EnterPasswordPrepaidBloc,
                                     EnterPasswordPrepaidState>(
                                   buildWhen: (p, c) =>
@@ -127,8 +127,22 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
 
                                     return EnterPasswordPrepaidContinueButton(
                                       isLoading: isLoading,
-                                      enabled: state.isValid && !isLoading,
+                                      // Keep the button visually active from initial state.
+                                      enabled: !isLoading,
                                       onTap: () {
+                                        if (!state.isValid) {
+                                          ScaffoldMessenger.of(context)
+                                            ..hideCurrentSnackBar()
+                                            ..showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Please enter your password to continue.',
+                                                ),
+                                              ),
+                                            );
+                                          return;
+                                        }
+
                                         context
                                             .read<EnterPasswordPrepaidBloc>()
                                             .add(
@@ -140,9 +154,9 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 22),
+                                const SizedBox(height: 38),
                                 const EnterPasswordPrepaidOrDivider(),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 30),
                                 EnterPasswordPrepaidBiometricButtons(
                                   onFaceId: () => context
                                       .read<EnterPasswordPrepaidBloc>()

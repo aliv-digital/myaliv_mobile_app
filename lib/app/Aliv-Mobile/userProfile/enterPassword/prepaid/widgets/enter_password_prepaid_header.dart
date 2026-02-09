@@ -9,7 +9,7 @@ class EnterPasswordPrepaidHeader extends StatelessWidget {
     return Column(
       children: const [
         Text('Enter Password', style: EnterPasswordPrepaidTheme.title),
-        SizedBox(height: 10),
+        SizedBox(height: 4),
         Text(
           'For security reasons, please enter your\npassword to continue.',
           textAlign: TextAlign.center,
