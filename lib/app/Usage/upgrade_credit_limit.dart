@@ -16,26 +16,30 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: purple,
         elevation: 0,
+        centerTitle: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Padding(
+            padding: const EdgeInsets.only(left: 24.0),
+            child: const Icon(Icons.arrow_back,color: Colors.white,),
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'upgrade credit limit',
           style: TextStyle(
-            fontFamily: 'CircularPro',
             color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontSize: 17,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w700,
           ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(0,8,20,8),
             child: GestureDetector(
               child: SvgPicture.asset(
                 'assets/icons/home.svg',
@@ -54,37 +58,45 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
           children: [
             // ================= CURRENT BALANCE =================
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(16),
+              decoration: ShapeDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    width: 1,
+                    color: const Color(0xFFEAECF0),
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // SvgPicture.asset('assets/icons/Wallet_Cash.svg'),
-                  Icon(IconsaxPlusBold.wallet_money, color: purple, size: 28),
+                   Image.asset('assets/icons/Wallet_Cash_550px 1.png',width: 36,height: 40,),
+                  // Icon(IconsaxPlusBold.wallet_money, color: purple, size: 28),
+                  SizedBox(width: 14),
+
                   Column(
                     children: const [
                       // Icon(Icons.account_balance_wallet_outlined,
                       //     color: purple, size: 28),
-                      SizedBox(height: 8),
                       Text(
                         '\$129.00',
                         style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 22,
+                          color: const Color(0xFF5045A7),
+                          fontSize: 24,
+                          fontFamily: 'Circular Pro',
                           fontWeight: FontWeight.w700,
-                          color: purple,
                         ),
                       ),
-                      SizedBox(height: 4),
                       Text(
                         'current balance',
                         style: TextStyle(
-                          fontFamily: 'CircularPro',
+                          color: Colors.black,
                           fontSize: 13,
-                          color: textMuted,
+                          fontFamily: 'Circular Pro',
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -105,52 +117,81 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // ================= TERMS =================
-            RichText(
-              text: const TextSpan(
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 13,
-                  color: textMuted,
-                ),
+            Text.rich(
+              TextSpan(
                 children: [
                   TextSpan(
-                    text: 'By pressing "update limits" you agree to the ',
+                    text: 'B',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.43,
+                    ),
                   ),
                   TextSpan(
-                    text: 'terms & conditions.',
+                    text: 'y pressing “update limits” you agree to the ',
                     style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.43,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'terms & conditions',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
-                      color: purple,
+                      height: 1.43,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '.',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.43,
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 30),
 
             // ================= CTA =================
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  // UI only
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: purple,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0,right: 16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // UI only
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: purple,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'proceed',
-                  style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                  child: const Text(
+                    'proceed',
+                    style: TextStyle(
+                      color: const Color(0xFFF1F1F8),
+                      fontSize: 13,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
@@ -173,25 +214,27 @@ class _LimitField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: const TextStyle(
-              fontFamily: 'CircularPro',
+              color: const Color(0xFF1C1C1C) /* Black-100% */,
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+              height: 1.43,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Container(
             height: 48,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: fieldBg,
-              borderRadius: BorderRadius.circular(12),
+            decoration: ShapeDecoration(
+              color: const Color(0xFFF1F1F8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             alignment: Alignment.centerLeft,
             child: Row(
@@ -199,16 +242,22 @@ class _LimitField extends StatelessWidget {
                 const Text(
                   '\$',
                   style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Uber Move Text',
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
                   ),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   value,
                   style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 15,
+                    color: const Color(0xFF707070),
+                    fontSize: 14,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
+                    height: 1.43,
                   ),
                 ),
               ],

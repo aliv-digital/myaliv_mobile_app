@@ -152,17 +152,17 @@ class PromoSummaryTicket extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
           decoration: BoxDecoration(
             color: ConfirmTopUpPrepaidTheme.ticket,
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
             children: [
               _promoInput(context),
-              const SizedBox(height: 18),
+              const SizedBox(height: 24),
 
               _row(context, 'sub total', _money(subTotal)),
-              const SizedBox(height: 12),
-              _row(context, 'vat', _money(vat)),
               const SizedBox(height: 14),
+              _row(context, 'vat', _money(vat)),
+              const SizedBox(height: 24),
 
               // Figma: tighter dashes, lower opacity
               DashedDivider(
@@ -171,9 +171,11 @@ class PromoSummaryTicket extends StatelessWidget {
                 dashGap: 4,
                 height: 1,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 24),
 
               _row(context, 'total', _money(total), isTotal: true),
+              const SizedBox(height: 16),
+
             ],
           ),
         ),
@@ -187,7 +189,7 @@ class PromoSummaryTicket extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         children: [
@@ -201,9 +203,11 @@ class PromoSummaryTicket extends StatelessWidget {
               decoration: InputDecoration(
                 isDense: true,
                 hintText: 'promo code',
-                hintStyle: ConfirmTopUpPrepaidTheme.bodyMd(context).copyWith(
-                  color: const Color(0xFFBDBDBD),
-                  fontWeight: FontWeight.w600,
+                hintStyle: TextStyle(
+                  color: const Color(0xFFC9C9C9),
+                  fontSize: 16,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w700,
                 ),
                 border: InputBorder.none,
               ),
@@ -216,9 +220,11 @@ class PromoSummaryTicket extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
               child: Text(
                 'apply',
-                style: ConfirmTopUpPrepaidTheme.bodyMd(context).copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: ConfirmTopUpPrepaidTheme.primary,
+                style: TextStyle(
+                  color: const Color(0xFF645D9C),
+                  fontSize: 16,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -230,11 +236,12 @@ class PromoSummaryTicket extends StatelessWidget {
 
   Widget _row(BuildContext context, String left, String right, {bool isTotal = false}) {
     final label = ConfirmTopUpPrepaidTheme.ticketLabel(context).copyWith(
-      fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+      fontWeight:   FontWeight.w500,
+      fontSize: 14
     );
 
     final value = ConfirmTopUpPrepaidTheme.ticketValue(context).copyWith(
-      fontWeight: isTotal ? FontWeight.w800 : FontWeight.w700,
+      fontWeight:   FontWeight.w500,
     );
 
     return Row(

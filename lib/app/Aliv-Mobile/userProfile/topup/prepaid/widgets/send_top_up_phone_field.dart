@@ -68,51 +68,13 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
           height: 60,
           child: Row(
             children: [
-              // -------- Country box --------
-              // InkWell(
-              //   onTap: _openCountryPicker,
-              //   borderRadius: BorderRadius.circular(8),
-              //   child: Container(
-              //     width: 82,
-              //     height: 60,
-              //     decoration: BoxDecoration(
-              //       borderRadius: BorderRadius.circular(6),
-              //       border: Border.all(
-              //         color: hasError
-              //             ? Colors.red
-              //             : TopUpPrepaidTheme.lightBg,
-              //         width: 1.2,
-              //       ),
-              //       color: Colors.white,
-              //     ),
-              //     padding: const EdgeInsets.symmetric(horizontal: 8),
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         Text(_flagEmoji, style: const TextStyle(fontSize: 20)),
-              //         const SizedBox(width: 6),
-              //         Text(
-              //           _dialCode,
-              //           style: const TextStyle(
-              //             fontSize: 14,
-              //             fontWeight: FontWeight.w500,
-              //             fontFamily: 'CircularPro',
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-              //
-              // const SizedBox(width: 10),
 
-              // -------- Phone field --------
               Expanded(
                 child: Container(
                   height: 60,
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: hasError
                           ? Colors.red
@@ -132,8 +94,11 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
                       border: InputBorder.none,
                       hintText: widget.hint,
                       hintStyle: const TextStyle(
+                        color: const Color(0xFF707070),
                         fontSize: 14,
-                        color: TopUpPrepaidTheme.textMuted,
+                        fontFamily: 'Circular Pro',
+                        fontWeight: FontWeight.w500,
+                        height: 1.43,
                       ),
                     ),
                     onChanged: (value) {

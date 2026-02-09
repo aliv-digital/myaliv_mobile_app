@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class GuestPayBillTheme {
   // Colors (tune these if your app already has tokens)
-  static const Color primary = Color(0xFF5A5796);
+  static const Color primary = Color(0xFF645D9C);
   static const Color pageBg = Colors.white;
 
   static const Color fieldBg = Color(0xFFF1F1F8);

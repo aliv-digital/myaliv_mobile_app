@@ -87,9 +87,13 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                   SliverAppBar(
                     pinned: true,
                     backgroundColor: TopUpPrepaidTheme.primary,
+                    centerTitle: false,
                     elevation: 0,
                     leading: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Padding(
+                        padding: const EdgeInsets.only(left: 24.0),
+                        child: const Icon(Icons.arrow_back, color: Colors.white),
+                      ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
                     title: Text('top up', style: TopUpPrepaidTheme.appBarTitle()),
@@ -144,38 +148,43 @@ class _MyNumberTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<TopUpPrepaidBloc>();
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-      child: Column(
-        children: [
-          const SizedBox(height: 30),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+        child: Column(
+          children: [
+            const SizedBox(height: 75),
 
-          // Balance row
-          TopUpPrepaidBalanceRow(balance: state.balance),
+            // Balance row
+            TopUpPrepaidBalanceRow(balance: state.balance),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-          // Amount input box (gradient border)
-          TopUpPrepaidAmountBox(
-            value: state.amountText,
-            onChanged: (v) => bloc.add(TopUpPrepaidAmountChanged(v)),
-          ),
+            // Amount input box (gradient border)
+            TopUpPrepaidAmountBox(
+              value: state.amountText,
+              onChanged: (v) => bloc.add(TopUpPrepaidAmountChanged(v)),
+            ),
 
-          const SizedBox(height: 22),
+            const SizedBox(height: 52),
 
-          // CTA button
-          TopUpPrepaidPrimaryButton(
-            enabled: state.canSubmit,
-            loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
-            onTap: () {
-              //bloc.add(const TopUpPrepaidTopUpPressed());
-              context.push(AppRoutes.confirmTopUpPrepaidScreen);
-            }
-          ),
+            // CTA button
+            TopUpPrepaidPrimaryButton(
+              enabled: state.canSubmit,
+              loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
+              onTap: () {
+                //bloc.add(const TopUpPrepaidTopUpPressed());
+                context.push(AppRoutes.confirmTopUpPrepaidScreen);
+              }
+            ),
 
-          // Keep spacing similar to screenshot (keyboard will push anyway)
-          const Spacer(),
-        ],
+            // Keep spacing similar to screenshot (keyboard will push anyway)
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }

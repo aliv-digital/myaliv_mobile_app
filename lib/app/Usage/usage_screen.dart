@@ -82,7 +82,7 @@ class UsageScreen extends StatelessWidget {
 class UsageTabBar extends StatelessWidget {
 
   static const Color purple = Color(0xFF645D9C);
-  static const Color grey = Color(0xFF9E9E9E);
+  static const Color grey = Color(0xFF9E9E9E);// Color(0xFF707070)
   static const Color dividerBg = Color(0xFFF4F6FB);
   final List<Tab> tabs;
   const UsageTabBar(this.tabs, {super.key});
@@ -97,11 +97,11 @@ class UsageTabBar extends StatelessWidget {
           TabBar(
             indicatorSize: TabBarIndicatorSize.tab, // 🔥 full tab width
             indicator: const UnderlineTabIndicator(
-              borderSide: BorderSide(color: purple, width: 3),
-              insets: EdgeInsets.symmetric(horizontal: 32),
+              borderSide: BorderSide(color: purple, width: 2),
+              insets: EdgeInsets.symmetric(horizontal: 8),
             ),
             labelColor: purple,
-            unselectedLabelColor: grey,
+            unselectedLabelColor:  Color(0xFF707070),
             labelStyle: const TextStyle(
               fontFamily: 'CircularPro',
               fontSize: 16,
@@ -120,7 +120,7 @@ class UsageTabBar extends StatelessWidget {
           ),
 
           // Divider background (important!)
-          Container(height: 10, color: dividerBg),
+          Container(height: 20, color: dividerBg),
         ],
       ),
     );

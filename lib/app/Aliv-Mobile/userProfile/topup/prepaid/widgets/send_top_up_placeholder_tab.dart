@@ -22,37 +22,43 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
       backgroundColor: TopUpPrepaidTheme.pageBg,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+          padding: const EdgeInsets.fromLTRB(24, 30, 24, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ================= TRANSFER FROM =================
               const _SectionLabel('transfer from'),
+              const SizedBox(height: 8),
+
               _ReadOnlyField('wallet \$ 129.00'),
 
               const SizedBox(height: 24),
 
               // ================= ENTER NUMBER =================
               const _SectionLabel('enter number to top up'),
+              const SizedBox(height: 8),
               SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
 
               const SizedBox(height: 24),
 
               const _SectionLabel('confirm number to top up'),
+              const SizedBox(height: 8),
               SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
 
               const SizedBox(height: 32),
 
               // ================= CURRENT BALANCE =================
               Center(
-                child: Text(
+                child:Text(
                   'current balance: \$129.00',
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
+                  style: TextStyle(
+                    color: const Color(0xFF1C1C1C) /* Black-100% */,
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w700,
+                    height: 1.43,
                   ),
-                ),
+                )
               ),
 
               const SizedBox(height: 24),
@@ -70,12 +76,12 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 52),
 
               // ================= PROCEED =================
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -95,10 +101,10 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                   child: const Text(
                     'proceed',
                     style: TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: const Color(0xFFF1F1F8),
+                      fontSize: 13,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -148,7 +154,7 @@ class _ReadOnlyField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.centerLeft,
       child: Text(

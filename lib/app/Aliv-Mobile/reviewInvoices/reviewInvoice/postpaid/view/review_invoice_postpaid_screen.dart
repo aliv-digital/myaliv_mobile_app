@@ -68,7 +68,7 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+                        padding: const EdgeInsets.fromLTRB(24, 0, 20, 20),
                         sliver: SliverList.separated(
                           itemCount: state.invoices.length,
                           separatorBuilder: (_, __) => const SizedBox(height: 12),

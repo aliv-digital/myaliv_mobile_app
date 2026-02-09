@@ -28,7 +28,7 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
           color: AddOrEditCardsPrepaidTheme.pageBg,
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
         ),
-        padding: const EdgeInsets.fromLTRB(22, 18, 22, 18),
+        padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -41,26 +41,25 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 20),
 
             // Message center
-            const Text(
-              'are you sure you want to remove\nyour saved card?',
+            Text(
+              'are you sure you want to remove \nyour saved card?',
               textAlign: TextAlign.center,
               style: TextStyle(
+                color: const Color(0xFF121212),
                 fontSize: 16,
-                //height: 1.25,
-                fontWeight: FontWeight.w400,
-                color: AddOrEditCardsPrepaidTheme.textDark,
-                fontFamily: AddOrEditCardsPrepaidTheme.myFontFamily,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
               ),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 20),
 
             // OK Button
             SizedBox(
-              height: 52,
+              height: 50,
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -74,10 +73,10 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
                 child: Text(
                   'ok',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    fontFamily: AddOrEditCardsPrepaidTheme.myFontFamily,
+                    color: const Color(0xFFF1F1F8),
+                    fontSize: 13,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

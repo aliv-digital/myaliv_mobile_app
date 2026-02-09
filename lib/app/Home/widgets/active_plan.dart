@@ -18,9 +18,11 @@ class PrepaidActivePlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: showRenewButton
+          ? const EdgeInsets.symmetric(horizontal: 24)
+          : EdgeInsetsGeometry.zero,
       child: Container(
-        height: 200,
+        height: showRenewButton ? 200 : 160,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -42,12 +44,13 @@ class PrepaidActivePlanCard extends StatelessWidget {
             // _planName(),
             const SizedBox(height: 20),
             _datesRow(),
-
             // 🔥 CONDITIONAL RENEW BUTTON
             if (showRenewButton) ...[
               const SizedBox(height: 14),
               _renewButton(),
             ],
+            // showRenewButton? const SizedBox(height: 14):const SizedBox(height: 0),
+            // showRenewButton?  _renewButton():const SizedBox(height: 0),
           ],
         ),
       ),
@@ -124,7 +127,6 @@ class PrepaidActivePlanCard extends StatelessWidget {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-
         onPressed: () {},
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF3F4FA),
@@ -133,12 +135,17 @@ class PrepaidActivePlanCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(28),
           ),
         ),
-        child:  Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset('assets/icons/card-add.svg', width: 18, height: 18,color: Color(0xFFEF3A4B),),
-            SizedBox(width: 10,),
+            SvgPicture.asset(
+              'assets/icons/card-add.svg',
+              width: 18,
+              height: 18,
+              color: Color(0xFFEF3A4B),
+            ),
+            SizedBox(width: 10),
             Text(
               'renew your plan',
               style: TextStyle(
@@ -177,10 +184,10 @@ class _DateBlock extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-              color: Colors.white /* White-100% */,
-              fontSize: 10,
-              fontFamily: 'Circular Pro',
-              fontWeight: FontWeight.w500
+            color: Colors.white /* White-100% */,
+            fontSize: 10,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 4),
