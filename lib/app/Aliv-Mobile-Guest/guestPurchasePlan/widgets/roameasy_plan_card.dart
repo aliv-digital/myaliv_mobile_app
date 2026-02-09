@@ -117,15 +117,19 @@ class RoamEasyPlanCard extends StatelessWidget {
             expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                plan.description,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12.2,
-                  height: 1.35,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF2C2C2C),
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: Text(
+                  plan.description,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                    fontFamily: 'Circular Pro',
+                    fontSize: 10,
+                    height: 1.38,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF2C2C2C),
+                  ),
                 ),
               ),
             ),
