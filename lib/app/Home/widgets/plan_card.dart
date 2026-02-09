@@ -23,15 +23,15 @@ class PlanCard extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           color: Color(plan.backgroundColor),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
             // IMAGE
             ClipRRect(
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                bottomLeft: Radius.circular(24),
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
               ),
               child: SizedBox(
                 width: imageWidth,
@@ -53,10 +53,11 @@ class PlanCard extends StatelessWidget {
                     Text(
                       plan.price,
                       style: const TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
                         color: Colors.white,
+                        fontSize: 32,
+                        fontFamily: 'Circular Pro',
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.16,
                       ),
                     ),
                     const Spacer(),
@@ -66,19 +67,22 @@ class PlanCard extends StatelessWidget {
                         Text(
                           plan.title,
                           style: const TextStyle(
-                            fontFamily: 'CircularPro',
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
                             color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'Circular Pro',
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.08,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           plan.subtitle,
                           style: const TextStyle(
-                            fontFamily: 'CircularPro',
-                            fontSize: 14,
-                            color: Colors.white70,
+                            color: const Color(0xFFE5D0D0),
+                            fontSize: 8,
+                            fontFamily: 'Circular Pro',
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.04,
                           ),
                         ),
                       ],

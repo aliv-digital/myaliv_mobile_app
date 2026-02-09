@@ -24,15 +24,47 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
         children: [
           const SizedBox(height: 10),
           const ReferFriendPrepaidIllustration(assetPath: _referSvgAsset),
-          const SizedBox(height: 18),
+          const SizedBox(height: 30),
 
-          Text(
-            "bring a friend and you'll both receive a cash\nback reward when they join the ALIV\nnetwork. Terms & Conditions apply",
-            textAlign: TextAlign.center,
-            style: ReferFriendPrepaidTheme.helper,
+          Padding(
+            padding: const EdgeInsets.only(left: 32.0,right: 32),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'bring a friend and you’ll both receive a cash back reward when they join the ALIV network. ',
+                    style: TextStyle(
+                      color: const Color(0xFF58677D),
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'Terms & Conditions',
+                    style: TextStyle(
+                      color: const Color(0xFF58677D),
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' apply',
+                    style: TextStyle(
+                      color: const Color(0xFF58677D),
+                      fontSize: 14,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
 
-          const SizedBox(height: 22),
+          const SizedBox(height: 30),
 
           BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
             buildWhen: (p, c) =>
@@ -63,7 +95,7 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                         .read<ReferFriendPrepaidBloc>()
                         .add(ReferFriendPrepaidFriendEmailChanged(v)),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 40),
                   ReferFriendPrepaidPrimaryButton(
                     label: 'share',
                     enabled: state.canShare && !loading,

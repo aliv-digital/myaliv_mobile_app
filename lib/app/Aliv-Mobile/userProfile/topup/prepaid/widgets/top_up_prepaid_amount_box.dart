@@ -73,7 +73,7 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
           padding: const EdgeInsets.all(2), // border thickness
           child: Container(
@@ -142,7 +142,16 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
           ),
         ),
         const SizedBox(height: 8),
-        Text('enter top up amount', style: TopUpPrepaidTheme.amountHint()),
+        Text(
+          'enter top up amount',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: const Color(0xFF222222),
+            fontSize: 12,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }

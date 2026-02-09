@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TopUpPaymentPrepaidTheme {
   // Colors tuned for Figma look
-  static const Color primary = Color(0xFF5E5A8F);
+  static const Color primary = Color(0xFF645D9C);
   static const Color background = Color(0xFFF3F4F8);
   static const Color card = Colors.white;
   static const Color border = Color(0xFFE5E7EB);
@@ -36,23 +36,23 @@ class TopUpPaymentPrepaidTheme {
   );
 
   static TextStyle labelSm(BuildContext context) => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12,
-    fontWeight: FontWeight.w700,
-    color: textPrimary,
+    color: Colors.black,
+    fontSize: 13,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w500,
   );
 
   static TextStyle bottomPrice(BuildContext context) => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 20,
-    fontWeight: FontWeight.w800,
-    color: textPrimary,
+      color: const Color(0xFF222222),
+      fontSize: 22,
+      fontFamily: 'Circular Pro',
+      fontWeight: FontWeight.w700,
   );
 
   static TextStyle buttonText(BuildContext context) => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w800,
-    color: Colors.white,
+    color: const Color(0xFFF1F1F8),
+    fontSize: 13,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w500,
   );
 }

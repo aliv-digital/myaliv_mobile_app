@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
@@ -94,11 +95,10 @@ class DefaultAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = const TextStyle(
-      fontSize: 17,
-      height: 1.25,
-      fontFamily: 'CircularPro',
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
+        color: Colors.white,
+        fontSize: 17,
+        fontFamily: 'Circular Pro',
+        fontWeight: FontWeight.w700,
     );
 
     return Material(
@@ -159,7 +159,7 @@ class DefaultAppBar extends StatelessWidget {
 
     return IconButton(
       onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-      icon: Image.asset(backIconAssetPath),
+      icon: SvgPicture.asset(backIconAssetPath,height: 24,width: 24,),
       color: Colors.white,
       iconSize: backIconSize,
       splashRadius: backSplashRadius,
@@ -257,13 +257,14 @@ class _HomeButton extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: BorderRadius.circular(100),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Icon(icon, color: Colors.white, size: 24),
+            // Icon(icon, color: Colors.white, size: 24),
+            SvgPicture.asset('assets/icons/home.svg',height: 24,width: 24,color: Colors.white,),
             if (showBadge)
               Positioned(
                 right: -2,
@@ -273,7 +274,7 @@ class _HomeButton extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(100),
                     border: Border.all(color: Colors.white, width: 1.2),
                   ),
                   child: Text(
@@ -315,7 +316,7 @@ class _NotificationButton extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: BorderRadius.circular(100),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Stack(
@@ -331,7 +332,7 @@ class _NotificationButton extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(100),
                     border: Border.all(color: Colors.white, width: 1.2),
                   ),
                   child: Text(

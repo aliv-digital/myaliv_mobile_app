@@ -25,10 +25,14 @@ class HomePlanTheme {
 
   // Section title above plan list
   static final TextStyle sectionTitle = TextStyle(
-    fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 12.5,
+    // fontFamily: AppConstants.defaultFontFamily,
+    // fontSize: 12.5,
+    // fontWeight: FontWeight.w700,
+    // color: Colors.black.withValues(alpha: 0.75),
+    color: Colors.black,
+    fontSize: 12,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w700,
-    color: Colors.black.withValues(alpha: 0.75),
   );
 
   // Error message in screen

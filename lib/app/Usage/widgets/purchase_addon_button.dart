@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PurchaseAddOnButton extends StatelessWidget {
   const PurchaseAddOnButton({super.key});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class PurchaseAddOnButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: SizedBox(
         width: double.infinity,
-        height: 56,
+        height: 40,
         child: ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
@@ -24,10 +24,10 @@ class PurchaseAddOnButton extends StatelessWidget {
           child: const Text(
             'purchase an add-on',
             style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: const Color(0xFFF1F1F8),
+              fontSize: 13,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),

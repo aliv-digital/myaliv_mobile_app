@@ -4,7 +4,7 @@ class ReferFriendPrepaidTheme {
   static const bg = Colors.white;
 
   // matches your existing purple tone family
-  static const brand = Color(0xFF5D5A8B);
+  static const brand = Color(0xFF645D9C);
   static const text = Color(0xFF111827);
   static const muted = Color(0xFF6B7280);
   static const border = Color(0xFFE6E6EC);
@@ -18,24 +18,27 @@ class ReferFriendPrepaidTheme {
   );
 
   static const tab = TextStyle(
-    fontFamily: 'CircularPro',
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
-    color: muted,
+    color: const Color(0xFF707070),
+    fontSize: 14,
+    fontFamily: 'Inter',
+    fontWeight: FontWeight.w400,
+    height: 1,
   );
 
   static const tabActive = TextStyle(
-    fontFamily: 'CircularPro',
-    fontSize: 13,
-    fontWeight: FontWeight.w700,
-    color: brand,
+    color: const Color(0xFF645D9C),
+    fontSize: 14,
+    fontFamily: 'Inter',
+    fontWeight: FontWeight.w600,
+    height: 1,
   );
 
   static const label = TextStyle(
-    fontFamily: 'CircularPro',
-    fontSize: 13,
+    color: const Color(0xFF1C1C1C) /* Black-100% */,
+    fontSize: 14,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w700,
-    color: text,
+    height: 1.43,
   );
 
   static const helper = TextStyle(
@@ -47,9 +50,9 @@ class ReferFriendPrepaidTheme {
   );
 
   static const button = TextStyle(
-    fontFamily: 'CircularPro',
-    fontSize: 14,
-    fontWeight: FontWeight.w700,
-    color: Colors.white,
+    color: const Color(0xFFF1F1F8),
+    fontSize: 13,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w500,
   );
 }

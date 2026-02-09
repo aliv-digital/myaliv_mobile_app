@@ -8,99 +8,113 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const Color bg = Color(0xFFF4F6FB);
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-      children: [
-        // 🔴 Active plan card (reuse your existing widget)
-        const ActivePlanCard(showRenewButton: false),
+    return Container(
+      color: Colors.white,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        children: [
+          // 🔴 Active plan card (reuse your existing widget)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+            child: const PrepaidActivePlanCard(showRenewButton: false),
+          ),
 
-        const SizedBox(height: 12),
+          // const SizedBox(height: 16),
 
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: () {},
-            child: const Text(
-              'fair use policy',
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                color: purple,
-                fontSize: 13,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {},
+                child: Text(
+                  'fair use policy',
+                  style: TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 12,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w700,
+                    decoration: TextDecoration.underline,
+                  ),
+                )
               ),
             ),
           ),
-        ),
 
-        const SizedBox(height: 20),
+          // const SizedBox(height: 16),
 
-        const _ActiveAddOns(),
+          const _ActiveAddOns(),
 
-        const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-        const _UsageSection(),
+          const _UsageSection(),
 
-        const SizedBox(height: 28),
+          const SizedBox(height: 16),
 
-        const PurchaseAddOnButton(),
+          const PurchaseAddOnButton(),
 
-        const _RoamingPlanSection(),
-        const UsageMetricRow(
-          title: 'roaming data',
-          subtitle: '0 of 2 GB',
-          progress: 0.0,
-          percentUsed: 0,
-          gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
-        ),
-        const UsageMetricRow(
-          title: 'local data',
-          subtitle: '0 of 0 MB',
-          progress: 0.0,
-          percentUsed: 0,
-          gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
-        ),
-        const UsageMetricRow(
-          title: 'roaming talk mins',
-          subtitle: '0 of 0 minutes',
-          progress: 0.02,
-          percentUsed: 2,
-          gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
-        ),
-        const UsageMetricRow(
-          title: 'local talk mins',
-          subtitle: '0 of 0 minutes',
-          progress: 0.02,
-          percentUsed: 2,
-          gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
-        ),
-        const UsageMetricRow(
-          title: 'roaming sms',
-          subtitle: '0 of 0 sms',
-          progress: 0.55,
-          percentUsed: 55,
-          gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
-        ),
-        const UsageMetricRow(
-          title: 'local sms',
-          subtitle: '0 of 0 sms',
-          progress: 0.55,
-          percentUsed: 55,
-          gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
-        ),
+          const _RoamingPlanSection(),
+          const SizedBox(height: 16),
 
-        const Text(
-          'Roameasy Begins Immediately Bundle\nCalls Unlimited',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
+          const UsageMetricRow(
+            title: 'roaming data',
+            subtitle: '0 of 2 GB',
+            progress: 0.0,
+            percentUsed: 0,
+            gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
           ),
-        ),
-      ],
+          const UsageMetricRow(
+            title: 'local data',
+            subtitle: '0 of 0 MB',
+            progress: 0.0,
+            percentUsed: 0,
+            gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
+          ),
+          const UsageMetricRow(
+            title: 'roaming talk mins',
+            subtitle: '0 of 0 minutes',
+            progress: 0.02,
+            percentUsed: 2,
+            gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
+          ),
+          const UsageMetricRow(
+            title: 'local talk mins',
+            subtitle: '0 of 0 minutes',
+            progress: 0.02,
+            percentUsed: 2,
+            gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
+          ),
+          const UsageMetricRow(
+            title: 'roaming sms',
+            subtitle: '0 of 0 sms',
+            progress: 0.55,
+            percentUsed: 55,
+            gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+          ),
+          const UsageMetricRow(
+            title: 'local sms',
+            subtitle: '0 of 0 sms',
+            progress: 0.55,
+            percentUsed: 55,
+            gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+          ),
+
+          Text(
+            'Roameasy Begins Immediately Bundle\nCalls Unlimited',
+            style: TextStyle(
+              color: const Color(0xFF222222),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -108,7 +122,7 @@ class CurrentPlanTab extends StatelessWidget {
 class _ActiveAddOns extends StatelessWidget {
   const _ActiveAddOns();
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +132,10 @@ class _ActiveAddOns extends StatelessWidget {
         const Text(
           'active add-ons',
           style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
+            color: const Color(0xFF222222),
+            fontSize: 12,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 12),
@@ -146,15 +161,16 @@ class _AddOnChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF6C63A6)),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFF645D9C)),
       ),
       child: Text(
         label,
         style: const TextStyle(
-          fontFamily: 'CircularPro',
-          color: Color(0xFF6C63A6),
-          fontWeight: FontWeight.w500,
+          color: const Color(0xFF645D9C),
+          fontSize: 14,
+          fontFamily: 'Circular Pro',
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -163,36 +179,211 @@ class _AddOnChip extends StatelessWidget {
 
 class _UsageSection extends StatelessWidget {
   const _UsageSection();
+  static const Color divider = Color(0xFFE0E0E0);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: const [
-        UsageRow(
+        _LimitRow(
           title: 'data',
-          subtitle: '2.4 GB of 14 GB',
-          rightText: '25% used',
-          progress: 0.25,
+          subtitle: '\$25.00 of \$30.00 remaining',
+          percentUsed: 25,
+          progressColor: Color(0xFFE07A4E),
         ),
-        UsageRow(
+         Divider(color: divider),
+
+         _LimitRow(
           title: 'sms',
-          subtitle: 'unlimited local',
-          rightText: 'unlimited',
-          progress: 1,
+          subtitle: 'Unlimited Local',
+          percentUsed: 0,
+          progressColor: Color(0xFF6CB7D4),
         ),
-        UsageRow(
+         Divider(color: divider),
+
+         _LimitRow(
           title: 'talk mins',
-          subtitle: 'unlimited local',
-          rightText: 'unlimited',
-          progress: 1,
+          subtitle: 'Unlimited Local',
+          percentUsed: 0,
+          progressColor: Color(0xFF6B63C5),
         ),
-        UsageRow(
-          title: 'bonus data',
-          subtitle: 'unlimited whatsapp messaging',
-          rightText: 'unlimited',
-          progress: 1,
+         Divider(color: divider),
+
+         _LimitRow(
+          title: 'Bonus Data',
+          subtitle: 'Unlimited WhatsApp Messaging',
+          percentUsed: 0,
+          progressColor: Color(0xFFBDBDBD),
         ),
+         Divider(color: divider),
+
+        _LimitRow(
+          title: 'int’l talk mins',
+          subtitle: '330 of 600',
+          percentUsed: 55,
+          progressColor: Color(0xFF6B63C5),
+        ),
+        _LimitRow(
+          title: 'mms',
+          subtitle: '\ 0 of 60 remaining',
+          percentUsed: 55,
+          progressColor: Color(0xFF6B63C5),
+        ),
+        // UsageRow(
+        //   title: 'data',
+        //   subtitle: '2.4 GB of 14 GB',
+        //   rightText: '25% used',
+        //   progress: 0.25,
+        // ),
+        // UsageRow(
+        //   title: 'sms',
+        //   subtitle: 'unlimited local',
+        //   rightText: 'unlimited',
+        //   progress: 1,
+        // ),
+        // UsageRow(
+        //   title: 'talk mins',
+        //   subtitle: 'unlimited local',
+        //   rightText: 'unlimited',
+        //   progress: 1,
+        // ),
+        // UsageRow(
+        //   title: 'bonus data',
+        //   subtitle: 'unlimited whatsapp messaging',
+        //   rightText: 'unlimited',
+        //   progress: 1,
+        // ),
       ],
+    );
+  }
+}
+
+class _LimitRow extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final int percentUsed;
+  final Color progressColor;
+
+  const _LimitRow({
+    required this.title,
+    required this.subtitle,
+    required this.percentUsed,
+    required this.progressColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // LEFT TEXT
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 12,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: const Color(0xFF707070),
+                    fontSize: 12,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // RIGHT PROGRESS
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: 120,
+                child:
+                // ClipRRect(
+                //   borderRadius: BorderRadius.circular(6),
+                //   child: LinearProgressIndicator(
+                //     value: percentUsed / 100,
+                //     minHeight: 6,
+                //     backgroundColor: progressColor.withOpacity(0.2),
+                //     valueColor: AlwaysStoppedAnimation(progressColor),
+                //   ),
+                // ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = 120 * percentUsed.clamp(0.0, 1.0);
+
+                      return Stack(
+                        children: [
+                          // Background
+                          Container(
+                            height: 6,
+                            width: 120,
+                            color: Color(0x3F808080).withOpacity(0.2),
+                          ),
+
+                          // Gradient progress (width = percentage)
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            height: 6,
+                            width: width.toDouble(),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: title == 'data'
+                                    ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
+                                    : title == 'local data'
+                                    ? [
+                                  const Color(0xFF97E3F8),
+                                  const Color(0xFF00627D),
+                                ]
+                                    : title == 'local talk mins' ||
+                                    title == 'int’l talk mins'
+                                    ? [
+                                  const Color(0xFFCCC7F8),
+                                  const Color(0xFF1F1B41),
+                                ]
+                                    : [
+                                  const Color(0x3F808080),
+                                  const Color(0x3F808080),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '$percentUsed% used',
+                style: const TextStyle(
+                  color: const Color(0xFF707070),
+                  fontSize: 12,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -268,20 +459,24 @@ class _RoamingPlanSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'roaming plan',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+    return Padding(
+      padding: const EdgeInsets.only(top: 24.0,bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'roaming plan',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        UsageRoamingPlanCard(),
-      ],
+          const SizedBox(height: 36),
+          UsageRoamingPlanCard(),
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:flutter_svg/svg.dart';
 import '../theme/enter_password_prepaid_theme.dart';
 
 class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
@@ -29,8 +29,13 @@ class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          const Icon(Icons.lock_outline, size: 20, color: Color(0xFF6B7280)),
-          const SizedBox(width: 12),
+          SvgPicture.asset(
+            'assets/icons/leading_lock.svg',
+            height: 20,
+            width: 20,
+            color: Color(0xFF6B7280),
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: TextField(
               obscureText: obscure,
@@ -60,10 +65,14 @@ class EnterPasswordPrepaidPasswordInput extends StatelessWidget {
           InkWell(
             onTap: onToggle,
             borderRadius: BorderRadius.circular(999),
-            child: SvgPicture.asset(
-              obscure ? AssetConstant.hideIconSVG : AssetConstant.viewIconSVG,
-              width: 20,
-              height: 20,
+            child: Padding(
+              padding: EdgeInsets.all(6),
+              child: SvgPicture.asset(
+                'assets/icons/leading_lock.svg',
+                height: 20,
+                width: 20,
+                color: Color(0xFF6B7280),
+              ),
             ),
           ),
         ],

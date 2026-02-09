@@ -19,6 +19,7 @@ class TopUpPrepaidTabs extends StatelessWidget {
             controller: controller,
             indicatorColor: TopUpPrepaidTheme.primary,
             indicatorWeight: 2,
+            indicatorSize: TabBarIndicatorSize.label,
             labelStyle: TopUpPrepaidTheme.tabSelected(),
             unselectedLabelStyle: TopUpPrepaidTheme.tabUnselected(),
             labelColor: TopUpPrepaidTheme.primary,
