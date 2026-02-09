@@ -17,13 +17,13 @@ class MyProfilePrepaidInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: MyProfilePrepaidTheme.cardDecoration(),
-      padding: const EdgeInsets.only(left: 16,right: 16,top: 16,bottom: 16),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           _RowItem(label: 'phone:', value: phone),
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           _RowItem(label: 'active on:', value: activeOn),
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           _RowItem(label: 'email address:', value: email),
         ],
       ),
@@ -40,31 +40,26 @@ class _RowItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
+        // Fixed label width keeps all three rows visually aligned like Figma.
+        SizedBox(
+          width: 120,
           child: Text(
             label,
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 14,
-              height: 1.43,
-              fontWeight: FontWeight.w500,
-              color: MyProfilePrepaidTheme.muted,
-            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: MyProfilePrepaidTheme.infoCardLabel,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Text(
             value,
             textAlign: TextAlign.right,
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 14,
-              height: 1.43,
-              fontWeight: FontWeight.w500,
-              color: MyProfilePrepaidTheme.textDark,
-            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: MyProfilePrepaidTheme.infoCardValue,
           ),
         ),
       ],

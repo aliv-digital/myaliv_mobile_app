@@ -13,9 +13,9 @@ class MyProfilePrepaidTheme {
   static const TextStyle deviceValue = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 14,
-    fontWeight: FontWeight.w700,
+    // Closest available weight for requested w450.
+    fontWeight: FontWeight.w500,
     color: Colors.black,
-    height: 1.43,
   );
 
 
@@ -24,7 +24,8 @@ class MyProfilePrepaidTheme {
   static const TextStyle deviceTitle = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 14,
-    fontWeight: FontWeight.w400,
+    // Closest available weight for requested w450.
+    fontWeight: FontWeight.w500,
     color: textMuted,
     height: 1.43,
   );
@@ -39,11 +40,18 @@ class MyProfilePrepaidTheme {
     fontFamily: 'CircularPro',
     fontSize: 18,
     letterSpacing: -0.30,
+    // Figma asks for 450; Flutter supports 400/500 steps, so 500 is the closest.
     fontWeight: FontWeight.w500,
     color: textDark,
   );
   // Status pill
-  static const Color statusPillBg = Color(0xFF19C3A5);
+  static const Color statusPillBg = Color(0xFF00C4B3);
+  static const TextStyle statusPillText = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 10,
+    fontWeight: FontWeight.w700,
+    color: Colors.white,
+  );
 
   static const TextStyle textMutedSmall = TextStyle(
     fontFamily: 'CircularPro',
@@ -58,6 +66,32 @@ class MyProfilePrepaidTheme {
     fontSize: 13,
     fontWeight: FontWeight.w700,
     color: textDark,
+  );
+
+  // First info card (phone / active on / email) styles from Figma.
+  static const TextStyle infoCardLabel = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 14,
+    fontWeight: FontWeight.w500, // closest available to requested w450
+    height: 1.43,
+    color: Color(0xFF989898),
+  );
+
+  static const TextStyle infoCardValue = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 14,
+    fontWeight: FontWeight.w500, // closest available to requested w450
+    color: Colors.black,
+  );
+
+  // Action card (edit email / change password)
+  static const Color actionIconBg = Color(0xFFF6F8F9);
+  static const TextStyle actionTitle = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 16,
+    letterSpacing: -0.32,
+    fontWeight: FontWeight.w700,
+    color: Colors.black,
   );
 
   static BoxDecoration cardDecoration() {

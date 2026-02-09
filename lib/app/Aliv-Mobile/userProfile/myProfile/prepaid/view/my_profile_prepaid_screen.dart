@@ -75,18 +75,19 @@ class _MyProfilePrepaidView extends StatelessWidget {
               Expanded(
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     // Appbar (already done)
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
+                        onBack: (){
+                          context.pop();
+                        },
                         title: 'my profile',
                         showHome: true,
                         onHomeTap: () {
-                          context
-                              .read<MyProfilePrepaidBloc>()
-                              .add(const MyProfilePrepaidHomePressed());
+                         // context.read<MyProfilePrepaidBloc>().add(const MyProfilePrepaidHomePressed());
+                         context.go(AppRoutes.home);
                         },
                       ),
                     ),
@@ -116,12 +117,11 @@ class _MyProfilePrepaidView extends StatelessWidget {
                         final data = state.data!;
 
                         return SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(22, 18, 22, 18),
+                          padding: const EdgeInsets.fromLTRB(28, 18, 28, 18),
                           sliver: SliverToBoxAdapter(
                             child: Center(
                               child: ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(maxWidth: 420),
+                                constraints: const BoxConstraints(maxWidth: 420),
                                 child: Column(
                                   children: [
                                     // ✅ Header (avatar + name + status pill)
