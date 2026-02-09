@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,9 +20,8 @@ class WhyAlivScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => WhyAlivBloc(
-          repository: const WhyAlivRepository()
-      )..add(const WhyAlivStarted()),
+      create: (_) => WhyAlivBloc(repository: const WhyAlivRepository())
+        ..add(const WhyAlivStarted()),
       child: const _WhyAlivView(),
     );
   }
@@ -36,26 +34,28 @@ class _WhyAlivView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
     return Scaffold(
       body: SafeArea(
         child: BlocListener<WhyAlivBloc, WhyAlivState>(
-          listenWhen: (prev, curr) => prev.status != curr.status && curr.status == WhyAlivStatus.failure,
+          listenWhen: (prev, curr) =>
+              prev.status != curr.status &&
+              curr.status == WhyAlivStatus.failure,
           listener: (context, state) {
             ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.errorMessage ?? 'Something went wrong',
-                    style: WhyAlivTheme.snackBarText,
-                  ),
+              SnackBar(
+                content: Text(
+                  state.errorMessage ?? 'Something went wrong',
+                  style: WhyAlivTheme.snackBarText,
                 ),
-              );
-            },
+              ),
+            );
+          },
           child: Column(
             children: [
               DefaultAppBar(
@@ -76,7 +76,8 @@ class _WhyAlivView extends StatelessWidget {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                HeadingOne(text: WhyAlivStrings.whyAlivHeading1),
+                                HeadingOne(
+                                    text: WhyAlivStrings.whyAlivHeading1),
                                 const SizedBox(height: 16),
                                 TextBody(
                                   text: WhyAlivStrings.whyAlivSubheading1,
@@ -84,7 +85,8 @@ class _WhyAlivView extends StatelessWidget {
                                 const SizedBox(height: 48),
                                 TextBody(text: WhyAlivStrings.whyAlivBody1),
                                 const SizedBox(height: 32),
-                                HeadingTwo(text: WhyAlivStrings.whyAlivHeading2),
+                                HeadingTwo(
+                                    text: WhyAlivStrings.whyAlivHeading2),
                                 const SizedBox(height: 16),
                                 TextBody(text: WhyAlivStrings.whyAlivBody2a),
                                 const SizedBox(height: 20),
@@ -105,7 +107,3 @@ class _WhyAlivView extends StatelessWidget {
     );
   }
 }
-
-
-
-

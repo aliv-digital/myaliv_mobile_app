@@ -22,7 +22,7 @@ class ChangePasswordPrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
@@ -51,9 +51,10 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
-        child: BlocListener<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
+        child:
+            BlocListener<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
           listenWhen: (p, c) =>
-          p.status != c.status || p.errorMessage != c.errorMessage,
+              p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == ChangePasswordPrepaidStatus.success) {
               // TODO: success navigation/snackbar (তুমি বসাবে)
@@ -71,7 +72,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
@@ -93,11 +94,10 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                               children: [
                                 const ChangePasswordPrepaidHeaderText(),
                                 const SizedBox(height: 18),
-
                                 BlocBuilder<ChangePasswordPrepaidBloc,
                                     ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
-                                  p.newPassword != c.newPassword ||
+                                      p.newPassword != c.newPassword ||
                                       p.obscureNew != c.obscureNew,
                                   builder: (context, state) {
                                     return ChangePasswordPrepaidPasswordField(
@@ -106,20 +106,20 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                       obscure: state.obscureNew,
                                       onChanged: (v) => context
                                           .read<ChangePasswordPrepaidBloc>()
-                                          .add(ChangePasswordPrepaidNewChanged(v)),
+                                          .add(ChangePasswordPrepaidNewChanged(
+                                              v)),
                                       onToggle: () => context
                                           .read<ChangePasswordPrepaidBloc>()
-                                          .add(const ChangePasswordPrepaidToggleNewVisibility()),
+                                          .add(
+                                              const ChangePasswordPrepaidToggleNewVisibility()),
                                     );
                                   },
                                 ),
-
                                 const SizedBox(height: 14),
-
                                 BlocBuilder<ChangePasswordPrepaidBloc,
                                     ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
-                                  p.confirmPassword != c.confirmPassword ||
+                                      p.confirmPassword != c.confirmPassword ||
                                       p.obscureConfirm != c.obscureConfirm,
                                   builder: (context, state) {
                                     return ChangePasswordPrepaidPasswordField(
@@ -128,21 +128,25 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                       obscure: state.obscureConfirm,
                                       onChanged: (v) => context
                                           .read<ChangePasswordPrepaidBloc>()
-                                          .add(ChangePasswordPrepaidConfirmChanged(v)),
+                                          .add(
+                                              ChangePasswordPrepaidConfirmChanged(
+                                                  v)),
                                       onToggle: () => context
                                           .read<ChangePasswordPrepaidBloc>()
-                                          .add(const ChangePasswordPrepaidToggleConfirmVisibility()),
+                                          .add(
+                                              const ChangePasswordPrepaidToggleConfirmVisibility()),
                                     );
                                   },
                                 ),
-
                                 const SizedBox(height: 24),
-
-                                BlocBuilder<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
+                                BlocBuilder<ChangePasswordPrepaidBloc,
+                                    ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
-                                  p.status != c.status || p.isValid != c.isValid,
+                                      p.status != c.status ||
+                                      p.isValid != c.isValid,
                                   builder: (context, state) {
-                                    final isLoading = state.status == ChangePasswordPrepaidStatus.submitting;
+                                    final isLoading = state.status ==
+                                        ChangePasswordPrepaidStatus.submitting;
 
                                     return ChangePasswordPrepaidSubmitButton(
                                       label: 'change password',
@@ -150,11 +154,11 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                       isLoading: isLoading,
                                       onTap: () => context
                                           .read<ChangePasswordPrepaidBloc>()
-                                          .add(const ChangePasswordPrepaidSubmitPressed()),
+                                          .add(
+                                              const ChangePasswordPrepaidSubmitPressed()),
                                     );
                                   },
                                 ),
-
                                 const SizedBox(height: 260),
                               ],
                             ),
@@ -171,7 +175,9 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                 duration: const Duration(milliseconds: 180),
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
-                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
               ),
             ],
           ),

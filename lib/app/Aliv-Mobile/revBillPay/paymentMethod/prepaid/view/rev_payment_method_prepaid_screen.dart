@@ -20,9 +20,9 @@ class REVPaymentMethodPrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -40,10 +40,13 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RevPaymentMethodPrepaidBloc, RevPaymentMethodPrepaidState>(
-      listenWhen: (p, c) => p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
+    return BlocConsumer<RevPaymentMethodPrepaidBloc,
+        RevPaymentMethodPrepaidState>(
+      listenWhen: (p, c) =>
+          p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
-        if (state.errorMessage != null && state.status == RevPaymentMethodPrepaidStatus.failure) {
+        if (state.errorMessage != null &&
+            state.status == RevPaymentMethodPrepaidStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
           );
@@ -54,15 +57,19 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
           // if (state.navTarget == RevPaymentMethodNavTarget.addCard) { ... }
           // if (state.navTarget == RevPaymentMethodNavTarget.paid) { ... }
 
-          context.read<RevPaymentMethodPrepaidBloc>().add(const RevPaymentNavConsumed());
+          context
+              .read<RevPaymentMethodPrepaidBloc>()
+              .add(const RevPaymentNavConsumed());
         }
       },
       builder: (context, state) {
         final isLoading = state.status == RevPaymentMethodPrepaidStatus.loading;
-        final isSubmitting = state.status == RevPaymentMethodPrepaidStatus.submitting;
+        final isSubmitting =
+            state.status == RevPaymentMethodPrepaidStatus.submitting;
 
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data:
+              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: RevPaymentMethodPrepaidTheme.bg,
             bottomNavigationBar: RevPaymentMethodBottomBar(
@@ -70,7 +77,9 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
               vatNote: state.vatNote,
               enabled: state.isPayNowEnabled,
               loading: isSubmitting,
-              onPayNow: () => context.read<RevPaymentMethodPrepaidBloc>().add(const RevPayNowPressed()),
+              onPayNow: () => context
+                  .read<RevPaymentMethodPrepaidBloc>()
+                  .add(const RevPayNowPressed()),
             ),
             body: Column(
               children: [
@@ -89,7 +98,6 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Expanded(
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -100,15 +108,15 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                           child: isLoading
                               ? const Center(child: CircularProgressIndicator())
                               : RevPaymentMethodSection(
-                            methods: state.methods,
-                            selectedId: state.selectedMethodId,
-                            onSelect: (id) => context
-                                .read<RevPaymentMethodPrepaidBloc>()
-                                .add(RevPaymentMethodSelected(id)),
-                            onPayWithCard: () => context
-                                .read<RevPaymentMethodPrepaidBloc>()
-                                .add(const RevPayWithCardPressed()),
-                          ),
+                                  methods: state.methods,
+                                  selectedId: state.selectedMethodId,
+                                  onSelect: (id) => context
+                                      .read<RevPaymentMethodPrepaidBloc>()
+                                      .add(RevPaymentMethodSelected(id)),
+                                  onPayWithCard: () => context
+                                      .read<RevPaymentMethodPrepaidBloc>()
+                                      .add(const RevPayWithCardPressed()),
+                                ),
                         ),
                       ),
                       const SliverToBoxAdapter(child: SizedBox(height: 90)),

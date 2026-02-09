@@ -23,7 +23,7 @@ class MyProfilePrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
@@ -48,7 +48,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<MyProfilePrepaidBloc, MyProfilePrepaidState>(
           listenWhen: (p, c) =>
-          p.navRequestId != c.navRequestId || p.navAction != c.navAction,
+              p.navRequestId != c.navRequestId || p.navAction != c.navAction,
           listener: (context, state) {
             switch (state.navAction) {
               case MyProfilePrepaidNavAction.back:
@@ -76,7 +76,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     // Appbar (already done)
                     SliverToBoxAdapter(
@@ -121,7 +121,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
                             child: Center(
                               child: ConstrainedBox(
                                 constraints:
-                                const BoxConstraints(maxWidth: 420),
+                                    const BoxConstraints(maxWidth: 420),
                                 child: Column(
                                   children: [
                                     // ✅ Header (avatar + name + status pill)
@@ -150,7 +150,8 @@ class _MyProfilePrepaidView extends StatelessWidget {
                                       title: 'edit email',
                                       onTap: () => context
                                           .read<MyProfilePrepaidBloc>()
-                                          .add(const MyProfilePrepaidEditEmailPressed()),
+                                          .add(
+                                              const MyProfilePrepaidEditEmailPressed()),
                                     ),
                                     const SizedBox(height: 16),
 
@@ -159,7 +160,8 @@ class _MyProfilePrepaidView extends StatelessWidget {
                                       title: 'change password',
                                       onTap: () => context
                                           .read<MyProfilePrepaidBloc>()
-                                          .add(const MyProfilePrepaidChangePasswordPressed()),
+                                          .add(
+                                              const MyProfilePrepaidChangePasswordPressed()),
                                     ),
 
                                     const SizedBox(height: 24),

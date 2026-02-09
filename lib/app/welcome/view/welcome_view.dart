@@ -19,7 +19,8 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WelcomeBloc(WelcomeRepository())..add(WelcomeLoaded()),
+      create: (context) =>
+          WelcomeBloc(WelcomeRepository())..add(WelcomeLoaded()),
       child: const WelcomeView(),
     );
   }
@@ -47,9 +48,9 @@ class WelcomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
 
         // ✅ single color bottom area
         systemNavigationBarColor: ColorManager.welcomeScreenBloc,
@@ -139,22 +140,20 @@ class WelcomeView extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 20),
-
                             CustomButton(
                               label: 'ALIV Mobile',
                               onPressed: () => context.push(AppRoutes.logIn),
                             ),
                             const SizedBox(height: 18),
-
                             CustomButton(
                               label: 'ALIVfbr',
                               onPressed: () {},
                             ),
                             const SizedBox(height: 18),
-
                             CustomButton(
                               label: 'ALIV Mobile Guest',
-                              onPressed: () => context.push(AppRoutes.guestSplash),
+                              onPressed: () =>
+                                  context.push(AppRoutes.guestSplash),
                             ),
                           ],
                         ),

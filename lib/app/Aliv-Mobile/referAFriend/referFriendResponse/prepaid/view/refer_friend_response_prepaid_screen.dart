@@ -17,9 +17,9 @@ class ReferFriendResponsePrepaidScreen extends StatelessWidget {
     // Keep status bar consistent with purple app bar
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -40,7 +40,8 @@ class _ReferFriendResponsePrepaidView extends StatelessWidget {
     return Scaffold(
       backgroundColor: ReferFriendResponsePrepaidTheme.bg,
       body: SafeArea(
-        child: BlocListener<ReferFriendResponsePrepaidBloc, ReferFriendResponsePrepaidState>(
+        child: BlocListener<ReferFriendResponsePrepaidBloc,
+            ReferFriendResponsePrepaidState>(
           listenWhen: (p, c) => p.toastMessage != c.toastMessage,
           listener: (context, state) {
             final msg = state.toastMessage;
@@ -50,7 +51,9 @@ class _ReferFriendResponsePrepaidView extends StatelessWidget {
               SnackBar(content: Text(msg)),
             );
 
-            context.read<ReferFriendResponsePrepaidBloc>().add(const ReferFriendResponsePrepaidToastConsumed());
+            context
+                .read<ReferFriendResponsePrepaidBloc>()
+                .add(const ReferFriendResponsePrepaidToastConsumed());
           },
           child: Column(
             children: [
@@ -87,7 +90,7 @@ class _HeaderBar extends StatelessWidget {
       title: 'success!',
       showHome: false,
       backgroundColor: ReferFriendResponsePrepaidTheme.brand,
-      onBack: (){},
+      onBack: () {},
     );
   }
 }

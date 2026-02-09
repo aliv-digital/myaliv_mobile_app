@@ -1,10 +1,16 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
 
-
-
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
   final appRouter = AppRouter();
   runApp(MyApp(appRouter: appRouter));
 }
@@ -19,7 +25,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'My Aliv',
       routerConfig: appRouter.router,
-      theme: ThemeData(useMaterial3: true),
+      theme: ThemeData(
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          ),
+        ),
+      ),
     );
   }
 }

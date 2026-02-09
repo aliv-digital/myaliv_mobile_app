@@ -3,7 +3,9 @@ import 'package:equatable/equatable.dart';
 import '../model/guest_pay_bill_models.dart';
 
 enum GuestPayBillLoadStatus { initial, loading, ready, failure }
+
 enum GuestPayBillVerifyStatus { idle, loading, success, failure }
+
 enum GuestPayBillSubmitStatus { idle, loading, success, failure }
 
 class GuestPayBillState extends Equatable {
@@ -11,6 +13,7 @@ class GuestPayBillState extends Equatable {
 
   final List<BillService> services;
   final BillService? selectedService;
+  final PayBillCountry selectedCountry;
 
   // REV
   final String accountNumber;
@@ -32,6 +35,7 @@ class GuestPayBillState extends Equatable {
     required this.loadStatus,
     required this.services,
     required this.selectedService,
+    required this.selectedCountry,
     required this.accountNumber,
     required this.name,
     required this.mobileNumber,
@@ -44,19 +48,20 @@ class GuestPayBillState extends Equatable {
   });
 
   factory GuestPayBillState.initial() => const GuestPayBillState(
-    loadStatus: GuestPayBillLoadStatus.initial,
-    services: [],
-    selectedService: null,
-    accountNumber: '',
-    name: '',
-    mobileNumber: '',
-    confirmMobileNumber: '',
-    amountText: '0.00',
-    verifyStatus: GuestPayBillVerifyStatus.idle,
-    accountInfo: null,
-    errorMessage: null,
-    submitStatus: GuestPayBillSubmitStatus.idle,
-  );
+        loadStatus: GuestPayBillLoadStatus.initial,
+        services: [],
+        selectedService: null,
+        selectedCountry: PayBillCountry.defaultCountry,
+        accountNumber: '',
+        name: '',
+        mobileNumber: '',
+        confirmMobileNumber: '',
+        amountText: '0.00',
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        accountInfo: null,
+        errorMessage: null,
+        submitStatus: GuestPayBillSubmitStatus.idle,
+      );
 
   bool get isAlivPostpaid => selectedService?.code == 'ALIV_POSTPAID';
 
@@ -89,6 +94,7 @@ class GuestPayBillState extends Equatable {
     GuestPayBillLoadStatus? loadStatus,
     List<BillService>? services,
     BillService? selectedService,
+    PayBillCountry? selectedCountry,
     String? accountNumber,
     String? name,
     String? mobileNumber,
@@ -103,6 +109,7 @@ class GuestPayBillState extends Equatable {
       loadStatus: loadStatus ?? this.loadStatus,
       services: services ?? this.services,
       selectedService: selectedService ?? this.selectedService,
+      selectedCountry: selectedCountry ?? this.selectedCountry,
       accountNumber: accountNumber ?? this.accountNumber,
       name: name ?? this.name,
       mobileNumber: mobileNumber ?? this.mobileNumber,
@@ -117,17 +124,18 @@ class GuestPayBillState extends Equatable {
 
   @override
   List<Object?> get props => [
-    loadStatus,
-    services,
-    selectedService,
-    accountNumber,
-    name,
-    mobileNumber,
-    confirmMobileNumber,
-    amountText,
-    verifyStatus,
-    accountInfo,
-    errorMessage,
-    submitStatus,
-  ];
+        loadStatus,
+        services,
+        selectedService,
+        selectedCountry,
+        accountNumber,
+        name,
+        mobileNumber,
+        confirmMobileNumber,
+        amountText,
+        verifyStatus,
+        accountInfo,
+        errorMessage,
+        submitStatus,
+      ];
 }

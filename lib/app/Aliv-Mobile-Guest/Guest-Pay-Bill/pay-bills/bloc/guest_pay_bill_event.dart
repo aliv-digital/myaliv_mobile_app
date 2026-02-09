@@ -49,6 +49,13 @@ class GuestPayBillConfirmMobileChanged extends GuestPayBillEvent {
   List<Object?> get props => [value];
 }
 
+class GuestPayBillCountryChanged extends GuestPayBillEvent {
+  final PayBillCountry country;
+  const GuestPayBillCountryChanged(this.country);
+  @override
+  List<Object?> get props => [country.flagEmoji, country.dialCode];
+}
+
 class GuestPayBillAmountChanged extends GuestPayBillEvent {
   final String value;
   const GuestPayBillAmountChanged(this.value);
