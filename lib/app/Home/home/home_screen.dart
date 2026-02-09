@@ -65,18 +65,25 @@ class HomeScreen extends StatelessWidget {
                       : _noActivePlan(context),
 
                   config.userType == UserType.prepaid
-                      ?  const SizedBox(height: 40):const SizedBox(height: 20),
+                      ? const SizedBox(height: 40)
+                      : const SizedBox(height: 20),
 
-                  if (config.hasActivePlan) Container(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                  if (config.hasActivePlan)
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
                       decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
 
-                      child: const ActivePlanUsageSection()),
+                      child: const ActivePlanUsageSection(),
+                    ),
 
                   const SizedBox(height: 20),
                   _bestPlans(context),
-                  const SizedBox(height: 16),
-                  _quickActions(context),
+                  // const SizedBox(height: 16),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                    decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
+                    child: _quickActions(context),
+                  ),
                   const SizedBox(height: 24),
                   _limitedOffer(),
                 ],
@@ -437,7 +444,7 @@ class HomeScreen extends StatelessWidget {
           child: Row(
             children: const [
               Padding(
-                padding: EdgeInsets.fromLTRB(14,18,12,24),
+                padding: EdgeInsets.fromLTRB(14, 18, 12, 24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,7 +452,9 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       'Limited \nTime Offer',
                       style: TextStyle(
-                        color: const Color(0xFF101828) /* Colors-Text-text-primary-(900) */,
+                        color: const Color(
+                          0xFF101828,
+                        ) /* Colors-Text-text-primary-(900) */,
                         fontSize: 20,
                         fontFamily: 'Circular Pro',
                         fontWeight: FontWeight.w700,
@@ -455,17 +464,19 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       'See the best product now',
                       style: TextStyle(
-                        color: const Color(0xFF101828) /* Colors-Text-text-primary-(900) */,
+                        color: const Color(
+                          0xFF101828,
+                        ) /* Colors-Text-text-primary-(900) */,
                         fontSize: 10,
                         fontFamily: 'Circular Pro',
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.05,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-              SizedBox(width: 8,),
+              SizedBox(width: 8),
               TimerBox('00', 'Days'),
               TimerBox('03', 'Hours'),
               TimerBox('55', 'Min'),
@@ -489,7 +500,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+            padding: const EdgeInsets.fromLTRB(24, 10, 24, 16),
             child: Row(
               children: [
                 Text(
