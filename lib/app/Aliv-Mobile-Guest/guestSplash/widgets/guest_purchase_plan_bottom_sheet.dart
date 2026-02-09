@@ -461,7 +461,7 @@ class _SheetBody extends StatelessWidget {
               title: 'guest purchase a plan',
               onBack: () => Navigator.of(context).pop(),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
 
             const _Label('enter mobile number'),
             const SizedBox(height: 8),
@@ -476,7 +476,7 @@ class _SheetBody extends StatelessWidget {
               showArrow: true,
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             const _Label('confirm mobile number'),
             const SizedBox(height: 8),
@@ -491,7 +491,7 @@ class _SheetBody extends StatelessWidget {
               showArrow: false,
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 20),
 
             if (state.purchaseStatus == GuestSplashPurchasePlanStatus.failure &&
                 (state.purchaseErrorMessage?.isNotEmpty ?? false))
