@@ -18,33 +18,26 @@ class ProfileMenuItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleColor = enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
-    final chevronColor = enabled ? ProfilePrepaidTheme.chevron : ProfilePrepaidTheme.textGrey;
+    final chevronColor = enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
 
     return Column(
       children: [
         InkWell(
           onTap: enabled ? onTap : null,
-          child: SizedBox(
-            height: 56,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: ProfilePrepaidTheme.t(
-                        13,
-                        weight: FontWeight.w400,
-                        color: titleColor,
-                      ),
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 18, 16, 18),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ProfilePrepaidTheme.menuItemText.copyWith(color: titleColor),
                   ),
-                  Icon(Icons.chevron_right, size: 22, color: chevronColor),
-                ],
-              ),
+                ),
+                Icon(Icons.chevron_right, size: 22, color: chevronColor),
+              ],
             ),
           ),
         ),
