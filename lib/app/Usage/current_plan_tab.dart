@@ -135,7 +135,7 @@ class CurrentPlanTab extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
             child: const UsageMetricRow(
               title: 'local sms',
               subtitle: '0 of 0 sms',
@@ -146,7 +146,7 @@ class CurrentPlanTab extends StatelessWidget {
           ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(32, 0, 32, 24),
+            padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
             child: Text(
               'Roameasy Begins Immediately Bundle\nCalls Unlimited',
               style: TextStyle(
@@ -156,6 +156,12 @@ class CurrentPlanTab extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
+          ),
+          Container(
+            // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(color: Color(0xFFF1F2FA)),
+            child: SizedBox(height: 20,)
           ),
         ],
       ),

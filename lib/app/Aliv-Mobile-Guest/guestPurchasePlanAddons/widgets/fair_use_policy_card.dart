@@ -24,7 +24,7 @@ class FairUsePolicyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           // Screenshot এর মতো light background feel (page bg এর সাথে blend)
-          padding: const EdgeInsets.fromLTRB(5, 4, 0, 10),
+          padding: const EdgeInsets.fromLTRB(5, 4, 4, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -32,20 +32,24 @@ class FairUsePolicyCard extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Text(
                   policy.title,
-                  style: GuestPurchasePlanAddOnsTheme.t(
-                    12,
-                    weight: FontWeight.w700,
-                    color: GuestPurchasePlanAddOnsTheme.textBlack,
-                  ).copyWith(
+                  style: TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 12,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
-                    decorationThickness: 2,
                   ),
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 10),
               Text(
                 policy.description,
-                style: GuestPurchasePlanAddOnsTheme.addOnHelper,
+                style: TextStyle(
+                  color: const Color(0xFF222222),
+                  fontSize: 12,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w700,
+                ), //GuestPurchasePlanAddOnsTheme.addOnHelper,
               ),
             ],
           ),

@@ -17,138 +17,83 @@ class ActivePlanCardV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: Container(
-        decoration: BoxDecoration(
-          color: GuestPurchasePlanAddOnsTheme.planRed,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 16,
-              offset: Offset(0, 10),
-              color: GuestPurchasePlanAddOnsTheme.shadow,
-            ),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        color: GuestPurchasePlanAddOnsTheme.planRed,
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: AssetImage('assets/icons/Home Active Plan.png'),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Stack(
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 16,
+            offset: Offset(0, 10),
+            color: GuestPurchasePlanAddOnsTheme.shadow,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 13, 16, 28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Background shapes
-              // Figma background ovals (size 321x226, opacity 0.08, black @ 63%)
-              Positioned(
-                left: -95,
-                bottom: -85,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.08,
-                    child: Container(
-                      width: 250,
-                      height: 180,
-                      decoration: ShapeDecoration(
-                        color: Colors.black.withOpacity(0.63),
-                        shape: const OvalBorder(),
-                      ),
+              Row(
+                children: [
+                  Text(
+                    plan.label,
+                    style: TextStyle(
+                      color: Colors.white /* White-100% */,
+                      fontSize: 12,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              ),
-              Positioned(
-                right: -120,
-                top: -100,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.08,
-                    child: Container(
-                      width: 280,
-                      height: 200,
-                      decoration: ShapeDecoration(
-                        color: Colors.black.withOpacity(0.63),
-                        shape: const OvalBorder(),
-                      ),
+                  const Spacer(),
+                  _AutoRenewPill(
+                    value: plan.autoRenew,
+                    onChanged: onAutoRenewChanged,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'auto renew',
+                    style: GuestPurchasePlanAddOnsTheme.t(
+                      12,
+                      weight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 0),
+              Text(
+                plan.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white /* White-100% */,
+                  fontSize: 24,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              // Watermark
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.10,
-                    child: Center(
-                      child: Text(
-                        'aliv',
-                        style: GuestPurchasePlanAddOnsTheme.t(
-                          92,
-                          weight: FontWeight.w900,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+              const SizedBox(height: 30),
+
+              Row(
+                children: [
+                  _DateBlock(
+                    label: plan.activeDateLabel,
+                    value: plan.activeDate,
+                    alignEnd: false,
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          plan.label,
-                          style: GuestPurchasePlanAddOnsTheme.t(
-                            12,
-                            weight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const Spacer(),
-                        _AutoRenewPill(
-                          value: plan.autoRenew,
-                          onChanged: onAutoRenewChanged,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'auto renew',
-                          style: GuestPurchasePlanAddOnsTheme.t(
-                            12,
-                            weight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      plan.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GuestPurchasePlanAddOnsTheme.t(
-                        24,
-                        weight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        _DateBlock(
-                          label: plan.activeDateLabel,
-                          value: plan.activeDate,
-                          alignEnd: false,
-                        ),
-                        const Spacer(),
-                        _DateBlock(
-                          label: plan.expireDateLabel,
-                          value: plan.expireDate,
-                          alignEnd: true,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  const Spacer(),
+                  _DateBlock(
+                    label: plan.expireDateLabel,
+                    value: plan.expireDate,
+                    alignEnd: true,
+                  ),
+                ],
               ),
             ],
           ),
@@ -159,10 +104,7 @@ class ActivePlanCardV2 extends StatelessWidget {
 }
 
 class _AutoRenewPill extends StatelessWidget {
-  const _AutoRenewPill({
-    required this.value,
-    required this.onChanged,
-  });
+  const _AutoRenewPill({required this.value, required this.onChanged});
 
   final bool value;
   final ValueChanged<bool> onChanged;
@@ -236,8 +178,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(

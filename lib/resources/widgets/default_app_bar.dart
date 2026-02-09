@@ -207,7 +207,7 @@ class DefaultAppBar extends StatelessWidget {
           onTap: onActionTextTap,
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            padding: const EdgeInsets.fromLTRB(10, 8, 24,8),
             child: Text(
               actionText!,
               style: actionTextStyle ??

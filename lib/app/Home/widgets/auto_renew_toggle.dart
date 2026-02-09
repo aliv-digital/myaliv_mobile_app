@@ -38,7 +38,7 @@ class _AutoRenewToggleState extends State<AutoRenewToggle> {
             padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
             decoration: BoxDecoration(
               color: isOn
-                  ? const Color(0xFF645D9C) // ON → dark
+                  ? const  Color(0xFFF4F4F4)//Color(0xFF645D9C) // ON → dark
                   : const Color(0xFFEAEAEA), // OFF → light grey
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
@@ -53,7 +53,7 @@ class _AutoRenewToggleState extends State<AutoRenewToggle> {
                     ? Icon(
                         IconsaxPlusLinear.tick_circle,
                         size: 16,
-                        color: Colors.white,
+                        color: Color(0xFFEE3434),
                       )
                     : SvgPicture.asset(
                         'assets/icons/clock_toggle.svg',
@@ -72,7 +72,7 @@ class _AutoRenewToggleState extends State<AutoRenewToggle> {
                   isOn ? 'on' : 'off',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: isOn ? Colors.white : const Color(0xFF707070),
+                    color: isOn ? Colors.black : const Color(0xFF707070),
                     fontSize: 12,
                     fontFamily: 'Circular Pro',
                     fontWeight: FontWeight.w500,

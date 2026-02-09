@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../router/app_routes.dart';
 
 class PurchaseAddOnButton extends StatelessWidget {
   const PurchaseAddOnButton({super.key});
@@ -13,7 +16,10 @@ class PurchaseAddOnButton extends StatelessWidget {
         width: double.infinity,
         height: 40,
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            // 🔥 purchase add-on
+            context.push(AppRoutes.guestPurchasePlanAddOns);
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: purple,
             elevation: 0,
