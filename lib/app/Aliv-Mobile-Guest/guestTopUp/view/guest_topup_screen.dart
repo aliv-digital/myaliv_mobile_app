@@ -161,6 +161,8 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               onPressed: () {
                                 context.push(AppRoutes.confirmGuestTopUp);
                               },
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
                               label: 'next',
                               isLoading: false,
                             );
