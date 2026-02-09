@@ -31,7 +31,7 @@ class HomePlanAddOnCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: selected ? HomePlanTheme.brandPurple : Colors.transparent,
             width: 1.2,
