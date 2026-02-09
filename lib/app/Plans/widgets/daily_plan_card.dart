@@ -29,7 +29,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -46,9 +46,10 @@ class HomePlanDailyPlanCard extends StatelessWidget {
               Expanded(
                 child: InkWell(
                   onTap: onToggle,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    // mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
@@ -117,7 +118,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
-                plan.description,
+                plan.description,textAlign: TextAlign.left,
                 style: const TextStyle(
                   fontFamily: 'CircularPro',
                   fontSize: 12.2,
@@ -202,7 +203,7 @@ class _PricePill extends StatelessWidget {
           color: HomePlanTheme.brandPurple,
           width: 1,
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
