@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../theme/enter_password_autoRenew_prepaid_theme.dart';
 
 class EnterPasswordAutoRenewPrepaidPasswordInput extends StatelessWidget {
@@ -27,7 +28,7 @@ class EnterPasswordAutoRenewPrepaidPasswordInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
-          const Icon(Icons.lock_outline, size: 18, color: Color(0xFF6B7280)),
+           SvgPicture.asset('assets/icons/leading_lock.svg', color: Color(0xFF6B7280)),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -55,13 +56,10 @@ class EnterPasswordAutoRenewPrepaidPasswordInput extends StatelessWidget {
           InkWell(
             onTap: onToggle,
             borderRadius: BorderRadius.circular(999),
-            child: const Padding(
+            child:  Padding(
               padding: EdgeInsets.all(6),
-              child: Icon(
-                Icons.visibility_off,
-                size: 18,
-                color: Color(0xFF6B7280),
-              ),
+              child: SvgPicture.asset('assets/icons/eye.svg', color: Color(0xFF6B7280)),
+
             ),
           ),
         ],

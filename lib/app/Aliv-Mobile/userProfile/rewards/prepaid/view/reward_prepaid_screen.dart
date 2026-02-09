@@ -30,7 +30,7 @@ class _RewardPrepaidView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:  Color(0xFFF0F1F9),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: BlocListener<RewardPrepaidBloc, RewardPrepaidState>(

@@ -8,7 +8,7 @@ class AssetConstant{
   static const bottomStripeSVG = 'assets/images/bottom_stripes.svg';
   static const backButtonSVG = 'assets/icons/back_button.svg';
   static const otpPhoneSVG = 'assets/images/otp_mobile.svg';
-  static const whiteBackArrowIconPNG = 'assets/icons/white_back_arrow.png';
+  static const whiteBackArrowIconPNG = 'assets/icons/arrow-left.svg';
 
   static const smsIconPNG = 'assets/icons/sms_icon.svg';
   static const phoneIconPNG = 'assets/icons/phone_icon.svg';

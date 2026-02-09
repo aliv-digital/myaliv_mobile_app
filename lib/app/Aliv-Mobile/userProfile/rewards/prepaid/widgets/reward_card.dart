@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
@@ -20,7 +21,7 @@ class RewardPrepaidCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const cardRadius = 16.0;
+    const cardRadius = 8.0;
     const cardHeight = 210.0;
 
     return Container(
@@ -43,11 +44,11 @@ class RewardPrepaidCard extends StatelessWidget {
           children: [
             Image.asset(
               AssetConstant.rewardsCardBackgroundPNG,
-              fit: BoxFit.cover,
+              fit: BoxFit.none,
             ),
 
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
               child: Column(
                 children: [
                   // Top area: icon + left-aligned text block
@@ -57,28 +58,27 @@ class RewardPrepaidCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Image.asset(
-                          AssetConstant.giftBoxPNG,
-                          height: 44,
-                          width: 44,
+                          'assets/icons/giftbox.png',
+                          height: 60,
+                          width: 72,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 8),
 
                         // Texts take remaining width; no overflow
                         Expanded(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  fontFamily: 'CircularPro',
-                                  fontWeight: FontWeight.w700,
+                                style: TextStyle(
                                   color: Colors.black,
-                                  height: 1.1,
+                                  fontSize: 17,
+                                  fontFamily: 'Circular Pro',
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -87,11 +87,10 @@ class RewardPrepaidCard extends StatelessWidget {
                                 maxLines: 3, // card space er vitor e thakbe
                                 overflow: TextOverflow.ellipsis, // "..."
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'CircularPro',
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black.withOpacity(0.70),
-                                  height: 1.35,
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontFamily: 'Circular Pro',
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -101,16 +100,15 @@ class RewardPrepaidCard extends StatelessWidget {
                     ),
                   ),
 
-                  const Spacer(),
-
+                  // SizedBox(height: 18,),
                   Row(
                     children: [
                       Expanded(
                         child: SizedBox(
                           height: 44,
                           child: DefaultButton(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                             label: 'get this',
                             isLoading: false,
                             onPressed: onGetThisPressed,
@@ -122,8 +120,8 @@ class RewardPrepaidCard extends StatelessWidget {
                         child: SizedBox(
                           height: 44,
                           child: DefaultButton(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                             label: 'read more',
                             isLoading: false,
                             onPressed: onReadMorePressed,
@@ -132,6 +130,8 @@ class RewardPrepaidCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(width: 24),
+
                 ],
               ),
             ),

@@ -11,31 +11,37 @@ class TimerBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 6),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
               value,
               style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.bold,
+                color: const Color(0xFF0F1313),
+                fontSize: 20,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.10,
               ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 10,
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                color: const Color(0xFF0F1313),
+                fontSize: 10,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.05,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -15,17 +15,18 @@ class ActivePlanUsageSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _header(context),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: Text(
             'liberty70',
             style: TextStyle(
-              fontFamily: 'CircularPro',
+              color: Colors.black,
               fontSize: 18,
+              fontFamily: 'Circular Pro',
               fontWeight: FontWeight.w700,
             ),
-          ),
+          )
         ),
         const SizedBox(height: 16),
         _usageCards(),
@@ -38,32 +39,35 @@ class ActivePlanUsageSection extends StatelessWidget {
   // ================= Header =================
   Widget _header(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
           GestureDetector(
             onTap: () {
               context.go(AppRoutes.usage);
               },
-            child: const Text(
+            child: Text(
               'active plan usage remaining',
               style: TextStyle(
-                fontFamily: 'CircularPro',
+                color: Colors.black,
                 fontSize: 18,
+                fontFamily: 'Circular Pro',
                 fontWeight: FontWeight.w700,
               ),
-            ),
+            )
           ),
           const Spacer(),
           GestureDetector(
             onTap: () {
               context.go(AppRoutes.usage);
             },
-            child: const Text(
+            child: Text(
               'view more',
               style: TextStyle(
-                fontFamily: 'CircularPro',
-                color: Color(0xFF2F80ED),
+                color: const Color(0xFF007AD0),
+                fontSize: 12,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -75,13 +79,13 @@ class ActivePlanUsageSection extends StatelessWidget {
   // ================= Usage Cards =================
   Widget _usageCards() {
     return SizedBox(
-      height: 190,
+      height: 154,
       child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 0),
         scrollDirection: Axis.horizontal,
         children: const [
           UsageCard(
-            icon: IconsaxPlusLinear.wifi,
+            icon: 'assets/icons/Rss.svg',
             title: 'data',
             value: '2.4 GB',
             total: '14 GB',
@@ -91,23 +95,23 @@ class ActivePlanUsageSection extends StatelessWidget {
           ),
           SizedBox(width: 12),
           UsageCard(
-            icon: IconsaxPlusLinear.call,
+            icon: 'assets/icons/Phone.svg',
             title: 'talk mins',
             value: 'unlimited',
             total: 'local',
             remainingLabel: 'remaining',
-            progress: 1,
-            color: Color(0xFF2D9CDB),
+            progress: 0.8,
+            color: Color(0xFF00B3E3),
           ),
           SizedBox(width: 12),
           UsageCard(
-            icon: IconsaxPlusLinear.message_text,
+            icon: 'assets/icons/message.svg',
             title: 'sms',
             value: 'unlimited',
             total: 'local',
             remainingLabel: 'remaining',
-            progress: 1,
-            color: Color(0xFF9B51E0),
+            progress: 0.8,
+            color: Color(0xFF5045A7),
           ),
         ],
       ),
@@ -120,23 +124,24 @@ class ActivePlanUsageSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: Text(
             'roameasy usa and can',
             style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+                color: Colors.black,
+                fontSize: 18,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w700,
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: 24),
           child: RoamingCard(
-            used: '0',
-            total: '2 GB',
-            progress: 0.0,
+            used: '1GB ',
+            total: '2GB',
+            progress: 0.5,
           ),
         ),
       ],

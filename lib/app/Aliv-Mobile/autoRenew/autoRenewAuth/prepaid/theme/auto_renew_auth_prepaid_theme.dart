@@ -21,31 +21,34 @@ class AutoRenewAuthPrepaidTheme {
   );
 
   static TextStyle paragraphStyle() =>  TextStyle(
-    fontFamily: fontFamily,
+    color: const Color(0xFF707070),
     fontSize: 14,
-    height: 1.45,
-    fontWeight: FontWeight.w400,
-    color: textMid,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w500,
+    height: 1.43,
   );
 
   static TextStyle sectionHeaderStyle() => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14,
+    color: const Color(0xFF707070),
+    fontSize: 16,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w700,
-    color: textDark,
+    height: 1.25,
   );
 
   static TextStyle signatureStyle() => const TextStyle(
-    fontFamily: fontFamily,
+    color: const Color(0xFF707070),
     fontSize: 14,
-    fontWeight: FontWeight.w600,
-    color: textDark,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w700,
+    height: 1.43,
   );
 
   static TextStyle fieldLabelStyle() => const TextStyle(
-    fontFamily: fontFamily,
+    color: const Color(0xFF1C1C1C) /* Black-100% */,
     fontSize: 14,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w700,
-    color: textDark,
+    height: 1.43,
   );
 }

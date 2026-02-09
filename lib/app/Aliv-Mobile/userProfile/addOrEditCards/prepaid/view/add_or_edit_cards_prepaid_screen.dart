@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../bloc/add_or_edit_cards_prepaid_bloc.dart';
 import '../bloc/add_or_edit_cards_prepaid_event.dart';
@@ -80,7 +81,10 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                     backgroundColor: AddOrEditCardsPrepaidTheme.primary,
                     elevation: 0,
                     leading: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Padding(
+                        padding: const EdgeInsets.only(left: 24.0),
+                        child: const Icon(Icons.arrow_back, color: Colors.white),
+                      ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
                     title: const Text(
@@ -92,11 +96,14 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                       ),
                     ),
                     actions: [
-                      IconButton(
-                        onPressed: () =>
-                            bloc.add(const AddOrEditCardsPrepaidHomePressed()),
-                        icon:
-                        const Icon(Icons.home_outlined, color: Colors.white),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20.0),
+                        child: IconButton(
+                          onPressed: () =>
+                              bloc.add(const AddOrEditCardsPrepaidHomePressed()),
+                          icon:
+                           SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
+                        ),
                       ),
                     ],
                   ),
@@ -109,7 +116,7 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                      padding: const EdgeInsets.fromLTRB(28, 20, 28, 18),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +132,7 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                                 }
                               },
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 20),
                             DashedAddCardButton(
                               onTap: () {
                                 bloc.add(

@@ -6,45 +6,47 @@ class FuturePlansTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-      children: [
-        // 🔹 STATIC FIRST PLAN
-        const _StaticFuturePlan(),
+    return Container(
+      color: Colors.white,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+        children: [
+          // 🔹 STATIC FIRST PLAN
+          const _StaticFuturePlan(),
 
-        const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-        // 🔹 STATIC BUTTON
-        const _StartPlanButton(),
+          // 🔹 STATIC BUTTON
+          // const _StartPlanButton(),
 
-        const SizedBox(height: 20),
+          // const SizedBox(height: 20),
 
-        // 🔹 DYNAMIC SECTION
-        const _DynamicFuturePlans(),
-      ],
+          // 🔹 DYNAMIC SECTION
+          const _DynamicFuturePlans(),
+        ],
+      ),
     );
   }
 }
+
 class _StaticFuturePlan extends StatelessWidget {
   const _StaticFuturePlan();
 
   @override
   Widget build(BuildContext context) {
     return const FuturePlanCard(
-      title: 'liberty45',
+      title: 'Travel30',
       startDate: '06/01/25',
       endDate: '05/01/25',
-      gradient: [
-        Color(0xFF2E2A7B),
-        Color(0xFF5A54C4),
-      ],
+      image: 'assets/icons/Future Plan 1.png',
     );
   }
 }
+
 class _StartPlanButton extends StatelessWidget {
   const _StartPlanButton();
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +77,7 @@ class _StartPlanButton extends StatelessWidget {
     );
   }
 }
+
 class _DynamicFuturePlans extends StatelessWidget {
   const _DynamicFuturePlans();
 
@@ -85,19 +88,13 @@ class _DynamicFuturePlans extends StatelessWidget {
         'title': 'freedom8',
         'start': '20/02/25',
         'end': '19/03/25',
-        'gradient': [
-          Color(0xFF3A7BD5),
-          Color(0xFFF857A6),
-        ],
+        'image': 'assets/icons/Home Active Plan.png',
       },
       {
-        'title': 'roameasy carib...',
+        'title': 'travel50.',
         'start': '20/01/25',
         'end': '19/02/25',
-        'gradient': [
-          Color(0xFF3CAEA3),
-          Color(0xFF5BC0BE),
-        ],
+        'image': 'assets/icons/Future Plan 3.png',
       },
     ];
 
@@ -105,15 +102,15 @@ class _DynamicFuturePlans extends StatelessWidget {
       children: plans
           .map(
             (plan) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: FuturePlanCard(
-            title: plan['title'] as String,
-            startDate: plan['start'] as String,
-            endDate: plan['end'] as String,
-            gradient: plan['gradient'] as List<Color>,
-          ),
-        ),
-      )
+              padding: const EdgeInsets.only(bottom: 16),
+              child: FuturePlanCard(
+                title: plan['title'] as String,
+                startDate: plan['start'] as String,
+                endDate: plan['end'] as String,
+                image: plan['image'] as String,
+              ),
+            ),
+          )
           .toList(),
     );
   }

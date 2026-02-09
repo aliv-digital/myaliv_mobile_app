@@ -30,23 +30,28 @@ class PaymentMethodTile extends StatelessWidget {
     final titleStyle = TopUpPaymentPrepaidTheme.bodyMd(context).copyWith(
       color: isSelected
           ? TopUpPaymentPrepaidTheme.primary
-          : TopUpPaymentPrepaidTheme.textPrimary,
+          : Color(0xFF222222),
       fontWeight: FontWeight.w700,
+      fontSize: 14,
+      fontFamily: 'Circular Pro',
+      height: 1.43,
 
     );
 
     final subtitleStyle = TopUpPaymentPrepaidTheme.bodySm(context).copyWith(
       color: isSelected
-          ? TopUpPaymentPrepaidTheme.primary.withValues(alpha: 0.75)
-          : TopUpPaymentPrepaidTheme.textSecondary,
-      fontWeight: FontWeight.w700,
-    );
+          ?  Color(0xCC5146A8)
+          : const Color(0xFF707070),
+      fontSize: 14,
+      fontFamily: 'Circular Pro',
+      fontWeight: FontWeight.w500,
+      height: 1.43,    );
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(12),

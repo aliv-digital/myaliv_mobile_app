@@ -22,7 +22,7 @@ class BottomPayBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        padding: const EdgeInsets.fromLTRB(24, 10, 24, 12),
         decoration: const BoxDecoration(color: Colors.white),
         child: Row(
           children: [
@@ -32,13 +32,12 @@ class BottomPayBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(_money(total), style: TopUpPaymentPrepaidTheme.bottomPrice(context)),
-                  const SizedBox(height: 2),
                   Text(vatInclusive ? 'vat inclusive' : 'vat exclusive', style: TopUpPaymentPrepaidTheme.bodySm(context)),
                 ],
               ),
             ),
             SizedBox(
-              height: 44,
+              height: 40,
               width: 170,
               child: ElevatedButton(
                 onPressed: isLoading ? null : onPayNow,

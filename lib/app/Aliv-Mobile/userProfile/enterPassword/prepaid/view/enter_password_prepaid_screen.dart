@@ -83,7 +83,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(28, 34, 28, 18),
+                      padding: const EdgeInsets.fromLTRB(42, 34, 42, 18),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(

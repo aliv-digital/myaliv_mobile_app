@@ -368,7 +368,7 @@ class _ScrollIndicator extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: HomePlanTheme.scrollBarBackgroundColor,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(100),
         ),
         child: Padding(
           padding: const EdgeInsets.all(inset),
@@ -383,7 +383,7 @@ class _ScrollIndicator extends StatelessWidget {
                   height: innerH + 2,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
               ),
