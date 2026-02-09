@@ -9,6 +9,12 @@ import '../bloc/guest_pay_bill_event.dart';
 import '../bloc/guest_pay_bill_state.dart';
 import '../model/guest_pay_bill_models.dart';
 import '../theme/guest_pay_bill_theme.dart';
+import '../widgets/guest_pay_bill_country_code_picker_box.dart';
+import '../widgets/guest_pay_bill_inline_verify_field.dart';
+import '../widgets/guest_pay_bill_primary_submit_button.dart';
+import '../widgets/guest_pay_bill_read_only_box.dart';
+import '../widgets/guest_pay_bill_required_label.dart';
+import '../widgets/guest_pay_bill_service_dropdown.dart';
 
 class GuestPayBillScreen extends StatelessWidget {
   const GuestPayBillScreen({super.key});
@@ -97,9 +103,10 @@ class _GuestPayBillView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _LabelRequired(text: 'select service'),
+                          const GuestPayBillRequiredLabel(
+                              text: 'select service'),
                           const SizedBox(height: _labelToFieldGap),
-                          _ServiceDropdown(
+                          GuestPayBillServiceDropdown(
                             services: state.services,
                             selected: state.selectedService,
                             onChanged: (s) => context
@@ -122,7 +129,7 @@ class _GuestPayBillView extends StatelessWidget {
                             const SizedBox(height: _labelToFieldGap),
                             Row(
                               children: [
-                                _CountryCodePickerBox(
+                                GuestPayBillCountryCodePickerBox(
                                   country: state.selectedCountry,
                                   showArrow: true,
                                   onTap: () => _pickCountry(context),
@@ -148,13 +155,13 @@ class _GuestPayBillView extends StatelessWidget {
                             const SizedBox(height: _labelToFieldGap),
                             Row(
                               children: [
-                                _CountryCodePickerBox(
+                                GuestPayBillCountryCodePickerBox(
                                   country: state.selectedCountry,
                                   showArrow: false,
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
-                                  child: _InlineVerifyField(
+                                  child: GuestPayBillInlineVerifyField(
                                     hint: 'eg: 2428999999',
                                     keyboardType: TextInputType.phone,
                                     loading: state.verifyStatus ==
@@ -189,7 +196,7 @@ class _GuestPayBillView extends StatelessWidget {
                             const SizedBox(height: _sectionGap),
                             Text('name', style: GuestPayBillTheme.labelStyle()),
                             const SizedBox(height: _labelToFieldGap),
-                            _InlineVerifyField(
+                            GuestPayBillInlineVerifyField(
                               hint: 'enter name',
                               keyboardType: TextInputType.text,
                               loading: state.verifyStatus ==
@@ -208,7 +215,7 @@ class _GuestPayBillView extends StatelessWidget {
                           Text('account status',
                               style: GuestPayBillTheme.labelStyle()),
                           const SizedBox(height: _labelToFieldGap),
-                          _ReadOnlyBox(
+                          GuestPayBillReadOnlyBox(
                             text: state.accountInfo?.status ?? '------',
                           ),
 
@@ -260,7 +267,7 @@ class _GuestPayBillView extends StatelessWidget {
                           ),
 
                           const SizedBox(height: _submitTopGap),
-                          _BigSubmitButton(
+                          GuestPayBillPrimarySubmitButton(
                             enabled: state.canSubmit,
                             loading: state.submitStatus ==
                                 GuestPayBillSubmitStatus.loading,
@@ -282,332 +289,4 @@ class _GuestPayBillView extends StatelessWidget {
   }
 
   String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
-}
-
-class _LabelRequired extends StatelessWidget {
-  final String text;
-  const _LabelRequired({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(text, style: GuestPayBillTheme.labelStyle()),
-        const Text(
-          '*',
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ServiceDropdown extends StatelessWidget {
-  final List<BillService> services;
-  final BillService? selected;
-  final ValueChanged<BillService?> onChanged;
-
-  const _ServiceDropdown({
-    required this.services,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: GuestPayBillTheme.fieldBg,
-        borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<BillService>(
-          isExpanded: true,
-          value: selected,
-          hint: const Text(
-            'ALIV Postpaid',
-            style: TextStyle(
-              color: GuestPayBillTheme.labelText,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          icon: const Icon(Icons.keyboard_arrow_down),
-          items: services
-              .map(
-                (s) => DropdownMenuItem(
-                  value: s,
-                  child: Text(
-                    s.label,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: GuestPayBillTheme.labelText,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-}
-
-class _InlineVerifyField extends StatelessWidget {
-  final String hint;
-  final TextInputType keyboardType;
-  final bool enabled;
-  final bool loading;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onSubmit;
-
-  const _InlineVerifyField({
-    required this.hint,
-    required this.keyboardType,
-    required this.enabled,
-    required this.loading,
-    required this.onChanged,
-    required this.onSubmit,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: GuestPayBillTheme.fieldBg,
-        borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              keyboardType: keyboardType,
-              onChanged: onChanged,
-              textAlignVertical: TextAlignVertical.center,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: const TextStyle(
-                  color: GuestPayBillTheme.placeholder,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-                border: InputBorder.none,
-                isCollapsed: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          _InlineSubmitButton(
-            loading: loading,
-            enabled: enabled,
-            onTap: onSubmit,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InlineSubmitButton extends StatelessWidget {
-  final bool enabled;
-  final bool loading;
-  final VoidCallback onTap;
-
-  const _InlineSubmitButton({
-    required this.enabled,
-    required this.loading,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // Keep visual state active from initial load, but guard invalid submission.
-    final bg = GuestPayBillTheme.primary;
-
-    return SizedBox(
-      height: 34,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bg,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-        ),
-        onPressed: loading
-            ? null
-            : () {
-                if (enabled) {
-                  onTap();
-                  return;
-                }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter required details first.'),
-                  ),
-                );
-              },
-        child: loading
-            ? const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : const Text(
-                'submit',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-class _CountryCodePickerBox extends StatelessWidget {
-  final PayBillCountry country;
-  final bool showArrow;
-  final VoidCallback? onTap;
-
-  const _CountryCodePickerBox({
-    required this.country,
-    required this.showArrow,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final child = Container(
-      width: 96,
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: GuestPayBillTheme.fieldBg,
-        borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
-      ),
-      child: Row(
-        children: [
-          Text(country.flagEmoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 6),
-          Text(
-            country.dialCode,
-            style: const TextStyle(
-              color: GuestPayBillTheme.labelText,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          if (showArrow) ...[
-            const SizedBox(width: 4),
-            const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 18,
-              color: GuestPayBillTheme.primary,
-            ),
-          ],
-        ],
-      ),
-    );
-
-    if (onTap == null) return child;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
-      child: child,
-    );
-  }
-}
-
-class _ReadOnlyBox extends StatelessWidget {
-  final String text;
-  const _ReadOnlyBox({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 46,
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      decoration: BoxDecoration(
-        color: GuestPayBillTheme.fieldBg,
-        borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
-      ),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-          color: GuestPayBillTheme.labelText,
-        ),
-      ),
-    );
-  }
-}
-
-class _BigSubmitButton extends StatelessWidget {
-  final bool enabled;
-  final bool loading;
-  final VoidCallback onTap;
-
-  const _BigSubmitButton({
-    required this.enabled,
-    required this.loading,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final bg =
-        enabled ? GuestPayBillTheme.primary : GuestPayBillTheme.disabledBtn;
-
-    return SizedBox(
-      height: 48,
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bg,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-        ),
-        onPressed: enabled && !loading ? onTap : null,
-        child: loading
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : Text(
-                'submit',
-                style: TextStyle(
-                  color: enabled ? Colors.white : Colors.white70,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-      ),
-    );
-  }
 }
