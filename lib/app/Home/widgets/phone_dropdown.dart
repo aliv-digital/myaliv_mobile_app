@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../home/home_screen.dart';
@@ -37,9 +38,22 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
             fontWeight: FontWeight.w500,
             height: 1.14,
           ),
-          items: const [
-            DropdownMenuItem(value: '242-801-1616', child: Text('242-801-1616')),
-            DropdownMenuItem(value: '242-801-9999', child: Text('242-801-9999')),
+          items: [
+            DropdownMenuItem(value: '242-801-1616', child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset('assets/icons/Phone.svg'),
+                SizedBox(width: 8,),
+                const Text('242-801-1616'),
+              ],
+            )),
+             DropdownMenuItem(value: '242-801-9999', child: Row(
+              children: [
+                SvgPicture.asset('assets/icons/Phone.svg'),
+                SizedBox(width: 8,),
+                Text('242-801-9999'),
+              ],
+            )),
           ],
           onChanged: (v) => setState(() => selected = v!),
         ),
