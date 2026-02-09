@@ -21,15 +21,15 @@ class ReceiptSuccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ keep these constants stable for pixel-perfect notch position
-    const double cardPad = 18;
+    // Section spacing tuned to match Figma (32px rhythm)
+    const double cardPad = 32;
     const double cornerRadius = 16;
 
     const double iconSize = 54;
-    const double gapAfterIcon = 14;
+    const double gapAfterIcon = 32;
     const double titleBoxH = 24; // fixed height to lock notch Y
-    const double gapAfterTitle = 16;
-    const double dividerH = 22;
+    const double gapAfterTitle = 32;
+    const double dividerH = 1;
 
     const double notchRadius = 10;
 
@@ -94,7 +94,7 @@ class ReceiptSuccessCard extends StatelessWidget {
               child: ReceiptTicketDivider(height: dividerH),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 32),
             Text(
               'It will take a few moments for the top up\nto appear on the account.',
               textAlign: TextAlign.center,
