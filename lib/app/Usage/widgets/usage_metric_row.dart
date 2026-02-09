@@ -31,18 +31,20 @@ class UsageMetricRow extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF222222),
+                      fontSize: 12,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 13,
-                      color: Colors.grey,
+                      color: const Color(0xFF707070),
+                      fontSize: 12,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],

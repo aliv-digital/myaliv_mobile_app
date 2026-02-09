@@ -44,7 +44,7 @@ class _TopUpPrepaidPlaceholderTabState
                     _SectionLabel('select card'),
                     //_DropdownField('visa ending in 1234'),
                     _CardDropdown(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
                     // ================= ANY TIME =================
                     Row(
@@ -73,19 +73,21 @@ class _TopUpPrepaidPlaceholderTabState
                       ],
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
                     // ================= THRESHOLD =================
                     _SectionLabel('when balance falls below'),
                     _InputField(value: '\$ 10.00'),
 
                     const SizedBox(height: 8),
-                    const Text(
-                      'amount must be above \$10.00 and below \$10,000',
+                    Text(
+                      'amount must be above \$ 10.00 and below \$ 10.000',
                       style: TextStyle(
-                        fontFamily: 'CircularPro',
+                        color: const Color(0xFF5045A7),
                         fontSize: 14,
-                        color: TopUpPrepaidTheme.purple4,
+                        fontFamily: 'Circular Pro',
+                        fontWeight: FontWeight.w500,
+                        height: 1.43,
                       ),
                     ),
 
@@ -137,7 +139,7 @@ class _TopUpPrepaidPlaceholderTabState
                     // ================= APPLY =================
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
+                      height: 40,
                       child: ElevatedButton(
                         onPressed: () {
                           FocusManager.instance.primaryFocus?.unfocus();
@@ -149,10 +151,10 @@ class _TopUpPrepaidPlaceholderTabState
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: TopUpPrepaidTheme.purple,
+                          backgroundColor: const Color(0xFF645D9C),//TopUpPrepaidTheme.purple,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(100),
                           ),
                         ),
                         child: Text(
@@ -348,13 +350,13 @@ class _AmountGrid extends StatelessWidget {
                       end: Alignment.bottomRight,
                     )
                   : null,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
             padding: const EdgeInsets.all(2), // border thickness
             child: Container(
               decoration: BoxDecoration(
                 color: isSelected ? Colors.white : TopUpPrepaidTheme.lightBg,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
 
@@ -395,7 +397,7 @@ class _InputField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: TopUpPrepaidTheme.lightBg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       alignment: Alignment.centerLeft,
       child: Text(

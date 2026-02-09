@@ -14,16 +14,18 @@ class PayWithCardTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(4, 10, 4, 6),
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 16),
         child: Row(
           children: [
-            Icon(Icons.add, color: TopUpPaymentPrepaidTheme.primary, size: 22),
+            Icon(Icons.add, color: Color(0xFF5045A7), size: 22),
             const SizedBox(width: 10),
             Text(
               'pay with card',
-              style: TopUpPaymentPrepaidTheme.bodyMd(context).copyWith(
-                color: TopUpPaymentPrepaidTheme.primary,
-                fontWeight: FontWeight.w800,
+              style: TextStyle(
+                color: const Color(0xFF5045A7),
+                fontSize: 13,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
               ),
             ),
             const Spacer(),

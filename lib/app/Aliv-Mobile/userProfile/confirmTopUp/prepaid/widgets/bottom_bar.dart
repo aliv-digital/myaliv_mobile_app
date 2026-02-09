@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/confirm_top_up_prepaid_theme.dart';
 
-
 class ConfirmTopUpBottomBar extends StatelessWidget {
   final double total;
   final bool vatExclusive;
@@ -24,7 +23,7 @@ class ConfirmTopUpBottomBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        padding: const EdgeInsets.fromLTRB(29, 10, 29, 12),
         decoration: const BoxDecoration(color: Colors.white),
         child: Row(
           children: [
@@ -33,30 +32,48 @@ class ConfirmTopUpBottomBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(_money(total), style: ConfirmTopUpPrepaidTheme.bottomPrice(context)),
+                  Text(
+                    _money(total),
+                    style: ConfirmTopUpPrepaidTheme.bottomPrice(context),
+                  ),
                   const SizedBox(height: 2),
-                  Text(vatExclusive ? 'vat exclusive' : 'vat inclusive', style: ConfirmTopUpPrepaidTheme.bodySm(context)),
+                  Text(
+                    vatExclusive ? 'vat exclusive' : 'vat inclusive',
+                    style: TextStyle(
+                      color: const Color(0xFF707070),
+                      fontSize: 12,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
             SizedBox(
-              height: 44,
-              width: 170,
+              height: 40,
+              width: 168,
               child: ElevatedButton(
                 onPressed: isLoading ? null : onContinue,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ConfirmTopUpPrepaidTheme.primary,
-                  disabledBackgroundColor: ConfirmTopUpPrepaidTheme.primary.withValues(alpha: 0.5),
+                  disabledBackgroundColor: ConfirmTopUpPrepaidTheme.primary
+                      .withValues(alpha: 0.5),
                   shape: const StadiumBorder(),
                   elevation: 0,
                 ),
                 child: isLoading
                     ? const SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                )
-                    : Text('continue', style: ConfirmTopUpPrepaidTheme.buttonText(context)),
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        'continue',
+                        style: ConfirmTopUpPrepaidTheme.buttonText(context),
+                      ),
               ),
             ),
           ],

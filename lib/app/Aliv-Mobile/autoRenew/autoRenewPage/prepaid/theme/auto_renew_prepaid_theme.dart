@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AutoRenewPrepaidTheme {
-  static const Color primary = Color(0xFF5B5A8F);
+  static const Color primary = Color(0xFF645D9C);
   static const Color pageBg = Color(0xFFF3F4F8);
 
   static const Color cardBg = Colors.white;

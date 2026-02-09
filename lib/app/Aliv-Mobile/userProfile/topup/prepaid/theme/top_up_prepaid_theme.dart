@@ -26,6 +26,7 @@ class TopUpPrepaidTheme {
     Color(0xFFF1C40F), // yellow
     Color(0xFF8E44AD), // purple
     Color(0xFFFF6B6B), // coral
+    Color.fromRGBO(0, 179, 227, 1),
   ];
 
   // -----------------------
@@ -53,10 +54,10 @@ class TopUpPrepaidTheme {
   );
 
   static TextStyle balanceLabel() => const TextStyle(
-    fontFamily: fontFamily,
+    color: const Color(0xFF5045A7),
     fontSize: 13,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w500,
-    color: primary,
   );
 
   static TextStyle pillText() => const TextStyle(
@@ -67,11 +68,11 @@ class TopUpPrepaidTheme {
   );
 
   static TextStyle amountText() => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 36,
+    color: const Color(0xFF5045A7),
+    fontSize: 40,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w700,
-    color: primary,
-    height: 1.0,
+
   );
 
   static TextStyle amountHint() => const TextStyle(
@@ -84,7 +85,7 @@ class TopUpPrepaidTheme {
   static TextStyle buttonText() => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 13,
-    fontWeight: FontWeight.w600,
-    color: Colors.white,
+    fontWeight: FontWeight.w500,
+    color: const Color(0xFFF1F1F8),
   );
 }

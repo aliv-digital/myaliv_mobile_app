@@ -116,9 +116,11 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
+
                                 const SizedBox(height: 16),
                                 const EnterPasswordPostpaidTermsText(),
                                 const SizedBox(height: 18),
+
                                 BlocBuilder<EnterPasswordPostpaidBloc,
                                     EnterPasswordPostpaidState>(
                                   buildWhen: (p, c) =>

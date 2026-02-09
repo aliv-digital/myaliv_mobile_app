@@ -33,7 +33,7 @@ class InvoiceTile extends StatelessWidget {
                       invoice.invoiceNo,
                       style: ReviewInvoicePostpaidTheme.invoiceNo(context),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         _MetaBlock(
@@ -53,22 +53,23 @@ class InvoiceTile extends StatelessWidget {
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SvgPicture.asset(
                     ReviewInvoicePostpaidAssets.pdfSvg,
                     width: 24,
                     height: 24,
                   ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'PDF',
-                    style: TextStyle(
-                      fontFamily: ReviewInvoicePostpaidTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.red,
-                    ),
-                  ),
+                  // const SizedBox(height: 2),
+                  // const Text(
+                  //   'PDF',
+                  //   style: TextStyle(
+                  //     fontFamily: ReviewInvoicePostpaidTheme.fontFamily,
+                  //     fontSize: 10,
+                  //     fontWeight: FontWeight.w700,
+                  //     color: Colors.red,
+                  //   ),
+                  // ),
                   const SizedBox(height: 14),
                   Text(
                     '${invoice.currencySymbol}${invoice.amount.toStringAsFixed(2)}',

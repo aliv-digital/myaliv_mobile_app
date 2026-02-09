@@ -4,14 +4,14 @@ class FuturePlanCard extends StatelessWidget {
   final String title;
   final String startDate;
   final String endDate;
-  final List<Color> gradient;
+  final String image;
 
   const FuturePlanCard({
     super.key,
     required this.title,
     required this.startDate,
     required this.endDate,
-    required this.gradient,
+    required this.image,
   });
 
   @override
@@ -20,12 +20,16 @@ class FuturePlanCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradient,
+        image: DecorationImage(
+          image:  AssetImage(image),
+          fit: BoxFit.fill,
         ),
+        borderRadius: BorderRadius.circular(12),
+        // gradient: LinearGradient(
+        //   begin: Alignment.topLeft,
+        //   end: Alignment.bottomRight,
+        //   colors: gradient,
+        // ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -34,58 +38,37 @@ class FuturePlanCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // watermark
-          Positioned(
-            right: 80,
-            bottom: -20,
-            child: Opacity(
-              opacity: 0.08,
-              child: Text(
-                'aliv',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 120,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                ),
-              ),
+          const Text(
+            'future plan',
+            style: TextStyle(
+              color: Colors.white /* White-100% */,
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
             ),
           ),
-
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white /* White-100% */,
+              fontSize: 24,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 30),
+          Row(
             children: [
-              const Text(
-                'active plan',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  color: Colors.white70,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  _DateBlock(title: 'starts', value: startDate),
-                  const Spacer(),
-                  _DateBlock(
-                    title: 'expire',
-                    value: endDate,
-                    alignRight: true,
-                  ),
-                ],
+              _DateBlock(title: 'starts', value: startDate),
+              const Spacer(),
+              _DateBlock(
+                title: 'expire',
+                value: endDate,
+                alignRight: true,
               ),
             ],
           ),
@@ -114,19 +97,21 @@ class _DateBlock extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            color: Colors.white70,
-            fontSize: 13,
+            color: Colors.white /* White-100% */,
+            fontSize: 10,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 18,
+            color: Colors.white /* White-100% */,
+            fontSize: 15,
+            fontFamily: 'Circular Pro',
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            letterSpacing: 2.25,
           ),
         ),
       ],

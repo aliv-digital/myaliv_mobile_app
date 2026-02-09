@@ -49,9 +49,11 @@ class DashedAddCardButton extends StatelessWidget {
               Text(
                 'add a new card',
                 style: TextStyle(
-                  fontSize: 14,
+                  color: const Color(0xFF645D9C),
+                  fontSize: 13,
+                  fontFamily: 'Circular Pro',
                   fontWeight: FontWeight.w500,
-                  color: AddOrEditCardsPrepaidTheme.dashedBorder,
+                  height: 1.54,
                 ),
               ),
             ],

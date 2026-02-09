@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -80,7 +81,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
             ),
             body: SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                padding: const EdgeInsets.fromLTRB(29, 24, 29, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -89,11 +90,11 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
                       customerPhone: state.customerPhone,
                       amount: state.amount,
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 18),
 
                     _termsLine(context),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 38),
 
                     PromoSummaryTicket(
                       controller: _promoController,
@@ -117,41 +118,60 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
     return AppBar(
       backgroundColor: ConfirmTopUpPrepaidTheme.primary,
       elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.of(context).maybePop(),
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 24.0),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
       ),
       title: Text(
         'confirmation',
         style: ConfirmTopUpPrepaidTheme.titleMd(context).copyWith(color: Colors.white),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.home_outlined, color: Colors.white),
-          onPressed: () {
-            // TODO: integrate GoRouter home route
-          },
+        Padding(
+          padding: const EdgeInsets.only(right: 18.0),
+          child: IconButton(
+            icon:  SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
+            onPressed: () {
+              // TODO: integrate GoRouter home route
+            },
+          ),
         ),
       ],
     );
   }
 
   Widget _termsLine(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: ConfirmTopUpPrepaidTheme.bodySm(context).copyWith(color: ConfirmTopUpPrepaidTheme.textPrimary),
-        children: [
-          const TextSpan(text: 'By pressing “continue” you agree to the '),
-          TextSpan(
-            text: 'Terms &\nConditions.',
-            style: ConfirmTopUpPrepaidTheme.link(context),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                context.read<ConfirmTopUpPrepaidBloc>().add(const TermsPressed());
-                // TODO: navigate to Terms screen
-              },
-          ),
-        ],
+    return SizedBox(
+      width: 332,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: 'By pressing “continue” you agree to the ',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
+                height: 1.43,
+              ),
+            ),
+            TextSpan(
+              text: 'Terms & Conditions.',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w700,
+                decoration: TextDecoration.underline,
+                height: 1.43,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
