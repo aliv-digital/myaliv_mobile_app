@@ -104,15 +104,21 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(_actionButtonHeight / 2),
+                                BorderRadius.circular(100),
                           ),
                         ),
                         child: Text(
                           'activate now',
-                          style:
-                              HomePlanTheme.bottomSheetPrimaryAction.copyWith(
-                            fontSize: 16,
+                          style: TextStyle(
+                            color: const Color(0xFFF1F1F8),
+                            fontSize: 13,
+                            fontFamily: 'Circular Pro',
+                            fontWeight: FontWeight.w500,
                           ),
+                          // style:
+                          //     HomePlanTheme.bottomSheetPrimaryAction.copyWith(
+                          //   fontSize: 16,
+                          // ),
                         ),
                       ),
                     ),
@@ -130,19 +136,25 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(_actionButtonHeight / 2),
+                                BorderRadius.circular(100),
                           ),
                         ),
                         child: Text(
-                          'future plan',
-                          style:
-                              HomePlanTheme.bottomSheetSecondaryAction.copyWith(
-                            fontSize: 16,
+                          'future plan',style: TextStyle(
+                          color: const Color(0xFF645D9C),
+                          fontSize: 13,
+                          fontFamily: 'Circular Pro',
+                          fontWeight: FontWeight.w500,
+                        ),
+
+                          // style:
+                          //     HomePlanTheme.bottomSheetSecondaryAction.copyWith(
+                          //   fontSize: 16,
                           ),
                         ),
                       ),
                     ),
-                  ),
+
                 ],
               ),
             ],
@@ -198,11 +210,14 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
             height: HomePlanWalletPaymentActivateOrFutureBottomSheet
                 ._pricePillHeight,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: HomePlanTheme.planPriceBorder,
-                width: 2,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFECEBF7),
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  width: 1,
+                  color: const Color(0xFF5045A7),
+                ),
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             alignment: Alignment.center,

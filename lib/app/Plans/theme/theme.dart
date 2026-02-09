@@ -8,7 +8,7 @@ class HomePlanTheme {
   static final Color appBarColor = HexColor.fromHex('#5D5A8B');
 
   // Brand + shared colors
-  static final Color brandPurple = HexColor.fromHex('#5D5A8B');
+  static final Color brandPurple = HexColor.fromHex('#645D9C');
   static final Color dividerColor = HexColor.fromHex('#707070');
   static final Color subtitleColor = HexColor.fromHex('#707070');
   static final Color scrollBarBackgroundColor = HexColor.fromHex('#F2F2F7');
@@ -58,6 +58,7 @@ class HomePlanTheme {
     height: 1.4,
     fontWeight: FontWeight.w600,
     color: Colors.black,
+
   );
 
   // Add-on label (e.g., data balance)
