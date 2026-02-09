@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../../login/theme/login_theme.dart';
+import '../theme/create_password_theme.dart';
 
 
 class PasswordInput extends StatelessWidget {
@@ -32,10 +35,14 @@ class PasswordInput extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.lock_outline,
-            size: 18,
-            color: AuthModuleColors.lockColor,
+          SvgPicture.asset(
+            AssetConstant.lockPassSVG,
+            width: 18,
+            height: 18,
+            colorFilter: ColorFilter.mode(
+              AuthModuleColors.lockColor,
+              BlendMode.srcIn,
+            ),
           ),
           const SizedBox(width: 10),
 
@@ -44,22 +51,10 @@ class PasswordInput extends StatelessWidget {
             child: TextField(
               obscureText: obscureText,
               onChanged: onChanged,
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.43,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF1A1A1A),
-              ),
+              style: CreatePasswordTheme.inputText,
               decoration: InputDecoration(
                 hintText: hint,
-                hintStyle: const TextStyle(
-                  fontSize: 14,
-                  height: 1.43,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFB7B7C2),
-                ),
+                hintStyle: CreatePasswordTheme.inputHint,
                 border: InputBorder.none,
                 isCollapsed: true, // important: removes default vertical padding
                 contentPadding: const EdgeInsets.symmetric(vertical: 15),

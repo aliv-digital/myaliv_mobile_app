@@ -15,13 +15,14 @@ class LoginHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DefaultBackButton(
+          padding: const EdgeInsets.only(left: 16, top: 12),
           onPressed: () {
             context.pop();
             // custom logic
           },
         ),
-        //SizedBox(height: 24),
-        _LogoTitle(),
+        const SizedBox(height: 22),
+        const _LogoTitle(),
       ],
     );
   }
@@ -37,16 +38,16 @@ class _LogoTitle extends StatelessWidget {
       children: [
         SvgPicture.asset(
           AssetConstant.alivBlackLogoSVG,
-          width: 95.42,
-          height: 48.86,
+          width: 96,
+          height: 48,
         ),
-        SizedBox(height: 30),
+        const SizedBox(height: 30),
         Text(
           'welcome back',
           style: TextStyle(
             fontSize: 17,
             fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: AuthModuleColors.textBlack,
           ),
         ),

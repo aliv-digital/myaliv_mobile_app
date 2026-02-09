@@ -21,7 +21,7 @@ class MonthlyPlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  //final Color _brand = GuestPurchasePlanTheme.alivPrimaryColor;
+  //final Color _brand = GuestPurchasePlanTheme.brandPurple;
   //static const Color _muted = Color(0xFF8B8B8B);
   //static const Color _divider = Color(0xFFE9E9EE);
 
@@ -30,7 +30,7 @@ class MonthlyPlanCard extends StatelessWidget {
     // Paste your FULL current PlanCard UI here (monthly version)
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -90,7 +90,7 @@ class MonthlyPlanCard extends StatelessWidget {
                           fontFamily: 'CircularPro',
                           fontSize: 10,
                           fontWeight: FontWeight.w400,
-                          color: GuestPurchasePlanTheme.subTitleTextColor,
+                          color: GuestPurchasePlanTheme.subtitleColor,
                         ),
                       ),
                     ],
@@ -117,15 +117,19 @@ class MonthlyPlanCard extends StatelessWidget {
             crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                plan.description,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12.2,
-                  height: 1.35,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF2C2C2C),
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: Text(
+                  plan.description,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                    fontFamily: 'Circular Pro',
+                    fontSize: 10,
+                    height: 1.38,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF2C2C2C),
+                  ),
                 ),
               ),
             ),
@@ -150,9 +154,9 @@ class MonthlyPlanCard extends StatelessWidget {
                       expanded ? 'hide details' : 'view details',
                       style: TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: GuestPurchasePlanTheme.alivPrimaryColor,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: GuestPurchasePlanTheme.brandPurple,
                       ),
                     ),
                   ),
@@ -164,7 +168,7 @@ class MonthlyPlanCard extends StatelessWidget {
                   height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: GuestPurchasePlanTheme.alivPrimaryColor,
+                      backgroundColor: GuestPurchasePlanTheme.brandPurple,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
@@ -175,8 +179,8 @@ class MonthlyPlanCard extends StatelessWidget {
                       'purchase now',
                       style: TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                     ),
@@ -200,13 +204,13 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
       decoration: BoxDecoration(
         border: Border.all(
-            color: GuestPurchasePlanTheme.alivPrimaryColor,
+            color: GuestPurchasePlanTheme.brandPurple,
             width: 1
         ),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -214,7 +218,7 @@ class _PricePill extends StatelessWidget {
           fontFamily: 'CircularPro',
           fontSize: 16,
           fontWeight: FontWeight.w700,
-          color: GuestPurchasePlanTheme.alivPrimaryColor,
+          color: GuestPurchasePlanTheme.brandPurple,
         ),
       ),
     );
@@ -468,7 +472,7 @@ class _BenefitItem extends StatelessWidget {
       fontSize: 12,
       height: 1.0,
       fontWeight: FontWeight.w400,
-      color: GuestPurchasePlanTheme.subTitleTextColor,
+      color: GuestPurchasePlanTheme.subtitleColor,
     );
 
     // measure widths

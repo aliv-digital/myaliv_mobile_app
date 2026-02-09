@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// for PlanBenefitType (data icon)
+// for HomePlanBenefitType (data icon)
 import '../data/plan_icon_assets.dart';
 import '../models/add_on_model.dart';
 import '../models/plan_model.dart';
+import '../theme/theme.dart';
 
 class HomePlanAddOnCard extends StatelessWidget {
   final HomePlanAddOnModel addon;
@@ -17,10 +18,6 @@ class HomePlanAddOnCard extends StatelessWidget {
     required this.onToggle,
   });
 
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _bg = Color(0xFFF6F6FB);
-  static const Color _accent = Color(0xFFFF5A3C);
-
   @override
   Widget build(BuildContext context) {
     final iconPath = HomePlanIconAssets.forType(HomePlanBenefitType.data);
@@ -30,12 +27,22 @@ class HomePlanAddOnCard extends StatelessWidget {
       onTap: onToggle,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: _bg,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _brand, width: 1.2),
+          border: Border.all(
+            color: selected ? HomePlanTheme.brandPurple : Colors.transparent,
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -48,15 +55,11 @@ class HomePlanAddOnCard extends StatelessWidget {
                     addon.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                    ),
+                    style: HomePlanTheme.addOnTitle,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (isSvg)
                         SvgPicture.asset(iconPath, width: 16, height: 16)
@@ -65,25 +68,15 @@ class HomePlanAddOnCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         addon.label, // data balance
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: _accent,
-                        ),
+                        style: HomePlanTheme.addOnLabel,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           addon.value, // 1gb
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: 'CircularPro',
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black,
-                          ),
+                          style: HomePlanTheme.addOnValue,
                         ),
                       ),
                     ],
@@ -98,12 +91,12 @@ class HomePlanAddOnCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                HomePlanCheckBoxSquare(
+                _CheckBoxSquare(
                   checked: selected,
                   onTap: onToggle,
                 ),
                 const SizedBox(height: 14),
-                HomePlanPricePill(price: addon.price),
+                _PricePill(price: addon.price),
               ],
             ),
           ],
@@ -113,45 +106,35 @@ class HomePlanAddOnCard extends StatelessWidget {
   }
 }
 
-class HomePlanPricePill extends StatelessWidget {
+class _PricePill extends StatelessWidget {
   final double price;
-  const HomePlanPricePill({required this.price});
-
-  static const Color _brand = Color(0xFF5D5A8B);
+  const _PricePill({required this.price});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
       decoration: BoxDecoration(
-        border: Border.all(color: _brand, width: 1.2),
+        border: Border.all(color: HomePlanTheme.brandPurple, width: 1),
         borderRadius: BorderRadius.circular(8),
         color: Colors.white,
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: const TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: _brand,
-        ),
+        style: HomePlanTheme.addOnPrice,
       ),
     );
   }
 }
 
-class HomePlanCheckBoxSquare extends StatelessWidget {
+class _CheckBoxSquare extends StatelessWidget {
   final bool checked;
   final VoidCallback onTap;
 
-  const HomePlanCheckBoxSquare({
-    super.key,
+  const _CheckBoxSquare({
     required this.checked,
     required this.onTap,
   });
-
-  static const Color _brand = Color(0xFF5D5A8B);
 
   @override
   Widget build(BuildContext context) {
@@ -159,12 +142,12 @@ class HomePlanCheckBoxSquare extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(6),
       child: Container(
-        width: 22,
-        height: 22,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
-          color: checked ? _brand : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: _brand, width: 1.2),
+          color: checked ? HomePlanTheme.brandPurple : Colors.transparent,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: HomePlanTheme.brandPurple, width: 1),
         ),
         alignment: Alignment.center,
         child: checked

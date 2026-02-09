@@ -33,13 +33,7 @@ class WhyAlivAppBar extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 16,
-                height: 1.25,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: WhyAlivTheme.appBarTitle,
             ),
           ),
         ],
@@ -47,4 +41,3 @@ class WhyAlivAppBar extends StatelessWidget {
     );
   }
 }
-

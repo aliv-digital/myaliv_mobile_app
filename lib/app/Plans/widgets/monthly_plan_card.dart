@@ -21,12 +21,16 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
+  //final Color _brand = HomePlanTheme.brandPurple;
+  //static const Color _muted = Color(0xFF8B8B8B);
+  //static const Color _divider = Color(0xFFE9E9EE);
+
   @override
   Widget build(BuildContext context) {
     // Paste your FULL current PlanCard UI here (monthly version)
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -86,7 +90,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                           fontFamily: 'CircularPro',
                           fontSize: 10,
                           fontWeight: FontWeight.w400,
-                          color: HomePlanTheme.subTitleTextColor,
+                          color: HomePlanTheme.subtitleColor,
                         ),
                       ),
                     ],
@@ -104,12 +108,13 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
 
           // thin divider line like screenshot
           const SizedBox(height: 16),
+          //Container(height: 1, color: HomePlanTheme.dividerColor),
 
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -147,7 +152,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                         fontFamily: 'CircularPro',
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
-                        color: HomePlanTheme.alivPrimaryColor,
+                        color: HomePlanTheme.brandPurple,
                       ),
                     ),
                   ),
@@ -159,7 +164,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                   height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: HomePlanTheme.alivPrimaryColor,
+                      backgroundColor: HomePlanTheme.brandPurple,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
@@ -190,12 +195,14 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
+  //static const Color _brand = Color(0xFF5D5A8B);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        border: Border.all(color: HomePlanTheme.alivPrimaryColor, width: 1),
+        border: Border.all(color: HomePlanTheme.brandPurple, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -204,7 +211,7 @@ class _PricePill extends StatelessWidget {
           fontFamily: 'CircularPro',
           fontSize: 16,
           fontWeight: FontWeight.w700,
-          color: HomePlanTheme.alivPrimaryColor,
+          color: HomePlanTheme.brandPurple,
         ),
       ),
     );
@@ -232,6 +239,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
   Widget build(BuildContext context) {
     const double rowH = 50; // ✅ figma
     const double sidePad = 2; // ✅ screenshot মত margins (22-26 tune)
+    const double itemW = 112;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -274,6 +282,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                   return Row(
                     children: [
                       SizedBox(
+                        // width: itemW,
                         height: rowH, //  50
                         child: _BenefitItem(
                           benefit: b,
@@ -294,6 +303,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
             ),
           ),
         ),
+
         const SizedBox(height: 10),
 
         //  indicator same side padding
@@ -350,7 +360,8 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
+  Widget _indicatorUI(
+      double trackW, double trackH, double thumbW, double left) {
     const double inset = 2; // screenshot এর মতো inner padding
     final double innerH = (trackH - inset * 2).clamp(0.0, trackH);
 
@@ -367,14 +378,17 @@ class _ScrollIndicator extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                left: left,
+                left:
+                    left, // this left should be calculated based on INNER track width
                 top: 0,
                 bottom: 0,
                 child: Container(
                   width: thumbW,
                   height: innerH + 2,
                   decoration: BoxDecoration(
-                    color: Colors.white, // thumb color
+                    color: Colors.white, // thumb color (add in theme)
+                    // যদি theme এ না থাকে, use this:
+                    // color: const Color(0xFFD8D8E2),
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
@@ -449,7 +463,7 @@ class _BenefitItem extends StatelessWidget {
       fontSize: 12,
       height: 1.0,
       fontWeight: FontWeight.w400,
-      color: HomePlanTheme.subTitleTextColor,
+      color: HomePlanTheme.subtitleColor,
     );
 
     // measure widths
@@ -467,7 +481,8 @@ class _BenefitItem extends StatelessWidget {
     final dynamicW = contentW + 16; // padding feel
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
+        // min/max তুমি চাইলে tune করতে পারো
         minWidth: 72,
         maxWidth: 160,
       ),
@@ -487,7 +502,7 @@ class _BenefitItem extends StatelessWidget {
                 ),
                 Text(
                   benefit.label,
-                  maxLines: 1,
+                  maxLines: 1, // dynamic width হলে 1 line better
                   overflow: TextOverflow.ellipsis,
                   style: labelStyle,
                 ),

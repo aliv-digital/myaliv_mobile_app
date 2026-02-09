@@ -75,16 +75,12 @@ class ReceiptFailureCard extends StatelessWidget {
             const SizedBox(height: gapAfterIcon),
 
             // Title: Payment Failed
-            const SizedBox(
+            SizedBox(
               height: titleBoxH,
               child: Center(
                 child: Text(
                   'Payment Failed',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFFFB2F2F), // red color for text
-                  ),
+                  style: ReceiptTheme.failureTitle,
                 ),
               ),
             ),
@@ -98,42 +94,24 @@ class ReceiptFailureCard extends StatelessWidget {
            // ),
 
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'There was a problem processing \nyour order.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'CircularPro',
-                height: 1.25,
-                color: Color(0xFF7A7A7A),
-                fontWeight: FontWeight.w400,
-              ),
+              style: ReceiptTheme.failureMessage,
             ),
             const SizedBox(height: 40),
 
             // Customer service contact info
-            const Text(
+            Text(
               'Please contact customer service at',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 16,
-                height: 1.25,
-                color: Color(0xFF7A7A7A),
-                fontWeight: FontWeight.w400,
-              ),
+              style: ReceiptTheme.failureHelper,
             ),
             const SizedBox(height: 1),
             Text(
               data.phoneNumber,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 16,
-                height: 1.25,
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-              ),
+              style: ReceiptTheme.failurePhone,
             ),
             // Details section (same as success card)
             //ReceiptDetailRow(label: 'top up', value: data.rightType, valueBold: true),
@@ -217,6 +195,4 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
         oldClipper.notchCenterY != notchCenterY;
   }
 }
-
-
 

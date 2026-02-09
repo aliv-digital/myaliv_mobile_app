@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/theme/theme.dart';
 
 class ReceiptDetailRow extends StatelessWidget {
   const ReceiptDetailRow({
@@ -36,7 +36,7 @@ class ReceiptDetailRow extends StatelessWidget {
             style: TextStyle(
               fontSize:  valueBold ? 18 : 16,
               fontFamily: 'CircularPro',
-              color: ReceiptTheme.successCardValueTextBlack,
+              color: GuestPurchasePlanReceiptTheme.successCardValueTextBlack,
               fontWeight: valueBold ? FontWeight.w700 : FontWeight.w400,
             ),
           ),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../../../resources/widgets/defaultBackButton.dart';
-import '../../login/theme/login_theme.dart';
+import '../theme/forget_password_theme.dart';
 
 
 class ForgetPasswordHeader extends StatelessWidget {
@@ -16,14 +15,14 @@ class ForgetPasswordHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 16,top: 53),
+          padding: EdgeInsets.only(left: 16, top: 12),
           onPressed: () {
             context.pop();
             // custom logic
           },
         ),
-        SizedBox(height: 64),
-        _LogoTitle(),
+        const SizedBox(height: 22),
+        const _LogoTitle(),
       ],
     );
   }
@@ -42,28 +41,18 @@ class _LogoTitle extends StatelessWidget {
           width: 95.42,
           height: 48.86,
         ),
-        SizedBox(height: 44),
+        const SizedBox(height: 44),
         Text(
           'verify your number',
-          style: TextStyle(
-            fontSize: 17,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            color: AuthModuleColors.textBlack,
-          ),
+          style: ForgetPasswordTheme.title,
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         SizedBox(
           width: 294,
-          child: Text('please enter your mobile to create your new password',
+          child: Text(
+            'please enter your mobile to create your new password',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              height: 1.47,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w400,
-              color: ColorManager.otpScreenTxtGray,
-            ),
+            style: ForgetPasswordTheme.subtitle,
           ),
         )
       ],

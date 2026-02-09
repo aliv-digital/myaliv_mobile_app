@@ -18,7 +18,7 @@ class LoginBottomTexts extends StatelessWidget {
             color: AuthModuleColors.textBlack,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         TextButton(
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,

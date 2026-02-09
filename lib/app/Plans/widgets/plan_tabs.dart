@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repository/home_plan_repository.dart';
+import '../theme/theme.dart';
 
 class HomePlanTabs extends StatelessWidget {
   final HomePlanTab selected;
@@ -22,12 +23,9 @@ class HomePlanTabs extends StatelessWidget {
     HomePlanTab.addOns: 'add ons',
   };
 
-  static const Color _barBg = Colors.white; // ✅ bar background
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _textInactive = Color(0xFF8B8B8B);
-  static const Color _divider = Color(0xFFE6E6EC);
-
   double _indicatorWidth(String label) {
+    // ✅ label অনুযায়ী width, যাতে screenshot এর মত লাগে
+    // short label = 44-52, long label = 64-78
     if (label.length <= 5) return 44; // daily, mifi
     if (label.length <= 7) return 54; // weekly, roaming
     if (label.length <= 10) return 66; // roameasy, monthly
@@ -37,7 +35,7 @@ class HomePlanTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: _barBg,
+      color: HomePlanTheme.tabBarBackground,
       padding: const EdgeInsets.only(top: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -45,10 +43,10 @@ class HomePlanTabs extends StatelessWidget {
           SizedBox(
             height: 44,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 26),
+              separatorBuilder: (_, _) => const SizedBox(width: 26),
               itemBuilder: (context, i) {
                 final tab = _tabs.keys.elementAt(i);
                 final label = _tabs[tab]!;
@@ -62,14 +60,9 @@ class HomePlanTabs extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 16,
-                          fontWeight: isActive
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: isActive ? _brand : _textInactive,
-                        ),
+                        style: isActive
+                            ? HomePlanTheme.tabLabelActive
+                            : HomePlanTheme.tabLabelInactive,
                       ),
                       const SizedBox(height: 8),
 
@@ -78,9 +71,11 @@ class HomePlanTabs extends StatelessWidget {
                         duration: const Duration(milliseconds: 180),
                         curve: Curves.easeOut,
                         height: 3,
-                        width: isActive ? _indicatorWidth(label) : 0,
+                        width: isActive
+                            ? _indicatorWidth(label)
+                            : 0, // ✅ inactive হলে hide
                         decoration: BoxDecoration(
-                          color: _brand,
+                          color: HomePlanTheme.brandPurple,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -92,7 +87,7 @@ class HomePlanTabs extends StatelessWidget {
           ),
 
           // ✅ thin grey divider under the whole bar
-          Container(height: 1, color: _divider),
+          Container(height: 1, color: HomePlanTheme.tabDivider),
         ],
       ),
     );

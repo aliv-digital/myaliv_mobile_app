@@ -21,7 +21,7 @@ class GuestPurchasePlanRepository {
         return const [
           PlanModel(
             id: 'd1',
-            title: 'daily10',
+            title: 'freedom 5',
             subtitle: '1 day',
             price: 10.00,
             description: 'A simple daily plan for quick usage.',
@@ -42,11 +42,27 @@ class GuestPurchasePlanRepository {
                   label: 'sms',
                   value: '10',
                   sub: 'local text'),
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '1',
+                  sub: 'GB'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.talkMins,
+                  label: 'talk mins',
+                  value: '10',
+                  sub: 'local talk mins'),
+              PlanBenefit(
+                  type: PlanBenefitType.sms,
+                  label: 'sms',
+                  value: '10',
+                  sub: 'local text'),
             ],
           ),
           PlanModel(
             id: 'd2',
-            title: 'daily20',
+            title: 'freedom 5',
             subtitle: '1 day',
             price: 20.00,
             description: 'Higher daily bundle for heavier usage.',
@@ -65,6 +81,31 @@ class GuestPurchasePlanRepository {
                   type: PlanBenefitType.sms,
                   label: 'sms',
                   value: '20',
+                  sub: 'local text'
+              ),
+            ],
+          ),
+          PlanModel(
+            id: 'd3',
+            title: 'freedom 5',
+            subtitle: '1 day',
+            price: 30.00,
+            description: 'Premium daily option for maximum value.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '5',
+                  sub: 'GB'),
+              PlanBenefit(
+                  type: PlanBenefitType.talkMins,
+                  label: 'talk mins',
+                  value: '50',
+                  sub: 'local talk mins'),
+              PlanBenefit(
+                  type: PlanBenefitType.sms,
+                  label: 'sms',
+                  value: '50',
                   sub: 'local text'),
             ],
           ),
@@ -226,6 +267,48 @@ class GuestPurchasePlanRepository {
           // ✅ roaming card: center metric usually data (you made roaming card separately)
           PlanModel(
             id: 'r1',
+            title: 'roam 20',
+            subtitle: '7 days',
+            price: 20.00,
+            description: 'Roaming plan for travel usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '0.25',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'r2',
+            title: 'roam 20',
+            subtitle: '7 days',
+            price: 20.00,
+            description: 'Roaming plan for travel usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '0.25',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'r3',
+            title: 'roam 20',
+            subtitle: '7 days',
+            price: 20.00,
+            description: 'Roaming plan for travel usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '0.25',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'r4',
             title: 'roam 20',
             subtitle: '7 days',
             price: 20.00,

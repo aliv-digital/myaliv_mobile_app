@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 /// DefaultAppBar (Reusable)
 /// - Back optional
@@ -11,7 +12,7 @@ class DefaultAppBar extends StatelessWidget {
 
     // Layout
     this.height = 56,
-    this.backgroundColor = const Color(0xFF655C9A),
+    this.backgroundColor = const Color(0xFF645D9C),
     this.horizontalPadding = 12,
     this.titleAlignment = AppBarTitleAlignment.left,
     this.centerTitle = false,
@@ -41,6 +42,7 @@ class DefaultAppBar extends StatelessWidget {
     this.notificationIcon = Icons.notifications_none_rounded,
     this.onNotificationTap,
     this.notificationCount,
+    this.showNotificationDotWhenZero = false,
 
     // Divider / shadow
     this.showBottomDivider = false,
@@ -82,6 +84,7 @@ class DefaultAppBar extends StatelessWidget {
   final IconData notificationIcon;
   final VoidCallback? onNotificationTap;
   final int? notificationCount;
+  final bool showNotificationDotWhenZero;
 
   // Divider / shadow
   final bool showBottomDivider;
@@ -111,7 +114,6 @@ class DefaultAppBar extends StatelessWidget {
               child: Row(
                 children: [
                   _buildLeading(context),
-
                   Expanded(
                     child: Align(
                       alignment: _titleAlign(),
@@ -120,11 +122,11 @@ class DefaultAppBar extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: titleStyle,
-                        textAlign: centerTitle ? TextAlign.center : TextAlign.left,
+                        textAlign:
+                            centerTitle ? TextAlign.center : TextAlign.left,
                       ),
                     ),
                   ),
-
                   _buildTrailing(context),
                 ],
               ),
@@ -152,7 +154,7 @@ class DefaultAppBar extends StatelessWidget {
     if (leading != null) return leading!;
 
     if (!showBackArrow) {
-      return const SizedBox(width: 44);
+      return const SizedBox.shrink();
     }
 
     return IconButton(
@@ -194,6 +196,7 @@ class DefaultAppBar extends StatelessWidget {
         icon: notificationIcon,
         count: notificationCount,
         onTap: onNotificationTap,
+        showDotWhenZero: showNotificationDotWhenZero,
       ));
     }
 
@@ -266,7 +269,8 @@ class _HomeButton extends StatelessWidget {
                 right: -2,
                 top: -2,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
                     borderRadius: BorderRadius.circular(999),
@@ -295,15 +299,19 @@ class _NotificationButton extends StatelessWidget {
     required this.icon,
     required this.count,
     required this.onTap,
+    required this.showDotWhenZero,
   });
 
   final IconData icon;
   final int? count;
   final VoidCallback? onTap;
+  final bool showDotWhenZero;
 
   @override
   Widget build(BuildContext context) {
-    final showBadge = (count ?? 0) > 0;
+    final countValue = count ?? 0;
+    final showCountBadge = countValue > 0;
+    final showDotBadge = countValue == 0 && showDotWhenZero;
 
     return InkWell(
       onTap: onTap,
@@ -314,19 +322,20 @@ class _NotificationButton extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             Icon(icon, color: Colors.white, size: 24),
-            if (showBadge)
+            if (showCountBadge)
               Positioned(
                 right: -2,
                 top: -2,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(color: Colors.white, width: 1.2),
                   ),
                   child: Text(
-                    count! > 99 ? '99+' : '$count',
+                    countValue > 99 ? '99+' : '$countValue',
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
                       fontSize: 10,
@@ -334,6 +343,18 @@ class _NotificationButton extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
+                ),
+              ),
+            if (showDotBadge)
+              const Positioned(
+                right: 0,
+                top: 0,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEE3434),
+                    shape: BoxShape.circle,
+                  ),
+                  child: SizedBox(width: 8, height: 8),
                 ),
               ),
           ],

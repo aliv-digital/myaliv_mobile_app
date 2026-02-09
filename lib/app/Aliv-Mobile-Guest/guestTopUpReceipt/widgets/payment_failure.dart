@@ -78,11 +78,8 @@ class PaymentFailedTicket extends StatelessWidget {
 
                       Text(
                         title,
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
+                        style: ReceiptTheme.ticketTitleBase.copyWith(
                           color: titleColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -90,38 +87,21 @@ class PaymentFailedTicket extends StatelessWidget {
                       Text(
                         message,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 16,
-                          height: 1.35,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: ReceiptTheme.ticketBody,
                       ),
                       const SizedBox(height: 12),
 
                       Text(
                         helperText,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 16,
-                          height: 1.35,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: ReceiptTheme.ticketBody,
                       ),
                       const SizedBox(height: 6),
 
                       Text(
                         phone,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                        ),
+                        style: ReceiptTheme.ticketPhone,
                       ),
 
                       const SizedBox(height: 64),
@@ -174,12 +154,7 @@ class _PillButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: Text(
             text,
-            style: TextStyle(
-              color: ReceiptTheme.successButtonTextColor,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'CircularPro',
-            ),
+            style: ReceiptTheme.ticketButtonText,
           ),
         ),
       ),

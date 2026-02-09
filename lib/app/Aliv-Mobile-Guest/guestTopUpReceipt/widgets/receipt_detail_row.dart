@@ -22,23 +22,14 @@ class ReceiptDetailRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.42,
-                fontFamily: 'CircularPro',
-                color: Color(0xFF7A7A7A),
-                fontWeight: FontWeight.w400,
-              ),
+              style: ReceiptTheme.detailLabel,
             ),
           ),
           Text(
             value,
-            style: TextStyle(
-              fontSize:  valueBold ? 18 : 16,
-              fontFamily: 'CircularPro',
-              color: ReceiptTheme.successCardValueTextBlack,
-              fontWeight: valueBold ? FontWeight.w700 : FontWeight.w400,
-            ),
+            style: valueBold
+                ? ReceiptTheme.detailValueBold
+                : ReceiptTheme.detailValue,
           ),
         ],
       ),

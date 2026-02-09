@@ -9,42 +9,14 @@ class LoginSocialButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-
-        Row(
-          children:  [
-            Expanded(
-              child: Divider(
-                thickness: 0.6,
-                color: AuthModuleColors.lightGreyBorder,
-              ),
-            ),
-            SizedBox(width: 8),
-            Text(
-              'or sign in with',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: AuthModuleColors.hintGrey,
-                height: 1.38,
-                letterSpacing: -0.08,
-                fontFamily: 'CircularPro'
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: Divider(
-                thickness: 0.6,
-                color: AuthModuleColors.lightGreyBorder,
-              ),
-            ),
-          ],
-        ),
+        const SizedBox(height: 30),
+        const _OrDividerRow(),
         const SizedBox(height: 30),
         Row(
           children: [
             Expanded(
               child: SizedBox(
-                height: 44,
+                height: 40,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: AuthModuleColors.alivPurple, width: 1),
@@ -56,7 +28,7 @@ class LoginSocialButtons extends StatelessWidget {
                   child: Text(
                     'face id',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       height: 1.43,
                       fontWeight: FontWeight.w700,
                       color: AuthModuleColors.alivPurple,
@@ -69,7 +41,7 @@ class LoginSocialButtons extends StatelessWidget {
             const SizedBox(width: 16),
             Expanded(
               child: SizedBox(
-                height: 44,
+                height: 40,
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: AuthModuleColors.alivPurple, width: 1),
@@ -81,7 +53,7 @@ class LoginSocialButtons extends StatelessWidget {
                   child: Text(
                     'fingerprint',
                     style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         height: 1.43,
                         fontWeight: FontWeight.w700,
                         color: AuthModuleColors.alivPurple,
@@ -94,6 +66,51 @@ class LoginSocialButtons extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _OrDividerRow extends StatelessWidget {
+  const _OrDividerRow();
+
+  static const double _dividerWidth = 32;
+  static const double _dividerHeight = 1;
+  static const double _labelGap = 12;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        _ShortDivider(),
+        SizedBox(width: _labelGap),
+        Text(
+          'or sign in with',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            color: AuthModuleColors.hintGrey,
+            height: 1.38,
+            letterSpacing: -0.08,
+            fontFamily: 'CircularPro',
+          ),
+        ),
+        SizedBox(width: _labelGap),
+        _ShortDivider(),
+      ],
+    );
+  }
+}
+
+class _ShortDivider extends StatelessWidget {
+  const _ShortDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: _OrDividerRow._dividerWidth,
+      height: _OrDividerRow._dividerHeight,
+      color: AuthModuleColors.lightGreyBorder,
     );
   }
 }

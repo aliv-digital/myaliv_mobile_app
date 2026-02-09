@@ -331,6 +331,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../theme/guest_splash_theme.dart';
 
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
@@ -398,7 +399,7 @@ class _GuestSplashPurchasePlanSheetView extends StatelessWidget {
           padding: EdgeInsets.only(bottom: bottomInset),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
@@ -460,7 +461,7 @@ class _SheetBody extends StatelessWidget {
               title: 'guest purchase a plan',
               onBack: () => Navigator.of(context).pop(),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
 
             const _Label('enter mobile number'),
             const SizedBox(height: 8),
@@ -471,9 +472,11 @@ class _SheetBody extends StatelessWidget {
               onChanged: (v) => context
                   .read<GuestSplashBloc>()
                   .add(GuestSplashPurchasePlanPhoneChanged(v)),
+              showPicker: true,
+              showArrow: true,
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             const _Label('confirm mobile number'),
             const SizedBox(height: 8),
@@ -484,9 +487,11 @@ class _SheetBody extends StatelessWidget {
               onChanged: (v) => context
                   .read<GuestSplashBloc>()
                   .add(GuestSplashPurchasePlanConfirmPhoneChanged(v)),
+              showPicker: false,
+              showArrow: false,
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 20),
 
             if (state.purchaseStatus == GuestSplashPurchasePlanStatus.failure &&
                 (state.purchaseErrorMessage?.isNotEmpty ?? false))
@@ -494,12 +499,7 @@ class _SheetBody extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
                   state.purchaseErrorMessage!,
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    color: Colors.red,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: GuestSplashTheme.errorText,
                 ),
               ),
 
@@ -521,12 +521,7 @@ class _SheetBody extends StatelessWidget {
                 },
                 child: const Text(
                   'continue',
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
+                  style: GuestSplashTheme.continueButtonText,
                 ),
               ),
             ),
@@ -560,25 +555,21 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         InkWell(
           borderRadius: BorderRadius.circular(22),
           onTap: onBack,
           child: const Padding(
-            padding: EdgeInsets.all(6),
-            child: Icon(Icons.arrow_back, size: 22),
+            padding: EdgeInsets.all(0),
+            child: Icon(Icons.arrow_back, size: 24),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(height: 12),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
+          style: GuestSplashTheme.sheetTitle,
         ),
       ],
     );
@@ -593,12 +584,7 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 13,
-        fontFamily: 'CircularPro',
-        fontWeight: FontWeight.w700,
-        color: Colors.black,
-      ),
+      style: GuestSplashTheme.fieldLabel,
     );
   }
 }
@@ -608,12 +594,16 @@ class _PhoneRow extends StatelessWidget {
   final String hint;
   final VoidCallback onPickCountry;
   final ValueChanged<String> onChanged;
+  final bool showPicker;
+  final bool showArrow;
 
   const _PhoneRow({
     required this.country,
     required this.hint,
     required this.onPickCountry,
     required this.onChanged,
+    required this.showPicker,
+    required this.showArrow,
   });
 
   static const Color _borderColor = Color(0xFFE3E3E3);
@@ -626,11 +616,11 @@ class _PhoneRow extends StatelessWidget {
     return Row(
       children: [
         InkWell(
-          onTap: onPickCountry,
+          onTap: showPicker ? onPickCountry : null,
           borderRadius: BorderRadius.circular(10),
           child: Container(
             height: 52,
-            width: 82,
+            width: 96,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               border: Border.all(color: _borderColor, width: 1),
@@ -640,17 +630,20 @@ class _PhoneRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(flag, style: const TextStyle(fontSize: 18)),
+                Text(flag, style: GuestSplashTheme.flagEmoji),
                 const SizedBox(width: 6),
                 Text(
                   dial,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+                  style: GuestSplashTheme.dialCode,
                 ),
+                if (showArrow) ...[
+                  const SizedBox(width: 2),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 18,
+                    color: Color(0xFF9E9E9E),
+                  ),
+                ],
               ],
             ),
           ),
@@ -675,20 +668,10 @@ class _PhoneRow extends StatelessWidget {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hint,
-                hintStyle: const TextStyle(
-                  color: Color(0xFFB7B7B7),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w400,
-                ),
+                hintStyle: GuestSplashTheme.phoneHint,
                 isCollapsed: true,
               ),
-              style: const TextStyle(
-                fontSize: 14,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
+              style: GuestSplashTheme.phoneInput,
             ),
           ),
         ),

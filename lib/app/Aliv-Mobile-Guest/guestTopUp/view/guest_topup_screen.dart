@@ -2,16 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/defaultButton.dart';
 import '../bloc/guest_topup_bloc.dart';
 import '../bloc/guest_topup_event.dart';
 import '../bloc/guest_topup_state.dart';
 import '../data/guest_topup_data.dart';
 import '../repository/guest_topup_repository.dart';
+import '../theme/guest_topup_theme.dart';
 import '../widgets/phone_number_input.dart';
 
 class GuestTopUpScreen extends StatelessWidget {
@@ -28,8 +31,36 @@ class GuestTopUpScreen extends StatelessWidget {
   }
 }
 
-class _GuestTopUpView extends StatelessWidget {
+class _GuestTopUpView extends StatefulWidget {
   const _GuestTopUpView();
+
+  @override
+  State<_GuestTopUpView> createState() => _GuestTopUpViewState();
+}
+
+class _GuestTopUpViewState extends State<_GuestTopUpView> {
+
+  static const CountryInfo _defaultCountry = CountryInfo(
+    flagEmoji: '🇧🇸',
+    dialCode: '1',
+  );
+
+  CountryInfo _selectedCountry = _defaultCountry;
+
+  void _pickCountry() {
+    showCountryPicker(
+      context: context,
+      showPhoneCode: true,
+      onSelect: (country) {
+        setState(() {
+          _selectedCountry = CountryInfo(
+            flagEmoji: country.flagEmoji,
+            dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
+          );
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,13 +80,19 @@ class _GuestTopUpView extends StatelessWidget {
               prev.status != curr.status &&
               curr.status == GuestTopUpStatus.failure,
           listener: (context, state) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.errorMessage ?? 'll')));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage ?? 'll',
+                  style: GuestTopUpTheme.snackBarText,
+                ),
+              ),
+            );
           },
           child: Column(
             children: [
               DefaultAppBar(
+                backgroundColor: HexColor.fromHex('FF645D9C'),
                 title: GuestTopUpStrings.guestTopUpAppbarTitle,
                 onBack: () {
                   context.pop();
@@ -67,23 +104,36 @@ class _GuestTopUpView extends StatelessWidget {
                     // enter phone number
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 25, left: 16, right: 16),
+                          padding: EdgeInsets.only(
+                            top: 25,
+                            left: 23,
+                            right: 23
+                          ),
                         child: LabeledInputField(
-                          label:
-                              'please enter an active prepaid number to top up',
-                          hintText: 'eg: 242-899-9999',
-                          onChanged: (v) {},
+                            label: 'please enter an active prepaid number to top up',
+                            hintText: 'eg: 2428999999',
+                            country: _selectedCountry,
+                            enableCountryPicker: true,
+                            onPickCountry: _pickCountry,
+                            onChanged: (v){}
                         ),
                       ),
                     ),
                     // confirm phone number
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                        padding: EdgeInsets.only(
+                            top: 20,
+                            left: 23,
+                            right: 23
+                        ),
                         child: LabeledInputField(
-                          label: 'confirm mobile number',
-                          hintText: 'eg: 242-899-9999',
-                          onChanged: (v) {},
+                            label: 'confirm mobile number',
+                            hintText: 'eg: 2428999999',
+                            country: _selectedCountry,
+                            enableCountryPicker: false,
+                            onPickCountry: _pickCountry,
+                            onChanged: (v){}
                         ),
                       ),
                     ),
@@ -104,9 +154,12 @@ class _GuestTopUpView extends StatelessWidget {
                         child: BlocBuilder<GuestTopUpBloc, GuestTopUpState>(
                           builder: (context, state) {
                             return DefaultButton(
+                              backgroundColor: HexColor.fromHex('FF645D9C'),
                               onPressed: () {
                                 context.push(AppRoutes.confirmGuestTopUp);
                               },
+                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
                               label: 'next',
                               isLoading: false,
                             );

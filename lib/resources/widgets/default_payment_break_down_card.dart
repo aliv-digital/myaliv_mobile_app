@@ -79,6 +79,9 @@ class DefaultPaymentBreakDownCard extends StatelessWidget {
 
     // Spacing (figma-ish defaults)
     this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 18),
+
+    // If true: keep last item (usually total) below dashed divider.
+    this.placeDividerBeforeLastItem = false,
   });
 
   final List<PaymentBreakdownLineItem> items;
@@ -94,6 +97,7 @@ class DefaultPaymentBreakDownCard extends StatelessWidget {
   final int targetScallopCount;
 
   final EdgeInsets padding;
+  final bool placeDividerBeforeLastItem;
 
   @override
   Widget build(BuildContext context) {
@@ -120,23 +124,37 @@ class DefaultPaymentBreakDownCard extends StatelessWidget {
               _InputRow(config: input!, theme: theme),
               const SizedBox(height: 18),
             ],
-
-            // rows
-            for (int i = 0; i < items.length; i++) ...[
-              _RowItem(item: items[i], theme: theme),
-              if (i != items.length - 1) const SizedBox(height: 14),
+            if (placeDividerBeforeLastItem && items.isNotEmpty) ...[
+              // Rows before divider (all except the last line).
+              for (int i = 0; i < items.length - 1; i++) ...[
+                _RowItem(item: items[i], theme: theme),
+                if (i != items.length - 2) const SizedBox(height: 14),
+              ],
+              const SizedBox(height: 24),
+              const _DashedDivider(
+                color: Color(0xB3FFFFFF),
+                height: 1,
+                dashWidth: 6,
+                dashGap: 5,
+              ),
+              const SizedBox(height: 24),
+              _RowItem(item: items.last, theme: theme),
+              const SizedBox(height: 24),
+            ] else ...[
+              // Default behavior: all rows above dashed divider.
+              for (int i = 0; i < items.length; i++) ...[
+                _RowItem(item: items[i], theme: theme),
+                if (i != items.length - 1) const SizedBox(height: 14),
+              ],
+              const SizedBox(height: 24),
+              const _DashedDivider(
+                color: Color(0xB3FFFFFF),
+                height: 1,
+                dashWidth: 6,
+                dashGap: 5,
+              ),
+              const SizedBox(height: 24),
             ],
-
-            const SizedBox(height: 24),
-
-            const _DashedDivider(
-              color: Color(0xB3FFFFFF),
-              height: 1,
-              dashWidth: 6,
-              dashGap: 5,
-            ),
-
-            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -241,7 +259,8 @@ class _InputRowState extends State<_InputRow> {
             child: Opacity(
               opacity: canInteract ? 1 : 0.45,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
                 child: Text(
                   c.actionText,
                   style: widget.theme.actionText,

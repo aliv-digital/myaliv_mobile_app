@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -14,6 +16,8 @@ class LoginPasswordField extends StatefulWidget {
 
 class _LoginPasswordFieldState extends State<LoginPasswordField> {
   bool _obscure = true;
+  static const double _fieldHeight = 54;
+  static const double _fieldRadius = 8;
 
   @override
   Widget build(BuildContext context) {
@@ -25,31 +29,41 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 60,
+              height: _fieldHeight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(_fieldRadius),
                 border: Border.all(
                   color: hasError ? AuthModuleColors.errorRed : AuthModuleColors.lightGreyBorder,
-                  width: 1.2,
+                  width: 1,
                 ),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.lock_outline,
-                    size: 20,
-                    color: AuthModuleColors.hintGrey,
+                  SvgPicture.asset(
+                    AssetConstant.lockPassSVG,
+                    width: 18,
+                    height: 18,
+                    colorFilter: ColorFilter.mode(
+                      AuthModuleColors.lockColor,
+                      BlendMode.srcIn,
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       obscureText: _obscure,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'CircularPro',
+                        color: AuthModuleColors.textBlack,
+                      ),
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: '• • • • • • •',
                         hintStyle: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           letterSpacing: 3,
                           color: AuthModuleColors.hintGrey,
                         ),
@@ -62,21 +76,12 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                     child: Icon(
                       _obscure ? Icons.visibility_off : Icons.visibility,
                       size: 20,
-                      color: AuthModuleColors.hintGrey,
+                      color: AuthModuleColors.lockColor,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 6),
-            if (hasError)
-              const Text(
-                'invalid credentials!',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AuthModuleColors.errorRed,
-                ),
-              ),
           ],
         );
       },

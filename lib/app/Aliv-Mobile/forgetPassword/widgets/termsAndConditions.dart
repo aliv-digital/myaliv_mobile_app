@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../login/theme/login_theme.dart';
+import '../theme/forget_password_theme.dart';
 
 class TermsAndPrivacyText extends StatelessWidget {
   final VoidCallback? onTermsTap;
@@ -29,11 +29,11 @@ class TermsAndPrivacyText extends StatelessWidget {
         textAlign: TextAlign.center,
         text: TextSpan(
           style: theme.textTheme.bodySmall?.copyWith(
-            fontSize: 12,
+            fontSize: ForgetPasswordTheme.termsBase.fontSize,
             //height: 1.5,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'CircularPro',
-            color: const Color(0xFF8A8FA6), // main text color
+            fontWeight: ForgetPasswordTheme.termsBase.fontWeight,
+            fontFamily: ForgetPasswordTheme.termsBase.fontFamily,
+            color: ForgetPasswordTheme.termsBase.color,
           ),
           children: [
             const TextSpan(
@@ -43,12 +43,9 @@ class TermsAndPrivacyText extends StatelessWidget {
             // ---- Terms & Conditions ----
             TextSpan(
               text: isTermsLoading ? "Loading..." : "Terms & Conditions",
-              style: TextStyle(
-                color: isTermsLoading
-                    ? AuthModuleColors.hintGrey // loading → normal grey
-                    : AuthModuleColors.linkBlue, // clickable link color
-                fontWeight: FontWeight.w500,
-              ),
+              style: isTermsLoading
+                  ? ForgetPasswordTheme.termsLinkDisabled
+                  : ForgetPasswordTheme.termsLink,
               recognizer: (!isTermsLoading && onTermsTap != null) ? (TapGestureRecognizer()..onTap = onTermsTap) : null,
             ),
 
@@ -57,10 +54,9 @@ class TermsAndPrivacyText extends StatelessWidget {
             // ---- Privacy Policy ----
             TextSpan(
               text: isPrivacyLoading ? "Loading..." : "Privacy Policy",
-              style: TextStyle(
-                color: isPrivacyLoading ? AuthModuleColors.hintGrey : AuthModuleColors.linkBlue,
-                fontWeight: FontWeight.w500,
-              ),
+              style: isPrivacyLoading
+                  ? ForgetPasswordTheme.termsLinkDisabled
+                  : ForgetPasswordTheme.termsLink,
               recognizer: (!isPrivacyLoading && onPrivacyTap != null) ? (TapGestureRecognizer()..onTap = onPrivacyTap) : null,
             ),
           ],

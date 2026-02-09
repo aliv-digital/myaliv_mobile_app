@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../model/add_on_models.dart';
 import '../theme/guest_purchase_plan_add_ons_theme.dart';
+import '../../guestPurchasePlan/data/plan_icon_assets.dart';
+import '../../guestPurchasePlan/models/plan_model.dart';
 
 /// AddOnTile
 /// - Selected হলে purple border দেখাবে (Figma screenshot)
@@ -25,12 +28,12 @@ class AddOnTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => onChanged(!selected),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
             color: GuestPurchasePlanAddOnsTheme.cardWhite,
-            borderRadius: BorderRadius.circular(14),
-            border: selected ? Border.all(color: borderColor, width: 1.6) : null,
+            borderRadius: BorderRadius.circular(12),
+            border: selected ? Border.all(color: borderColor, width: 1.2) : null,
             boxShadow: const [
               BoxShadow(
                 blurRadius: 16,
@@ -40,7 +43,7 @@ class AddOnTile extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,7 +53,7 @@ class AddOnTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         item.title,
-                        style: GuestPurchasePlanAddOnsTheme.t(18, weight: FontWeight.w700),
+                        style: GuestPurchasePlanAddOnsTheme.addOnTitle,
                       ),
                     ),
                     _SquareCheckbox(
@@ -60,27 +63,23 @@ class AddOnTile extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
 
                 Row(
                   children: [
                     Expanded(
                       child: Row(
                         children: [
-                          Icon(Icons.wifi, size: 18, color: GuestPurchasePlanAddOnsTheme.planRed),
-                          const SizedBox(width: 8),
+                          _DataIcon(),
+                          const SizedBox(width: 2),
                           Text(
                             item.subtitleLabel,
-                            style: GuestPurchasePlanAddOnsTheme.t(
-                              18,
-                              weight: FontWeight.w500,
-                              color: GuestPurchasePlanAddOnsTheme.planRed,
-                            ),
+                            style: GuestPurchasePlanAddOnsTheme.addOnLabel,
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 6),
                           Text(
                             item.subtitleValue,
-                            style: GuestPurchasePlanAddOnsTheme.t(24, weight: FontWeight.w700),
+                            style: GuestPurchasePlanAddOnsTheme.addOnValue,
                           ),
                         ],
                       ),
@@ -88,18 +87,14 @@ class AddOnTile extends StatelessWidget {
 
                     // price chip
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
                       decoration: BoxDecoration(
-                        border: Border.all(color: borderColor, width: 1.4),
-                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: borderColor, width: 1),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '${item.currencySymbol} ${item.price.toStringAsFixed(2)}',
-                        style: GuestPurchasePlanAddOnsTheme.t(
-                          16,
-                          weight: FontWeight.w900,
-                          color: borderColor,
-                        ),
+                        style: GuestPurchasePlanAddOnsTheme.addOnPrice,
                       ),
                     ),
                   ],
@@ -127,17 +122,44 @@ class _SquareCheckbox extends StatelessWidget {
       onTap: () => onChanged(!value),
       borderRadius: BorderRadius.circular(4),
       child: Container(
-        width: 22,
-        height: 22,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: borderColor, width: 1.4),
+          border: Border.all(color: borderColor, width: 1),
           color: value ? borderColor : Colors.transparent,
         ),
         child: value
             ? const Icon(Icons.check, size: 16, color: Colors.white)
             : const SizedBox.shrink(),
       ),
+    );
+  }
+}
+
+class _DataIcon extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final iconPath = PlanIconAssets.forType(PlanBenefitType.data);
+    final isSvg = iconPath.toLowerCase().endsWith('.svg');
+
+    if (isSvg) {
+      return SvgPicture.asset(
+        iconPath,
+        width: 18,
+        height: 18,
+        colorFilter: const ColorFilter.mode(
+          GuestPurchasePlanAddOnsTheme.addOnLabelColor,
+          BlendMode.srcIn,
+        ),
+      );
+    }
+    return Image.asset(
+      iconPath,
+      width: 18,
+      height: 18,
+      color: GuestPurchasePlanAddOnsTheme.addOnLabelColor,
+      colorBlendMode: BlendMode.srcIn,
     );
   }
 }

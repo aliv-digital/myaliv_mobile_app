@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
+import '../theme/theme.dart';
 
 
 class MifiPlanCard extends StatelessWidget {
@@ -21,9 +22,6 @@ class MifiPlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _muted = Color(0xFF8B8B8B);
-
   @override
   Widget build(BuildContext context) {
     // ✅ mifi card center metric: data benefit prefer
@@ -36,7 +34,7 @@ class MifiPlanCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -57,22 +55,47 @@ class MifiPlanCard extends StatelessWidget {
                 child: InkWell(
                   onTap: onToggle,
                   borderRadius: BorderRadius.circular(10),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        plan.title, // e.g. mifi 75
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
-                        ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: Text(
+                              plan.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontFamily: 'CircularPro',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 0),
+                          AnimatedRotation(
+                            duration: const Duration(milliseconds: 180),
+                            turns: expanded ? 0.5 : 0.0,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 28,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      AnimatedRotation(
-                        duration: const Duration(milliseconds: 180),
-                        turns: expanded ? 0.5 : 0.0,
-                        child: const Icon(Icons.keyboard_arrow_down, size: 22),
+                      Text(
+                        plan.subtitle,
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: GuestPurchasePlanTheme.subtitleColor,
+                        ),
                       ),
                     ],
                   ),
@@ -82,25 +105,12 @@ class MifiPlanCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 6),
-
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              plan.subtitle, // e.g. 30 days
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: _muted,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
           // ===== Center metric (data only) =====
           _CenterMetric(benefit: center),
+
+          const SizedBox(height: 16),
 
           // ===== Expanded description =====
           AnimatedCrossFade(
@@ -109,16 +119,17 @@ class MifiPlanCard extends StatelessWidget {
             expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(bottom: 16),
+              child: SizedBox(
+                width: double.infinity,
                 child: Text(
                   plan.description,
+                  textAlign: TextAlign.start,
                   style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 12.2,
-                    height: 1.35,
-                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Circular Pro',
+                    fontSize: 10,
+                    height: 1.38,
+                    fontWeight: FontWeight.w500,
                     color: Color(0xFF2C2C2C),
                   ),
                 ),
@@ -131,38 +142,38 @@ class MifiPlanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: SizedBox(
-                  height: 42,
+                  height: 40,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.grey.shade300),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(22),
                       ),
-                      backgroundColor: const Color(0xFFF1F1F6),
+                      backgroundColor: GuestPurchasePlanTheme.viewDetailsButtonColor,
                     ),
                     onPressed: onViewDetails,
                     child: Text(
                       expanded ? 'hide details' : 'view details',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'CircularPro',
                         fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: _brand,
+                        fontWeight: FontWeight.w500,
+                        color: GuestPurchasePlanTheme.brandPurple,
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
               Expanded(
                 child: SizedBox(
-                  height: 42,
+                  height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _brand,
+                      backgroundColor: GuestPurchasePlanTheme.brandPurple,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(22),
                       ),
                     ),
                     onPressed: onPurchaseNow,
@@ -171,7 +182,7 @@ class MifiPlanCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'CircularPro',
                         fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                     ),
@@ -190,23 +201,21 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
-  static const Color _brand = Color(0xFF5D5A8B);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
       decoration: BoxDecoration(
-        border: Border.all(color: _brand, width: 1.2),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: 'CircularPro',
-          fontSize: 14,
-          fontWeight: FontWeight.w800,
-          color: _brand,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: GuestPurchasePlanTheme.brandPurple,
         ),
       ),
     );
@@ -216,9 +225,6 @@ class _PricePill extends StatelessWidget {
 class _CenterMetric extends StatelessWidget {
   final PlanBenefit benefit;
   const _CenterMetric({required this.benefit});
-
-  static const Color _muted = Color(0xFF8B8B8B);
-  static const Color _accent = Color(0xFFFF5A3C);
 
   @override
   Widget build(BuildContext context) {
@@ -234,38 +240,39 @@ class _CenterMetric extends StatelessWidget {
               SvgPicture.asset(iconPath, width: 16, height: 16)
             else
               Image.asset(iconPath, width: 16, height: 16),
-            const SizedBox(width: 6),
+            const SizedBox(width: 2),
             Text(
-              benefit.label.toLowerCase(), // "data"
+              benefit.label.toLowerCase(),
               style: const TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: _accent,
+                fontSize: 12,
+                height: 1.0,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFFF6C36),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 2),
         Text(
-          benefit.value, // e.g. "50"
+          benefit.value,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 22,
+            fontSize: 16,
             height: 1.0,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
-          benefit.sub, // e.g. "gb"
+          benefit.sub,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 13,
+            fontSize: 12,
             height: 1.0,
-            fontWeight: FontWeight.w400,
-            color: _muted,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF707070),
           ),
         ),
       ],

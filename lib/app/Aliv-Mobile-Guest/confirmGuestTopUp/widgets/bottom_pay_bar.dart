@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 
 class BottomPayBar extends StatelessWidget {
   const BottomPayBar({
@@ -9,7 +10,7 @@ class BottomPayBar extends StatelessWidget {
     this.buttonText = 'pay now',
     this.isVatExclusive = false,
     this.backgroundColor = Colors.white,
-    this.buttonColor = const Color(0xFF6B63A7),
+    this.buttonColor = const Color(0xFF655C9A),
   });
 
   final String amountText;
@@ -24,84 +25,85 @@ class BottomPayBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final numericAmount = amountText.replaceAll('\$', '').trim();
+
     return Material(
       color: backgroundColor,
       elevation: 10,
       shadowColor: const Color(0x22000000),
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Left amount column
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      amountText,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF111111),
-                        height: 1.0,
+        child: SizedBox(
+          height: 75,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Left amount column
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '\$',
+                              style: TopUpConfirmTheme.payBarAmount.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' $numericAmount',
+                              style: TopUpConfirmTheme.payBarAmount,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      isVatExclusive? 'vat exclusive' : 'vat inclusive',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w200,
-                        color: Color(0xFF6D6D6D),
-                        height: 1.0,
+                      const SizedBox(height: 2),
+                      Text(
+                        isVatExclusive ? 'vat exclusive' : 'vat inclusive',
+                        style: TopUpConfirmTheme.payBarVat,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 14),
-
-              // Right pill button
-              SizedBox(
-                height: 40,
-                width: 169, // screenshot এর মতো বড় pill look
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : onPayNow,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                    disabledBackgroundColor: buttonColor.withValues(alpha: 0.7),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: isLoading ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.4,
-                      color: Colors.white,
-                    ),
-                  ) :
-                  Text(
-                    buttonText,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                    ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+
+                const SizedBox(width: 16),
+
+                // Right pill button
+                SizedBox(
+                  height: 44,
+                  width: 180,
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : onPayNow,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      disabledBackgroundColor: buttonColor.withValues(alpha: 0.7),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.4,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            buttonText,
+                            style: TopUpConfirmTheme.payBarButton,
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

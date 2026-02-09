@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repository/guest_purchase_plan_repository.dart';
+import '../theme/theme.dart';
 
 class PlanTabs extends StatelessWidget {
   final PlanTab selected;
@@ -22,11 +23,6 @@ class PlanTabs extends StatelessWidget {
     PlanTab.addOns: 'add ons',
   };
 
-  static const Color _barBg = Colors.white; // ✅ bar background
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _textInactive = Color(0xFF8B8B8B);
-  static const Color _divider = Color(0xFFE6E6EC);
-
   double _indicatorWidth(String label) {
     // ✅ label অনুযায়ী width, যাতে screenshot এর মত লাগে
     // short label = 44-52, long label = 64-78
@@ -39,15 +35,15 @@ class PlanTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: _barBg,
-      padding: const EdgeInsets.only(top: 10),
+      color: GuestPurchasePlanTheme.tabBarBackground,
+      padding: const EdgeInsets.only(top: 30),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
             height: 44,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
               separatorBuilder: (_, _) => const SizedBox(width: 26),
@@ -64,13 +60,9 @@ class PlanTabs extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 16,
-                          fontWeight:
-                          isActive ? FontWeight.w700 : FontWeight.w500,
-                          color: isActive ? _brand : _textInactive,
-                        ),
+                        style: isActive
+                            ? GuestPurchasePlanTheme.tabLabelActive
+                            : GuestPurchasePlanTheme.tabLabelInactive,
                       ),
                       const SizedBox(height: 8),
 
@@ -83,7 +75,7 @@ class PlanTabs extends StatelessWidget {
                             ? _indicatorWidth(label)
                             : 0, // ✅ inactive হলে hide
                         decoration: BoxDecoration(
-                          color: _brand,
+                          color: GuestPurchasePlanTheme.brandPurple,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -95,7 +87,7 @@ class PlanTabs extends StatelessWidget {
           ),
 
           // ✅ thin grey divider under the whole bar
-          Container(height: 1, color: _divider),
+          Container(height: 1, color: GuestPurchasePlanTheme.tabDivider),
         ],
       ),
     );

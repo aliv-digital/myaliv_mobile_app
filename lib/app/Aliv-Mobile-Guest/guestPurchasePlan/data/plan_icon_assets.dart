@@ -8,7 +8,7 @@ class PlanIconAssets {
   static const String talk = AssetConstant.phoneIconPNG;
   static const String sms = AssetConstant.smsIconPNG;
   static const String bonusData = AssetConstant.bonusDataIconPNG;
-  static const String intl = AssetConstant.talkTextIconPNG;
+  static const String intl = AssetConstant.phoneIconPNG;//talkTextIconPNG;
   static const String mms = AssetConstant.mmsIconPNG;
 
   static String forType(PlanBenefitType type) {

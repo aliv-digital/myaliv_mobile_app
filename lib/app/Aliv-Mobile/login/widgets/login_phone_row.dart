@@ -16,6 +16,8 @@ class LoginPhoneRow extends StatefulWidget {
 
 class _LoginPhoneRowState extends State<LoginPhoneRow> {
   Country? _selectedCountry;
+  static const double _fieldHeight = 54;
+  static const double _fieldRadius = 8;
 
   String get _flagEmoji => _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
 
@@ -43,7 +45,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 60,
+      height: _fieldHeight,
       child: Row(
         children: [
           // ------- Country box -------
@@ -51,13 +53,13 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
             onTap: _openCountryPicker,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              width: 82,
-              height: 60,
+              width: 76,
+              height: _fieldHeight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(_fieldRadius),
                 border: Border.all(
                   color: AuthModuleColors.lightGreyBorder,
-                  width: 1.2,
+                  width: 1,
                 ),
                 color: Colors.white,
               ),
@@ -79,21 +81,27 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                       color: AuthModuleColors.textBlack,
                     ),
                   ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 16,
+                    color: AuthModuleColors.hintGrey,
+                  ),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
 
           // ------- Phone field -------
           Expanded(
             child: Container(
-              height: 60,
+              height: _fieldHeight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(_fieldRadius),
                 border: Border.all(
                   color: AuthModuleColors.lightGreyBorder,
-                  width: 1.2,
+                  width: 1,
                 ),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -111,7 +119,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                     keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      hintText: 'eg: 242-899-9999',
+                      hintText: 'eg: 242 899 9999',
                       hintStyle: TextStyle(
                         fontSize: 14,
                         color: AuthModuleColors.hintGrey,

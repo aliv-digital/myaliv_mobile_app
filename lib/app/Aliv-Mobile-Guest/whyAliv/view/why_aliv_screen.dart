@@ -6,12 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_one.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/heading_two.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/widgets/text_body.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/why_aliv_bloc.dart';
 import '../bloc/why_aliv_event.dart';
 import '../bloc/why_aliv_state.dart';
 import '../data/string_constants.dart';
 import '../repository/why_aliv_repository.dart';
+import '../theme/why_aliv_theme.dart';
 
 class WhyAlivScreen extends StatelessWidget {
   const WhyAlivScreen({super.key});
@@ -46,16 +48,18 @@ class _WhyAlivView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status && curr.status == WhyAlivStatus.failure,
           listener: (context, state) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.errorMessage ?? 'Something went wrong',
+                SnackBar(
+                  content: Text(
+                    state.errorMessage ?? 'Something went wrong',
+                    style: WhyAlivTheme.snackBarText,
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
           child: Column(
             children: [
               DefaultAppBar(
+                backgroundColor: HexColor.fromHex('FF645D9C'),
                 title: WhyAlivStrings.whyAlivAppbarTitle,
                 onBack: () {
                   context.pop();
@@ -66,24 +70,24 @@ class _WhyAlivView extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 22, 24, 32),
+                        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                         child: BlocBuilder<WhyAlivBloc, WhyAlivState>(
                           builder: (context, state) {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 HeadingOne(text: WhyAlivStrings.whyAlivHeading1),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 16),
                                 TextBody(
                                   text: WhyAlivStrings.whyAlivSubheading1,
                                 ),
-                                const SizedBox(height: 26),
+                                const SizedBox(height: 48),
                                 TextBody(text: WhyAlivStrings.whyAlivBody1),
-                                const SizedBox(height: 30),
+                                const SizedBox(height: 32),
                                 HeadingTwo(text: WhyAlivStrings.whyAlivHeading2),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 16),
                                 TextBody(text: WhyAlivStrings.whyAlivBody2a),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 20),
                                 TextBody(text: WhyAlivStrings.whyAlivBody2b),
                               ],
                             );
@@ -101,7 +105,6 @@ class _WhyAlivView extends StatelessWidget {
     );
   }
 }
-
 
 
 

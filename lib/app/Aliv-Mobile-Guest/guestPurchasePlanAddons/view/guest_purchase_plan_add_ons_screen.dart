@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
-import '../../confirmGuestTopUp/widgets/bottom_pay_bar.dart';
+import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/guest_purchase_plan_add_ons_bloc.dart';
 import '../bloc/guest_purchase_plan_add_ons_event.dart';
 import '../bloc/guest_purchase_plan_add_ons_state.dart';
 import '../repository/guest_purchase_plan_add_ons_repository.dart';
 import '../theme/guest_purchase_plan_add_ons_theme.dart';
-import '../widgets/active_plan_card.dart';
+import '../widgets/active_plan_card_v2.dart';
 import '../widgets/add_on_tile.dart';
 import '../widgets/fair_use_policy_card.dart';
 
 class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
-  const GuestPurchasePlanAddOnsScreen({
-    super.key
-  });
+  const GuestPurchasePlanAddOnsScreen({super.key});
 
- // final VoidCallback onSkip;
- // final VoidCallback onProceed;
+  // final VoidCallback onSkip;
+  // final VoidCallback onProceed;
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +28,9 @@ class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
           repository: ctx.read<GuestPurchasePlanAddOnsRepository>(),
         )..add(const GuestPurchasePlanAddOnsStarted()),
         child: _GuestPurchasePlanAddOnsView(
-          onSkip: (){},
-          onProceed: (){},
+          onSkip: () => context.push(AppRoutes.guestPurchasePlanConfirmation),
+          onProceed: () =>
+              context.push(AppRoutes.guestPurchasePlanConfirmation),
         ),
       ),
     );
@@ -44,34 +45,42 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
 
   final VoidCallback onSkip;
   final VoidCallback onProceed;
+  static const double _contentHorizontalPadding = 25;
   //static const _bg = Color(0xFFF1F2FA);
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPurchasePlanAddOnsBloc, GuestPurchasePlanAddOnsState>(
+    return BlocListener<
+      GuestPurchasePlanAddOnsBloc,
+      GuestPurchasePlanAddOnsState
+    >(
       listenWhen: (p, c) =>
-      p.skipRequestId != c.skipRequestId || p.proceedRequestId != c.proceedRequestId,
+          p.skipRequestId != c.skipRequestId ||
+          p.proceedRequestId != c.proceedRequestId,
       listener: (context, state) {
         if (state.skipRequestId > 0) onSkip();
         if (state.proceedRequestId > 0) onProceed();
       },
       child: Scaffold(
         backgroundColor: GuestPurchasePlanAddOnsTheme.bg,
-        bottomNavigationBar: BlocBuilder<GuestPurchasePlanAddOnsBloc, GuestPurchasePlanAddOnsState>(
-          builder: (context, state) {
-            if (state.status != GuestPurchasePlanAddOnsStatus.ready) {
-              return const SizedBox.shrink();
-            }
-            return BottomPayBar(
-              isVatExclusive: false,
-              buttonText: 'proceed',
-              amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
-              ///isLoading: state.status == state.selectedAddOnIds.isNotEmpty,
-              onPayNow: () => context.read<GuestPurchasePlanAddOnsBloc>().add(
-                const GuestPurchasePlanAddOnsProceedPressed(),
-              ),
-            );
-          },
-        ),
+        bottomNavigationBar:
+            BlocBuilder<
+              GuestPurchasePlanAddOnsBloc,
+              GuestPurchasePlanAddOnsState
+            >(
+              builder: (context, state) {
+                if (state.status != GuestPurchasePlanAddOnsStatus.ready) {
+                  return const SizedBox.shrink();
+                }
+                return DefaultBottomPayBar(
+                  isVatExclusive: false,
+                  buttonText: 'proceed',
+                  amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
+                  onPayNow: () => context
+                      .read<GuestPurchasePlanAddOnsBloc>()
+                      .add(const GuestPurchasePlanAddOnsProceedPressed()),
+                );
+              },
+            ),
         body: SafeArea(
           child: Column(
             children: [
@@ -79,71 +88,94 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                 title: 'add-ons',
                 showBackArrow: false,
                 actionText: 'skip',
-                onActionTextTap: () => context.read<GuestPurchasePlanAddOnsBloc>().add(
-                  const GuestPurchasePlanAddOnsSkipPressed()
-                )
+                onActionTextTap: () {
+                  debugPrint('[GuestPurchasePlanAddOns] skip tapped');
+                  //context.read<GuestPurchasePlanAddOnsBloc>().add(const GuestPurchasePlanAddOnsSkipPressed());
+                  context.push(AppRoutes.guestPurchasePlanConfirmation);
+                },
               ),
               Expanded(
-                child: BlocBuilder<GuestPurchasePlanAddOnsBloc, GuestPurchasePlanAddOnsState>(
-                  builder: (context, state) {
-                    if (state.status == GuestPurchasePlanAddOnsStatus.loading ||
-                        state.status == GuestPurchasePlanAddOnsStatus.initial) {
-                      return const Center(
-                        child: SizedBox(
-                          width: 26,
-                          height: 26,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      );
-                    }
+                child:
+                    BlocBuilder<
+                      GuestPurchasePlanAddOnsBloc,
+                      GuestPurchasePlanAddOnsState
+                    >(
+                      builder: (context, state) {
+                        if (state.status ==
+                                GuestPurchasePlanAddOnsStatus.loading ||
+                            state.status ==
+                                GuestPurchasePlanAddOnsStatus.initial) {
+                          return const Center(
+                            child: SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          );
+                        }
 
-                    if (state.status == GuestPurchasePlanAddOnsStatus.error) {
-                      return Center(
-                        child: Text(
-                          state.errorMessage ?? 'Failed to load',
-                          style: GuestPurchasePlanAddOnsTheme.t(13, weight: FontWeight.w600),
-                        ),
-                      );
-                    }
-
-                    final plan = state.activePlan!;
-                    final policy = state.fairUsePolicy!;
-
-                    return ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-                      children: [
-                        ActivePlanCard(
-                          plan: plan,
-                          onAutoRenewChanged: (v) => context
-                              .read<GuestPurchasePlanAddOnsBloc>()
-                              .add(GuestPurchasePlanAddOnsAutoRenewToggled(v)),
-                        ),
-                        const SizedBox(height: 14),
-                        FairUsePolicyCard(policy: policy, onTap: () {  },),
-                        const SizedBox(height: 14),
-
-                        // Add-on list
-                        ...state.addOns.map((item) {
-                          final selected = state.selectedAddOnIds.contains(item.id);
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: AddOnTile(
-                              item: item,
-                              selected: selected,
-                              onChanged: (v) => context.read<GuestPurchasePlanAddOnsBloc>().add(
-                                GuestPurchasePlanAddOnsSelectionToggled(
-                                  addOnId: item.id,
-                                  selected: v,
-                                ),
+                        if (state.status ==
+                            GuestPurchasePlanAddOnsStatus.error) {
+                          return Center(
+                            child: Text(
+                              state.errorMessage ?? 'Failed to load',
+                              style: GuestPurchasePlanAddOnsTheme.t(
+                                13,
+                                weight: FontWeight.w600,
                               ),
                             ),
                           );
-                        }),
-                        const SizedBox(height: 4),
-                      ],
-                    );
-                  },
-                ),
+                        }
+
+                        final plan = state.activePlan!;
+                        final policy = state.fairUsePolicy!;
+
+                        return ListView(
+                          padding: const EdgeInsets.fromLTRB(
+                            _contentHorizontalPadding,
+                            14,
+                            _contentHorizontalPadding,
+                            16,
+                          ),
+                          children: [
+                            ActivePlanCardV2(
+                              plan: plan,
+                              onAutoRenewChanged: (v) => context
+                                  .read<GuestPurchasePlanAddOnsBloc>()
+                                  .add(
+                                    GuestPurchasePlanAddOnsAutoRenewToggled(v),
+                                  ),
+                            ),
+                            const SizedBox(height: 16),
+                            FairUsePolicyCard(policy: policy, onTap: () {}),
+                            const SizedBox(height: 16),
+
+                            // Add-on list
+                            ...state.addOns.map((item) {
+                              final selected = state.selectedAddOnIds.contains(
+                                item.id,
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: AddOnTile(
+                                  item: item,
+                                  selected: selected,
+                                  onChanged: (v) => context
+                                      .read<GuestPurchasePlanAddOnsBloc>()
+                                      .add(
+                                        GuestPurchasePlanAddOnsSelectionToggled(
+                                          addOnId: item.id,
+                                          selected: v,
+                                        ),
+                                      ),
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 4),
+                          ],
+                        );
+                      },
+                    ),
               ),
             ],
           ),
@@ -152,4 +184,3 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
     );
   }
 }
-

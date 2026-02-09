@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme.dart';
 
 class CustomTopUpCard extends StatelessWidget {
   final String title;
@@ -31,18 +32,11 @@ class CustomTopUpCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
+                  style: TopUpConfirmTheme.customCardTitle,
                 ),
                 Text(
                   phoneNumber,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  style: TopUpConfirmTheme.customCardPhone,
                 ),
               ],
             ),
@@ -55,10 +49,7 @@ class CustomTopUpCard extends StatelessWidget {
               children: [
                 Text(
                   'Top-up amount',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  ),
+                  style: TopUpConfirmTheme.customCardLabel,
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -69,11 +60,7 @@ class CustomTopUpCard extends StatelessWidget {
                   ),
                   child: Text(
                     '\$${amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                    style: TopUpConfirmTheme.customCardAmount,
                   ),
                 ),
               ],

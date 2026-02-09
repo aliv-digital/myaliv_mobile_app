@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/guest_purchase_plan_add_ons_theme.dart';
 
 class BottomPayBar extends StatelessWidget {
   const BottomPayBar({
@@ -7,8 +8,8 @@ class BottomPayBar extends StatelessWidget {
     required this.onPayNow,
     this.isLoading = false,
     this.buttonText = 'pay now',
-    this.backgroundColor = Colors.white,
-    this.buttonColor = const Color(0xFF6B63A7),
+    this.backgroundColor = GuestPurchasePlanAddOnsTheme.cardWhite,
+    this.buttonColor = GuestPurchasePlanAddOnsTheme.bottomBarButton,
   });
 
   final String amountText;
@@ -25,7 +26,7 @@ class BottomPayBar extends StatelessWidget {
     return Material(
       color: backgroundColor,
       elevation: 10,
-      shadowColor: const Color(0x22000000),
+      shadowColor: GuestPurchasePlanAddOnsTheme.bottomBarShadow,
       child: SafeArea(
         top: false,
         child: Padding(
@@ -41,24 +42,12 @@ class BottomPayBar extends StatelessWidget {
                   children: [
                     Text(
                       amountText,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF111111),
-                        height: 1.0,
-                      ),
+                      style: GuestPurchasePlanAddOnsTheme.bottomBarAmountText,
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'vat exclusive',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w200,
-                        color: Color(0xFF6D6D6D),
-                        height: 1.0,
-                      ),
+                      style: GuestPurchasePlanAddOnsTheme.bottomBarVatText,
                     ),
                   ],
                 ),
@@ -90,12 +79,7 @@ class BottomPayBar extends StatelessWidget {
                   )
                       : Text(
                     buttonText,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: GuestPurchasePlanAddOnsTheme.bottomBarButtonText,
                   ),
                 ),
               ),

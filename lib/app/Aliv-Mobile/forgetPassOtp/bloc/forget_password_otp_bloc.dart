@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../repository/forgetPass_otp_repository.dart';
-import 'forgetPass_otp_event.dart';
-import 'forgetPass_otp_state.dart';
+import '../repository/forget_password_otp_repository.dart';
+import 'forget_password_otp_event.dart';
+import 'forget_password_otp_state.dart';
 
 
 class ForgetPasswordOtpBloc extends Bloc<ForgetPasswordOtpEvent, ForgetPasswordOtpState> {
