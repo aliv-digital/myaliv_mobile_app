@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../theme/my_profile_prepaid_theme.dart';
 
 class MyProfilePrepaidDeviceCard extends StatelessWidget {
@@ -29,12 +30,13 @@ class MyProfilePrepaidDeviceCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.smartphone_outlined,
-            size: 42,
-            color: MyProfilePrepaidTheme.brand,
+          Image.asset(
+            AssetConstant.phonePNG,
+            width: 25,
+            height: 42,
+            fit: BoxFit.contain,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             title.toLowerCase(),
             style: MyProfilePrepaidTheme.deviceTitle,

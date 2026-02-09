@@ -23,9 +23,9 @@ class ReferFriendPrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -42,7 +42,8 @@ class _ReferFriendPrepaidView extends StatefulWidget {
   const _ReferFriendPrepaidView();
 
   @override
-  State<_ReferFriendPrepaidView> createState() => _ReferFriendPrepaidViewState();
+  State<_ReferFriendPrepaidView> createState() =>
+      _ReferFriendPrepaidViewState();
 }
 
 class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
@@ -84,7 +85,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
       body: SafeArea(
         child: BlocListener<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
           listenWhen: (p, c) =>
-          p.toastMessage != c.toastMessage ||
+              p.toastMessage != c.toastMessage ||
               p.errorMessage != c.errorMessage ||
               p.selectedTab != c.selectedTab,
           listener: (context, state) {
@@ -97,8 +98,8 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                 SnackBar(content: Text(toast)),
               );
               context.read<ReferFriendPrepaidBloc>().add(
-                const ReferFriendPrepaidToastConsumed(),
-              );
+                    const ReferFriendPrepaidToastConsumed(),
+                  );
             }
 
             final err = state.errorMessage;
@@ -107,8 +108,8 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                 SnackBar(content: Text(err)),
               );
               context.read<ReferFriendPrepaidBloc>().add(
-                const ReferFriendPrepaidErrorConsumed(),
-              );
+                    const ReferFriendPrepaidErrorConsumed(),
+                  );
             }
           },
           child: Column(
@@ -117,13 +118,14 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
               BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
                 buildWhen: (p, c) => p.selectedTab != c.selectedTab,
                 builder: (context, state) {
-                  final title = state.selectedTab == 2 ? 'Refer/Redeem' : 'refer a friend';
+                  final title = state.selectedTab == 2
+                      ? 'Refer/Redeem'
+                      : 'refer a friend';
 
                   return DefaultAppBar(
                     title: title,
                     showHome: false,
                     backgroundColor: ReferFriendPrepaidTheme.brand,
-
                     onBack: () => context.pop(),
                   );
                 },
@@ -144,9 +146,10 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
 
               // ✅ tab content area (scrolls inside)
               Expanded(
-                child: BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
+                child: BlocBuilder<ReferFriendPrepaidBloc,
+                    ReferFriendPrepaidState>(
                   buildWhen: (p, c) =>
-                  p.selectedTab != c.selectedTab || p.history != c.history,
+                      p.selectedTab != c.selectedTab || p.history != c.history,
                   builder: (context, state) {
                     return PageView(
                       controller: _controller,
@@ -221,8 +224,8 @@ class _HistoryTab extends StatelessWidget {
           return ReferFriendPrepaidHistoryCard(
             item: item,
             onCopy: () => context.read<ReferFriendPrepaidBloc>().add(
-              ReferFriendPrepaidCopyPressed(item.code),
-            ),
+                  ReferFriendPrepaidCopyPressed(item.code),
+                ),
           );
         },
       ),

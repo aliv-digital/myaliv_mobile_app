@@ -1,4 +1,3 @@
-
 import '../model/guest_pay_bill_models.dart';
 
 class GuestPayBillRepository {
@@ -6,6 +5,7 @@ class GuestPayBillRepository {
     await Future.delayed(const Duration(milliseconds: 250));
     return const [
       BillService(code: 'ALIV_POSTPAID', label: 'ALIV Postpaid'),
+      BillService(code: 'ALIV_FIBR', label: 'ALIVFibr'),
       BillService(code: 'REV', label: 'REV'),
     ];
   }
@@ -37,6 +37,23 @@ class GuestPayBillRepository {
       return const PayBillAccountInfo(
         status: 'Active',
         name: 'James Bain',
+        balance: 200.00,
+      );
+    }
+
+    throw Exception('Account not found');
+  }
+
+  Future<PayBillAccountInfo> verifyAlivFibr({
+    required String accountNumberOrUsername,
+    required String enteredName,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 700));
+
+    if (accountNumberOrUsername.trim().length >= 8) {
+      return PayBillAccountInfo(
+        status: 'Active',
+        name: enteredName.trim().isEmpty ? 'Tanya Bain' : enteredName.trim(),
         balance: 200.00,
       );
     }

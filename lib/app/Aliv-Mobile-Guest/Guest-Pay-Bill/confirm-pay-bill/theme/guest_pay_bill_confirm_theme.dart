@@ -32,10 +32,13 @@ class GuestPayBillConfirmTheme {
   );
 
   static TextStyle headerSub() => const TextStyle(
-    color: textDark,
+    color: Color(0xFF121212),
     fontSize: 16,
-    fontFamily: 'CircularPro',
-    fontWeight: FontWeight.w500,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w400,
+    // Circular Pro requested at 450; Flutter font weight constants are 100 steps.
+    // This keeps visual weight close to 450 when variable font data is available.
+    fontVariations: [FontVariation('wght', 450)],
   );
 
   static TextStyle terms() => const TextStyle(

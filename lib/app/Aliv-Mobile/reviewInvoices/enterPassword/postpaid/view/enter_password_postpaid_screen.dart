@@ -25,15 +25,16 @@ class EnterPasswordPostpaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
     );
 
     return BlocProvider(
-      create: (_) => EnterPasswordPostpaidBloc(EnterPasswordPostpaidRepository())
-        ..add(const EnterPasswordPostpaidStarted()),
+      create: (_) =>
+          EnterPasswordPostpaidBloc(EnterPasswordPostpaidRepository())
+            ..add(const EnterPasswordPostpaidStarted()),
       child: const _EnterPasswordPostpaidView(),
     );
   }
@@ -53,9 +54,10 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
-        child: BlocListener<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
+        child:
+            BlocListener<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
           listenWhen: (p, c) =>
-          p.status != c.status || p.errorMessage != c.errorMessage,
+              p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == EnterPasswordPostpaidStatus.success) {
               // continue
@@ -72,7 +74,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
@@ -97,7 +99,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                 BlocBuilder<EnterPasswordPostpaidBloc,
                                     EnterPasswordPostpaidState>(
                                   buildWhen: (p, c) =>
-                                  p.password != c.password ||
+                                      p.password != c.password ||
                                       p.obscure != c.obscure,
                                   builder: (context, state) {
                                     return EnterPasswordPostpaidPasswordInput(
@@ -105,10 +107,13 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                       obscure: state.obscure,
                                       onChanged: (v) => context
                                           .read<EnterPasswordPostpaidBloc>()
-                                          .add(EnterPasswordPostpaidPasswordChanged(v)),
+                                          .add(
+                                              EnterPasswordPostpaidPasswordChanged(
+                                                  v)),
                                       onToggle: () => context
                                           .read<EnterPasswordPostpaidBloc>()
-                                          .add(const EnterPasswordPostpaidToggleObscure()),
+                                          .add(
+                                              const EnterPasswordPostpaidToggleObscure()),
                                     );
                                   },
                                 ),
@@ -120,7 +125,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                 BlocBuilder<EnterPasswordPostpaidBloc,
                                     EnterPasswordPostpaidState>(
                                   buildWhen: (p, c) =>
-                                  p.status != c.status ||
+                                      p.status != c.status ||
                                       p.isValid != c.isValid,
                                   builder: (context, state) {
                                     final isLoading = state.status ==
@@ -132,7 +137,8 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                       onTap: () {
                                         context
                                             .read<EnterPasswordPostpaidBloc>()
-                                            .add(const EnterPasswordPostpaidContinuePressed());
+                                            .add(
+                                                const EnterPasswordPostpaidContinuePressed());
                                       },
                                     );
                                   },
@@ -145,13 +151,14 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                 EnterPasswordPostpaidBiometricButtons(
                                   onFaceId: () => context
                                       .read<EnterPasswordPostpaidBloc>()
-                                      .add(const EnterPasswordPostpaidFaceIdPressed()),
+                                      .add(
+                                          const EnterPasswordPostpaidFaceIdPressed()),
                                   onFingerprint: () => context
                                       .read<EnterPasswordPostpaidBloc>()
-                                      .add(const EnterPasswordPostpaidFingerprintPressed()),
+                                      .add(
+                                          const EnterPasswordPostpaidFingerprintPressed()),
                                 ),
-
-                                // const SizedBox(height: 180),
+                                const SizedBox(height: 180),
                               ],
                             ),
                           ),
@@ -167,7 +174,9 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                 duration: const Duration(milliseconds: 180),
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
-                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+                child: keyboardOpen
+                    ? const SizedBox.shrink()
+                    : const BottomStripes(),
               ),
             ],
           ),

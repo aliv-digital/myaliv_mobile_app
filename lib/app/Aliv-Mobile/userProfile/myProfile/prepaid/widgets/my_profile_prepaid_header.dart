@@ -23,26 +23,22 @@ class MyProfilePrepaidHeader extends StatelessWidget {
         Container(
           width: 100,
           height: 100,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 14,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(100),
           ),
-          alignment: Alignment.center,
-          child: Text(
-            avatarLetter,
-            style: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-              height: 1.0,
+          child: Center(
+            child: Text(
+              avatarLetter,
+              style: const TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 34,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+                height: 1.0,
+              ),
             ),
           ),
         ),
@@ -53,14 +49,7 @@ class MyProfilePrepaidHeader extends StatelessWidget {
         Text(
           fullName,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 18,
-            letterSpacing: -0.30,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-            height: 1.1,
-          ),
+          style: MyProfilePrepaidTheme.textName,
         ),
 
         const SizedBox(height: 8),
@@ -84,17 +73,12 @@ class MyProfilePrepaidHeader extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: MyProfilePrepaidTheme.statusPillBg,
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: BorderRadius.circular(50),
               ),
               child: Text(
                 statusLabel.toLowerCase(),
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  height: 1.0,
-                ),
+                textAlign: TextAlign.center,
+                style: MyProfilePrepaidTheme.statusPillText,
               ),
             ),
           ],

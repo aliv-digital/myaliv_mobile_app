@@ -21,21 +21,29 @@ class ReceiptSuccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // keep these constants stable for pixel-perfect notch position
-    const double cardPad = 18;
+    // Figma-aligned paddings
+    const double horizontalPad = 24;
+    const double topPad = 32;
+    const double bottomPad = 32;
     const double cornerRadius = 16;
 
     const double iconSize = 54;
-    const double gapAfterIcon = 14;
+    const double gapAfterIcon = 20;
     const double titleBoxH = 24; // fixed height to lock notch Y
-    const double gapAfterTitle = 16;
+    const double gapAfterTitle = 32;
+    const double gapAfterFirstDivider = 32;
+    const double gapAfterMessage = 24;
     const double dividerH = 22;
 
     const double notchRadius = 10;
 
     // Notch should align with the FIRST divider center (after Payment Success!)
-    final double notchCenterY =
-        cardPad + iconSize + gapAfterIcon + titleBoxH + gapAfterTitle + (dividerH / 2);
+    final double notchCenterY = topPad +
+        iconSize +
+        gapAfterIcon +
+        titleBoxH +
+        gapAfterTitle +
+        (dividerH / 2);
 
     return PhysicalShape(
       clipper: _TicketSideNotchClipper(
@@ -48,7 +56,12 @@ class ReceiptSuccessCard extends StatelessWidget {
       shadowColor: const Color(0x22000000),
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(cardPad, cardPad, cardPad, cardPad),
+        padding: const EdgeInsets.fromLTRB(
+          horizontalPad,
+          topPad,
+          horizontalPad,
+          bottomPad,
+        ),
         child: Column(
           children: [
             // success icon
@@ -68,7 +81,8 @@ class ReceiptSuccessCard extends StatelessWidget {
                       color: Color(0xFF2E9E5B),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.check, color: Colors.white, size: 18),
+                    child:
+                        const Icon(Icons.check, color: Colors.white, size: 18),
                   ),
                 ),
               ),
@@ -99,7 +113,7 @@ class ReceiptSuccessCard extends StatelessWidget {
               child: ReceiptTicketDivider(height: dividerH),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: gapAfterFirstDivider),
             Text(
               'It will take a few moments for the top up\nto appear on the account.',
               textAlign: TextAlign.center,
@@ -111,14 +125,24 @@ class ReceiptSuccessCard extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: gapAfterMessage),
 
             // details
-            ReceiptDetailRow(label: data.leftType, value: data.rightType, valueBold: false),
-            ReceiptDetailRow(label: 'date', value: data.dateText, valueBold: false),
-            ReceiptDetailRow(label: 'time', value: data.timeText, valueBold: false),
-            ReceiptDetailRow(label: 'phone no.', value: data.phoneNumber, valueBold: false),
-            ReceiptDetailRow(label: 'payment method', value: data.paymentMethod, valueBold: false),
+            ReceiptDetailRow(
+                label: data.leftType, value: data.rightType, valueBold: false),
+            ReceiptDetailRow(
+                label: 'date', value: data.dateText, valueBold: false),
+            ReceiptDetailRow(
+                label: 'time', value: data.timeText, valueBold: false),
+            ReceiptDetailRow(
+              label: data.identifierLabel,
+              value: data.phoneNumber,
+              valueBold: false,
+            ),
+            ReceiptDetailRow(
+                label: 'payment method',
+                value: data.paymentMethod,
+                valueBold: false),
 
             const SizedBox(height: 6),
 
@@ -128,7 +152,7 @@ class ReceiptSuccessCard extends StatelessWidget {
               child: ReceiptTicketDivider(height: dividerH),
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
 
             ReceiptDetailRow(
               label: 'amount',
@@ -137,11 +161,7 @@ class ReceiptSuccessCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
-            const SizedBox(height: 32),
-
             ReceiptBackButton(onTap: onBackHome),
-            const SizedBox(height: 52),
           ],
         ),
       ),

@@ -34,7 +34,7 @@ class ReceiptDetailRow extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-              fontSize:  valueBold ? 18 : 16,
+              fontSize: valueBold ? 18 : 16,
               fontFamily: 'CircularPro',
               color: ReceiptTheme.successCardValueTextBlack,
               fontWeight: valueBold ? FontWeight.w700 : FontWeight.w400,

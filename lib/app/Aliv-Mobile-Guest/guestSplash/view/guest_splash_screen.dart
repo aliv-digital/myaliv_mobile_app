@@ -51,9 +51,14 @@ class GuestSplashView extends StatelessWidget {
     //  ensure status + navigation areas match the screen color (single color look)
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        /*
+           statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
+         */
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
 
         //  bottom nav / gesture area same color
         systemNavigationBarColor: GuestSplashTheme.purple,

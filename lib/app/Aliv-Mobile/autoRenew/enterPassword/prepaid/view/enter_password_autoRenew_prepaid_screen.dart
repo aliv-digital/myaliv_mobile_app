@@ -25,7 +25,7 @@ class EnterPasswordAutoRenewPrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
@@ -54,7 +54,8 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
-        child: BlocListener<EnterPasswordAutoRenewPrepaidBloc, EnterPasswordAutoRenewPrepaidState>(
+        child: BlocListener<EnterPasswordAutoRenewPrepaidBloc,
+            EnterPasswordAutoRenewPrepaidState>(
           listenWhen: (p, c) =>
               p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
@@ -106,8 +107,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                       obscure: state.obscure,
                                       onChanged: (v) => context
                                           .read<
-                                            EnterPasswordAutoRenewPrepaidBloc
-                                          >()
+                                              EnterPasswordAutoRenewPrepaidBloc>()
                                           .add(
                                             EnterPasswordAutoRenewPrepaidPasswordChanged(
                                               v,
@@ -115,8 +115,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                           ),
                                       onToggle: () => context
                                           .read<
-                                            EnterPasswordAutoRenewPrepaidBloc
-                                          >()
+                                              EnterPasswordAutoRenewPrepaidBloc>()
                                           .add(
                                             const EnterPasswordAutoRenewPrepaidToggleObscure(),
                                           ),
@@ -134,8 +133,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                       p.status != c.status ||
                                       p.isValid != c.isValid,
                                   builder: (context, state) {
-                                    final isLoading =
-                                        state.status ==
+                                    final isLoading = state.status ==
                                         EnterPasswordAutoRenewPrepaidStatus
                                             .submitting;
 
@@ -145,8 +143,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                       onTap: () {
                                         context
                                             .read<
-                                              EnterPasswordAutoRenewPrepaidBloc
-                                            >()
+                                                EnterPasswordAutoRenewPrepaidBloc>()
                                             .add(
                                               const EnterPasswordAutoRenewPrepaidContinuePressed(),
                                             );

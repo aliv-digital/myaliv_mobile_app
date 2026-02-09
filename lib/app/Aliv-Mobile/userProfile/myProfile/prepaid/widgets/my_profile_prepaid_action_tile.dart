@@ -23,34 +23,32 @@ class MyProfilePrepaidActionTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: MyProfilePrepaidTheme.cardDecoration(),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
-                width: 34,
-                height: 34,
+                width: 40,
+                height: 40,
+                padding: const EdgeInsets.all(0),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F1F6),
-                  borderRadius: BorderRadius.circular(10),
+                  color: MyProfilePrepaidTheme.actionIconBg,
+                  borderRadius: BorderRadius.circular(100),
                 ),
                 child: SvgPicture.asset(
                     iconPath,
+                    width: 25,
+                    height: 25,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 16,
-                    letterSpacing: -0.32,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
+                  style: MyProfilePrepaidTheme.actionTitle,
                 ),
               ),
-              const Icon(Icons.chevron_right, color: MyProfilePrepaidTheme.muted),
+              const SizedBox(width: 12),
+              const Icon(Icons.chevron_right, color: Colors.black, size: 22),
             ],
           ),
         ),

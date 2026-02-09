@@ -41,9 +41,9 @@ class _LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -57,7 +57,7 @@ class _LoginView extends StatelessWidget {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
-             // context.go(AppRoutes.home);
+              // context.go(AppRoutes.home);
             }
           },
           child: Stack(
@@ -85,7 +85,9 @@ class _LoginView extends StatelessWidget {
                             const SizedBox(height: 10),
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
-                                final hasError = state.status == LoginStatus.failure && state.errorMessage != null;
+                                final hasError =
+                                    state.status == LoginStatus.failure &&
+                                        state.errorMessage != null;
                                 return Row(
                                   children: [
                                     Expanded(
@@ -110,7 +112,8 @@ class _LoginView extends StatelessWidget {
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,
                                         minimumSize: const Size(0, 0),
-                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
                                       ),
                                       onPressed: () {
                                         context.push(AppRoutes.forgetPassword);
@@ -135,20 +138,23 @@ class _LoginView extends StatelessWidget {
 
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
-                                final loading = state.status == LoginStatus.loading;
+                                final loading =
+                                    state.status == LoginStatus.loading;
                                 return DefaultButton(
                                   label: 'sign in',
                                   isLoading: loading,
                                   height: 48,
                                   onPressed: () {
-                                    context.read<LoginBloc>().add(const LoginSubmitted());
+                                    context
+                                        .read<LoginBloc>()
+                                        .add(const LoginSubmitted());
                                     context.push(AppRoutes.loginOtp);
                                   },
                                 );
                               },
                             ),
 
-                           // const SizedBox(height: 24),
+                            // const SizedBox(height: 24),
                             const LoginSocialButtons(),
                             const SizedBox(height: 34),
                             const SizedBox(height: 220),

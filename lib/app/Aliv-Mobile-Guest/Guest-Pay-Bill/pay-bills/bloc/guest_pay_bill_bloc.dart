@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/guest_pay_bill_models.dart';
 import '../repository/guest_pay_bill_repository.dart';
 import 'guest_pay_bill_event.dart';
 import 'guest_pay_bill_state.dart';
@@ -17,6 +18,7 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
 
     on<GuestPayBillMobileChanged>(_onMobileChanged);
     on<GuestPayBillConfirmMobileChanged>(_onConfirmMobileChanged);
+    on<GuestPayBillCountryChanged>(_onCountryChanged);
 
     on<GuestPayBillAmountChanged>(_onAmountChanged);
     on<GuestPayBillVerifyPressed>(_onVerifyPressed);
@@ -24,9 +26,9 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   Future<void> _onStarted(
-      GuestPayBillStarted event,
-      Emitter<GuestPayBillState> emit,
-      ) async {
+    GuestPayBillStarted event,
+    Emitter<GuestPayBillState> emit,
+  ) async {
     emit(state.copyWith(loadStatus: GuestPayBillLoadStatus.loading));
     try {
       final services = await repo.fetchServices();
@@ -45,11 +47,12 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   void _onServiceChanged(
-      GuestPayBillServiceChanged event,
-      Emitter<GuestPayBillState> emit,
-      ) {
+    GuestPayBillServiceChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
     emit(state.copyWith(
       selectedService: event.service,
+      selectedCountry: PayBillCountry.defaultCountry,
       // reset all inputs + verification
       accountNumber: '',
       name: '',
@@ -62,10 +65,22 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     ));
   }
 
+  void _onCountryChanged(
+    GuestPayBillCountryChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
+    emit(state.copyWith(
+      selectedCountry: event.country,
+      accountInfo: null,
+      verifyStatus: GuestPayBillVerifyStatus.idle,
+      errorMessage: null,
+    ));
+  }
+
   void _onAccountChanged(
-      GuestPayBillAccountNumberChanged event,
-      Emitter<GuestPayBillState> emit,
-      ) {
+    GuestPayBillAccountNumberChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
     emit(state.copyWith(
       accountNumber: event.value,
       accountInfo: null,
@@ -75,9 +90,9 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   void _onNameChanged(
-      GuestPayBillNameChanged event,
-      Emitter<GuestPayBillState> emit,
-      ) {
+    GuestPayBillNameChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
     emit(state.copyWith(
       name: event.value,
       accountInfo: null,
@@ -87,9 +102,9 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   void _onMobileChanged(
-      GuestPayBillMobileChanged event,
-      Emitter<GuestPayBillState> emit,
-      ) {
+    GuestPayBillMobileChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
     emit(state.copyWith(
       mobileNumber: event.value,
       accountInfo: null,
@@ -99,9 +114,9 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   void _onConfirmMobileChanged(
-      GuestPayBillConfirmMobileChanged event,
-      Emitter<GuestPayBillState> emit,
-      ) {
+    GuestPayBillConfirmMobileChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
     emit(state.copyWith(
       confirmMobileNumber: event.value,
       accountInfo: null,
@@ -111,16 +126,16 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   void _onAmountChanged(
-      GuestPayBillAmountChanged event,
-      Emitter<GuestPayBillState> emit,
-      ) {
+    GuestPayBillAmountChanged event,
+    Emitter<GuestPayBillState> emit,
+  ) {
     emit(state.copyWith(amountText: event.value, errorMessage: null));
   }
 
   Future<void> _onVerifyPressed(
-      GuestPayBillVerifyPressed event,
-      Emitter<GuestPayBillState> emit,
-      ) async {
+    GuestPayBillVerifyPressed event,
+    Emitter<GuestPayBillState> emit,
+  ) async {
     if (!state.canVerify) return;
 
     emit(state.copyWith(
@@ -132,13 +147,18 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     try {
       final info = state.isAlivPostpaid
           ? await repo.verifyAlivPostpaid(
-        mobileNumber: state.mobileNumber,
-        confirmMobileNumber: state.confirmMobileNumber,
-      )
-          : await repo.verifyRev(
-        accountNumber: state.accountNumber,
-        enteredName: state.name,
-      );
+              mobileNumber: state.mobileNumber,
+              confirmMobileNumber: state.confirmMobileNumber,
+            )
+          : state.isAlivFibr
+              ? await repo.verifyAlivFibr(
+                  accountNumberOrUsername: state.accountNumber,
+                  enteredName: state.name,
+                )
+              : await repo.verifyRev(
+                  accountNumber: state.accountNumber,
+                  enteredName: state.name,
+                );
 
       emit(state.copyWith(
         verifyStatus: GuestPayBillVerifyStatus.success,
@@ -156,9 +176,9 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   }
 
   Future<void> _onSubmitPressed(
-      GuestPayBillSubmitPressed event,
-      Emitter<GuestPayBillState> emit,
-      ) async {
+    GuestPayBillSubmitPressed event,
+    Emitter<GuestPayBillState> emit,
+  ) async {
     if (!state.canSubmit) return;
 
     emit(state.copyWith(

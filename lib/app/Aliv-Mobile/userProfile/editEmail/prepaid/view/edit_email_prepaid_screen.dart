@@ -22,7 +22,7 @@ class EditEmailPrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
@@ -52,7 +52,7 @@ class _EditEmailPrepaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<EditEmailPrepaidBloc, EditEmailPrepaidState>(
           listenWhen: (p, c) =>
-          p.status != c.status || p.errorMessage != c.errorMessage,
+              p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == EditEmailPrepaidStatus.success) {
               // optional: success toast/snackbar ( তুমি চাইলে বসাবে )
@@ -69,7 +69,7 @@ class _EditEmailPrepaidView extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
@@ -83,7 +83,6 @@ class _EditEmailPrepaidView extends StatelessWidget {
                         },
                       ),
                     ),
-
                     BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
                       builder: (context, state) {
                         if (state.status == EditEmailPrepaidStatus.loading ||
@@ -107,7 +106,8 @@ class _EditEmailPrepaidView extends StatelessWidget {
                           sliver: SliverToBoxAdapter(
                             child: Center(
                               child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 420),
+                                constraints:
+                                    const BoxConstraints(maxWidth: 420),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -116,28 +116,26 @@ class _EditEmailPrepaidView extends StatelessWidget {
                                       label: 'full name',
                                       value: data.fullName,
                                     ),
-                                    const SizedBox(height: 18),
+                                    const SizedBox(height: 16),
                                     EditEmailPrepaidInfoField(
                                       label: 'phone number',
                                       value: data.phoneNumber,
                                     ),
-                                    const SizedBox(height: 18),
+                                    const SizedBox(height: 16),
                                     EditEmailPrepaidInfoField(
                                       label: 'gender',
                                       value: data.gender,
                                     ),
-                                    const SizedBox(height: 18),
-
+                                    const SizedBox(height: 16),
                                     Text(
                                       'email address',
                                       style: EditEmailPrepaidTheme.fieldLabel,
                                     ),
-                                    const SizedBox(height: 10),
-
+                                    const SizedBox(height: 8),
                                     BlocBuilder<EditEmailPrepaidBloc,
                                         EditEmailPrepaidState>(
                                       buildWhen: (p, c) =>
-                                      p.email != c.email ||
+                                          p.email != c.email ||
                                           p.status != c.status,
                                       builder: (context, state) {
                                         return EditEmailPrepaidEmailInput(
@@ -146,12 +144,12 @@ class _EditEmailPrepaidView extends StatelessWidget {
                                               EditEmailPrepaidStatus.submitting,
                                           onChanged: (v) => context
                                               .read<EditEmailPrepaidBloc>()
-                                              .add(EditEmailPrepaidEmailChanged(v)),
+                                              .add(EditEmailPrepaidEmailChanged(
+                                                  v)),
                                         );
                                       },
                                     ),
-
-                                    const SizedBox(height: 20),
+                                    const SizedBox(height: 30),
                                   ],
                                 ),
                               ),
@@ -160,17 +158,17 @@ class _EditEmailPrepaidView extends StatelessWidget {
                         );
                       },
                     ),
-
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 40, right: 40),
-                        child: BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
+                        child: BlocBuilder<EditEmailPrepaidBloc,
+                            EditEmailPrepaidState>(
                           buildWhen: (p, c) =>
-                          p.status != c.status ||
+                              p.status != c.status ||
                               p.isEmailValid != c.isEmailValid,
                           builder: (context, state) {
-                            final isLoading =
-                                state.status == EditEmailPrepaidStatus.submitting;
+                            final isLoading = state.status ==
+                                EditEmailPrepaidStatus.submitting;
 
                             return EditEmailPrepaidSaveButton(
                               isLoading: isLoading,

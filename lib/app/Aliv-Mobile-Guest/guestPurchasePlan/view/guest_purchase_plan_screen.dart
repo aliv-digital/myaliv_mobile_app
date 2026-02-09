@@ -30,9 +30,9 @@ class GuestPurchasePlanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -117,7 +117,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                 onBack: () {
                   context.pop();
                 }),
-            
+
             // _TopBar(
             //   title: 'plans',
             //   onBack: () => Navigator.of(context).maybePop(),
