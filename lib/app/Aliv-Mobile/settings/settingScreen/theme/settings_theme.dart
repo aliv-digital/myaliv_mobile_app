@@ -8,14 +8,14 @@ class SettingsTheme {
   static const Color appBarBg = Color(0xFF655C9A);
   static const Color cardBg = Colors.white;
   static const Color divider = Color(0xFFE8E9EE);
-  static const Color iconCircleBg = Color(0xFFEFEFF6);
+  static const Color iconCircleBg = Color(0xFFF6F8F9);
   static const Color chevron = Color(0xFF1F1F1F);
   static const Color textPrimary = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF6B7280);
 
   // Layout
   static const double appBarHeight = 56;
-  static const double cardRadius = 12;
+  static const double cardRadius = 8;
   static const double tileHeight = 56;
   static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 16, 16, 16);
 
@@ -29,11 +29,11 @@ class SettingsTheme {
   );
 
   static const TextStyle tileText = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    color: textPrimary,
-    height: 1.1,
+    color: Colors.black,
+    fontSize: 16,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w700,
+    // letterSpacing: -0.32,
   );
 
   static const TextStyle subtitle = TextStyle(

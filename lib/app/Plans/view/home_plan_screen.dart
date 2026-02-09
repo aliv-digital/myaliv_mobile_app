@@ -127,9 +127,8 @@ class _HomePlanView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 24.0),
             child: SvgPicture.asset('assets/icons/bell with red.svg'),
-          )
+          ),
         ],
-          
       ),
       body: SafeArea(
         child: Column(
@@ -241,8 +240,9 @@ class _HomePlanView extends StatelessWidget {
                       // ADD ONS TAB
                       if (state.selectedTab == HomePlanTab.addOns) {
                         final HomePlanAddOnModel addon = state.addOns[index];
-                        final bool selected =
-                            state.selectedAddOnIds.contains(addon.id);
+                        final bool selected = state.selectedAddOnIds.contains(
+                          addon.id,
+                        );
 
                         return Padding(
                           padding: EdgeInsets.only(left: 12, right: 12),
@@ -250,9 +250,9 @@ class _HomePlanView extends StatelessWidget {
                             addon: addon,
                             selected: selected,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleAddon(addon));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleAddon(addon),
+                              );
                             },
                           ),
                         );
@@ -269,14 +269,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -292,14 +292,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -315,14 +315,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -338,14 +338,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -361,14 +361,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -384,14 +384,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -407,14 +407,14 @@ class _HomePlanView extends StatelessWidget {
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -428,7 +428,7 @@ class _HomePlanView extends StatelessWidget {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
