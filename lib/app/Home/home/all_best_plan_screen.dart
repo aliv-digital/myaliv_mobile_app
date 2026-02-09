@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 class AllBestPlansScreen extends StatelessWidget {
   const AllBestPlansScreen({super.key});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
   static const demoImages = [
     'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     'https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg',

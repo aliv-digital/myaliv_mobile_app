@@ -17,16 +17,15 @@ import '../repository/guest_topup_repository.dart';
 import '../theme/guest_topup_theme.dart';
 import '../widgets/phone_number_input.dart';
 
-
 class GuestTopUpScreen extends StatelessWidget {
   const GuestTopUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => GuestTopUpBloc(
-          repository: const GuestTopUpRepository()
-      )..add(const GuestTopUpStarted()),
+      create: (_) =>
+          GuestTopUpBloc(repository: const GuestTopUpRepository())
+            ..add(const GuestTopUpStarted()),
       child: const _GuestTopUpView(),
     );
   }
@@ -78,7 +77,8 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       body: SafeArea(
         child: BlocListener<GuestTopUpBloc, GuestTopUpState>(
           listenWhen: (prev, curr) =>
-          prev.status != curr.status && curr.status == GuestTopUpStatus.failure,
+              prev.status != curr.status &&
+              curr.status == GuestTopUpStatus.failure,
           listener: (context, state) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -142,19 +142,16 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                       child: Padding(
                         padding: EdgeInsets.only(top: 44, bottom: 44),
                         child: GradientInputField(
-                            label: 'enter top up amount',
-                            hint: '00.00',
-                            onChanged: (value){
-
-                            }
+                          label: 'enter top up amount',
+                          hint: '00.00',
+                          onChanged: (value) {},
                         ),
-                      )
+                      ),
                     ),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 43,right: 43),
+                        padding: const EdgeInsets.only(left: 43, right: 43),
                         child: BlocBuilder<GuestTopUpBloc, GuestTopUpState>(
-
                           builder: (context, state) {
                             return DefaultButton(
                               backgroundColor: HexColor.fromHex('FF645D9C'),

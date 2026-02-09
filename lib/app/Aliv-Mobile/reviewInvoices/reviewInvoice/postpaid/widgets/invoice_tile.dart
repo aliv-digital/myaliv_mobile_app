@@ -8,11 +8,7 @@ class InvoiceTile extends StatelessWidget {
   final InvoiceItem invoice;
   final VoidCallback onTap;
 
-  const InvoiceTile({
-    super.key,
-    required this.invoice,
-    required this.onTap,
-  });
+  const InvoiceTile({super.key, required this.invoice, required this.onTap});
 
   String _formatDate(DateTime date) => DateFormat('dd MMM yyyy').format(date);
 
@@ -33,13 +29,22 @@ class InvoiceTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(invoice.invoiceNo, style: ReviewInvoicePostpaidTheme.invoiceNo(context)),
+                    Text(
+                      invoice.invoiceNo,
+                      style: ReviewInvoicePostpaidTheme.invoiceNo(context),
+                    ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        _MetaBlock(label: 'invoice date', value: _formatDate(invoice.invoiceDate)),
+                        _MetaBlock(
+                          label: 'invoice date',
+                          value: _formatDate(invoice.invoiceDate),
+                        ),
                         const SizedBox(width: 18),
-                        _MetaBlock(label: 'due date', value: _formatDate(invoice.dueDate)),
+                        _MetaBlock(
+                          label: 'due date',
+                          value: _formatDate(invoice.dueDate),
+                        ),
                       ],
                     ),
                   ],

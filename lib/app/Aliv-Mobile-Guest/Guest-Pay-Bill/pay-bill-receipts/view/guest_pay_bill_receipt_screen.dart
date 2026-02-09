@@ -52,7 +52,7 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
 class _GuestPayBillReceiptView extends StatelessWidget {
   const _GuestPayBillReceiptView();
 
-  static const _purple = Color(0xFF655C9A);
+  static const _purple = Color(0xFF645D9C);
   static const _bg = Color(0xFFF1F2FA);
 
   @override

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import 'auto_renew_toggle.dart';
 
-class ActivePlanCard extends StatelessWidget {
+class PrepaidActivePlanCard extends StatelessWidget {
   final bool showRenewButton;
 
-  const ActivePlanCard({
+  const PrepaidActivePlanCard({
     super.key,
     this.showRenewButton = true, // 🔥 default OFF
   });
@@ -17,53 +18,36 @@ class ActivePlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        height: 200,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [red, redDark],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+          image: DecorationImage(
+            image: const AssetImage('assets/icons/Home Active Plan.png'),
+            fit: BoxFit.fill,
           ),
-          borderRadius: BorderRadius.circular(24),
+          // gradient: const LinearGradient(
+          //   colors: [red, redDark],
+          //   begin: Alignment.topLeft,
+          //   end: Alignment.bottomRight,
+          // ),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // watermark
-            Positioned(
-              right: -20,
-              bottom: -20,
-              child: Opacity(
-                opacity: 0.08,
-                child: Text(
-                  'aliv',
-                  style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 140,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            _topRow(),
+            // const SizedBox(height: 6),
+            // _planName(),
+            const SizedBox(height: 20),
+            _datesRow(),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _topRow(),
-                const SizedBox(height: 6),
-                _planName(),
-                const SizedBox(height: 24),
-                _datesRow(),
-
-                // 🔥 CONDITIONAL RENEW BUTTON
-                if (showRenewButton) ...[
-                  const SizedBox(height: 24),
-                  _renewButton(),
-                ],
-              ],
-            ),
+            // 🔥 CONDITIONAL RENEW BUTTON
+            if (showRenewButton) ...[
+              const SizedBox(height: 14),
+              _renewButton(),
+            ],
           ],
         ),
       ),
@@ -72,14 +56,40 @@ class ActivePlanCard extends StatelessWidget {
 
   Widget _topRow() {
     return Row(
-      children: const [
-        Text(
-          'active plan',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 14,
-            color: Colors.white70,
-          ),
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: [
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'active',
+                    style: TextStyle(
+                      color: Colors.white /* White-100% */,
+                      fontSize: 12,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' plan',
+                    style: TextStyle(
+                      color: Colors.white /* White-100% */,
+                      fontSize: 12,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _planName(),
+          ],
         ),
         Spacer(),
         AutoRenewToggle(initialValue: true),
@@ -88,13 +98,13 @@ class ActivePlanCard extends StatelessWidget {
   }
 
   Widget _planName() {
-    return const Text(
+    return Text(
       'liberty70',
       style: TextStyle(
-        fontFamily: 'CircularPro',
-        fontSize: 32,
-        fontWeight: FontWeight.w800,
-        color: Colors.white,
+        color: Colors.white /* White-100% */,
+        fontSize: 24,
+        fontFamily: 'Circular Pro',
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -112,8 +122,9 @@ class ActivePlanCard extends StatelessWidget {
   Widget _renewButton() {
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 50,
       child: ElevatedButton(
+
         onPressed: () {},
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF3F4FA),
@@ -122,14 +133,22 @@ class ActivePlanCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(28),
           ),
         ),
-        child: const Text(
-          'renew your plan',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: red,
-          ),
+        child:  Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset('assets/icons/card-add.svg', width: 18, height: 18,color: Color(0xFFEF3A4B),),
+            SizedBox(width: 10,),
+            Text(
+              'renew your plan',
+              style: TextStyle(
+                color: const Color(0xFFEF3A4B),
+                fontSize: 13,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -151,26 +170,28 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-      alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            color: Colors.white70,
-            fontSize: 14,
+              color: Colors.white /* White-100% */,
+              fontSize: 10,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500
           ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 24,
+            color: Colors.white /* White-100% */,
+            fontSize: 15,
+            fontFamily: 'Circular Pro',
             fontWeight: FontWeight.w700,
-            color: Colors.white,
-            letterSpacing: 1.2,
+            letterSpacing: 2.25,
           ),
         ),
       ],
