@@ -10,13 +10,13 @@ class UsageRoamingPlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 13, 16, 28),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         image: DecorationImage(
           image: const AssetImage('assets/icons/Future Plan 3.png'),
           fit: BoxFit.fill,
-        ),        // gradient: const LinearGradient(
+        ), // gradient: const LinearGradient(
         //   begin: Alignment.topLeft,
         //   end: Alignment.bottomRight,
         //   colors: [startColor, endColor],
@@ -58,19 +58,12 @@ class UsageRoamingPlanCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 30),
           Row(
             children: const [
-              _DateColumn(
-                title: 'active',
-                value: '20/01/25',
-              ),
+              _DateColumn(title: 'active', value: '20/01/25'),
               Spacer(),
-              _DateColumn(
-                title: 'expire',
-                value: '19/02/25',
-                alignRight: true,
-              ),
+              _DateColumn(title: 'expire', value: '19/02/25', alignRight: true),
             ],
           ),
         ],
@@ -78,6 +71,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
     );
   }
 }
+
 class _DateColumn extends StatelessWidget {
   final String title;
   final String value;
@@ -92,8 +86,9 @@ class _DateColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-      alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           title,

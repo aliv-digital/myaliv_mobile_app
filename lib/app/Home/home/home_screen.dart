@@ -330,40 +330,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ================= ACTIVE PLAN =================
-  Widget _activePlan() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.redAccent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text(
-              'active plan',
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                color: Colors.white70,
-              ),
-            ),
-            SizedBox(height: 6),
-            Text(
-              'Liberty70',
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   // ================= BEST PLANS =================
   Widget _bestPlans(BuildContext context) {
