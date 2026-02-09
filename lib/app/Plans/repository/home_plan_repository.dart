@@ -42,6 +42,30 @@ class HomePlanRepository {
                   value: '10',
                   sub: 'local text'),
               HomePlanBenefit(
+                  type: HomePlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: '5',
+                  sub: 'GB'),
+              HomePlanBenefit(
+                  type: HomePlanBenefitType.intlTalkText,
+                  label: 'Int\'l Talk & Text',
+                  value: '10',
+                  sub: 'SMS Text'),
+              HomePlanBenefit(
+                  type: HomePlanBenefitType.mms,
+                  label: 'mms',
+                  value: '10',
+                  sub: 'ALIV to ALIV'),
+            ],
+          ),
+          HomePlanModel(
+            id: 'd2',
+            title: 'freedom 5',
+            subtitle: '1 day',
+            price: 20.00,
+            description: 'Higher daily bundle for heavier usage.',
+            benefits: [
+              HomePlanBenefit(
                   type: HomePlanBenefitType.data,
                   label: 'data',
                   value: '1',
@@ -56,30 +80,21 @@ class HomePlanRepository {
                   label: 'sms',
                   value: '10',
                   sub: 'local text'),
-            ],
-          ),
-          HomePlanModel(
-            id: 'd2',
-            title: 'freedom 5',
-            subtitle: '1 day',
-            price: 20.00,
-            description: 'Higher daily bundle for heavier usage.',
-            benefits: [
               HomePlanBenefit(
-                  type: HomePlanBenefitType.data,
-                  label: 'data',
-                  value: '2',
+                  type: HomePlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: '5',
                   sub: 'GB'),
               HomePlanBenefit(
-                  type: HomePlanBenefitType.talkMins,
-                  label: 'talk mins',
-                  value: '20',
-                  sub: 'local talk mins'),
+                  type: HomePlanBenefitType.intlTalkText,
+                  label: 'Int\'l Talk & Text',
+                  value: '10',
+                  sub: 'SMS Text'),
               HomePlanBenefit(
-                  type: HomePlanBenefitType.sms,
-                  label: 'sms',
-                  value: '20',
-                  sub: 'local text'),
+                  type: HomePlanBenefitType.mms,
+                  label: 'mms',
+                  value: '10',
+                  sub: 'ALIV to ALIV'),
             ],
           ),
           HomePlanModel(
@@ -92,18 +107,33 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.data,
                   label: 'data',
-                  value: '5',
+                  value: '1',
                   sub: 'GB'),
               HomePlanBenefit(
                   type: HomePlanBenefitType.talkMins,
                   label: 'talk mins',
-                  value: '50',
+                  value: '10',
                   sub: 'local talk mins'),
               HomePlanBenefit(
                   type: HomePlanBenefitType.sms,
                   label: 'sms',
-                  value: '50',
+                  value: '10',
                   sub: 'local text'),
+              HomePlanBenefit(
+                  type: HomePlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: '5',
+                  sub: 'GB'),
+              HomePlanBenefit(
+                  type: HomePlanBenefitType.intlTalkText,
+                  label: 'Int\'l Talk & Text',
+                  value: '10',
+                  sub: 'SMS Text'),
+              HomePlanBenefit(
+                  type: HomePlanBenefitType.mms,
+                  label: 'mms',
+                  value: '10',
+                  sub: 'ALIV to ALIV'),
             ],
           ),
         ];

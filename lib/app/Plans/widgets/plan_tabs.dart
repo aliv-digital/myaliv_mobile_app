@@ -41,7 +41,7 @@ class HomePlanTabs extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: 44,
+            height: 46,
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               scrollDirection: Axis.horizontal,

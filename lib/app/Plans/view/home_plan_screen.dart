@@ -112,7 +112,7 @@ class _HomePlanView extends StatelessWidget {
         centerTitle: false,
 
         title: Padding(
-          padding: const EdgeInsets.only(left: 24.0),
+          padding: const EdgeInsets.only(left: 20.0),
           child: Text(
             'plans',
             style: TextStyle(
@@ -125,7 +125,7 @@ class _HomePlanView extends StatelessWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 24.0),
+            padding: const EdgeInsets.only(right: 20.0),
             child: SvgPicture.asset('assets/icons/bell with red.svg'),
           ),
         ],
@@ -197,7 +197,7 @@ class _HomePlanView extends StatelessWidget {
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(31, 20, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(43, 20, 32, 8),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(

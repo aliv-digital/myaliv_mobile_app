@@ -29,17 +29,18 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Paste your FULL current PlanCard UI here (monthly version)
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 31, vertical: 10),
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
-          ),
+            color: Color(0x0C000000),
+            blurRadius: 16,
+            offset: Offset(8, 10),
+            spreadRadius: 0,
+          )
         ],
       ),
       child: Column(
@@ -151,7 +152,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'CircularPro',
                         fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: HomePlanTheme.brandPurple,
                       ),
                     ),
@@ -176,7 +177,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'CircularPro',
                         fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                     ),
@@ -203,7 +204,7 @@ class _PricePill extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
         border: Border.all(color: HomePlanTheme.brandPurple, width: 1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
