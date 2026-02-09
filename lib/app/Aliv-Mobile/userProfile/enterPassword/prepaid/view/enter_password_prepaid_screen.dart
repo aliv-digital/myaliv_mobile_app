@@ -24,7 +24,7 @@ class EnterPasswordPrepaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
@@ -52,9 +52,10 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
-        child: BlocListener<EnterPasswordPrepaidBloc, EnterPasswordPrepaidState>(
+        child:
+            BlocListener<EnterPasswordPrepaidBloc, EnterPasswordPrepaidState>(
           listenWhen: (p, c) =>
-          p.status != c.status || p.errorMessage != c.errorMessage,
+              p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == EnterPasswordPrepaidStatus.success) {
               // TODO: success navigation (go_router) তুমি বসাবে
@@ -70,7 +71,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
@@ -94,7 +95,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                 BlocBuilder<EnterPasswordPrepaidBloc,
                                     EnterPasswordPrepaidState>(
                                   buildWhen: (p, c) =>
-                                  p.password != c.password ||
+                                      p.password != c.password ||
                                       p.obscure != c.obscure,
                                   builder: (context, state) {
                                     return EnterPasswordPrepaidPasswordInput(
@@ -102,10 +103,13 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                       obscure: state.obscure,
                                       onChanged: (v) => context
                                           .read<EnterPasswordPrepaidBloc>()
-                                          .add(EnterPasswordPrepaidPasswordChanged(v)),
+                                          .add(
+                                              EnterPasswordPrepaidPasswordChanged(
+                                                  v)),
                                       onToggle: () => context
                                           .read<EnterPasswordPrepaidBloc>()
-                                          .add(const EnterPasswordPrepaidToggleObscure()),
+                                          .add(
+                                              const EnterPasswordPrepaidToggleObscure()),
                                     );
                                   },
                                 ),
@@ -115,7 +119,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                 BlocBuilder<EnterPasswordPrepaidBloc,
                                     EnterPasswordPrepaidState>(
                                   buildWhen: (p, c) =>
-                                  p.status != c.status ||
+                                      p.status != c.status ||
                                       p.isValid != c.isValid,
                                   builder: (context, state) {
                                     final isLoading = state.status ==
@@ -127,9 +131,11 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                       onTap: () {
                                         context
                                             .read<EnterPasswordPrepaidBloc>()
-                                            .add(const EnterPasswordPrepaidContinuePressed());
+                                            .add(
+                                                const EnterPasswordPrepaidContinuePressed());
 
-                                        context.push(AppRoutes.otpProfilePrepaidScreen);
+                                        context.push(
+                                            AppRoutes.otpProfilePrepaidScreen);
                                       },
                                     );
                                   },
@@ -140,10 +146,12 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                 EnterPasswordPrepaidBiometricButtons(
                                   onFaceId: () => context
                                       .read<EnterPasswordPrepaidBloc>()
-                                      .add(const EnterPasswordPrepaidFaceIdPressed()),
+                                      .add(
+                                          const EnterPasswordPrepaidFaceIdPressed()),
                                   onFingerprint: () => context
                                       .read<EnterPasswordPrepaidBloc>()
-                                      .add(const EnterPasswordPrepaidFingerprintPressed()),
+                                      .add(
+                                          const EnterPasswordPrepaidFingerprintPressed()),
                                 ),
                                 const SizedBox(height: 180),
                               ],

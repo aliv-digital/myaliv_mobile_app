@@ -23,9 +23,8 @@ class GuestTopUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          GuestTopUpBloc(repository: const GuestTopUpRepository())
-            ..add(const GuestTopUpStarted()),
+      create: (_) => GuestTopUpBloc(repository: const GuestTopUpRepository())
+        ..add(const GuestTopUpStarted()),
       child: const _GuestTopUpView(),
     );
   }
@@ -39,7 +38,6 @@ class _GuestTopUpView extends StatefulWidget {
 }
 
 class _GuestTopUpViewState extends State<_GuestTopUpView> {
-
   static const CountryInfo _defaultCountry = CountryInfo(
     flagEmoji: '🇧🇸',
     dialCode: '1',
@@ -66,9 +64,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -104,37 +102,28 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                     // enter phone number
                     SliverToBoxAdapter(
                       child: Padding(
-                          padding: EdgeInsets.only(
-                            top: 25,
-                            left: 23,
-                            right: 23
-                          ),
+                        padding: EdgeInsets.only(top: 25, left: 23, right: 23),
                         child: LabeledInputField(
-                            label: 'please enter an active prepaid number to top up',
+                            label:
+                                'please enter an active prepaid number to top up',
                             hintText: 'eg: 2428999999',
                             country: _selectedCountry,
                             enableCountryPicker: true,
                             onPickCountry: _pickCountry,
-                            onChanged: (v){}
-                        ),
+                            onChanged: (v) {}),
                       ),
                     ),
                     // confirm phone number
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(
-                            top: 20,
-                            left: 23,
-                            right: 23
-                        ),
+                        padding: EdgeInsets.only(top: 20, left: 23, right: 23),
                         child: LabeledInputField(
                             label: 'confirm mobile number',
                             hintText: 'eg: 2428999999',
                             country: _selectedCountry,
                             enableCountryPicker: false,
                             onPickCountry: _pickCountry,
-                            onChanged: (v){}
-                        ),
+                            onChanged: (v) {}),
                       ),
                     ),
 

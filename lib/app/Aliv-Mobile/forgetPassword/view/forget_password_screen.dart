@@ -13,7 +13,6 @@ import '../widgets/forgetpass_header.dart';
 import '../widgets/forgetpass_phone_row.dart';
 import '../widgets/termsAndConditions.dart';
 
-
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});
 
@@ -33,9 +32,9 @@ class _ForgetPasswordScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
 
@@ -61,7 +60,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     slivers: [
                       const SliverToBoxAdapter(
                         child: ForgetPasswordHeader(),
@@ -77,7 +76,8 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                               const SizedBox(height: 20),
 
                               // send button
-                              BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+                              BlocBuilder<ForgetPasswordBloc,
+                                  ForgetPasswordState>(
                                 builder: (context, state) {
                                   final loading = state.status ==
                                       ForgetPasswordStatus.loading;
@@ -95,7 +95,8 @@ class _ForgetPasswordScreenView extends StatelessWidget {
 
                               const SizedBox(height: 147),
 
-                              BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+                              BlocBuilder<ForgetPasswordBloc,
+                                  ForgetPasswordState>(
                                 builder: (context, state) {
                                   return TermsAndPrivacyText(
                                     isTermsLoading: state.isTermsLoading,
