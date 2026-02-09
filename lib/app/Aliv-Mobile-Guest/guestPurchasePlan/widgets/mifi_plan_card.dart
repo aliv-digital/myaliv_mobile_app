@@ -156,8 +156,8 @@ class MifiPlanCard extends StatelessWidget {
                       expanded ? 'hide details' : 'view details',
                       style: TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                         color: GuestPurchasePlanTheme.brandPurple,
                       ),
                     ),
@@ -181,8 +181,8 @@ class MifiPlanCard extends StatelessWidget {
                       'purchase now',
                       style: TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                     ),
