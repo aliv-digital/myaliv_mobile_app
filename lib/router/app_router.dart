@@ -89,8 +89,9 @@ class AppRouter {
         builder: (context, state) => const HelpScreen(),
       ),
       GoRoute(
-          path: AppRoutes.privacyScreen,
-          builder: (context, state) => const PrivacyScreen()),
+        path: AppRoutes.privacyScreen,
+        builder: (context, state) => const PrivacyScreen(),
+      ),
       GoRoute(
         path: AppRoutes.securityScreen,
         builder: (context, state) => const SecurityScreen(),
@@ -106,7 +107,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.makePaymentConfirmationPostpaidScreen,
         builder: (context, state) =>
-            const MakePaymentConfirmationPostPaidScreen(),
+        const MakePaymentConfirmationPostPaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.makePaymentPostpaidScreen,
@@ -125,12 +126,13 @@ class AppRouter {
         builder: (context, state) => const ReferFriendPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.otpAutoRenewPrepaidScreen,
-          builder: (context, state) => const OtpAutoRenewPrepaidScreen()),
+        path: AppRoutes.otpAutoRenewPrepaidScreen,
+        builder: (context, state) => const OtpAutoRenewPrepaidScreen(),
+      ),
       GoRoute(
         path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
         builder: (context, state) =>
-            const EnterPasswordAutoRenewPrepaidScreen(),
+        const EnterPasswordAutoRenewPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.autoRenewAuthPrepaidScreen,
@@ -164,6 +166,7 @@ class AppRouter {
         path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
         builder: (context, state) => const TopUpPrepaidNumberPostPaid(),
       ),
+
       GoRoute(
         path: AppRoutes.topUpPrepaidScreen,
         builder: (context, state) => const TopUpPrepaidScreen(),
@@ -177,26 +180,6 @@ class AppRouter {
         builder: (context, state) => const PurchasesPrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.rewardDetailsPrepaidScreen,
-          builder: (context, state) => const RewardDetailsPrepaidScreen()),
-      GoRoute(
-          path: AppRoutes.rewardPrepaidScreen,
-          builder: (context, state) => const RewardPrepaidScreen()),
-      GoRoute(
-          path: AppRoutes.otpProfilePrepaidScreen,
-          builder: (context, state) => const OtpProfilePrepaidScreen()),
-      GoRoute(
-          path: AppRoutes.changePasswordPrepaidScreen,
-          builder: (context, state) => const ChangePasswordPrepaidScreen()),
-      GoRoute(
-          path: AppRoutes.enterPassWordPrepaidScreen,
-          builder: (context, state) => const EnterPasswordPrepaidScreen()),
-      GoRoute(
-          path: AppRoutes.editEmailPrepaidScreen,
-          builder: (context, state) => const EditEmailPrepaidScreen()),
-      GoRoute(
-          path: AppRoutes.myProfilePrepaidScreen,
-          builder: (context, state) => const MyProfilePrepaidScreen()),
         path: AppRoutes.rewardDetailsPrepaidScreen,
         builder: (context, state) => const RewardDetailsPrepaidScreen(),
       ),
@@ -233,28 +216,6 @@ class AppRouter {
         builder: (context, state) => const ProfilePrepaidScreen(),
       ),
       GoRoute(
-          path: AppRoutes.guestPurchasePlanReceipt,
-          builder: (context, state) => const GuestPurchasePlanReceiptScreen(
-              phoneNumber: '242-801-1616',
-              amount: 75,
-              dateText: 'Mar 12,2023',
-              timeText: '446332')),
-      GoRoute(
-          path: AppRoutes.guestPurchasePlanConfirmation,
-          builder: (context, state) =>
-              const GuestPurchasePlanConfirmationScreen(
-                phoneNumber: '23434545',
-              )),
-      GoRoute(
-          path: AppRoutes.guestPurchasePlanAddOns,
-          builder: (context, state) => const GuestPurchasePlanAddOnsScreen()),
-      GoRoute(
-        path: AppRoutes.guestPayBillReceipt,
-        builder: (context, state) => const GuestPayBillReceiptScreen(
-            phoneNumber: '234235454',
-            amount: 12,
-            dateText: '12-23-2025',
-            timeText: '08:34'),
         path: AppRoutes.callLogs,
         builder: (context, state) {
           final tabParam = state.uri.queryParameters['tab'];
@@ -278,7 +239,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
         builder: (context, state) =>
-            const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
+        const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,
@@ -315,10 +276,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestTopUpReceipt,
         builder: (context, state) => const GuestTopUpReceiptScreen(
-          phoneNumber: '234-235-454',
+          phoneNumber: '234235454',
           amount: 12,
-          dateText: 'Mar 22, 2023',
-          timeText: '8:34 am',
+          dateText: '12-23-2025',
+          timeText: '08:34',
         ),
       ),
       GoRoute(
@@ -364,9 +325,9 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmGuestTopUp,
         builder: (context, state) =>
-            GuestConfirmTopUpScreen(
-                phoneNumber: '245-346-452356', amount: 15),
+            GuestConfirmTopUpScreen(phoneNumber: '245346-452356', amount: 12),
       ),
+
       ShellRoute(
         builder: (context, state, child) {
           return BottomShell(child: child);
@@ -385,10 +346,10 @@ class AppRouter {
             builder: (context, state) {
               final config =
                   (state.extra as HomeUiConfig?) ??
-                  const HomeUiConfig(
-                    userType: UserType.postpaid,
-                    hasActivePlan: true,
-                  );
+                      const HomeUiConfig(
+                        userType: UserType.prepaid,
+                        hasActivePlan: true,
+                      );
 
               return UsageScreen(config: config);
             },
@@ -423,3 +384,359 @@ class AppRouter {
     ],
   );
 }
+
+// class AppRouter {
+//   late final GoRouter router = GoRouter(
+//     initialLocation: AppRoutes
+//         .splash, //guestPurchasePlanConfirmation,//confirmTopUpPrepaidScreen,//confirmTopUpPrepaidScreen,//.addOrEditCardsPrepaidScreen, // initial Screen
+//
+//     routes: [
+//       GoRoute(
+//         path: AppRoutes.revPaymentMethodPrepaidScreen,
+//         builder: (context, state) => const REVPaymentMethodPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.faceIdSecurityScreen,
+//         builder: (context, state) => const FaceIdSecurityScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.fingerPrintSecurityScreen,
+//         builder: (context, state) => const FingerPrintSecurityScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.helpScreen,
+//         builder: (context, state) => const HelpScreen(),
+//       ),
+//       GoRoute(
+//           path: AppRoutes.privacyScreen,
+//           builder: (context, state) => const PrivacyScreen()),
+//       GoRoute(
+//         path: AppRoutes.securityScreen,
+//         builder: (context, state) => const SecurityScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.settingsScreen,
+//         builder: (context, state) => const SettingsScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.revConfirmationPrepaidScreen,
+//         builder: (context, state) => const RevConfirmationPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.makePaymentConfirmationPostpaidScreen,
+//         builder: (context, state) =>
+//             const MakePaymentConfirmationPostPaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.makePaymentPostpaidScreen,
+//         builder: (context, state) => const MakePaymentPostPaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.revBillPayPrepaidScreen,
+//         builder: (context, state) => const RevPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.referFriendResponsePrepaidScreen,
+//         builder: (context, state) => const ReferFriendResponsePrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.referFriendPrepaidScreen,
+//         builder: (context, state) => const ReferFriendPrepaidScreen(),
+//       ),
+//       GoRoute(
+//           path: AppRoutes.otpAutoRenewPrepaidScreen,
+//           builder: (context, state) => const OtpAutoRenewPrepaidScreen()),
+//       GoRoute(
+//         path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
+//         builder: (context, state) =>
+//             const EnterPasswordAutoRenewPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.autoRenewAuthPrepaidScreen,
+//         builder: (context, state) => const AutoRenewAuthPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.autoRenewPrepaidScreen,
+//         builder: (context, state) => const AutoRenewPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.otpReviewInvoicePostPaidScreen,
+//         builder: (context, state) => const OtpPostpaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.enterPasswordReviewInvoicePostpaidScreen,
+//         builder: (context, state) => const EnterPasswordPostpaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.reviewInvoicePostPaidScreen,
+//         builder: (context, state) => const ReviewInvoicePostpaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.topUpPaymentPrepaidScreen,
+//         builder: (context, state) => const TopUpPaymentPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.confirmTopUpPrepaidScreen,
+//         builder: (context, state) => const ConfirmTopUpPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
+//         builder: (context, state) => const TopUpPrepaidNumberPostPaid(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.topUpPrepaidScreen,
+//         builder: (context, state) => const TopUpPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.addOrEditCardsPrepaidScreen,
+//         builder: (context, state) => const AddOrEditCardsPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.purchasesPrepaidScreen,
+//         builder: (context, state) => const PurchasesPrepaidScreen(),
+//       ),
+//       GoRoute(
+//           path: AppRoutes.rewardDetailsPrepaidScreen,
+//           builder: (context, state) => const RewardDetailsPrepaidScreen()),
+//       GoRoute(
+//           path: AppRoutes.rewardPrepaidScreen,
+//           builder: (context, state) => const RewardPrepaidScreen()),
+//       GoRoute(
+//           path: AppRoutes.otpProfilePrepaidScreen,
+//           builder: (context, state) => const OtpProfilePrepaidScreen()),
+//       GoRoute(
+//           path: AppRoutes.changePasswordPrepaidScreen,
+//           builder: (context, state) => const ChangePasswordPrepaidScreen()),
+//       GoRoute(
+//           path: AppRoutes.enterPassWordPrepaidScreen,
+//           builder: (context, state) => const EnterPasswordPrepaidScreen()),
+//       GoRoute(
+//           path: AppRoutes.editEmailPrepaidScreen,
+//           builder: (context, state) => const EditEmailPrepaidScreen()),
+//       GoRoute(
+//           path: AppRoutes.myProfilePrepaidScreen,
+//           builder: (context, state) => const MyProfilePrepaidScreen()),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.rewardPrepaidScreen,
+//         builder: (context, state) => const RewardPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.otpProfilePrepaidScreen,
+//         builder: (context, state) => const OtpProfilePrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.changePasswordPrepaidScreen,
+//         builder: (context, state) => const ChangePasswordPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.enterPassWordPrepaidScreen,
+//         builder: (context, state) => const EnterPasswordPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.editEmailPrepaidScreen,
+//         builder: (context, state) => const EditEmailPrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.myProfilePrepaidScreen,
+//         builder: (context, state) => const MyProfilePrepaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.profilePostpaidScreen,
+//         builder: (context, state) => const ProfilePostpaidScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.profilePrepaidScreen,
+//         builder: (context, state) => const ProfilePrepaidScreen(),
+//       ),
+//       GoRoute(
+//           path: AppRoutes.guestPurchasePlanReceipt,
+//           builder: (context, state) => const GuestPurchasePlanReceiptScreen(
+//               phoneNumber: '242-801-1616',
+//               amount: 75,
+//               dateText: 'Mar 12,2023',
+//               timeText: '446332')),
+//       GoRoute(
+//           path: AppRoutes.guestPurchasePlanConfirmation,
+//           builder: (context, state) =>
+//               const GuestPurchasePlanConfirmationScreen(
+//                 phoneNumber: '23434545',
+//               )),
+//       GoRoute(
+//           path: AppRoutes.guestPurchasePlanAddOns,
+//           builder: (context, state) => const GuestPurchasePlanAddOnsScreen()),
+//       GoRoute(
+//         path: AppRoutes.guestPayBillReceipt,
+//         builder: (context, state) => const GuestPayBillReceiptScreen(
+//             phoneNumber: '234235454',
+//             amount: 12,
+//             dateText: '12-23-2025',
+//             timeText: '08:34'),
+//         path: AppRoutes.callLogs,
+//         builder: (context, state) {
+//           final tabParam = state.uri.queryParameters['tab'];
+//
+//           final initialTab = tabParam == 'call_logs'
+//               ? CallLogsTabType.callLogs
+//               : CallLogsTabType.transactions;
+//
+//           return CallLogsScreen(initialTab: initialTab);
+//         },
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPurchasePlanReceipt,
+//         builder: (context, state) => const GuestPurchasePlanReceiptScreen(
+//           phoneNumber: '242-801-1616',
+//           amount: 75,
+//           dateText: 'Mar 12,2023',
+//           timeText: '446332',
+//         ),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPurchasePlanConfirmation,
+//         builder: (context, state) =>
+//             const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPurchasePlanAddOns,
+//         builder: (context, state) => const GuestPurchasePlanAddOnsScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPayBillReceipt,
+//         builder: (context, state) => const GuestPayBillReceiptScreen(
+//           phoneNumber: '234235454',
+//           amount: 12,
+//           dateText: '12-23-2025',
+//           timeText: '08:34',
+//         ),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPayBillConfirm,
+//         builder: (context, state) => const GuestPayBillConfirmScreen(
+//           args: GuestPayBillConfirmArgs(
+//             serviceName: 'ALIV Postpaid',
+//             identifierLabel: 'mobile no.',
+//             identifierValue: '242-801-0000',
+//             amount: 200.00,
+//           ),
+//         ),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPayBill,
+//         builder: (context, state) => const GuestPayBillScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestPurchasePlan,
+//         builder: (context, state) => const GuestPurchasePlanScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestTopUpReceipt,
+//         builder: (context, state) => const GuestTopUpReceiptScreen(
+//           phoneNumber: '234-235-454',
+//           amount: 12,
+//           dateText: 'Mar 22, 2023',
+//           timeText: '8:34 am',
+//         ),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.splash,
+//         builder: (context, state) => const SplashPage(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.logIn,
+//         builder: (context, state) => const LoginScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.welcome,
+//         builder: (context, state) => const WelcomeScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.loginOtp,
+//         builder: (context, state) => const LoginOtpScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.forgetPassword,
+//         builder: (context, state) => const ForgetPasswordScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.forgetPasswordOtp,
+//         builder: (context, state) => const ForgetPasswordOtpScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.createPassword,
+//         builder: (context, state) => const CreatePasswordScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestSplash,
+//         builder: (context, state) => const GuestSplashScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.whyAliv,
+//         builder: (context, state) => const WhyAlivScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.guestTopUp,
+//         builder: (context, state) => const GuestTopUpScreen(),
+//       ),
+//       GoRoute(
+//         path: AppRoutes.confirmGuestTopUp,
+//         builder: (context, state) =>
+//             GuestConfirmTopUpScreen(
+//                 phoneNumber: '245-346-452356', amount: 15),
+//       ),
+//       ShellRoute(
+//         builder: (context, state, child) {
+//           return BottomShell(child: child);
+//         },
+//         routes: [
+//           GoRoute(
+//             path: AppRoutes.home,
+//             builder: (context, state) => const HomeScreen(),
+//           ),
+//           // GoRoute(
+//           //   path: AppRoutes.usage,
+//           //   builder: (context, state) => const UsageScreen(),
+//           // ),
+//           GoRoute(
+//             path: AppRoutes.usage,
+//             builder: (context, state) {
+//               final config =
+//                   (state.extra as HomeUiConfig?) ??
+//                   const HomeUiConfig(
+//                     userType: UserType.postpaid,
+//                     hasActivePlan: true,
+//                   );
+//
+//               return UsageScreen(config: config);
+//             },
+//           ),
+//
+//           GoRoute(
+//             path: AppRoutes.upgradeCreditLimit,
+//             builder: (context, state) {
+//               return const UpgradeCreditLimitScreen();
+//             },
+//           ),
+//
+//           GoRoute(
+//             path: AppRoutes.plans,
+//             builder: (context, state) => const HomePlanScreen(),
+//           ),
+//           GoRoute(
+//             path: AppRoutes.menu,
+//             builder: (context, state) => const MenuScreen(),
+//           ),
+//         ],
+//       ),
+//       GoRoute(
+//         path: AppRoutes.allBestPlans,
+//         builder: (context, state) => const AllBestPlansScreen(),
+//       ),
+//
+//       GoRoute(
+//         path: AppRoutes.notificationScreen,
+//         builder: (context, state) => const NotificationsScreen(),
+//       ),
+//     ],
+//   );
+// }
