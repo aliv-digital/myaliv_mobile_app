@@ -13,8 +13,6 @@ class OtpBottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     return Column(
       children: [
         // verify button
@@ -24,6 +22,7 @@ class OtpBottomActions extends StatelessWidget {
             return DefaultButton(
               label: 'verify',
               isLoading: loading,
+              textStyle: LoginOtpTheme.verifyButtonText,
               onPressed: () {
                context.read<LoginOtpBloc>().add(const LoginOtpSubmitted());
                context.push(AppRoutes.home);
@@ -32,7 +31,7 @@ class OtpBottomActions extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: LoginOtpSizes.verifyToResendGap),
 
         // didn't receive / resend
         BlocBuilder<LoginOtpBloc, LoginOtpState>(

@@ -29,16 +29,16 @@ class LoginHeader extends StatelessWidget {
         children: [
           SizedBox(
             width: sideSlotWidth,
-            child: Padding(
-              padding: EdgeInsets.only(left: AuthModuleSizes.backLeft, top: backInnerTop),
-              child: DefaultBackButton(
-                padding: EdgeInsets.zero,
-                iconWidth: AuthModuleSizes.backIconWidth,
-                iconHeight: AuthModuleSizes.backIconHeight,
-                onPressed: () {
-                  context.pop();
-                },
+            child: DefaultBackButton(
+              padding: EdgeInsets.only(
+                left: AuthModuleSizes.backLeft,
+                top: backInnerTop,
               ),
+              iconWidth: AuthModuleSizes.backIconWidth,
+              iconHeight: AuthModuleSizes.backIconHeight,
+              onPressed: () {
+                context.pop();
+              },
             ),
           ),
           Expanded(

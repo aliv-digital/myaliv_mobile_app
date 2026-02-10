@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
-import '../../login/theme/login_theme.dart';
 import '../theme/login_otp_theme.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
@@ -82,36 +80,52 @@ class _OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 52,
-      height: 52,
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        textAlign: TextAlign.center,
-        textAlignVertical: TextAlignVertical.center, // vertical center
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: LoginOtpTheme.otpInput,
-        decoration: InputDecoration(
-          isCollapsed: true,                  //reduce extra height
-          contentPadding: EdgeInsets.only(left: 15,right: 15,top: 10,bottom: 15),   // no extra padding না
-          counterText: '',
-          border:  OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: ColorManager.otpBoxBorderDefaultColor, // LoginColors.lightGreyBorder,
-              width: 1,
+      width: LoginOtpSizes.otpBoxSize,
+      height: LoginOtpSizes.otpBoxSize,
+      child: AnimatedBuilder(
+        animation: focusNode,
+        builder: (context, _) {
+          final isFocused = focusNode.hasFocus;
+          final innerRadius =
+              (LoginOtpSizes.otpBoxRadius - LoginOtpSizes.otpBoxBorderWidth)
+                  .clamp(0.0, LoginOtpSizes.otpBoxRadius);
+
+          return Container(
+            decoration: BoxDecoration(
+              gradient: isFocused ? LoginOtpGradients.focusedInputBorder : null,
+              border: isFocused
+                  ? null
+                  : Border.all(
+                      color: LoginOtpColors.otpBoxBorderDefault,
+                      width: LoginOtpSizes.otpBoxBorderWidth,
+                    ),
+              borderRadius: BorderRadius.circular(LoginOtpSizes.otpBoxRadius),
             ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: AuthModuleColors.alivPurple,
-              width: 1.4,
+            padding: const EdgeInsets.all(LoginOtpSizes.otpBoxBorderWidth),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(innerRadius),
+              child: ColoredBox(
+                color: LoginOtpColors.otpBoxBackground,
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  textAlign: TextAlign.center,
+                  textAlignVertical: TextAlignVertical.center,
+                  keyboardType: TextInputType.number,
+                  maxLength: 1,
+                  style: LoginOtpTheme.otpInput,
+                  decoration: const InputDecoration(
+                    isCollapsed: true,
+                    contentPadding: LoginOtpSizes.otpBoxContentPadding,
+                    counterText: '',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: onChanged,
+                ),
+              ),
             ),
-          ),
-        ),
-        onChanged: onChanged,
+          );
+        },
       ),
     );
   }

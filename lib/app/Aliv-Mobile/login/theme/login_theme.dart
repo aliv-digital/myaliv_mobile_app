@@ -37,7 +37,7 @@ class AuthModuleColors {
 
 class AuthModuleSizes {
   // Header placement values measured from full screen top.
-  static const double backLeft = 16;
+  static const double backLeft = 16.64; //looks alright at : 31.64;
   static const double backTopFromScreen = 53;
   static const double logoTopFromScreen = 60;
   static const double backIconWidth = 16.64;
