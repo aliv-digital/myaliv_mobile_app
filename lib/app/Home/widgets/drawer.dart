@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
@@ -7,12 +8,12 @@ import '../../../router/app_routes.dart';
 class AppMenuDrawer extends StatelessWidget {
   const AppMenuDrawer({super.key});
 
-  static const Color purple = Color(0xFF6C63A6);
+  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.82,
+      width: MediaQuery.of(context).size.width * 0.7,
       child: SafeArea(
         child: Column(
           children: [
@@ -21,64 +22,99 @@ class AppMenuDrawer extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
                           'Jade Turnquest',
+                          textAlign: TextAlign.left,
                           style: TextStyle(
-                            fontFamily: 'CircularPro',
-                            fontSize: 20,
+                            color: const Color(0xFF1C1C1C) /* Black-100% */,
+                            fontSize: 24,
+                            fontFamily: 'Circular Pro',
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        SizedBox(height: 2),
                         Text(
-                          '242.820.2246',
+                          '242.820.2246  ',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'CircularPro',
-                            color: Colors.grey,
+                            color: const Color(0xFF1C1C1C) /* Black-100% */,
+                            fontSize: 14,
+                            fontFamily: 'Circular Pro',
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                  // IconButton(
+                  //   icon: const Icon(Icons.close),
+                  //   onPressed: () => Navigator.pop(context),
+                  // ),
+                  InkWell(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFF1F1F1F)),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 18,
+                        color: Color(0xFF1F1F1F),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            const Divider(),
+            // const Divider(),
+            SizedBox(height: 22),
 
-            _item(IconsaxPlusLinear.user, 'profile',context),
-            _item(IconsaxPlusLinear.wallet_check, 'purchases',context),
-            _item(IconsaxPlusLinear.user_add, 'refer a friend',context),
-            _item(IconsaxPlusLinear.notification, 'notifications',context),
-            _item(IconsaxPlusLinear.document_1, 'REV bill pay',context),
-            _item(IconsaxPlusLinear.setting_5, 'settings',context),
-            _item(IconsaxPlusLinear.support, 'support',context),
-            _item(IconsaxPlusLinear.global, 'ALIVFibr', external: true,context),
+            _item('assets/icons/profile.svg', 'profile', context),
+            _item('assets/icons/purchase.svg', 'purchases', context),
+            _item('assets/icons/refer.svg', 'refer a friend', context),
+            _item('assets/icons/notification.svg', 'notifications', context),
+            _item('assets/icons/bill.svg', 'REV bill pay', context),
+            _item('assets/icons/settings.svg', 'settings', context),
+            _item('assets/icons/support.svg', 'support', context),
+            _item(
+              'assets/icons/magnet.svg',
+              'ALIVFibr',
+              external: true,
+              context,
+            ),
 
-            const Spacer(),
-
+            SizedBox(height: 22),
             Padding(
               padding: const EdgeInsets.all(20),
               child: SizedBox(
-                width: double.infinity,
-                height: 48,
+                width: 260,
+                height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.logout, color: Colors.white),
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // close drawer
+                    await Future.delayed(const Duration(milliseconds: 50));
+
+                    context.go(AppRoutes.welcome);
+                  },
+                  icon: SvgPicture.asset('assets/icons/logout.svg'),
                   label: const Text(
                     'logout',
                     style: TextStyle(
-                      fontFamily: 'CircularPro',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      color: Colors.white /* White-100% */,
+                      fontSize: 13,
+                      fontFamily: 'Circular Pro',
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.26,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
@@ -96,24 +132,54 @@ class AppMenuDrawer extends StatelessWidget {
     );
   }
 
-  Widget _item(IconData icon, String label, BuildContext context,{bool external = false}) {
+  Widget _item(
+    String icon,
+    String label,
+    BuildContext context, {
+    bool external = false,
+  }) {
     return ListTile(
-      leading: Icon(icon),
+      leading: SvgPicture.asset(icon, height: 20, width: 20),
       title: Text(label, style: const TextStyle(fontFamily: 'CircularPro')),
-      trailing: external
+      trailing: label == 'refer a friend'
+          ? null
+          : label == 'notifications'
+          ? null
+          : label == 'REV bill pay'
+          ? null
+          : external
           ? const Icon(Icons.open_in_new, size: 18)
           : const Icon(Icons.chevron_right),
-      onTap: () {
-        if(label == 'profile'){
+      onTap: () async {
+        if (label == 'profile') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.profilePrepaidScreen);
-        }else if(label == 'purchases'){
+        } else if (label == 'purchases') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.purchasesPrepaidScreen);
-        }else if(label == 'refer a friend'){
+        } else if (label == 'refer a friend') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.referFriendPrepaidScreen);
-        }else if(label == 'settings'){
+        } else if (label == 'settings') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.settingsScreen);
-        } else if(label == 'REV bill pay'){
+        } else if (label == 'REV bill pay') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.revBillPayPrepaidScreen);
+        } else if (label == 'notifications') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
+          context.push(AppRoutes.notificationScreen);
+        }
+        else if (label == 'support') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
+          context.push(AppRoutes.supportScreen);
         }
       },
     );

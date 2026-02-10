@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/pay_with_card_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/payment_method_tile.dart';
 
@@ -43,7 +44,7 @@ class TopUpPaymentPrepaidScreen extends StatelessWidget {
             ),
             body: SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -52,7 +53,7 @@ class TopUpPaymentPrepaidScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('payment method', style: TopUpPaymentPrepaidTheme.labelSm(context)),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 16),
 
                           ...state.methods.map((m) {
                             final selected = state.selectedMethodId == m.id;
@@ -92,20 +93,25 @@ class TopUpPaymentPrepaidScreen extends StatelessWidget {
     return AppBar(
       backgroundColor: TopUpPaymentPrepaidTheme.primary,
       elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.of(context).maybePop(),
+      centerTitle: false,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 24.0),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
       ),
       title: Text(
         'payment',
         style: TopUpPaymentPrepaidTheme.titleMd(context).copyWith(color: Colors.white),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.home_outlined, color: Colors.white),
-          onPressed: () {
-            // TODO: GoRouter home
-          },
+        Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: IconButton(
+            onPressed: (){},
+            icon: SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
+          ),
         ),
       ],
     );

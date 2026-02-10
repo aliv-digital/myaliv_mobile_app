@@ -53,23 +53,26 @@ class _AuthNameInputState extends State<AuthNameInput> {
     return TextField(
       controller: _controller,
       style: const TextStyle(
-        fontFamily: AutoRenewAuthPrepaidTheme.fontFamily,
-        fontSize: 13,
+        color:  Colors.black,
+        fontSize: 14,
+        fontFamily: 'Circular Pro',
         fontWeight: FontWeight.w500,
+        height: 1.43,
       ),
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: TextStyle(
-          fontFamily: AutoRenewAuthPrepaidTheme.fontFamily,
-          fontSize: 12.5,
+          color: const Color(0xFF707070),
+          fontSize: 14,
+          fontFamily: 'Circular Pro',
           fontWeight: FontWeight.w500,
-          color: AutoRenewAuthPrepaidTheme.textMid,
+          height: 1.43,
         ),
         filled: true,
         fillColor: AutoRenewAuthPrepaidTheme.textInputFillColor,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
         ),
       ),

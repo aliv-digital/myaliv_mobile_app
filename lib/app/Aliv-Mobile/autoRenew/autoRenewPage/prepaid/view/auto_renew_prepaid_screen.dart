@@ -103,7 +103,7 @@ class _AutoRenewPrepaidView extends StatelessWidget {
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 18),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,12 +114,12 @@ class _AutoRenewPrepaidView extends StatelessWidget {
                               onSelect: (id) =>
                                   bloc.add(AutoRenewMethodSelected(id)),
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 24),
                             DashedAddCardButton(
                               onTap: () =>
                                   bloc.add(const AutoRenewAddNewCardPressed()),
                             ),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 24),
                             _ProceedButton(
                               enabled: state.canProceed,
                               loading: state.savingSelection,
@@ -156,13 +156,13 @@ class _ProceedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 56,
+      height: 50,
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor:
           AutoRenewPrepaidTheme.primary.withValues(alpha: enabled ? 1 : 0.45),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
           elevation: 0,
         ),
         onPressed: enabled ? onTap : null,
@@ -178,10 +178,10 @@ class _ProceedButton extends StatelessWidget {
         const Text(
           'proceed',
           style: TextStyle(
-            fontFamily: AutoRenewPrepaidTheme.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: const Color(0xFFF1F1F8),
+            fontSize: 13,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),

@@ -19,19 +19,18 @@ class FaceIdSecurityTheme {
   static const double bodyToButtonGap = 24;
 
   static const TextStyle title = TextStyle(
-    fontFamily: fontFamily,
+    color: Colors.black,
     fontSize: 18,
-    fontWeight: FontWeight.w800,
-    color: textPrimary,
-    height: 1.25,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w700,
+
   );
 
   static const TextStyle body = TextStyle(
-    fontFamily: fontFamily,
+    color: const Color(0xFF707070),
     fontSize: 14,
-    // Design asks for w450; Flutter named weights are discrete, so w500 is closest.
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w500,
-    color: Color(0xFF707070),
     height: 1.43,
   );
 
@@ -40,10 +39,10 @@ class FaceIdSecurityTheme {
   static const double bottomButtonRadius = 24;
   static const Color bottomButtonBg = Color(0xFF655C9A);
   static const TextStyle bottomButtonText = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
     color: Colors.white,
+    fontSize: 17,
+    fontFamily: 'Circular Pro',
+    fontWeight: FontWeight.w700,
     height: 1.80,
   );
 }

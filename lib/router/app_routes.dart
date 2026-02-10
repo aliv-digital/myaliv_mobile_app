@@ -2,6 +2,7 @@ class AppRoutes {
   static const home = '/home';
 
   static const usage = '/usage';
+  static const upgradeCreditLimit = '/upgrade-credit-limit';
   static const plans = '/plans';
   static const menu = '/menu';
   
@@ -53,6 +54,7 @@ class AppRoutes {
 
   static const topUpPrepaidScreen = '/top-up-prepaid-screen';
   static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
+  static const callLogs = '/call_logs';
 
   static const confirmTopUpPrepaidScreen = '/confirm-top-up-prepaid-screen';
   static const confirmTopUpPostpaidScreen = '/confirm-top-up-postpaid-screen';
@@ -81,6 +83,7 @@ class AppRoutes {
   static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
 
   static const revBillPayPrepaidScreen = '/rev-bill-pay-prepaid-screen';
+  static const notificationScreen = '/notifications';
 
   static const revConfirmationPrepaidScreen = '/rev-confirmation-prepaid-screen';
   static const makePaymentConfirmationPostpaidScreen = '/make-payment-confirmation-postpaid-screen';
@@ -96,6 +99,9 @@ class AppRoutes {
   static const faceIdSecurityScreen = '/face-id-security-screen';
 
   static const revPaymentMethodPrepaidScreen = '/rev-payment-method-prepaid-screen';
+  static const supportScreen = '/support';
+  static const chatScreen = '/chat';
+  static const callSupportScreen = '/call-support';
 
 
 

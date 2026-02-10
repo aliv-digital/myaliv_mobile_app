@@ -8,7 +8,7 @@ class HomePlanTheme {
   static final Color appBarColor = HexColor.fromHex('#5D5A8B');
 
   // Brand + shared colors
-  static final Color brandPurple = HexColor.fromHex('#5D5A8B');
+  static final Color brandPurple = HexColor.fromHex('#645D9C');
   static final Color dividerColor = HexColor.fromHex('#707070');
   static final Color subtitleColor = HexColor.fromHex('#707070');
   static final Color scrollBarBackgroundColor = HexColor.fromHex('#F2F2F7');
@@ -25,10 +25,14 @@ class HomePlanTheme {
 
   // Section title above plan list
   static final TextStyle sectionTitle = TextStyle(
-    fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 12.5,
+    // fontFamily: AppConstants.defaultFontFamily,
+    // fontSize: 12.5,
+    // fontWeight: FontWeight.w700,
+    // color: Colors.black.withValues(alpha: 0.75),
+    color: Colors.black,
+    fontSize: 12,
+    fontFamily: 'Circular Pro',
     fontWeight: FontWeight.w700,
-    color: Colors.black.withValues(alpha: 0.75),
   );
 
   // Error message in screen
@@ -54,6 +58,7 @@ class HomePlanTheme {
     height: 1.4,
     fontWeight: FontWeight.w600,
     color: Colors.black,
+
   );
 
   // Add-on label (e.g., data balance)

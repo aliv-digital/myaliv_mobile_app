@@ -11,7 +11,7 @@ class PaymentMethodCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: TopUpPaymentPrepaidTheme.card,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: const [
           BoxShadow(
             blurRadius: 18,
@@ -20,7 +20,7 @@ class PaymentMethodCard extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       child: child,
     );
   }

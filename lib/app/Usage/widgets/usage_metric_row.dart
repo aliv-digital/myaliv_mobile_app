@@ -20,55 +20,60 @@ class UsageMetricRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // LEFT TEXT
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0,right: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // LEFT TEXT
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: const Color(0xFF222222),
+                        fontSize: 12,
+                        fontFamily: 'Circular Pro',
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: const Color(0xFF707070),
+                        fontSize: 12,
+                        fontFamily: 'Circular Pro',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // RIGHT BAR + % TEXT
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _ProgressBar(
+                    progress: progress,
+                    gradient: gradient,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    subtitle,
+                    '$percentUsed% used',
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
-                      fontSize: 13,
+                      fontSize: 12,
                       color: Colors.grey,
                     ),
                   ),
                 ],
               ),
-            ),
-
-            // RIGHT BAR + % TEXT
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _ProgressBar(
-                  progress: progress,
-                  gradient: gradient,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '$percentUsed% used',
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 14),
         const Divider(height: 1),

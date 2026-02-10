@@ -8,11 +8,7 @@ class InvoiceTile extends StatelessWidget {
   final InvoiceItem invoice;
   final VoidCallback onTap;
 
-  const InvoiceTile({
-    super.key,
-    required this.invoice,
-    required this.onTap,
-  });
+  const InvoiceTile({super.key, required this.invoice, required this.onTap});
 
   String _formatDate(DateTime date) => DateFormat('dd MMM yyyy').format(date);
 
@@ -33,13 +29,22 @@ class InvoiceTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(invoice.invoiceNo, style: ReviewInvoicePostpaidTheme.invoiceNo(context)),
-                    const SizedBox(height: 10),
+                    Text(
+                      invoice.invoiceNo,
+                      style: ReviewInvoicePostpaidTheme.invoiceNo(context),
+                    ),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
-                        _MetaBlock(label: 'invoice date', value: _formatDate(invoice.invoiceDate)),
+                        _MetaBlock(
+                          label: 'invoice date',
+                          value: _formatDate(invoice.invoiceDate),
+                        ),
                         const SizedBox(width: 18),
-                        _MetaBlock(label: 'due date', value: _formatDate(invoice.dueDate)),
+                        _MetaBlock(
+                          label: 'due date',
+                          value: _formatDate(invoice.dueDate),
+                        ),
                       ],
                     ),
                   ],
@@ -48,22 +53,23 @@ class InvoiceTile extends StatelessWidget {
               const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SvgPicture.asset(
                     ReviewInvoicePostpaidAssets.pdfSvg,
                     width: 24,
                     height: 24,
                   ),
-                  const SizedBox(height: 2),
-                  const Text(
-                    'PDF',
-                    style: TextStyle(
-                      fontFamily: ReviewInvoicePostpaidTheme.fontFamily,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.red,
-                    ),
-                  ),
+                  // const SizedBox(height: 2),
+                  // const Text(
+                  //   'PDF',
+                  //   style: TextStyle(
+                  //     fontFamily: ReviewInvoicePostpaidTheme.fontFamily,
+                  //     fontSize: 10,
+                  //     fontWeight: FontWeight.w700,
+                  //     color: Colors.red,
+                  //   ),
+                  // ),
                   const SizedBox(height: 14),
                   Text(
                     '${invoice.currencySymbol}${invoice.amount.toStringAsFixed(2)}',

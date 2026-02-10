@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ReferFriendResponsePrepaidTheme {
   static const Color bg = Color(0xFFF3F4FA);
-  static const Color brand = Color(0xFF5D5A8B);
+  static const Color brand = Color(0xFF645D9C);
 
   static const Color text = Color(0xFF111827);
   static const Color muted = Color(0xFF6B7280);

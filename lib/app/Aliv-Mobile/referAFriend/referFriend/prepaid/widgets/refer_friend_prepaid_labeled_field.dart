@@ -27,7 +27,7 @@ class ReferFriendPrepaidLabeledField extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: ReferFriendPrepaidTheme.fieldBg,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(color: ReferFriendPrepaidTheme.border),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -38,15 +38,16 @@ class ReferFriendPrepaidLabeledField extends StatelessWidget {
               border: InputBorder.none,
               hintText: hint,
               hintStyle: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFF9CA3AF),
+                color: const Color(0xFF707070),
+                fontSize: 14,
+                fontFamily: 'Circular Pro',
+                fontWeight: FontWeight.w500,
+                height: 1.43,
               ),
             ),
             style: const TextStyle(
               fontFamily: 'CircularPro',
-              fontSize: 13.5,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.black,
             ),

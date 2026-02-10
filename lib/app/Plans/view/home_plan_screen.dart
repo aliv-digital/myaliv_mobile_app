@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Plans/widgets/mifi_plan_card.dart';
@@ -106,17 +107,41 @@ class _HomePlanView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: HomePlanTheme.screenBackground,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF645D9C),
+        centerTitle: false,
+
+        title: Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: Text(
+            'plans',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: SvgPicture.asset('assets/icons/bell with red.svg'),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            DefaultAppBar(
-                showNotificationDotWhenZero: true,
-                notificationCount: 0,
-                showNotification: true,
-                title: 'plans',
-                onBack: () {
-                  context.pop();
-                }),
+            // DefaultAppBar(
+            //     showNotificationDotWhenZero: true,
+            //     notificationCount: 0,
+            //     showNotification: true,
+            //     showBackArrow: false,
+            //     title: 'plans',
+            //     onBack: () {
+            //       context.pop();
+            //     }),
             // _TopBar(
             //   title: 'plans',
             //   onBack: () => Navigator.of(context).maybePop(),
@@ -172,7 +197,7 @@ class _HomePlanView extends StatelessWidget {
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(31, 20, 16, 0),
+                  padding: const EdgeInsets.fromLTRB(43, 20, 32, 8),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -215,18 +240,19 @@ class _HomePlanView extends StatelessWidget {
                       // ADD ONS TAB
                       if (state.selectedTab == HomePlanTab.addOns) {
                         final HomePlanAddOnModel addon = state.addOns[index];
-                        final bool selected =
-                            state.selectedAddOnIds.contains(addon.id);
+                        final bool selected = state.selectedAddOnIds.contains(
+                          addon.id,
+                        );
 
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanAddOnCard(
                             addon: addon,
                             selected: selected,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleAddon(addon));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleAddon(addon),
+                              );
                             },
                           ),
                         );
@@ -238,19 +264,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.monthly) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanMonthlyPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -261,19 +287,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.daily) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanDailyPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -284,19 +310,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.weekly) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanWeeklyPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -307,19 +333,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.roaming) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanRoamingPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -330,19 +356,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.roameasy) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanRoamEasyPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -353,19 +379,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.mifi) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanMifiPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -376,19 +402,19 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.libertyGlobal) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 15, right: 15),
+                          padding: EdgeInsets.only(left: 12, right: 12),
                           child: HomePlanLibertyGlobalPlanCard(
                             plan: plan,
                             expanded: expanded,
                             onToggle: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
-                              context
-                                  .read<HomePlanBloc>()
-                                  .add(HomePlanToggleExpanded(plan.id));
+                              context.read<HomePlanBloc>().add(
+                                HomePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -402,7 +428,7 @@ class _HomePlanView extends StatelessWidget {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -16,7 +16,16 @@ class RevLabeledSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: RevPrepaidTheme.label),
+        Text(label,
+          style: TextStyle(
+            color: const Color(0xFF1C1C1C) /* Black-100% */,
+            fontSize: 14,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w700,
+            height: 1.43,
+          ),
+            // style: RevPrepaidTheme.label
+        ),
         const SizedBox(height: 8),
         child,
       ],

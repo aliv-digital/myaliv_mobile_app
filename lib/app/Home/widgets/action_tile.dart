@@ -15,7 +15,7 @@ class ActionTile extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -23,16 +23,23 @@ class ActionTile extends StatelessWidget {
           // Icon(iconPath, color: HomeScreen.purple),
           SvgPicture.asset(
             iconPath,
-            width: 16,
-            height: 16,
+            width: 34,
+            height: 34,
             // color: HomeScreen.purple,
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'CircularPro', fontSize: 12),
+            style: const TextStyle(
+              color: const Color(0xFF222222),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+              height: 1.10,
+              letterSpacing: 0.06,
+            ),
           ),
         ],
       ),

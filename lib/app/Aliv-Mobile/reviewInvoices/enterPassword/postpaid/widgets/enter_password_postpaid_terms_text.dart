@@ -16,20 +16,55 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
           color: EnterPasswordPostpaidTheme.muted,
         ),
         children: const [
-          TextSpan(text: 'By pressing “Continue” button you agree\n'),
-          TextSpan(text: 'to the '),
+          TextSpan(
+            text: 'By pressing ‘Continue’ button you agree',
+            style: TextStyle(
+              color: const Color(0xFF58677D),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          TextSpan(
+            text: 'to the ',
+            style: TextStyle(
+              color: const Color(0xFF58677D),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           TextSpan(
             text: 'Terms & Conditions',
             style: TextStyle(
-              color: EnterPasswordPostpaidTheme.link,
+              color: const Color(0xFF645D9C),
+              fontSize: 13,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
               decoration: TextDecoration.underline,
             ),
+
+            // style: TextStyle(
+            //   color: EnterPasswordPostpaidTheme.link,
+            //   decoration: TextDecoration.underline,
+            // ),
           ),
-          TextSpan(text: ' & '),
+          TextSpan(
+            text: ' & ',
+            style: TextStyle(
+              color: const Color(0xFF58677D),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           TextSpan(
             text: 'Privacy Policy',
             style: TextStyle(
-              color: EnterPasswordPostpaidTheme.link,
+              color: const Color(0xFF645D9C),
+              fontSize: 13,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
               decoration: TextDecoration.underline,
             ),
           ),

@@ -62,7 +62,7 @@ class _RewardDetailsView extends StatelessWidget {
                       else
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                            padding: const EdgeInsets.fromLTRB(24, 31, 24, 18),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
