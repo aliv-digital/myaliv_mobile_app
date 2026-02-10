@@ -59,7 +59,7 @@ class _RewardPrepaidView extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
-                        title: 'Rewards',
+                        title: 'rewards',
                         showHome: true,
                         onHomeTap: () => context.go(AppRoutes.home),
                         onBack: () => context.pop(),
@@ -89,7 +89,7 @@ class _RewardPrepaidView extends StatelessWidget {
                         if (state.rewards.isEmpty) {
                           return SliverToBoxAdapter(
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+                              padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
                               child: NoRewardsPrepaid(
                                 prefixText:
                                 "looks like you're currently not eligible\nfor any rewards. visit ",
@@ -108,7 +108,7 @@ class _RewardPrepaidView extends StatelessWidget {
                                 (context, index) {
                               final item = state.rewards[index];
                               return Padding(
-                                padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+                                padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
                                 child: RewardPrepaidCard(
                                   title: item.title,
                                   description: item.description,

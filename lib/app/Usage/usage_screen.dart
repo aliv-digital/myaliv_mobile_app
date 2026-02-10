@@ -7,19 +7,24 @@ import 'current_plan_tab.dart';
 import 'future_plan_tab.dart';
 import 'my_limits_tab.dart';
 
-class UsageScreen extends StatelessWidget {
+class UsageScreen extends StatefulWidget {
   final HomeUiConfig config;
 
   const UsageScreen({super.key, required this.config});
 
   static const Color purple = Color(0xFF645D9C);
-// ---------------- CONFIG ----------------
 
+  @override
+  State<UsageScreen> createState() => _UsageScreenState();
+}
+
+class _UsageScreenState extends State<UsageScreen> {
+// ---------------- CONFIG ----------------
   List<Tab> _tabs() {
     return [
       const Tab(text: 'current plan'),
       const Tab(text: 'future plans'),
-      if (config.isPostpaid) const Tab(text: 'my limits'),
+      if (widget.config.isPostpaid) const Tab(text: 'my limits'),
     ];
   }
 
@@ -27,13 +32,16 @@ class UsageScreen extends StatelessWidget {
     return [
       const CurrentPlanTab(),
       const FuturePlansTab(),
-      if (config.isPostpaid) const MyLimitsTab(),
+      if (widget.config.isPostpaid) const MyLimitsTab(),
     ];
   }
 
   int _initialTabIndex() {
-    if (config.isPostpaid && config.openMyLimits) {
+    if (widget.config.isPostpaid && widget.config.openMyLimits) {
       return 2; // 🔥 my limits
+    }
+    if(widget.config.isFuturePlan == true){
+      return 1;
     }
     return 0;
   }
@@ -51,7 +59,7 @@ class UsageScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFF4F6FB),
         appBar: AppBar(
           centerTitle: false,
-          backgroundColor: purple,
+          backgroundColor: UsageScreen.purple,
           elevation: 0,
           title: Padding(
             padding: const EdgeInsets.only(left: 16.0),
