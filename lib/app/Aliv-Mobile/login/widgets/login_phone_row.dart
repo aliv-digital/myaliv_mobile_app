@@ -5,6 +5,7 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../theme/login_theme.dart';
+import 'focused_input_border_wrapper.dart';
 
 class LoginPhoneRow extends StatefulWidget {
   const LoginPhoneRow({super.key});
@@ -15,6 +16,29 @@ class LoginPhoneRow extends StatefulWidget {
 
 class _LoginPhoneRowState extends State<LoginPhoneRow> {
   Country? _selectedCountry;
+  final FocusNode _phoneFocusNode = FocusNode();
+  bool _hasPhoneFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneFocusNode.addListener(_onPhoneFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _phoneFocusNode.removeListener(_onPhoneFocusChanged);
+    _phoneFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onPhoneFocusChanged() {
+    if (_hasPhoneFocus != _phoneFocusNode.hasFocus) {
+      setState(() {
+        _hasPhoneFocus = _phoneFocusNode.hasFocus;
+      });
+    }
+  }
 
   String get _flagEmoji => _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
 
@@ -42,6 +66,32 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
 
   @override
   Widget build(BuildContext context) {
+    final phoneField = Container(
+      height: AuthModuleSizes.fieldHeight,
+      decoration: BoxDecoration(
+        color: AuthModuleColors.pageBackground,
+        borderRadius: BorderRadius.circular(AuthModuleSizes.fieldRadius),
+      ),
+      padding: AuthModulePaddings.fieldHorizontal14,
+      alignment: Alignment.center,
+      child: BlocBuilder<LoginBloc, LoginState>(
+        buildWhen: (p, c) => p.phone != c.phone,
+        builder: (context, state) {
+          return TextField(
+            focusNode: _phoneFocusNode,
+            style: AuthModuleTextStyles.fieldValue,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: 'eg: 242-899-9999',
+              hintStyle: AuthModuleTextStyles.fieldHint,
+            ),
+            onChanged: (value) => context.read<LoginBloc>().add(LoginPhoneChanged(value)),
+          );
+        },
+      ),
+    );
+
     return SizedBox(
       height: AuthModuleSizes.fieldHeight,
       child: Row(
@@ -85,29 +135,10 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
 
           // ------- Phone field -------
           Expanded(
-            child: Container(
-              height: AuthModuleSizes.fieldHeight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AuthModuleSizes.fieldRadius),
-                border: Border.fromBorderSide(AuthModuleDecorations.inputBorder),
-              ),
-              padding: AuthModulePaddings.fieldHorizontal14,
-              alignment: Alignment.center,
-              child: BlocBuilder<LoginBloc, LoginState>(
-                buildWhen: (p, c) => p.phone != c.phone,
-                builder: (context, state) {
-                  return TextField(
-                    style: AuthModuleTextStyles.fieldValue,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'eg: 242-899-9999',
-                      hintStyle: AuthModuleTextStyles.fieldHint,
-                    ),
-                    onChanged: (value) => context.read<LoginBloc>().add(LoginPhoneChanged(value)),
-                  );
-                },
-              ),
+            child: FocusedInputBorderWrapper(
+              isFocused: _hasPhoneFocus,
+              unfocusedBorderColor: AuthModuleColors.loginFieldBorderColor,
+              child: phoneField,
             ),
           ),
         ],

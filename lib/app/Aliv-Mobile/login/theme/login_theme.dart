@@ -26,6 +26,13 @@ class AuthModuleColors {
 
   // Label color for the divider text: "or sign in with".
   static const orSignInWithTextColor = Color(0xFF8A8A8F);
+
+  // Focused input border gradient palette (left-to-right).
+  static const Color focusedInputBorderYellow = Color(0xFFFFC627);
+  static const Color focusedInputBorderBlue = Color(0xFF00B3E3);
+  static const Color focusedInputBorderPurple = Color(0xFF4B298C);
+  static const Color focusedInputBorderPink = Color(0xFFFF9BB1);
+  static const Color focusedInputBorderOrange = Color(0xFFFF6C36);
 }
 
 class AuthModuleSizes {
@@ -255,6 +262,21 @@ class AuthModuleDecorations {
   static const BorderSide inputErrorBorder = BorderSide(
     color: AuthModuleColors.errorRed,
     width: AuthModuleSizes.fieldBorderWidth,
+  );
+}
+
+class AuthModuleGradients {
+  // Gradient used for focused phone/password borders.
+  static const LinearGradient focusedInputBorder = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: <Color>[
+      AuthModuleColors.focusedInputBorderYellow,
+      AuthModuleColors.focusedInputBorderBlue,
+      AuthModuleColors.focusedInputBorderPurple,
+      AuthModuleColors.focusedInputBorderPink,
+      AuthModuleColors.focusedInputBorderOrange,
+    ],
   );
 }
 
