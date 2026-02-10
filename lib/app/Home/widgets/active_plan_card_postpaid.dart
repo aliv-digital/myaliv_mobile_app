@@ -100,7 +100,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
                   context.go(
                     AppRoutes.usage,
                     extra: HomeUiConfig(
-                      userType: UserType.prepaid,
+                      userType: UserType.postpaid,
                       hasActivePlan: true,
                       openMyLimits: true, // 🔥 KEY LINE
                       isFuturePlan: false
