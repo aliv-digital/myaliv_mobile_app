@@ -14,7 +14,7 @@ class RevReadonlyField extends StatelessWidget {
     return Container(
       height: 44,
       width: double.infinity,
-      padding: const EdgeInsets.all( 16),
+      padding: const EdgeInsets.all( 8),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
         color: RevPrepaidTheme.fieldBg,
