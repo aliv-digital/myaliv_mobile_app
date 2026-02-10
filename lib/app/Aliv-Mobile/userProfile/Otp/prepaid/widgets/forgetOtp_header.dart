@@ -14,15 +14,20 @@ class OtpProfilePrepaidHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Screen body already uses SafeArea. Keep back icon exactly 53px
+    // from physical top (including status bar) by subtracting top inset.
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
+    final topFromSafeArea = (53 - statusBarHeight).clamp(0.0, 53.0);
+
     return Column(
       children: [
         DefaultBackButton(
-          padding: const EdgeInsets.only(left: 24, top: 53),
+          padding: EdgeInsets.only(left: 16, top: topFromSafeArea),
           onPressed: () {
             context.pop();
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 56),
         SvgPicture.asset(
           AssetConstant.otpPhoneSVG,
           width: 162,

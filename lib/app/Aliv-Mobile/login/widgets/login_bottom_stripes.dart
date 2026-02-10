@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import '../theme/login_theme.dart';
 
 class BottomStripes extends StatelessWidget {
   const BottomStripes({super.key});
 
-  static const double kHeight = 28;
+  static const double kHeight = AuthModuleSizes.stripeTotalHeight;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: const [
-        _Stripe(color: Color(0xFFF26C4F), height: 14), // উপরের কমলা
-        _Stripe(color: Color(0xFFE89BB8), height: 14), // হালকা পিংক
-        _Stripe(color: Color(0xFF000000), height: 14), // কালো
-        _Stripe(color: Color(0xFF6ECFF6), height: 14), // লাইট ব্লু
-        _Stripe(color: Color(0xFFFBB03B), height: 14), // নিচের হলুদ/কমলা
+      children: [
+        _Stripe(color: AuthModuleStripePalette.colors[0], height: AuthModuleSizes.stripeHeight),
+        _Stripe(color: AuthModuleStripePalette.colors[1], height: AuthModuleSizes.stripeHeight),
+        _Stripe(color: AuthModuleStripePalette.colors[2], height: AuthModuleSizes.stripeHeight),
+        _Stripe(color: AuthModuleStripePalette.colors[3], height: AuthModuleSizes.stripeHeight),
+        _Stripe(color: AuthModuleStripePalette.colors[4], height: AuthModuleSizes.stripeHeight),
       ],
     );
   }

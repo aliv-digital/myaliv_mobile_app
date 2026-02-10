@@ -26,14 +26,13 @@ class ForgetPasswordOtpScreen extends StatelessWidget {
 
 class _ForgetPasswordOtpView extends StatelessWidget {
   const _ForgetPasswordOtpView();
-  static const double _bottomActionOffset = 22;
 
   @override
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ForgetPasswordOtpColors.screenBackground,
 
       // ✅ default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
@@ -60,42 +59,50 @@ class _ForgetPasswordOtpView extends StatelessWidget {
                 children: [
                   // ---------- Scrollable content ----------
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(),
-                      child: CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                        slivers: [
-                          const SliverToBoxAdapter(
-                            child: ForgetPasswordOtpHeader(),
-                          ),
-                          SliverToBoxAdapter(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 41, right: 41),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: const [
-                                  SizedBox(height: 24),
-                                  ForgetPasswordOtpCodeFields(),
-                                  SizedBox(height: 54),
-                                  ForgetPasswordOtpBottomActions(),
-                                  SizedBox(height: 24),
-                                ],
-                              ),
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      slivers: [
+                        const SliverToBoxAdapter(
+                          child: ForgetPasswordOtpHeader(),
+                        ),
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding:
+                                ForgetPasswordOtpPaddings.contentHorizontal,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: const [
+                                SizedBox(
+                                    height:
+                                        ForgetPasswordOtpSizes.contentTopGap),
+                                ForgetPasswordOtpCodeFields(),
+                                SizedBox(
+                                    height: ForgetPasswordOtpSizes
+                                        .otpToBottomActionsGap),
+                                ForgetPasswordOtpBottomActions(),
+                                SizedBox(
+                                    height: ForgetPasswordOtpSizes
+                                        .contentBottomGap),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
 
                   // ✅ Bottom stripes vanish when keyboard opens
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 180),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
-                    child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+                    duration: ForgetPasswordOtpMotion.stripeSwitcherDuration,
+                    switchInCurve:
+                        ForgetPasswordOtpMotion.stripeSwitcherInCurve,
+                    switchOutCurve:
+                        ForgetPasswordOtpMotion.stripeSwitcherOutCurve,
+                    child: keyboardOpen
+                        ? const SizedBox.shrink()
+                        : const BottomStripes(),
                   ),
                 ],
               ),
@@ -103,7 +110,8 @@ class _ForgetPasswordOtpView extends StatelessWidget {
                 const Positioned(
                   left: 0,
                   right: 0,
-                  bottom: BottomStripes.kHeight + _bottomActionOffset,
+                  bottom: BottomStripes.kHeight +
+                      ForgetPasswordOtpSizes.changePhoneBottomOffset,
                   child: _ChangePhoneNumberAction(),
                 ),
             ],

@@ -1,13 +1,11 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../login/theme/login_theme.dart';
 import '../theme/forget_password_theme.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
-
-
+import 'focused_input_border_wrapper.dart';
 
 class ForgetPasswordPhoneRow extends StatefulWidget {
   const ForgetPasswordPhoneRow({super.key});
@@ -18,15 +16,40 @@ class ForgetPasswordPhoneRow extends StatefulWidget {
 
 class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
   Country? _selectedCountry;
-  static const double _fieldHeight = 54;
-  static const double _fieldRadius = 8;
+  final FocusNode _phoneFocusNode = FocusNode();
+  bool _hasPhoneFocus = false;
 
-  String get _flagEmoji => _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
+  @override
+  void initState() {
+    super.initState();
+    _phoneFocusNode.addListener(_onPhoneFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _phoneFocusNode.removeListener(_onPhoneFocusChanged);
+    _phoneFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onPhoneFocusChanged() {
+    if (_hasPhoneFocus != _phoneFocusNode.hasFocus) {
+      setState(() {
+        _hasPhoneFocus = _phoneFocusNode.hasFocus;
+      });
+    }
+  }
+
+  String get _flagEmoji =>
+      _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
 
   String get _dialCode {
     final raw = _selectedCountry?.phoneCode ?? '1';
-    // "1-242" / "1 242" টাইপ হলে প্রথম অংশটাই নেব
-    return raw.split(RegExp(r'[\s-]')).first;
+    // Handles both "1-242" and "1 242" forms and keeps first non-empty segment.
+    final normalized = raw.replaceAll('-', ' ');
+    return normalized
+        .split(' ')
+        .firstWhere((part) => part.trim().isNotEmpty, orElse: () => '1');
   }
 
   void _openCountryPicker() {
@@ -46,26 +69,54 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
 
   @override
   Widget build(BuildContext context) {
+    final phoneField = Container(
+      height: ForgetPasswordSizes.fieldHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(ForgetPasswordSizes.fieldRadius),
+        color: ForgetPasswordColors.pageBackground,
+      ),
+      padding: ForgetPasswordPaddings.fieldHorizontal14,
+      alignment: Alignment.center,
+      child: BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+        buildWhen: (p, c) => p.phone != c.phone,
+        builder: (context, state) {
+          return TextField(
+            focusNode: _phoneFocusNode,
+            style: ForgetPasswordTheme.phoneInput,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: 'eg: 242 899 9999',
+              hintStyle: ForgetPasswordTheme.phoneHint,
+            ),
+            onChanged: (value) => context
+                .read<ForgetPasswordBloc>()
+                .add(ForgetPasswordPhoneChanged(value)),
+          );
+        },
+      ),
+    );
+
     return SizedBox(
-      height: _fieldHeight,
+      height: ForgetPasswordSizes.fieldHeight,
       child: Row(
         children: [
           // ------- Country box -------
           InkWell(
             onTap: _openCountryPicker,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius:
+                BorderRadius.circular(ForgetPasswordSizes.fieldRadius),
             child: Container(
-              width: 76,
-              height: _fieldHeight,
+              width: ForgetPasswordSizes.countryWidth,
+              height: ForgetPasswordSizes.fieldHeight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(_fieldRadius),
-                border: Border.all(
-                  color: AuthModuleColors.lightGreyBorder,
-                  width: 1,
-                ),
-                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(ForgetPasswordSizes.fieldRadius),
+                border: Border.fromBorderSide(
+                    ForgetPasswordDecorations.inputBorder),
+                color: ForgetPasswordColors.pageBackground,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: ForgetPasswordPaddings.countryHorizontal8,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Row(
@@ -73,54 +124,34 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
                   children: [
                     Text(
                       _flagEmoji,
-                      style: const TextStyle(fontSize: 20),
+                      style: ForgetPasswordTheme.countryFlag,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(
+                        width: ForgetPasswordSizes.countryFlagToCodeGap),
                     Text(
                       _dialCode,
                       style: ForgetPasswordTheme.dialCode,
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(
+                        width: ForgetPasswordSizes.countryCodeToArrowGap),
                     const Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      size: 16,
-                      color: AuthModuleColors.hintGrey,
+                      size: ForgetPasswordSizes.countryArrowSize,
+                      color: ForgetPasswordColors.hintGrey,
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: ForgetPasswordSizes.countryToPhoneGap),
 
           // ------- Phone field -------
           Expanded(
-            child: Container(
-              height: _fieldHeight,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(_fieldRadius),
-                border: Border.all(
-                  color: AuthModuleColors.lightGreyBorder,
-                  width: 1,
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              alignment: Alignment.center,
-              child: BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
-                buildWhen: (p, c) => p.phone != c.phone,
-                builder: (context, state) {
-                  return TextField(
-                    style: ForgetPasswordTheme.phoneInput,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'eg: 242 899 9999',
-                      hintStyle: ForgetPasswordTheme.phoneHint,
-                    ),
-                    onChanged: (value) => context.read<ForgetPasswordBloc>().add(ForgetPasswordPhoneChanged(value)),
-                  );
-                },
-              ),
+            child: ForgetPasswordFocusedInputBorderWrapper(
+              isFocused: _hasPhoneFocus,
+              unfocusedBorderColor: ForgetPasswordColors.fieldBorder,
+              child: phoneField,
             ),
           ),
         ],

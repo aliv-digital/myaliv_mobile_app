@@ -14,6 +14,7 @@ class DefaultButton extends StatelessWidget {
 
   /// text color override করার দরকার হলে
   final Color? textColor;
+  final TextStyle? textStyle;
   final FontWeight fontWeight;
   final double fontSize;
   /// border radius override করতে চাইলে
@@ -29,13 +30,23 @@ class DefaultButton extends StatelessWidget {
     this.fontWeight = FontWeight.w700,
     this.backgroundColor,
     this.textColor,
+    this.textStyle,
     this.borderRadius = const BorderRadius.all(Radius.circular(100)),
   });
 
   @override
   Widget build(BuildContext context) {
     final Color bgColor = backgroundColor ?? ColorManager.defaultButtonColor;
-    final Color fgColor = textColor ?? Colors.white;
+    final Color resolvedTextColor = textColor ?? textStyle?.color ?? Colors.white;
+    final TextStyle resolvedTextStyle =
+        (textStyle ??
+                TextStyle(
+                  fontSize: fontSize,
+                  fontFamily: 'CircularPro',
+                  fontWeight: fontWeight,
+                  height: 1.80,
+                ))
+            .copyWith(color: resolvedTextColor);
 
     return SizedBox(
       height: height,
@@ -59,13 +70,8 @@ class DefaultButton extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
           ),
         ) : Text(
-          label, style: TextStyle(
-            fontSize: fontSize,
-            fontFamily: 'CircularPro',
-            fontWeight: fontWeight,
-            color: fgColor,
-            height: 1.80
-          ),
+          label,
+          style: resolvedTextStyle,
         ),
       ),
     );

@@ -9,24 +9,37 @@ class OtpHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topInset = MediaQuery.viewPaddingOf(context).top;
+    final backTop = (LoginOtpSizes.backTopFromScreen - topInset)
+        .clamp(0.0, double.infinity)
+        .toDouble();
+    final imageGapFromBackIcon = LoginOtpSizes.otpImageTopFromScreen - LoginOtpSizes.backTopFromScreen - LoginOtpSizes.backIconHeight;
+
     return Column(
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 16, top: 12),
-          onPressed: () {}
+          padding: EdgeInsets.only(
+            left: LoginOtpSizes.backLeft,
+            top: backTop,
+          ),
+          iconWidth: LoginOtpSizes.backIconWidth,
+          iconHeight: LoginOtpSizes.backIconHeight,
+          onPressed: () {
+            Navigator.of(context).maybePop();
+          },
         ),
-        const SizedBox(height: 22),
+        SizedBox(height: imageGapFromBackIcon),
         SvgPicture.asset(
           AssetConstant.otpPhoneSVG,
-          width: 162,
-          height: 170,
+          width: LoginOtpSizes.otpImageWidth,
+          height: LoginOtpSizes.otpImageHeight,
         ),
-        const SizedBox(height: 21),
+        const SizedBox(height: LoginOtpSizes.otpImageToTitleGap),
         const Text(
           'verification code',
           style: LoginOtpTheme.title,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: LoginOtpSizes.titleToSubtitleGap),
         Text(
           'we have sent a verification code to your email\nand via sms',
           textAlign: TextAlign.center,

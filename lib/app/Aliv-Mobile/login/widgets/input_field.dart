@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/login_theme.dart';
 
 class CustomInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -26,8 +27,8 @@ class CustomInputField extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.grey, width: 1.2),
+          borderRadius: BorderRadius.circular(AuthModuleSizes.fieldRadius),
+          border: Border.fromBorderSide(AuthModuleDecorations.genericInputBorder),
         ),
         child: TextField(
           controller: controller,
@@ -38,7 +39,7 @@ class CustomInputField extends StatelessWidget {
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            contentPadding: AuthModulePaddings.genericInputContent,
           ),
         ),
       ),

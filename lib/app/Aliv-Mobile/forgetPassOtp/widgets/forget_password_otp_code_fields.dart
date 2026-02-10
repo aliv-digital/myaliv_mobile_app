@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
-import '../../login/theme/login_theme.dart';
 import '../theme/forget_password_otp_theme.dart';
 import '../bloc/forget_password_otp_bloc.dart';
 import '../bloc/forget_password_otp_event.dart';
 import '../bloc/forget_password_otp_state.dart';
 
-
 class ForgetPasswordOtpCodeFields extends StatefulWidget {
   const ForgetPasswordOtpCodeFields({super.key});
 
   @override
-  State<ForgetPasswordOtpCodeFields> createState() => _ForgetPasswordOtpCodeFieldsState();
+  State<ForgetPasswordOtpCodeFields> createState() =>
+      _ForgetPasswordOtpCodeFieldsState();
 }
 
-class _ForgetPasswordOtpCodeFieldsState extends State<ForgetPasswordOtpCodeFields> {
-  final _controllers = List.generate(5, (_) => TextEditingController(), growable: false);
+class _ForgetPasswordOtpCodeFieldsState
+    extends State<ForgetPasswordOtpCodeFields> {
+  final _controllers =
+      List.generate(5, (_) => TextEditingController(), growable: false);
   final _focusNodes = List.generate(5, (_) => FocusNode(), growable: false);
 
   @override
@@ -34,7 +34,8 @@ class _ForgetPasswordOtpCodeFieldsState extends State<ForgetPasswordOtpCodeField
     if (value.length > 1) {
       value = value.characters.last;
       _controllers[index].text = value;
-      _controllers[index].selection = TextSelection.collapsed(offset: value.length);
+      _controllers[index].selection =
+          TextSelection.collapsed(offset: value.length);
     }
 
     if (value.isNotEmpty && index < 4) {
@@ -44,13 +45,16 @@ class _ForgetPasswordOtpCodeFieldsState extends State<ForgetPasswordOtpCodeField
     }
 
     final code = _controllers.map((c) => c.text).join();
-    context.read<ForgetPasswordOtpBloc>().add(ForgetPasswordOtpCodeChanged(code));
+    context
+        .read<ForgetPasswordOtpBloc>()
+        .add(ForgetPasswordOtpCodeChanged(code));
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<ForgetPasswordOtpBloc, ForgetPasswordOtpState>(
-      listenWhen: (p, c) => p.status != c.status && c.status == ForgetPasswordOtpStatus.failure,
+      listenWhen: (p, c) =>
+          p.status != c.status && c.status == ForgetPasswordOtpStatus.failure,
       listener: (context, state) {
         // চাইলে error হলে সব clear করতে পারো
         // for (final c in _controllers) c.clear();
@@ -83,36 +87,56 @@ class _OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 52,
-      height: 52,
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        textAlign: TextAlign.center,
-        textAlignVertical: TextAlignVertical.center, // vertical center
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: ForgetPasswordOtpTheme.otpInput,
-        decoration: InputDecoration(
-          isCollapsed: true,                  // reduce extra height
-          contentPadding: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),   // no extra padding
-          counterText: '',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: ColorManager.otpBoxBorderDefaultColor, // LoginColors.lightGreyBorder,
-              width: 1,
+      width: ForgetPasswordOtpSizes.otpBoxSize,
+      height: ForgetPasswordOtpSizes.otpBoxSize,
+      child: AnimatedBuilder(
+        animation: focusNode,
+        builder: (context, _) {
+          final isFocused = focusNode.hasFocus;
+          final innerRadius = (ForgetPasswordOtpSizes.otpBoxRadius -
+                  ForgetPasswordOtpSizes.otpBoxBorderWidth)
+              .clamp(0.0, ForgetPasswordOtpSizes.otpBoxRadius);
+
+          return Container(
+            decoration: BoxDecoration(
+              gradient: isFocused
+                  ? ForgetPasswordOtpGradients.focusedInputBorder
+                  : null,
+              border: isFocused
+                  ? null
+                  : Border.all(
+                      color: ForgetPasswordOtpColors.otpBoxBorderDefault,
+                      width: ForgetPasswordOtpSizes.otpBoxBorderWidth,
+                    ),
+              borderRadius:
+                  BorderRadius.circular(ForgetPasswordOtpSizes.otpBoxRadius),
             ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: AuthModuleColors.alivPurple,
-              width: 1.4,
+            padding:
+                const EdgeInsets.all(ForgetPasswordOtpSizes.otpBoxBorderWidth),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(innerRadius),
+              child: ColoredBox(
+                color: ForgetPasswordOtpColors.otpBoxBackground,
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  textAlign: TextAlign.center,
+                  textAlignVertical: TextAlignVertical.center,
+                  keyboardType: TextInputType.number,
+                  maxLength: 1,
+                  style: ForgetPasswordOtpTheme.otpInput,
+                  decoration: const InputDecoration(
+                    isCollapsed: true,
+                    contentPadding: ForgetPasswordOtpSizes.otpBoxContentPadding,
+                    counterText: '',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: onChanged,
+                ),
+              ),
             ),
-          ),
-        ),
-        onChanged: onChanged,
+          );
+        },
       ),
     );
   }

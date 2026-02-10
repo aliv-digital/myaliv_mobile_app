@@ -23,14 +23,13 @@ class LoginOtpScreen extends StatelessWidget {
 
 class _LoginOtpView extends StatelessWidget {
   const _LoginOtpView();
-  static const double _bottomActionOffset = 22;
 
   @override
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: LoginOtpColors.screenBackground,
 
       // ✅ Default behavior back (keyboard উঠলে body resize হবে + auto scroll works)
       resizeToAvoidBottomInset: true,
@@ -62,15 +61,15 @@ class _LoginOtpView extends StatelessWidget {
                         const SliverToBoxAdapter(child: OtpHeader()),
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 41, right: 41),
+                            padding: LoginOtpPaddings.contentHorizontal,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: const [
-                                SizedBox(height: 24),
+                                SizedBox(height: LoginOtpSizes.contentTopGap),
                                 OtpCodeFields(),
-                                SizedBox(height: 54),
+                                SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
                                 OtpBottomActions(),
-                                SizedBox(height: 24),
+                                SizedBox(height: LoginOtpSizes.contentBottomGap),
                               ],
                             ),
                           ),
@@ -81,9 +80,9 @@ class _LoginOtpView extends StatelessWidget {
 
                   // ✅ Bottom stripes will VANISH when keyboard opens (no moving up)
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 180),
-                    switchInCurve: Curves.easeOut,
-                    switchOutCurve: Curves.easeIn,
+                    duration: LoginOtpMotion.stripeSwitcherDuration,
+                    switchInCurve: LoginOtpMotion.stripeSwitcherInCurve,
+                    switchOutCurve: LoginOtpMotion.stripeSwitcherOutCurve,
                     child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
                   ),
                 ],
@@ -92,7 +91,7 @@ class _LoginOtpView extends StatelessWidget {
                 const Positioned(
                   left: 0,
                   right: 0,
-                  bottom: BottomStripes.kHeight + _bottomActionOffset,
+                  bottom: BottomStripes.kHeight + LoginOtpSizes.changePhoneBottomOffset,
                   child: _ChangePhoneNumberAction(),
                 ),
             ],
