@@ -34,6 +34,7 @@ class HomeScreen extends StatelessWidget {
   final HomeUiConfig config = const HomeUiConfig(
     userType: UserType.prepaid, // 🔥 switch here for demo
     hasActivePlan: true,
+    isFuturePlan: false
   );
 
   @override

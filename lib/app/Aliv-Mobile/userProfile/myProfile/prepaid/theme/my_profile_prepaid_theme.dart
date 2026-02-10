@@ -100,10 +100,12 @@ class MyProfilePrepaidTheme {
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.05),
+          color: Color(0x0C000000),
           blurRadius: 16,
-          offset: const Offset(0, 10),
-        ),
+          offset: Offset(8, 10),
+          spreadRadius: 0,
+        )
+
       ],
     );
   }

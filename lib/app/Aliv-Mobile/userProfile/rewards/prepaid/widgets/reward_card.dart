@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+
+import '../../../../../../router/app_routes.dart';
 
 class RewardPrepaidCard extends StatelessWidget {
   final String title;
@@ -31,10 +34,11 @@ class RewardPrepaidCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(cardRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
+            color: Color(0x0C000000),
+            blurRadius: 16,
+            offset: Offset(8, 10),
+            spreadRadius: 0,
+          )
         ],
       ),
       child: ClipRRect(
@@ -111,7 +115,7 @@ class RewardPrepaidCard extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             label: 'get this',
                             isLoading: false,
-                            onPressed: onGetThisPressed,
+                            onPressed: (){},
                           ),
                         ),
                       ),
@@ -124,7 +128,10 @@ class RewardPrepaidCard extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             label: 'read more',
                             isLoading: false,
-                            onPressed: onReadMorePressed,
+                            onPressed: (){
+                              context.push(
+                                AppRoutes.rewardDetailsPrepaidScreen,
+                              );                            },
                           ),
                         ),
                       ),

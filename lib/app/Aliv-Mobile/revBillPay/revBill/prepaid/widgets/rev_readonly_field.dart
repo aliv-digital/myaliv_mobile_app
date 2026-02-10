@@ -14,11 +14,11 @@ class RevReadonlyField extends StatelessWidget {
     return Container(
       height: 44,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.all( 16),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
         color: RevPrepaidTheme.fieldBg,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(text, style: RevPrepaidTheme.input),
     );

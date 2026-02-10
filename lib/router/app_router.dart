@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/pre
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
+import 'package:myaliv_mobile_app/app/Support/support_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
@@ -59,6 +60,8 @@ import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Menu/menu_screen.dart';
 import '../app/Notifications/notification_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
+import '../app/Support/chatbot_screen.dart';
+import '../app/Support/quick_help_screen.dart';
 import '../app/Usage/upgrade_credit_limit.dart';
 import '../app/Usage/usage_screen.dart';
 import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
@@ -370,6 +373,7 @@ class AppRouter {
                       const HomeUiConfig(
                         userType: UserType.prepaid,
                         hasActivePlan: true,
+                        isFuturePlan: false
                       );
 
               return UsageScreen(config: config);
@@ -401,6 +405,19 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.notificationScreen,
         builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.supportScreen,
+        builder: (context, state) => const SupportScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.chatScreen,
+        builder: (context, state) => const ChatBotScreen(),
+      ),
+
+      GoRoute(
+        path: AppRoutes.callSupportScreen,
+        builder: (context, state) => const QuickHelpScreen(),
       ),
     ],
   );

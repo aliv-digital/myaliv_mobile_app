@@ -103,6 +103,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
                       userType: UserType.prepaid,
                       hasActivePlan: true,
                       openMyLimits: true, // 🔥 KEY LINE
+                      isFuturePlan: false
                     ),
                   );
                 },

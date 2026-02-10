@@ -90,7 +90,7 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
                 width: 66,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: RevPrepaidTheme.appBarBg,
+                  color: const Color(0xFF645D9C),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: widget.submitting

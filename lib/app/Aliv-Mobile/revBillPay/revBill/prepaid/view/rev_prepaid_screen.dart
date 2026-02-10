@@ -73,7 +73,7 @@ class _RevPrepaidView extends StatelessWidget {
                             label: 'service',
                             child: RevReadonlyField(text: state.service)
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 16),
                           RevLabeledSection(
                             label: 'Account Number',
                             child: RevTextField(
@@ -85,7 +85,7 @@ class _RevPrepaidView extends StatelessWidget {
                               )
                             )
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 16),
                           RevLabeledSection(
                             label: 'Name',
                             child: RevNameWithSubmitField(
@@ -101,15 +101,24 @@ class _RevPrepaidView extends StatelessWidget {
                               )
                             )
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 16),
                           RevLabeledSection(
                             label: 'Account Status',
                             child: RevReadonlyField(
                                 text: state.accountStatusText
                             )
                           ),
-                          const SizedBox(height: 14),
-                          Text('account balance', style: RevPrepaidTheme.label),
+                          const SizedBox(height: 16),
+                          Text('account balance',
+                              // style: RevPrepaidTheme.label
+                            style: TextStyle(
+                              color: const Color(0xFF1C1C1C) /* Black-100% */,
+                              fontSize: 14,
+                              fontFamily: 'Circular Pro',
+                              fontWeight: FontWeight.w700,
+                              height: 1.43,
+                            ),
+                          ),
                           const SizedBox(height: 8),
                           Text(state.accountBalanceText, style: RevPrepaidTheme.value),
                           const SizedBox(height: 14),
@@ -122,7 +131,7 @@ class _RevPrepaidView extends StatelessWidget {
                               )
                             )
                           ),
-                          const SizedBox(height: 22),
+                          const SizedBox(height: 30),
                           RevPrimaryButton(
                             text: 'proceed',
                             enabled: state.canProceed,

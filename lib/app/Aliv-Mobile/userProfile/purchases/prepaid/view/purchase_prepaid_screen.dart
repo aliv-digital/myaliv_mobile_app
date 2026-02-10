@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../../Home/home/data/home_ui_config.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/purchase_prepaid_bloc.dart';
 import '../bloc/purchase_prepaid_event.dart';
@@ -120,9 +121,27 @@ class _PurchasePrepaidView extends StatelessWidget {
         break;
       case PurchasePrepaidAction.futurePlans:
         // TODO: Handle this case.
+        context.go(
+          AppRoutes.usage,
+          extra: HomeUiConfig(
+              userType: UserType.prepaid,
+              hasActivePlan: true,
+              openMyLimits: false,
+              isFuturePlan: true// 🔥 KEY LINE
+          ),
+        );
         break;
       case PurchasePrepaidAction.myLimits:
         // TODO: Handle this case.
+        context.go(
+          AppRoutes.usage,
+          extra: HomeUiConfig(
+              userType: UserType.postpaid,
+              hasActivePlan: true,
+              openMyLimits: true,
+              isFuturePlan: false// 🔥 KEY LINE
+          ),
+        );
         break;
       case PurchasePrepaidAction.reviewInvoices:
         context.push(AppRoutes.enterPasswordReviewInvoicePostpaidScreen);

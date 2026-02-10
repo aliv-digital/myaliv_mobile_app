@@ -53,9 +53,25 @@ class AppMenuDrawer extends StatelessWidget {
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                  // IconButton(
+                  //   icon: const Icon(Icons.close),
+                  //   onPressed: () => Navigator.pop(context),
+                  // ),
+                  InkWell(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFF1F1F1F)),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 18,
+                        color: Color(0xFF1F1F1F),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -159,6 +175,11 @@ class AppMenuDrawer extends StatelessWidget {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.notificationScreen);
+        }
+        else if (label == 'support') {
+          Navigator.of(context).pop(); // close drawer
+          await Future.delayed(const Duration(milliseconds: 50));
+          context.push(AppRoutes.supportScreen);
         }
       },
     );
