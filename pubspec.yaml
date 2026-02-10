@@ -24,6 +24,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_advanced_switch: ^3.1.0
   url_launcher: ^6.3.2
+  table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:

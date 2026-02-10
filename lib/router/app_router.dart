@@ -60,6 +60,7 @@ import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Menu/menu_screen.dart';
 import '../app/Notifications/notification_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
+import '../app/Plans/view/plans_entry_screen.dart';
 import '../app/Support/chatbot_screen.dart';
 import '../app/Support/quick_help_screen.dart';
 import '../app/Usage/upgrade_credit_limit.dart';
@@ -371,7 +372,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                       const HomeUiConfig(
-                        userType: UserType.prepaid,
+                        userType: UserType.postpaid,
                         hasActivePlan: true,
                         isFuturePlan: false
                       );
@@ -387,10 +388,25 @@ class AppRouter {
             },
           ),
 
+          // GoRoute(
+          //   path: AppRoutes.plans,
+          //   builder: (context, state) => const HomePlanScreen(),
+          // ),
           GoRoute(
             path: AppRoutes.plans,
-            builder: (context, state) => const HomePlanScreen(),
+            builder: (context, state) {
+              final config =
+                  (state.extra as HomeUiConfig?) ??
+                      const HomeUiConfig(
+                        userType: UserType.postpaid,
+                        hasActivePlan: true,
+                        isFuturePlan: false,
+                      );
+
+              return PlansEntryScreen(config: config);
+            },
           ),
+
           GoRoute(
             path: AppRoutes.menu,
             builder: (context, state) => const MenuScreen(),
