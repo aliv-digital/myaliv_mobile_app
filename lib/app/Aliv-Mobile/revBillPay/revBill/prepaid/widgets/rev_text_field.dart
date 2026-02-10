@@ -55,7 +55,7 @@ class _RevTextFieldState extends State<RevTextField> {
         color: RevPrepaidTheme.fieldBg,
         borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.all(8),
       alignment: Alignment.center,
       child: TextField(
         controller: _controller,
