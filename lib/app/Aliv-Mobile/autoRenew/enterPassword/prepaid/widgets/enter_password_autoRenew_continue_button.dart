@@ -26,7 +26,7 @@ class EnterPasswordAutoRenewPrepaidContinueButton extends StatelessWidget {
           EnterPasswordAutoRenewPrepaidTheme.brand.withValues(alpha: 0.35),
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(100),
           ),
         ),
         child: isLoading
@@ -41,10 +41,11 @@ class EnterPasswordAutoRenewPrepaidContinueButton extends StatelessWidget {
             : const Text(
           'Continue',
           style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
             color: Colors.white,
+            fontSize: 17,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w700,
+            height: 1.80,
           ),
         ),
       ),

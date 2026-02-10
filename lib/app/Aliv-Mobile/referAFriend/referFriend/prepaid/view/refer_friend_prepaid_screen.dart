@@ -183,7 +183,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                 ),
               ),
 
-              const BottomStripes(),
+              // const BottomStripes(),
             ],
           ),
         ),
@@ -214,7 +214,7 @@ class _HistoryTab extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       child: ListView.separated(
         physics: const BouncingScrollPhysics(),
         itemCount: history.length,

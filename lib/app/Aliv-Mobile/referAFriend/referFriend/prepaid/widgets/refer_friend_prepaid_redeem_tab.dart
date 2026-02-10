@@ -19,17 +19,21 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 18, 22, 24),
+      padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
       child: Column(
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: 32),
           const ReferFriendPrepaidIllustration(assetPath: _redeemSvgAsset),
-          const SizedBox(height: 18),
+          const SizedBox(height: 30),
 
           BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
-            buildWhen: (p, c) => p.redeemCode != c.redeemCode || p.redeemStatus != c.redeemStatus,
+            buildWhen: (p, c) =>
+                p.redeemCode != c.redeemCode ||
+                p.redeemStatus != c.redeemStatus,
             builder: (context, state) {
-              final loading = state.redeemStatus == ReferFriendPrepaidSubmitStatus.submitting;
+              final loading =
+                  state.redeemStatus ==
+                  ReferFriendPrepaidSubmitStatus.submitting;
 
               return Column(
                 children: [
@@ -42,42 +46,52 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
                         .read<ReferFriendPrepaidBloc>()
                         .add(ReferFriendPrepaidRedeemCodeChanged(v)),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 26),
                   ReferFriendPrepaidPrimaryButton(
                     label: 'redeem',
                     enabled: state.canRedeem && !loading,
                     isLoading: loading,
-                    onTap: () => context
-                        .read<ReferFriendPrepaidBloc>()
-                        .add(const ReferFriendPrepaidRedeemPressed()),
+                    onTap: () => context.read<ReferFriendPrepaidBloc>().add(
+                      const ReferFriendPrepaidRedeemPressed(),
+                    ),
                   ),
                 ],
               );
             },
           ),
 
-          const SizedBox(height: 22),
+          const SizedBox(height: 30),
 
           Text(
             "if you are a postpaid customer, you will\nreceive an invoice credit.",
             textAlign: TextAlign.center,
-            style: ReferFriendPrepaidTheme.helper,
+            style: TextStyle(
+              color: const Color(0xFF58677D),
+              fontSize: 14,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 24),
           const Text(
             "or",
             style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 12.5,
-              fontWeight: FontWeight.w600,
-              color: ReferFriendPrepaidTheme.muted,
+              color: const Color(0xFF58677D),
+              fontSize: 14,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 24),
           Text(
             "if you are a prepaid customer, you will\nreceive bonus wallet credit via the myALIV\napp within 24 hours.",
             textAlign: TextAlign.center,
-            style: ReferFriendPrepaidTheme.helper,
+            style: TextStyle(
+              color: const Color(0xFF58677D),
+              fontSize: 14,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class TopUpPrepaidNumberPostPaidTheme {
   static const String fontFamily = 'CircularPro';
 
-  static const Color primary = Color(0xFF6B63A7);
+  static const Color primary = Color(0xFF645D9C);
   static const Color pageBg = Color(0xFFF4F5F9);
 
   static const Color textDark = Color(0xFF111827);

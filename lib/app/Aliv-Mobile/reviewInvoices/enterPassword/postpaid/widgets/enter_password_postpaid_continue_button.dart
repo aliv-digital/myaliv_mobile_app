@@ -26,7 +26,7 @@ class EnterPasswordPostpaidContinueButton extends StatelessWidget {
           EnterPasswordPostpaidTheme.brand.withValues(alpha: 0.35),
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(100),
           ),
         ),
         child: isLoading
@@ -38,13 +38,15 @@ class EnterPasswordPostpaidContinueButton extends StatelessWidget {
             color: Colors.white,
           ),
         )
-            : const Text(
+            : Text(
           'Continue',
+          textAlign: TextAlign.center,
           style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
             color: Colors.white,
+            fontSize: 17,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w700,
+            height: 1.80,
           ),
         ),
       ),

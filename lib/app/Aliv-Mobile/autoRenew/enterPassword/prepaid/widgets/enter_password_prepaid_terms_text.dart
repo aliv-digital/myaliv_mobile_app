@@ -6,36 +6,58 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(
+   return Text.rich(
       TextSpan(
-        style: const TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 11.5,
-          height: 1.35,
-          fontWeight: FontWeight.w400,
-          color: EnterPasswordAutoRenewPrepaidTheme.muted,
-        ),
-        children: const [
-          TextSpan(text: 'By pressing “Continue” button you agree\n'),
-          TextSpan(text: 'to the '),
+        children: [
           TextSpan(
-            text: 'Terms & Conditions',
+            text: 'By pressing ‘Continue’ button you agree\nto the ',
             style: TextStyle(
-              color: EnterPasswordAutoRenewPrepaidTheme.link,
+              color: const Color(0xFF58677D),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          TextSpan(
+            text: 'Terms & Conditionss',
+            style: TextStyle(
+              color: const Color(0xFF1CACE3),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
               decoration: TextDecoration.underline,
             ),
           ),
-          TextSpan(text: ' & '),
+          TextSpan(
+            text: ' ',
+            style: TextStyle(
+              color: const Color(0xFF1CACE3),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          TextSpan(
+            text: '& ',
+            style: TextStyle(
+              color: const Color(0xFF58677D),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           TextSpan(
             text: 'Privacy Policy',
             style: TextStyle(
-              color: EnterPasswordAutoRenewPrepaidTheme.link,
+              color: const Color(0xFF1CACE3),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
               decoration: TextDecoration.underline,
             ),
           ),
         ],
       ),
       textAlign: TextAlign.center,
-    );
-  }
+    ); }
 }

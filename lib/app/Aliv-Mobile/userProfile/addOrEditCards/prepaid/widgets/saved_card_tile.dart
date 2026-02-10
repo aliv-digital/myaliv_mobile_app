@@ -22,7 +22,7 @@ class SavedCardTile extends StatelessWidget {
       // ✅ Inner tile style (border + radius)
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
@@ -60,13 +60,9 @@ class SavedCardTile extends StatelessWidget {
               : InkWell(
             borderRadius: BorderRadius.circular(10),
             onTap: onDelete,
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.delete_outline,
-                size: 22,
-                color: AddOrEditCardsPrepaidTheme.textDark,
-              ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SvgPicture.asset('assets/icons/delete.svg'),
             ),
           ),
         ],
@@ -95,13 +91,13 @@ class _BrandLogo extends StatelessWidget {
     final isVisa = brand == CardBrand.visa;
 
     return Container(
-      width: 52,
-      height: 38,
+      // width: 52,
+      // height: 38,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: const Color(0xFFF4F5F7),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        // border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: SvgPicture.asset(
         isVisa ? AssetConstant.visaCardSVG : AssetConstant.masterCardSVG,

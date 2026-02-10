@@ -24,7 +24,7 @@ class HomePlanWalletPaymentActivateBottomSheet extends StatelessWidget {
   static const double _sectionGap = 20;
   static const double _warningInnerPadding = 10;
   static const double _planCardHeight = 76;
-  static const double _pricePillHeight = 40;
+  static const double _pricePillHeight = 30;
   static const double _actionButtonHeight = 50;
   static const double _cornerRadius = 24;
   static const double _backIconSize = 24;
@@ -133,7 +133,7 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: HomePlanTheme.planSummaryBackground,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
@@ -160,10 +160,10 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
             height: HomePlanWalletPaymentActivateBottomSheet._pricePillHeight,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: HomePlanTheme.planPriceBorder,
-                width: 2,
+                width: 1,
               ),
             ),
             alignment: Alignment.center,

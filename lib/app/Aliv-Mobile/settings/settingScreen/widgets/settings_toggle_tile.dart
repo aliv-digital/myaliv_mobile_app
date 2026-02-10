@@ -103,7 +103,7 @@ class _FigmaToggle extends StatelessWidget {
         padding: const EdgeInsets.all(_pad),
         decoration: BoxDecoration(
           color: trackColor,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(100),
           border: Border.all(color: borderColor, width: 1.2),
         ),
         child: Stack(

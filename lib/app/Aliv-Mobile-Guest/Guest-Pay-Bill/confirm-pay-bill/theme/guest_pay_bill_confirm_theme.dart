@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestPayBillConfirmTheme {
-  static const Color primary = Color(0xFF5A5796);
+  static const Color primary = Color(0xFF645D9C);
   static const Color pageBg = Color(0xFFF2F3FA);
   static const Color cardWhite = Colors.white;
 

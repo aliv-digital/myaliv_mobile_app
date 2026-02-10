@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 class RoamingCard extends StatelessWidget {
@@ -18,7 +19,7 @@ class RoamingCard extends StatelessWidget {
     const Color roamingColor = Color(0xFFF2994A);
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(24,20,24,20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -31,66 +32,94 @@ class RoamingCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(IconsaxPlusLinear.wifi, color: roamingColor),
-              SizedBox(width: 6),
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset('assets/icons/Rss.svg', height: 18, width: 18),
+
+              SizedBox(width: 4),
               Text(
                 'roaming data',
                 style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  color: roamingColor,
-                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFFFF6C36),
+                  fontSize: 12,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                color: Colors.black,
-              ),
+          const SizedBox(height: 4),
+          Text.rich(
+            TextSpan(
               children: [
                 TextSpan(
-                  text: used,
-                  style: const TextStyle(
-                    fontSize: 22,
+                  text: '0',
+                  style: TextStyle(
+                    color: const Color(0xFFFA762B),
+                    fontSize: 16,
+                    fontFamily: 'Circular Pro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const TextSpan(text: ' of\n'),
                 TextSpan(
-                  text: total,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  text: ' of\n2 GB',
+                  style: TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 16,
+                    fontFamily: 'Circular Pro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'remaining',
+            textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'CircularPro',
-              color: Colors.grey,
+              color: const Color(0xFF707070),
+              fontSize: 12,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              backgroundColor: roamingColor.withOpacity(0.2),
-              valueColor:
-              const AlwaysStoppedAnimation(roamingColor),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = 80 * progress.clamp(0.0, 1.0);
+
+                return Stack(
+                  children: [
+                    // Background
+                    Container(
+                      height: 6,
+                      width: 80,
+                      color: Color(0xFFE94408).withOpacity(0.2),
+                    ),
+
+                    // Gradient progress (width = percentage)
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: 6,
+                      width: width,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFF0D7CE), Color(0xFFE94408)],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../theme/add_or_edit_cards_prepaid_theme.dart';
 
 class AddCardExpiryResult {
@@ -65,7 +66,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                     color: const Color(0xFFF2F0FA),
                     borderRadius: BorderRadius.circular(23),
                   ),
-                  child: const Icon(Icons.credit_card, color: AddOrEditCardsPrepaidTheme.primary),
+                  child:SvgPicture.asset('assets/icons/Featured icon.svg',) //const Icon(Icons.credit_card_sharp, color: AddOrEditCardsPrepaidTheme.primary),
                 ),
                 const Spacer(),
                 InkWell(
@@ -90,9 +91,11 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               child: Text(
                 'save *${widget.last4} card',
                 style: const TextStyle(
-                  fontSize: 20,
+                  color: const Color(0xFF222222),
+                  fontSize: 18,
+                  fontFamily: 'Circular Pro',
                   fontWeight: FontWeight.w700,
-                  color: AddOrEditCardsPrepaidTheme.textDark,
+                  height: 1.56,
                 ),
               ),
             ),
@@ -102,14 +105,17 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               child: Text(
                 'confirm expiration date',
                 style: TextStyle(
+
+                  color: const Color(0xFF707070),
                   fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AddOrEditCardsPrepaidTheme.textMuted,
+                  fontFamily: 'Circular Pro',
+                  fontWeight: FontWeight.w500,
+                  height: 1.43,
                 ),
               ),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 20),
 
             Row(
               children: [
@@ -133,17 +139,17 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               ],
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
 
             SizedBox(
               width: double.infinity,
-              height: 52,
+              height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AddOrEditCardsPrepaidTheme.primary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(26),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
                 onPressed: () {
@@ -155,9 +161,10 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                 child: const Text(
                   'save card',
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: const Color(0xFFF1F1F8),
+                    fontSize: 13,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -209,10 +216,10 @@ class _DropField<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 46,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: const Color(0xFFF2F3F7),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
@@ -226,9 +233,11 @@ class _DropField<T> extends StatelessWidget {
               child: Text(
                 labelBuilder(e),
                 style: const TextStyle(
+                  color: const Color(0xFF707070),
                   fontSize: 14,
+                  fontFamily: 'Circular Pro',
                   fontWeight: FontWeight.w500,
-                  color: AddOrEditCardsPrepaidTheme.textDark,
+                  height: 1.43,
                 ),
               ),
             ),

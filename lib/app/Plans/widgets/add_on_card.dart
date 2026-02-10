@@ -25,22 +25,23 @@ class HomePlanAddOnCard extends StatelessWidget {
 
     return InkWell(
       onTap: onToggle,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 31, vertical: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: selected ? HomePlanTheme.brandPurple : Colors.transparent,
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 14,
-              offset: const Offset(0, 8),
+              color: Color(0x0C000000),
+              blurRadius: 16,
+              offset: Offset(8, 10),
+              spreadRadius: 0,
             ),
           ],
         ),
@@ -91,10 +92,7 @@ class HomePlanAddOnCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _CheckBoxSquare(
-                  checked: selected,
-                  onTap: onToggle,
-                ),
+                _CheckBoxSquare(checked: selected, onTap: onToggle),
                 const SizedBox(height: 14),
                 _PricePill(price: addon.price),
               ],
@@ -114,10 +112,12 @@ class _PricePill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-      decoration: BoxDecoration(
-        border: Border.all(color: HomePlanTheme.brandPurple, width: 1),
-        borderRadius: BorderRadius.circular(8),
+      decoration: ShapeDecoration(
         color: Colors.white,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(width: 1, color: const Color(0xFF645D9C)),
+          borderRadius: BorderRadius.circular(5),
+        ),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -131,10 +131,7 @@ class _CheckBoxSquare extends StatelessWidget {
   final bool checked;
   final VoidCallback onTap;
 
-  const _CheckBoxSquare({
-    required this.checked,
-    required this.onTap,
-  });
+  const _CheckBoxSquare({required this.checked, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +139,8 @@ class _CheckBoxSquare extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(6),
       child: Container(
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
         decoration: BoxDecoration(
           color: checked ? HomePlanTheme.brandPurple : Colors.transparent,
           borderRadius: BorderRadius.circular(4),

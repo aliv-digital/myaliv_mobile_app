@@ -10,72 +10,60 @@ class UsageRoamingPlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(16, 13, 16, 28),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [startColor, endColor],
-        ),
+        borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: const AssetImage('assets/icons/Future Plan 3.png'),
+          fit: BoxFit.fill,
+        ), // gradient: const LinearGradient(
+        //   begin: Alignment.topLeft,
+        //   end: Alignment.bottomRight,
+        //   colors: [startColor, endColor],
+        // ),
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // -------- watermark --------
-          Positioned(
-            right: 80,
-            bottom: -20,
-            child: Opacity(
-              opacity: 0.08,
-              child: Text(
-                'aliv',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 120,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'active',
+                  style: TextStyle(
+                    color: Colors.white /* White-100% */,
+                    fontSize: 12,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
+                TextSpan(
+                  text: ' plan',
+                  style: TextStyle(
+                    color: Colors.white /* White-100% */,
+                    fontSize: 12,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
-
-          // -------- content --------
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'active plan',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  color: Colors.white70,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'roameasy usa and can',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: const [
-                  _DateColumn(
-                    title: 'active',
-                    value: '20/01/25',
-                  ),
-                  Spacer(),
-                  _DateColumn(
-                    title: 'expire',
-                    value: '19/02/25',
-                    alignRight: true,
-                  ),
-                ],
-              ),
+          const Text(
+            'roameasy usa and can',
+            style: TextStyle(
+              color: Colors.white /* White-100% */,
+              fontSize: 24,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 30),
+          Row(
+            children: const [
+              _DateColumn(title: 'active', value: '20/01/25'),
+              Spacer(),
+              _DateColumn(title: 'expire', value: '19/02/25', alignRight: true),
             ],
           ),
         ],
@@ -83,6 +71,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
     );
   }
 }
+
 class _DateColumn extends StatelessWidget {
   final String title;
   final String value;
@@ -97,25 +86,28 @@ class _DateColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-      alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            color: Colors.white70,
-            fontSize: 13,
+            color: Colors.white /* White-100% */,
+            fontSize: 10,
+            fontFamily: 'Circular Pro',
+            fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 4),
+
         Text(
           value,
           style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 18,
+            color: Colors.white /* White-100% */,
+            fontSize: 15,
+            fontFamily: 'Circular Pro',
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            letterSpacing: 2.25,
           ),
         ),
       ],

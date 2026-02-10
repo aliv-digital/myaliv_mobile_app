@@ -18,8 +18,11 @@ class SettingsSectionCard extends StatelessWidget {
         color: SettingsTheme.cardBg,
         borderRadius: BorderRadius.circular(SettingsTheme.cardRadius),
       ),
-      child: Column(
-        children: _withDividers(children),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: _withDividers(children),
+        ),
       ),
     );
   }
