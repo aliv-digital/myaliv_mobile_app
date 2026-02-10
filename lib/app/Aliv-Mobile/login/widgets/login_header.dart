@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
@@ -11,23 +10,49 @@ class LoginHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        DefaultBackButton(
-          padding: const EdgeInsets.only(left: 16, top: 12),
-          onPressed: () {
-            context.pop();
-            // custom logic
-          },
-        ),
-        const SizedBox(height: 22),
-        const _LogoTitle(),
-      ],
+    final topInset = MediaQuery.viewPaddingOf(context).top;
+    final backTop = (AuthModuleSizes.backTopFromScreen - topInset)
+        .clamp(0.0, double.infinity)
+        .toDouble();
+    final logoTop = (AuthModuleSizes.logoTopFromScreen - topInset)
+        .clamp(0.0, double.infinity)
+        .toDouble();
+    final topBase = backTop < logoTop ? backTop : logoTop;
+    final backInnerTop = backTop - topBase;
+    final logoInnerTop = logoTop - topBase;
+    final sideSlotWidth = AuthModuleSizes.backLeft + AuthModuleSizes.backIconWidth;
+
+    return Padding(
+      padding: EdgeInsets.only(top: topBase),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: sideSlotWidth,
+            child: Padding(
+              padding: EdgeInsets.only(left: AuthModuleSizes.backLeft, top: backInnerTop),
+              child: DefaultBackButton(
+                padding: EdgeInsets.zero,
+                iconWidth: AuthModuleSizes.backIconWidth,
+                iconHeight: AuthModuleSizes.backIconHeight,
+                onPressed: () {
+                  context.pop();
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(top: logoInnerTop),
+              child: const _LogoTitle(),
+            ),
+          ),
+          SizedBox(width: sideSlotWidth),
+        ],
+      ),
     );
   }
 }
-
 
 class _LogoTitle extends StatelessWidget {
   const _LogoTitle();
@@ -35,21 +60,17 @@ class _LogoTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         SvgPicture.asset(
           AssetConstant.alivBlackLogoSVG,
-          width: 96,
-          height: 48,
+          width: AuthModuleSizes.logoWidth,
+          height: AuthModuleSizes.logoHeight,
         ),
-        const SizedBox(height: 30),
-        Text(
+        const SizedBox(height: AuthModuleSizes.logoToTitleGap),
+        const Text(
           'welcome back',
-          style: TextStyle(
-            fontSize: 17,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w600,
-            color: AuthModuleColors.textBlack,
-          ),
+          style: AuthModuleTextStyles.welcomeBack,
         ),
       ],
     );

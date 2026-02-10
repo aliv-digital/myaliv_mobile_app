@@ -16,8 +16,6 @@ class LoginPasswordField extends StatefulWidget {
 
 class _LoginPasswordFieldState extends State<LoginPasswordField> {
   bool _obscure = true;
-  static const double _fieldHeight = 54;
-  static const double _fieldRadius = 8;
 
   @override
   Widget build(BuildContext context) {
@@ -29,54 +27,44 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: _fieldHeight,
+              height: AuthModuleSizes.fieldHeight,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(_fieldRadius),
-                border: Border.all(
-                  color: hasError ? AuthModuleColors.errorRed : AuthModuleColors.lightGreyBorder,
-                  width: 1,
+                borderRadius: BorderRadius.circular(AuthModuleSizes.fieldRadius),
+                border: Border.fromBorderSide(
+                  hasError ? AuthModuleDecorations.inputErrorBorder : AuthModuleDecorations.inputBorder,
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
+              padding: AuthModulePaddings.fieldHorizontal14,
               child: Row(
                 children: [
                   SvgPicture.asset(
                     AssetConstant.lockPassSVG,
-                    width: 18,
-                    height: 18,
-                    colorFilter: ColorFilter.mode(
+                    width: AuthModuleSizes.lockIconSize,
+                    height: AuthModuleSizes.lockIconSize,
+                    colorFilter: const ColorFilter.mode(
                       AuthModuleColors.lockColor,
                       BlendMode.srcIn,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AuthModuleSizes.lockToInputGap),
                   Expanded(
                     child: TextField(
                       obscureText: _obscure,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'CircularPro',
-                        color: AuthModuleColors.textBlack,
-                      ),
-                      decoration: const InputDecoration(
+                      style: AuthModuleTextStyles.fieldValue,
+                      decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: '• • • • • • •',
-                        hintStyle: TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 3,
-                          color: AuthModuleColors.hintGrey,
-                        ),
+                        hintText: 'enter your password',
+                        hintStyle: AuthModuleTextStyles.passwordHint,
                       ),
                       onChanged: (value) => context.read<LoginBloc>().add(LoginPasswordChanged(value)),
                     ),
                   ),
                   GestureDetector(
                     onTap: () => setState(() => _obscure = !_obscure),
-                    child: Icon(
-                      _obscure ? Icons.visibility_off : Icons.visibility,
-                      size: 20,
-                      color: AuthModuleColors.lockColor,
+                    child: SvgPicture.asset(
+                      _obscure ? AssetConstant.hideIconSVG : AssetConstant.viewIconSVG,
+                      width: AuthModuleSizes.eyeIconSize,
+                      height: AuthModuleSizes.eyeIconSize,
                     ),
                   ),
                 ],

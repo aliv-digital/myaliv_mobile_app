@@ -8,33 +8,21 @@ class LoginBottomTexts extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
-          'still need to activate your account?',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            height: 1.43,
-            color: AuthModuleColors.textBlack,
+        const SizedBox(
+          width: AuthModuleSizes.activatePromptWidth,
+          child: Text(
+            'still need to activate your account?',
+            textAlign: TextAlign.center,
+            style: AuthModuleTextStyles.activateAccountPrompt,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AuthModuleSizes.activatePromptToLinkGap),
         TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: const Size(0, 0),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
+          style: AuthModuleButtonStyles.inlineTextLink,
           onPressed: () {},
-          child: Text(
+          child: const Text(
             'manage my password',
-            style: TextStyle(
-              fontSize: 14,
-              color: AuthModuleColors.linkBlue,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w400,
-              height: 1.43,
-            ),
+            style: AuthModuleTextStyles.manageMyPassword,
           ),
         ),
       ],

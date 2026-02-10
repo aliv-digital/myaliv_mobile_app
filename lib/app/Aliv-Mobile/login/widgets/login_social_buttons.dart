@@ -9,59 +9,17 @@ class LoginSocialButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 30),
         const _OrDividerRow(),
-        const SizedBox(height: 30),
+        const SizedBox(height: AuthModuleSizes.dividerToButtonsGap),
+        // social buttons ------------------
         Row(
           children: [
             Expanded(
-              child: SizedBox(
-                height: 40,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AuthModuleColors.alivPurple, width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'face id',
-                    style: TextStyle(
-                      fontSize: 13,
-                      height: 1.43,
-                      fontWeight: FontWeight.w700,
-                      color: AuthModuleColors.alivPurple,
-                      fontFamily: 'CircularPro'
-                    ),
-                  ),
-                ),
-              ),
+              child: _SocialButton(label: 'face id'),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: AuthModuleSizes.socialButtonsGap),
             Expanded(
-              child: SizedBox(
-                height: 40,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AuthModuleColors.alivPurple, width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'fingerprint',
-                    style: TextStyle(
-                        fontSize: 13,
-                        height: 1.43,
-                        fontWeight: FontWeight.w700,
-                        color: AuthModuleColors.alivPurple,
-                        fontFamily: 'CircularPro'
-                    ),
-                  ),
-                ),
-              ),
+              child: _SocialButton(label: 'fingerprint'),
             ),
           ],
         ),
@@ -70,32 +28,44 @@ class LoginSocialButtons extends StatelessWidget {
   }
 }
 
+class _SocialButton extends StatelessWidget {
+  const _SocialButton({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: AuthModuleSizes.socialButtonHeight,
+      child: OutlinedButton(
+        style: AuthModuleButtonStyles.socialOutlined,
+        onPressed: () {},
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: AuthModuleTextStyles.socialMediaButton,
+        ),
+      ),
+    );
+  }
+}
+
 class _OrDividerRow extends StatelessWidget {
   const _OrDividerRow();
-
-  static const double _dividerWidth = 32;
-  static const double _dividerHeight = 1;
-  static const double _labelGap = 12;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children: [
         _ShortDivider(),
-        SizedBox(width: _labelGap),
-        Text(
+        const SizedBox(width: AuthModuleSizes.dividerLabelGap),
+        const Text(
           'or sign in with',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
-            color: AuthModuleColors.hintGrey,
-            height: 1.38,
-            letterSpacing: -0.08,
-            fontFamily: 'CircularPro',
-          ),
+          textAlign: TextAlign.center,
+          style: AuthModuleTextStyles.orSignInWith,
         ),
-        SizedBox(width: _labelGap),
+        const SizedBox(width: AuthModuleSizes.dividerLabelGap),
         _ShortDivider(),
       ],
     );
@@ -107,10 +77,12 @@ class _ShortDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: _OrDividerRow._dividerWidth,
-      height: _OrDividerRow._dividerHeight,
+    return const ColoredBox(
       color: AuthModuleColors.lightGreyBorder,
+      child: SizedBox(
+        width: AuthModuleSizes.dividerWidth,
+        height: AuthModuleSizes.dividerHeight,
+      ),
     );
   }
 }

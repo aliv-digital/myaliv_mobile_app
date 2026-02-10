@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -41,14 +40,14 @@ class _LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
+        statusBarColor: AuthModuleColors.pageBackground,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AuthModuleColors.pageBackground,
 
       // ✅ Keyboard উঠলেও body resize হবে না (BottomStripes নড়বে না)
       resizeToAvoidBottomInset: false,
@@ -74,20 +73,18 @@ class _LoginView extends StatelessWidget {
                     ),
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 47, right: 47),
+                        padding: AuthModulePaddings.pageHorizontal,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SizedBox(height: 36),
+                            const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
                             const LoginPhoneRow(),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: AuthModuleSizes.phoneToPasswordGap),
                             const LoginPasswordField(),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: AuthModuleSizes.passwordToErrorRowGap),
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
-                                final hasError =
-                                    state.status == LoginStatus.failure &&
-                                        state.errorMessage != null;
+                                final hasError = state.status == LoginStatus.failure && state.errorMessage != null;
                                 return Row(
                                   children: [
                                     Expanded(
@@ -100,41 +97,26 @@ class _LoginView extends StatelessWidget {
                                           maintainAnimation: true,
                                           child: const Text(
                                             'invalid credentials!',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: AuthModuleColors.errorRed,
-                                            ),
+                                            style: AuthModuleTextStyles.invalidCredentials,
                                           ),
                                         ),
                                       ),
                                     ),
                                     TextButton(
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: const Size(0, 0),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                      ),
+                                      style: AuthModuleButtonStyles.inlineTextLink,
                                       onPressed: () {
                                         context.push(AppRoutes.forgetPassword);
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'forgot password?',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: AuthModuleColors.linkBlue,
-                                          height: 1.38,
-                                          fontFamily: 'CircularPro',
-                                          fontWeight: FontWeight.w400,
-                                          letterSpacing: -0.08,
-                                        ),
+                                        style: AuthModuleTextStyles.forgotPassword,
                                       ),
                                     ),
                                   ],
                                 );
                               },
                             ),
-                            const SizedBox(height: 15),
+                            const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
 
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
@@ -143,21 +125,22 @@ class _LoginView extends StatelessWidget {
                                 return DefaultButton(
                                   label: 'sign in',
                                   isLoading: loading,
-                                  height: 48,
+                                  height: AuthModuleSizes.fieldHeight,
+                                  textStyle: AuthModuleTextStyles.signInButton,
                                   onPressed: () {
-                                    context
-                                        .read<LoginBloc>()
-                                        .add(const LoginSubmitted());
+                                    context.read<LoginBloc>().add(const LoginSubmitted());
                                     context.push(AppRoutes.loginOtp);
                                   },
                                 );
                               },
                             ),
+                            const SizedBox(height: AuthModuleSizes.signInToSocialGap),
 
-                            // const SizedBox(height: 24),
+
                             const LoginSocialButtons(),
-                            const SizedBox(height: 34),
-                            const SizedBox(height: 220),
+                            const SizedBox(height: AuthModuleSizes.socialToBottomGap),
+                            LoginBottomTexts(),
+                            const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
                           ],
                         ),
                       ),
@@ -170,10 +153,12 @@ class _LoginView extends StatelessWidget {
               const Positioned(
                 left: 0,
                 right: 0,
-                bottom: 112,
+                bottom: AuthModuleSizes.bottomTextsBottomOffset,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 41),
-                  child: LoginBottomTexts(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AuthModuleSizes.bottomTextsHorizontalPadding,
+                  ),
+                  child: SizedBox(),
                 ),
               ),
               const Align(
