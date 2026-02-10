@@ -38,7 +38,7 @@ class ForgetPasswordTheme {
   );
 
   // Phone input hint text
-  static const TextStyle phoneHint = TextStyle(
+  static TextStyle phoneHint = TextStyle(
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
     color: AuthModuleColors.hintGrey,
@@ -59,7 +59,7 @@ class ForgetPasswordTheme {
   );
 
   // Terms & privacy loading/disabled link color
-  static const TextStyle termsLinkDisabled = TextStyle(
+  static TextStyle termsLinkDisabled = TextStyle(
     fontWeight: FontWeight.w500,
     color: AuthModuleColors.hintGrey,
   );

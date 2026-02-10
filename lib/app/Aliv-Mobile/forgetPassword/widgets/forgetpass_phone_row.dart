@@ -81,7 +81,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
                       style: ForgetPasswordTheme.dialCode,
                     ),
                     const SizedBox(width: 4),
-                    const Icon(
+                     Icon(
                       Icons.keyboard_arrow_down_rounded,
                       size: 16,
                       color: AuthModuleColors.hintGrey,

@@ -13,7 +13,7 @@ class ForgetPasswordOtpHeader extends StatelessWidget {
     return Column(
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 16, top: 12),
+          padding: EdgeInsets.only(left: 16, top: 53),
           onPressed: () {
             context.pop();
           },
