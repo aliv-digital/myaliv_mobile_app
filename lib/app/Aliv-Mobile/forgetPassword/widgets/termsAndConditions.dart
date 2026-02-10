@@ -21,23 +21,16 @@ class TermsAndPrivacyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+      padding: ForgetPasswordPaddings.termsHorizontal,
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontSize: ForgetPasswordTheme.termsBase.fontSize,
-            //height: 1.5,
-            fontWeight: ForgetPasswordTheme.termsBase.fontWeight,
-            fontFamily: ForgetPasswordTheme.termsBase.fontFamily,
-            color: ForgetPasswordTheme.termsBase.color,
-          ),
+          style: ForgetPasswordTheme.termsBase,
           children: [
             const TextSpan(
               text: "By pressing the ‘send’ button above you agree to the ",
+              style: ForgetPasswordTheme.termsIntro,
             ),
 
             // ---- Terms & Conditions ----
@@ -45,8 +38,10 @@ class TermsAndPrivacyText extends StatelessWidget {
               text: isTermsLoading ? "Loading..." : "Terms & Conditions",
               style: isTermsLoading
                   ? ForgetPasswordTheme.termsLinkDisabled
-                  : ForgetPasswordTheme.termsLink,
-              recognizer: (!isTermsLoading && onTermsTap != null) ? (TapGestureRecognizer()..onTap = onTermsTap) : null,
+                  : ForgetPasswordTheme.termsAndConditionsLink,
+              recognizer: (!isTermsLoading && onTermsTap != null)
+                  ? (TapGestureRecognizer()..onTap = onTermsTap)
+                  : null,
             ),
 
             const TextSpan(text: " & "),
@@ -56,8 +51,10 @@ class TermsAndPrivacyText extends StatelessWidget {
               text: isPrivacyLoading ? "Loading..." : "Privacy Policy",
               style: isPrivacyLoading
                   ? ForgetPasswordTheme.termsLinkDisabled
-                  : ForgetPasswordTheme.termsLink,
-              recognizer: (!isPrivacyLoading && onPrivacyTap != null) ? (TapGestureRecognizer()..onTap = onPrivacyTap) : null,
+                  : ForgetPasswordTheme.privacyPolicyLink,
+              recognizer: (!isPrivacyLoading && onPrivacyTap != null)
+                  ? (TapGestureRecognizer()..onTap = onPrivacyTap)
+                  : null,
             ),
           ],
         ),

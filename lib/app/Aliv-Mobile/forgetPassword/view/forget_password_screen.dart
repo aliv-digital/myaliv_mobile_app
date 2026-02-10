@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../../../../router/app_routes.dart';
 import '../bloc/forget_password_bloc.dart';
-import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
 import '../repository/forgetpassword_repository.dart';
+import '../theme/forget_password_theme.dart';
 import '../widgets/forgetpass_bottom_stripes.dart';
 import '../widgets/forgetpass_header.dart';
 import '../widgets/forgetpass_phone_row.dart';
@@ -27,21 +28,21 @@ class ForgetPasswordScreen extends StatelessWidget {
 
 class _ForgetPasswordScreenView extends StatelessWidget {
   const _ForgetPasswordScreenView();
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
+        statusBarColor: ForgetPasswordColors.pageBackground,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
     );
 
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    //final phoneRowGap = _phoneRowGapFromSubtitle(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ForgetPasswordColors.pageBackground,
 
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
@@ -55,78 +56,70 @@ class _ForgetPasswordScreenView extends StatelessWidget {
             children: [
               // ---------- Scrollable content ----------
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    slivers: [
-                      const SliverToBoxAdapter(
-                        child: ForgetPasswordHeader(),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 47, right: 47),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const SizedBox(height: 9.61),
-                              const ForgetPasswordPhoneRow(),
-                              const SizedBox(height: 20),
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: ForgetPasswordHeader(),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: ForgetPasswordPaddings.pageHorizontal,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            //SizedBox(height: phoneRowGap),
+                            const ForgetPasswordPhoneRow(),
+                            const SizedBox(height: ForgetPasswordSizes.phoneToSendGap),
 
-                              // send button
-                              BlocBuilder<ForgetPasswordBloc,
-                                  ForgetPasswordState>(
-                                builder: (context, state) {
-                                  final loading = state.status ==
-                                      ForgetPasswordStatus.loading;
+                            // send button
+                            BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+                              builder: (context, state) {
+                                final loading = state.status == ForgetPasswordStatus.loading;
 
-                                  return DefaultButton(
-                                    label: 'send',
-                                    isLoading: loading,
-                                    onPressed: () {
-                                      //context.read<ForgetPasswordBloc>().add(const ForgetPasswordSubmitted());
-                                      context.push(AppRoutes.forgetPasswordOtp);
-                                    },
-                                  );
-                                },
-                              ),
+                                return DefaultButton(
+                                  label: 'send',
+                                  isLoading: loading,
+                                  textStyle: ForgetPasswordTheme.sendButton,
+                                  onPressed: () {
+                                    //context.read<ForgetPasswordBloc>().add(const ForgetPasswordSubmitted());
+                                    context.push(AppRoutes.forgetPasswordOtp);
+                                  },
+                                );
+                              },
+                            ),
 
-                              const SizedBox(height: 147),
+                            const SizedBox(height: ForgetPasswordSizes.sendToTermsGap),
 
-                              BlocBuilder<ForgetPasswordBloc,
-                                  ForgetPasswordState>(
-                                builder: (context, state) {
-                                  return TermsAndPrivacyText(
-                                    isTermsLoading: state.isTermsLoading,
-                                    isPrivacyLoading: state.isPrivacyLoading,
-                                    onTermsTap: () {
-                                      //context.read<LegalBloc>().add(LoadTermsPressed());
-                                    },
-                                    onPrivacyTap: () {
-                                      //context.read<LegalBloc>().add(LoadPrivacyPressed());
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                            BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+                              builder: (context, state) {
+                                return TermsAndPrivacyText(
+                                  isTermsLoading: state.isTermsLoading,
+                                  isPrivacyLoading: state.isPrivacyLoading,
+                                  onTermsTap: () {
+                                    //context.read<LegalBloc>().add(LoadTermsPressed());
+                                  },
+                                  onPrivacyTap: () {
+                                    //context.read<LegalBloc>().add(LoadPrivacyPressed());
+                                  },
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
 
               // ✅ Bottom stripes vanish when keyboard opens
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: keyboardOpen
-                    ? const SizedBox.shrink()
-                    : const ForgetPasswordBottomStripes(),
+                duration: ForgetPasswordMotion.stripeSwitcherDuration,
+                switchInCurve: ForgetPasswordMotion.stripeSwitcherInCurve,
+                switchOutCurve: ForgetPasswordMotion.stripeSwitcherOutCurve,
+                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
               ),
             ],
           ),

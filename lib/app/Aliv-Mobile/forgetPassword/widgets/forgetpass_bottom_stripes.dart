@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/forget_password_theme.dart';
 
 class ForgetPasswordBottomStripes extends StatelessWidget {
   const ForgetPasswordBottomStripes({super.key});
@@ -7,12 +8,27 @@ class ForgetPasswordBottomStripes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: const [
-        _Stripe(color: Color(0xFFF26C4F), height: 8), // উপরের কমলা
-        _Stripe(color: Color(0xFFE89BB8), height: 6), // হালকা পিংক
-        _Stripe(color: Color(0xFF000000), height: 6), // কালো
-        _Stripe(color: Color(0xFF6ECFF6), height: 6), // লাইট ব্লু
-        _Stripe(color: Color(0xFFFBB03B), height: 8), // নিচের হলুদ/কমলা
+      children: [
+        _Stripe(
+          color: ForgetPasswordStripePalette.colors[0],
+          height: ForgetPasswordStripePalette.heights[0],
+        ),
+        _Stripe(
+          color: ForgetPasswordStripePalette.colors[1],
+          height: ForgetPasswordStripePalette.heights[1],
+        ),
+        _Stripe(
+          color: ForgetPasswordStripePalette.colors[2],
+          height: ForgetPasswordStripePalette.heights[2],
+        ),
+        _Stripe(
+          color: ForgetPasswordStripePalette.colors[3],
+          height: ForgetPasswordStripePalette.heights[3],
+        ),
+        _Stripe(
+          color: ForgetPasswordStripePalette.colors[4],
+          height: ForgetPasswordStripePalette.heights[4],
+        ),
       ],
     );
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../login/theme/login_theme.dart';
-
+import '../theme/forget_password_theme.dart';
 
 class LoginBottomTexts extends StatelessWidget {
   const LoginBottomTexts({super.key});
@@ -12,14 +11,9 @@ class LoginBottomTexts extends StatelessWidget {
         const Text(
           'still need to activate your account?',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            height: 1.43,
-            color: AuthModuleColors.textBlack,
-          ),
+          style: ForgetPasswordTheme.accountActivationPrompt,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: ForgetPasswordSizes.bottomPromptToActionGap),
         TextButton(
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -29,13 +23,7 @@ class LoginBottomTexts extends StatelessWidget {
           onPressed: () {},
           child: Text(
             'manage my password',
-            style: TextStyle(
-              fontSize: 14,
-              color: AuthModuleColors.linkBlue,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w400,
-              height: 1.43,
-            ),
+            style: ForgetPasswordTheme.managePasswordLink,
           ),
         ),
       ],
