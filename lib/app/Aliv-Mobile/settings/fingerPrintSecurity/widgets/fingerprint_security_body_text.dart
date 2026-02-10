@@ -17,7 +17,7 @@ class FingerPrintSecurityBodyText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(header, style: FingerPrintSecurityTheme.title),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Text(body, style: FingerPrintSecurityTheme.body),
       ],
     );
