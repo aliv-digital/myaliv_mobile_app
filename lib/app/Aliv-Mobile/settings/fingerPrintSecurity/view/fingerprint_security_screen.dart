@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/fingerprint_security_bloc.dart';
 import '../bloc/fingerprint_security_event.dart';
 import '../bloc/fingerprint_security_state.dart';
 import '../repository/fingerprint_security_repository_impl.dart';
 import '../theme/fingerprint_security_theme.dart';
-import '../widgets/fingerprint_security_app_bar.dart';
 import '../widgets/fingerprint_security_body_text.dart';
-import '../widgets/fingerprint_security_bottom_button.dart';
 
 class FingerPrintSecurityScreen extends StatelessWidget {
   const FingerPrintSecurityScreen({super.key});
@@ -33,40 +33,66 @@ class _FingerPrintSecurityView extends StatelessWidget {
       listener: (context, state) {
         if (state.navTarget == FingerPrintSecurityNavTarget.back) {
           Navigator.of(context).maybePop();
-          context.read<FingerPrintSecurityBloc>().add(const FingerPrintSecurityNavConsumed());
+          context
+              .read<FingerPrintSecurityBloc>()
+              .add(const FingerPrintSecurityNavConsumed());
         }
       },
       builder: (context, state) {
         final content = state.content;
 
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data:
+              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: FingerPrintSecurityTheme.bg,
             body: Column(
               children: [
                 SafeArea(
                   bottom: false,
-                  child: FingerPrintSecurityAppBar(
-                    title: 'fingerprint security',
+                  child: SizedBox(
+                    height: FingerPrintSecurityTheme.appBarHeight,
+                    child: DefaultAppBar(
+                      title: 'fingerprint security',
+                      height: FingerPrintSecurityTheme.appBarHeight,
+                      backgroundColor: FingerPrintSecurityTheme.appBarBg,
+                      showBackArrow: true,
+                      showHome: false,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: FingerPrintSecurityTheme.pagePadding.copyWith(bottom: 90),
+                    padding: FingerPrintSecurityTheme.pagePadding,
                     child: content == null
                         ? const SizedBox.shrink()
-                        : FingerPrintSecurityBodyText(
-                      header: content.header,
-                      body: content.body,
-                    ),
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              FingerPrintSecurityBodyText(
+                                header: content.header,
+                                body: content.body,
+                              ),
+                              const SizedBox(
+                                height:
+                                    FingerPrintSecurityTheme.bodyToButtonGap,
+                              ),
+                              DefaultButton(
+                                label: 'yes, i agree',
+                                isLoading: false,
+                                onPressed: () => context
+                                    .read<FingerPrintSecurityBloc>()
+                                    .add(const AgreePressed()),
+                                backgroundColor:
+                                    FingerPrintSecurityTheme.bottomButtonBg,
+                                textStyle:
+                                    FingerPrintSecurityTheme.bottomButtonText,
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ],
-            ),
-            bottomNavigationBar: FingerPrintSecurityBottomButton(
-              text: 'yes, i agree',
-              onTap: () => context.read<FingerPrintSecurityBloc>().add(const AgreePressed()),
             ),
           ),
         );
