@@ -73,8 +73,9 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.loginOtp,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
 
+    //forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.revPaymentMethodPrepaidScreen,
@@ -111,7 +112,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.makePaymentConfirmationPostpaidScreen,
         builder: (context, state) =>
-        const MakePaymentConfirmationPostPaidScreen(),
+            const MakePaymentConfirmationPostPaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.makePaymentPostpaidScreen,
@@ -136,7 +137,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.enterPasswordAutoRenewPrepaidScreen,
         builder: (context, state) =>
-        const EnterPasswordAutoRenewPrepaidScreen(),
+            const EnterPasswordAutoRenewPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.autoRenewAuthPrepaidScreen,
@@ -243,7 +244,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
         builder: (context, state) =>
-        const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
+            const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,
@@ -371,11 +372,11 @@ class AppRouter {
             builder: (context, state) {
               final config =
                   (state.extra as HomeUiConfig?) ??
-                      const HomeUiConfig(
-                        userType: UserType.prepaid,
-                        hasActivePlan: true,
-                        isFuturePlan: false
-                      );
+                  const HomeUiConfig(
+                    userType: UserType.prepaid,
+                    hasActivePlan: true,
+                    isFuturePlan: false,
+                  );
 
               return UsageScreen(config: config);
             },
@@ -397,11 +398,11 @@ class AppRouter {
             builder: (context, state) {
               final config =
                   (state.extra as HomeUiConfig?) ??
-                      const HomeUiConfig(
-                        userType: UserType.prepaid,
-                        hasActivePlan: true,
-                        isFuturePlan: false,
-                      );
+                  const HomeUiConfig(
+                    userType: UserType.prepaid,
+                    hasActivePlan: true,
+                    isFuturePlan: false,
+                  );
 
               return PlansEntryScreen(config: config);
             },
