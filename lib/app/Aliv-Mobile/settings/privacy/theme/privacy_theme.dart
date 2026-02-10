@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 class PrivacyTheme {
-  static const String fontFamily = 'CircularPro';
+  static const String fontFamily = AppConstants.defaultFontFamily;
 
   static const Color bg = Color(0xFFF2F3F7);
   static const Color appBarBg = Color(0xFF655C9A);
@@ -9,12 +10,12 @@ class PrivacyTheme {
   static const Color textSecondary = Color(0xFF6B7280);
 
   static const double appBarHeight = 56;
-  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 18, 16, 24);
+  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
 
   static const TextStyle title = TextStyle(
     fontFamily: fontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: textPrimary,
     height: 1.25,
   );
@@ -29,7 +30,7 @@ class PrivacyTheme {
 
   static const TextStyle sectionHeader = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w800,
     color: textPrimary,
     height: 1.3,

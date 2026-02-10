@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../../resources/widgets/default_app_bar.dart';
 
 import '../../../../../router/app_routes.dart';
 import '../bloc/privacy_bloc.dart';
@@ -8,7 +9,6 @@ import '../bloc/privacy_event.dart';
 import '../bloc/privacy_state.dart';
 import '../repository/privacy_repository_impl.dart';
 import '../theme/privacy_theme.dart';
-import '../widgets/privacy_app_bar.dart';
 import '../widgets/privacy_section.dart';
 
 class PrivacyScreen extends StatelessWidget {
@@ -17,9 +17,9 @@ class PrivacyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PrivacyBloc(
-        repository: PrivacyRepositoryImpl(),
-      )..add(const PrivacyStarted()),
+      create: (_) =>
+          PrivacyBloc(repository: PrivacyRepositoryImpl())
+            ..add(const PrivacyStarted()),
       child: const _PrivacyView(),
     );
   }
@@ -42,20 +42,34 @@ class _PrivacyView extends StatelessWidget {
         final content = state.content;
 
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: PrivacyTheme.bg,
             body: Column(
               children: [
                 SafeArea(
                   bottom: false,
-                  child: PrivacyAppBar(
-                    title: 'privacy',
-                    onHomeTap: () {
-                      context.read<PrivacyBloc>().add(
-                          const PrivacyHomePressed());
-                      context.go(AppRoutes.home);
-                    }),
+                  child: SizedBox(
+                    height: PrivacyTheme.appBarHeight,
+                    child: DefaultAppBar(
+                      title: 'privacy',
+                      onBack: () {
+                        context.pop();
+                      },
+                      height: PrivacyTheme.appBarHeight,
+                      backgroundColor: PrivacyTheme.appBarBg,
+                      showBackArrow: true,
+                      showHome: true,
+                      onHomeTap: () {
+                        context.read<PrivacyBloc>().add(
+                          const PrivacyHomePressed(),
+                        );
+                        context.go(AppRoutes.home);
+                      },
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -63,23 +77,32 @@ class _PrivacyView extends StatelessWidget {
                     child: content == null
                         ? const SizedBox.shrink()
                         : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        PrivacySection(
-                          title: content.title1,
-                          paragraphs: [
-                            content.paragraph1,
-                            content.paragraph2,
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Text('how we can help', style: PrivacyTheme.sectionHeader),
-                        const SizedBox(height: 10),
-                        Text(content.paragraph3, style: PrivacyTheme.body),
-                        const SizedBox(height: 14),
-                        Text(content.paragraph4, style: PrivacyTheme.body),
-                      ],
-                    ),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PrivacySection(
+                                title: content.title1,
+                                paragraphs: [
+                                  content.paragraph1,
+                                  content.paragraph2,
+                                ],
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                'how we can help',
+                                style: PrivacyTheme.sectionHeader,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                content.paragraph3,
+                                style: PrivacyTheme.body,
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                content.paragraph4,
+                                style: PrivacyTheme.body,
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ],

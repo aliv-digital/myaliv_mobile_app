@@ -11,7 +11,11 @@ class FingerPrintSecurityTheme {
 
   static const double appBarHeight = 56;
 
-  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 18, 16, 24);
+  // Body content padding from design (left/right 16, top 24).
+  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
+
+  // Vertical gap between body text and CTA button.
+  static const double bodyToButtonGap = 24;
 
   static const TextStyle title = TextStyle(
     fontFamily: fontFamily,
@@ -24,8 +28,9 @@ class FingerPrintSecurityTheme {
   static const TextStyle body = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
+    // Design asks for w450; Flutter named weights are discrete, so w500 is closest.
     fontWeight: FontWeight.w500,
-    color: textSecondary,
+    color: Color(0xFF707070),
     height: 1.43,
   );
 
@@ -35,9 +40,9 @@ class FingerPrintSecurityTheme {
   static const Color bottomButtonBg = Color(0xFF655C9A);
   static const TextStyle bottomButtonText = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: FontWeight.w700,
     color: Colors.white,
-    height: 1.1,
+    height: 1.80,
   );
 }
