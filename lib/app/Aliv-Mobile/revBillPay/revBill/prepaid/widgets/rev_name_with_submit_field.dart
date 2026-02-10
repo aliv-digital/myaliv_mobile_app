@@ -82,24 +82,25 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
           top: 8,
           bottom: 8,
           child: Opacity(
-            opacity: canTap ? 1 : 0.55,
+            opacity: canTap ? 1 : 1, // 0.55, // activate moment , initially inactive
             child: InkWell(
               onTap: canTap ? widget.onSubmit : null,
               borderRadius: BorderRadius.circular(16),
               child: Container(
-                width: 66,
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                //width: ,
+                height: double.infinity,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF645D9C),
-                  borderRadius: BorderRadius.circular(16),
+                  color: RevPrepaidTheme.appBarBg,
+                  borderRadius: BorderRadius.circular(100),
                 ),
-                child: widget.submitting
-                    ? const SizedBox(
-                  height: 14,
-                  width: 14,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-                    : Text('submit', style: RevPrepaidTheme.submit),
+                // child: widget.submitting ? const SizedBox(
+                //   height: 4,
+                //   width: 4,
+                //   child: CircularProgressIndicator(strokeWidth: 1)
+                // ) : Text('submit', style: RevPrepaidTheme.submit),
+                child: Text('submit', style: RevPrepaidTheme.submit),
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../router/app_routes.dart';
 import '../bloc/rev_prepaid_bloc.dart';
@@ -22,9 +23,9 @@ class RevPrepaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => RevPrepaidBloc(
-        repository: RevPrepaidRepositoryImpl(),
-      )..add(const RevPrepaidStarted()),
+      create: (_) =>
+          RevPrepaidBloc(repository: RevPrepaidRepositoryImpl())
+            ..add(const RevPrepaidStarted()),
       child: const _RevPrepaidView(),
     );
   }
@@ -47,107 +48,116 @@ class _RevPrepaidView extends StatelessWidget {
         return Scaffold(
           backgroundColor: RevPrepaidTheme.bg,
           body: SafeArea(
-              child: CustomScrollView(
-                slivers: [
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: RevAppBarSliver(
+            child: CustomScrollView(
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: RevAppBarSliver(
+                    height: RevPrepaidTheme.appBarHeight,
+                    child: DefaultAppBar(
+                      title: state.title,
                       height: RevPrepaidTheme.appBarHeight,
-                      child: DefaultAppBar(
-                        title: state.title,
-                        height: RevPrepaidTheme.appBarHeight,
-                        backgroundColor: RevPrepaidTheme.appBarBg,
-                        showBackArrow: true,
-                        centerTitle: false
-                      ),
+                      backgroundColor: RevPrepaidTheme.appBarBg,
+                      showBackArrow: true,
+                      centerTitle: false,
                     ),
                   ),
+                ),
 
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                    sliver: SliverToBoxAdapter(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          RevLabeledSection(
-                            label: 'service',
-                            child: RevReadonlyField(text: state.service)
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 17, 24, 20),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RevLabeledSection(
+                          label: 'service',
+                          child: RevReadonlyField(text: state.service),
+                        ),
+                        const SizedBox(height: 14),
+                        RevLabeledSection(
+                          label: 'Account Number',
+                          child: RevTextField(
+                            value: state.accountNumber,
+                            hintText: 'enter number',
+                            keyboardType: TextInputType.number,
+                            onChanged: (v) => context
+                                .read<RevPrepaidBloc>()
+                                .add(RevAccountNumberChanged(v)),
                           ),
-                          const SizedBox(height: 16),
-                          RevLabeledSection(
-                            label: 'Account Number',
-                            child: RevTextField(
-                              value: state.accountNumber,
-                              hintText: 'enter number',
-                              keyboardType: TextInputType.number,
-                              onChanged: (v) => context.read<RevPrepaidBloc>().add(
-                                RevAccountNumberChanged(v)
-                              )
-                            )
-                          ),
-                          const SizedBox(height: 16),
-                          RevLabeledSection(
-                            label: 'Name',
-                            child: RevNameWithSubmitField(
-                              value: state.name,
-                              hintText: 'enter name',
-                              canSubmit: state.canSubmit,
-                              submitting: state.submitting,
-                              onChanged: (v) => context.read<RevPrepaidBloc>().add(
-                                RevNameChanged(v)
-                              ),
-                              onSubmit: () => context.read<RevPrepaidBloc>().add(
-                                const RevSubmitPressed()
-                              )
-                            )
-                          ),
-                          const SizedBox(height: 16),
-                          RevLabeledSection(
-                            label: 'Account Status',
-                            child: RevReadonlyField(
-                                text: state.accountStatusText
-                            )
-                          ),
-                          const SizedBox(height: 16),
-                          Text('account balance',
-                              // style: RevPrepaidTheme.label
-                            style: TextStyle(
-                              color: const Color(0xFF1C1C1C) /* Black-100% */,
-                              fontSize: 14,
-                              fontFamily: 'Circular Pro',
-                              fontWeight: FontWeight.w700,
-                              height: 1.43,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        RevLabeledSection(
+                          label: 'Name',
+                          child: RevNameWithSubmitField(
+                            value: state.name,
+                            hintText: 'enter name',
+                            canSubmit: state.canSubmit,
+                            submitting: state.submitting,
+                            onChanged: (v) => context
+                                .read<RevPrepaidBloc>()
+                                .add(RevNameChanged(v)),
+                            onSubmit: () => context.read<RevPrepaidBloc>().add(
+                              const RevSubmitPressed(),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(state.accountBalanceText, style: RevPrepaidTheme.value),
-                          const SizedBox(height: 14),
-                          RevLabeledSection(
-                            label: 'enter a custom amount',
-                            child: RevAmountField(
-                              value: state.amountFormatted,
-                              onChanged: (v) => context.read<RevPrepaidBloc>().add(
-                                RevAmountChanged(v)
-                              )
-                            )
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        RevLabeledSection(
+                          label: 'Account Status',
+                          child: RevReadonlyField(
+                            text: state.accountStatusText,
                           ),
-                          const SizedBox(height: 30),
-                          RevPrimaryButton(
-                            text: 'proceed',
-                            enabled: state.canProceed,
-                            onTap: () {context.read<RevPrepaidBloc>().add(
-                              const RevProceedPressed()
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Text('account balance', style: RevPrepaidTheme.label),
+                        const SizedBox(height: 8),
+                        Text(
+                          state.accountBalanceText,
+                          style: TextStyle(
+                            fontFamily: RevPrepaidTheme.fontFamily,
+                            fontSize: 14,
+                            height: 1.2,
+                            fontWeight: FontWeight.w500,
+                            color: HexColor.fromHex('#707070'),
+                          ),
+                        ), //style: RevPrepaidTheme.value),
+                        const SizedBox(height: 16),
+                        RevLabeledSection(
+                          label: 'enter a custom amount',
+                          child: RevAmountField(
+                            value: state.amountFormatted,
+                            onChanged: (v) => context
+                                .read<RevPrepaidBloc>()
+                                .add(RevAmountChanged(v)),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        RevPrimaryButton(
+                          text: 'proceed',
+                          enabled: state.canProceed,
+                          onTap: () {
+                            context.read<RevPrepaidBloc>().add(
+                              const RevProceedPressed(),
                             );
-                            context.push(AppRoutes.revConfirmationPrepaidScreen);
-                            }
-                          )
-                        ]
-                      )
-                    )
-                  )
-                ]
-              )
-          )
+                            context.push(
+                              AppRoutes.revConfirmationPrepaidScreen,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

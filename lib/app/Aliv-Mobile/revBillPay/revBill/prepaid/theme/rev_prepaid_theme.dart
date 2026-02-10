@@ -17,16 +17,16 @@ class RevPrepaidTheme {
 
   static TextStyle get label => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 12,
-    height: 1.2,
-    fontWeight: FontWeight.w600,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
     color: text,
   );
 
   static TextStyle get input => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 13,
-    height: 1.2,
+    fontSize: 14,
+    height: 1.43,
     fontWeight: FontWeight.w500,
     color: text,
   );
@@ -51,9 +51,9 @@ class RevPrepaidTheme {
 
   static TextStyle get submit => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 12,
-    height: 1.2,
-    fontWeight: FontWeight.w600,
+    fontSize: 16,
+    height: 1.25,
+    fontWeight: FontWeight.w500,
     color: Colors.white,
   );
 }

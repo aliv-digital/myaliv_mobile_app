@@ -19,7 +19,7 @@ class RevPrimaryButton extends StatelessWidget {
       onTap: enabled ? onTap : null,
       borderRadius: BorderRadius.circular(22),
       child: Container(
-        height: 44,
+        height: 40,
         width: double.infinity,
         alignment: Alignment.center,
         decoration: BoxDecoration(
@@ -29,6 +29,8 @@ class RevPrimaryButton extends StatelessWidget {
         child: Text(
           text,
           style: RevPrepaidTheme.button.copyWith(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
             color: enabled ? Colors.white : Colors.white.withValues(alpha: 0.75),
           ),
         ),
