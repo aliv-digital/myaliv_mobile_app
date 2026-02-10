@@ -8,7 +8,6 @@ import '../bloc/forget_password_otp_event.dart';
 import '../bloc/forget_password_otp_state.dart';
 import '../theme/forget_password_otp_theme.dart';
 
-
 class ForgetPasswordOtpBottomActions extends StatelessWidget {
   const ForgetPasswordOtpBottomActions({super.key});
 
@@ -23,20 +22,24 @@ class ForgetPasswordOtpBottomActions extends StatelessWidget {
             return DefaultButton(
               label: 'verify',
               isLoading: loading,
+              textStyle: ForgetPasswordOtpTheme.verifyButtonText,
               onPressed: () {
-                context.read<ForgetPasswordOtpBloc>().add(const ForgetPasswordOtpSubmitted());
+                context
+                    .read<ForgetPasswordOtpBloc>()
+                    .add(const ForgetPasswordOtpSubmitted());
                 context.push(AppRoutes.createPassword);
               },
             );
           },
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: ForgetPasswordOtpSizes.verifyToResendGap),
 
         // didn't receive / resend
         BlocBuilder<ForgetPasswordOtpBloc, ForgetPasswordOtpState>(
           builder: (context, state) {
-            final resendLoading = state.resendStatus == ForgetPasswordOtpResendStatus.loading;
+            final resendLoading =
+                state.resendStatus == ForgetPasswordOtpResendStatus.loading;
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +49,11 @@ class ForgetPasswordOtpBottomActions extends StatelessWidget {
                   style: ForgetPasswordOtpTheme.helperText,
                 ),
                 GestureDetector(
-                  onTap: resendLoading ? null : () => context.read<ForgetPasswordOtpBloc>().add(const ForgetPasswordOtpResendRequested()),
+                  onTap: resendLoading
+                      ? null
+                      : () => context
+                          .read<ForgetPasswordOtpBloc>()
+                          .add(const ForgetPasswordOtpResendRequested()),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: ForgetPasswordOtpTheme.resendText,
@@ -56,7 +63,6 @@ class ForgetPasswordOtpBottomActions extends StatelessWidget {
             );
           },
         ),
-
       ],
     );
   }

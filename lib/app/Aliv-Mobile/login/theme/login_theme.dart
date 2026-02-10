@@ -178,9 +178,9 @@ class AuthModuleTextStyles {
 
   // Header title style below ALIV logo.
   static const TextStyle welcomeBack = TextStyle(
-    fontSize: 17,
+    fontSize: 24,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     color: AuthModuleColors.textBlack,
   );
 
