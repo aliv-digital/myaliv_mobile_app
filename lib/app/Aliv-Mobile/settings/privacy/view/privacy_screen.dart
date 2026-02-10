@@ -86,17 +86,17 @@ class _PrivacyView extends StatelessWidget {
                                   content.paragraph2,
                                 ],
                               ),
-                              const SizedBox(height: 18),
+                              // const SizedBox(height: 18),
                               Text(
                                 'how we can help',
                                 style: PrivacyTheme.sectionHeader,
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 16),
                               Text(
                                 content.paragraph3,
                                 style: PrivacyTheme.body,
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 16),
                               Text(
                                 content.paragraph4,
                                 style: PrivacyTheme.body,

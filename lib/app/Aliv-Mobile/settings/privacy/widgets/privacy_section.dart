@@ -17,13 +17,15 @@ class PrivacySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: PrivacyTheme.title),
-        const SizedBox(height: 10),
+        const SizedBox(height: 16),
         ...paragraphs.map(
               (p) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.only(bottom: 48),
             child: Text(p, style: PrivacyTheme.body),
           ),
+
         ),
+
       ],
     );
   }
