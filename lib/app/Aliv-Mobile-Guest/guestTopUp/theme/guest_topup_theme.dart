@@ -7,6 +7,7 @@ class GuestTopUpTheme {
   static Color headingColor = HexColor.fromHex('#000000');
   static Color bodyTextColor = HexColor.fromHex('#707070');
   static Color inputFieldBackgroundColor = HexColor.fromHex('#F2F1F9');
+  static Color inputFieldBorderColor = HexColor.fromHex('#E0E0E0');
 
   // Gradient border colors (Figma)
   static Color yellow = HexColor.fromHex('#FFC627');
@@ -18,11 +19,29 @@ class GuestTopUpTheme {
   // Selection color (Figma)
   static Color selection = HexColor.fromHex('#5146A8');
 
-
   static Color amountTextColor = HexColor.fromHex('#5146A8');
   static Color simpleTxt = HexColor.fromHex('#222222');
 
   static final Color amountValueColor = HexColor.fromHex('#5A4FB6');
+
+  // Shared phone field dimensions and border settings.
+  static const double phoneFieldHeight = 54;
+  static const double phoneFieldRadius = 8;
+  static const double phoneFieldBorderWidth = 1;
+  static const double countryToPhoneGap = 10;
+
+  // Focused-state gradient border for phone inputs.
+  static final LinearGradient focusedInputBorderGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: <Color>[
+      yellow,
+      blue,
+      purple,
+      lightPink,
+      orange,
+    ],
+  );
 
   // Input label text above phone fields
   static final TextStyle inputLabel = TextStyle(
@@ -32,6 +51,19 @@ class GuestTopUpTheme {
     fontWeight: FontWeight.w700,
     color: Colors.black,
   );
+
+  // First heading: "please enter an active prepaid number to top up"
+  static const TextStyle activePrepaidPrompt = TextStyle(
+    color: Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
+  // Exact spacing for the first heading block.
+  static const double activePrepaidTopGap = 25.49;
+  static const double activePrepaidHorizontal = 23.5;
 
   // Phone input text
   static final TextStyle phoneInput = TextStyle(

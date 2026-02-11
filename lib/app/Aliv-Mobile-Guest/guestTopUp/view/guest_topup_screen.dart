@@ -102,15 +102,20 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                     // enter phone number
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 25, left: 23, right: 23),
+                        padding: const EdgeInsets.only(
+                          top: GuestTopUpTheme.activePrepaidTopGap,
+                          left: GuestTopUpTheme.activePrepaidHorizontal,
+                          right: GuestTopUpTheme.activePrepaidHorizontal,
+                        ),
                         child: LabeledInputField(
-                            label:
-                                'please enter an active prepaid number to top up',
-                            hintText: 'eg: 2428999999',
-                            country: _selectedCountry,
-                            enableCountryPicker: true,
-                            onPickCountry: _pickCountry,
-                            onChanged: (v) {}),
+                          label: 'please enter an active prepaid number to top up',
+                          labelStyle: GuestTopUpTheme.activePrepaidPrompt,
+                          hintText: 'eg: 2428999999',
+                          country: _selectedCountry,
+                          enableCountryPicker: true,
+                          onPickCountry: _pickCountry,
+                          onChanged: (v) {},
+                        ),
                       ),
                     ),
                     // confirm phone number
