@@ -31,7 +31,9 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
   final FocusNode _phoneFocusNode = FocusNode();
   bool _hasPhoneFocus = false;
 
-  static const double _fieldHeight = GuestTopUpTheme.phoneFieldHeight;
+  static const double _phoneFieldHeight = GuestTopUpTheme.phoneFieldHeight;
+  static const double _countryPickerHeight =
+      GuestTopUpTheme.countryPickerHeight;
   static const double _fieldRadius = GuestTopUpTheme.phoneFieldRadius;
   static const double _countryWidth = 76;
 
@@ -72,7 +74,7 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
               onTap: widget.enableCountryPicker ? widget.onPickCountry : null,
               borderRadius: BorderRadius.circular(_fieldRadius),
               child: Container(
-                height: _fieldHeight,
+                height: _countryPickerHeight,
                 width: _countryWidth,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
@@ -109,7 +111,7 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
                 // Unfocused state should be borderless; show gradient only on focus.
                 unfocusedBorderColor: Colors.transparent,
                 child: Container(
-                  height: _fieldHeight,
+                  height: _phoneFieldHeight,
                   decoration: BoxDecoration(
                     color: GuestTopUpTheme.inputFieldBackgroundColor,
                     borderRadius: BorderRadius.circular(_fieldRadius),

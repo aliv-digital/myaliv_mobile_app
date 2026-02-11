@@ -28,7 +28,8 @@ class GuestTopUpTheme {
   static final Color amountValueColor = HexColor.fromHex('#5146A8');
 
   // Shared phone field dimensions and border settings.
-  static const double phoneFieldHeight = 54;
+  static const double phoneFieldHeight = 48;
+  static const double countryPickerHeight = 48;
   static const double phoneFieldRadius = 8;
   static const double phoneFieldBorderWidth = 1;
   static const double countryToPhoneGap = 10;
