@@ -11,7 +11,7 @@ class DefaultAppBar extends StatelessWidget {
     required this.title,
 
     // Layout
-    this.height = 56,
+    this.height = 64,
     this.backgroundColor = const Color(0xFF645D9C),
     this.horizontalPadding = 12,
     this.titleAlignment = AppBarTitleAlignment.left,
