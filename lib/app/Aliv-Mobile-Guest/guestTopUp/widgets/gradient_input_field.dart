@@ -157,6 +157,10 @@ class _GradientInputFieldState extends State<GradientInputField> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Text(
+                'enter top up amount',
+                style: GuestTopUpTheme.amountHelper,
+              ),
               SizedBox(
                 width: fieldWidth,
                 height: 68,
@@ -232,11 +236,8 @@ class _GradientInputFieldState extends State<GradientInputField> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'enter top up amount',
-                style: GuestTopUpTheme.amountHelper,
-              ),
+              //const SizedBox(height: 8),
+
             ],
           ),
         );
