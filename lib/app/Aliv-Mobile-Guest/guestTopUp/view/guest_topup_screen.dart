@@ -71,7 +71,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: GuestTopUpTheme.screenBackgroundColor,
       body: SafeArea(
         child: BlocListener<GuestTopUpBloc, GuestTopUpState>(
           listenWhen: (prev, curr) =>
@@ -146,6 +146,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                         child: BlocBuilder<GuestTopUpBloc, GuestTopUpState>(
                           builder: (context, state) {
                             return DefaultButton(
+                              height: 40,
                               backgroundColor: HexColor.fromHex('FF645D9C'),
                               onPressed: () {
                                 context.push(AppRoutes.confirmGuestTopUp);

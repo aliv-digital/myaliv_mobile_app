@@ -3,6 +3,9 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestTopUpTheme {
+  // Guest top-up screen background.
+  static const Color screenBackgroundColor = Color(0xFFFFFFFF);
+
   static Color appBarColor = HexColor.fromHex('#645D9C');
   static Color headingColor = HexColor.fromHex('#000000');
   static Color bodyTextColor = HexColor.fromHex('#707070');
@@ -22,7 +25,7 @@ class GuestTopUpTheme {
   static Color amountTextColor = HexColor.fromHex('#5146A8');
   static Color simpleTxt = HexColor.fromHex('#222222');
 
-  static final Color amountValueColor = HexColor.fromHex('#5A4FB6');
+  static final Color amountValueColor = HexColor.fromHex('#5146A8');
 
   // Shared phone field dimensions and border settings.
   static const double phoneFieldHeight = 54;
@@ -42,6 +45,49 @@ class GuestTopUpTheme {
       orange,
     ],
   );
+
+  // Amount input field dimensions from design.
+  static const double amountFieldOuterHorizontalPadding = 68;
+  static const double amountFieldHeight = 71;
+  static const double amountFieldRadius = 10;
+  static const double amountFieldBorderWidth = 3;
+  static const double amountFieldLabelToFieldGap = 4;
+  static const double amountFieldTextHorizontalInset = 68;
+
+  // Elevation below the amount input card.
+  static const Color amountFieldShadowColor = Color(0x1A000000);
+  static const double amountFieldShadowBlur = 12;
+  static const double amountFieldShadowOffsetY = 6;
+
+  // Default value shown in the amount input.
+  static const String amountDefaultValue = r'$15.00';
+
+  // Exact gradient palette provided for the amount border.
+  static final List<Color> amountFieldBorderGradientColors = <Color>[
+    yellow,
+    blue,
+    purple,
+    lightPink,
+    orange,
+    lightPink,
+    purple,
+    blue,
+    yellow,
+  ];
+
+  // Position each color along the border loop:
+  // top-left -> top -> top-right -> right -> bottom-right -> bottom -> bottom-left -> left -> top-left.
+  static const List<double> amountFieldBorderGradientStops = <double>[
+    0.00, // yellow at top-left start
+    0.22, // blue across top edge
+    0.40, // purple near top-right
+    0.46, // pink on right side
+    0.52, // orange at bottom-right
+    0.68, // pink across bottom
+    0.86, // purple near bottom-left
+    0.94, // blue on left side
+    1.00, // yellow closes back to top-left
+  ];
 
   // Input label text above phone fields
   static final TextStyle inputLabel = TextStyle(
@@ -75,9 +121,13 @@ class GuestTopUpTheme {
 
   // Phone input hint
   static final TextStyle phoneHint = TextStyle(
+    // 70% opacity of #707070 for the phone placeholder text.
+    color: Color(0xB3707070),
     fontSize: 14,
+    height: 1.43,
     fontFamily: AppConstants.defaultFontFamily,
-    color: HexColor.fromHex('#B0B0B5'),
+    // Flutter has no named w450, so w500 is the closest available weight.
+    fontWeight: FontWeight.w500,
   );
 
   // Country dial code text inside picker
@@ -90,7 +140,7 @@ class GuestTopUpTheme {
 
   // Top-up amount input text
   static final TextStyle amountInput = TextStyle(
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
     color: amountValueColor,
@@ -98,7 +148,7 @@ class GuestTopUpTheme {
 
   // Top-up amount prefix ($)
   static final TextStyle amountPrefix = TextStyle(
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
     color: amountValueColor,
@@ -106,18 +156,19 @@ class GuestTopUpTheme {
 
   // Top-up amount hint
   static final TextStyle amountHint = TextStyle(
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
-    color: amountValueColor,
+    color: amountValueColor.withValues(alpha: 0.35),
   );
 
   // Helper text below amount field
   static final TextStyle amountHelper = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
+    fontSize: 14,
+    // Flutter has no named w450, so w500 is the closest available weight.
+    fontWeight: FontWeight.w500,
     fontFamily: AppConstants.defaultFontFamily,
-    color: simpleTxt,
+    color: Color(0xFF1C1C1C),
   );
 
   // SnackBar message text

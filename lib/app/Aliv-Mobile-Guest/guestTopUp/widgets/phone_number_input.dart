@@ -106,7 +106,8 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
             Expanded(
               child: FocusedInputBorderWrapper(
                 isFocused: _hasPhoneFocus,
-                unfocusedBorderColor: GuestTopUpTheme.inputFieldBorderColor,
+                // Unfocused state should be borderless; show gradient only on focus.
+                unfocusedBorderColor: Colors.transparent,
                 child: Container(
                   height: _fieldHeight,
                   decoration: BoxDecoration(
