@@ -30,6 +30,7 @@ class PaymentBreakdownCard extends StatelessWidget {
         scallopCount: TopUpConfirmTheme.breakdownScallopCount,
         scallopGap: TopUpConfirmTheme.breakdownScallopGap,
         scallopDepth: TopUpConfirmTheme.breakdownScallopDepth,
+        scallopOvalHeightFactor: TopUpConfirmTheme.breakdownScallopOvalHeightFactor,
         scallopSideInset: TopUpConfirmTheme.breakdownScallopSideInset,
       ),
       clipBehavior: Clip.antiAlias,
@@ -182,6 +183,7 @@ class _ScallopBottomClipper extends CustomClipper<Path> {
     required this.scallopCount,
     required this.scallopGap,
     required this.scallopSideInset,
+    required this.scallopOvalHeightFactor,
     this.scallopDepth = 6,
   });
 
@@ -189,8 +191,9 @@ class _ScallopBottomClipper extends CustomClipper<Path> {
   final int scallopCount;
   final double scallopGap;
   final double scallopSideInset;
+  final double scallopOvalHeightFactor;
 
-  /// Scallop cut depth; clamped to computed scallop radius.
+  /// Scallop cut depth; clamped to computed oval half-height.
   final double scallopDepth;
 
   @override
@@ -214,24 +217,27 @@ class _ScallopBottomClipper extends CustomClipper<Path> {
     final count = scallopCount.clamp(1, 9999);
     final totalGap = (count - 1) * scallopGap;
     final diameter = ((usableWidth - totalGap) / count).clamp(0.0, usableWidth);
-    final scallopRadius = diameter / 2;
-    if (scallopRadius <= 0) {
+    final scallopOvalHeight = diameter * scallopOvalHeightFactor;
+    final scallopRadiusX = diameter / 2;
+    final scallopRadiusY = scallopOvalHeight / 2;
+    if (scallopRadiusX <= 0 || scallopRadiusY <= 0) {
       return base;
     }
     final step = diameter + scallopGap;
-    final startX = leftLimit + scallopRadius;
+    final startX = leftLimit + scallopRadiusX;
 
-    final depth = scallopDepth.clamp(0.0, scallopRadius);
-    final centerYOffset = scallopRadius - depth;
+    final depth = scallopDepth.clamp(0.0, scallopRadiusY);
+    final centerYOffset = scallopRadiusY - depth;
     final centerY = size.height + centerYOffset;
 
     for (int i = 0; i < count; i++) {
       final cx = startX + i * step;
 
       holes.addOval(
-        Rect.fromCircle(
+        Rect.fromCenter(
           center: Offset(cx, centerY),
-          radius: scallopRadius,
+          width: diameter,
+          height: scallopOvalHeight,
         ),
       );
     }
@@ -245,6 +251,7 @@ class _ScallopBottomClipper extends CustomClipper<Path> {
         oldClipper.scallopCount != scallopCount ||
         oldClipper.scallopGap != scallopGap ||
         oldClipper.scallopSideInset != scallopSideInset ||
+        oldClipper.scallopOvalHeightFactor != scallopOvalHeightFactor ||
         oldClipper.scallopDepth != scallopDepth;
   }
 }

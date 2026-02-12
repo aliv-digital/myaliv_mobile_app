@@ -86,7 +86,9 @@ class TopUpConfirmTheme {
   static const double breakdownScallopRadius = 10;
   static const int breakdownScallopCount = 12;
   static const double breakdownScallopGap = 4;
-  static const double breakdownScallopDepth = 10;
+  static const double breakdownScallopDepth = 6;
+  // Use a flatter vertical oval instead of a perfect circle for each scallop.
+  static const double breakdownScallopOvalHeightFactor = 0.72;
   // Keep left/right ends flat while scallops stay in the middle (Figma-like).
   static const double breakdownScallopSideInset = 10;
   static const double breakdownElevation = 10;
