@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -10,7 +11,6 @@ import '../bloc/confirm_topup_state.dart';
 import '../repository/confirm_topup_repository.dart';
 import '../theme/theme.dart';
 import '../widgets/bottom_pay_bar.dart';
-import '../widgets/payment_breakdown_card.dart';
 import '../widgets/terms_and_conditions_text.dart';
 import '../widgets/topup_summary_card.dart';
 
@@ -163,10 +163,27 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                       p.vat != c.vat ||
                       p.total != c.total,
                   builder: (context, state) {
-                    return PaymentBreakdownCard(
-                      subTotal: state.subTotal,
-                      vat: state.vat,
-                      total: state.total,
+                    // Local card kept for reference:
+                    // return PaymentBreakdownCard(
+                    //   subTotal: state.subTotal,
+                    //   vat: state.vat,
+                    //   total: state.total,
+                    // );
+                    return CustomPaymentBreakDownCard(
+                      items: [
+                        CustomPaymentBreakdownLineItem(
+                          label: 'sub total',
+                          value: '\$ ${state.subTotal.toStringAsFixed(2)}',
+                        ),
+                        CustomPaymentBreakdownLineItem(
+                          label: 'vat',
+                          value: '\$ ${state.vat.toStringAsFixed(2)}',
+                        ),
+                        CustomPaymentBreakdownLineItem(
+                          label: 'total',
+                          value: '\$ ${state.total.toStringAsFixed(2)}',
+                        ),
+                      ],
                     );
                   },
                 ),
