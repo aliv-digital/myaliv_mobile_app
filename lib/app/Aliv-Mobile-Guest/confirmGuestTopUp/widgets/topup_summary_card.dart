@@ -15,35 +15,38 @@ class TopUpSummaryCard extends StatelessWidget {
   final String actionLabel;
   final String amountText;
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(minHeight: 120),
+      constraints: const BoxConstraints(
+        minHeight: TopUpConfirmTheme.summaryCardMinHeight,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
+        color: TopUpConfirmTheme.cardBackgroundColor,
+        borderRadius:
+            BorderRadius.circular(TopUpConfirmTheme.summaryCardRadius),
+        boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x18000000),
-            blurRadius: 12,
-            offset: Offset(0, 6),
+            color: TopUpConfirmTheme.cardShadowColor,
+            blurRadius: TopUpConfirmTheme.summaryCardShadowBlur,
+            offset: Offset(0, TopUpConfirmTheme.summaryCardShadowOffsetY),
           ),
         ],
       ),
 
-      // no padding here (so divider can be full width)
+      // Keep outer container unpadded so divider spans full width.
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 16),
-
-          // top content (padded)
+          // Top section content.
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
+            padding: const EdgeInsets.fromLTRB(
+              TopUpConfirmTheme.summaryHorizontalInset,
+              TopUpConfirmTheme.summaryTopSectionVerticalPadding,
+              TopUpConfirmTheme.summaryHorizontalInset,
+              TopUpConfirmTheme.summaryTopSectionVerticalPadding,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -51,7 +54,8 @@ class TopUpSummaryCard extends StatelessWidget {
                   title,
                   style: TopUpConfirmTheme.summaryTitle,
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(
+                    height: TopUpConfirmTheme.summaryTitleToPhoneGap),
                 Text(
                   phoneNumber,
                   style: TopUpConfirmTheme.summaryPhone,
@@ -60,16 +64,17 @@ class TopUpSummaryCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 14),
-
-          //  FULL WIDTH divider (left edge -> right edge)
+          // Full-width divider.
           const _ThinLine(),
 
-          const SizedBox(height: 22),
-
-          // bottom content (padded)
+          // Bottom section content.
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
+            padding: const EdgeInsets.fromLTRB(
+              TopUpConfirmTheme.summaryHorizontalInset,
+              TopUpConfirmTheme.summaryBottomSectionVerticalPadding,
+              TopUpConfirmTheme.summaryHorizontalInset,
+              TopUpConfirmTheme.summaryBottomSectionVerticalPadding,
+            ),
             child: Row(
               children: [
                 Text(
@@ -81,8 +86,6 @@ class TopUpSummaryCard extends StatelessWidget {
               ],
             ),
           ),
-
-          const SizedBox(height: 16),
         ],
       ),
     );
@@ -92,14 +95,12 @@ class TopUpSummaryCard extends StatelessWidget {
 class _ThinLine extends StatelessWidget {
   const _ThinLine();
 
-  static const _divider = Color(0xFFB7B2DA);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 1,
+      height: TopUpConfirmTheme.summaryDividerHeight,
       width: double.infinity,
-      color: _divider,
+      color: TopUpConfirmTheme.summaryDividerColor,
     );
   }
 }
@@ -109,25 +110,29 @@ class _AmountPill extends StatelessWidget {
 
   final String text;
 
-  static const _pillBorder = Color(0xFF6B63A7);
-  static const _pillText = Color(0xFF6B63A7);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-      decoration: BoxDecoration(
-        color: TopUpConfirmTheme.boxColor,//Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(width: 1, color: _pillBorder),
+      padding: const EdgeInsets.symmetric(
+        horizontal: TopUpConfirmTheme.summaryAmountPillHorizontalPadding,
+        vertical: TopUpConfirmTheme.summaryAmountPillVerticalPadding,
       ),
-      child: Text(
-        text,
-        style: TopUpConfirmTheme.summaryAmountPill.copyWith(
-            color: _pillText,
-            fontSize: 16,
-            fontWeight: FontWeight.w400
-        ),
+      decoration: BoxDecoration(
+        color: TopUpConfirmTheme.summaryAmountPillBackgroundColor,
+        borderRadius:
+            BorderRadius.circular(TopUpConfirmTheme.summaryAmountPillRadius),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: TopUpConfirmTheme.summaryAmountPill,
+          ),
+        ],
       ),
     );
   }

@@ -62,13 +62,13 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   const SystemUiOverlayStyle(
+    //     statusBarColor: Colors.white,
+    //     statusBarIconBrightness: Brightness.dark,
+    //     statusBarBrightness: Brightness.light,
+    //   ),
+    // );
 
     return Scaffold(
       backgroundColor: GuestTopUpTheme.screenBackgroundColor,

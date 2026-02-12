@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
@@ -12,6 +10,7 @@ import '../bloc/confirm_topup_state.dart';
 import '../repository/confirm_topup_repository.dart';
 import '../theme/theme.dart';
 import '../widgets/bottom_pay_bar.dart';
+import '../widgets/payment_breakdown_card.dart';
 import '../widgets/terms_and_conditions_text.dart';
 import '../widgets/topup_summary_card.dart';
 
@@ -46,8 +45,6 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
 
 class _GuestConfirmTopUpView extends StatelessWidget {
   const _GuestConfirmTopUpView();
-
-  static const _bg = Color(0xFFF1F2FA);
 
   void _openTerms(BuildContext context) {
     // TODO: open terms page / modal / webview
@@ -88,8 +85,9 @@ class _GuestConfirmTopUpView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: _bg,
-        bottomNavigationBar:  BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+        backgroundColor: TopUpConfirmTheme.screenBackgroundColor,
+        bottomNavigationBar:
+            BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
           builder: (context, state) {
             return BottomPayBar(
                 amountText: '\$ ${state.total.toStringAsFixed(2)}',
@@ -107,7 +105,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: DefaultAppBar(
-                backgroundColor: HexColor.fromHex('FF645D9C'),
+                  backgroundColor: TopUpConfirmTheme.appBarColor,
                   title: 'confirmation and payment',
                   onBack: () {
                     context.pop();
@@ -116,7 +114,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
             // 1) Top card
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 29, right: 29, top: 31),
+                padding: TopUpConfirmTheme.summaryWrapperPadding,
                 child:
                     BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                   buildWhen: (p, c) =>
@@ -131,18 +129,19 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               ),
             ),
 
-            // spacing
-            //const SliverToBoxAdapter(child: SizedBox(height: 14)),
-
             // 2) Terms text
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 29, right: 29, top: 17, bottom: 17),
+                padding: TopUpConfirmTheme.termsWrapperPadding,
                 child:
                     BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                   builder: (context, state) {
                     return TermsAndConditionsText(
+                      isChecked: state.isTermsChecked,
+                      onToggleChecked: () =>
+                          context.read<GuestConfirmTopUpBloc>().add(
+                                const GuestConfirmTopUpTermsCheckboxToggled(),
+                              ),
                       onTapTerms: () =>
                           context.read<GuestConfirmTopUpBloc>().add(
                                 const GuestConfirmTopUpTermsPressed(),
@@ -153,12 +152,10 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               ),
             ),
 
-            //const SliverToBoxAdapter(child: SizedBox(height: 14)),
-
             // 3) Payment breakdown
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.only(left: 29, right: 29),
+                padding: TopUpConfirmTheme.breakdownWrapperPadding,
                 child:
                     BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                   buildWhen: (p, c) =>
@@ -166,31 +163,19 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                       p.vat != c.vat ||
                       p.total != c.total,
                   builder: (context, state) {
-                    return DefaultPaymentBreakDownCard(
-                      placeDividerBeforeLastItem: true,
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-                      items: [
-                        PaymentBreakdownLineItem(
-                          label: 'sub total',
-                          value: '\$ ${state.subTotal.toStringAsFixed(2)}',
-                        ),
-                        PaymentBreakdownLineItem(
-                          label: 'vat',
-                          value: '\$ ${state.vat.toStringAsFixed(2)}',
-                        ),
-                        PaymentBreakdownLineItem(
-                          label: 'total',
-                          value: '\$ ${state.total.toStringAsFixed(2)}',
-                        ),
-                      ],
+                    return PaymentBreakdownCard(
+                      subTotal: state.subTotal,
+                      vat: state.vat,
+                      total: state.total,
                     );
                   },
                 ),
               ),
             ),
 
-            // bottom spacing যাতে bottom bar এর সাথে collide না করে
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: TopUpConfirmTheme.bottomScrollSpacing),
+            ),
           ],
         )),
       ),
