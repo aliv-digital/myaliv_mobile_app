@@ -3,6 +3,15 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestTopUpTheme {
+  // Screen copy for guest top-up form.
+  static const String activePrepaidLabel = 'please enter an active prepaid number to top up';
+  static const String confirmMobileLabel = 'confirm mobile number';
+  static const String amountLabel = 'enter top up amount';
+  static const String phoneHintText = 'eg: 2428999999';
+  static const String amountHintText = '00.00';
+  static const String nextButtonLabel = 'next';
+  static const String fallbackErrorMessage = 'Something went wrong';
+
   // Guest top-up screen background.
   static const Color screenBackgroundColor = Color(0xFFFFFFFF);
 
