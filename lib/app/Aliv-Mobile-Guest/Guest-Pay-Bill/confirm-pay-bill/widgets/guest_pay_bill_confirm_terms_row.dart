@@ -1,68 +1,83 @@
 import 'package:flutter/material.dart';
+
 import '../theme/guest_pay_bill_confirm_theme.dart';
 
 class GuestPayBillConfirmTermsRow extends StatelessWidget {
-  final VoidCallback onTapTerms;
-
   const GuestPayBillConfirmTermsRow({
     super.key,
+    required this.isChecked,
+    required this.onToggleChecked,
     required this.onTapTerms,
   });
 
+  final bool isChecked;
+  final VoidCallback onToggleChecked;
+  final VoidCallback onTapTerms;
+
   @override
   Widget build(BuildContext context) {
-    const baseStyle = TextStyle(
-      fontFamily: GuestPayBillConfirmTheme.myFontFamily,
-      color: GuestPayBillConfirmTheme.textDark,
-      fontSize: 14,
-      height: 1.43,
-      fontWeight: FontWeight.w500,
-    );
-
-    const linkStyle = TextStyle(
-      color: GuestPayBillConfirmTheme.textDark,
-      fontSize: 14,
-      height: 1.43,
-      fontFamily: GuestPayBillConfirmTheme.myFontFamily,
-      fontWeight: FontWeight.w700,
-      decoration: TextDecoration.underline,
-      decorationThickness: 1.2,
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: TextSpan(
-            style: baseStyle,
-            children: [
-              const TextSpan(
-                text: 'By pressing “pay now” you agree to the ',
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: onToggleChecked,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: GuestPayBillConfirmTheme.termsCheckboxTopInset,
               ),
-              WidgetSpan(
-                alignment: PlaceholderAlignment.baseline,
-                baseline: TextBaseline.alphabetic,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: onTapTerms,
-                  child: const Text(
-                    'Terms &',
-                    style: linkStyle,
+              child: Container(
+                width: GuestPayBillConfirmTheme.termsCheckboxSize,
+                height: GuestPayBillConfirmTheme.termsCheckboxSize,
+                decoration: BoxDecoration(
+                  color: isChecked
+                      ? GuestPayBillConfirmTheme.termsCheckboxFillColor
+                      : GuestPayBillConfirmTheme.termsCheckboxUncheckedColor,
+                  borderRadius: BorderRadius.circular(
+                    GuestPayBillConfirmTheme.termsCheckboxRadius,
+                  ),
+                  border: Border.all(
+                    color: GuestPayBillConfirmTheme.termsCheckboxBorderColor,
+                    width: GuestPayBillConfirmTheme.termsCheckboxBorderWidth,
                   ),
                 ),
+                child: isChecked
+                    ? const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 18,
+                      )
+                    : null,
               ),
-            ],
+            ),
           ),
-        ),
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTapTerms,
-          child: const Text(
-            'Conditions.',
-            style: linkStyle,
+          const SizedBox(
+              width: GuestPayBillConfirmTheme.termsCheckboxToTextGap),
+          SizedBox(
+            width: GuestPayBillConfirmTheme.termsTextWidth,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTapTerms,
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: GuestPayBillConfirmTheme.termsPrefix,
+                      style: GuestPayBillConfirmTheme.termsBase,
+                    ),
+                    const TextSpan(
+                      text: GuestPayBillConfirmTheme.termsLinkText,
+                      style: GuestPayBillConfirmTheme.termsLink,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

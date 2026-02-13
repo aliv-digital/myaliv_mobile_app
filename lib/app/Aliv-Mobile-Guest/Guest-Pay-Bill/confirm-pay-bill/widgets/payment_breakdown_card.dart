@@ -1,38 +1,21 @@
-// payment_breakdown_card.dart
-//
-// Figma-like scallops: OVAL + FLAT GAP
-//  Now supports EXACT scallop count (ex: 13)
-// - If targetCount is set, it forces exactly that many ovals across the width
-// - ovalWidth is auto-calculated from available width + gap
-//
-// Notes:
-// - gap fixed রাখলে ovalWidth auto ছোট/বড় হবে device width অনুযায়ী
-// - যদি ovalWidth too small হয়ে যায়, তখন gap কমাতে হবে
-
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/theme/guest_pay_bill_confirm_theme.dart';
 
 class PaymentBreakdownCard extends StatelessWidget {
-   PaymentBreakdownCard({
+  const PaymentBreakdownCard({
     super.key,
     required this.subTotal,
     required this.vat,
     required this.total,
     this.currencySymbol = r'$',
-    //this.backgroundColor = const Color(0xFF6B63A7),
-
-    // UI tuning
-    this.topCornerRadius = 18,
-    this.elevation = 8,
-
-    // scallops tuning
-    this.ovalHeight = 15, // bite depth softness
-    this.gap = 8,        // flat gap between ovals
-    this.edgeInset = 0,   // if you want inset from edges
-
-    //  force exact count
-    this.targetCount = 12,
+    this.topCornerRadius = GuestPayBillConfirmTheme.breakdownTopCornerRadius,
+    this.elevation = GuestPayBillConfirmTheme.breakdownElevation,
+    this.ovalHeight = GuestPayBillConfirmTheme.breakdownOvalHeight,
+    this.gap = GuestPayBillConfirmTheme.breakdownScallopGap,
+    this.edgeInset = GuestPayBillConfirmTheme.breakdownEdgeInset,
+    this.targetCount = GuestPayBillConfirmTheme.breakdownTargetScallopCount,
   });
 
   final double subTotal;
@@ -40,7 +23,8 @@ class PaymentBreakdownCard extends StatelessWidget {
   final double total;
 
   final String currencySymbol;
-  final Color backgroundColor = GuestPayBillConfirmTheme.paymentBreakDownCardColor;
+  final Color backgroundColor =
+      GuestPayBillConfirmTheme.paymentBreakDownCardColor;
 
   final double topCornerRadius;
   final double elevation;
@@ -50,14 +34,13 @@ class PaymentBreakdownCard extends StatelessWidget {
   final double gap;
   final double edgeInset;
 
-  /// Set this to force exact oval count (ex: 13)
   final int targetCount;
 
   String _money(double v) => '$currencySymbol ${v.toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
-    const textColor = Colors.white;
+    const rowTextColor = Colors.white;
 
     return PhysicalShape(
       clipper: _FigmaOvalScallopBottomClipper(
@@ -65,46 +48,46 @@ class PaymentBreakdownCard extends StatelessWidget {
         ovalHeight: ovalHeight,
         gap: gap,
         edgeInset: edgeInset,
-        targetCount: targetCount, // ✅ exactly 13
+        targetCount: targetCount,
       ),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       color: backgroundColor,
       elevation: elevation,
       shadowColor: const Color(0x22000000),
       child: Padding(
-        padding: const EdgeInsets.only(top: 20,bottom: 20,left: 16,right: 16),
+        padding: GuestPayBillConfirmTheme.breakdownPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _RowItem(
-              label: 'sub total',
+              label: GuestPayBillConfirmTheme.subTotalLabel,
               value: _money(subTotal),
-              textColor: textColor,
+              textColor: rowTextColor,
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: GuestPayBillConfirmTheme.breakdownRowGap),
             _RowItem(
-              label: 'vat',
+              label: GuestPayBillConfirmTheme.vatLabel,
               value: _money(vat),
-              textColor: textColor,
+              textColor: rowTextColor,
             ),
-            const SizedBox(height: 24),
-
+            const SizedBox(
+                height: GuestPayBillConfirmTheme.breakdownGapBeforeDivider),
             const _DashedDivider(
-              color: Color(0xB3FFFFFF),
-              height: 1,
-              dashWidth: 6,
-              dashGap: 5,
+              color: GuestPayBillConfirmTheme.breakdownDividerColor,
+              height: GuestPayBillConfirmTheme.breakdownDividerHeight,
+              dashWidth: GuestPayBillConfirmTheme.breakdownDividerDashWidth,
+              dashGap: GuestPayBillConfirmTheme.breakdownDividerDashGap,
             ),
-
-            const SizedBox(height: 24),
+            const SizedBox(
+                height: GuestPayBillConfirmTheme.breakdownGapAfterDivider),
             _RowItem(
-              label: 'total',
+              label: GuestPayBillConfirmTheme.totalLabel,
               value: _money(total),
-              textColor: textColor,
+              textColor: rowTextColor,
               isBold: false,
             ),
-
-            const SizedBox(height: 18),
+            const SizedBox(
+                height: GuestPayBillConfirmTheme.breakdownBottomInnerGap),
           ],
         ),
       ),
@@ -127,18 +110,14 @@ class _RowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontFamily: GuestPayBillConfirmTheme.myFontFamily,
-      color: textColor,
-      fontSize: 14,
-      fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
-      height: 1.1,
-    );
+    final style = isBold
+        ? GuestPayBillConfirmTheme.breakdownRowEmphasis
+        : GuestPayBillConfirmTheme.breakdownRow;
 
     return Row(
       children: [
-        Expanded(child: Text(label, style: style)),
-        Text(value, style: style),
+        Expanded(child: Text(label, style: style.copyWith(color: textColor))),
+        Text(value, style: style.copyWith(color: textColor)),
       ],
     );
   }
@@ -214,7 +193,6 @@ class _DashedDividerPainter extends CustomPainter {
   }
 }
 
-/// Forces exact scallop count (targetCount) using ovalWidth auto-calc
 class _FigmaOvalScallopBottomClipper extends CustomClipper<Path> {
   const _FigmaOvalScallopBottomClipper({
     required this.topCornerRadius,
@@ -252,11 +230,8 @@ class _FigmaOvalScallopBottomClipper extends CustomClipper<Path> {
 
     final count = targetCount.clamp(1, 200);
 
-    // exact ovalWidth computed so that count fits perfectly
-    // total = count*ovalWidth + (count-1)*gap
     final ovalWidth = (usableW - (count - 1) * gap) / count;
 
-    // If ovalWidth becomes too tiny, still return base (avoid ugly)
     if (ovalWidth <= 6) return base;
 
     final used = (count * ovalWidth) + ((count - 1) * gap);
