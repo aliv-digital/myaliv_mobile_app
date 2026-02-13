@@ -35,10 +35,10 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
       leftType: 'top up',
       rightType: 'prepaid',
       dateText: dateText,
-      timeText: timeText,
+      timeText: '7:30 am',//timeText,
       phoneNumber: phoneNumber,
       paymentMethod: paymentMethod,
-      amount: amount,
+      amount: 15.00//amount,
     );
 
     return RepositoryProvider(
@@ -89,7 +89,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                           return ReceiptSuccessCard(
                             data: data,
                             onBackHome: () {
-                              context.go(AppRoutes.home);
+                              context.go(AppRoutes.logIn);
                             },
                             pageBackground: ReceiptTheme.circleBackground,
                           );
