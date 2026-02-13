@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 /// DefaultAppBar (Reusable)
 /// - Back optional
@@ -96,7 +96,7 @@ class DefaultAppBar extends StatelessWidget {
     final titleStyle = const TextStyle(
       fontSize: 17,
       height: 1.25,
-      fontFamily: 'CircularPro',
+      fontFamily: AppConstants.defaultFontFamily,
       fontWeight: FontWeight.w600,
       color: Colors.white,
     );
@@ -212,7 +212,7 @@ class DefaultAppBar extends StatelessWidget {
               actionText!,
               style: actionTextStyle ??
                   const TextStyle(
-                    fontFamily: 'CircularPro',
+                    fontFamily: AppConstants.defaultFontFamily,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -279,7 +279,7 @@ class _HomeButton extends StatelessWidget {
                   child: Text(
                     count! > 99 ? '99+' : '$count',
                     style: const TextStyle(
-                      fontFamily: 'CircularPro',
+                      fontFamily: AppConstants.defaultFontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
@@ -337,7 +337,7 @@ class _NotificationButton extends StatelessWidget {
                   child: Text(
                     countValue > 99 ? '99+' : '$countValue',
                     style: const TextStyle(
-                      fontFamily: 'CircularPro',
+                      fontFamily: AppConstants.defaultFontFamily,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,

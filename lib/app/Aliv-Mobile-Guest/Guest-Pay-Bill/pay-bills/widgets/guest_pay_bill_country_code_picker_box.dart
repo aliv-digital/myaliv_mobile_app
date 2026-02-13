@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../model/guest_pay_bill_models.dart';
 import '../theme/guest_pay_bill_theme.dart';
@@ -27,13 +28,20 @@ class GuestPayBillCountryCodePickerBox extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(country.flagEmoji, style: const TextStyle(fontSize: 18)),
+          Text(
+            country.flagEmoji,
+            style: const TextStyle(
+              fontSize: 18,
+              fontFamily: AppConstants.defaultFontFamily,
+            ),
+          ),
           const SizedBox(width: 6),
           Text(
             country.dialCode,
             style: const TextStyle(
               color: GuestPayBillTheme.labelText,
               fontSize: 13,
+              fontFamily: AppConstants.defaultFontFamily,
               fontWeight: FontWeight.w500,
             ),
           ),
