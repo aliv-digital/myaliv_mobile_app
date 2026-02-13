@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import '../model/guest_pay_bill_receipt_args.dart';
+
 import '../bloc/guest_pay_bill_receipt_bloc.dart';
 import '../bloc/guest_pay_bill_receipt_event.dart';
 import '../bloc/guest_pay_bill_receipt_state.dart';
+import '../model/guest_pay_bill_receipt_args.dart';
 import '../repository/guest_pay_bill_receipt_repository.dart';
 import '../theme/theme.dart';
 import '../widgets/receipt_success_card.dart';
-import '../widgets/payment_failure.dart';
 
 class GuestPayBillReceiptScreen extends StatelessWidget {
   const GuestPayBillReceiptScreen({super.key, required this.args});
@@ -45,50 +45,56 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
 class _GuestPayBillReceiptView extends StatelessWidget {
   const _GuestPayBillReceiptView();
 
-  static const _bg = Color(0xFFF1F2FA);
+  void _onBackHomePressed(BuildContext context) {
+    context.read<GuestPayBillReceiptBloc>().add(
+          const GuestPayBillReceiptBackToHomePressed(),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
-      listenWhen: (p, c) => p.backHomeRequestId != c.backHomeRequestId,
+      listenWhen: (previousState, currentState) {
+        return previousState.backHomeRequestId != currentState.backHomeRequestId;
+      },
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
-          Navigator.of(context).popUntil((r) => r.isFirst);
+          context.go(AppRoutes.home);
         }
       },
       child: Scaffold(
-        backgroundColor: _bg,
+        backgroundColor: GuestPayBillReceiptTheme.screenBackground,
         body: SafeArea(
           child: CustomScrollView(
             slivers: [
+              // Top app bar
               SliverToBoxAdapter(
                 child: DefaultAppBar(
+                  backgroundColor: GuestPayBillReceiptTheme.appBarColor,
                   showBackArrow: false,
                   title: 'my receipt',
                   onBack: () {},
                 ),
               ),
+
+              // Main receipt card container
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 24,
-                    right: 24,
-                    top: 29,
-                    bottom: 30,
-                  ),
-                  child: BlocBuilder<GuestPayBillReceiptBloc,GuestPayBillReceiptState>(
+                  padding: GuestPayBillReceiptTheme.contentPadding,
+                  child: BlocBuilder<GuestPayBillReceiptBloc,
+                      GuestPayBillReceiptState>(
                     builder: (context, state) {
                       final data = state.data;
-                        if (data == null) return const SizedBox.shrink();
-                        return ReceiptSuccessCard(
-                          data: data,
-                            onBackHome: () {
-                              context.go(AppRoutes.home);
-                            },
-                            pageBackground: GuestPayBillReceiptTheme.circleBackground,
-                          );
+                      if (data == null) return const SizedBox.shrink();
+
+                      return ReceiptSuccessCard(
+                        data: data,
+                        onBackHome: () {
+                          _onBackHomePressed(context);
                         },
-                      ),
+                      );
+                    },
+                  ),
                 ),
               ),
 
@@ -103,7 +109,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
               //           top: 29,
               //           bottom: 30,
               //         ),
-              //         child: BlocBuilder<GuestPayBillReceiptBloc,GuestPayBillReceiptState>( 
+              //         child: BlocBuilder<GuestPayBillReceiptBloc,GuestPayBillReceiptState>(
               //           builder: (context, state) {
               //                 final data = state.data;
               //                 if (data == null) return const SizedBox.shrink();
@@ -120,7 +126,6 @@ class _GuestPayBillReceiptView extends StatelessWidget {
               //     ),
               //   ),
               // ),
-            
             ],
           ),
         ),

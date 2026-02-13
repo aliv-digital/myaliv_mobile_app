@@ -7,14 +7,12 @@ class GuestPayBillFocusedInputBorderWrapper extends StatelessWidget {
     super.key,
     required this.child,
     required this.isFocused,
-    required this.unfocusedBorderColor,
     this.radius = GuestPayBillTheme.radius,
     this.borderWidth = GuestPayBillTheme.inputFocusBorderWidth,
   });
 
   final Widget child;
   final bool isFocused;
-  final Color unfocusedBorderColor;
   final double radius;
   final double borderWidth;
 
@@ -24,12 +22,6 @@ class GuestPayBillFocusedInputBorderWrapper extends StatelessWidget {
       decoration: BoxDecoration(
         gradient:
             isFocused ? GuestPayBillTheme.focusedInputBorderGradient : null,
-        border: isFocused
-            ? null
-            : Border.all(
-                color: unfocusedBorderColor,
-                width: borderWidth,
-              ),
         borderRadius: BorderRadius.circular(radius),
       ),
       padding: EdgeInsets.all(borderWidth),

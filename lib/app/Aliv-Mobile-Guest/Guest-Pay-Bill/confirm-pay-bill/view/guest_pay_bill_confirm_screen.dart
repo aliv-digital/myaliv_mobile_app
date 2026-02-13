@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/widgets/payment_breakdown_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -72,6 +72,10 @@ class _GuestPayBillConfirmView extends StatelessWidget {
     final period = hour24 >= 12 ? 'pm' : 'am';
     final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
     return '$hour12:$minute $period';
+  }
+
+  String _formatAmount(double amount) {
+    return '\$ ${amount.toStringAsFixed(2)}';
   }
 
   GuestPayBillReceiptArgs _buildReceiptArgs(GuestPayBillConfirmState state) {
@@ -252,10 +256,21 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             height: GuestPayBillConfirmTheme.sectionGap,
                           ),
                           // Payment breakdown card component
-                          PaymentBreakdownCard(
-                            subTotal: state.subTotal,
-                            vat: state.vat,
-                            total: state.total,
+                          CustomPaymentBreakDownCard(
+                            items: <CustomPaymentBreakdownLineItem>[
+                              CustomPaymentBreakdownLineItem(
+                                label: GuestPayBillConfirmTheme.subTotalLabel,
+                                value: _formatAmount(state.subTotal),
+                              ),
+                              CustomPaymentBreakdownLineItem(
+                                label: GuestPayBillConfirmTheme.vatLabel,
+                                value: _formatAmount(state.vat),
+                              ),
+                              CustomPaymentBreakdownLineItem(
+                                label: GuestPayBillConfirmTheme.totalLabel,
+                                value: _formatAmount(state.total),
+                              ),
+                            ],
                           ),
                           // Bottom breathing space before footer area
                           const SizedBox(

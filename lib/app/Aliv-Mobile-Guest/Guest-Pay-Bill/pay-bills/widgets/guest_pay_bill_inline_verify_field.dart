@@ -57,7 +57,6 @@ class _GuestPayBillInlineVerifyFieldState
   Widget build(BuildContext context) {
     return GuestPayBillFocusedInputBorderWrapper(
       isFocused: _hasFocus,
-      unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
       child: Container(
         height: GuestPayBillTheme.inlineVerifyFieldHeight,
         padding: const EdgeInsets.all(8),

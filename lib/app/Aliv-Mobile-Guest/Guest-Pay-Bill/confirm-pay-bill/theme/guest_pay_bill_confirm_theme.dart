@@ -22,9 +22,8 @@ class GuestPayBillConfirmTheme {
   static const Color textDark = Color(0xFF1C1C1E);
   static const Color textLight = Colors.white;
   static const Color hint = Color(0xFF707070);
-  static const Color border = Color(0xFF5A5796);
-  static const Color amountBackground = Color(0xFFEDEBF7);
-  static const Color amountText = Color(0xFF5146A8);
+  static const Color amountBackground = Color(0xFFF4F4F6);
+  static const Color amountText = Color(0xFF222222);
   static const Color paymentBreakDownCardColor = Color(0xFF645D9C);
   static const Color snackBarBackground = Color(0xFF323232);
   static const Color termsLinkColor = Color(0xFF645D9C);
@@ -48,24 +47,29 @@ class GuestPayBillConfirmTheme {
   static const double termsCheckboxToTextGap = 10;
   static const double termsTextWidth = 307;
 
+  // Header summary card inner spacing from Figma:
+  // top/bottom = 24, left/right = 16.
   static const EdgeInsets headerCardPadding = EdgeInsets.only(
     top: 24,
     bottom: 24,
     left: 16,
     right: 16,
   );
-  static const double headerCardRadius = 8;
+  // Rounded corner radius for summary card container.
+  static const double headerCardRadius = 12;
   static const double headerToSubtitleGap = 4;
   static const double headerTextToAmountPillGap = 10;
 
+  // Amount chip spacing from Figma:
+  // left/right = 10, top/bottom = 4.
   static const EdgeInsets amountPillPadding = EdgeInsets.only(
-    left: 11,
-    right: 11,
-    top: 5,
-    bottom: 5,
+    left: 10,
+    right: 10,
+    top: 4,
+    bottom: 4,
   );
-  static const double amountPillRadius = 8;
-  static const double amountPillBorderWidth = 1;
+  // Amount chip corner radius from Figma.
+  static const double amountPillRadius = 5;
 
   // Bottom bar layout
   static const EdgeInsets bottomBarPadding =
@@ -108,7 +112,7 @@ class GuestPayBillConfirmTheme {
   );
 
   static const TextStyle headerTitle = TextStyle(
-    color: textDark,
+    color: Colors.black,
     fontSize: 18,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
@@ -118,14 +122,15 @@ class GuestPayBillConfirmTheme {
     color: Color(0xFF121212),
     fontSize: 16,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
+    // Figma asks w450; w400 is the closest Flutter weight.
+    fontWeight: FontWeight.w400,
   );
 
   static const TextStyle amountPill = TextStyle(
     color: amountText,
     fontSize: 16,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
   );
 
   static const TextStyle termsBase = TextStyle(

@@ -63,13 +63,10 @@ class _AmountPill extends StatelessWidget {
         color: GuestPayBillConfirmTheme.amountBackground,
         borderRadius:
             BorderRadius.circular(GuestPayBillConfirmTheme.amountPillRadius),
-        border: Border.all(
-          color: GuestPayBillConfirmTheme.border,
-          width: GuestPayBillConfirmTheme.amountPillBorderWidth,
-        ),
       ),
       child: Text(
         _money(amount),
+        textAlign: TextAlign.center,
         style: GuestPayBillConfirmTheme.amountPill,
       ),
     );

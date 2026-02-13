@@ -10,12 +10,10 @@ class ReceiptSuccessCard extends StatelessWidget {
     super.key,
     required this.data,
     required this.onBackHome,
-    required this.pageBackground,
   });
 
   final GuestPayBillReceiptData data;
   final VoidCallback onBackHome;
-  final Color pageBackground;
 
   String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
 
@@ -69,16 +67,16 @@ class ReceiptSuccessCard extends StatelessWidget {
               width: iconSize,
               height: iconSize,
               child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE6F4EC),
+                decoration: BoxDecoration(
+                  color: GuestPayBillReceiptTheme.successIconOuter,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Container(
                     width: 30,
                     height: 30,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF2E9E5B),
+                    decoration: BoxDecoration(
+                      color: GuestPayBillReceiptTheme.successIconInner,
                       shape: BoxShape.circle,
                     ),
                     child:
@@ -90,17 +88,12 @@ class ReceiptSuccessCard extends StatelessWidget {
             const SizedBox(height: gapAfterIcon),
 
             // fixed title height (so notch stays exactly aligned)
-            const SizedBox(
+            SizedBox(
               height: titleBoxH,
               child: Center(
                 child: Text(
                   'Payment Success!',
-                  style: TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF111111),
-                  ),
+                  style: GuestPayBillReceiptTheme.successTitle,
                 ),
               ),
             ),
@@ -117,13 +110,7 @@ class ReceiptSuccessCard extends StatelessWidget {
             Text(
               'It will take a few moments for the top up\nto appear on the account.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'CircularPro',
-                //height: 1.25,
-                color: GuestPayBillReceiptTheme.textGrey,
-                fontWeight: FontWeight.w400,
-              ),
+              style: GuestPayBillReceiptTheme.successBody,
             ),
             const SizedBox(height: gapAfterMessage),
 

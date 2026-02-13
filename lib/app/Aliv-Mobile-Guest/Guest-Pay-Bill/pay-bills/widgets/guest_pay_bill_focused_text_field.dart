@@ -54,7 +54,6 @@ class _GuestPayBillFocusedTextFieldState
   Widget build(BuildContext context) {
     return GuestPayBillFocusedInputBorderWrapper(
       isFocused: _hasFocus,
-      unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
       child: TextField(
         focusNode: _focusNode,
         keyboardType: widget.keyboardType,

@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/theme/theme.dart';
 
 class PaymentFailedTicket extends StatelessWidget {
   const PaymentFailedTicket({
@@ -59,7 +58,8 @@ class PaymentFailedTicket extends StatelessWidget {
                 ),
                 child: Container(
                   color: backgroundColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -72,7 +72,8 @@ class PaymentFailedTicket extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: Icon(Icons.error_outline,color: Colors.red,size: 32),
+                        child: Icon(Icons.error_outline,
+                            color: Colors.red, size: 32),
                       ),
                       const SizedBox(height: 16),
 
@@ -163,7 +164,7 @@ class _PillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: ReceiptTheme.failedButtonBackgroundColor,
+      color: GuestPayBillReceiptTheme.failedButtonBackgroundColor,
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         borderRadius: BorderRadius.circular(999),
@@ -175,7 +176,7 @@ class _PillButton extends StatelessWidget {
           child: Text(
             text,
             style: TextStyle(
-              color: ReceiptTheme.successButtonTextColor,
+              color: GuestPayBillReceiptTheme.successButtonTextColor,
               fontSize: 13,
               fontWeight: FontWeight.w400,
               fontFamily: 'CircularPro',
@@ -211,10 +212,11 @@ class _TicketClipper extends CustomClipper<Path> {
       );
 
     final holes = Path()
-    // left notch (half outside to cut-in)
+      // left notch (half outside to cut-in)
       ..addOval(Rect.fromCircle(center: Offset(0, notchCenterY), radius: nr))
-    // right notch
-      ..addOval(Rect.fromCircle(center: Offset(size.width, notchCenterY), radius: nr));
+      // right notch
+      ..addOval(Rect.fromCircle(
+          center: Offset(size.width, notchCenterY), radius: nr));
 
     return Path.combine(PathOperation.difference, rectPath, holes);
   }
@@ -261,17 +263,12 @@ class _TicketBorderPainter extends CustomPainter {
 }
 
 class _DashedLinePainter extends CustomPainter {
-  _DashedLinePainter({
-    required this.color,
-    this.dashWidth = 6,
-    this.dashGap = 5,
-    this.strokeWidth = 1.4,
-  });
+  _DashedLinePainter({required this.color});
 
   final Color color;
-  final double dashWidth;
-  final double dashGap;
-  final double strokeWidth;
+  static const double dashWidth = 6;
+  static const double dashGap = 5;
+  static const double strokeWidth = 1.4;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -292,9 +289,6 @@ class _DashedLinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DashedLinePainter oldDelegate) {
-    return oldDelegate.color != color ||
-        oldDelegate.dashWidth != dashWidth ||
-        oldDelegate.dashGap != dashGap ||
-        oldDelegate.strokeWidth != strokeWidth;
+    return oldDelegate.color != color;
   }
 }
