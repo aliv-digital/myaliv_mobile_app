@@ -1,12 +1,11 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/widgets/phone_row.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/guest_splash_theme.dart';
-
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
 import '../bloc/guest_splash_state.dart';
@@ -140,29 +139,32 @@ class _SheetBody extends StatelessWidget {
             const _Label('enter mobile number'),
             const SizedBox(
                 height: GuestSplashTheme.purchasePlanLabelToFieldGap),
-            _PhoneRow(
+            PhoneRow(
               country: state.purchaseCountry,
-              hint: 'eg: 242-899-9999',
-              onPickCountry: () => _pickCountry(context),
-              onChanged: (v) => context
-                  .read<GuestSplashBloc>()
-                  .add(GuestSplashPurchasePlanPhoneChanged(v)),
-              showPicker: true,
-              showArrow: true,
+              hintText: 'eg: 242-899-9999',
+              onTapCountryPicker: () => _pickCountry(context),
+              onChanged: (v) {context.read<GuestSplashBloc>().add(
+                GuestSplashPurchasePlanPhoneChanged(v)
+              );
+              },
+              enableCountryPicker: true,
+              showCountryArrow: true,
             ),
             const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
             const _Label('confirm mobile number'),
             const SizedBox(
-                height: GuestSplashTheme.purchasePlanLabelToFieldGap),
-            _PhoneRow(
+              height: GuestSplashTheme.purchasePlanLabelToFieldGap
+            ),
+            PhoneRow(
               country: state.purchaseCountry,
-              hint: 'eg: 242-899-9999',
-              onPickCountry: () => _pickCountry(context),
-              onChanged: (v) => context
-                  .read<GuestSplashBloc>()
-                  .add(GuestSplashPurchasePlanConfirmPhoneChanged(v)),
-              showPicker: false,
-              showArrow: false,
+              hintText: 'eg: 242-899-9999',
+              onChanged: (v) {
+                context.read<GuestSplashBloc>().add(
+                  GuestSplashPurchasePlanConfirmPhoneChanged(v)
+                  );
+              },
+              enableCountryPicker: false,
+              showCountryArrow: false,
             ),
             const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
             if (state.purchaseStatus == GuestSplashPurchasePlanStatus.failure &&
@@ -256,137 +258,6 @@ class _Label extends StatelessWidget {
     return Text(
       text,
       style: GuestSplashTheme.fieldLabel,
-    );
-  }
-}
-
-class _PhoneRow extends StatelessWidget {
-  final Country? country;
-  final String hint;
-  final VoidCallback onPickCountry;
-  final ValueChanged<String> onChanged;
-  final bool showPicker;
-  final bool showArrow;
-
-  const _PhoneRow({
-    required this.country,
-    required this.hint,
-    required this.onPickCountry,
-    required this.onChanged,
-    required this.showPicker,
-    required this.showArrow,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final dial = country?.phoneCode ?? '1';
-    final flag = country?.flagEmoji ?? '🏳️';
-
-    return Row(
-      children: [
-        InkWell(
-          onTap: showPicker ? onPickCountry : null,
-          borderRadius: BorderRadius.circular(
-            GuestSplashTheme.purchasePlanFieldCornerRadius,
-          ),
-          child: Container(
-            height: GuestSplashTheme.purchasePlanCountryPickerHeight,
-            width: GuestSplashTheme.purchasePlanCountryPickerWidth,
-            padding: EdgeInsets.only(
-              left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
-              right: showArrow
-                  ? GuestSplashTheme
-                      .purchasePlanCountryPickerRightPaddingWithArrow
-                  : GuestSplashTheme
-                      .purchasePlanCountryPickerRightPaddingWithoutArrow,
-            ),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: GuestSplashTheme.purchasePlanFieldBorderColor,
-                width: GuestSplashTheme.purchasePlanFieldBorderWidth,
-              ),
-              borderRadius: BorderRadius.circular(
-                GuestSplashTheme.purchasePlanFieldCornerRadius,
-              ),
-              color: GuestSplashTheme.purchasePlanFieldBackgroundColor,
-            ),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: GuestSplashTheme.purchasePlanCountryFlagWidth,
-                      height: GuestSplashTheme.purchasePlanCountryFlagHeight,
-                      child: Center(
-                        child: Text(flag, style: GuestSplashTheme.flagEmoji),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: GuestSplashTheme.purchasePlanCountryFlagToDialGap,
-                    ),
-                    Text(
-                      dial,
-                      style: GuestSplashTheme.dialCode,
-                    ),
-                    if (showArrow) ...[
-                      const SizedBox(
-                        width:
-                            GuestSplashTheme.purchasePlanCountryDialToArrowGap,
-                      ),
-                      Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: GuestSplashTheme.purchasePlanCountryArrowIconSize,
-                        color:
-                            GuestSplashTheme.purchasePlanCountryArrowIconColor,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-            width: GuestSplashTheme.purchasePlanCountryPickerToInputGap),
-        Expanded(
-          child: Container(
-            height: GuestSplashTheme.purchasePlanPhoneInputHeight,
-            padding: const EdgeInsets.symmetric(
-              horizontal:
-                  GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
-            ),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: GuestSplashTheme.purchasePlanFieldBorderColor,
-                width: GuestSplashTheme.purchasePlanFieldBorderWidth,
-              ),
-              borderRadius: BorderRadius.circular(
-                GuestSplashTheme.purchasePlanFieldCornerRadius,
-              ),
-              color: GuestSplashTheme.purchasePlanFieldBackgroundColor,
-            ),
-            alignment: Alignment.center,
-            child: TextField(
-              onChanged: onChanged,
-              keyboardType: TextInputType.phone,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
-              ],
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: hint,
-                hintStyle: GuestSplashTheme.phoneHint,
-                isCollapsed: true,
-              ),
-              style: GuestSplashTheme.phoneInput,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

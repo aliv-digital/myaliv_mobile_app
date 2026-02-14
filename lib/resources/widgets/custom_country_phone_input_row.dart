@@ -58,6 +58,9 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     this.countryPickerWidth = 76,
     this.countryToPhoneGap = 10,
     this.countryPickerPadding = const EdgeInsets.symmetric(horizontal: 8),
+    this.showCountryPickerBorder = false,
+    this.countryPickerBorderColor = Colors.transparent,
+    this.countryPickerBorderWidth = 1,
     this.phoneInputPadding = const EdgeInsets.symmetric(horizontal: 14),
     this.countryFlagToDialGap = 4,
     this.countryDialToArrowGap = 2,
@@ -105,6 +108,9 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final double countryPickerWidth;
   final double countryToPhoneGap;
   final EdgeInsets countryPickerPadding;
+  final bool showCountryPickerBorder;
+  final Color countryPickerBorderColor;
+  final double countryPickerBorderWidth;
   final EdgeInsets phoneInputPadding;
   final double countryFlagToDialGap;
   final double countryDialToArrowGap;
@@ -239,6 +245,12 @@ class _CustomCountryPhoneInputRowState
             padding: widget.countryPickerPadding,
             decoration: BoxDecoration(
               color: widget.backgroundColor,
+              border: widget.showCountryPickerBorder
+                  ? Border.all(
+                      color: widget.countryPickerBorderColor,
+                      width: widget.countryPickerBorderWidth,
+                    )
+                  : null,
               borderRadius: BorderRadius.circular(widget.borderRadius),
             ),
             child: FittedBox(

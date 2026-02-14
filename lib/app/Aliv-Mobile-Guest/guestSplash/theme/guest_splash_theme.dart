@@ -105,8 +105,7 @@ class GuestSplashTheme {
   static const Offset purchasePlanSheetEntranceBeginOffset = Offset(0, 0.12);
 
   // Main sheet container styling (`Container` wrapping `_SheetBody`).
-  static const EdgeInsets purchasePlanSheetContentPadding =
-      EdgeInsets.fromLTRB(16, 24, 16, 24);
+  static const EdgeInsets purchasePlanSheetContentPadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
   static const Color purchasePlanSheetBackgroundColor = Colors.white;
   static const double purchasePlanSheetTopCornerRadius = 22;
 
@@ -158,6 +157,6 @@ class GuestSplashTheme {
   static final Color purchasePlanCountryArrowIconColor = HexColor.fromHex('#9E9E9E');
 
   // Phone input field dimensions + inner spacing.
-  static const double purchasePlanPhoneInputHeight = 52;
+  static const double purchasePlanPhoneInputHeight = 50;
   static const double purchasePlanPhoneInputHorizontalPadding = 20;
 }
