@@ -23,19 +23,11 @@ class ReceiptSuccessCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const double titleBoxH = 24; // Fixed height keeps notch alignment stable.
 
-    // Notch should align with the FIRST divider center (after Payment Success!)
-    final double notchCenterY = ReceiptTheme.successCardPadding.top +
-        ReceiptTheme.successIconOuterSize +
-        ReceiptTheme.successGapAfterIcon +
-        titleBoxH +
-        ReceiptTheme.successGapAfterTitle +
-        (ReceiptTheme.successDashedDividerStrokeWidth / 2);
-
     return PhysicalShape(
       clipper: _TicketSideNotchClipper(
         cornerRadius: ReceiptTheme.successCardCornerRadius,
         notchRadius: ReceiptTheme.successCardNotchRadius,
-        notchCenterY: notchCenterY,
+        notchCenterY: ReceiptTheme.successCardNotchTopOffset,
       ),
       clipBehavior: Clip.antiAlias,
       elevation: ReceiptTheme.successCardElevation,

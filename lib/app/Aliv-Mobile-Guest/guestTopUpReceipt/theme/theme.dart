@@ -14,7 +14,8 @@ class ReceiptTheme {
   static final Color successBodyColor = HexColor.fromHex('#707070');
   static final Color successCardBackgroundColor = HexColor.fromHex('#FFFFFF');
   static final Color successCardShadowColor = const Color(0x22000000);
-  static final Color successCardBottomDividerColor = HexColor.fromHex('#E9E9EE');
+  static final Color successCardBottomDividerColor =
+      HexColor.fromHex('#E9E9EE');
   static final Color circleBackground = HexColor.fromHex('#FCE8E1');
 
   // Failure card colors (ReceiptFailureCard)
@@ -39,10 +40,13 @@ class ReceiptTheme {
 
   // Card inner padding from Figma:
   // top = 32, left/right = 24, bottom = 24.
-  static const EdgeInsets successCardPadding = EdgeInsets.fromLTRB(24, 32, 24, 32);
+  static const EdgeInsets successCardPadding =
+      EdgeInsets.fromLTRB(24, 32, 24, 32);
 
   // Side-notch geometry for the ticket cut.
   static const double successCardNotchRadius = 10;
+  // Ticket notch vertical position from card top edge.
+  static const double successCardNotchTopOffset = 164;
 
   // Icon block sizes.
   static const double successIconOuterSize = 56;
@@ -59,7 +63,7 @@ class ReceiptTheme {
   static const double successGapBeforeAmount = 16;
   static const double successGapAfterAmount = 32;
   static const double successGapAfterBottomDivider = 32;
-  static const double successGapAfterButton = 24+32;
+  static const double successGapAfterButton = 24 + 32;
 
   // Divider spacing and stroke values.
   static const double successDashedDividerStrokeWidth = 1;
