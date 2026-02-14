@@ -48,6 +48,7 @@ class GuestSplashTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     color: Colors.black,
+    height: 1.56
   );
 
   // Field label text: "enter mobile number" etc.
@@ -56,6 +57,7 @@ class GuestSplashTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     color: Colors.black,
+    height: 1.43
   );
 
   // Country dial code text inside picker box
@@ -64,6 +66,7 @@ class GuestSplashTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     color: Colors.black,
+    height: 1.43
   );
 
   // Phone input hint text
@@ -72,6 +75,7 @@ class GuestSplashTheme {
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w400,
+    height: 1.43
   );
 
   // Phone input text
@@ -80,6 +84,7 @@ class GuestSplashTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w500,
     color: Colors.black,
+    height: 1.43
   );
 
   // Country flag emoji text
@@ -87,4 +92,64 @@ class GuestSplashTheme {
     fontSize: 18,
     fontFamily: AppConstants.defaultFontFamily,
   );
+
+  // -----------------------------
+  // Purchase Plan Bottom Sheet UI
+  // -----------------------------
+
+  // Bottom sheet modal barrier color (`showModalBottomSheet`).
+  static const Color purchasePlanSheetBarrierColor = Color(0x59000000);
+
+  // Keyboard inset animation config (`AnimatedPadding` in sheet container).
+  static const Duration purchasePlanSheetKeyboardAnimationDuration = Duration(milliseconds: 180);
+  static const Curve purchasePlanSheetKeyboardAnimationCurve = Curves.easeOut;
+
+  // Additional entrance animation config (`FadeTransition` + `SlideTransition`).
+  static const Curve purchasePlanSheetEntranceCurve = Curves.easeOutCubic;
+  static const Offset purchasePlanSheetEntranceBeginOffset = Offset(0, 0.12);
+
+  // Main sheet container styling (`Container` wrapping `_SheetBody`).
+  static const EdgeInsets purchasePlanSheetContentPadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
+  static const Color purchasePlanSheetBackgroundColor = Colors.white;
+  static const double purchasePlanSheetTopCornerRadius = 22;
+
+  // Placeholder loader area when bloc state is not ready (`_SheetBody`).
+  static const double purchasePlanSheetLoadingHeight = 180;
+
+  // Vertical spacing between sections in `_SheetBody`.
+  static const double purchasePlanSectionGap = 20;
+  static const double purchasePlanLabelToFieldGap = 10;
+  static const double purchasePlanErrorBottomPadding = 10;
+
+  // Continue button container + shape.
+  static const double purchasePlanContinueButtonHeight = 50;
+  static const double purchasePlanContinueButtonRadius = 100;
+  static final Color purchasePlanContinueButtonColor = HexColor.fromHex('#645D9C');
+
+  // Header back icon touch area + icon size.
+  static const double purchasePlanHeaderBackTapRadius = 22;
+  static const double purchasePlanHeaderBackIconSize = 24;
+  static const double purchasePlanHeaderBackToTitleGap = 8;
+
+  // Country picker + phone input shared field values.
+  static final Color purchasePlanFieldBorderColor = HexColor.fromHex('#E3E3E3');
+  static const double purchasePlanFieldBorderWidth = 1;
+  static const double purchasePlanFieldCornerRadius = 10;
+  static const Color purchasePlanFieldBackgroundColor = Colors.white;
+
+  // Country picker box dimensions + inner spacing.
+  static const double purchasePlanCountryPickerHeight = 52;
+  static const double purchasePlanCountryPickerWidth = 96;
+  static const double purchasePlanCountryPickerHorizontalPadding = 10;
+  static const double purchasePlanCountryPickerToInputGap = 10;
+  static const double purchasePlanCountryFlagToDialGap = 6;
+  static const double purchasePlanCountryDialToArrowGap = 2;
+
+  // Country picker dropdown arrow icon style.
+  static const double purchasePlanCountryArrowIconSize = 18;
+  static final Color purchasePlanCountryArrowIconColor = HexColor.fromHex('#9E9E9E');
+
+  // Phone input field dimensions + inner spacing.
+  static const double purchasePlanPhoneInputHeight = 52;
+  static const double purchasePlanPhoneInputHorizontalPadding = 20;
 }
