@@ -48,5 +48,5 @@ class AssetConstant{
 
   static const viewIconSVG = 'assets/icons/view.svg';
   static const hideIconSVG = 'assets/icons/view_not.svg';
-
+  static const leftArrowSVG = 'assets/icons/arrow_left.svg';
 }

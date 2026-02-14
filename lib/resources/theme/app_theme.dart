@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class AppTheme {
   // Palette for universal payment breakdown card widgets.
@@ -7,6 +8,8 @@ class AppTheme {
   static const Color paymentBreakdownCardTextColor = Color(0xFFFFFFFF);
   static const Color paymentBreakdownCardDividerColor = Color(0xB3FFFFFF);
   static const Color paymentBreakdownCardShadowColor = Color(0x22000000);
+
+  static Color defaultAppBarColor = HexColor.fromHex('#645D9C');
 
   // Card shape and shadow.
   static const double paymentBreakdownCardTopCornerRadius = 20;

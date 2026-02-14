@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -13,16 +14,19 @@ class DefaultAppBar extends StatelessWidget {
     // Layout
     this.height = 64,
     this.backgroundColor = const Color(0xFF645D9C),
-    this.horizontalPadding = 12,
+    this.horizontalPadding = 24,
+    this.leadingToTitleSpacing = 12,
     this.titleAlignment = AppBarTitleAlignment.left,
     this.centerTitle = false,
 
     // Back
     this.showBackArrow = true,
     this.onBack,
-    this.backIconAssetPath = AssetConstant.whiteBackArrowIconPNG,
+    this.backIconAssetPath = AssetConstant.leftArrowSVG,
     this.backIconSize = 24,
     this.backSplashRadius = 22,
+    this.backIconAlignment = Alignment.centerLeft,
+    this.leadingWidth,
     this.leading,
 
     // Right side (actions)
@@ -56,6 +60,7 @@ class DefaultAppBar extends StatelessWidget {
   final double height;
   final Color backgroundColor;
   final double horizontalPadding;
+  final double leadingToTitleSpacing;
   final AppBarTitleAlignment titleAlignment;
   final bool centerTitle;
 
@@ -65,6 +70,8 @@ class DefaultAppBar extends StatelessWidget {
   final String backIconAssetPath;
   final double backIconSize;
   final double backSplashRadius;
+  final AlignmentGeometry backIconAlignment;
+  final double? leadingWidth;
   final Widget? leading;
 
   // Trailing / Actions
@@ -95,9 +102,8 @@ class DefaultAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final titleStyle = const TextStyle(
       fontSize: 17,
-      height: 1.25,
       fontFamily: AppConstants.defaultFontFamily,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: Colors.white,
     );
 
@@ -114,6 +120,8 @@ class DefaultAppBar extends StatelessWidget {
               child: Row(
                 children: [
                   _buildLeading(context),
+                  if (_hasVisibleLeading)
+                    SizedBox(width: leadingToTitleSpacing),
                   Expanded(
                     child: Align(
                       alignment: _titleAlign(),
@@ -123,7 +131,7 @@ class DefaultAppBar extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: titleStyle,
                         textAlign:
-                            centerTitle ? TextAlign.center : TextAlign.left,
+                            centerTitle ? TextAlign.left : TextAlign.left,
                       ),
                     ),
                   ),
@@ -150,6 +158,10 @@ class DefaultAppBar extends StatelessWidget {
     return Alignment.centerLeft;
   }
 
+  bool get _hasVisibleLeading {
+    return leading != null || showBackArrow;
+  }
+
   Widget _buildLeading(BuildContext context) {
     if (leading != null) return leading!;
 
@@ -157,14 +169,28 @@ class DefaultAppBar extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return IconButton(
-      onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-      icon: Image.asset(backIconAssetPath),
-      color: Colors.white,
-      iconSize: backIconSize,
-      splashRadius: backSplashRadius,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+    final resolvedLeadingWidth = leadingWidth ?? backIconSize;
+
+    return SizedBox(
+      width: resolvedLeadingWidth,
+      height: 44,
+      child: Align(
+        alignment: backIconAlignment,
+        child: InkResponse(
+          onTap: onBack ?? () => Navigator.of(context).maybePop(),
+          radius: backSplashRadius,
+          child: SizedBox(
+            width: backIconSize,
+            height: backIconSize,
+            child: SvgPicture.asset(
+              backIconAssetPath,
+              width: backIconSize,
+              height: backIconSize,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
