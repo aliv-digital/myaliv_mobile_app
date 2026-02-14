@@ -4,7 +4,6 @@ import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
-
 class LibertyGlobalPlanCard extends StatelessWidget {
   final PlanModel plan;
   final bool expanded;
@@ -115,7 +114,7 @@ class LibertyGlobalPlanCard extends StatelessWidget {
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -148,7 +147,8 @@ class LibertyGlobalPlanCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      backgroundColor: GuestPurchasePlanTheme.viewDetailsButtonColor,
+                      backgroundColor:
+                          GuestPurchasePlanTheme.viewDetailsButtonColor,
                     ),
                     onPressed: onViewDetails,
                     child: Text(
@@ -203,19 +203,15 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+      padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
-        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
-        borderRadius: BorderRadius.circular(5),
+        color: GuestPurchasePlanTheme.planPricePillBackground,
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: GuestPurchasePlanTheme.brandPurple,
-        ),
+        style: GuestPurchasePlanTheme.planPricePillTextStyle,
       ),
     );
   }

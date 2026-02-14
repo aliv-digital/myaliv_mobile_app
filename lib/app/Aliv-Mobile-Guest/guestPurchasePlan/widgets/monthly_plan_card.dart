@@ -110,11 +110,11 @@ class MonthlyPlanCard extends StatelessWidget {
           const SizedBox(height: 16),
           //Container(height: 1, color: GuestPurchasePlanTheme.dividerColor),
 
-
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState:
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -147,7 +147,8 @@ class MonthlyPlanCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      backgroundColor: GuestPurchasePlanTheme.viewDetailsButtonColor,
+                      backgroundColor:
+                          GuestPurchasePlanTheme.viewDetailsButtonColor,
                     ),
                     onPressed: onViewDetails,
                     child: Text(
@@ -204,22 +205,15 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+      padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
-        border: Border.all(
-            color: GuestPurchasePlanTheme.brandPurple,
-            width: 1
-        ),
-        borderRadius: BorderRadius.circular(5),
+        color: GuestPurchasePlanTheme.planPricePillBackground,
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: GuestPurchasePlanTheme.brandPurple,
-        ),
+        style: GuestPurchasePlanTheme.planPricePillTextStyle,
       ),
     );
   }
@@ -244,8 +238,8 @@ class _BenefitsRowState extends State<_BenefitsRow> {
 
   @override
   Widget build(BuildContext context) {
-    const double rowH = 50;        // ✅ figma
-    const double sidePad = 2;     // ✅ screenshot মত margins (22-26 tune)
+    const double rowH = 50; // ✅ figma
+    const double sidePad = 2; // ✅ screenshot মত margins (22-26 tune)
     const double itemW = 112;
 
     return Column(
@@ -289,7 +283,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                   return Row(
                     children: [
                       SizedBox(
-                       // width: itemW,
+                        // width: itemW,
                         height: rowH, //  50
                         child: _BenefitItem(
                           benefit: b,
@@ -329,12 +323,12 @@ class _ScrollIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double trackH = 6;
+    const double trackH = GuestPurchasePlanTheme.scrollBarThumbHeight;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final double trackW = constraints.maxWidth;
-        final double thumbW = (trackW * 0.22).clamp(78.0, 140.0);
+        const double thumbW = GuestPurchasePlanTheme.scrollBarThumbWidth;
 
         return AnimatedBuilder(
           animation: controller,
@@ -367,46 +361,58 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
-    const double inset = 2; // screenshot এর মতো inner padding
-    final double innerH = (trackH - inset * 2).clamp(0.0, trackH);
-
+  Widget _indicatorUI(
+      double trackW, double trackH, double thumbW, double left) {
     return SizedBox(
       width: trackW,
-      height: trackH+3,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: GuestPurchasePlanTheme.scrollBarBackgroundColor, // track color
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(inset),
-          child: Stack(
-            children: [
-              Positioned(
-                left: left, // this left should be calculated based on INNER track width
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: thumbW,
-                  height: innerH+2,
-                  decoration: BoxDecoration(
-                    color: Colors.white, // thumb color (add in theme)
-                    // যদি theme এ না থাকে, use this:
-                    // color: const Color(0xFFD8D8E2),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
+      height: GuestPurchasePlanTheme.scrollBarRenderBoxHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: trackW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            left: left,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: thumbW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarThumbColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: GuestPurchasePlanTheme.scrollBarThumbShadowColor,
+                    blurRadius: GuestPurchasePlanTheme.scrollBarShadowBlur,
+                    offset: Offset(
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetX,
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetY,
+                    ),
+                    spreadRadius: GuestPurchasePlanTheme.scrollBarShadowSpread,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
-
 }
-
 
 class _AssetIcon extends StatelessWidget {
   final PlanBenefitType type;
@@ -429,8 +435,6 @@ class _AssetIcon extends StatelessWidget {
     return Image.asset(path, width: size, height: size, fit: BoxFit.contain);
   }
 }
-
-
 
 class _BenefitItem extends StatelessWidget {
   final PlanBenefit benefit;

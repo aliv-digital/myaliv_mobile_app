@@ -18,9 +18,7 @@ Future<GuestSplashPurchasePlanInput?> showGuestSplashPurchasePlanBottomSheet(
   final initialCountry = service.findByCode('BS') ?? service.findByCode('US');
 
   // Init bottom-sheet state in same bloc
-  context
-      .read<GuestSplashBloc>()
-      .add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
+  context.read<GuestSplashBloc>().add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
 
   return showModalBottomSheet<GuestSplashPurchasePlanInput>(
     context: context,

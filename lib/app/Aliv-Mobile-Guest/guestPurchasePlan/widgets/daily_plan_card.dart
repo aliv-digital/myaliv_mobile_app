@@ -106,7 +106,8 @@ class DailyPlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState:
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -139,7 +140,8 @@ class DailyPlanCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      backgroundColor: GuestPurchasePlanTheme.viewDetailsButtonColor,
+                      backgroundColor:
+                          GuestPurchasePlanTheme.viewDetailsButtonColor,
                     ),
                     onPressed: onViewDetails,
                     child: Text(
@@ -194,22 +196,15 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+      padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: GuestPurchasePlanTheme.brandPurple,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(5),
+        color: GuestPurchasePlanTheme.planPricePillBackground,
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: GuestPurchasePlanTheme.brandPurple,
-        ),
+        style: GuestPurchasePlanTheme.planPricePillTextStyle,
       ),
     );
   }
@@ -257,49 +252,52 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(widget.benefits.length, (i) {
-                  final b = widget.benefits[i];
+                          final b = widget.benefits[i];
 
-                  Color labelColor;
-                  switch (b.type) {
-                    case PlanBenefitType.data:
-                      labelColor = GuestPurchasePlanTheme.dataColor;
-                      break;
-                    case PlanBenefitType.intlTalkText:
-                      labelColor = GuestPurchasePlanTheme.intlTalkTextColor;
-                      break;
-                    case PlanBenefitType.sms:
-                      labelColor = GuestPurchasePlanTheme.smsColor;
-                      break;
-                    case PlanBenefitType.bonusData:
-                      labelColor = GuestPurchasePlanTheme.bonusDataColor;
-                      break;
-                    case PlanBenefitType.mms:
-                      labelColor = GuestPurchasePlanTheme.mmsColor;
-                      break;
-                    case PlanBenefitType.talkMins:
-                      labelColor = GuestPurchasePlanTheme.talkMinsColor;
-                      break;
-                  }
+                          Color labelColor;
+                          switch (b.type) {
+                            case PlanBenefitType.data:
+                              labelColor = GuestPurchasePlanTheme.dataColor;
+                              break;
+                            case PlanBenefitType.intlTalkText:
+                              labelColor =
+                                  GuestPurchasePlanTheme.intlTalkTextColor;
+                              break;
+                            case PlanBenefitType.sms:
+                              labelColor = GuestPurchasePlanTheme.smsColor;
+                              break;
+                            case PlanBenefitType.bonusData:
+                              labelColor =
+                                  GuestPurchasePlanTheme.bonusDataColor;
+                              break;
+                            case PlanBenefitType.mms:
+                              labelColor = GuestPurchasePlanTheme.mmsColor;
+                              break;
+                            case PlanBenefitType.talkMins:
+                              labelColor = GuestPurchasePlanTheme.talkMinsColor;
+                              break;
+                          }
 
-                  return Row(
-                    children: [
-                      SizedBox(
-                        height: rowH,
-                        child: _BenefitItem(
-                          benefit: b,
-                          labelColor: labelColor,
-                        ),
-                      ),
-                      if (i != widget.benefits.length - 1)
-                        Container(
-                          width: 1,
-                          height: 34,
-                          margin: const EdgeInsets.symmetric(horizontal: 12),
-                          color: GuestPurchasePlanTheme.dividerColor,
-                        ),
-                    ],
-                  );
-                }),
+                          return Row(
+                            children: [
+                              SizedBox(
+                                height: rowH,
+                                child: _BenefitItem(
+                                  benefit: b,
+                                  labelColor: labelColor,
+                                ),
+                              ),
+                              if (i != widget.benefits.length - 1)
+                                Container(
+                                  width: 1,
+                                  height: 34,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  color: GuestPurchasePlanTheme.dividerColor,
+                                ),
+                            ],
+                          );
+                        }),
                       ),
                     ),
                   ),
@@ -324,12 +322,12 @@ class _ScrollIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double trackH = 6;
+    const double trackH = GuestPurchasePlanTheme.scrollBarThumbHeight;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final double trackW = constraints.maxWidth;
-        final double thumbW = (trackW * 0.22).clamp(78.0, 140.0);
+        const double thumbW = GuestPurchasePlanTheme.scrollBarThumbWidth;
 
         return AnimatedBuilder(
           animation: controller,
@@ -359,38 +357,54 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
-    const double inset = 2;
-    final double innerH = (trackH - inset * 2).clamp(0.0, trackH);
-
+  Widget _indicatorUI(
+      double trackW, double trackH, double thumbW, double left) {
     return SizedBox(
       width: trackW,
-      height: trackH + 3,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: GuestPurchasePlanTheme.scrollBarBackgroundColor,
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(inset),
-          child: Stack(
-            children: [
-              Positioned(
-                left: left,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: thumbW,
-                  height: innerH + 2,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
+      height: GuestPurchasePlanTheme.scrollBarRenderBoxHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: trackW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            left: left,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: thumbW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarThumbColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: GuestPurchasePlanTheme.scrollBarThumbShadowColor,
+                    blurRadius: GuestPurchasePlanTheme.scrollBarShadowBlur,
+                    offset: Offset(
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetX,
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetY,
+                    ),
+                    spreadRadius: GuestPurchasePlanTheme.scrollBarShadowSpread,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

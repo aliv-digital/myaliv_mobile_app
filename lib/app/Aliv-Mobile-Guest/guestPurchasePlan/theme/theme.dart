@@ -12,8 +12,20 @@ class GuestPurchasePlanTheme {
   static final Color dividerColor = HexColor.fromHex('#707070');
   static final Color subtitleColor = HexColor.fromHex('#707070');
   static final Color scrollBarBackgroundColor = HexColor.fromHex('#F2F2F7');
+  static final Color scrollBarThumbColor = HexColor.fromHex('#645D9C');
+  static const Color scrollBarThumbShadowColor = Color(0x19000000);
   static final Color viewDetailsButtonColor = HexColor.fromHex('#F2F1F9');
   static final Color addOnCardBackground = HexColor.fromHex('#F6F6FB');
+
+  // Plan-card horizontal scroll indicator style.
+  static const double scrollBarThumbWidth = 60;
+  static const double scrollBarThumbHeight = 4;
+  static const double scrollBarThumbRadius = 50;
+  static const double scrollBarShadowBlur = 10;
+  static const double scrollBarShadowOffsetX = 1;
+  static const double scrollBarShadowOffsetY = 0;
+  static const double scrollBarShadowSpread = 0;
+  static const double scrollBarRenderBoxHeight = 16;
 
   // Metric label colors
   static final Color talkMinsColor = HexColor.fromHex('#00B3E3');
@@ -141,6 +153,11 @@ class GuestPurchasePlanTheme {
   static final Color planSummaryBackground = HexColor.fromHex('#FFFFFF');
   static final Color planPriceBorder = HexColor.fromHex('#6258B8');
   static final Color planPriceText = HexColor.fromHex('#6258B8');
+  static final Color planPricePillBackground = HexColor.fromHex('#F4F4F6');
+  static final Color planPricePillTextColor = HexColor.fromHex('#222222');
+  static const EdgeInsets planPricePillPadding =
+      EdgeInsets.symmetric(horizontal: 10, vertical: 4);
+  static const double planPricePillRadius = 5;
   static final Color activateNowButton = HexColor.fromHex('#655D9C');
 
   // Bottom-sheet shared text styles
@@ -174,6 +191,14 @@ class GuestPurchasePlanTheme {
     fontWeight: FontWeight.w700,
     color: planPriceText,
     height: 1.0,
+  );
+
+  // Plan-card top-right price text (e.g., "$ 8.00").
+  static final TextStyle planPricePillTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    color: planPricePillTextColor,
   );
 
   static final TextStyle bottomSheetPrimaryAction = TextStyle(

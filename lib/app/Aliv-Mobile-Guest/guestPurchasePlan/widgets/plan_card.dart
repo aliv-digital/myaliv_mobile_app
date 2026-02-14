@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
+import '../theme/theme.dart';
 
 class PlanCard extends StatelessWidget {
   final PlanModel plan;
@@ -102,7 +103,7 @@ class PlanCard extends StatelessWidget {
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -183,24 +184,18 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
-  static const Color _brand = Color(0xFF5D5A8B);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
-        border: Border.all(color: _brand, width: 1.2),
-        borderRadius: BorderRadius.circular(8),
+        color: GuestPurchasePlanTheme.planPricePillBackground,
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: const TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 13.5,
-          fontWeight: FontWeight.w800,
-          color: _brand,
-        ),
+        style: GuestPurchasePlanTheme.planPricePillTextStyle,
       ),
     );
   }
@@ -277,8 +272,8 @@ class _ScrollIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double trackW = 260;
-    const double trackH = 6;
-    const double thumbW = 58;
+    const double trackH = GuestPurchasePlanTheme.scrollBarThumbHeight;
+    const double thumbW = GuestPurchasePlanTheme.scrollBarThumbWidth;
 
     return Center(
       child: AnimatedBuilder(
@@ -310,33 +305,58 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
-    return Stack(
-      children: [
-        Container(
-          width: trackW,
-          height: trackH,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE9E9EE),
-            borderRadius: BorderRadius.circular(999),
-          ),
-        ),
-        Positioned(
-          left: left,
-          child: Container(
-            width: thumbW,
-            height: trackH,
-            decoration: BoxDecoration(
-              color: const Color(0xFFD8D8E2),
-              borderRadius: BorderRadius.circular(999),
+  Widget _indicatorUI(
+      double trackW, double trackH, double thumbW, double left) {
+    return SizedBox(
+      width: trackW,
+      height: GuestPurchasePlanTheme.scrollBarRenderBoxHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: trackW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+          Positioned(
+            left: left,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: thumbW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarThumbColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: GuestPurchasePlanTheme.scrollBarThumbShadowColor,
+                    blurRadius: GuestPurchasePlanTheme.scrollBarShadowBlur,
+                    offset: Offset(
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetX,
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetY,
+                    ),
+                    spreadRadius: GuestPurchasePlanTheme.scrollBarShadowSpread,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-
 
 class _AssetIcon extends StatelessWidget {
   final PlanBenefitType type;
