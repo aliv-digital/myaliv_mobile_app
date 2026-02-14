@@ -44,48 +44,43 @@ class GuestSplashTheme {
 
   // Bottom sheet header title text
   static const TextStyle sheetTitle = TextStyle(
-    fontSize: 18,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w700,
-    color: Colors.black,
-    height: 1.56
-  );
+      fontSize: 18,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w700,
+      color: Colors.black,
+      height: 1.56);
 
   // Field label text: "enter mobile number" etc.
   static const TextStyle fieldLabel = TextStyle(
-    fontSize: 14,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w700,
-    color: Colors.black,
-    height: 1.43
-  );
+      fontSize: 14,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w700,
+      color: Colors.black,
+      height: 1.43);
 
   // Country dial code text inside picker box
   static const TextStyle dialCode = TextStyle(
-    fontSize: 14,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w700,
-    color: Colors.black,
-    height: 1.43
-  );
+      fontSize: 14,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w700,
+      color: Colors.black,
+      height: 1.43);
 
   // Phone input hint text
   static const TextStyle phoneHint = TextStyle(
-    color: Color(0xFFB7B7B7),
-    fontSize: 14,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w400,
-    height: 1.43
-  );
+      color: Color(0xFFB7B7B7),
+      fontSize: 14,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w400,
+      height: 1.43);
 
   // Phone input text
   static const TextStyle phoneInput = TextStyle(
-    fontSize: 14,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
-    color: Colors.black,
-    height: 1.43
-  );
+      fontSize: 14,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w500,
+      color: Colors.black,
+      height: 1.43);
 
   // Country flag emoji text
   static const TextStyle flagEmoji = TextStyle(
@@ -101,7 +96,8 @@ class GuestSplashTheme {
   static const Color purchasePlanSheetBarrierColor = Color(0x59000000);
 
   // Keyboard inset animation config (`AnimatedPadding` in sheet container).
-  static const Duration purchasePlanSheetKeyboardAnimationDuration = Duration(milliseconds: 180);
+  static const Duration purchasePlanSheetKeyboardAnimationDuration =
+      Duration(milliseconds: 180);
   static const Curve purchasePlanSheetKeyboardAnimationCurve = Curves.easeOut;
 
   // Additional entrance animation config (`FadeTransition` + `SlideTransition`).
@@ -109,7 +105,8 @@ class GuestSplashTheme {
   static const Offset purchasePlanSheetEntranceBeginOffset = Offset(0, 0.12);
 
   // Main sheet container styling (`Container` wrapping `_SheetBody`).
-  static const EdgeInsets purchasePlanSheetContentPadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
+  static const EdgeInsets purchasePlanSheetContentPadding =
+      EdgeInsets.fromLTRB(16, 24, 16, 24);
   static const Color purchasePlanSheetBackgroundColor = Colors.white;
   static const double purchasePlanSheetTopCornerRadius = 22;
 
@@ -124,7 +121,8 @@ class GuestSplashTheme {
   // Continue button container + shape.
   static const double purchasePlanContinueButtonHeight = 50;
   static const double purchasePlanContinueButtonRadius = 100;
-  static final Color purchasePlanContinueButtonColor = HexColor.fromHex('#645D9C');
+  static final Color purchasePlanContinueButtonColor =
+      HexColor.fromHex('#645D9C');
 
   // Header back icon touch area + icon size.
   static const double purchasePlanHeaderBackTapRadius = 22;
@@ -140,13 +138,23 @@ class GuestSplashTheme {
   // Country picker box dimensions + inner spacing.
   static const double purchasePlanCountryPickerHeight = 52;
   static const double purchasePlanCountryPickerWidth = 96;
-  static const double purchasePlanCountryPickerHorizontalPadding = 10;
+  // Left inner padding before the flag icon.
+  static const double purchasePlanCountryPickerLeftPadding = 10;
+  // Right inner padding when dropdown arrow is visible.
+  static const double purchasePlanCountryPickerRightPaddingWithArrow = 6;
+  // Right inner padding when dropdown arrow is hidden.
+  static const double purchasePlanCountryPickerRightPaddingWithoutArrow = 16;
+  // Exact country flag rendering size in picker.
+  static const double purchasePlanCountryFlagWidth = 26;
+  static const double purchasePlanCountryFlagHeight = 20;
   static const double purchasePlanCountryPickerToInputGap = 10;
-  static const double purchasePlanCountryFlagToDialGap = 6;
+  // Gap between flag and country dial code ("1").
+  static const double purchasePlanCountryFlagToDialGap = 5;
+  // Gap between dial code and dropdown arrow.
   static const double purchasePlanCountryDialToArrowGap = 2;
 
   // Country picker dropdown arrow icon style.
-  static const double purchasePlanCountryArrowIconSize = 18;
+  static const double purchasePlanCountryArrowIconSize = 16;
   static final Color purchasePlanCountryArrowIconColor = HexColor.fromHex('#9E9E9E');
 
   // Phone input field dimensions + inner spacing.

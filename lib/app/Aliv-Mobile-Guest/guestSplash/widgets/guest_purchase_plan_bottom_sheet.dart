@@ -19,7 +19,9 @@ Future<GuestSplashPurchasePlanInput?> showGuestSplashPurchasePlanBottomSheet(
   final initialCountry = service.findByCode('BS') ?? service.findByCode('US');
 
   // Init bottom-sheet state in same bloc
-  context.read<GuestSplashBloc>().add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
+  context
+      .read<GuestSplashBloc>()
+      .add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
 
   return showModalBottomSheet<GuestSplashPurchasePlanInput>(
     context: context,
@@ -235,8 +237,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(
-          height: GuestSplashTheme.purchasePlanHeaderBackToTitleGap
-        ),
+            height: GuestSplashTheme.purchasePlanHeaderBackToTitleGap),
         Text(
           title,
           style: GuestSplashTheme.sheetTitle,
@@ -291,9 +292,13 @@ class _PhoneRow extends StatelessWidget {
           child: Container(
             height: GuestSplashTheme.purchasePlanCountryPickerHeight,
             width: GuestSplashTheme.purchasePlanCountryPickerWidth,
-            padding: const EdgeInsets.symmetric(
-              horizontal:
-                  GuestSplashTheme.purchasePlanCountryPickerHorizontalPadding,
+            padding: EdgeInsets.only(
+              left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
+              right: showArrow
+                  ? GuestSplashTheme
+                      .purchasePlanCountryPickerRightPaddingWithArrow
+                  : GuestSplashTheme
+                      .purchasePlanCountryPickerRightPaddingWithoutArrow,
             ),
             decoration: BoxDecoration(
               border: Border.all(
@@ -305,28 +310,43 @@ class _PhoneRow extends StatelessWidget {
               ),
               color: GuestSplashTheme.purchasePlanFieldBackgroundColor,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(flag, style: GuestSplashTheme.flagEmoji),
-                const SizedBox(
-                  width: GuestSplashTheme.purchasePlanCountryFlagToDialGap,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: GuestSplashTheme.purchasePlanCountryFlagWidth,
+                      height: GuestSplashTheme.purchasePlanCountryFlagHeight,
+                      child: Center(
+                        child: Text(flag, style: GuestSplashTheme.flagEmoji),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: GuestSplashTheme.purchasePlanCountryFlagToDialGap,
+                    ),
+                    Text(
+                      dial,
+                      style: GuestSplashTheme.dialCode,
+                    ),
+                    if (showArrow) ...[
+                      const SizedBox(
+                        width:
+                            GuestSplashTheme.purchasePlanCountryDialToArrowGap,
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: GuestSplashTheme.purchasePlanCountryArrowIconSize,
+                        color:
+                            GuestSplashTheme.purchasePlanCountryArrowIconColor,
+                      ),
+                    ],
+                  ],
                 ),
-                Text(
-                  dial,
-                  style: GuestSplashTheme.dialCode,
-                ),
-                if (showArrow) ...[
-                  const SizedBox(
-                    width: GuestSplashTheme.purchasePlanCountryDialToArrowGap,
-                  ),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    size: GuestSplashTheme.purchasePlanCountryArrowIconSize,
-                    color: GuestSplashTheme.purchasePlanCountryArrowIconColor,
-                  ),
-                ],
-              ],
+              ),
             ),
           ),
         ),
@@ -336,7 +356,8 @@ class _PhoneRow extends StatelessWidget {
           child: Container(
             height: GuestSplashTheme.purchasePlanPhoneInputHeight,
             padding: const EdgeInsets.symmetric(
-              horizontal: GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
+              horizontal:
+                  GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
             ),
             decoration: BoxDecoration(
               border: Border.all(
