@@ -347,7 +347,22 @@ class _NotificationButton extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Icon(icon, color: Colors.white, size: 24),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: SvgPicture.asset(
+                AssetConstant.notificationIconSVG,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
+                placeholderBuilder: (_) =>
+                    Icon(icon, color: Colors.white, size: 24),
+              ),
+            ),
             if (showCountBadge)
               Positioned(
                 right: -2,

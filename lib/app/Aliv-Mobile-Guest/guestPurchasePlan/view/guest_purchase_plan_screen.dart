@@ -56,9 +56,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
   String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 
   void _onPurchaseNowPressed(BuildContext context, PlanModel plan) {
-    context
-        .read<GuestPurchasePlanBloc>()
-        .add(GuestPurchasePlanPurchaseNowPressed(plan));
+    context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanPurchaseNowPressed(plan));
 
     final hasActivePlan = _hasActivePlan(plan);
 

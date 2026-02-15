@@ -189,9 +189,9 @@ class GuestPurchasePlanTheme {
 
   // Bottom-sheet shared colors
   static final Color bottomSheetBackground = HexColor.fromHex('#F1F2FA');
-  static final Color warningBackground = HexColor.fromHex('#FFE8E8');
-  static final Color warningBorder = HexColor.fromHex('#FF8F8F');
-  static final Color warningText = HexColor.fromHex('#FF0000');
+  static final Color warningBackground = HexColor.fromHex('#F0DDDD');
+  static final Color warningBorder = HexColor.fromHex('#FCA19B');
+  static final Color warningText = HexColor.fromHex('#F40F0F');
   static final Color planSummaryBackground = HexColor.fromHex('#FFFFFF');
   static final Color planPriceBorder = HexColor.fromHex('#6258B8');
   static final Color planPriceText = HexColor.fromHex('#6258B8');
@@ -213,18 +213,17 @@ class GuestPurchasePlanTheme {
 
   static final TextStyle bottomSheetPlanName = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: FontWeight.w700,
     color: Colors.black,
-    height: 1.0,
   );
 
   static final TextStyle bottomSheetPlanDuration = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 12,
+    fontSize: 10,
+    // Flutter doesn't support w450 directly; w400 is the nearest available.
     fontWeight: FontWeight.w400,
-    color: subtitleColor,
-    height: 1.0,
+    color: HexColor.fromHex('#707070'),
   );
 
   static final TextStyle bottomSheetPrice = TextStyle(
@@ -372,4 +371,107 @@ class GuestPurchasePlanTheme {
   static const String planCardViewDetailsLabel = 'view details';
   static const String planCardHideDetailsLabel = 'hide details';
   static const String planCardPurchaseNowLabel = 'purchase now';
+
+  /// BOTTOM-SHEET STYLES
+  // ---------------------------------------------------------------------------
+  // Shared container and spacing
+  // Used in:
+  // - wallet_payment_activate_bottom_sheet.dart
+  // - wallet_payment_activate_or_future_bottom_sheet.dart
+  // ---------------------------------------------------------------------------
+  static const double bottomSheetTopCornerRadius = 24;
+  static const EdgeInsets bottomSheetContentPadding = EdgeInsets.fromLTRB(
+    16,
+    24,
+    16,
+    24,
+  );
+  static const double bottomSheetSectionGap = 20;
+
+  // ---------------------------------------------------------------------------
+  // Back button in bottom sheet header
+  // ---------------------------------------------------------------------------
+  static const double bottomSheetBackIconSize = 24;
+  static const double bottomSheetBackTapRadius = 12;
+  static const Color bottomSheetBackIconColor = Colors.black;
+
+  // ---------------------------------------------------------------------------
+  // Warning/alert box
+  // ---------------------------------------------------------------------------
+  static const EdgeInsets bottomSheetWarningPadding = EdgeInsets.all(10);
+  static const double bottomSheetWarningRadius = 4;
+  static const double bottomSheetWarningBorderWidth = 1;
+
+  // ---------------------------------------------------------------------------
+  // Selected plan summary card (name + duration + price pill)
+  // ---------------------------------------------------------------------------
+  // Inner padding for the selected-plan summary card in bottom sheets.
+  // Figma spacing target: Left 16, Top 20, Right 16, Bottom 20.
+  static const EdgeInsets bottomSheetSummaryCardInnerPadding =
+      EdgeInsets.fromLTRB(16, 20, 16, 20);
+  // Card height aligned with the above LTRB padding.
+  // 84 keeps the exact padding while preventing text overflow on device.
+  static const double bottomSheetSummaryCardHeight = 84;
+
+  static const double bottomSheetSummaryCardRadius = 12;
+
+  static const double bottomSheetSummaryNameToDurationGap = 0;
+
+  static const double bottomSheetSummaryPricePillHeight = 40;
+
+  static const EdgeInsets bottomSheetSummaryPricePillPadding =
+      EdgeInsets.symmetric(horizontal: 16);
+
+  static const double bottomSheetSummaryPricePillRadius = 5;
+
+  static const double bottomSheetSummaryPricePillBorderWidth = 1;
+
+  static final Color bottomSheetSummaryPricePillBackground =
+      HexColor.fromHex('#F4F4F6');
+
+  static final TextStyle bottomSheetSummaryPriceTextStyle = TextStyle(
+    color: const Color(0xFF222222),
+    fontSize: 16,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+  );
+
+  // ---------------------------------------------------------------------------
+  // Bottom-sheet action buttons
+  // ---------------------------------------------------------------------------
+  static const double bottomSheetActionButtonHeight = 50;
+  static const double bottomSheetActionButtonCornerRadius = 100;
+  static const double bottomSheetDualActionButtonsGap = 12;
+  static const double bottomSheetSecondaryButtonBorderWidth = 1.5;
+  static final Color bottomSheetSecondaryButtonBackgroundColor =
+      HexColor.fromHex('#FFFFFF');
+
+  // Activate-only sheet action text style.
+  static final TextStyle bottomSheetPrimaryActionSingleStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 17,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+    height: 1.0,
+  );
+
+  // Activate/Future dual-action sheet text styles (16px from current UI).
+  static final TextStyle bottomSheetPrimaryActionDualStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+    height: 1.0,
+  );
+  static final TextStyle bottomSheetSecondaryActionDualStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: planPriceBorder,
+    height: 1.0,
+  );
+
+  // Optional centralized labels for consistency.
+  static const String bottomSheetActivateNowLabel = 'activate now';
+  static const String bottomSheetFuturePlanLabel = 'future plan';
 }
