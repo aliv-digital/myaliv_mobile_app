@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
@@ -58,17 +59,16 @@ class PlanCard extends StatelessWidget {
                       const SizedBox(
                         width: GuestPurchasePlanTheme.planCardTitleToArrowGap,
                       ),
-                      Transform.translate(
-                        offset: Offset(
-                          -GuestPurchasePlanTheme
-                              .planCardArrowVisualInsetCompensation,
-                          0,
-                        ),
-                        child: AnimatedRotation(
-                          duration: const Duration(milliseconds: 180),
-                          turns: expanded ? 0.5 : 0.0,
-                          child:
-                              const Icon(Icons.keyboard_arrow_down, size: 22),
+                      SizedBox(
+                        child: SvgPicture.asset(
+                          expanded
+                              ? AssetConstant.upArrowSVG
+                              : AssetConstant.downArrowSVG,
+                          width:
+                              GuestPurchasePlanTheme.planCardToggleArrowWidth,
+                          height:
+                              GuestPurchasePlanTheme.planCardToggleArrowHeight,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ],

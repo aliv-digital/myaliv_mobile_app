@@ -51,4 +51,7 @@ class AssetConstant{
   static const leftArrowSVG = 'assets/icons/arrow_left.svg';
   static const phoneCallIconSVG = 'assets/icons/phone_call.svg';
 
+  static const upArrowSVG = 'assets/icons/up.svg';
+  static const downArrowSVG = 'assets/icons/bottom.svg';
+
 }

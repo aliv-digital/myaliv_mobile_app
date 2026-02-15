@@ -270,12 +270,14 @@ class GuestPurchasePlanTheme {
 
   // Header tap target and spacing between major card sections.
   static const double planCardHeaderTapRadius = 10;
-  // Compensates the Material arrow icon's built-in left inset so gap behaves
-  // visually (e.g., 0 means title and arrow appear attached).
-  static const double planCardArrowVisualInsetCompensation = 6;
-  static const double planCardTitleToArrowGap = 0;
+  static const double planCardTitleToArrowGap = 10;
   static const double planCardSectionSpacing = 16;
   static const double planCardDescriptionBottomSpacing = 16;
+
+  // Expand/collapse arrow icon size used beside each plan title.
+  // Used in all plan card headers when switching between up/down SVGs.
+  static const double planCardToggleArrowWidth = 6;
+  static const double planCardToggleArrowHeight = 12;
 
   // Header text styles (title + subtitle).
   static final TextStyle planCardTitleTextStyle = TextStyle(

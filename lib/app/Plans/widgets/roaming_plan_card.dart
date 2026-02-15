@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
@@ -77,12 +78,16 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 0),
-                          AnimatedRotation(
-                            duration: const Duration(milliseconds: 180),
-                            turns: expanded ? 0.5 : 0.0,
-                            child: const Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 28,
+                          SizedBox(
+                            width: 6,
+                            height: 12,
+                            child: SvgPicture.asset(
+                              expanded
+                                  ? AssetConstant.upArrowSVG
+                                  : AssetConstant.downArrowSVG,
+                              width: 6,
+                              height: 12,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ],

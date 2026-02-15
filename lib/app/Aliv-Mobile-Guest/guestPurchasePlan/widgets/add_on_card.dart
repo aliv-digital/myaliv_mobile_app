@@ -38,7 +38,9 @@ class AddOnCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
+            color: selected
+                ? GuestPurchasePlanTheme.brandPurple
+                : Colors.transparent,
             width: 1.2,
           ),
           boxShadow: [
@@ -63,7 +65,6 @@ class AddOnCard extends StatelessWidget {
                     style: GuestPurchasePlanTheme.addOnTitle,
                   ),
                   const SizedBox(height: 16),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -151,9 +152,11 @@ class _CheckBoxSquare extends StatelessWidget {
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: checked ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
+          color:
+              checked ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
+          border:
+              Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
         ),
         alignment: Alignment.center,
         child: checked
