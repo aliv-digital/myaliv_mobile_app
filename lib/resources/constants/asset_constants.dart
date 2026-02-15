@@ -55,6 +55,7 @@ class AssetConstant{
   static const downArrowSVG = 'assets/icons/bottom.svg';
 
   static const notificationIconSVG = 'assets/icons/notification.svg';
+  static const planRedCardPNG = 'assets/images/plan.png';
 
 
 }

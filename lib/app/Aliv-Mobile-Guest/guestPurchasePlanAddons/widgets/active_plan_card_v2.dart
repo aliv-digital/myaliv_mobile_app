@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../model/add_on_models.dart';
 import '../theme/guest_purchase_plan_add_ons_theme.dart';
+import 'plan_red_image_card.dart';
 
 /// ActivePlanCardV2
 /// Fresh implementation for pixel-perfect Figma matching.
@@ -14,145 +15,36 @@ class ActivePlanCardV2 extends StatelessWidget {
 
   final ActivePlanSummary plan;
   final ValueChanged<bool> onAutoRenewChanged;
+  static const double _cardWidth = 340;
+  static const double _cardHeight = 150;
+  static const double _cardRadius = 12;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 150,
-      child: Container(
-        decoration: BoxDecoration(
-          color: GuestPurchasePlanAddOnsTheme.planRed,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 16,
-              offset: Offset(0, 10),
-              color: GuestPurchasePlanAddOnsTheme.shadow,
+    return PlanRedImageCard(
+      planLabel: plan.label,
+      planName: plan.name,
+      activeLabel: plan.activeDateLabel,
+      activeDate: plan.activeDate,
+      expireLabel: plan.expireDateLabel,
+      expireDate: plan.expireDate,
+      maxWidth: _cardWidth,
+      height: _cardHeight,
+      borderRadius: _cardRadius,
+      topRight: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _AutoRenewPill(value: plan.autoRenew, onChanged: onAutoRenewChanged),
+          const SizedBox(width: 8),
+          Text(
+            'auto renew',
+            style: GuestPurchasePlanAddOnsTheme.t(
+              12,
+              weight: FontWeight.w700,
+              color: Colors.white,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Stack(
-            children: [
-              // Background shapes
-              // Figma background ovals (size 321x226, opacity 0.08, black @ 63%)
-              Positioned(
-                left: -95,
-                bottom: -85,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.08,
-                    child: Container(
-                      width: 250,
-                      height: 180,
-                      decoration: ShapeDecoration(
-                        color: Colors.black.withOpacity(0.63),
-                        shape: const OvalBorder(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: -120,
-                top: -100,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.08,
-                    child: Container(
-                      width: 280,
-                      height: 200,
-                      decoration: ShapeDecoration(
-                        color: Colors.black.withOpacity(0.63),
-                        shape: const OvalBorder(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // Watermark
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: 0.10,
-                    child: Center(
-                      child: Text(
-                        'aliv',
-                        style: GuestPurchasePlanAddOnsTheme.t(
-                          92,
-                          weight: FontWeight.w900,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          plan.label,
-                          style: GuestPurchasePlanAddOnsTheme.t(
-                            12,
-                            weight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const Spacer(),
-                        _AutoRenewPill(
-                          value: plan.autoRenew,
-                          onChanged: onAutoRenewChanged,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'auto renew',
-                          style: GuestPurchasePlanAddOnsTheme.t(
-                            12,
-                            weight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      plan.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GuestPurchasePlanAddOnsTheme.t(
-                        24,
-                        weight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        _DateBlock(
-                          label: plan.activeDateLabel,
-                          value: plan.activeDate,
-                          alignEnd: false,
-                        ),
-                        const Spacer(),
-                        _DateBlock(
-                          label: plan.expireDateLabel,
-                          value: plan.expireDate,
-                          alignEnd: true,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -218,47 +110,6 @@ class _AutoRenewPill extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _DateBlock extends StatelessWidget {
-  const _DateBlock({
-    required this.label,
-    required this.value,
-    required this.alignEnd,
-  });
-
-  final String label;
-  final String value;
-  final bool alignEnd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: GuestPurchasePlanAddOnsTheme.t(
-            12,
-            weight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: GuestPurchasePlanAddOnsTheme.t(
-            15,
-            weight: FontWeight.w900,
-            color: Colors.white,
-            height: 1.0,
-          ).copyWith(letterSpacing: 2.25),
-        ),
-      ],
     );
   }
 }
