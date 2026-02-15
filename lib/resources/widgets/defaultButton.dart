@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
-import '../../resources/color_manager.dart'; // তোমার ColorManager এর path
+import '../../resources/color_manager.dart';
 
 class DefaultButton extends StatelessWidget {
   final String label;
   final bool isLoading;
   final VoidCallback? onPressed;
 
-  /// height change করতে চাইলে override করতে পারবে (default: 52)
+  /// Overrides button height. Default: 52.
   final double height;
 
-  /// background color override করার দরকার হলে
+  /// Overrides button background color.
   final Color? backgroundColor;
 
-  /// text color override করার দরকার হলে
+  /// Overrides button text color.
   final Color? textColor;
+
+  /// Optional border for outlined or bordered button variants.
+  final BorderSide? borderSide;
+
+  /// Optional elevation override (defaults to 0).
+  final double elevation;
+
+  /// Optional custom padding for the button child.
+  final EdgeInsetsGeometry? contentPadding;
+
   final TextStyle? textStyle;
   final FontWeight fontWeight;
   final double fontSize;
-  /// border radius override করতে চাইলে
+
+  /// Overrides border radius. Default: pill shape.
   final BorderRadiusGeometry borderRadius;
 
   const DefaultButton({
@@ -30,6 +41,9 @@ class DefaultButton extends StatelessWidget {
     this.fontWeight = FontWeight.w700,
     this.backgroundColor,
     this.textColor,
+    this.borderSide,
+    this.elevation = 0,
+    this.contentPadding,
     this.textStyle,
     this.borderRadius = const BorderRadius.all(Radius.circular(100)),
   });
@@ -37,42 +51,52 @@ class DefaultButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color bgColor = backgroundColor ?? ColorManager.defaultButtonColor;
-    final Color resolvedTextColor = textColor ?? textStyle?.color ?? Colors.white;
-    final TextStyle resolvedTextStyle =
-        (textStyle ??
-                TextStyle(
-                  fontSize: fontSize,
-                  fontFamily: 'CircularPro',
-                  fontWeight: fontWeight,
-                  height: 1.80,
-                ))
-            .copyWith(color: resolvedTextColor);
+    final Color resolvedTextColor =
+        textColor ?? textStyle?.color ?? Colors.white;
+    final TextStyle resolvedTextStyle = (textStyle ??
+            TextStyle(
+              fontSize: fontSize,
+              fontFamily: 'CircularPro',
+              fontWeight: fontWeight,
+              height: 1.80,
+            ))
+        .copyWith(color: resolvedTextColor);
 
     return SizedBox(
       height: height,
       width: double.infinity,
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          disabledBackgroundColor: bgColor.withValues(alpha: 0.7),
-          shape: RoundedRectangleBorder(
-            borderRadius: borderRadius,
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return bgColor.withValues(alpha: 0.7);
+            }
+            return bgColor;
+          }),
+          elevation: WidgetStateProperty.all(elevation),
+          side: WidgetStateProperty.all(borderSide),
+          padding: contentPadding == null
+              ? null
+              : WidgetStateProperty.all(contentPadding),
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: borderRadius),
           ),
-          elevation: 0,
         ),
-        // loading হলে আর onPressed null হলে বাটন disable
+        // Disable button while loading or when callback is null.
         onPressed: (isLoading || onPressed == null) ? null : onPressed,
-        child: isLoading ? const SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        ) : Text(
-          label,
-          style: resolvedTextStyle,
-        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                label,
+                style: resolvedTextStyle,
+              ),
       ),
     );
   }

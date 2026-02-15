@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
@@ -32,17 +33,17 @@ class MifiPlanCard extends StatelessWidget {
     final PlanBenefit center = dataBenefit ?? plan.benefits.first;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+      margin: GuestPurchasePlanTheme.planCardOuterMargin,
+      padding: GuestPurchasePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: GuestPurchasePlanTheme.planCardBackgroundColor,
         borderRadius:
             BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
+            color: GuestPurchasePlanTheme.planCardShadowColor,
+            blurRadius: GuestPurchasePlanTheme.planCardShadowBlur,
+            offset: GuestPurchasePlanTheme.planCardShadowOffset,
           ),
         ],
       ),
@@ -54,7 +55,9 @@ class MifiPlanCard extends StatelessWidget {
               Expanded(
                 child: InkWell(
                   onTap: onToggle,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardHeaderTapRadius,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -69,12 +72,8 @@ class MifiPlanCard extends StatelessWidget {
                               plan.title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontFamily: 'CircularPro',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
+                              style:
+                                  GuestPurchasePlanTheme.planCardTitleTextStyle,
                             ),
                           ),
                           const SizedBox(width: 0),
@@ -90,12 +89,7 @@ class MifiPlanCard extends StatelessWidget {
                       ),
                       Text(
                         plan.subtitle,
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          color: GuestPurchasePlanTheme.subtitleColor,
-                        ),
+                        style: GuestPurchasePlanTheme.planCardSubtitleTextStyle,
                       ),
                     ],
                   ),
@@ -105,12 +99,12 @@ class MifiPlanCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // ===== Center metric (data only) =====
           _CenterMetric(benefit: center),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // ===== Expanded description =====
           AnimatedCrossFade(
@@ -119,19 +113,15 @@ class MifiPlanCard extends StatelessWidget {
                 expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(
+                bottom: GuestPurchasePlanTheme.planCardDescriptionBottomSpacing,
+              ),
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
                   plan.description,
                   textAlign: TextAlign.start,
-                  style: const TextStyle(
-                    fontFamily: 'Circular Pro',
-                    fontSize: 10,
-                    height: 1.38,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF2C2C2C),
-                  ),
+                  style: GuestPurchasePlanTheme.planCardDescriptionTextStyle,
                 ),
               ),
             ),
@@ -141,52 +131,45 @@ class MifiPlanCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade300),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      backgroundColor:
-                          GuestPurchasePlanTheme.viewDetailsButtonColor,
-                    ),
-                    onPressed: onViewDetails,
-                    child: Text(
-                      expanded ? 'hide details' : 'view details',
-                      style: TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: GuestPurchasePlanTheme.brandPurple,
-                      ),
-                    ),
+                child: DefaultButton(
+                  label: expanded
+                      ? GuestPurchasePlanTheme.planCardHideDetailsLabel
+                      : GuestPurchasePlanTheme.planCardViewDetailsLabel,
+                  isLoading: false,
+                  onPressed: onViewDetails,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardViewDetailsBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardViewDetailsTextStyle,
+                  borderSide: BorderSide(
+                    color:
+                        GuestPurchasePlanTheme.planCardViewDetailsBorderColor,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(
+                width: GuestPurchasePlanTheme.planCardActionButtonsGap,
+              ),
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: GuestPurchasePlanTheme.brandPurple,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                    ),
-                    onPressed: onPurchaseNow,
-                    child: const Text(
-                      'purchase now',
-                      style: TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
+                child: DefaultButton(
+                  label: GuestPurchasePlanTheme.planCardPurchaseNowLabel,
+                  isLoading: false,
+                  onPressed: onPurchaseNow,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardPurchaseNowBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardPurchaseNowTextStyle,
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),

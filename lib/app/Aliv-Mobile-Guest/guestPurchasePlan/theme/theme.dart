@@ -14,7 +14,6 @@ class GuestPurchasePlanTheme {
   static final Color scrollBarBackgroundColor = HexColor.fromHex('#F2F2F7');
   static final Color scrollBarThumbColor = HexColor.fromHex('#645D9C');
   static const Color scrollBarThumbShadowColor = Color(0x19000000);
-  static final Color viewDetailsButtonColor = HexColor.fromHex('#F2F1F9');
   static final Color addOnCardBackground = HexColor.fromHex('#F6F6FB');
 
   // Plan-card horizontal scroll indicator style.
@@ -26,9 +25,6 @@ class GuestPurchasePlanTheme {
   static const double scrollBarShadowOffsetY = 0;
   static const double scrollBarShadowSpread = 0;
   static const double scrollBarRenderBoxHeight = 16;
-
-  // Shared outer corner radius for all plan cards.
-  static const double planCardRadius = 8;
 
   // Metric label colors
   static final Color talkMinsColor = HexColor.fromHex('#00B3E3');
@@ -219,4 +215,105 @@ class GuestPurchasePlanTheme {
     color: planPriceBorder,
     height: 1.0,
   );
+
+  // ---------------------------------------------------------------------------
+  // Plan Card Tokens (Daily/Weekly/Monthly/Roaming/RoamEasy/Mifi/Liberty Global)
+  // Change values in this section to update all plan-card UI consistently.
+  // Used in:
+  // - daily_plan_card.dart
+  // - weekly_plan_card.dart
+  // - monthly_plan_card.dart
+  // - roaming_plan_card.dart
+  // - roameasy_plan_card.dart
+  // - mifi_plan_card.dart
+  // - liberty_global_plan_card.dart
+  // ---------------------------------------------------------------------------
+
+  // Outer card spacing inside the plan list.
+  static const EdgeInsets planCardOuterMargin = EdgeInsets.symmetric(
+    horizontal: 14,
+    vertical: 10,
+  );
+
+  // Inner padding of each white plan card.
+  static const EdgeInsets planCardInnerPadding = EdgeInsets.fromLTRB(
+    12,
+    12,
+    12,
+    12,
+  );
+
+  // Base color and shape for the plan card container.
+  static const Color planCardBackgroundColor = Colors.white;
+  static const double planCardRadius = 8;
+
+  // Soft shadow under each plan card.
+  static const Color planCardShadowColor = Color(0x0F000000);
+  static const double planCardShadowBlur = 14;
+  static const Offset planCardShadowOffset = Offset(0, 8);
+
+  // Header tap target and spacing between major card sections.
+  static const double planCardHeaderTapRadius = 10;
+  static const double planCardSectionSpacing = 16;
+  static const double planCardDescriptionBottomSpacing = 16;
+
+  // Header text styles (title + subtitle).
+  static final TextStyle planCardTitleTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    color: Colors.black,
+  );
+
+  static final TextStyle planCardSubtitleTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    color: subtitleColor,
+  );
+
+  // Expanded description text style.
+  static final TextStyle planCardDescriptionTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 10,
+    height: 1.38,
+    fontWeight: FontWeight.w500,
+    color: const Color(0xFF2C2C2C),
+  );
+
+  // Bottom action row (view details + purchase now) layout.
+  static const double planCardActionButtonHeight = 40;
+  static const double planCardActionButtonsGap = 12;
+  static const double planCardActionButtonRadius = 22;
+  static const EdgeInsets planCardActionButtonContentPadding =EdgeInsets.fromLTRB(0, 0, 0, 0);
+      //EdgeInsets.fromLTRB(24, 16, 24, 16);
+
+  // View details button visuals.
+  static final Color planCardViewDetailsBorderColor = HexColor.fromHex(
+    '#E0E0E0',
+  );
+  static final Color planCardViewDetailsBackgroundColor = HexColor.fromHex(
+    '#F2F1F9',
+  );
+  static final TextStyle planCardViewDetailsTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    color: brandPurple,
+  );
+
+  // Purchase now button visuals.
+  static final Color planCardPurchaseNowBackgroundColor = brandPurple;
+  static const Color planCardPurchaseNowTextColor = Colors.white;
+  static final TextStyle planCardPurchaseNowTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    color: planCardPurchaseNowTextColor,
+  );
+
+  // Centralized button labels to keep wording consistent across all plan cards.
+  static const String planCardViewDetailsLabel = 'view details';
+  static const String planCardHideDetailsLabel = 'hide details';
+  static const String planCardPurchaseNowLabel = 'purchase now';
 }

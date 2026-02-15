@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 import '../theme/theme.dart';
@@ -20,24 +21,20 @@ class PlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _muted = Color(0xFF8B8B8B);
-  static const Color _divider = Color(0xFFE9E9EE);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      margin: GuestPurchasePlanTheme.planCardOuterMargin,
+      padding: GuestPurchasePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: GuestPurchasePlanTheme.planCardBackgroundColor,
         borderRadius:
             BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
+            color: GuestPurchasePlanTheme.planCardShadowColor,
+            blurRadius: GuestPurchasePlanTheme.planCardShadowBlur,
+            offset: GuestPurchasePlanTheme.planCardShadowOffset,
           ),
         ],
       ),
@@ -49,17 +46,14 @@ class PlanCard extends StatelessWidget {
               Expanded(
                 child: InkWell(
                   onTap: onToggle,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardHeaderTapRadius,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         plan.title,
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
-                        ),
+                        style: GuestPurchasePlanTheme.planCardTitleTextStyle,
                       ),
                       const SizedBox(width: 6),
                       AnimatedRotation(
@@ -81,12 +75,7 @@ class PlanCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               plan.subtitle,
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 11.5,
-                fontWeight: FontWeight.w400,
-                color: _muted,
-              ),
+              style: GuestPurchasePlanTheme.planCardSubtitleTextStyle,
             ),
           ),
 
@@ -97,7 +86,7 @@ class PlanCard extends StatelessWidget {
 
           // thin divider line like screenshot
           const SizedBox(height: 10),
-          Container(height: 1, color: _divider),
+          Container(height: 1, color: GuestPurchasePlanTheme.dividerColor),
           const SizedBox(height: 10),
 
           // ===== Expanded description =====
@@ -110,13 +99,7 @@ class PlanCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
                 plan.description,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12.2,
-                  height: 1.35,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF2C2C2C),
-                ),
+                style: GuestPurchasePlanTheme.planCardDescriptionTextStyle,
               ),
             ),
           ),
@@ -125,51 +108,43 @@ class PlanCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade300),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      backgroundColor: const Color(0xFFF1F1F6),
-                    ),
-                    onPressed: onViewDetails,
-                    child: Text(
-                      expanded ? 'hide details' : 'view details',
-                      style: const TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: _brand,
-                      ),
-                    ),
+                child: DefaultButton(
+                  label: expanded
+                      ? GuestPurchasePlanTheme.planCardHideDetailsLabel
+                      : GuestPurchasePlanTheme.planCardViewDetailsLabel,
+                  isLoading: false,
+                  onPressed: onViewDetails,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardViewDetailsBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardViewDetailsTextStyle,
+                  borderSide: BorderSide(
+                    color:
+                        GuestPurchasePlanTheme.planCardViewDetailsBorderColor,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _brand,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                    ),
-                    onPressed: onPurchaseNow,
-                    child: const Text(
-                      'purchase now',
-                      style: TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                child: DefaultButton(
+                  label: GuestPurchasePlanTheme.planCardPurchaseNowLabel,
+                  isLoading: false,
+                  onPressed: onPurchaseNow,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardPurchaseNowBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardPurchaseNowTextStyle,
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
