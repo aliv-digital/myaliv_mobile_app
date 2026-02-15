@@ -15,6 +15,33 @@ class GuestPurchasePlanTheme {
   static final Color scrollBarThumbColor = HexColor.fromHex('#645D9C');
   static const Color scrollBarThumbShadowColor = Color(0x19000000);
   static final Color addOnCardBackground = HexColor.fromHex('#F6F6FB');
+  // Add-on amount pill background (e.g., "$ 5.00" box) from Figma.
+  static final Color addOnPricePillBackground = HexColor.fromHex('#F4F4F6');
+
+  // Add-on card spacing tokens (used in add_on_card.dart).
+  // Keep these centralized so card spacing can be updated from theme only.
+  static const EdgeInsets addOnCardOuterMargin = EdgeInsets.symmetric(
+    horizontal: 15,
+    vertical: 10,
+  );
+  static const EdgeInsets addOnCardInnerPadding = EdgeInsets.all(16);
+  static const double addOnCardTitleToDetailsGap = 16;
+  static const double addOnCardInfoIconSize = 16;
+  static const double addOnCardIconToLabelGap = 6;
+  static const double addOnCardLabelToValueGap = 6;
+  static const double addOnCardValueToPriceGap = 12;
+
+  // Add-on checkbox style (selected state in Figma).
+  // Used in: add_on_card.dart -> _CheckBoxSquare
+  static const double addOnCheckboxSize = 15;
+  static const double addOnCheckboxRadius = 2;
+  static const double addOnCheckboxBorderWidth = 1;
+  static final Color addOnCheckboxCheckedFillColor = HexColor.fromHex(
+    '#5045A7',
+  );
+  static final Color addOnCheckboxBorderColor = HexColor.fromHex('#645D9C');
+  static const double addOnCheckboxCheckIconSize = 12;
+  static const Color addOnCheckboxCheckIconColor = Colors.white;
 
   // Plan-card horizontal scroll indicator style.
   static const double scrollBarThumbWidth = 60;
@@ -61,7 +88,7 @@ class GuestPurchasePlanTheme {
   // Add-ons helper copy under the title
   static final TextStyle addOnHelper = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 14,
+    fontSize: 12,
     height: 1.4,
     fontWeight: FontWeight.w600,
     color: Colors.black,
@@ -88,7 +115,7 @@ class GuestPurchasePlanTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w700,
-    color: brandPurple,
+    color: HexColor.fromHex('#222222'),
   );
 
   // Plan tabs label

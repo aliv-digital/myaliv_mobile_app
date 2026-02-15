@@ -113,8 +113,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
         child: Column(
           children: [
             DefaultAppBar(
-             // showNotification: true,
-             //   showNotificationDotWhenZero: true,
+              showBackArrow: false,
+              showNotification: true,
+                showNotificationDotWhenZero: true,
                 title: 'plans',
                 onBack: () {
                   context.pop();
@@ -158,10 +159,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     title = 'choose a prepaid monthly primary plan';
                     break;
                   case PlanTab.roaming:
-                    title = 'choose a prepaid roaming primary plan';
+                    title = 'choose a roaming data only plan';
                     break;
                   case PlanTab.roameasy:
-                    title = 'choose a prepaid roameasy primary plan';
+                    title = 'choose a roameasy standalone plan';
                     break;
                   case PlanTab.addOns:
                     title =
@@ -172,7 +173,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     title = 'choose a prepaid mifi primary plan';
                     break;
                   case PlanTab.libertyGlobal:
-                    title = 'choose a prepaid liberty global primary plan';
+                    title = 'choose an international calling plan';
                     break;
 
                 }
@@ -183,9 +184,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       title,
-                      style: state.selectedTab == PlanTab.addOns
-                          ? GuestPurchasePlanTheme.addOnHelper
-                          : GuestPurchasePlanTheme.sectionTitle,
+                      style: GuestPurchasePlanTheme.sectionTitle,
+                      // style: state.selectedTab == PlanTab.addOns
+                      //     ? GuestPurchasePlanTheme.addOnHelper
+                      //     : GuestPurchasePlanTheme.sectionTitle,
                     ),
                   ),
                 );

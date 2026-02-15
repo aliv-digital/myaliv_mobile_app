@@ -30,7 +30,7 @@ class GuestPurchasePlanRepository {
                   type: PlanBenefitType.data,
                   label: 'data',
                   value: '2',
-                  sub: 'GB'
+                  sub: 'gb'
               ),
               PlanBenefit(
                   type: PlanBenefitType.talkMins,
@@ -441,7 +441,7 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '90',
+                  value: '125',
                   sub: 'gb'),
             ],
           ),
