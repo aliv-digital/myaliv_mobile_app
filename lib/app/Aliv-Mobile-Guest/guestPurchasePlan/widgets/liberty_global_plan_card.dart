@@ -30,15 +30,19 @@ class LibertyGlobalPlanCard extends StatelessWidget {
 
     final PlanBenefit center = intlTalk ?? plan.benefits.first;
 
+    debugPrint("----- LibertyGlobalPlanCard -----");
+    debugPrint("intlTalk: $intlTalk");
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
@@ -225,6 +229,12 @@ class _CenterMetric extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconPath = PlanIconAssets.forType(benefit.type);
     final isSvg = iconPath.toLowerCase().endsWith('.svg');
+
+    debugPrint("----- AddOnCard -----");
+    debugPrint("PlanBenefitType.data: ${PlanBenefitType.data}");
+    debugPrint("iconPath: $iconPath");
+    debugPrint("benefit label: ${benefit.label}");
+
 
     return Column(
       children: [

@@ -33,7 +33,8 @@ class MonthlyPlanCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),

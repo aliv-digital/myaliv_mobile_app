@@ -113,6 +113,8 @@ class _GuestPurchasePlanView extends StatelessWidget {
         child: Column(
           children: [
             DefaultAppBar(
+             // showNotification: true,
+             //   showNotificationDotWhenZero: true,
                 title: 'plans',
                 onBack: () {
                   context.pop();
@@ -161,17 +163,18 @@ class _GuestPurchasePlanView extends StatelessWidget {
                   case PlanTab.roameasy:
                     title = 'choose a prepaid roameasy primary plan';
                     break;
+                  case PlanTab.addOns:
+                    title =
+                    'add-ons can only be added to your active primary plan and '
+                        'expires when it ends.';
+                    break;
                   case PlanTab.mifi:
                     title = 'choose a prepaid mifi primary plan';
                     break;
                   case PlanTab.libertyGlobal:
                     title = 'choose a prepaid liberty global primary plan';
                     break;
-                  case PlanTab.addOns:
-                    title =
-                        'add-ons can only be added to your active primary plan and '
-                        'expires when it ends.';
-                    break;
+
                 }
 
                 return Padding(

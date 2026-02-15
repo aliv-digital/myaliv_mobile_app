@@ -27,6 +27,9 @@ class GuestPurchasePlanTheme {
   static const double scrollBarShadowSpread = 0;
   static const double scrollBarRenderBoxHeight = 16;
 
+  // Shared outer corner radius for all plan cards.
+  static const double planCardRadius = 8;
+
   // Metric label colors
   static final Color talkMinsColor = HexColor.fromHex('#00B3E3');
   static final Color smsColor = HexColor.fromHex('#5146A8');

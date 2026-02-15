@@ -21,6 +21,11 @@ class AddOnCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconPath = PlanIconAssets.forType(PlanBenefitType.data);
+
+    debugPrint("----- AddOnCard -----");
+    debugPrint("PlanBenefitType.data: ${PlanBenefitType.data}");
+    debugPrint("iconPath: $iconPath");
+
     final isSvg = iconPath.toLowerCase().endsWith('.svg');
 
     return InkWell(

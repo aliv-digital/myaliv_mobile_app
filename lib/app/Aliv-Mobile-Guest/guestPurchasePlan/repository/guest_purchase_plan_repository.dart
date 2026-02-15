@@ -7,9 +7,9 @@ enum PlanTab {
   monthly,
   roaming,
   roameasy,
-  mifi,
-  libertyGlobal,
   addOns,
+  mifi,
+  libertyGlobal
 }
 
 class GuestPurchasePlanRepository {
@@ -23,92 +23,76 @@ class GuestPurchasePlanRepository {
             id: 'd1',
             title: 'freedom 5',
             subtitle: '1 day',
-            price: 10.00,
+            price: 5.00,
             description: 'A simple daily plan for quick usage.',
             benefits: [
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '1',
-                  sub: 'GB'
-              ),
-              PlanBenefit(
-                  type: PlanBenefitType.talkMins,
-                  label: 'talk mins',
-                  value: '10',
-                  sub: 'local talk mins'),
-              PlanBenefit(
-                  type: PlanBenefitType.sms,
-                  label: 'sms',
-                  value: '10',
-                  sub: 'local text'),
-              PlanBenefit(
-                  type: PlanBenefitType.data,
-                  label: 'data',
-                  value: '1',
-                  sub: 'GB'
-              ),
-              PlanBenefit(
-                  type: PlanBenefitType.talkMins,
-                  label: 'talk mins',
-                  value: '10',
-                  sub: 'local talk mins'),
-              PlanBenefit(
-                  type: PlanBenefitType.sms,
-                  label: 'sms',
-                  value: '10',
-                  sub: 'local text'),
-            ],
-          ),
-          PlanModel(
-            id: 'd2',
-            title: 'freedom 5',
-            subtitle: '1 day',
-            price: 20.00,
-            description: 'Higher daily bundle for heavier usage.',
-            benefits: [
-              PlanBenefit(
-                  type: PlanBenefitType.data,
-                  label: 'data',
                   value: '2',
-                  sub: 'GB'),
-              PlanBenefit(
-                  type: PlanBenefitType.talkMins,
-                  label: 'talk mins',
-                  value: '20',
-                  sub: 'local talk mins'),
-              PlanBenefit(
-                  type: PlanBenefitType.sms,
-                  label: 'sms',
-                  value: '20',
-                  sub: 'local text'
+                  sub: 'GB'
               ),
-            ],
-          ),
-          PlanModel(
-            id: 'd3',
-            title: 'freedom 5',
-            subtitle: '1 day',
-            price: 30.00,
-            description: 'Premium daily option for maximum value.',
-            benefits: [
-              PlanBenefit(
-                  type: PlanBenefitType.data,
-                  label: 'data',
-                  value: '5',
-                  sub: 'GB'),
               PlanBenefit(
                   type: PlanBenefitType.talkMins,
                   label: 'talk mins',
-                  value: '50',
+                  value: '30',
                   sub: 'local talk mins'),
               PlanBenefit(
                   type: PlanBenefitType.sms,
                   label: 'sms',
-                  value: '50',
-                  sub: 'local text'),
+                  value: '30',
+                  sub: 'local text')
             ],
           ),
+          // PlanModel(
+          //   id: 'd2',
+          //   title: 'freedom 5',
+          //   subtitle: '1 day',
+          //   price: 20.00,
+          //   description: 'Higher daily bundle for heavier usage.',
+          //   benefits: [
+          //     PlanBenefit(
+          //         type: PlanBenefitType.data,
+          //         label: 'data',
+          //         value: '2',
+          //         sub: 'GB'),
+          //     PlanBenefit(
+          //         type: PlanBenefitType.talkMins,
+          //         label: 'talk mins',
+          //         value: '20',
+          //         sub: 'local talk mins'),
+          //     PlanBenefit(
+          //         type: PlanBenefitType.sms,
+          //         label: 'sms',
+          //         value: '20',
+          //         sub: 'local text'
+          //     ),
+          //   ],
+          // ),
+          // PlanModel(
+          //   id: 'd3',
+          //   title: 'freedom 5',
+          //   subtitle: '1 day',
+          //   price: 30.00,
+          //   description: 'Premium daily option for maximum value.',
+          //   benefits: [
+          //     PlanBenefit(
+          //         type: PlanBenefitType.data,
+          //         label: 'data',
+          //         value: '5',
+          //         sub: 'GB'),
+          //     PlanBenefit(
+          //         type: PlanBenefitType.talkMins,
+          //         label: 'talk mins',
+          //         value: '50',
+          //         sub: 'local talk mins'),
+          //     PlanBenefit(
+          //         type: PlanBenefitType.sms,
+          //         label: 'sms',
+          //         value: '50',
+          //         sub: 'local text'),
+          //   ],
+          // ),
         ];
 
       case PlanTab.weekly:
@@ -116,7 +100,7 @@ class GuestPurchasePlanRepository {
           // ✅ weekly card screenshot অনুযায়ী: unlimited talk + unlimited sms
           PlanModel(
             id: 'w1',
-            title: 'freedom 5',
+            title: 'freedom 8',
             subtitle: '7 day',
             price: 8.00,
             description: 'Weekly plan with unlimited local talk and text.',
@@ -138,13 +122,61 @@ class GuestPurchasePlanRepository {
                   sub: 'local text'),
             ],
           ),
+          PlanModel(
+            id: 'w2',
+            title: 'freedom 15',
+            subtitle: '7 day',
+            price: 15.00,
+            description: 'Weekly plan with unlimited local talk and text.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '3',
+                  sub: 'gb'),
+              PlanBenefit(
+                  type: PlanBenefitType.talkMins,
+                  label: 'talk mins',
+                  value: 'unlimited',
+                  sub: 'local talk mins'),
+              PlanBenefit(
+                  type: PlanBenefitType.sms,
+                  label: 'sms',
+                  value: 'unlimited',
+                  sub: 'local text'),
+            ],
+          ),
+          PlanModel(
+            id: 'w2',
+            title: 'freedom 45',
+            subtitle: '7 day',
+            price: 45.00,
+            description: 'Weekly plan with unlimited local talk and text.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: 'unlimited',
+                  sub: 'gb'),
+              PlanBenefit(
+                  type: PlanBenefitType.talkMins,
+                  label: 'talk mins',
+                  value: 'unlimited',
+                  sub: 'local talk mins'),
+              PlanBenefit(
+                  type: PlanBenefitType.sms,
+                  label: 'sms',
+                  value: 'unlimited',
+                  sub: 'local text'),
+            ],
+          ),
         ];
 
       case PlanTab.monthly:
         return const [
           PlanModel(
             id: 'm1',
-            title: 'liberty40',
+            title: 'liberty 40',
             subtitle: '30 days',
             price: 40.00,
             description:
@@ -153,38 +185,38 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '1',
+                  value: '5',
                   sub: 'gb'),
               PlanBenefit(
                   type: PlanBenefitType.talkMins,
                   label: 'talk mins',
-                  value: '30',
+                  value: 'unlimited',
                   sub: 'local talk mins'),
               PlanBenefit(
                   type: PlanBenefitType.sms,
                   label: 'sms',
-                  value: '30',
+                  value: 'unlimited',
                   sub: 'local text'),
-              PlanBenefit(
-                  type: PlanBenefitType.bonusData,
-                  label: 'bonus data',
-                  value: '5',
-                  sub: 'gb'),
-              PlanBenefit(
-                  type: PlanBenefitType.intlTalkText,
-                  label: "int'l talk & text",
-                  value: '300',
-                  sub: 'sms text'),
-              PlanBenefit(
-                  type: PlanBenefitType.mms,
-                  label: 'mms',
-                  value: '0',
-                  sub: 'ALIV to ALIV'),
+              // PlanBenefit(
+              //     type: PlanBenefitType.bonusData,
+              //     label: 'bonus data',
+              //     value: '5',
+              //     sub: 'gb'),
+              // PlanBenefit(
+              //     type: PlanBenefitType.intlTalkText,
+              //     label: "us/can text",
+              //     value: '300',
+              //     sub: 'sms text'),
+              // PlanBenefit(
+              //     type: PlanBenefitType.mms,
+              //     label: 'mms',
+              //     value: '0',
+              //     sub: 'ALIV to ALIV'),
             ],
           ),
           PlanModel(
             id: 'm2',
-            title: 'liberty70',
+            title: 'liberty 70',
             subtitle: '30 days',
             price: 70.00,
             description: 'Monthly plan with extended value.',
@@ -192,18 +224,20 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '1',
+                  value: '14',
                   sub: 'gb'),
               PlanBenefit(
                   type: PlanBenefitType.talkMins,
                   label: 'talk mins',
-                  value: '30',
+                  value: 'unlimited',
                   sub: 'local talk mins'),
               PlanBenefit(
                   type: PlanBenefitType.sms,
                   label: 'sms',
-                  value: '30',
-                  sub: 'local text'),
+                  value: 'unlimited',
+                  sub: 'local text'
+              ),
+              /*
               PlanBenefit(
                   type: PlanBenefitType.bonusData,
                   label: 'bonus data',
@@ -218,31 +252,35 @@ class GuestPurchasePlanRepository {
                   type: PlanBenefitType.mms,
                   label: 'mms',
                   value: '0',
-                  sub: 'ALIV to ALIV'),
+                  sub: 'ALIV to ALIV'
+              ),
+            */
             ],
           ),
           PlanModel(
             id: 'm3',
-            title: 'liberty120',
-            subtitle: 'begins immediately',
+            title: 'liberty 120',
+            subtitle: '30 days',
             price: 120.00,
             description: 'Premium monthly option for heavy usage.',
             benefits: [
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '1',
+                  value: 'unlimited',
                   sub: 'gb'),
               PlanBenefit(
                   type: PlanBenefitType.talkMins,
                   label: 'talk mins',
-                  value: '30',
+                  value: 'unlimited',
                   sub: 'local talk mins'),
               PlanBenefit(
                   type: PlanBenefitType.sms,
                   label: 'sms',
-                  value: '30',
-                  sub: 'local text'),
+                  value: 'unlimited',
+                  sub: 'local text'
+              ),
+              /*
               PlanBenefit(
                   type: PlanBenefitType.bonusData,
                   label: 'bonus data',
@@ -258,6 +296,7 @@ class GuestPurchasePlanRepository {
                   label: 'mms',
                   value: '0',
                   sub: 'ALIV to ALIV'),
+              */
             ],
           ),
         ];
@@ -281,32 +320,34 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'r2',
-            title: 'roam 20',
+            title: 'roam 30',
             subtitle: '7 days',
-            price: 20.00,
+            price: 30.00,
             description: 'Roaming plan for travel usage.',
             benefits: [
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '0.25',
-                  sub: 'gb'),
+                  value: '0.5',
+                  sub: 'gb'
+              ),
             ],
           ),
           PlanModel(
             id: 'r3',
-            title: 'roam 20',
-            subtitle: '7 days',
-            price: 20.00,
+            title: 'roam 50',
+            subtitle: '14 days',
+            price: 50.00,
             description: 'Roaming plan for travel usage.',
             benefits: [
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '0.25',
+                  value: '1',
                   sub: 'gb'),
             ],
           ),
+          /*
           PlanModel(
             id: 'r4',
             title: 'roam 20',
@@ -320,7 +361,7 @@ class GuestPurchasePlanRepository {
                   value: '0.25',
                   sub: 'gb'),
             ],
-          ),
+          ),*/
         ];
 
       case PlanTab.roameasy:
@@ -328,7 +369,37 @@ class GuestPurchasePlanRepository {
           // ✅ roameasy same like roaming
           PlanModel(
             id: 're1',
-            title: 'roameasy 30',
+            title: 'roameasy carib',
+            subtitle: '7 days',
+            price: 25.00,
+            description: 'Easy roaming pack for short trips.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '1.5',
+                  sub: 'gb'
+              ),
+            ],
+          ),
+          PlanModel(
+            id: 're2',
+            title: 'roameasy usa & can',
+            subtitle: '7 days',
+            price: 25.00,
+            description: 'Easy roaming pack for short trips.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '2',
+                  sub: 'gb'
+              ),
+            ],
+          ),
+          PlanModel(
+            id: 're3',
+            title: 'roameasy europe',
             subtitle: '7 days',
             price: 30.00,
             description: 'Easy roaming pack for short trips.',
@@ -336,8 +407,9 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
-                  value: '0.50',
-                  sub: 'gb'),
+                  value: '1',
+                  sub: 'gb'
+              ),
             ],
           ),
         ];
@@ -349,13 +421,41 @@ class GuestPurchasePlanRepository {
             id: 'mi1',
             title: 'mifi 75',
             subtitle: '30 days',
-            price: 70.00,
+            price: 75.00,
             description: 'MiFi data plan for hotspot usage.',
             benefits: [
               PlanBenefit(
                   type: PlanBenefitType.data,
                   label: 'data',
                   value: '50',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'mi2',
+            title: 'mifi 90',
+            subtitle: '30 days',
+            price: 125.00,
+            description: 'MiFi data plan for hotspot usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '90',
+                  sub: 'gb'),
+            ],
+          ),
+          PlanModel(
+            id: 'mi3',
+            title: 'mifi 140',
+            subtitle: '30 days',
+            price: 140.00,
+            description: 'MiFi data plan for hotspot usage.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.data,
+                  label: 'data',
+                  value: '200',
                   sub: 'gb'),
             ],
           ),
@@ -376,6 +476,36 @@ class GuestPurchasePlanRepository {
                   label: "int'l talk",
                   value: '30',
                   sub: 'talk mins'),
+            ],
+          ),
+          //liberty global caribbean
+          PlanModel(
+            id: 'lg2',
+            title: 'liberty global caribbean',
+            subtitle: '365 days',
+            price: 21.00,
+            description: 'International talk plan for Liberty Global.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,
+                  label: "int'l talk",
+                  value: '50',
+                  sub: 'talk mins'),
+            ],
+          ),
+          PlanModel(
+            id: 'lg3',
+            title: 'liberty global china',
+            subtitle: '365 days',
+            price: 21.00,
+            description: 'International talk plan for Liberty Global.',
+            benefits: [
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,
+                  label: "int'l talk",
+                  value: '250',
+                  sub: 'talk mins'
+              ),
             ],
           ),
         ];
@@ -403,14 +533,14 @@ class GuestPurchasePlanRepository {
         title: 'liberty data 2',
         label: 'data balance',
         value: '2gb',
-        price: 8.00,
+        price: 10.00,
       ),
       AddOnModel(
         id: 'a3',
-        title: 'liberty data 5',
+        title: 'liberty data 3',
         label: 'data balance',
-        value: '5gb',
-        price: 15.00,
+        value: '3gb',
+        price: 16.00,
       ),
     ];
   }

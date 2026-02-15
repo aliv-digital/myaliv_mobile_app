@@ -18,9 +18,10 @@ class PlanTabs extends StatelessWidget {
     PlanTab.monthly: 'monthly',
     PlanTab.roaming: 'roaming',
     PlanTab.roameasy: 'roameasy',
-    PlanTab.mifi: 'mifi',
-    PlanTab.libertyGlobal: 'liberty global',
     PlanTab.addOns: 'add ons',
+    PlanTab.mifi: 'mifi',
+    PlanTab.libertyGlobal: 'liberty global'
+
   };
 
   double _indicatorWidth(String label) {
