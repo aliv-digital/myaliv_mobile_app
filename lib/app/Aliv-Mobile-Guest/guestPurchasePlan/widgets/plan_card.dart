@@ -55,11 +55,21 @@ class PlanCard extends StatelessWidget {
                         plan.title,
                         style: GuestPurchasePlanTheme.planCardTitleTextStyle,
                       ),
-                      const SizedBox(width: 6),
-                      AnimatedRotation(
-                        duration: const Duration(milliseconds: 180),
-                        turns: expanded ? 0.5 : 0.0,
-                        child: const Icon(Icons.keyboard_arrow_down, size: 22),
+                      const SizedBox(
+                        width: GuestPurchasePlanTheme.planCardTitleToArrowGap,
+                      ),
+                      Transform.translate(
+                        offset: Offset(
+                          -GuestPurchasePlanTheme
+                              .planCardArrowVisualInsetCompensation,
+                          0,
+                        ),
+                        child: AnimatedRotation(
+                          duration: const Duration(milliseconds: 180),
+                          turns: expanded ? 0.5 : 0.0,
+                          child:
+                              const Icon(Icons.keyboard_arrow_down, size: 22),
+                        ),
                       ),
                     ],
                   ),

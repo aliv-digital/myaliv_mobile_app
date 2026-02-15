@@ -21,7 +21,7 @@ class GuestPurchasePlanRepository {
         return const [
           PlanModel(
             id: 'd1',
-            title: 'freedom 5',
+            title: 'freedom5',
             subtitle: '1 day',
             price: 5.00,
             description: 'A simple daily plan for quick usage.',
@@ -100,7 +100,7 @@ class GuestPurchasePlanRepository {
           // ✅ weekly card screenshot অনুযায়ী: unlimited talk + unlimited sms
           PlanModel(
             id: 'w1',
-            title: 'freedom 8',
+            title: 'freedom8',
             subtitle: '7 day',
             price: 8.00,
             description: 'Weekly plan with unlimited local talk and text.',
@@ -124,7 +124,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'w2',
-            title: 'freedom 15',
+            title: 'freedom15',
             subtitle: '7 day',
             price: 15.00,
             description: 'Weekly plan with unlimited local talk and text.',
@@ -147,8 +147,8 @@ class GuestPurchasePlanRepository {
             ],
           ),
           PlanModel(
-            id: 'w2',
-            title: 'freedom 45',
+            id: 'w3',
+            title: 'freedom45',
             subtitle: '7 day',
             price: 45.00,
             description: 'Weekly plan with unlimited local talk and text.',
@@ -176,7 +176,7 @@ class GuestPurchasePlanRepository {
         return const [
           PlanModel(
             id: 'm1',
-            title: 'liberty 40',
+            title: 'liberty40',
             subtitle: '30 days',
             price: 40.00,
             description:
@@ -216,7 +216,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'm2',
-            title: 'liberty 70',
+            title: 'liberty70',
             subtitle: '30 days',
             price: 70.00,
             description: 'Monthly plan with extended value.',
@@ -259,7 +259,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'm3',
-            title: 'liberty 120',
+            title: 'liberty120',
             subtitle: '30 days',
             price: 120.00,
             description: 'Premium monthly option for heavy usage.',
@@ -306,7 +306,7 @@ class GuestPurchasePlanRepository {
           // ✅ roaming card: center metric usually data (you made roaming card separately)
           PlanModel(
             id: 'r1',
-            title: 'roam 20',
+            title: 'roam20',
             subtitle: '7 days',
             price: 20.00,
             description: 'Roaming plan for travel usage.',
@@ -320,7 +320,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'r2',
-            title: 'roam 30',
+            title: 'roam30',
             subtitle: '7 days',
             price: 30.00,
             description: 'Roaming plan for travel usage.',
@@ -335,7 +335,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'r3',
-            title: 'roam 50',
+            title: 'roam50',
             subtitle: '14 days',
             price: 50.00,
             description: 'Roaming plan for travel usage.',
@@ -419,7 +419,7 @@ class GuestPurchasePlanRepository {
           // ✅ mifi card: center metric = data
           PlanModel(
             id: 'mi1',
-            title: 'mifi 75',
+            title: 'mifi75',
             subtitle: '30 days',
             price: 75.00,
             description: 'MiFi data plan for hotspot usage.',
@@ -433,7 +433,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'mi2',
-            title: 'mifi 90',
+            title: 'mifi90',
             subtitle: '30 days',
             price: 125.00,
             description: 'MiFi data plan for hotspot usage.',
@@ -447,7 +447,7 @@ class GuestPurchasePlanRepository {
           ),
           PlanModel(
             id: 'mi3',
-            title: 'mifi 140',
+            title: 'mifi140',
             subtitle: '30 days',
             price: 140.00,
             description: 'MiFi data plan for hotspot usage.',

@@ -39,7 +39,7 @@ class GuestPurchasePlanTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w700,
-    color: Colors.black.withValues(alpha: 0.75),
+    color: Colors.black,
   );
 
   // Error message in screen
@@ -104,12 +104,17 @@ class GuestPurchasePlanTheme {
   static final Color tabTextInactive = HexColor.fromHex('#8B8B8B');
   static final Color tabDivider = HexColor.fromHex('#E6E6EC');
 
-  // Plan tab label (active)
+  // Vertical distance between app bar bottom and the top of tab title text.
+  static const double tabTopGapFromAppBar = 30;
+
+  // Selected plan tab label style (e.g., "monthly")
+  // Used in: plan_tabs.dart for the currently selected tab text.
   static final TextStyle tabLabelActive = TextStyle(
-    fontFamily: AppConstants.defaultFontFamily,
+    fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: brandPurple,
+    height: 1,
+    color: HexColor.fromHex('#707070'),
   );
 
   // Plan tab label (inactive)
@@ -119,6 +124,17 @@ class GuestPurchasePlanTheme {
     fontWeight: FontWeight.w500,
     color: tabTextInactive,
   );
+
+  // Unselected tab label bottom gap from the tab bar baseline.
+  static const double tabUnselectedLabelBottomGap = 5;
+
+  // Selected tab keeps the same text-to-bar gap, then indicator adds 2px under
+  // it, which makes the selected label appear 2px higher than unselected.
+  static const double tabSelectedLabelToIndicatorGap = 7;
+
+  // Selected-tab indicator dimensions from Figma.
+  static const double tabIndicatorHeight = 2;
+  static const double tabIndicatorRadius = 0.4;
 
   // Plan metric title (e.g., mins/data)
   static final TextStyle metricTitle = TextStyle(
@@ -254,6 +270,10 @@ class GuestPurchasePlanTheme {
 
   // Header tap target and spacing between major card sections.
   static const double planCardHeaderTapRadius = 10;
+  // Compensates the Material arrow icon's built-in left inset so gap behaves
+  // visually (e.g., 0 means title and arrow appear attached).
+  static const double planCardArrowVisualInsetCompensation = 6;
+  static const double planCardTitleToArrowGap = 0;
   static const double planCardSectionSpacing = 16;
   static const double planCardDescriptionBottomSpacing = 16;
 
@@ -284,26 +304,33 @@ class GuestPurchasePlanTheme {
   // Bottom action row (view details + purchase now) layout.
   static const double planCardActionButtonHeight = 40;
   static const double planCardActionButtonsGap = 12;
-  static const double planCardActionButtonRadius = 22;
-  static const EdgeInsets planCardActionButtonContentPadding =EdgeInsets.fromLTRB(0, 0, 0, 0);
-      //EdgeInsets.fromLTRB(24, 16, 24, 16);
+  static const double planCardActionButtonRadius = 100;
+  static const EdgeInsets planCardActionButtonContentPadding =
+      EdgeInsets.fromLTRB(0, 0, 0, 0);
+  //EdgeInsets.fromLTRB(24, 16, 24, 16);
 
   // View details button visuals.
   static final Color planCardViewDetailsBorderColor = HexColor.fromHex(
     '#E0E0E0',
   );
   static final Color planCardViewDetailsBackgroundColor = HexColor.fromHex(
-    '#F2F1F9',
+    '#FFFFFF',
   );
+
+  static final Color planCardViewDetailsTextColor = HexColor.fromHex('#645D9C');
+
   static final TextStyle planCardViewDetailsTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 13,
-    fontWeight: FontWeight.w500,
-    color: brandPurple,
+    // Flutter does not support FontWeight.w450, so w400 is the closest.
+    fontWeight: FontWeight.w400,
+    color: planCardViewDetailsTextColor,
   );
 
   // Purchase now button visuals.
-  static final Color planCardPurchaseNowBackgroundColor = brandPurple;
+  static final Color planCardPurchaseNowBackgroundColor = HexColor.fromHex(
+    '#645D9C',
+  );
   static const Color planCardPurchaseNowTextColor = Colors.white;
   static final TextStyle planCardPurchaseNowTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
