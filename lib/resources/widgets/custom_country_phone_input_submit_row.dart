@@ -2,44 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
-/// CustomCountryPhoneInputRow
-/// --------------------------
-/// Reusable country picker + phone input row with the same behavior/pattern
-/// used in guest top-up (`guestTopUp/widgets/phone_number_input.dart`).
+/// Reusable country-code + phone input row with inline submit button.
 ///
-/// Usage 1: Standard row (country picker enabled)
-/// ```dart
-/// CustomCountryPhoneInputRow(
-///   labelText: 'enter mobile number',
-///   hintText: 'eg: 242-899-9999',
-///   flagEmoji: country.flagEmoji,
-///   dialCode: country.phoneCode,
-///   countryIsoCode: country.countryCode, // Enables flat flag asset rendering.
-///   onTapCountryPicker: _pickCountry,
-///   onChanged: (value) => bloc.add(PhoneChanged(value)),
-/// )
-/// ```
-///
-/// Usage 2: Confirm row (fixed country, no arrow)
-/// ```dart
-/// CustomCountryPhoneInputRow(
-///   labelText: 'confirm mobile number',
-///   hintText: 'eg: 242-899-9999',
-///   flagEmoji: selectedCountry.flagEmoji,
-///   dialCode: selectedCountry.phoneCode,
-///   countryIsoCode: selectedCountry.countryCode,
-///   onChanged: (value) => bloc.add(ConfirmPhoneChanged(value)),
-///   enableCountryPicker: false,
-///   showCountryArrow: false,
-/// )
-/// ```
-class CustomCountryPhoneInputRow extends StatefulWidget {
-  const CustomCountryPhoneInputRow({
+/// This follows the same structure as `CustomCountryPhoneInputRow`, but the
+/// right input container includes a submit action button (e.g. "submit").
+class CustomCountryPhoneInputSubmitRow extends StatefulWidget {
+  const CustomCountryPhoneInputSubmitRow({
     super.key,
     required this.hintText,
     required this.flagEmoji,
     required this.dialCode,
     required this.onChanged,
+    required this.onSubmit,
+    required this.submitEnabled,
+    required this.submitLoading,
     this.countryIsoCode,
     this.labelText,
     this.onTapCountryPicker,
@@ -53,24 +29,34 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     this.readOnly = false,
     this.onSubmitted,
     this.backgroundColor = const Color(0xFFF2F1F9),
-    this.unfocusedBorderColor = Colors.transparent,
+    this.unfocusedBorderColor = const Color(0xFFE0E0E0),
     this.hideUnfocusedInputBorder = false,
     this.focusedBorderGradient = _defaultFocusedBorderGradient,
     this.borderRadius = 8,
     this.borderWidth = 1,
-    this.fieldHeight = 48,
-    this.countryPickerWidth = 76,
+    this.fieldHeight = 50,
+    this.countryPickerWidth = 96,
     this.countryToPhoneGap = 10,
-    this.countryPickerPadding = const EdgeInsets.symmetric(horizontal: 8),
+    this.countryPickerPadding = const EdgeInsets.symmetric(horizontal: 10),
     this.showCountryPickerBorder = false,
     this.countryPickerBorderColor = Colors.transparent,
     this.countryPickerBorderWidth = 1,
-    this.phoneInputPadding = const EdgeInsets.symmetric(horizontal: 14),
-    this.countryFlagToDialGap = 4,
-    this.countryDialToArrowGap = 2,
-    this.countryArrowIconSize = 16,
-    this.countryArrowColor = const Color(0xFFB0B0B5),
+    this.inputContainerPadding = const EdgeInsets.all(8),
+    this.phoneInputPadding = const EdgeInsets.symmetric(horizontal: 8),
+    this.countryFlagToDialGap = 6,
+    this.countryDialToArrowGap = 4,
+    this.countryArrowIconSize = 18,
+    this.countryArrowColor = const Color(0xFF5A5796),
     this.countryArrowIcon = Icons.keyboard_arrow_down_rounded,
+    this.submitButtonHeight = 34,
+    this.submitButtonHorizontalPadding = 14,
+    this.submitButtonBorderRadius = 100,
+    this.submitButtonBackgroundColor = const Color(0xFF5A5796),
+    this.submitButtonTextColor = Colors.white,
+    this.submitText = 'submit',
+    this.submitTextStyle,
+    this.submitDisabledMessage = 'Please enter required details first.',
+    this.submitButtonGap = 8,
     this.labelToRowGap = 8,
     this.labelStyle,
     this.flagStyle,
@@ -79,12 +65,16 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     this.phoneHintStyle,
   });
 
-  // Optional label above the row (same structure as guest top-up).
   final String? labelText;
-
-  // Text field behavior.
   final String hintText;
   final ValueChanged<String> onChanged;
+  final VoidCallback onSubmit;
+  final bool submitEnabled;
+  final bool submitLoading;
+  final String submitText;
+  final TextStyle? submitTextStyle;
+  final String submitDisabledMessage;
+
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final TextEditingController? controller;
@@ -93,16 +83,13 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final bool readOnly;
   final ValueChanged<String>? onSubmitted;
 
-  // Country picker behavior.
   final String flagEmoji;
   final String dialCode;
-  // Optional ISO2 code (e.g., "BS") to render flat flag from country_pickers assets.
   final String? countryIsoCode;
   final VoidCallback? onTapCountryPicker;
   final bool enableCountryPicker;
   final bool showCountryArrow;
 
-  // Container/border visuals.
   final Color backgroundColor;
   final Color unfocusedBorderColor;
   // If true, the phone input border is hidden in neutral/unfocused state.
@@ -111,7 +98,6 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final double borderRadius;
   final double borderWidth;
 
-  // Dimensions and spacing.
   final double fieldHeight;
   final double countryPickerWidth;
   final double countryToPhoneGap;
@@ -119,15 +105,21 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final bool showCountryPickerBorder;
   final Color countryPickerBorderColor;
   final double countryPickerBorderWidth;
+  final EdgeInsets inputContainerPadding;
   final EdgeInsets phoneInputPadding;
   final double countryFlagToDialGap;
   final double countryDialToArrowGap;
   final double countryArrowIconSize;
   final Color countryArrowColor;
   final IconData countryArrowIcon;
+  final double submitButtonHeight;
+  final double submitButtonHorizontalPadding;
+  final double submitButtonBorderRadius;
+  final Color submitButtonBackgroundColor;
+  final Color submitButtonTextColor;
+  final double submitButtonGap;
   final double labelToRowGap;
 
-  // Typography overrides.
   final TextStyle? labelStyle;
   final TextStyle? flagStyle;
   final TextStyle? dialCodeStyle;
@@ -147,12 +139,12 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   );
 
   @override
-  State<CustomCountryPhoneInputRow> createState() =>
-      _CustomCountryPhoneInputRowState();
+  State<CustomCountryPhoneInputSubmitRow> createState() =>
+      _CustomCountryPhoneInputSubmitRowState();
 }
 
-class _CustomCountryPhoneInputRowState
-    extends State<CustomCountryPhoneInputRow> {
+class _CustomCountryPhoneInputSubmitRowState
+    extends State<CustomCountryPhoneInputSubmitRow> {
   late FocusNode _effectiveFocusNode;
   late bool _ownsFocusNode;
   bool _hasPhoneFocus = false;
@@ -164,7 +156,7 @@ class _CustomCountryPhoneInputRowState
   }
 
   @override
-  void didUpdateWidget(covariant CustomCountryPhoneInputRow oldWidget) {
+  void didUpdateWidget(covariant CustomCountryPhoneInputSubmitRow oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.focusNode != widget.focusNode) {
       _unbindFocusNode();
@@ -203,10 +195,8 @@ class _CustomCountryPhoneInputRowState
   Widget _buildCountryFlag(TextStyle resolvedFlagStyle) {
     final String? isoCode = widget.countryIsoCode;
     if (isoCode != null && isoCode.isNotEmpty) {
-      // country_pickers does not include AC.png; use SH asset (same flag style).
       final String assetIsoCode =
           isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
-
       return Image.asset(
         'assets/${assetIsoCode.toLowerCase()}.png',
         package: 'country_pickers',
@@ -218,8 +208,25 @@ class _CustomCountryPhoneInputRowState
         },
       );
     }
-
     return Text(widget.flagEmoji, style: resolvedFlagStyle);
+  }
+
+  void _onSubmitTapped() {
+    if (widget.submitLoading) {
+      return;
+    }
+    if (widget.submitEnabled) {
+      widget.onSubmit();
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          widget.submitDisabledMessage,
+          style: const TextStyle(fontFamily: AppConstants.defaultFontFamily),
+        ),
+      ),
+    );
   }
 
   @override
@@ -232,13 +239,11 @@ class _CustomCountryPhoneInputRowState
           fontWeight: FontWeight.w700,
           color: Colors.black,
         );
-
     final TextStyle resolvedFlagStyle = widget.flagStyle ??
         const TextStyle(
           fontSize: 18,
           fontFamily: AppConstants.defaultFontFamily,
         );
-
     final TextStyle resolvedDialStyle = widget.dialCodeStyle ??
         const TextStyle(
           fontSize: 14,
@@ -246,7 +251,6 @@ class _CustomCountryPhoneInputRowState
           fontFamily: AppConstants.defaultFontFamily,
           color: Color(0xFF111111),
         );
-
     final TextStyle resolvedPhoneInputStyle = widget.phoneInputStyle ??
         const TextStyle(
           fontSize: 14,
@@ -254,7 +258,6 @@ class _CustomCountryPhoneInputRowState
           fontFamily: AppConstants.defaultFontFamily,
           color: Color(0xFF000000),
         );
-
     final TextStyle resolvedPhoneHintStyle = widget.phoneHintStyle ??
         const TextStyle(
           color: Color(0xB3707070),
@@ -262,6 +265,13 @@ class _CustomCountryPhoneInputRowState
           height: 1.43,
           fontFamily: AppConstants.defaultFontFamily,
           fontWeight: FontWeight.w500,
+        );
+    final TextStyle resolvedSubmitStyle = widget.submitTextStyle ??
+        TextStyle(
+          color: widget.submitButtonTextColor,
+          fontSize: 12,
+          fontFamily: AppConstants.defaultFontFamily,
+          fontWeight: FontWeight.w600,
         );
 
     final Widget row = Row(
@@ -319,26 +329,63 @@ class _CustomCountryPhoneInputRowState
                 color: widget.backgroundColor,
                 borderRadius: BorderRadius.circular(widget.borderRadius),
               ),
-              padding: widget.phoneInputPadding,
-              alignment: Alignment.center,
-              child: TextField(
-                focusNode: _effectiveFocusNode,
-                controller: widget.controller,
-                autofocus: widget.autofocus,
-                readOnly: widget.readOnly,
-                style: resolvedPhoneInputStyle,
-                keyboardType: widget.keyboardType,
-                inputFormatters: widget.inputFormatters,
-                onSubmitted: widget.onSubmitted,
-                decoration: InputDecoration(
-                  fillColor: widget.backgroundColor,
-                  filled: true,
-                  border: InputBorder.none,
-                  hintText: widget.hintText,
-                  hintStyle: resolvedPhoneHintStyle,
-                  isCollapsed: true,
-                ),
-                onChanged: widget.onChanged,
+              padding: widget.inputContainerPadding,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      focusNode: _effectiveFocusNode,
+                      controller: widget.controller,
+                      autofocus: widget.autofocus,
+                      readOnly: widget.readOnly,
+                      style: resolvedPhoneInputStyle,
+                      keyboardType: widget.keyboardType,
+                      inputFormatters: widget.inputFormatters,
+                      onSubmitted: (value) {
+                        widget.onSubmitted?.call(value);
+                      },
+                      decoration: InputDecoration(
+                        fillColor: widget.backgroundColor,
+                        filled: true,
+                        border: InputBorder.none,
+                        hintText: widget.hintText,
+                        hintStyle: resolvedPhoneHintStyle,
+                        isCollapsed: true,
+                        contentPadding: widget.phoneInputPadding,
+                      ),
+                      onChanged: widget.onChanged,
+                    ),
+                  ),
+                  SizedBox(width: widget.submitButtonGap),
+                  SizedBox(
+                    height: widget.submitButtonHeight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: widget.submitButtonBackgroundColor,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            widget.submitButtonBorderRadius,
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: widget.submitButtonHorizontalPadding,
+                        ),
+                      ),
+                      onPressed: _onSubmitTapped,
+                      child: widget.submitLoading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(widget.submitText, style: resolvedSubmitStyle),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_submit_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -12,7 +14,6 @@ import '../bloc/guest_pay_bill_event.dart';
 import '../bloc/guest_pay_bill_state.dart';
 import '../model/guest_pay_bill_models.dart';
 import '../theme/guest_pay_bill_theme.dart';
-import '../widgets/guest_pay_bill_country_code_picker_box.dart';
 import '../widgets/guest_pay_bill_focused_text_field.dart';
 import '../widgets/guest_pay_bill_inline_verify_field.dart';
 import '../widgets/guest_pay_bill_primary_submit_button.dart';
@@ -82,6 +83,22 @@ class _GuestPayBillView extends StatelessWidget {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
+      customFlagBuilder: (Country country) {
+        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
+            ? 'sh'
+            : country.countryCode.toLowerCase();
+        return Image.asset(
+          'assets/$assetIsoCode.png',
+          package: 'country_pickers',
+          width: 26,
+          height: 20,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Text(country.flagEmoji,
+                style: const TextStyle(fontSize: 18));
+          },
+        );
+      },
       onSelect: (country) {
         final normalizedPhoneCode =
             country.phoneCode.replaceAll(' ', '').split('-').first;
@@ -92,6 +109,7 @@ class _GuestPayBillView extends StatelessWidget {
             PayBillCountry(
               flagEmoji: country.flagEmoji,
               dialCode: normalizedPhoneCode,
+              isoCode: country.countryCode,
             ),
           ),
         );
@@ -187,26 +205,45 @@ class _GuestPayBillView extends StatelessWidget {
         style: GuestPayBillTheme.labelStyle(),
       ),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
-      Row(
-        children: <Widget>[
-          GuestPayBillCountryCodePickerBox(
-            country: state.selectedCountry,
-            showArrow: true,
-            onTap: () {
-              _pickCountry(context);
-            },
-          ),
-          const SizedBox(width: GuestPayBillTheme.countryPickerToInputGap),
-          Expanded(
-            child: GuestPayBillFocusedTextField(
-              hint: GuestPayBillTheme.phoneHintText,
-              keyboardType: TextInputType.phone,
-              onChanged: (value) {
-                _onMobileChanged(context, value);
-              },
-            ),
-          ),
-        ],
+      CustomCountryPhoneInputRow(
+        hideUnfocusedInputBorder: true,
+        hintText: GuestPayBillTheme.phoneHintText,
+        flagEmoji: state.selectedCountry.flagEmoji,
+        dialCode: state.selectedCountry.dialCode,
+        countryIsoCode: state.selectedCountry.isoCode,
+        onTapCountryPicker: () {
+          _pickCountry(context);
+        },
+        onChanged: (value) {
+          _onMobileChanged(context, value);
+        },
+        enableCountryPicker: true,
+        showCountryArrow: true,
+        fieldHeight: GuestPayBillTheme.inlineVerifyFieldHeight,
+        countryPickerWidth: 96,
+        countryToPhoneGap: GuestPayBillTheme.countryPickerToInputGap,
+        borderRadius: GuestPayBillTheme.radius,
+        borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
+        countryPickerPadding: const EdgeInsets.symmetric(horizontal: 10),
+        backgroundColor: GuestPayBillTheme.fieldBg,
+        unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
+        phoneInputStyle: GuestPayBillTheme.inputTextStyle,
+        phoneHintStyle: const TextStyle(
+          color: GuestPayBillTheme.placeholder,
+          fontSize: 13,
+          fontFamily: 'CircularPro',
+          fontWeight: FontWeight.w500,
+        ),
+        dialCodeStyle: const TextStyle(
+          color: GuestPayBillTheme.labelText,
+          fontSize: 13,
+          fontFamily: 'CircularPro',
+          fontWeight: FontWeight.w500,
+        ),
+        flagStyle: const TextStyle(
+          fontSize: 18,
+          fontFamily: 'CircularPro',
+        ),
       ),
       const SizedBox(height: GuestPayBillTheme.sectionGap),
       Text(
@@ -214,28 +251,49 @@ class _GuestPayBillView extends StatelessWidget {
         style: GuestPayBillTheme.labelStyle(),
       ),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
-      Row(
-        children: <Widget>[
-          GuestPayBillCountryCodePickerBox(
-            country: state.selectedCountry,
-            showArrow: false,
-          ),
-          const SizedBox(width: GuestPayBillTheme.countryPickerToInputGap),
-          Expanded(
-            child: GuestPayBillInlineVerifyField(
-              hint: GuestPayBillTheme.phoneHintText,
-              keyboardType: TextInputType.phone,
-              loading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
-              enabled: state.canVerify,
-              onChanged: (value) {
-                _onConfirmMobileChanged(context, value);
-              },
-              onSubmit: () {
-                _onVerifyPressed(context);
-              },
-            ),
-          ),
-        ],
+      CustomCountryPhoneInputSubmitRow(
+        hideUnfocusedInputBorder: true,
+        hintText: GuestPayBillTheme.phoneHintText,
+        flagEmoji: state.selectedCountry.flagEmoji,
+        dialCode: state.selectedCountry.dialCode,
+        countryIsoCode: state.selectedCountry.isoCode,
+        enableCountryPicker: false,
+        showCountryArrow: false,
+        fieldHeight: GuestPayBillTheme.inlineVerifyFieldHeight,
+        countryPickerWidth: 96,
+        countryToPhoneGap: GuestPayBillTheme.countryPickerToInputGap,
+        countryPickerPadding: const EdgeInsets.symmetric(horizontal: 10),
+        inputContainerPadding: const EdgeInsets.all(8),
+        phoneInputPadding: const EdgeInsets.symmetric(horizontal: 8),
+        countryFlagToDialGap: 6,
+        countryDialToArrowGap: 4,
+        countryArrowIconSize: 18,
+        backgroundColor: GuestPayBillTheme.fieldBg,
+        unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
+        borderRadius: GuestPayBillTheme.radius,
+        borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
+        keyboardType: TextInputType.phone,
+        phoneInputStyle: GuestPayBillTheme.inputTextStyle,
+        phoneHintStyle: const TextStyle(
+          color: GuestPayBillTheme.placeholder,
+          fontSize: 13,
+          fontFamily: 'Circular Pro',
+          fontWeight: FontWeight.w500,
+        ),
+        dialCodeStyle: const TextStyle(
+          color: GuestPayBillTheme.labelText,
+          fontSize: 13,
+          fontFamily: 'Circular Pro',
+          fontWeight: FontWeight.w500,
+        ),
+        submitEnabled: state.canVerify,
+        submitLoading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
+        onChanged: (value) {
+          _onConfirmMobileChanged(context, value);
+        },
+        onSubmit: () {
+          _onVerifyPressed(context);
+        },
       ),
     ];
   }
