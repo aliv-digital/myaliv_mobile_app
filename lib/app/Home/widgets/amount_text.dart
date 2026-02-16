@@ -16,7 +16,7 @@ class OutlinedAmountText extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF5045A7),
             fontSize: 24,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
         )

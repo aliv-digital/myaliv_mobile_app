@@ -24,7 +24,7 @@ class ConfirmTopUpPrepaidTheme {
   static TextStyle titleMd(BuildContext context) => const TextStyle(
     color: Colors.black,
     fontSize: 18,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 
@@ -38,7 +38,7 @@ class ConfirmTopUpPrepaidTheme {
   static TextStyle bodySm(BuildContext context) => const TextStyle(
     color: const Color(0xFF121212),
     fontSize: 16,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
 
   );

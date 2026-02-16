@@ -53,7 +53,7 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
             const Text(
               'when to start?',
               style: TextStyle(
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -100,7 +100,7 @@ Widget _Header(BuildContext context) {
       const Text(
         'when to start?',
         style: TextStyle(
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontSize: 18,
           fontWeight: FontWeight.w700,
         ),
@@ -122,7 +122,7 @@ class _InfoBanner extends StatelessWidget {
       child: const Text(
         'your standalone plan can start immediately, or on a date of your choice.',
         style: TextStyle(
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontSize: 12,
           color: const Color(0xFFF30F0F),
           height: 1.38,
@@ -146,7 +146,7 @@ class _StartFromField extends StatelessWidget {
         const Text(
           'start from',
           style: TextStyle(
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
@@ -168,7 +168,7 @@ class _StartFromField extends StatelessWidget {
                   child: Text(
                     date == null ? 'Select date' : _formatDate(date!),
                     style: const TextStyle(
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontSize: 14,
                       color: Color(0xFF707070),
                     ),
@@ -197,7 +197,7 @@ Widget _DividerOr() {
         child: Text(
           'or',
           style: TextStyle(
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontSize: 13,
             color: Color(0xFF8A8A8F),
           ),
@@ -226,7 +226,7 @@ class _ActivateButton extends StatelessWidget {
         child: const Text(
           'activate now',
           style: TextStyle(
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontSize: 13,
             color: Color(0xFFF1F1F8),
           ),

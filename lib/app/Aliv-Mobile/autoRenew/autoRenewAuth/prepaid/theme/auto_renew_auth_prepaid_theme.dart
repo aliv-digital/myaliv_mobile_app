@@ -23,7 +23,7 @@ class AutoRenewAuthPrepaidTheme {
   static TextStyle paragraphStyle() =>  TextStyle(
     color: const Color(0xFF707070),
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
     height: 1.43,
   );
@@ -31,7 +31,7 @@ class AutoRenewAuthPrepaidTheme {
   static TextStyle sectionHeaderStyle() => const TextStyle(
     color: const Color(0xFF707070),
     fontSize: 16,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     height: 1.25,
   );
@@ -39,7 +39,7 @@ class AutoRenewAuthPrepaidTheme {
   static TextStyle signatureStyle() => const TextStyle(
     color: const Color(0xFF707070),
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     height: 1.43,
   );
@@ -47,7 +47,7 @@ class AutoRenewAuthPrepaidTheme {
   static TextStyle fieldLabelStyle() => const TextStyle(
     color: const Color(0xFF1C1C1C) /* Black-100% */,
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     height: 1.43,
   );

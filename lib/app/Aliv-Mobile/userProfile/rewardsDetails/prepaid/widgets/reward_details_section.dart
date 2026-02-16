@@ -21,7 +21,7 @@ class RewardDetailsSection extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF1C1C1C) /* Black-100% */,
             fontSize: 14,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
             height: 1.43,
           ),
@@ -39,7 +39,7 @@ class RewardDetailsSection extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF707070),
             fontSize: 14,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
             height: 1.43,
           ),

@@ -35,7 +35,7 @@ class AppMenuDrawer extends StatelessWidget {
                           style: TextStyle(
                             color: const Color(0xFF1C1C1C) /* Black-100% */,
                             fontSize: 24,
-                            fontFamily: 'Circular Pro',
+                            fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -46,7 +46,7 @@ class AppMenuDrawer extends StatelessWidget {
                           style: TextStyle(
                             color: const Color(0xFF1C1C1C) /* Black-100% */,
                             fontSize: 14,
-                            fontFamily: 'Circular Pro',
+                            fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -112,7 +112,7 @@ class AppMenuDrawer extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white /* White-100% */,
                       fontSize: 13,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.26,
                     ),

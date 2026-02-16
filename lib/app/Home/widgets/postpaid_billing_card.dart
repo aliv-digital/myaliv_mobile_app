@@ -42,7 +42,7 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.32,
                   ),
@@ -77,7 +77,7 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                         style: const TextStyle(
                           color: const Color(0xFF707070),
                           fontSize: 8,
-                          fontFamily: 'Circular Pro',
+                          fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -176,7 +176,7 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   style: TextStyle(
                     color: const Color(0xFFF1F1F8),
                     fontSize: 13,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500, // 🔥 NOT WHITE
                   ),
                 ),

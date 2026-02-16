@@ -56,7 +56,7 @@ class TopUpPrepaidTheme {
   static TextStyle balanceLabel() => const TextStyle(
     color: const Color(0xFF5045A7),
     fontSize: 13,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 
@@ -70,7 +70,7 @@ class TopUpPrepaidTheme {
   static TextStyle amountText() => const TextStyle(
     color: const Color(0xFF5045A7),
     fontSize: 40,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
 
   );

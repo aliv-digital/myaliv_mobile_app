@@ -45,7 +45,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
 
   final VoidCallback onSkip;
   final VoidCallback onProceed;
-  static const double _contentHorizontalPadding = 24;
+  static const double _contentHorizontalPadding = 25;
   //static const _bg = Color(0xFFF1F2FA);
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
             children: [
               DefaultAppBar(
                 title: 'add-ons',
-                showBackArrow: true,
+                showBackArrow: false,
                 actionText: 'skip',
                 onActionTextTap: () {
                   debugPrint('[GuestPurchasePlanAddOns] skip tapped');
@@ -135,7 +135,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                         return ListView(
                           padding: const EdgeInsets.fromLTRB(
                             _contentHorizontalPadding,
-                            20,
+                            14,
                             _contentHorizontalPadding,
                             16,
                           ),

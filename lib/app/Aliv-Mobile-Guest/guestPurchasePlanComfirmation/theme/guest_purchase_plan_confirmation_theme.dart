@@ -4,7 +4,7 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 class GuestPurchasePlanConfirmationTheme {
   static const bg = Color(0xFFF1F2FA);
 
-  static const purple = Color(0xFF645D9C);
+  static const purple = Color(0xFF655C9A);
   static const purpleDark = Color(0xFF5B548E);
   static const outlinePurple = Color(0xFF655C9A);
 

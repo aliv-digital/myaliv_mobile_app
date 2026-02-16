@@ -118,7 +118,7 @@ class _HomePlanView extends StatelessWidget {
             style: TextStyle(
               color: Colors.white,
               fontSize: 17,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
             ),
           ),

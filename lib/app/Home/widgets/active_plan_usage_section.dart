@@ -23,7 +23,7 @@ class ActivePlanUsageSection extends StatelessWidget {
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
             ),
           )
@@ -51,7 +51,7 @@ class ActivePlanUsageSection extends StatelessWidget {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w700,
               ),
             )
@@ -66,7 +66,7 @@ class ActivePlanUsageSection extends StatelessWidget {
               style: TextStyle(
                 color: const Color(0xFF007AD0),
                 fontSize: 12,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -130,7 +130,7 @@ class ActivePlanUsageSection extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black,
                 fontSize: 18,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w700,
             ),
           ),

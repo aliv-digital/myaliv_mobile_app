@@ -47,7 +47,7 @@ class RoamingCard extends StatelessWidget {
                 style: TextStyle(
                   color: const Color(0xFFFF6C36),
                   fontSize: 12,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -62,7 +62,7 @@ class RoamingCard extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFFFA762B),
                     fontSize: 16,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -71,7 +71,7 @@ class RoamingCard extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFF222222),
                     fontSize: 16,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -86,7 +86,7 @@ class RoamingCard extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF707070),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),

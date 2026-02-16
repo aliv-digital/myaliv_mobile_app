@@ -55,7 +55,7 @@ class PlanCard extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,
-                        fontFamily: 'Circular Pro',
+                        fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.16,
                       ),
@@ -69,7 +69,7 @@ class PlanCard extends StatelessWidget {
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
-                            fontFamily: 'Circular Pro',
+                            fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.08,
                           ),
@@ -80,7 +80,7 @@ class PlanCard extends StatelessWidget {
                           style: const TextStyle(
                             color: const Color(0xFFE5D0D0),
                             fontSize: 8,
-                            fontFamily: 'Circular Pro',
+                            fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w500,
                             letterSpacing: 0.04,
                           ),

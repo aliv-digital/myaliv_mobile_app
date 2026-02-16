@@ -21,7 +21,7 @@ class FaceIdSecurityTheme {
   static const TextStyle title = TextStyle(
     color: Colors.black,
     fontSize: 18,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
 
   );
@@ -29,7 +29,7 @@ class FaceIdSecurityTheme {
   static const TextStyle body = TextStyle(
     color: const Color(0xFF707070),
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
     height: 1.43,
   );
@@ -41,7 +41,7 @@ class FaceIdSecurityTheme {
   static const TextStyle bottomButtonText = TextStyle(
     color: Colors.white,
     fontSize: 17,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     height: 1.80,
   );

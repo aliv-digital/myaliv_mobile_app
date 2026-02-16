@@ -33,7 +33,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white /* White-100% */,
                     fontSize: 12,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -42,7 +42,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white /* White-100% */,
                     fontSize: 12,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -54,7 +54,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
             style: TextStyle(
               color: Colors.white /* White-100% */,
               fontSize: 24,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -95,7 +95,7 @@ class _DateColumn extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white /* White-100% */,
             fontSize: 10,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -105,7 +105,7 @@ class _DateColumn extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white /* White-100% */,
             fontSize: 15,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
             letterSpacing: 2.25,
           ),

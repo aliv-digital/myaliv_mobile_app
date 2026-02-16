@@ -112,7 +112,7 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                           style: TextStyle(
                             color: const Color(0xFFF1F1F8),
                             fontSize: 13,
-                            fontFamily: 'Circular Pro',
+                            fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w500,
                           ),
                           // style:
@@ -143,7 +143,7 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                           'future plan',style: TextStyle(
                           color: const Color(0xFF645D9C),
                           fontSize: 13,
-                          fontFamily: 'Circular Pro',
+                          fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w500,
                         ),
 

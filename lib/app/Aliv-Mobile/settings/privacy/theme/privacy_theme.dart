@@ -15,14 +15,14 @@ class PrivacyTheme {
   static const TextStyle title = TextStyle(
       color: Colors.black,
       fontSize: 18,
-      fontFamily: 'Circular Pro',
+      fontFamily: 'CircularPro',
       fontWeight: FontWeight.w700
   );
 
   static const TextStyle body = TextStyle(
     color: const Color(0xFF707070),
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
     height: 1.43,
   );
@@ -30,7 +30,7 @@ class PrivacyTheme {
   static const TextStyle sectionHeader = TextStyle(
       color: Colors.black,
       fontSize: 18,
-      fontFamily: 'Circular Pro',
+      fontFamily: 'CircularPro',
       fontWeight: FontWeight.w700
   );
 }

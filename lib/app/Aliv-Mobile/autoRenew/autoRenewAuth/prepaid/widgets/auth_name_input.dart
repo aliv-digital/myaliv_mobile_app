@@ -55,7 +55,7 @@ class _AuthNameInputState extends State<AuthNameInput> {
       style: const TextStyle(
         color:  Colors.black,
         fontSize: 14,
-        fontFamily: 'Circular Pro',
+        fontFamily: 'CircularPro',
         fontWeight: FontWeight.w500,
         height: 1.43,
       ),
@@ -64,7 +64,7 @@ class _AuthNameInputState extends State<AuthNameInput> {
         hintStyle: TextStyle(
           color: const Color(0xFF707070),
           fontSize: 14,
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontWeight: FontWeight.w500,
           height: 1.43,
         ),

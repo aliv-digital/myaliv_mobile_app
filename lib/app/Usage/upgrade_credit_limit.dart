@@ -33,7 +33,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 17,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -86,7 +86,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                         style: TextStyle(
                           color: const Color(0xFF5045A7),
                           fontSize: 24,
-                          fontFamily: 'Circular Pro',
+                          fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -95,7 +95,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 13,
-                          fontFamily: 'Circular Pro',
+                          fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -125,7 +125,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                       height: 1.43,
                     ),
@@ -135,7 +135,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                       height: 1.43,
                     ),
@@ -145,7 +145,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                       decoration: TextDecoration.underline,
                       height: 1.43,
@@ -156,7 +156,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                       height: 1.43,
                     ),
@@ -189,7 +189,7 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                     style: TextStyle(
                       color: const Color(0xFFF1F1F8),
                       fontSize: 13,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -223,7 +223,7 @@ class _LimitField extends StatelessWidget {
             style: const TextStyle(
               color: const Color(0xFF1C1C1C) /* Black-100% */,
               fontSize: 14,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
               height: 1.43,
             ),
@@ -255,7 +255,7 @@ class _LimitField extends StatelessWidget {
                   style: const TextStyle(
                     color: const Color(0xFF707070),
                     fontSize: 14,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                     height: 1.43,
                   ),

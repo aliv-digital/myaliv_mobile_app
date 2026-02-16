@@ -39,7 +39,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                 style: TextStyle(
                   color: const Color(0xFF222222),
                   fontSize: 13,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                 ),
               ),

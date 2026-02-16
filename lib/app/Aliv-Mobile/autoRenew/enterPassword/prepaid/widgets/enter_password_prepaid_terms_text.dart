@@ -14,7 +14,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF58677D),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -23,7 +23,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF1CACE3),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
               decoration: TextDecoration.underline,
             ),
@@ -33,7 +33,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF1CACE3),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -42,7 +42,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF58677D),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -51,7 +51,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF1CACE3),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
               decoration: TextDecoration.underline,
             ),

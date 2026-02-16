@@ -33,16 +33,11 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<
-      RevConfirmationPrepaidBloc,
-      RevConfirmationPrepaidState
-    >(
+    return BlocConsumer<RevConfirmationPrepaidBloc, RevConfirmationPrepaidState>(
       listenWhen: (p, c) => p.navTarget != c.navTarget,
       listener: (context, state) {
         if (state.navTarget != RevConfirmNavTarget.none) {
-          context.read<RevConfirmationPrepaidBloc>().add(
-            const RevNavConsumed(),
-          );
+          context.read<RevConfirmationPrepaidBloc>().add(const RevNavConsumed());
         }
 
         //  optional: show error if user presses continue without accepting terms
@@ -54,9 +49,7 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
       },
       builder: (context, state) {
         return MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: RevConfirmationPrepaidTheme.bg,
             bottomNavigationBar: RevBottomBar(
@@ -89,7 +82,7 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                   child: CustomScrollView(
                     slivers: [
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(29, 24, 29, 22),
+                        padding: const EdgeInsets.fromLTRB(29, 24, 29, 24),
                         sliver: SliverToBoxAdapter(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +93,7 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                                 accountNumber: state.accountNumber,
                                 amountText: state.headerAmountPillText,
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 17),
 
                               // ✅ NEW: checkbox + link
                               RevTermsCheckbox(
@@ -114,11 +107,10 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                                 },
                               ),
 
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 17),
 
                               DefaultPaymentBreakDownCard(
-                                backgroundColor:
-                                    RevConfirmationPrepaidTheme.receiptBg,
+                                backgroundColor: RevConfirmationPrepaidTheme.receiptBg,
                                 targetScallopCount: 12,
                                 input: PaymentBreakdownInputConfig(
                                   value: state.promoCode,
@@ -153,7 +145,7 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                                 ],
                               ),
 
-                              const SizedBox(height: 90),
+                              // const SizedBox(height: 90),
                             ],
                           ),
                         ),

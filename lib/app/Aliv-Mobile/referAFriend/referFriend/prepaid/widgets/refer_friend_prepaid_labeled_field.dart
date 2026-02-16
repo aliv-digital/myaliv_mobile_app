@@ -40,7 +40,7 @@ class ReferFriendPrepaidLabeledField extends StatelessWidget {
               hintStyle: const TextStyle(
                 color: const Color(0xFF707070),
                 fontSize: 14,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
                 height: 1.43,
               ),

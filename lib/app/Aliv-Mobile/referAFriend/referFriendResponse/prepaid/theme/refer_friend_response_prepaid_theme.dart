@@ -11,7 +11,7 @@ class ReferFriendResponsePrepaidTheme {
   static const TextStyle title = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: text,
   );
 

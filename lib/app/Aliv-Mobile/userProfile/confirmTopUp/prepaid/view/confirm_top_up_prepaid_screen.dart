@@ -154,7 +154,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
                 height: 1.43,
               ),
@@ -164,7 +164,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w700,
                 decoration: TextDecoration.underline,
                 height: 1.43,

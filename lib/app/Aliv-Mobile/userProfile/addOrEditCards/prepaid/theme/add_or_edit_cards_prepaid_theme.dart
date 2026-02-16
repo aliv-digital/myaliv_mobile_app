@@ -16,7 +16,7 @@ class AddOrEditCardsPrepaidTheme {
   static TextStyle sectionTitle() => const TextStyle(
     color: Colors.black,
     fontSize: 13,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 

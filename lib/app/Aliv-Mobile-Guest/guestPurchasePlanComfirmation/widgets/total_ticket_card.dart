@@ -57,7 +57,7 @@ class TotalTicketCard extends StatelessWidget {
           '\$ ${value.toStringAsFixed(2)}',
           style: GuestPurchasePlanConfirmationTheme.t(
             13,
-            weight: isTotal ? FontWeight.w900 : FontWeight.w800,
+            weight: isTotal ? FontWeight.w800 : FontWeight.w700,
             color: Colors.white,
           ),
         ),

@@ -111,7 +111,7 @@ class _CallSupportCard extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                   height: 1.10,
                   letterSpacing: 0.07,

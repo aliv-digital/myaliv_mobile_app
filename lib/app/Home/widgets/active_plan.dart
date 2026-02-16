@@ -75,7 +75,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white /* White-100% */,
                       fontSize: 12,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -84,7 +84,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white /* White-100% */,
                       fontSize: 12,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -106,7 +106,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
       style: TextStyle(
         color: Colors.white /* White-100% */,
         fontSize: 24,
-        fontFamily: 'Circular Pro',
+        fontFamily: 'CircularPro',
         fontWeight: FontWeight.w700,
       ),
     );
@@ -151,7 +151,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
               style: TextStyle(
                 color: const Color(0xFFEF3A4B),
                 fontSize: 13,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -186,7 +186,7 @@ class _DateBlock extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white /* White-100% */,
             fontSize: 10,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -196,7 +196,7 @@ class _DateBlock extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white /* White-100% */,
             fontSize: 15,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
             letterSpacing: 2.25,
           ),

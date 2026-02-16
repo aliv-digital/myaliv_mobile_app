@@ -51,7 +51,7 @@ class TopUpPrepaidNumberPostPaidTheme {
   static TextStyle amountText() => const TextStyle(
     fontFamily: fontFamily,
     fontSize: 40,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: primary,
     height: 1.0,
   );

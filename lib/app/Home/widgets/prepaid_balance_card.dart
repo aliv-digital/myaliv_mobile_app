@@ -55,7 +55,7 @@ class PrepaidBalanceCard extends StatelessWidget {
                         style: TextStyle(
                           color: const Color(0xFFF1F1F8),
                           fontSize: 13,
-                          fontFamily: 'Circular Pro',
+                          fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -107,7 +107,7 @@ class PrepaidBalanceCard extends StatelessWidget {
             style: const TextStyle(
               color: Colors.black,
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -117,7 +117,7 @@ class PrepaidBalanceCard extends StatelessWidget {
           style: const TextStyle(
             color: const Color(0xFF5045A7),
             fontSize: 24,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
         ),

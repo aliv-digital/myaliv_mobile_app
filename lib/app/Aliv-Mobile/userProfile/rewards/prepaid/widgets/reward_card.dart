@@ -81,7 +81,7 @@ class RewardPrepaidCard extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 17,
-                                  fontFamily: 'Circular Pro',
+                                  fontFamily: 'CircularPro',
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -93,7 +93,7 @@ class RewardPrepaidCard extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 14,
-                                  fontFamily: 'Circular Pro',
+                                  fontFamily: 'CircularPro',
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),

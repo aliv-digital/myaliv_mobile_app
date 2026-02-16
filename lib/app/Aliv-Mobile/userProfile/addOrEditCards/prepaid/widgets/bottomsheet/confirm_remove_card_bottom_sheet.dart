@@ -50,7 +50,7 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
               style: TextStyle(
                 color: const Color(0xFF121212),
                 fontSize: 16,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -75,7 +75,7 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFFF1F1F8),
                     fontSize: 13,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),

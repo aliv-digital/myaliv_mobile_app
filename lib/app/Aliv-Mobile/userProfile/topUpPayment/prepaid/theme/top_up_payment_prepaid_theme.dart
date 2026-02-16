@@ -38,21 +38,21 @@ class TopUpPaymentPrepaidTheme {
   static TextStyle labelSm(BuildContext context) => const TextStyle(
     color: Colors.black,
     fontSize: 13,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 
   static TextStyle bottomPrice(BuildContext context) => const TextStyle(
       color: const Color(0xFF222222),
       fontSize: 22,
-      fontFamily: 'Circular Pro',
+      fontFamily: 'CircularPro',
       fontWeight: FontWeight.w700,
   );
 
   static TextStyle buttonText(BuildContext context) => const TextStyle(
     color: const Color(0xFFF1F1F8),
     fontSize: 13,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 }

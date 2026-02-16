@@ -20,7 +20,7 @@ class HomeHeader extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 'assets/icons/aliv_splash_logo.svg',
-                height: 46,
+                height: 46,width: 112,
                 // width: 24,
               ),
               const Spacer(),
@@ -71,7 +71,7 @@ class HomeHeader extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFFF1F1F8),
               fontSize: 16,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),

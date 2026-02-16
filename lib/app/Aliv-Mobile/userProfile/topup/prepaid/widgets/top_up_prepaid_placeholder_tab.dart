@@ -85,7 +85,7 @@ class _TopUpPrepaidPlaceholderTabState
                       style: TextStyle(
                         color: const Color(0xFF5045A7),
                         fontSize: 14,
-                        fontFamily: 'Circular Pro',
+                        fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w500,
                         height: 1.43,
                       ),
@@ -186,7 +186,7 @@ class _SectionLabel extends StatelessWidget {
         text,
         style: const TextStyle(
           fontSize: 14,
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontWeight: FontWeight.w700,
           height: 1.43,
         ),
@@ -256,7 +256,7 @@ class _CardDropdownState extends State<_CardDropdown> {
                 style: const TextStyle(
                   color: const Color(0xFF707070),
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                   height: 1.43,
                 ),
