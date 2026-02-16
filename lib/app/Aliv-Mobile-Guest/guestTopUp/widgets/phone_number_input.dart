@@ -36,6 +36,8 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
       GuestTopUpTheme.countryPickerHeight;
   static const double _fieldRadius = GuestTopUpTheme.phoneFieldRadius;
   static const double _countryWidth = 76;
+  static const double _countryFlagWidth = 26;
+  static const double _countryFlagHeight = 20;
 
   @override
   void initState() {
@@ -56,6 +58,27 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
         _hasPhoneFocus = _phoneFocusNode.hasFocus;
       });
     }
+  }
+
+  Widget _buildCountryFlag(CountryInfo countryInfo) {
+    if (countryInfo.isoCode != null && countryInfo.isoCode!.isNotEmpty) {
+      if (countryInfo.isoCode!.toUpperCase() == 'AC') {
+        return Text(countryInfo.flagEmoji, style: const TextStyle(fontSize: 18));
+      }
+
+      return Image.asset(
+        'assets/${countryInfo.isoCode!.toLowerCase()}.png',
+        package: 'country_pickers',
+        width: _countryFlagWidth,
+        height: _countryFlagHeight,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Text(countryInfo.flagEmoji, style: const TextStyle(fontSize: 18));
+        },
+      );
+    }
+
+    return Text(countryInfo.flagEmoji, style: const TextStyle(fontSize: 18));
   }
 
   @override
@@ -86,8 +109,7 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(widget.country.flagEmoji,
-                          style: const TextStyle(fontSize: 18)),
+                      _buildCountryFlag(widget.country),
                       const SizedBox(width: 4),
                       Text(widget.country.dialCode,
                           style: GuestTopUpTheme.dialCode),
@@ -145,9 +167,11 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
 class CountryInfo {
   final String flagEmoji;
   final String dialCode;
+  final String? isoCode;
 
   const CountryInfo({
     required this.flagEmoji,
     required this.dialCode,
+    this.isoCode,
   });
 }

@@ -46,6 +46,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   static const CountryInfo _defaultCountry = CountryInfo(
     flagEmoji: '🇧🇸',
     dialCode: '1',
+    isoCode: 'BS',
   );
 
   CountryInfo _selectedCountry = _defaultCountry;
@@ -72,11 +73,29 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
-      onSelect: (country) {
+      // Keep using the previous package while rendering flat flag assets.
+      customFlagBuilder: (Country country) {
+        if (country.countryCode.toUpperCase() == 'AC') {
+          return Text(country.flagEmoji, style: const TextStyle(fontSize: 18));
+        }
+
+        return Image.asset(
+          'assets/${country.countryCode.toLowerCase()}.png',
+          package: 'country_pickers',
+          width: 26,
+          height: 20,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Text(country.flagEmoji, style: const TextStyle(fontSize: 18));
+          },
+        );
+      },
+      onSelect: (Country country) {
         setState(() {
           _selectedCountry = CountryInfo(
             flagEmoji: country.flagEmoji,
             dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
+            isoCode: country.countryCode,
           );
         });
       },
