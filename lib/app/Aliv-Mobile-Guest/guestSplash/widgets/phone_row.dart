@@ -33,6 +33,7 @@ class PhoneRow extends StatelessWidget {
       hintText: hintText,
       flagEmoji: country?.flagEmoji ?? '🏳️',
       dialCode: country?.phoneCode ?? '1',
+      countryIsoCode: country?.countryCode,
       onTapCountryPicker: onTapCountryPicker,
       onChanged: onChanged,
       enableCountryPicker: enableCountryPicker,

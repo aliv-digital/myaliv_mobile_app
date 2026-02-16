@@ -1,9 +1,10 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/widgets/phone_row.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/guest_splash_theme.dart';
 import '../bloc/guest_splash_bloc.dart';
@@ -18,7 +19,9 @@ Future<GuestSplashPurchasePlanInput?> showGuestSplashPurchasePlanBottomSheet(
   final initialCountry = service.findByCode('BS') ?? service.findByCode('US');
 
   // Init bottom-sheet state in same bloc
-  context.read<GuestSplashBloc>().add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
+  context
+      .read<GuestSplashBloc>()
+      .add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
 
   return showModalBottomSheet<GuestSplashPurchasePlanInput>(
     context: context,
@@ -137,32 +140,140 @@ class _SheetBody extends StatelessWidget {
             const _Label('enter mobile number'),
             const SizedBox(
                 height: GuestSplashTheme.purchasePlanLabelToFieldGap),
-            PhoneRow(
-              country: state.purchaseCountry,
+            // Previous local wrapper kept for quick fallback:
+            // PhoneRow(
+            //   country: state.purchaseCountry,
+            //   hintText: 'eg: 242-899-9999',
+            //   onTapCountryPicker: () => _pickCountry(context),
+            //   onChanged: (v) {context.read<GuestSplashBloc>().add(
+            //     GuestSplashPurchasePlanPhoneChanged(v)
+            //   );
+            //   },
+            //   enableCountryPicker: true,
+            //   showCountryArrow: true,
+            // ),
+            CustomCountryPhoneInputRow(
               hintText: 'eg: 242-899-9999',
+              flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
+              dialCode: state.purchaseCountry?.phoneCode ?? '1',
+              countryIsoCode: state.purchaseCountry?.countryCode,
               onTapCountryPicker: () => _pickCountry(context),
-              onChanged: (v) {context.read<GuestSplashBloc>().add(
-                GuestSplashPurchasePlanPhoneChanged(v)
-              );
+              onChanged: (v) {
+                context.read<GuestSplashBloc>().add(
+                      GuestSplashPurchasePlanPhoneChanged(v),
+                    );
               },
               enableCountryPicker: true,
               showCountryArrow: true,
+              fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
+              countryPickerWidth:
+                  GuestSplashTheme.purchasePlanCountryPickerWidth,
+              countryToPhoneGap:
+                  GuestSplashTheme.purchasePlanCountryPickerToInputGap,
+              borderRadius: GuestSplashTheme.purchasePlanFieldCornerRadius,
+              borderWidth: GuestSplashTheme.purchasePlanFieldBorderWidth,
+              countryPickerPadding: const EdgeInsets.only(
+                left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
+                right: GuestSplashTheme
+                    .purchasePlanCountryPickerRightPaddingWithArrow,
+              ),
+              showCountryPickerBorder: true,
+              countryPickerBorderColor:
+                  GuestSplashTheme.purchasePlanFieldBorderColor,
+              countryPickerBorderWidth:
+                  GuestSplashTheme.purchasePlanFieldBorderWidth,
+              phoneInputPadding: const EdgeInsets.symmetric(
+                horizontal:
+                    GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
+              ),
+              countryFlagToDialGap:
+                  GuestSplashTheme.purchasePlanCountryFlagToDialGap,
+              countryDialToArrowGap:
+                  GuestSplashTheme.purchasePlanCountryDialToArrowGap,
+              countryArrowIconSize:
+                  GuestSplashTheme.purchasePlanCountryArrowIconSize,
+              countryArrowColor:
+                  GuestSplashTheme.purchasePlanCountryArrowIconColor,
+              backgroundColor:
+                  GuestSplashTheme.purchasePlanFieldBackgroundColor,
+              unfocusedBorderColor:
+                  GuestSplashTheme.purchasePlanFieldBorderColor,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
+              ],
+              dialCodeStyle: GuestSplashTheme.dialCode,
+              phoneInputStyle: GuestSplashTheme.phoneInput,
+              phoneHintStyle: GuestSplashTheme.phoneHint,
+              flagStyle: GuestSplashTheme.flagEmoji,
             ),
             const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
             const _Label('confirm mobile number'),
             const SizedBox(
-              height: GuestSplashTheme.purchasePlanLabelToFieldGap
-            ),
-            PhoneRow(
-              country: state.purchaseCountry,
+                height: GuestSplashTheme.purchasePlanLabelToFieldGap),
+            // Previous local wrapper kept for quick fallback:
+            // PhoneRow(
+            //   country: state.purchaseCountry,
+            //   hintText: 'eg: 242-899-9999',
+            //   onChanged: (v) {
+            //     context.read<GuestSplashBloc>().add(
+            //       GuestSplashPurchasePlanConfirmPhoneChanged(v)
+            //       );
+            //   },
+            //   enableCountryPicker: false,
+            //   showCountryArrow: false,
+            // ),
+            CustomCountryPhoneInputRow(
               hintText: 'eg: 242-899-9999',
+              flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
+              dialCode: state.purchaseCountry?.phoneCode ?? '1',
+              countryIsoCode: state.purchaseCountry?.countryCode,
               onChanged: (v) {
                 context.read<GuestSplashBloc>().add(
-                  GuestSplashPurchasePlanConfirmPhoneChanged(v)
-                  );
+                      GuestSplashPurchasePlanConfirmPhoneChanged(v),
+                    );
               },
               enableCountryPicker: false,
               showCountryArrow: false,
+              fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
+              countryPickerWidth:
+                  GuestSplashTheme.purchasePlanCountryPickerWidth,
+              countryToPhoneGap:
+                  GuestSplashTheme.purchasePlanCountryPickerToInputGap,
+              borderRadius: GuestSplashTheme.purchasePlanFieldCornerRadius,
+              borderWidth: GuestSplashTheme.purchasePlanFieldBorderWidth,
+              countryPickerPadding: const EdgeInsets.only(
+                left: GuestSplashTheme.purchasePlanCountryPickerLeftPadding,
+                right: GuestSplashTheme
+                    .purchasePlanCountryPickerRightPaddingWithoutArrow,
+              ),
+              showCountryPickerBorder: true,
+              countryPickerBorderColor:
+                  GuestSplashTheme.purchasePlanFieldBorderColor,
+              countryPickerBorderWidth:
+                  GuestSplashTheme.purchasePlanFieldBorderWidth,
+              phoneInputPadding: const EdgeInsets.symmetric(
+                horizontal:
+                    GuestSplashTheme.purchasePlanPhoneInputHorizontalPadding,
+              ),
+              countryFlagToDialGap:
+                  GuestSplashTheme.purchasePlanCountryFlagToDialGap,
+              countryDialToArrowGap:
+                  GuestSplashTheme.purchasePlanCountryDialToArrowGap,
+              countryArrowIconSize:
+                  GuestSplashTheme.purchasePlanCountryArrowIconSize,
+              countryArrowColor:
+                  GuestSplashTheme.purchasePlanCountryArrowIconColor,
+              backgroundColor:
+                  GuestSplashTheme.purchasePlanFieldBackgroundColor,
+              unfocusedBorderColor:
+                  GuestSplashTheme.purchasePlanFieldBorderColor,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
+              ],
+              dialCodeStyle: GuestSplashTheme.dialCode,
+              phoneInputStyle: GuestSplashTheme.phoneInput,
+              phoneHintStyle: GuestSplashTheme.phoneHint,
+              flagStyle: GuestSplashTheme.flagEmoji,
             ),
             const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
             if (state.purchaseStatus == GuestSplashPurchasePlanStatus.failure &&
@@ -200,6 +311,23 @@ class _SheetBody extends StatelessWidget {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
+      customFlagBuilder: (Country country) {
+        // `country_pickers` does not include `ac.png`, so map AC -> SH asset.
+        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
+            ? 'sh'
+            : country.countryCode.toLowerCase();
+
+        return Image.asset(
+          'assets/$assetIsoCode.png',
+          package: 'country_pickers',
+          width: GuestSplashTheme.purchasePlanCountryFlagWidth,
+          height: GuestSplashTheme.purchasePlanCountryFlagHeight,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Text(country.flagEmoji, style: GuestSplashTheme.flagEmoji);
+          },
+        );
+      },
       onSelect: (country) {
         context
             .read<GuestSplashBloc>()

@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 ///   hintText: 'eg: 242-899-9999',
 ///   flagEmoji: country.flagEmoji,
 ///   dialCode: country.phoneCode,
+///   countryIsoCode: country.countryCode, // Enables flat flag asset rendering.
 ///   onTapCountryPicker: _pickCountry,
 ///   onChanged: (value) => bloc.add(PhoneChanged(value)),
 /// )
@@ -26,6 +27,7 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 ///   hintText: 'eg: 242-899-9999',
 ///   flagEmoji: selectedCountry.flagEmoji,
 ///   dialCode: selectedCountry.phoneCode,
+///   countryIsoCode: selectedCountry.countryCode,
 ///   onChanged: (value) => bloc.add(ConfirmPhoneChanged(value)),
 ///   enableCountryPicker: false,
 ///   showCountryArrow: false,
@@ -38,6 +40,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     required this.flagEmoji,
     required this.dialCode,
     required this.onChanged,
+    this.countryIsoCode,
     this.labelText,
     this.onTapCountryPicker,
     this.enableCountryPicker = true,
@@ -92,6 +95,8 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   // Country picker behavior.
   final String flagEmoji;
   final String dialCode;
+  // Optional ISO2 code (e.g., "BS") to render flat flag from country_pickers assets.
+  final String? countryIsoCode;
   final VoidCallback? onTapCountryPicker;
   final bool enableCountryPicker;
   final bool showCountryArrow;
@@ -192,6 +197,28 @@ class _CustomCountryPhoneInputRowState
     }
   }
 
+  Widget _buildCountryFlag(TextStyle resolvedFlagStyle) {
+    final String? isoCode = widget.countryIsoCode;
+    if (isoCode != null && isoCode.isNotEmpty) {
+      // country_pickers does not include AC.png; use SH asset (same flag style).
+      final String assetIsoCode =
+          isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
+
+      return Image.asset(
+        'assets/${assetIsoCode.toLowerCase()}.png',
+        package: 'country_pickers',
+        width: 26,
+        height: 20,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Text(widget.flagEmoji, style: resolvedFlagStyle);
+        },
+      );
+    }
+
+    return Text(widget.flagEmoji, style: resolvedFlagStyle);
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextStyle resolvedLabelStyle = widget.labelStyle ??
@@ -258,7 +285,7 @@ class _CustomCountryPhoneInputRowState
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.flagEmoji, style: resolvedFlagStyle),
+                  _buildCountryFlag(resolvedFlagStyle),
                   SizedBox(width: widget.countryFlagToDialGap),
                   Text(widget.dialCode, style: resolvedDialStyle),
                   if (widget.showCountryArrow) ...[

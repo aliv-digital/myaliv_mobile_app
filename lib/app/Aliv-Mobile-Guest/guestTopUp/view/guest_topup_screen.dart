@@ -5,6 +5,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/defaultButton.dart';
@@ -75,18 +76,20 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       showPhoneCode: true,
       // Keep using the previous package while rendering flat flag assets.
       customFlagBuilder: (Country country) {
-        if (country.countryCode.toUpperCase() == 'AC') {
-          return Text(country.flagEmoji, style: const TextStyle(fontSize: 18));
-        }
+        // `country_pickers` does not include `ac.png`, so map AC -> SH asset.
+        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
+            ? 'sh'
+            : country.countryCode.toLowerCase();
 
         return Image.asset(
-          'assets/${country.countryCode.toLowerCase()}.png',
+          'assets/$assetIsoCode.png',
           package: 'country_pickers',
           width: 26,
           height: 20,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return Text(country.flagEmoji, style: const TextStyle(fontSize: 18));
+            return Text(country.flagEmoji,
+                style: const TextStyle(fontSize: 18));
           },
         );
       },
@@ -139,13 +142,14 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                           left: GuestTopUpTheme.activePrepaidHorizontal,
                           right: GuestTopUpTheme.activePrepaidHorizontal,
                         ),
-                        child: LabeledInputField(
-                          label: GuestTopUpTheme.activePrepaidLabel,
+                        child: CustomCountryPhoneInputRow(
+                          labelText: GuestTopUpTheme.activePrepaidLabel,
                           labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                           hintText: GuestTopUpTheme.phoneHintText,
-                          country: _selectedCountry,
-                          enableCountryPicker: true,
-                          onPickCountry: _pickCountry,
+                          flagEmoji: _selectedCountry.flagEmoji,
+                          dialCode: _selectedCountry.dialCode,
+                          countryIsoCode: _selectedCountry.isoCode,
+                          onTapCountryPicker: _pickCountry,
                           onChanged: (value) {},
                         ),
                       ),
@@ -156,12 +160,14 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                       child: Padding(
                         padding:
                             const EdgeInsets.only(top: 20, left: 23, right: 23),
-                        child: LabeledInputField(
-                          label: GuestTopUpTheme.confirmMobileLabel,
+                        child: CustomCountryPhoneInputRow(
+                          labelText: GuestTopUpTheme.confirmMobileLabel,
                           hintText: GuestTopUpTheme.phoneHintText,
-                          country: _selectedCountry,
+                          flagEmoji: _selectedCountry.flagEmoji,
                           enableCountryPicker: false,
-                          onPickCountry: _pickCountry,
+                          showCountryArrow: false,
+                          dialCode: _selectedCountry.dialCode,
+                          countryIsoCode: _selectedCountry.isoCode,
                           onChanged: (value) {},
                         ),
                       ),
