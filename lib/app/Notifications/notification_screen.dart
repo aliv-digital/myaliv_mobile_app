@@ -369,7 +369,7 @@ class NotificationItem extends StatelessWidget {
                     style: const TextStyle(
                       color: const Color(0xFF1C1C1C) /* Black-100% */,
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -379,7 +379,7 @@ class NotificationItem extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),

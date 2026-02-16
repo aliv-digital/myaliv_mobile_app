@@ -33,7 +33,7 @@ class SecurityTheme {
   static const TextStyle sectionHeader = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: textPrimary,
     height: 1.3,
   );

@@ -10,7 +10,7 @@ class ReceiptBackButton extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
 
-  static const _purple = Color(0xFF645D9C);
+  static const _purple = Color(0xFF655C9A);
 
   @override
   Widget build(BuildContext context) {

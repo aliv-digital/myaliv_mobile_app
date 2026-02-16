@@ -31,7 +31,7 @@ class SettingsTheme {
   static const TextStyle tileText = TextStyle(
     color: Colors.black,
     fontSize: 16,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     // letterSpacing: -0.32,
   );

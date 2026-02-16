@@ -31,7 +31,7 @@ class HomePlanTheme {
     // color: Colors.black.withValues(alpha: 0.75),
     color: Colors.black,
     fontSize: 12,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 
@@ -47,7 +47,7 @@ class HomePlanTheme {
   static final TextStyle addOnTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 
@@ -126,7 +126,7 @@ class HomePlanTheme {
   static final TextStyle metricValue = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 14,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 

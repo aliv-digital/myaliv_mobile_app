@@ -25,7 +25,7 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 17,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -92,7 +92,7 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
                 'James Brown',
                 style: TextStyle(
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                   height: 1.43,
                 ),
@@ -106,7 +106,7 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
                 style: TextStyle(
                   color: const Color(0xFF1C1C1C) /* Black-100% */,
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                   height: 1.43,
                 ),

@@ -17,21 +17,21 @@ class ReviewInvoicePostpaidTheme {
   static TextStyle invoiceNo(BuildContext context) => const TextStyle(
     color: const Color(0xFF1C1C1C) /* Black-100% */,
     fontSize: 16,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 
   static TextStyle metaLabel(BuildContext context) => const TextStyle(
     color: const Color(0xFF707070),
     fontSize: 12,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 
   static TextStyle metaValue(BuildContext context) => const TextStyle(
     color: const Color(0xFF1C1C1C) /* Black-100% */,
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 

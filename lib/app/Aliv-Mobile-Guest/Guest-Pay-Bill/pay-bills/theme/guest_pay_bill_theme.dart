@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class GuestPayBillTheme {
   // Colors (tune these if your app already has tokens)
-  static const Color primary = Color(0xFF645D9C);
+  static const Color primary = Color(0xFF5A5796);
   static const Color pageBg = Colors.white;
 
   static const Color fieldBg = Color(0xFFF1F1F8);
@@ -20,7 +20,7 @@ class GuestPayBillTheme {
   static TextStyle labelStyle() => const TextStyle(
         color: Color(0xFF1C1C1C),
         fontSize: 14,
-        fontFamily: 'Circular Pro',
+        fontFamily: 'CircularPro',
         fontWeight: FontWeight.w700,
         height: 1.43,
       );

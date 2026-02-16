@@ -39,7 +39,7 @@ class DashedAddCardButton extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFF645D9C),
                     fontSize: 13,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                     height: 1.54,
                   ),

@@ -174,7 +174,7 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
               style: const TextStyle(
                 color: Color(0xFF5045A7),
                 fontSize: 16,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
               ),
             ),

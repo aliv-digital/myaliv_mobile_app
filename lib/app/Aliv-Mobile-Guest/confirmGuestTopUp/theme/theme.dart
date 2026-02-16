@@ -35,7 +35,7 @@ class TopUpConfirmTheme{
   static final TextStyle summaryAmountPill = TextStyle(
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: const Color(0xFF6B63A7),
   );
 
@@ -68,7 +68,7 @@ class TopUpConfirmTheme{
   static final TextStyle termsLink = TextStyle(
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     height: 1.25,
     color: const Color(0xFF111111),
     decoration: TextDecoration.underline,

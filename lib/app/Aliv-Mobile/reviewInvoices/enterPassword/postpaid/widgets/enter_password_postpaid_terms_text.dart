@@ -21,7 +21,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF58677D),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -30,7 +30,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF58677D),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -39,7 +39,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF645D9C),
               fontSize: 13,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
               decoration: TextDecoration.underline,
             ),
@@ -54,7 +54,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF58677D),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -63,7 +63,7 @@ class EnterPasswordPostpaidTermsText extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF645D9C),
               fontSize: 13,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
               decoration: TextDecoration.underline,
             ),

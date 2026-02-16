@@ -35,7 +35,7 @@ class ActionTile extends StatelessWidget {
             style: const TextStyle(
               color: const Color(0xFF222222),
               fontSize: 12,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
               height: 1.10,
               letterSpacing: 0.06,

@@ -54,7 +54,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                   style: TextStyle(
                     color: const Color(0xFF1C1C1C) /* Black-100% */,
                     fontSize: 14,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     height: 1.43,
                   ),
@@ -103,7 +103,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     style: TextStyle(
                       color: const Color(0xFFF1F1F8),
                       fontSize: 13,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),

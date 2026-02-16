@@ -97,7 +97,7 @@ class _RowItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = TopUpConfirmTheme.breakdownText.copyWith(
       color: textColor,
-      fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+      fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
     );
 
     return Row(

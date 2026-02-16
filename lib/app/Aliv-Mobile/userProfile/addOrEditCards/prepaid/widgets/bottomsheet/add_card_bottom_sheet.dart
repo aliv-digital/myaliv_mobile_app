@@ -93,7 +93,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                 style: const TextStyle(
                   color: const Color(0xFF222222),
                   fontSize: 18,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                   height: 1.56,
                 ),
@@ -108,7 +108,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
 
                   color: const Color(0xFF707070),
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                   height: 1.43,
                 ),
@@ -163,7 +163,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                   style: TextStyle(
                     color: const Color(0xFFF1F1F8),
                     fontSize: 13,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -235,7 +235,7 @@ class _DropField<T> extends StatelessWidget {
                 style: const TextStyle(
                   color: const Color(0xFF707070),
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                   height: 1.43,
                 ),

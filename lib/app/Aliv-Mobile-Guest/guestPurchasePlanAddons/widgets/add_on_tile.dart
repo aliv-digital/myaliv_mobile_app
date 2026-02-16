@@ -28,11 +28,11 @@ class AddOnTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => onChanged(!selected),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
             color: GuestPurchasePlanAddOnsTheme.cardWhite,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
             border: selected ? Border.all(color: borderColor, width: 1.2) : null,
             boxShadow: const [
               BoxShadow(
@@ -63,7 +63,7 @@ class AddOnTile extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 16),
 
                 Row(
                   children: [
@@ -87,10 +87,10 @@ class AddOnTile extends StatelessWidget {
 
                     // price chip
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
                       decoration: BoxDecoration(
                         border: Border.all(color: borderColor, width: 1),
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '${item.currencySymbol} ${item.price.toStringAsFixed(2)}',
@@ -120,12 +120,12 @@ class _SquareCheckbox extends StatelessWidget {
 
     return InkWell(
       onTap: () => onChanged(!value),
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(4),
       child: Container(
-        width: 20,
-        height: 20,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: borderColor, width: 1),
           color: value ? borderColor : Colors.transparent,
         ),

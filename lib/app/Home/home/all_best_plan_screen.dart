@@ -122,7 +122,7 @@ class _PlanCard extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
                       fontSize: 40,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white,
                       letterSpacing: 0.5,
                     ),

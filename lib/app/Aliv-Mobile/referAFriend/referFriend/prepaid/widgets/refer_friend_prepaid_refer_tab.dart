@@ -36,7 +36,7 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                     style: TextStyle(
                       color: const Color(0xFF58677D),
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -45,7 +45,7 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                     style: TextStyle(
                       color: const Color(0xFF58677D),
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -54,7 +54,7 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                     style: TextStyle(
                       color: const Color(0xFF58677D),
                       fontSize: 14,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),

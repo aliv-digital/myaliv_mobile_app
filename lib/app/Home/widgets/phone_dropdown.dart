@@ -34,7 +34,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
 
             color: const Color(0xFFF1F1F8),
             fontSize: 14,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
             height: 1.14,
           ),

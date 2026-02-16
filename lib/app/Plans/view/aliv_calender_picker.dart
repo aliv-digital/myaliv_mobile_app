@@ -53,7 +53,7 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
             leftChevronIcon: const Icon(Icons.chevron_left),
             rightChevronIcon: const Icon(Icons.chevron_right),
             titleTextStyle: const TextStyle(
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Color(0xFF2E3A59),
@@ -75,7 +75,7 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
             outsideDaysVisible: true,
 
             defaultTextStyle: const TextStyle(
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
               color: Color(0xFF2E3A59),
             ),
@@ -130,7 +130,7 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
                   'cancel',
                   style: TextStyle(
                     color: Color(0xFF645D9C),
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                   ),
                 ),
               ),
@@ -146,7 +146,7 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
                 child: const Text(
                   'apply',
                   style: TextStyle(
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w600,
                   ),
                 ),

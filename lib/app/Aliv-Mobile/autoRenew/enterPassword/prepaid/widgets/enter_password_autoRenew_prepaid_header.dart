@@ -13,7 +13,7 @@ class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF010101),
             fontSize: 17,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -24,7 +24,7 @@ class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF58677D),
             fontSize: 15,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
             height: 1.47,
           ),

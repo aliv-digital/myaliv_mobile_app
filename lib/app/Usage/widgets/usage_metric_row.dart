@@ -35,7 +35,7 @@ class UsageMetricRow extends StatelessWidget {
                       style: const TextStyle(
                         color: const Color(0xFF222222),
                         fontSize: 12,
-                        fontFamily: 'Circular Pro',
+                        fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -45,7 +45,7 @@ class UsageMetricRow extends StatelessWidget {
                       style: const TextStyle(
                         color: const Color(0xFF707070),
                         fontSize: 12,
-                        fontFamily: 'Circular Pro',
+                        fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w500,
                       ),
                     ),

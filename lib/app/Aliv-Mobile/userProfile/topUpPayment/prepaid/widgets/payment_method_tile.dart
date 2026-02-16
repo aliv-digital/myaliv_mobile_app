@@ -33,7 +33,7 @@ class PaymentMethodTile extends StatelessWidget {
           : Color(0xFF222222),
       fontWeight: FontWeight.w700,
       fontSize: 14,
-      fontFamily: 'Circular Pro',
+      fontFamily: 'CircularPro',
       height: 1.43,
 
     );
@@ -43,7 +43,7 @@ class PaymentMethodTile extends StatelessWidget {
           ?  Color(0xCC5146A8)
           : const Color(0xFF707070),
       fontSize: 14,
-      fontFamily: 'Circular Pro',
+      fontFamily: 'CircularPro',
       fontWeight: FontWeight.w500,
       height: 1.43,    );
 

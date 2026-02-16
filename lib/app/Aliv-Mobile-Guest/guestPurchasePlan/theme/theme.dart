@@ -43,7 +43,7 @@ class GuestPurchasePlanTheme {
   static final TextStyle addOnTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 
@@ -121,7 +121,7 @@ class GuestPurchasePlanTheme {
   static final TextStyle metricValue = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 14,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 

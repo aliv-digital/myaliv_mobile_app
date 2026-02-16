@@ -42,7 +42,7 @@ class ConfirmTopUpBottomBar extends StatelessWidget {
                     style: TextStyle(
                       color: const Color(0xFF707070),
                       fontSize: 12,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),

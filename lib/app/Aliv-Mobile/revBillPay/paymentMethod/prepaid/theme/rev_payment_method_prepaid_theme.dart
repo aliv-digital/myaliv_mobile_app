@@ -56,7 +56,7 @@ class RevPaymentMethodPrepaidTheme {
     fontFamily: fontFamily,
     fontSize: 18,
     height: 1.2,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: text,
   );
 

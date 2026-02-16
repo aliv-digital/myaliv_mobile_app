@@ -206,7 +206,7 @@ class PromoSummaryTicket extends StatelessWidget {
                 hintStyle: TextStyle(
                   color: const Color(0xFFC9C9C9),
                   fontSize: 16,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                 ),
                 border: InputBorder.none,
@@ -223,7 +223,7 @@ class PromoSummaryTicket extends StatelessWidget {
                 style: TextStyle(
                   color: const Color(0xFF645D9C),
                   fontSize: 16,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                 ),
               ),

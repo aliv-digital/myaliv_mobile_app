@@ -139,7 +139,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
               },
             ),
 
-            //const SizedBox(height: 6),
+            const SizedBox(height: 6),
 
             BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
               buildWhen: (p, c) => p.selectedTab != c.selectedTab,
@@ -175,13 +175,14 @@ class _GuestPurchasePlanView extends StatelessWidget {
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(31, 24, 15, 15),
+                  padding: const EdgeInsets.fromLTRB(31, 20, 16, 0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       title,
-                      style: state.selectedTab == PlanTab.addOns ?
-                      GuestPurchasePlanTheme.addOnHelper : GuestPurchasePlanTheme.sectionTitle,
+                      style: state.selectedTab == PlanTab.addOns
+                          ? GuestPurchasePlanTheme.addOnHelper
+                          : GuestPurchasePlanTheme.sectionTitle,
                     ),
                   ),
                 );

@@ -16,7 +16,7 @@ class AutoRenewPrepaidTheme {
   static TextStyle sectionTitle() => const TextStyle(
     color: Colors.black,
     fontSize: 13,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
   );
 
@@ -24,7 +24,7 @@ class AutoRenewPrepaidTheme {
        fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
     color: selected ? const Color(0xFF645D9C):Color(0xFF222222),
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     height: 1.43,
   );
 
@@ -33,7 +33,7 @@ class AutoRenewPrepaidTheme {
     color: selected ? const Color(0xFF645D9C):Color(0xFF222222),
 
     fontSize: 14,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
     height: 1.43,
   );

@@ -24,7 +24,7 @@ class RevBottomBar extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 16),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: SafeArea(
         top: false,
         child: Row(
@@ -34,9 +34,29 @@ class RevBottomBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(amountText, style: RevConfirmationPrepaidTheme.bottomAmount),
-                  const SizedBox(height: 2),
-                  Text('vat inclusive', style: RevConfirmationPrepaidTheme.bottomVat),
+                  Text(
+                    '\$ 200.00',
+                    style: TextStyle(
+                      color: const Color(0xFF222222),
+                      fontSize: 22,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  // Text(amountText,
+                  //     style: RevConfirmationPrepaidTheme.bottomAmount
+                  // ),
+                  // const SizedBox(height: 2),
+                  Text(
+                    'vat inclusive',
+                    style: TextStyle(
+                      color: const Color(0xFF707070),
+                      fontSize: 12,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                  // Text('vat inclusive', style: RevConfirmationPrepaidTheme.bottomVat),
                 ],
               ),
             ),
@@ -45,14 +65,22 @@ class RevBottomBar extends StatelessWidget {
               height: 44,
               child: InkWell(
                 onTap: onContinue,
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(100),
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: RevConfirmationPrepaidTheme.continueBtnBg,
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  child: Text('continue', style: RevConfirmationPrepaidTheme.continueText),
+                  child: Text(
+                    'continue',
+                    style: TextStyle(
+                      color: const Color(0xFFF1F1F8),
+                      fontSize: 13,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )//Text('continue', style: RevConfirmationPrepaidTheme.continueText),
                 ),
               ),
             ),

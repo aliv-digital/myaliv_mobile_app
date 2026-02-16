@@ -74,7 +74,7 @@ class _AutoRenewToggleState extends State<AutoRenewToggle> {
                   style: TextStyle(
                     color: isOn ? Colors.black : const Color(0xFF707070),
                     fontSize: 12,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -91,7 +91,7 @@ class _AutoRenewToggleState extends State<AutoRenewToggle> {
           style: TextStyle(
             color: Colors.white,
             fontSize: 12,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
           ),
         ),

@@ -90,7 +90,7 @@ class _Header extends StatelessWidget {
           children: [
              Text(title,
               style: TextStyle(
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -136,7 +136,7 @@ class _BalanceRow extends StatelessWidget {
           style: TextStyle(
             color: Color(0xFFFF6C36),
             fontSize: 18,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -146,7 +146,7 @@ class _BalanceRow extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
           ),
         ),
         const Spacer(),
@@ -161,7 +161,7 @@ class _BalanceRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
             ),
           ),
         ),
@@ -180,7 +180,7 @@ class _Description extends StatelessWidget {
       style: TextStyle(
         fontSize: 10,
         height: 1.38,
-        fontFamily: 'Circular Pro',
+        fontFamily: 'CircularPro',
         fontWeight: FontWeight.w500,
         color: Color(0xFF222222),
 
@@ -211,7 +211,7 @@ class _Actions extends StatelessWidget {
             child: Text(
               expanded ? 'hide details' : 'view details',
               style: const TextStyle(
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontSize: 13,
                 color: Color(0xFF645D9C),
               ),
@@ -232,7 +232,7 @@ class _Actions extends StatelessWidget {
             child: const Text(
               'purchase now',
               style: TextStyle(
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontSize: 13,
                 color: Color(0xFFF1F1F8),
               ),

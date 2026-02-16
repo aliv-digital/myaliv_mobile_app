@@ -44,7 +44,7 @@ class EnterPasswordPostpaidContinueButton extends StatelessWidget {
           style: TextStyle(
             color: Colors.white,
             fontSize: 17,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
             height: 1.80,
           ),

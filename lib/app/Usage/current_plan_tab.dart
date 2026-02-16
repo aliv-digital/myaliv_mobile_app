@@ -35,7 +35,7 @@ class CurrentPlanTab extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFF222222),
                     fontSize: 12,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
                   ),
@@ -73,7 +73,7 @@ class CurrentPlanTab extends StatelessWidget {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -152,7 +152,7 @@ class CurrentPlanTab extends StatelessWidget {
               style: TextStyle(
                 color: const Color(0xFF222222),
                 fontSize: 12,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -184,7 +184,7 @@ class _ActiveAddOns extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF222222),
             fontSize: 12,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -219,7 +219,7 @@ class _AddOnChip extends StatelessWidget {
         style: const TextStyle(
           color: const Color(0xFF645D9C),
           fontSize: 14,
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -340,7 +340,7 @@ class _LimitRow extends StatelessWidget {
                   style: const TextStyle(
                     color: const Color(0xFF222222),
                     fontSize: 12,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -350,7 +350,7 @@ class _LimitRow extends StatelessWidget {
                   style: const TextStyle(
                     color: const Color(0xFF707070),
                     fontSize: 12,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -428,7 +428,7 @@ class _LimitRow extends StatelessWidget {
                 style: const TextStyle(
                   color: const Color(0xFF707070),
                   fontSize: 12,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                 ),
               ),

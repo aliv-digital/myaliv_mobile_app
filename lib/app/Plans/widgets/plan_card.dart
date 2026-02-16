@@ -55,7 +55,7 @@ class PlanCard extends StatelessWidget {
                         style: const TextStyle(
                           fontFamily: 'CircularPro',
                           fontSize: 16,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
                           color: Colors.black,
                         ),
                       ),
@@ -198,7 +198,7 @@ class _PricePill extends StatelessWidget {
         style: const TextStyle(
           fontFamily: 'CircularPro',
           fontSize: 13.5,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w700,
           color: _brand,
         ),
       ),
@@ -404,7 +404,7 @@ class _BenefitItem extends StatelessWidget {
                       fontFamily: 'CircularPro',
                       fontSize: 14,
                       height: 1.0,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: Colors.black,
                     ),
                   ),

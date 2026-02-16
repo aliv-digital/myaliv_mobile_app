@@ -24,7 +24,7 @@ class TimerBox extends StatelessWidget {
               style: const TextStyle(
                 color: const Color(0xFF0F1313),
                 fontSize: 20,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.10,
               ),
@@ -35,7 +35,7 @@ class TimerBox extends StatelessWidget {
               style: const TextStyle(
                 color: const Color(0xFF0F1313),
                 fontSize: 10,
-                fontFamily: 'Circular Pro',
+                fontFamily: 'CircularPro',
                 fontWeight: FontWeight.w500,
                 letterSpacing: 0.05,
               ),

@@ -131,7 +131,7 @@ class _RowItem extends StatelessWidget {
       fontFamily: GuestPayBillConfirmTheme.myFontFamily,
       color: textColor,
       fontSize: 14,
-      fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
+      fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
       height: 1.1,
     );
 

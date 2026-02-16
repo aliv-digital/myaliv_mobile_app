@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestPayBillConfirmTheme {
-  static const Color primary = Color(0xFF645D9C);
+  static const Color primary = Color(0xFF5A5796);
   static const Color pageBg = Color(0xFFF2F3FA);
   static const Color cardWhite = Colors.white;
 
@@ -34,7 +34,7 @@ class GuestPayBillConfirmTheme {
   static TextStyle headerSub() => const TextStyle(
     color: Color(0xFF121212),
     fontSize: 16,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w400,
     // Circular Pro requested at 450; Flutter font weight constants are 100 steps.
     // This keeps visual weight close to 450 when variable font data is available.
@@ -63,7 +63,7 @@ class GuestPayBillConfirmTheme {
     color: textDark,
     fontSize: 22,
     fontFamily: GuestPayBillConfirmTheme.myFontFamily,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
   );
 
   static TextStyle bottomCaption() => TextStyle(

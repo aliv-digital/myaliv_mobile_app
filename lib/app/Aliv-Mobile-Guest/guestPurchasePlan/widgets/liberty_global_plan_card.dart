@@ -125,7 +125,7 @@ class LibertyGlobalPlanCard extends StatelessWidget {
                   plan.description,
                   textAlign: TextAlign.start,
                   style: const TextStyle(
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontSize: 10,
                     height: 1.38,
                     fontWeight: FontWeight.w500,

@@ -103,7 +103,7 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(29, 24, 29, 20),
+                        padding: const EdgeInsets.fromLTRB(29, 24, 29, 24),
                         sliver: SliverToBoxAdapter(
                           child: isLoading
                               ? const Center(child: CircularProgressIndicator())

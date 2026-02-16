@@ -65,7 +65,7 @@ class TopUpSummaryCard extends StatelessWidget {
           //  FULL WIDTH divider (left edge -> right edge)
           const _ThinLine(),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
 
           // bottom content (padded)
           Padding(
@@ -82,7 +82,7 @@ class TopUpSummaryCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
         ],
       ),
     );

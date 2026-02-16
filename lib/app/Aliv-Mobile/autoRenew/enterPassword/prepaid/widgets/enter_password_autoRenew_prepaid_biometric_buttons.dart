@@ -31,7 +31,7 @@ class EnterPasswordAutoRenewPrepaidBiometricButtons extends StatelessWidget {
                 style: TextStyle(
                   color: const Color(0xCC5146A8),
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                   height: 1.43,
                 ),
@@ -56,7 +56,7 @@ class EnterPasswordAutoRenewPrepaidBiometricButtons extends StatelessWidget {
                 style: TextStyle(
                   color: const Color(0xCC5146A8),
                   fontSize: 14,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                   height: 1.43,
                 ),

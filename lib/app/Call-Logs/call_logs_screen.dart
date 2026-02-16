@@ -195,7 +195,7 @@ class _MonthSelector extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF222222),
               fontSize: 14,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
               height: 1.43,
             ),

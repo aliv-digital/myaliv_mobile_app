@@ -12,9 +12,9 @@ class DefaultAppBar extends StatelessWidget {
     required this.title,
 
     // Layout
-    this.height = 56,
+    this.height = 64,
     this.backgroundColor = const Color(0xFF645D9C),
-    this.horizontalPadding = 12,
+    this.horizontalPadding = 14,
     this.titleAlignment = AppBarTitleAlignment.left,
     this.centerTitle = false,
 
@@ -97,7 +97,7 @@ class DefaultAppBar extends StatelessWidget {
     final titleStyle = const TextStyle(
         color: Colors.white,
         fontSize: 17,
-        fontFamily: 'Circular Pro',
+        fontFamily: 'CircularPro',
         fontWeight: FontWeight.w700,
     );
 
@@ -173,7 +173,7 @@ class DefaultAppBar extends StatelessWidget {
       return SizedBox(
         width: 88,
         child: Align(
-          alignment: Alignment.centerRight,
+          alignment: Alignment.centerLeft,
           child: trailing,
         ),
       );
@@ -282,7 +282,7 @@ class _HomeButton extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
                       fontSize: 10,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),
@@ -340,7 +340,7 @@ class _NotificationButton extends StatelessWidget {
                     style: const TextStyle(
                       fontFamily: 'CircularPro',
                       fontSize: 10,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
                   ),

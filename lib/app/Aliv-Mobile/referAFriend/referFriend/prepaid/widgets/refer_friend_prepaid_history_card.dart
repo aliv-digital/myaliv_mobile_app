@@ -57,7 +57,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                 style: const TextStyle(
                   color: const Color(0xFF222222),
                   fontSize: 20,
-                  fontFamily: 'Circular Pro',
+                  fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -89,7 +89,7 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                     style: TextStyle(
                       color: const Color(0xFFD92C20) /* Colors-Text-text-error-primary-(600) */,
                       fontSize: 12,
-                      fontFamily: 'Circular Pro',
+                      fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -146,7 +146,7 @@ class _Meta extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF222222),
               fontSize: 13,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -156,7 +156,7 @@ class _Meta extends StatelessWidget {
             style: TextStyle(
               color: const Color(0xFF222222),
               fontSize: 16,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
             ),
           ),
