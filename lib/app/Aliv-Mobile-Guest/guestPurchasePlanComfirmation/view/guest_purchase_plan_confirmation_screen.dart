@@ -69,10 +69,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
               return const SizedBox.shrink();
             }
 
-            final total = state.data!.totals.total;
-
             return DefaultBottomPayBar(
               isVatExclusive: true,
+              isButtonEnabled: state.isTermsChecked,
+              buttonColor: const Color(0xFF645D9C),
               onPayNow: () =>
                   context.read<GuestPurchasePlanConfirmationBloc>().add(
                         const GuestPurchasePlanConfirmationPayNowPressed(),

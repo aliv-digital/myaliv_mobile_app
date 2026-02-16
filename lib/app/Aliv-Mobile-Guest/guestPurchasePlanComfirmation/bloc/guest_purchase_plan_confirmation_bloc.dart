@@ -81,6 +81,8 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
     GuestPurchasePlanConfirmationPayNowPressed event,
     Emitter<GuestPurchasePlanConfirmationState> emit,
   ) {
+    if (!state.isTermsChecked) return;
+
     // Future: call API to create payment intent etc.
     emit(state.copyWith(payNowRequestId: state.payNowRequestId + 1));
   }

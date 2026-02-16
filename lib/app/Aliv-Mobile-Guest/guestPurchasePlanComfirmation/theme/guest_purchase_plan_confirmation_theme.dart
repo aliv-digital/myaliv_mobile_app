@@ -50,7 +50,7 @@ class GuestPurchasePlanConfirmationTheme {
   static const double purchaseItemTitleToSubtitleGap = 0;
   static const double purchaseItemPriceToDeleteGap = 20;
   static const double purchaseItemDeleteTapPadding = 6;
-  static const double purchaseItemDeleteIconSize = 20;
+  static const double purchaseItemDeleteIconSize = 16;
 
   // ---------------- Purchase Item Amount Chip ----------------
   // Amount chip container style (e.g. "$ 15.00")
