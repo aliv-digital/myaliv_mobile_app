@@ -200,7 +200,7 @@ class GuestPurchasePlanTheme {
   static const EdgeInsets planPricePillPadding =
       EdgeInsets.symmetric(horizontal: 10, vertical: 4);
   static const double planPricePillRadius = 5;
-  static final Color activateNowButton = HexColor.fromHex('#655D9C');
+  static final Color activateNowButton = HexColor.fromHex('#645D9C');
 
   // Bottom-sheet shared text styles
   static final TextStyle bottomSheetWarning = TextStyle(
@@ -474,4 +474,133 @@ class GuestPurchasePlanTheme {
   // Optional centralized labels for consistency.
   static const String bottomSheetActivateNowLabel = 'activate now';
   static const String bottomSheetFuturePlanLabel = 'future plan';
+
+  // ---------------------------------------------------------------------------
+  // Roam bottom sheet (when to start?)
+  // Used in: roam_bottom_sheet.dart
+  // ---------------------------------------------------------------------------
+  static const Color roamBottomSheetBackgroundColor = Colors.white;
+
+  static final TextStyle roamBottomSheetTitleTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    color: const Color(0xFF222222),
+    height: 1.56,
+  );
+
+  // "start from" label (roam bottom sheet).
+  static const double roamBottomSheetStartFromLabelWidth = 358;
+  static final TextStyle roamBottomSheetStartFromLabelTextStyle = TextStyle(
+    color: const Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
+  static final Color roamBottomSheetDateFieldBackgroundColor =
+      HexColor.fromHex('#F2F1F9');
+  static const double roamBottomSheetDateFieldHeight = 44;
+  static const double roamBottomSheetDateFieldRadius = 8;
+  static const EdgeInsets roamBottomSheetDateFieldPadding = EdgeInsets.only(left: 16,right: 8,top: 8,bottom: 8);
+
+  static final TextStyle roamBottomSheetDateFieldTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 14,
+    // Flutter does not support FontWeight.w450 directly; w400 is the closest.
+    fontWeight: FontWeight.w400,
+    color: HexColor.fromHex('#707070'),
+    height: 1.43,
+  );
+
+  static final Color roamBottomSheetDateFieldIconColor = planPriceBorder;
+  static const double roamBottomSheetDateFieldIconSize = 18;
+
+  static final Color roamBottomSheetOrDividerColor = HexColor.fromHex('#DCDCEA');
+  static final TextStyle roamBottomSheetOrTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: HexColor.fromHex('#707070'),
+  );
+
+  static const String roamBottomSheetTitle = 'when to start?';
+  static const String roamBottomSheetStartFromLabel = 'start from';
+  static const String roamBottomSheetWarningText =
+      'your standalone plan can start immediately, or on a date of your choice.';
+
+  // Roam warning box visual style (used only in roam_bottom_sheet.dart).
+  static final Color roamBottomSheetWarningBackgroundColor = HexColor.fromHex(
+    '#FCE9E1',
+  );
+  static const double roamBottomSheetWarningTextWidth = 338;
+  static final TextStyle roamBottomSheetWarningTextStyle = TextStyle(
+    // Flutter does not support FontWeight.w450 directly; w400 is the nearest.
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: HexColor.fromHex('#F30F0F'),
+    height: 1.38,
+  );
+
+  // Roam bottom-sheet layout spacing (Figma-aligned).
+  static const EdgeInsets roamBottomSheetContentPadding = EdgeInsets.fromLTRB(
+    16,
+    24,
+    16,
+    24,
+  );
+  static const double roamBottomSheetBackToTitleGap = 20;
+  static const double roamBottomSheetTitleToWarningGap = 20;
+  static const double roamBottomSheetWarningToStartFromGap = 20;
+  static const double roamBottomSheetStartFromToDateFieldGap = 10;
+  static const double roamBottomSheetDateFieldToOrGap = 20;
+  static const double roamBottomSheetOrToActivateNowGap = 20;
+  static const double roamBottomSheetOrTextHorizontalPadding = 16;
+
+  // Roam bottom-sheet primary action ("activate now") text style.
+  static final TextStyle roamBottomSheetActivateNowTextStyle = TextStyle(
+    color: const Color(0xFFF1F1F8),
+    fontSize: 13,
+    fontFamily: AppConstants.defaultFontFamily,
+    // Flutter does not support FontWeight.w450 directly; w400 is the closest.
+    fontWeight: FontWeight.w400,
+  );
+
+  // Calendar picker bottom sheet styles for roam date selection.
+  static final Color roamCalendarSheetBackgroundColor = bottomSheetBackground;
+  // Calendar sheet outer spacing from container edge (Figma: 24 top/bottom, 16 sides).
+  static const EdgeInsets roamCalendarContentPadding = EdgeInsets.fromLTRB(
+    16,
+    24,
+    16,
+    24,
+  );
+  // Visible calendar height to avoid excessive blank area below day grid.
+  static const double roamCalendarPickerVisibleHeight = 300;
+  static final Color roamCalendarDividerColor = HexColor.fromHex('#DCDCEA');
+  static final Color roamCalendarCancelButtonBackgroundColor =
+      HexColor.fromHex('#FFFFFF');
+  static const double roamCalendarActionButtonsGap = 12;
+  static const double roamCalendarActionButtonHeight = 42;
+  // Vertical gap between divider and action buttons.
+  static const double roamCalendarDividerToActionsGap = 20;
+
+  static final TextStyle roamCalendarCancelTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: HexColor.fromHex('#707070'),
+  );
+
+  static final TextStyle roamCalendarApplyTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+  );
+
+  static const String roamCalendarCancelLabel = 'cancel';
+  static const String roamCalendarApplyLabel = 'apply';
 }

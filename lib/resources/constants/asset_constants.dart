@@ -58,5 +58,8 @@ class AssetConstant{
   static const planRedCardPNG = 'assets/images/plan.png';
   static const trashIconSVG = 'assets/icons/trash.svg';
 
+  static const calenderIconSVG = 'assets/icons/calender.svg';
+
+
 
 }

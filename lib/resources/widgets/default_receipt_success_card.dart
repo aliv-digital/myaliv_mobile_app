@@ -11,11 +11,14 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
     required this.data,
     required this.onBackHome,
     required this.pageBackground,
+    this.statusMessage =
+        'It will take a few moments for the plan to appears on the account.',
   });
 
   final GuestPurchasePlanReceiptData data;
   final VoidCallback onBackHome;
   final Color pageBackground;
+  final String statusMessage;
 
   String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
 
@@ -102,7 +105,7 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(
-              'It will take a few moments for the plan to appears on the account.',
+              statusMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,

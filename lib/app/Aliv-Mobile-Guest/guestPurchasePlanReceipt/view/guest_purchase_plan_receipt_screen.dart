@@ -9,7 +9,6 @@ import '../../../../resources/widgets/default_receipt_success_card.dart';
 import '../bloc/guest_purchase_plan_receipt_event.dart';
 import '../bloc/guest_purchase_plan_receipt_state.dart';
 import '../theme/theme.dart';
-import '../widgets/payment_failure.dart';
 
 class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   const GuestPurchasePlanReceiptScreen({
@@ -19,6 +18,8 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
     required this.dateText,
     required this.timeText,
     this.paymentMethod = 'credit card',
+    this.statusMessage =
+        'It will take a few moments for the plan to appears on the account.',
   });
 
   final String phoneNumber;
@@ -26,6 +27,7 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   final String dateText;
   final String timeText;
   final String paymentMethod;
+  final String statusMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +59,21 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
         create: (ctx) => GuestPurchasePlanReceiptBloc(
           repository: ctx.read<GuestPurchasePlanReceiptRepository>(),
         )..add(GuestPurchasePlanReceiptStarted(receiptData)),
-        child: const _GuestPurchasePlanReceiptView(),
+        child: _GuestPurchasePlanReceiptView(
+          statusMessage: statusMessage,
+        ),
       ),
     );
   }
 }
 
 class _GuestPurchasePlanReceiptView extends StatelessWidget {
-  const _GuestPurchasePlanReceiptView();
+  const _GuestPurchasePlanReceiptView({
+    required this.statusMessage,
+  });
 
   static const _bg = Color(0xFFF1F2FA);
+  final String statusMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -104,12 +111,14 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
                       if (data == null) return const SizedBox.shrink();
 
                       return DefaultReceiptSuccessCard(
+                      
 
                         data: data,
                         onBackHome: () {
                           context.go(AppRoutes.logIn);
                         },
                         pageBackground: GuestPurchasePlanReceiptTheme.circleBackground,
+                        statusMessage: statusMessage,
                       );
                     },
                   ),
