@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prep
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
+import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
@@ -19,12 +20,11 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purcha
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
-import '../app/Aliv-Mobile/forgetPassOtp/view/forgetPass_screen.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forget_password_otp_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
-import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/forgetPass_screen.dart';
+import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
@@ -135,12 +135,24 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPayBillReceipt,
-        builder: (context, state) => const GuestPayBillReceiptScreen(
-          phoneNumber: '234235454',
-          amount: 12,
-          dateText: '12-23-2025',
-          timeText: '08:34',
-        ),
+        builder: (context, state) {
+          final receiptArgs = state.extra;
+
+          if (receiptArgs is GuestPayBillReceiptArgs) {
+            return GuestPayBillReceiptScreen(args: receiptArgs);
+          }
+
+          return const GuestPayBillReceiptScreen(
+            args: GuestPayBillReceiptArgs(
+              serviceName: 'ALIV Postpaid',
+              identifierLabel: 'mobile no.',
+              identifierValue: '242-801-0000',
+              amount: 200.00,
+              dateText: 'Mar 22, 2023',
+              timeText: '07:30 am',
+            ),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.guestPayBillConfirm,
@@ -236,7 +248,7 @@ class AppRouter {
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
                     userType: UserType.postpaid,
-                    hasActivePlan: true,
+                    hasActivePlan: true, isFuturePlan: true,
                   );
 
               return UsageScreen(config: config);

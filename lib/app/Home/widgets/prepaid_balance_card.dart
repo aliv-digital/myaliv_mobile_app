@@ -29,9 +29,9 @@ class PrepaidBalanceCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            _row('assets/icons/wallet.svg', 'top up balance', '\$00.00'),
+            _row('assets/icons/wallet.svg', 'top-up balance', '\$129.00'),
             const SizedBox(height: 12),
-            _row('assets/icons/reward.svg', 'reward balance', '\$00.00'),
+            _row('assets/icons/reward.svg', 'reward balance', '\$308.40'),
             const SizedBox(height: 12),
 
             GestureDetector(
@@ -48,10 +48,11 @@ class PrepaidBalanceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SvgPicture.asset('assets/icons/card-add-pre.svg', width: 21, height: 21,),
+                    SizedBox(width: 10,),
                     SizedBox(
                       height: 21,
                       child: Text(
-                        'add topup',textAlign: TextAlign.start,
+                        'add top-up',textAlign: TextAlign.start,
                         style: TextStyle(
                           color: const Color(0xFFF1F1F8),
                           fontSize: 13,

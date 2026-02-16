@@ -135,7 +135,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                         return ListView(
                           padding: const EdgeInsets.fromLTRB(
                             _contentHorizontalPadding,
-                            14,
+                            20,
                             _contentHorizontalPadding,
                             16,
                           ),

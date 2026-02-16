@@ -40,28 +40,29 @@ class HomeHeader extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 12),
-              // const Icon(IconsaxPlusLinear.notification, color: Colors.white),
-              Stack(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    child: SvgPicture.asset('assets/icons/Bell.svg'),
-                  ),
-                  Positioned(
-                    left: 20,
-                    top: 4,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFFED3434),
-                        shape: OvalBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+
+              ///notification removed
+              // Stack(
+              //   children: [
+              //     Container(
+              //       width: 32,
+              //       height: 32,
+              //       child: SvgPicture.asset('assets/icons/Bell.svg'),
+              //     ),
+              //     Positioned(
+              //       left: 20,
+              //       top: 4,
+              //       child: Container(
+              //         width: 8,
+              //         height: 8,
+              //         decoration: ShapeDecoration(
+              //           color: const Color(0xFFED3434),
+              //           shape: OvalBorder(),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
           const SizedBox(height: 20),
