@@ -128,7 +128,7 @@ class GuestPurchasePlanConfirmationTheme {
   static const double termsNoticeCheckboxSize = 15;
   static const double termsNoticeCheckboxRadius = 2;
   static const double termsNoticeCheckboxToTextGap = 10;
-  static const double termsNoticeCheckboxIconSize = 15;
+  static const double termsNoticeCheckboxIconSize = 12;
 
   // Fine alignment so checkbox lines up with first text line visually.
   // Figma alignment: checkbox starts slightly lower than the first text line.

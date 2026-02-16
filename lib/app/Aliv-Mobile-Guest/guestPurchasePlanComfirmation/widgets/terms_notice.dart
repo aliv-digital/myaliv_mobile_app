@@ -58,6 +58,7 @@ class _TermsNoticeState extends State<TermsNotice> {
               width: GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxSize,
               height:
                   GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxSize,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: widget.isChecked
                     ? GuestPurchasePlanConfirmationTheme
@@ -74,7 +75,7 @@ class _TermsNoticeState extends State<TermsNotice> {
               ),
               child: widget.isChecked
                   ? const Icon(
-                      Icons.check,
+                      Icons.check_rounded,
                       color: Colors.white,
                       size: GuestPurchasePlanConfirmationTheme
                           .termsNoticeCheckboxIconSize,
