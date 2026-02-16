@@ -1,43 +1,119 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
 
-class TermsNotice extends StatelessWidget {
+class TermsNotice extends StatefulWidget {
+  final bool isChecked;
+  final VoidCallback onToggleChecked;
   final VoidCallback onTermsTap;
 
   const TermsNotice({
     super.key,
+    required this.isChecked,
+    required this.onToggleChecked,
     required this.onTermsTap,
   });
 
   @override
+  State<TermsNotice> createState() => _TermsNoticeState();
+}
+
+class _TermsNoticeState extends State<TermsNotice> {
+  late final TapGestureRecognizer _termsTapRecognizer;
+
+  @override
+  void initState() {
+    super.initState();
+    _termsTapRecognizer = TapGestureRecognizer()..onTap = widget.onTermsTap;
+  }
+
+  @override
+  void didUpdateWidget(covariant TermsNotice oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _termsTapRecognizer.onTap = widget.onTermsTap;
+  }
+
+  @override
+  void dispose() {
+    _termsTapRecognizer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: GuestPurchasePlanConfirmationTheme.t(
-          14,
-          weight: FontWeight.w700,
-          color: GuestPurchasePlanConfirmationTheme.textBlack,
-          height: 1.25,
-        ),
-        children: [
-          const TextSpan(text: 'By pressing “pay now” you agree to the '),
-          WidgetSpan(
-            alignment: PlaceholderAlignment.baseline,
-            baseline: TextBaseline.alphabetic,
-            child: GestureDetector(
-              onTap: onTermsTap,
-              child: Text(
-                'Terms & Conditions.',
-                style: GuestPurchasePlanConfirmationTheme.t(
-                  14,
-                  weight: FontWeight.w900,
-                  color: GuestPurchasePlanConfirmationTheme.textBlack,
-                ).copyWith(decoration: TextDecoration.underline),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: widget.onToggleChecked,
+          borderRadius: BorderRadius.circular(
+            GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxRadius,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: GuestPurchasePlanConfirmationTheme
+                  .termsNoticeCheckboxTopOffset,
+            ),
+            child: Container(
+              width: GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxSize,
+              height:
+                  GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxSize,
+              decoration: BoxDecoration(
+                color: widget.isChecked
+                    ? GuestPurchasePlanConfirmationTheme
+                        .termsNoticeCheckboxCheckedFillColor
+                    : Colors.transparent,
+                border: Border.all(
+                  width: 1,
+                  color: GuestPurchasePlanConfirmationTheme
+                      .termsNoticeCheckboxBorderColor,
+                ),
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxRadius,
+                ),
               ),
+              child: widget.isChecked
+                  ? const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: GuestPurchasePlanConfirmationTheme
+                          .termsNoticeCheckboxIconSize,
+                    )
+                  : null,
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          width:
+              GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxToTextGap,
+        ),
+        Flexible(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: GuestPurchasePlanConfirmationTheme.termsNoticeTextWidth,
+            ),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'By checking this box, I agree to the ',
+                    style: GuestPurchasePlanConfirmationTheme
+                        .termsNoticeBodyTextStyle,
+                  ),
+                  TextSpan(
+                    text: 'Terms & Conditions.',
+                    style: GuestPurchasePlanConfirmationTheme
+                        .termsNoticeLinkTextStyle,
+                    recognizer: _termsTapRecognizer,
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.start,
+              softWrap: true,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

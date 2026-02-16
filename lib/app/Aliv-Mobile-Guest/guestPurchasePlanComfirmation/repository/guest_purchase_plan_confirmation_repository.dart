@@ -13,7 +13,7 @@ class GuestPurchasePlanConfirmationRepository {
         label: 'primary plan',
         title: 'liberty70',
         subtitle: 'begins immediately',
-        price: 63.64,
+        price: 15.00,
       ),
       const PurchaseLineItem(
         id: 'addon1',

@@ -12,12 +12,16 @@ class GuestPurchasePlanConfirmationState extends Equatable {
   final int openTermsRequestId;
   final int payNowRequestId;
 
+  /// Stores whether the user checked the terms checkbox.
+  final bool isTermsChecked;
+
   const GuestPurchasePlanConfirmationState({
     required this.status,
     required this.data,
     required this.errorMessage,
     required this.openTermsRequestId,
     required this.payNowRequestId,
+    required this.isTermsChecked,
   });
 
   factory GuestPurchasePlanConfirmationState.initial() {
@@ -27,6 +31,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
       errorMessage: null,
       openTermsRequestId: 0,
       payNowRequestId: 0,
+      isTermsChecked: false,
     );
   }
 
@@ -36,6 +41,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
     String? errorMessage,
     int? openTermsRequestId,
     int? payNowRequestId,
+    bool? isTermsChecked,
   }) {
     return GuestPurchasePlanConfirmationState(
       status: status ?? this.status,
@@ -43,15 +49,17 @@ class GuestPurchasePlanConfirmationState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       openTermsRequestId: openTermsRequestId ?? this.openTermsRequestId,
       payNowRequestId: payNowRequestId ?? this.payNowRequestId,
+      isTermsChecked: isTermsChecked ?? this.isTermsChecked,
     );
   }
 
   @override
   List<Object?> get props => [
-    status,
-    data,
-    errorMessage,
-    openTermsRequestId,
-    payNowRequestId,
-  ];
+        status,
+        data,
+        errorMessage,
+        openTermsRequestId,
+        payNowRequestId,
+        isTermsChecked,
+      ];
 }

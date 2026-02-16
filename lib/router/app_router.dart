@@ -65,7 +65,7 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash,//guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.guestPurchasePlanConfirmation,//guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
@@ -212,7 +212,7 @@ class AppRouter {
           path: AppRoutes.guestPurchasePlanConfirmation,
           builder: (context, state) =>
               const GuestPurchasePlanConfirmationScreen(
-                phoneNumber: '23434545',
+                phoneNumber: '242-801-1616',
               )),
       GoRoute(
           path: AppRoutes.guestPurchasePlanAddOns,

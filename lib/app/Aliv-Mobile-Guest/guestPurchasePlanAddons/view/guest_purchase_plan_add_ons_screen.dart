@@ -49,8 +49,10 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
   //static const _bg = Color(0xFFF1F2FA);
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPurchasePlanAddOnsBloc,
-        GuestPurchasePlanAddOnsState>(
+    return BlocListener<
+      GuestPurchasePlanAddOnsBloc,
+      GuestPurchasePlanAddOnsState
+    >(
       listenWhen: (p, c) =>
           p.skipRequestId != c.skipRequestId ||
           p.proceedRequestId != c.proceedRequestId,
@@ -60,22 +62,27 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: GuestPurchasePlanAddOnsTheme.bg,
-        bottomNavigationBar: BlocBuilder<GuestPurchasePlanAddOnsBloc,
-            GuestPurchasePlanAddOnsState>(
-          builder: (context, state) {
-            if (state.status != GuestPurchasePlanAddOnsStatus.ready) {
-              return const SizedBox.shrink();
-            }
-            return DefaultBottomPayBar(
-              isVatExclusive: true,
-              buttonText: 'proceed',
-              amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
-              onPayNow: () => context
-                  .read<GuestPurchasePlanAddOnsBloc>()
-                  .add(const GuestPurchasePlanAddOnsProceedPressed()),
-            );
-          },
-        ),
+        bottomNavigationBar:
+            BlocBuilder<
+              GuestPurchasePlanAddOnsBloc,
+              GuestPurchasePlanAddOnsState
+            >(
+              builder: (context, state) {
+                if (state.status != GuestPurchasePlanAddOnsStatus.ready) {
+                  return const SizedBox.shrink();
+                }
+                return DefaultBottomPayBar(
+                  isVatExclusive: true,
+                  buttonText: 'proceed',
+                  amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
+                  onPayNow: () {
+                    context.read<GuestPurchasePlanAddOnsBloc>().add(
+                      const GuestPurchasePlanAddOnsProceedPressed(),
+                    );
+                  },
+                );
+              },
+            ),
         body: SafeArea(
           child: Column(
             children: [
@@ -90,81 +97,87 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                 },
               ),
               Expanded(
-                child: BlocBuilder<GuestPurchasePlanAddOnsBloc,
-                    GuestPurchasePlanAddOnsState>(
-                  builder: (context, state) {
-                    if (state.status == GuestPurchasePlanAddOnsStatus.loading ||
-                        state.status == GuestPurchasePlanAddOnsStatus.initial) {
-                      return const Center(
-                        child: SizedBox(
-                          width: 26,
-                          height: 26,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      );
-                    }
-
-                    if (state.status == GuestPurchasePlanAddOnsStatus.error) {
-                      return Center(
-                        child: Text(
-                          state.errorMessage ?? 'Failed to load',
-                          style: GuestPurchasePlanAddOnsTheme.t(
-                            13,
-                            weight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    }
-
-                    final plan = state.activePlan!;
-                    final policy = state.fairUsePolicy!;
-
-                    return ListView(
-                      padding: const EdgeInsets.fromLTRB(
-                        _contentHorizontalPadding,
-                        20,
-                        _contentHorizontalPadding,
-                        16,
-                      ),
-                      children: [
-                        PlanRedImageCard(
-                          planLabel: plan.label,
-                          planName: plan.name,
-                          activeLabel: plan.activeDateLabel,
-                          activeDate: plan.activeDate,
-                          expireLabel: plan.expireDateLabel,
-                          expireDate: plan.expireDate,
-                        ),
-                        const SizedBox(height: 16),
-                        FairUsePolicyCard(policy: policy, onTap: () {}),
-                        const SizedBox(height: 16),
-
-                        // Add-on list
-                        ...state.addOns.map((item) {
-                          final selected = state.selectedAddOnIds.contains(
-                            item.id,
-                          );
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: AddOnTile(
-                              item: item,
-                              selected: selected,
-                              onChanged: (v) => context
-                                  .read<GuestPurchasePlanAddOnsBloc>()
-                                  .add(
-                                    GuestPurchasePlanAddOnsSelectionToggled(
-                                      addOnId: item.id,
-                                      selected: v,
-                                    ),
-                                  ),
+                child:
+                    BlocBuilder<
+                      GuestPurchasePlanAddOnsBloc,
+                      GuestPurchasePlanAddOnsState
+                    >(
+                      builder: (context, state) {
+                        if (state.status ==
+                                GuestPurchasePlanAddOnsStatus.loading ||
+                            state.status ==
+                                GuestPurchasePlanAddOnsStatus.initial) {
+                          return const Center(
+                            child: SizedBox(
+                              width: 26,
+                              height: 26,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                           );
-                        }),
-                        const SizedBox(height: 4),
-                      ],
-                    );
-                  },
-                ),
+                        }
+
+                        if (state.status ==
+                            GuestPurchasePlanAddOnsStatus.error) {
+                          return Center(
+                            child: Text(
+                              state.errorMessage ?? 'Failed to load',
+                              style: GuestPurchasePlanAddOnsTheme.t(
+                                13,
+                                weight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }
+
+                        final plan = state.activePlan!;
+                        final policy = state.fairUsePolicy!;
+
+                        return ListView(
+                          padding: const EdgeInsets.fromLTRB(
+                            _contentHorizontalPadding,
+                            20,
+                            _contentHorizontalPadding,
+                            16,
+                          ),
+                          children: [
+                            PlanRedImageCard(
+                              planLabel: plan.label,
+                              planName: plan.name,
+                              activeLabel: plan.activeDateLabel,
+                              activeDate: plan.activeDate,
+                              expireLabel: plan.expireDateLabel,
+                              expireDate: plan.expireDate,
+                            ),
+                            const SizedBox(height: 16),
+                            FairUsePolicyCard(policy: policy, onTap: () {}),
+                            const SizedBox(height: 16),
+
+                            // Add-on list
+                            ...state.addOns.map((item) {
+                              final selected = state.selectedAddOnIds.contains(
+                                item.id,
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: AddOnTile(
+                                  item: item,
+                                  selected: selected,
+                                  onChanged: (v) => context
+                                      .read<GuestPurchasePlanAddOnsBloc>()
+                                      .add(
+                                        GuestPurchasePlanAddOnsSelectionToggled(
+                                          addOnId: item.id,
+                                          selected: v,
+                                        ),
+                                      ),
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 4),
+                          ],
+                        );
+                      },
+                    ),
               ),
             ],
           ),
