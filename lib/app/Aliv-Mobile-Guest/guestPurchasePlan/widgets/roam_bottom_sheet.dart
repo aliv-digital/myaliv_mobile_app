@@ -283,11 +283,47 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: Theme.of(context).colorScheme.copyWith(
-                        primary: GuestPurchasePlanTheme.brandPurple,
-                        onPrimary: Colors.white,
+                        primary: GuestPurchasePlanTheme
+                            .roamCalendarSelectedDayBackgroundColor,
+                        onPrimary:
+                            GuestPurchasePlanTheme.roamCalendarSelectedDayTextColor,
                         surface: GuestPurchasePlanTheme
                             .roamCalendarSheetBackgroundColor,
+                        onSurface: GuestPurchasePlanTheme.roamCalendarDayTextColor,
                       ),
+                  datePickerTheme: DatePickerThemeData(
+                    backgroundColor:
+                        GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
+                    headerForegroundColor:
+                        GuestPurchasePlanTheme.roamCalendarDayTextColor,
+                    headerHeadlineStyle:
+                        GuestPurchasePlanTheme.roamCalendarHeaderTextStyle,
+                    weekdayStyle:
+                        GuestPurchasePlanTheme.roamCalendarWeekdayTextStyle,
+                    dayStyle: GuestPurchasePlanTheme.roamCalendarDayTextStyle,
+                    dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
+                      (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return GuestPurchasePlanTheme
+                              .roamCalendarSelectedDayTextColor;
+                        }
+                        return GuestPurchasePlanTheme.roamCalendarDayTextColor;
+                      },
+                    ),
+                    dayBackgroundColor:
+                        WidgetStateProperty.resolveWith<Color?>(
+                      (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return GuestPurchasePlanTheme
+                              .roamCalendarSelectedDayBackgroundColor;
+                        }
+                        return Colors.transparent;
+                      },
+                    ),
+                    dayShape: const WidgetStatePropertyAll<OutlinedBorder>(
+                      CircleBorder(),
+                    ),
+                  ),
                   textButtonTheme: TextButtonThemeData(
                     style: TextButton.styleFrom(
                       foregroundColor: GuestPurchasePlanTheme.brandPurple,

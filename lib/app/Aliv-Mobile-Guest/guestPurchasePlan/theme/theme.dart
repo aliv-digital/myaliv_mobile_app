@@ -570,6 +570,30 @@ class GuestPurchasePlanTheme {
 
   // Calendar picker bottom sheet styles for roam date selection.
   static final Color roamCalendarSheetBackgroundColor = bottomSheetBackground;
+  static final Color roamCalendarSelectedDayBackgroundColor =
+      HexColor.fromHex('#645D9C');
+  static const Color roamCalendarSelectedDayTextColor = Colors.white;
+  static final Color roamCalendarDayTextColor = HexColor.fromHex('#34465D');
+  static final TextStyle roamCalendarHeaderTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    height: 1.33,
+    color: HexColor.fromHex('#304054'),
+  );
+  static final TextStyle roamCalendarWeekdayTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: roamCalendarDayTextColor,
+  );
+  static final TextStyle roamCalendarDayTextStyle = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1.43,
+    color: roamCalendarDayTextColor,
+  );
   // Calendar sheet outer spacing from container edge (Figma: 24 top/bottom, 16 sides).
   static const EdgeInsets roamCalendarContentPadding = EdgeInsets.fromLTRB(
     16,
