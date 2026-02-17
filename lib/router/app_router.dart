@@ -21,6 +21,7 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_scre
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPaymentMethod/prepaid/view/guest_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
@@ -66,7 +67,7 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.roamingPlanConfirmation, //guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.guestPaymentMethodScreen, //guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
@@ -220,6 +221,10 @@ class AppRouter {
           builder: (context, state) => const RoamingPlanConfirmationScreen(
                 phoneNumber: '242-801-1616',
               )),
+      GoRoute(
+        path: AppRoutes.guestPaymentMethodScreen,
+        builder: (context, state) => const GuestPaymentMethodPrepaidScreen(),
+      ),
       GoRoute(
           path: AppRoutes.guestPurchasePlanAddOns,
           builder: (context, state) => const GuestPurchasePlanAddOnsScreen()),

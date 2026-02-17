@@ -60,6 +60,10 @@ class AssetConstant{
 
   static const calenderIconSVG = 'assets/icons/calender.svg';
   static const dateIconSVG = 'assets/icons/date.svg';
+  static const homeIconSVG = 'assets/icons/home_icon.svg';
+  static const arrowRightIconSVG = 'assets/icons/arrow_right.svg';
+
+
 
 
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/roaming_plan_confirmation_bloc.dart';
 import '../bloc/roaming_plan_confirmation_event.dart';
@@ -92,6 +94,10 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                 children: [
                   /// Top app bar (fixed)
                   DefaultAppBar(
+                    showHome: true,
+                    onHomeTap: (){
+                      context.go(AppRoutes.home);
+                    },
                     title: 'confirmation',
                     onBack: () => Navigator.of(context).maybePop(),
                     showBackArrow: true,
