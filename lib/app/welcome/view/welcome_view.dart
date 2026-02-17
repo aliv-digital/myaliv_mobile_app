@@ -29,7 +29,7 @@ class WelcomeScreen extends StatelessWidget {
 class WelcomeView extends StatelessWidget {
   const WelcomeView({super.key});
 
-  static const double _horizontal = 25;
+  static const double _horizontal = 95;
 
   // ✅ Figma-like image crop/zoom
   static const double _imageZoom = 1.14;
@@ -43,6 +43,8 @@ class WelcomeView extends StatelessWidget {
   // ✅ Panel paddings (Figma-like)
   static const double _panelTopPadding = 22;
   static const double _panelBottomGap = 16;
+  // ✅ Logo bottom distance from purple section start.
+  static const double _logoBottomFromPurpleStart = 160;
 
   @override
   Widget build(BuildContext context) {
@@ -101,13 +103,17 @@ class WelcomeView extends StatelessWidget {
                             ),
                           ),
 
-                          // ✅ Logo placement responsive (no magic bottom pixels)
-                          Align(
-                            alignment: const Alignment(0, 0.62),
-                            child: SvgPicture.asset(
-                              AssetConstant.splashLogoSVG,
-                              width: 192,
-                              height: 98,
+                          // ✅ Logo positioned from the purple panel boundary.
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: _logoBottomFromPurpleStart,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                AssetConstant.splashLogoSVG,
+                                width: 192,
+                                height: 98,
+                              ),
                             ),
                           ),
                         ],
