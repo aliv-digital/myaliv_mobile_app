@@ -20,9 +20,10 @@ class GuestPayBillRequiredLabel extends StatelessWidget {
           '*',
           style: TextStyle(
             color: Colors.red,
-            fontSize: 13,
+            fontSize: 14,
             fontFamily: AppConstants.defaultFontFamily,
             fontWeight: FontWeight.w700,
+            height: 1.43,
           ),
         ),
       ],

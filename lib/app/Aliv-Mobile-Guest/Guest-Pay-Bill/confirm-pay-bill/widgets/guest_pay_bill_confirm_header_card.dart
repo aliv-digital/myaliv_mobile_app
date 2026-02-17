@@ -30,14 +30,26 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
         children: [
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(serviceName, style: GuestPayBillConfirmTheme.headerTitle),
+                Text(
+                  serviceName,
+                  style: GuestPayBillConfirmTheme.headerTitle,
+                  strutStyle: const StrutStyle(
+                    height: 1,
+                    forceStrutHeight: true,
+                  ),
+                ),
                 const SizedBox(
                     height: GuestPayBillConfirmTheme.headerToSubtitleGap),
                 Text(
                   '$identifierLabel $identifierValue',
                   style: GuestPayBillConfirmTheme.headerSub,
+                  strutStyle: const StrutStyle(
+                    height: 1,
+                    forceStrutHeight: true,
+                  ),
                 ),
               ],
             ),

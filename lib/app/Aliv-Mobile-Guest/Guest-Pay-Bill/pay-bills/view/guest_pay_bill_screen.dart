@@ -172,7 +172,7 @@ class _GuestPayBillView extends StatelessWidget {
     final identifierLabel = state.isAlivPostpaid ? 'mobile no.' : 'Acc #';
 
     final identifierValue = state.isAlivPostpaid
-        ? _formatMobileNumber(state.mobileNumber.trim())
+        ? '242-801-0000'
         : state.accountNumber.trim();
 
     return GuestPayBillConfirmArgs(
@@ -181,18 +181,6 @@ class _GuestPayBillView extends StatelessWidget {
       identifierValue: identifierValue,
       amount: state.amountValue,
     );
-  }
-
-  String _formatMobileNumber(String rawValue) {
-    final digitsOnly = String.fromCharCodes(
-      rawValue.codeUnits.where((unit) => unit >= 48 && unit <= 57),
-    );
-
-    if (digitsOnly.length != 10) {
-      return rawValue;
-    }
-
-    return '${digitsOnly.substring(0, 3)}-${digitsOnly.substring(3, 6)}-${digitsOnly.substring(6)}';
   }
 
   List<Widget> _buildAlivPostpaidFields(
@@ -456,20 +444,6 @@ class _GuestPayBillView extends StatelessWidget {
                             onChanged: (value) {
                               _onAmountChanged(context, value);
                             },
-                            prefix: const Padding(
-                              padding: EdgeInsets.only(
-                                left: GuestPayBillTheme.amountPrefixLeftPadding,
-                                right:
-                                    GuestPayBillTheme.amountPrefixRightPadding,
-                              ),
-                              child: Center(
-                                widthFactor: 0,
-                                child: Text(
-                                  r'$',
-                                  style: GuestPayBillTheme.amountPrefixStyle,
-                                ),
-                              ),
-                            ),
                           ),
 
                           const SizedBox(

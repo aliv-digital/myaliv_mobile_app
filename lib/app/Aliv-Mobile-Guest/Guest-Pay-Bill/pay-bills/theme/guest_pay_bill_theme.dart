@@ -51,7 +51,7 @@ class GuestPayBillTheme {
   static const double contentTopGapAfterAppBar = 32;
 
   // Used by: left/right content padding for entire form body.
-  static const double contentHorizontalPadding = 23;
+  static const double contentHorizontalPadding = 24;
 
   // Used by: scroll content bottom padding.
   static const double contentBottomPadding = 18;
@@ -66,7 +66,7 @@ class GuestPayBillTheme {
   static const double countryPickerToInputGap = 10;
 
   // Used by: top margin before primary submit button.
-  static const double submitTopGap = 30;
+  static const double submitTopGap = 40;
 
   // Used by: custom amount prefix `$` left inset.
   static const double amountPrefixLeftPadding = 14;
@@ -77,6 +77,9 @@ class GuestPayBillTheme {
   // ===== Colors =====
   // Used by: app bar background and primary action backgrounds.
   static const Color primary = Color(0xFF5A5796);
+
+  // Used by: submit action buttons (inline verify submit + bottom submit).
+  static const Color submitButtonColor = Color(0xFF645D9C);
 
   // Used by: entire screen background.
   static const Color pageBg = Colors.white;
@@ -166,8 +169,10 @@ class GuestPayBillTheme {
   static TextStyle helperStyle() => const TextStyle(
         fontSize: 11,
         fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w500,
-        color: helperText,
+        // Figma uses w450; closest Flutter-supported weight is w400.
+        fontWeight: FontWeight.w400,
+        height: 1.82,
+        color: Color(0xFF707070),
       );
 
   // Shared input decoration for standard text fields in this module.

@@ -163,7 +163,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
           builder: (context, state) {
             // Shared default bottom pay bar component
             return DefaultBottomPayBar(
-              amountText: '\$ ${state.total.toStringAsFixed(2)}',
+              amountText: '\$ 200.00',//'\$ ${state.total.toStringAsFixed(2)}',
               isLoading:
                   state.payStatus == GuestPayBillConfirmPayStatus.loading,
               buttonText: GuestPayBillConfirmTheme.payNowLabel,
@@ -178,6 +178,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                   );
                   return;
                 }
+                //context.push(AppRoutes.guestPayBillReceipt, extra: _buildReceiptArgs(state));
                 _onPayNowPressed(context);
               },
             );
@@ -260,7 +261,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             items: <CustomPaymentBreakdownLineItem>[
                               CustomPaymentBreakdownLineItem(
                                 label: GuestPayBillConfirmTheme.subTotalLabel,
-                                value: _formatAmount(state.subTotal),
+                                value: '\$ 200.00',//_formatAmount(state.subTotal),
                               ),
                               CustomPaymentBreakdownLineItem(
                                 label: GuestPayBillConfirmTheme.vatLabel,
@@ -268,7 +269,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                               ),
                               CustomPaymentBreakdownLineItem(
                                 label: GuestPayBillConfirmTheme.totalLabel,
-                                value: _formatAmount(state.total),
+                                value: '\$ 200.00',//_formatAmount(state.total),
                               ),
                             ],
                           ),

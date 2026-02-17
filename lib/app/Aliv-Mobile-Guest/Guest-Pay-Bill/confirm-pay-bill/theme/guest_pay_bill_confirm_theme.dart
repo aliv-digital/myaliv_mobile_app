@@ -27,7 +27,7 @@ class GuestPayBillConfirmTheme {
   static const Color paymentBreakDownCardColor = Color(0xFF645D9C);
   static const Color snackBarBackground = Color(0xFF323232);
   static const Color termsLinkColor = Color(0xFF645D9C);
-  static const Color termsCheckboxFillColor = Color(0xFF645D9C);
+  static const Color termsCheckboxFillColor = Color(0xFF5146A8);
   static const Color termsCheckboxBorderColor = Color(0xFF645D9C);
   static const Color termsCheckboxUncheckedColor = Colors.white;
 
@@ -40,10 +40,11 @@ class GuestPayBillConfirmTheme {
   static const double headerTopGap = 20;
   static const double sectionGap = 17;
   static const double breakdownBottomGap = 18;
-  static const double termsCheckboxSize = 24;
+  static const double termsCheckboxSize = 15;
   static const double termsCheckboxRadius = 4;
   static const double termsCheckboxTopInset = 5;
   static const double termsCheckboxBorderWidth = 1;
+  static const double termsCheckboxCheckSize = 12;
   static const double termsCheckboxToTextGap = 10;
   static const double termsTextWidth = 307;
 
@@ -57,7 +58,7 @@ class GuestPayBillConfirmTheme {
   );
   // Rounded corner radius for summary card container.
   static const double headerCardRadius = 12;
-  static const double headerToSubtitleGap = 4;
+  static const double headerToSubtitleGap = 5;
   static const double headerTextToAmountPillGap = 10;
 
   // Amount chip spacing from Figma:
@@ -122,8 +123,8 @@ class GuestPayBillConfirmTheme {
     color: Color(0xFF121212),
     fontSize: 16,
     fontFamily: AppConstants.defaultFontFamily,
-    // Figma asks w450; w400 is the closest Flutter weight.
-    fontWeight: FontWeight.w400,
+    // Figma asks w450; Flutter supports 100-step weights only.
+    fontWeight: FontWeight.w500,
   );
 
   static const TextStyle amountPill = TextStyle(
@@ -138,9 +139,8 @@ class GuestPayBillConfirmTheme {
     color: Colors.black,
     fontSize: 14,
     height: 1.43,
-    // Design asks for w450; Flutter uses 100-step named weights.
-    // w500 is the closest stable option.
-    fontWeight: FontWeight.w500,
+    // Figma uses w450; closest Flutter-supported weight is w400.
+    fontWeight: FontWeight.w400,
   );
 
   static const TextStyle termsLink = TextStyle(
@@ -150,7 +150,6 @@ class GuestPayBillConfirmTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
-    decorationThickness: 1.2,
   );
 
   static const TextStyle breakdownRow = TextStyle(

@@ -63,7 +63,7 @@ class AssetConstant{
   static const homeIconSVG = 'assets/icons/home_icon.svg';
   static const arrowRightIconSVG = 'assets/icons/arrow_right.svg';
 
-
+  static const downbluArrowSVG = 'assets/icons/down_blu.svg';
 
 
 

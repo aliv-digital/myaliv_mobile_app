@@ -45,9 +45,9 @@ class GuestPayBillConfirmTermsRow extends StatelessWidget {
                 ),
                 child: isChecked
                     ? const Icon(
-                        Icons.check,
+                        Icons.check_rounded,
                         color: Colors.white,
-                        size: 18,
+                        size: GuestPayBillConfirmTheme.termsCheckboxCheckSize,
                       )
                     : null,
               ),

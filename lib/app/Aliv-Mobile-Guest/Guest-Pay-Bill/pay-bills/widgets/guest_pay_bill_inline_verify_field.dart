@@ -118,7 +118,7 @@ class GuestPayBillInlineSubmitButton extends StatelessWidget {
       height: 34,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: GuestPayBillTheme.primary,
+          backgroundColor: GuestPayBillTheme.submitButtonColor,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
