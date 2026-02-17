@@ -26,6 +26,10 @@ class PurchaseItemRow extends StatelessWidget {
               Text(
                 item.label,
                 style: RoamingPlanConfirmationTheme.purchaseItemLabelTextStyle,
+                textHeightBehavior: const TextHeightBehavior(
+                  applyHeightToFirstAscent: false,
+                  applyHeightToLastDescent: false,
+                ),
               ),
               const SizedBox(
                 height:
@@ -34,6 +38,10 @@ class PurchaseItemRow extends StatelessWidget {
               Text(
                 item.title,
                 style: RoamingPlanConfirmationTheme.purchaseItemTitleTextStyle,
+                textHeightBehavior: const TextHeightBehavior(
+                  applyHeightToFirstAscent: false,
+                  applyHeightToLastDescent: false,
+                ),
               ),
               const SizedBox(
                 height:
@@ -43,6 +51,10 @@ class PurchaseItemRow extends StatelessWidget {
                 item.subtitle,
                 style:
                     RoamingPlanConfirmationTheme.purchaseItemSubtitleTextStyle,
+                textHeightBehavior: const TextHeightBehavior(
+                  applyHeightToFirstAscent: false,
+                  applyHeightToLastDescent: false,
+                ),
               ),
             ],
           ),

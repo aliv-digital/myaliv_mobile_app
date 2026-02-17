@@ -53,8 +53,8 @@ class RoamingPlanConfirmationTheme {
   static const Color purchaseSummaryDividerColor = Color(0xFFE6E8F2);
 
   // Spacing inside each purchase row.
-  static const double purchaseItemLabelToTitleGap = 0;
-  static const double purchaseItemTitleToSubtitleGap = 0;
+  static const double purchaseItemLabelToTitleGap = 2;
+  static const double purchaseItemTitleToSubtitleGap = 2;
   static const double purchaseItemPriceToDeleteGap = 20;
   static const double purchaseItemDeleteTapPadding = 6;
   static const double purchaseItemDeleteIconSize = 16;
@@ -101,6 +101,7 @@ class RoamingPlanConfirmationTheme {
     fontSize: 10,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
+    height: 1,
   );
 
   // Row main title style: "liberty70", "liberty data 1"
@@ -109,6 +110,7 @@ class RoamingPlanConfirmationTheme {
     fontSize: 18,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
+    height: 1,
   );
 
   // Row subtitle style: "begins immediately"
@@ -118,6 +120,7 @@ class RoamingPlanConfirmationTheme {
     fontSize: 10,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w400,
+    height: 1,
   );
 
   // ---------------- Terms Row ----------------
