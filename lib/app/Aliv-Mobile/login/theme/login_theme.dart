@@ -7,6 +7,7 @@ class AuthModuleColors {
 
   // Social login outline/text purple.
   static const Color socialMediaButtonPurple = Color(0xFF746BB9);
+  static const Color socialMediaButtonBorder = Color(0xFFF2F1F9);
 
   // Semi-transparent purple used for outlined button text in older mocks.
   static const Color loginRoundOutLinedBorderButton = Color(0xCC5146A8);
@@ -37,8 +38,8 @@ class AuthModuleColors {
 
 class AuthModuleSizes {
   // Header placement values measured from full screen top.
-  static const double backLeft = 16.64; //looks alright at : 31.64;
-  static const double backTopFromScreen = 53;
+  static const double backLeft = 16.64;
+  static const double backTopFromScreen = 40.31;
   static const double logoTopFromScreen = 60;
   static const double backIconWidth = 16.64;
   static const double backIconHeight = 14.43;
@@ -127,7 +128,7 @@ class AuthModuleButtonStyles {
   // Shared outline style for social login buttons.
   static final ButtonStyle socialOutlined = OutlinedButton.styleFrom(
     side: const BorderSide(
-      color: AuthModuleColors.socialMediaButtonPurple,
+      color: AuthModuleColors.socialMediaButtonBorder,
       width: AuthModuleSizes.fieldBorderWidth,
     ),
     padding: AuthModulePaddings.socialButtonContent,
@@ -158,12 +159,11 @@ class AuthModuleTextStyles {
     height: 1.43,
   );
 
-  // Design asks for 450; Flutter named weights are discrete, so w500 is closest.
   static const TextStyle activateAccountPrompt = TextStyle(
     color: AuthModuleColors.activateAccountPrompt,
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
     height: 1.43,
   );
 
