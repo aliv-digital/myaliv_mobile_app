@@ -73,12 +73,16 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
             }
 
             return DefaultBottomPayBar(
+               buttonText: 'continue',
                 isVatExclusive: true,
                 isButtonEnabled: state.isTermsChecked,
                 buttonColor: const Color(0xFF645D9C),
-                onPayNow: () => context.read<RoamingPlanConfirmationBloc>().add(
-                      const RoamingPlanConfirmationPayNowPressed(),
-                    ),
+                onPayNow: () {
+                  context.read<RoamingPlanConfirmationBloc>().add(
+                    const RoamingPlanConfirmationPayNowPressed(),
+                  );
+                  context.push(AppRoutes.guestPaymentMethodScreen);
+                },
                 amountText: '\$ 75.00' //total.toString(),
                 );
           },

@@ -73,7 +73,7 @@ class _CreatePasswordView extends StatelessWidget {
                                   p.password != c.password,
                               builder: (context, state) {
                                 return PasswordInput(
-                                  hint: 'password',
+                                  hint: 'enter new password',
                                   obscureText: state.obscurePassword,
                                   onChanged: (v) => context
                                       .read<CreatePasswordBloc>()

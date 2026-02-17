@@ -75,7 +75,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
             onBackPressed: () => Navigator.of(sheetContext).pop(),
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.guestPurchasePlanAddOns);
+              context.push(AppRoutes.roamingPlanConfirmation);
             },
           );
         }
