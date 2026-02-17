@@ -4,9 +4,9 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestTopUpTheme {
   // Screen copy for guest top-up form.
-  static const String activePrepaidLabel = 'please enter an active prepaid number to top up';
+  static const String activePrepaidLabel = 'please enter an active prepaid number to top-up';
   static const String confirmMobileLabel = 'confirm mobile number';
-  static const String amountLabel = 'enter top up amount';
+  static const String amountLabel = 'enter top-up amount';
   static const String phoneHintText = 'eg: 2428999999';
   static const String amountHintText = '00.00';
   static const String nextButtonLabel = 'next';
@@ -61,7 +61,7 @@ class GuestTopUpTheme {
   static const double amountFieldHeight = 71;
   static const double amountFieldRadius = 10;
   static const double amountFieldBorderWidth = 3;
-  static const double amountFieldLabelToFieldGap = 4;
+  static const double amountFieldLabelToFieldGap = 2;
   static const double amountFieldTextHorizontalInset = 68;
 
   // Elevation below the amount input card.
@@ -174,7 +174,7 @@ class GuestTopUpTheme {
 
   // Helper text below amount field
   static final TextStyle amountHelper = TextStyle(
-    fontSize: 14,
+    fontSize: 12,
     // Flutter has no named w450, so w500 is the closest available weight.
     fontWeight: FontWeight.w500,
     fontFamily: AppConstants.defaultFontFamily,

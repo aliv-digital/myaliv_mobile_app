@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/guest_splash_bloc.dart';
@@ -33,8 +34,8 @@ class GuestSplashView extends StatelessWidget {
   // Fixed design tokens from Figma.
   static const double _heroHeight = 460;
   static const double _heroBottomPurpleMaskHeight = 36;
-  static const double _horizontalPadding = 25;
-  static const double _titleTopPadding = 6;
+  static const double _horizontalPadding = 95;
+  static const double _titleTopPadding = 20;
   static const double _bottomTailSpace = 103;
   static const double _titleToFirstButtonGap = 27;
   static const double _buttonVerticalGap = 20;
@@ -56,7 +57,7 @@ class GuestSplashView extends StatelessWidget {
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
          */
-        statusBarColor: Colors.white,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
 
@@ -125,9 +126,9 @@ class GuestSplashView extends StatelessWidget {
                                         shape: BoxShape.circle,
                                       ),
                                       alignment: Alignment.center,
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.chevron_left,
-                                        color: Colors.black,
+                                        color: HexColor.fromHex('#645D9C'),
                                         size: _backIconSize,
                                       ),
                                     ),
@@ -171,6 +172,7 @@ class GuestSplashView extends StatelessWidget {
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
+
                             children: [
                               Text(
                                 'Please Select Option',
