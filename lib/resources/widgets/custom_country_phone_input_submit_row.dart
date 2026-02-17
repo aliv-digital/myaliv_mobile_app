@@ -17,6 +17,7 @@ class CustomCountryPhoneInputSubmitRow extends StatefulWidget {
     required this.submitEnabled,
     required this.submitLoading,
     this.countryIsoCode,
+    this.countryFlagBorderRadius = 4,
     this.labelText,
     this.onTapCountryPicker,
     this.enableCountryPicker = true,
@@ -86,6 +87,7 @@ class CustomCountryPhoneInputSubmitRow extends StatefulWidget {
   final String flagEmoji;
   final String dialCode;
   final String? countryIsoCode;
+  final double countryFlagBorderRadius;
   final VoidCallback? onTapCountryPicker;
   final bool enableCountryPicker;
   final bool showCountryArrow;
@@ -197,15 +199,18 @@ class _CustomCountryPhoneInputSubmitRowState
     if (isoCode != null && isoCode.isNotEmpty) {
       final String assetIsoCode =
           isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
-      return Image.asset(
-        'assets/${assetIsoCode.toLowerCase()}.png',
-        package: 'country_pickers',
-        width: 26,
-        height: 20,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Text(widget.flagEmoji, style: resolvedFlagStyle);
-        },
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(widget.countryFlagBorderRadius),
+        child: Image.asset(
+          'assets/${assetIsoCode.toLowerCase()}.png',
+          package: 'country_pickers',
+          width: 26,
+          height: 20,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Text(widget.flagEmoji, style: resolvedFlagStyle);
+          },
+        ),
       );
     }
     return Text(widget.flagEmoji, style: resolvedFlagStyle);

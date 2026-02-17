@@ -41,6 +41,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     required this.dialCode,
     required this.onChanged,
     this.countryIsoCode,
+    this.countryFlagBorderRadius = 4,
     this.labelText,
     this.onTapCountryPicker,
     this.enableCountryPicker = true,
@@ -100,6 +101,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final String dialCode;
   // Optional ISO2 code (e.g., "BS") to render flat flag from country_pickers assets.
   final String? countryIsoCode;
+  final double countryFlagBorderRadius;
   final VoidCallback? onTapCountryPicker;
   final bool enableCountryPicker;
   final bool showCountryArrow;
@@ -212,15 +214,18 @@ class _CustomCountryPhoneInputRowState
       final String assetIsoCode =
           isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
 
-      return Image.asset(
-        'assets/${assetIsoCode.toLowerCase()}.png',
-        package: 'country_pickers',
-        width: 26,
-        height: 20,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Text(widget.flagEmoji, style: resolvedFlagStyle);
-        },
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(widget.countryFlagBorderRadius),
+        child: Image.asset(
+          'assets/${assetIsoCode.toLowerCase()}.png',
+          package: 'country_pickers',
+          width: 26,
+          height: 20,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Text(widget.flagEmoji, style: resolvedFlagStyle);
+          },
+        ),
       );
     }
 
