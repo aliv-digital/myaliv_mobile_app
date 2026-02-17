@@ -8,32 +8,18 @@ class EnterPasswordPrepaidTermsText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
-        style: const TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 12,
-          height: 1.35,
-          fontWeight: FontWeight.w400,
-          color: EnterPasswordPrepaidTheme.muted,
-        ),
+        style: EnterPasswordPrepaidTheme.legalIntro,
         children: const [
-          TextSpan(text: 'By pressing “Continue” button you agree\n'),
+          TextSpan(text: 'By pressing ‘Continue’ button you agree\n'),
           TextSpan(text: 'to the '),
           TextSpan(
             text: 'Terms & Conditions',
-            style: TextStyle(
-              color: EnterPasswordPrepaidTheme.link,
-              decoration: TextDecoration.underline,
-              decorationColor: EnterPasswordPrepaidTheme.link,
-            ),
+            style: EnterPasswordPrepaidTheme.legalLink,
           ),
           TextSpan(text: ' & '),
           TextSpan(
             text: 'Privacy Policy',
-            style: TextStyle(
-              color: EnterPasswordPrepaidTheme.link,
-              decoration: TextDecoration.underline,
-              decorationColor: EnterPasswordPrepaidTheme.link,
-            ),
+            style: EnterPasswordPrepaidTheme.legalLink,
           ),
         ],
       ),

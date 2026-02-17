@@ -6,13 +6,13 @@ class ChangePasswordPrepaidTheme {
   static const Color hint = Color(0xFFB1B1B1);
   static const Color inputBg = Color(0xFFF7F7FB);
   static const Color inputBorder = Color(0xFFE6E6EC);
-  static const Color mutedText = Color(0xFF6B7280);
+  static const Color mutedText = Color(0xFF58677D);
 
+  // Figma requests w450; Flutter closest named weight is w500.
   static const TextStyle helper = TextStyle(
     fontFamily: 'CircularPro',
-    fontSize: 13,
-    height: 1.35,
-    fontWeight: FontWeight.w400,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
     color: mutedText,
   );
 }

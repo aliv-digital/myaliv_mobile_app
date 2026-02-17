@@ -137,12 +137,12 @@ class _MyProfilePrepaidView extends StatelessWidget {
                                       activeOn: data.activeOn,
                                       email: data.email,
                                     ),
-                                    const SizedBox(height: 16),
+                                    //const SizedBox(height: 16),
 
-                                    MyProfilePrepaidDeviceCard(
-                                      title: data.deviceTitle,
-                                      deviceModel: data.deviceModel,
-                                    ),
+                                    // MyProfilePrepaidDeviceCard(
+                                    //   title: data.deviceTitle,
+                                    //   deviceModel: data.deviceModel,
+                                    // ),
                                     const SizedBox(height: 16),
 
                                     MyProfilePrepaidActionTile(
