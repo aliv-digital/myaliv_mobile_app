@@ -59,6 +59,8 @@ class AssetConstant{
   static const trashIconSVG = 'assets/icons/trash.svg';
 
   static const calenderIconSVG = 'assets/icons/calender.svg';
+  static const dateIconSVG = 'assets/icons/date.svg';
+
 
 
 

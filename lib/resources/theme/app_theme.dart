@@ -25,9 +25,9 @@ class AppTheme {
   // Card content spacing.
   static const EdgeInsets paymentBreakdownCardPadding =
       EdgeInsets.fromLTRB(16, 20, 16, 20);
-  static const double paymentBreakdownRowGap = 16;
-  static const double paymentBreakdownGapBeforeDivider = 16;
-  static const double paymentBreakdownGapAfterDivider = 16;
+  static const double paymentBreakdownRowGap = 14;
+  static const double paymentBreakdownGapBeforeDivider = 24;
+  static const double paymentBreakdownGapAfterDivider = 24;
   static const double paymentBreakdownBottomInnerGap = 20;
 
   // Dashed divider style.
@@ -42,7 +42,7 @@ class AppTheme {
   static const EdgeInsets paymentBreakdownPromoPadding =
       EdgeInsets.symmetric(horizontal: 16);
   static const double paymentBreakdownPromoActionGap = 6;
-  static const double paymentBreakdownPromoBottomGap = 16;
+  static const double paymentBreakdownPromoBottomGap = 24;
   static const double paymentBreakdownPromoDisabledOpacity = 0.45;
 
   // Typography used by universal payment breakdown card widgets.

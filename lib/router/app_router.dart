@@ -22,6 +22,7 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_pla
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
+import '../app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
@@ -65,7 +66,7 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.guestPayBill,//guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.roamingPlanConfirmation, //guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
@@ -207,8 +208,7 @@ class AppRouter {
               phoneNumber: '242-801-1616',
               amount: 75,
               dateText: 'Mar 22,2023',
-              timeText: '446332')
-      ),
+              timeText: '446332')),
       GoRoute(
           path: AppRoutes.guestPurchasePlanConfirmation,
           builder: (context, state) =>
@@ -216,9 +216,13 @@ class AppRouter {
                 phoneNumber: '242-801-1616',
               )),
       GoRoute(
+          path: AppRoutes.roamingPlanConfirmation,
+          builder: (context, state) => const RoamingPlanConfirmationScreen(
+                phoneNumber: '242-801-1616',
+              )),
+      GoRoute(
           path: AppRoutes.guestPurchasePlanAddOns,
-          builder: (context, state) => const GuestPurchasePlanAddOnsScreen()
-      ),
+          builder: (context, state) => const GuestPurchasePlanAddOnsScreen()),
       GoRoute(
         path: AppRoutes.guestPayBillReceipt,
         builder: (context, state) {

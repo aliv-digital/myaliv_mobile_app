@@ -4,7 +4,7 @@ class AppRoutes {
   static const usage = '/usage';
   static const plans = '/plans';
   static const menu = '/menu';
-  
+
   static const allBestPlans = '/best-plans';
   static const splash = '/splash';
   static const welcome = '/welcome';
@@ -25,8 +25,10 @@ class AppRoutes {
   static const guestPayBillReceipt = '/guest-pay-bill-receipt';
 
   static const guestPurchasePlanAddOns = '/guest-purchase-plan-add-ons';
-  static const guestPurchasePlanConfirmation = '/guest-purchase-plan-confirmation';
+  static const guestPurchasePlanConfirmation =
+      '/guest-purchase-plan-confirmation';
   static const guestPurchasePlanReceipt = '/guest-purchase-plan-receipt';
+  static const roamingPlanConfirmation = '/roaming-plan-confirmation';
 
   static const profilePrepaidScreen = '/profile-prepaid-screen';
   static const profilePostpaidScreen = '/profile-postpaid-screen';
@@ -36,7 +38,8 @@ class AppRoutes {
   static const editEmailPostpaidScreen = '/edit-email-postpaid-screen';
   static const enterPassWordPrepaidScreen = '/enter-pass-word-prepaid-screen';
   static const changePasswordPrepaidScreen = '/change-password-prepaid-screen';
-  static const changePasswordPostpaidScreen = '/change-password-postpaid-screen';
+  static const changePasswordPostpaidScreen =
+      '/change-password-postpaid-screen';
 
   static const otpProfilePrepaidScreen = '/otp-profile-prepaid-screen';
   static const otpProfilePostpaidScreen = '/otp-profile-postpaid-screen';
@@ -49,7 +52,8 @@ class AppRoutes {
   static const purchasesPrepaidScreen = '/purchases-prepaid-screen';
   static const purchasesPostpaidScreen = '/purchases-postpaid-screen';
 
-  static const addOrEditCardsPrepaidScreen = '/add-or-edit-cards-prepaid-screen';
+  static const addOrEditCardsPrepaidScreen =
+      '/add-or-edit-cards-prepaid-screen';
 
   static const topUpPrepaidScreen = '/top-up-prepaid-screen';
   static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
@@ -60,11 +64,11 @@ class AppRoutes {
   static const topUpPaymentPrepaidScreen = '/top-up-payment-prepaid-screen';
   static const topUpPaymentPostpaidScreen = '/top-up-payment-postpaid-screen';
 
-
   static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
   static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
 
-  static const enterPasswordReviewInvoicePostpaidScreen = '/enter-password-postpaid-screen';
+  static const enterPasswordReviewInvoicePostpaidScreen =
+      '/enter-password-postpaid-screen';
 
   static const otpReviewInvoicePostPaidScreen = '/otp-postpaid-screen';
 
@@ -72,18 +76,22 @@ class AppRoutes {
 
   static const autoRenewAuthPrepaidScreen = '/auto-renew-auth-prepaid-screen';
 
-  static const enterPasswordAutoRenewPrepaidScreen = '/enter-password-auto-renew-prepaid-screen';
+  static const enterPasswordAutoRenewPrepaidScreen =
+      '/enter-password-auto-renew-prepaid-screen';
 
   static const otpAutoRenewPrepaidScreen = '/otp-auto-renew-prepaid-screen';
 
   static const referFriendPrepaidScreen = '/refer-friend-prepaid-screen';
 
-  static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
+  static const referFriendResponsePrepaidScreen =
+      '/refer-friend-response-prepaid-screen';
 
   static const revBillPayPrepaidScreen = '/rev-bill-pay-prepaid-screen';
 
-  static const revConfirmationPrepaidScreen = '/rev-confirmation-prepaid-screen';
-  static const makePaymentConfirmationPostpaidScreen = '/make-payment-confirmation-postpaid-screen';
+  static const revConfirmationPrepaidScreen =
+      '/rev-confirmation-prepaid-screen';
+  static const makePaymentConfirmationPostpaidScreen =
+      '/make-payment-confirmation-postpaid-screen';
   static const makePaymentPostpaidScreen = '/make-payment-postpaid-screen';
 
   static const settingsScreen = '/settings-screen';
@@ -95,9 +103,6 @@ class AppRoutes {
 
   static const faceIdSecurityScreen = '/face-id-security-screen';
 
-  static const revPaymentMethodPrepaidScreen = '/rev-payment-method-prepaid-screen';
-
-
-
-
+  static const revPaymentMethodPrepaidScreen =
+      '/rev-payment-method-prepaid-screen';
 }
