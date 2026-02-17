@@ -10,7 +10,7 @@ class PaymentBreakdownCard extends StatelessWidget {
     required this.vat,
     required this.total,
     this.currencySymbol = r'$',
-    this.backgroundColor = TopUpConfirmTheme.breakdownBackgroundColor,
+    this.backgroundColor = const Color(0xFF6B63A7),
   });
 
   final double subTotal;
@@ -24,50 +24,55 @@ class PaymentBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const textColor = Colors.white;
+
     return PhysicalShape(
       clipper: const _ScallopBottomClipper(
-        cornerRadius: TopUpConfirmTheme.breakdownCardRadius,
-        scallopCount: TopUpConfirmTheme.breakdownScallopCount,
-        scallopGap: TopUpConfirmTheme.breakdownScallopGap,
-        scallopDepth: TopUpConfirmTheme.breakdownScallopDepth,
-        scallopOvalHeightFactor: TopUpConfirmTheme.breakdownScallopOvalHeightFactor,
-        scallopSideInset: TopUpConfirmTheme.breakdownScallopSideInset,
+        cornerRadius: 14,
+        scallopRadius: 10,
+        scallopGap: 6,
+        scallopDepth: 5
       ),
       clipBehavior: Clip.antiAlias,
       color: backgroundColor,
-      elevation: TopUpConfirmTheme.breakdownElevation,
-      shadowColor: TopUpConfirmTheme.payBarShadowColor,
+      elevation: 10,
+      shadowColor: const Color(0x22000000),
       child: Padding(
-        padding: TopUpConfirmTheme.breakdownCardPadding,
+        padding: const EdgeInsets.fromLTRB(22, 18, 22, 18),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _RowItem(
               label: 'sub total',
               value: _money(subTotal),
-              textColor: TopUpConfirmTheme.breakdownTextColor,
+              textColor: textColor,
             ),
-            const SizedBox(height: TopUpConfirmTheme.breakdownRowGap),
+            const SizedBox(height: 14),
             _RowItem(
               label: 'vat',
               value: _money(vat),
-              textColor: TopUpConfirmTheme.breakdownTextColor,
+              textColor: textColor,
             ),
-            const SizedBox(height: TopUpConfirmTheme.breakdownGapBeforeDivider),
+            const SizedBox(height: 16),
+
+            // dashed divider
             const _DashedDivider(
-              color: TopUpConfirmTheme.breakdownDashColor,
-              height: TopUpConfirmTheme.breakdownDashHeight,
-              dashWidth: TopUpConfirmTheme.breakdownDashWidth,
-              dashGap: TopUpConfirmTheme.breakdownDashGap,
+              color: Color(0xB3FFFFFF),
+              height: 1,
+              dashWidth: 6,
+              dashGap: 5,
             ),
-            const SizedBox(height: TopUpConfirmTheme.breakdownGapAfterDivider),
+
+            const SizedBox(height: 16),
             _RowItem(
               label: 'total',
               value: _money(total),
-              textColor: TopUpConfirmTheme.breakdownTextColor,
-              isBold: false,
+              textColor: textColor,
+              isBold: false, // screenshot like normal weight
             ),
-            const SizedBox(height: TopUpConfirmTheme.breakdownBottomInnerGap),
+
+            // give some breathing room above scallops
+            const SizedBox(height: 18),
           ],
         ),
       ),
@@ -90,10 +95,10 @@ class _RowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = isBold
-        ? TopUpConfirmTheme.breakdownEmphasizedText
-        : TopUpConfirmTheme.breakdownText;
-    final style = baseStyle.copyWith(color: textColor);
+    final style = TopUpConfirmTheme.breakdownText.copyWith(
+      color: textColor,
+      fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+    );
 
     return Row(
       children: [
@@ -180,64 +185,55 @@ class _DashedDividerPainter extends CustomPainter {
 class _ScallopBottomClipper extends CustomClipper<Path> {
   const _ScallopBottomClipper({
     required this.cornerRadius,
-    required this.scallopCount,
+    required this.scallopRadius,
     required this.scallopGap,
-    required this.scallopSideInset,
-    required this.scallopOvalHeightFactor,
-    this.scallopDepth = 6,
+    this.scallopDepth = 6, // ✅ depth কমাতে এটা টিউন করবে
   });
 
   final double cornerRadius;
-  final int scallopCount;
+  final double scallopRadius;
   final double scallopGap;
-  final double scallopSideInset;
-  final double scallopOvalHeightFactor;
 
-  /// Scallop cut depth; clamped to computed oval half-height.
+  /// ✅ scallop cut কতটা উপরে উঠবে (depth).
+  /// must be <= scallopRadius
   final double scallopDepth;
 
   @override
   Path getClip(Size size) {
     final base = Path()
       ..addRRect(
-        RRect.fromRectAndCorners(
+        RRect.fromRectAndRadius(
           Rect.fromLTWH(0, 0, size.width, size.height),
-          topLeft: Radius.circular(cornerRadius),
-          topRight: Radius.circular(cornerRadius),
+          Radius.circular(cornerRadius),
         ),
       );
 
     final holes = Path();
 
-    // Keep a small horizontal inset so the first/last scallops align like design.
-    final leftLimit = scallopSideInset;
-    final rightLimit = size.width - scallopSideInset;
-
-    final usableWidth = (rightLimit - leftLimit).clamp(0.0, size.width);
-    final count = scallopCount.clamp(1, 9999);
-    final totalGap = (count - 1) * scallopGap;
-    final diameter = ((usableWidth - totalGap) / count).clamp(0.0, usableWidth);
-    final scallopOvalHeight = diameter * scallopOvalHeightFactor;
-    final scallopRadiusX = diameter / 2;
-    final scallopRadiusY = scallopOvalHeight / 2;
-    if (scallopRadiusX <= 0 || scallopRadiusY <= 0) {
-      return base;
-    }
+    final diameter = scallopRadius * 2;
     final step = diameter + scallopGap;
-    final startX = leftLimit + scallopRadiusX;
 
-    final depth = scallopDepth.clamp(0.0, scallopRadiusY);
-    final centerYOffset = scallopRadiusY - depth;
+    final leftLimit = cornerRadius + 8;
+    final rightLimit = size.width - cornerRadius - 8;
+
+    final usableWidth = rightLimit - leftLimit;
+    final count = (usableWidth / step).floor().clamp(0, 9999);
+
+    final used = count * step - scallopGap;
+    final startX = leftLimit + (usableWidth - used) / 2 + scallopRadius;
+
+    // depth কমাতে center কে নিচে নামানো
+    final depth = scallopDepth.clamp(0.0, scallopRadius);
+    final centerYOffset = scallopRadius - depth; // depth কম হলে offset বেশি
     final centerY = size.height + centerYOffset;
 
     for (int i = 0; i < count; i++) {
       final cx = startX + i * step;
 
       holes.addOval(
-        Rect.fromCenter(
+        Rect.fromCircle(
           center: Offset(cx, centerY),
-          width: diameter,
-          height: scallopOvalHeight,
+          radius: scallopRadius,
         ),
       );
     }
@@ -248,10 +244,8 @@ class _ScallopBottomClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(covariant _ScallopBottomClipper oldClipper) {
     return oldClipper.cornerRadius != cornerRadius ||
-        oldClipper.scallopCount != scallopCount ||
+        oldClipper.scallopRadius != scallopRadius ||
         oldClipper.scallopGap != scallopGap ||
-        oldClipper.scallopSideInset != scallopSideInset ||
-        oldClipper.scallopOvalHeightFactor != scallopOvalHeightFactor ||
         oldClipper.scallopDepth != scallopDepth;
   }
 }

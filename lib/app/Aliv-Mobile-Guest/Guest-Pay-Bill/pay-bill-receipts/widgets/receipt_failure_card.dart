@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/theme/theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
 import '../bloc/guest_pay_bill_receipt_state.dart';
 import 'receipt_ticket_divider.dart';
 import 'receipt_back_button.dart';
@@ -16,6 +16,7 @@ class ReceiptFailureCard extends StatelessWidget {
   final VoidCallback onBackHome;
   final Color pageBackground;
 
+
   @override
   Widget build(BuildContext context) {
     // Constants for card layout
@@ -28,12 +29,7 @@ class ReceiptFailureCard extends StatelessWidget {
     const double dividerH = 22;
     const double notchRadius = 10;
 
-    final double notchCenterY = cardPad +
-        iconSize +
-        gapAfterIcon +
-        titleBoxH +
-        gapAfterTitle +
-        (dividerH / 2);
+    final double notchCenterY = cardPad + iconSize + gapAfterIcon + titleBoxH + gapAfterTitle + (dividerH / 2);
 
     return PhysicalShape(
       clipper: _TicketSideNotchClipper(
@@ -56,7 +52,7 @@ class ReceiptFailureCard extends StatelessWidget {
               height: iconSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  //  color: ReceiptTheme.circleBackground, // light red circle
+                //  color: ReceiptTheme.circleBackground, // light red circle
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -96,10 +92,10 @@ class ReceiptFailureCard extends StatelessWidget {
             const SizedBox(height: gapAfterTitle),
 
             // Dashed line divider (no notch for the bottom line)
-            // const Padding(
-            //   padding: EdgeInsets.symmetric(horizontal: 6),
-            //   child: ReceiptTicketDivider(height: dividerH),
-            // ),
+           // const Padding(
+           //   padding: EdgeInsets.symmetric(horizontal: 6),
+           //   child: ReceiptTicketDivider(height: dividerH),
+           // ),
 
             const SizedBox(height: 10),
             const Text(
@@ -153,11 +149,13 @@ class ReceiptFailureCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6),
               child: ReceiptTicketDivider(
                 height: dividerH,
-                dashColor: GuestPayBillReceiptTheme.redDashColor,
+                dashColor: ReceiptTheme.redDashColor,
               ),
             ),
 
-            // const SizedBox(height: 6),
+           // const SizedBox(height: 6),
+
+
 
             //const SizedBox(height: 10),
 
@@ -219,3 +217,6 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
         oldClipper.notchCenterY != notchCenterY;
   }
 }
+
+
+

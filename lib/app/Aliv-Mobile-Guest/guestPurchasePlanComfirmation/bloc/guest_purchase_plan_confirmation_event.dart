@@ -29,16 +29,6 @@ final class GuestPurchasePlanConfirmationTermsPressed
   const GuestPurchasePlanConfirmationTermsPressed();
 }
 
-final class GuestPurchasePlanConfirmationTermsCheckboxToggled
-    extends GuestPurchasePlanConfirmationEvent {
-  final bool isChecked;
-
-  const GuestPurchasePlanConfirmationTermsCheckboxToggled(this.isChecked);
-
-  @override
-  List<Object?> get props => [isChecked];
-}
-
 final class GuestPurchasePlanConfirmationPayNowPressed
     extends GuestPurchasePlanConfirmationEvent {
   const GuestPurchasePlanConfirmationPayNowPressed();

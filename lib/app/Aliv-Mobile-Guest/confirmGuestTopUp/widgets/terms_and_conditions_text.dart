@@ -6,77 +6,35 @@ class TermsAndConditionsText extends StatelessWidget {
   const TermsAndConditionsText({
     super.key,
     required this.onTapTerms,
-    required this.isChecked,
-    required this.onToggleChecked,
   });
 
   final VoidCallback onTapTerms;
-  final bool isChecked;
-  final VoidCallback onToggleChecked;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: TopUpConfirmTheme.termsTopInset),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-              top: TopUpConfirmTheme.termsCheckboxTopOffset,
-            ),
-            child: GestureDetector(
-              onTap: onToggleChecked,
-              child: Container(
-                width: TopUpConfirmTheme.termsCheckboxSize,
-                height: TopUpConfirmTheme.termsCheckboxSize,
-                decoration: BoxDecoration(
-                  color: isChecked
-                      ? TopUpConfirmTheme.termsCheckboxColor
-                      : TopUpConfirmTheme.termsCheckboxUncheckedBackgroundColor,
-                  borderRadius: BorderRadius.circular(
-                    TopUpConfirmTheme.termsCheckboxRadius,
-                  ),
-                  border: isChecked
-                      ? null
-                      : Border.all(
-                          color: TopUpConfirmTheme
-                              .termsCheckboxUncheckedBorderColor,
-                          width: TopUpConfirmTheme.termsCheckboxBorderWidth,
-                        ),
-                ),
-                alignment: Alignment.center,
-                child: isChecked
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: TopUpConfirmTheme.termsCheckboxCheckIconColor,
-                        size: TopUpConfirmTheme.termsCheckboxIconSize,
-                      )
-                    : null,
+      padding: const EdgeInsets.only(top: 6),
+      child: RichText(
+        textAlign: TextAlign.left,
+        text: TextSpan(
+          style: TopUpConfirmTheme.termsBase,
+          children: [
+            const TextSpan(
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: 'CircularPro',
+                height: 1.43,
+                fontWeight: FontWeight.w400,
               ),
+              text: 'By pressing “pay now” you agree to the ',
             ),
-          ),
-          const SizedBox(width: TopUpConfirmTheme.termsCheckboxToTextGap),
-          Expanded(
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                style: TopUpConfirmTheme.termsLead,
-                children: [
-                  TextSpan(
-                    style: TopUpConfirmTheme.termsLead,
-                    text: TopUpConfirmTheme.termsLeadText,
-                  ),
-                  TextSpan(
-                    text: TopUpConfirmTheme.termsLinkText,
-                    style: TopUpConfirmTheme.termsLink,
-                    recognizer: TapGestureRecognizer()..onTap = onTapTerms,
-                  ),
-                ],
-              ),
+            TextSpan(
+              text: 'Terms &\nConditions.',
+              style: TopUpConfirmTheme.termsLink,
+              recognizer: TapGestureRecognizer()..onTap = onTapTerms,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

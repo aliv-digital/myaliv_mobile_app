@@ -14,12 +14,12 @@ class ReceiptBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
+      height: 46,
       width: double.infinity,
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: ReceiptTheme.backButtonBackgroundColor,
+          backgroundColor: const Color(0xFFEDEDF3),
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
         ),

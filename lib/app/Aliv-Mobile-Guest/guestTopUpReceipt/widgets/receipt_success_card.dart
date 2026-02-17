@@ -21,26 +21,40 @@ class ReceiptSuccessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double titleBoxH = 24; // Fixed height keeps notch alignment stable.
+    // Section spacing tuned to match Figma (32px rhythm)
+    const double cardPad = 32;
+    const double cornerRadius = 16;
+
+    const double iconSize = 54;
+    const double gapAfterIcon = 32;
+    const double titleBoxH = 24; // fixed height to lock notch Y
+    const double gapAfterTitle = 32;
+    const double dividerH = 1;
+
+    const double notchRadius = 10;
+
+    // Notch should align with the FIRST divider center (after Payment Success!)
+    final double notchCenterY =
+        cardPad + iconSize + gapAfterIcon + titleBoxH + gapAfterTitle + (dividerH / 2);
 
     return PhysicalShape(
       clipper: _TicketSideNotchClipper(
-        cornerRadius: ReceiptTheme.successCardCornerRadius,
-        notchRadius: ReceiptTheme.successCardNotchRadius,
-        notchCenterY: ReceiptTheme.successCardNotchTopOffset,
+        cornerRadius: cornerRadius,
+        notchRadius: notchRadius,
+        notchCenterY: notchCenterY,
       ),
       clipBehavior: Clip.antiAlias,
-      elevation: ReceiptTheme.successCardElevation,
-      shadowColor: ReceiptTheme.successCardShadowColor,
-      color: ReceiptTheme.successCardBackgroundColor,
+      elevation: 10,
+      shadowColor: const Color(0x22000000),
+      color: Colors.white,
       child: Padding(
-        padding: ReceiptTheme.successCardPadding,
+        padding: const EdgeInsets.fromLTRB(cardPad, cardPad, cardPad, cardPad),
         child: Column(
           children: [
             // success icon
             SizedBox(
-              width: ReceiptTheme.successIconOuterSize,
-              height: ReceiptTheme.successIconOuterSize,
+              width: iconSize,
+              height: iconSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: ReceiptTheme.successIconOuter,
@@ -48,96 +62,62 @@ class ReceiptSuccessCard extends StatelessWidget {
                 ),
                 child: Center(
                   child: Container(
-                    width: ReceiptTheme.successIconInnerSize,
-                    height: ReceiptTheme.successIconInnerSize,
+                    width: 30,
+                    height: 30,
                     decoration: BoxDecoration(
                       color: ReceiptTheme.successIconInner,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: ReceiptTheme.successIconCheckSize,
-                    ),
+                    child: const Icon(Icons.check, color: Colors.white, size: 18),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: ReceiptTheme.successGapAfterIcon),
+            const SizedBox(height: gapAfterIcon),
 
             // fixed title height (so notch stays exactly aligned)
             SizedBox(
-              width: ReceiptTheme.successCardContentWidth,
               height: titleBoxH,
               child: Center(
                 child: Text(
                   'Payment Success!',
-                  textAlign: TextAlign.center,
                   style: ReceiptTheme.successTitle,
                 ),
               ),
             ),
 
-            const SizedBox(height: ReceiptTheme.successGapAfterTitle),
+            const SizedBox(height: gapAfterTitle),
 
             // ✅ dashed divider (slightly inset like screenshot)
             const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ReceiptTheme.successDashedDividerHorizontalInset,
-              ),
-              child: ReceiptTicketDivider(
-                height: ReceiptTheme.successDashedDividerStrokeWidth,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              child: ReceiptTicketDivider(height: dividerH),
             ),
 
-            const SizedBox(height: ReceiptTheme.successGapAfterTitle),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final helperTextWidth =
-                    constraints.maxWidth < ReceiptTheme.successCardContentWidth
-                        ? constraints.maxWidth
-                        : ReceiptTheme.successCardContentWidth;
-
-                return SizedBox(
-                  width: helperTextWidth,
-                  child: Text(
-                    'It will take a few moments for the top-up '
-                    'to appear on the account.',
-                    textAlign: TextAlign.center,
-                    style: ReceiptTheme.successBody,
-                  ),
-                );
-              },
+            const SizedBox(height: 32),
+            Text(
+              'It will take a few moments for the top up\nto appear on the account.',
+              textAlign: TextAlign.center,
+              style: ReceiptTheme.successBody,
             ),
-            const SizedBox(height: ReceiptTheme.successGapAfterMessage),
+            const SizedBox(height: 12),
 
             // details
-            ReceiptDetailRow(
-                label: 'top up', value: data.rightType, valueBold: false),
-            ReceiptDetailRow(
-                label: 'date', value: data.dateText, valueBold: false),
-            ReceiptDetailRow(
-                label: 'time', value: data.timeText, valueBold: false),
-            ReceiptDetailRow(
-                label: 'phone no.', value: data.phoneNumber, valueBold: false),
-            ReceiptDetailRow(
-                label: 'payment method',
-                value: data.paymentMethod,
-                valueBold: false),
+            ReceiptDetailRow(label: 'top up', value: data.rightType, valueBold: false),
+            ReceiptDetailRow(label: 'date', value: data.dateText, valueBold: false),
+            ReceiptDetailRow(label: 'time', value: data.timeText, valueBold: false),
+            ReceiptDetailRow(label: 'phone no.', value: data.phoneNumber, valueBold: false),
+            ReceiptDetailRow(label: 'payment method', value: data.paymentMethod, valueBold: false),
 
-            const SizedBox(height: ReceiptTheme.successGapBeforeAmount),
+            const SizedBox(height: 6),
 
             // second divider (NO notches needed; this is just dashed)
             const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ReceiptTheme.successDashedDividerHorizontalInset,
-              ),
-              child: ReceiptTicketDivider(
-                height: ReceiptTheme.successDashedDividerStrokeWidth,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              child: ReceiptTicketDivider(height: dividerH),
             ),
 
-            const SizedBox(height: ReceiptTheme.successGapBeforeAmount),
+            const SizedBox(height: 6),
 
             ReceiptDetailRow(
               label: 'amount',
@@ -145,16 +125,12 @@ class ReceiptSuccessCard extends StatelessWidget {
               valueBold: true,
             ),
 
-            const SizedBox(height: ReceiptTheme.successGapAfterAmount),
-            Divider(
-              height: ReceiptTheme.successBottomDividerThickness,
-              thickness: ReceiptTheme.successBottomDividerThickness,
-              color: ReceiptTheme.successCardBottomDividerColor,
-            ),
-            const SizedBox(height: ReceiptTheme.successGapAfterBottomDivider),
+            const SizedBox(height: 32),
+            const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
+            const SizedBox(height: 32),
 
-            ReceiptBackButton(onTap: onBackHome, text: 'back to login page'),
-            const SizedBox(height: ReceiptTheme.successGapAfterButton),
+            ReceiptBackButton(onTap: onBackHome),
+            const SizedBox(height: 52),
           ],
         ),
       ),

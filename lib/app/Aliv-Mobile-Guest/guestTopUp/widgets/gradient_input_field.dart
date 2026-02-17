@@ -1,3 +1,98 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
+//
+// class GradientInputField extends StatelessWidget {
+//   final String label;
+//   final String hint;
+//   final ValueChanged<String> onChanged;
+//
+//   const GradientInputField({super.key,
+//     required this.label,
+//     required this.hint,
+//     required this.onChanged,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(left: 68,right: 68),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.center,  // Center everything horizontally
+//         children: [
+//           Container(
+//             color: Colors.white,
+//             width: double.infinity,  // Ensuring label stretches across
+//             padding: const EdgeInsets.symmetric(horizontal: 14),
+//             child: SizedBox.shrink(),
+//           ),
+//           SizedBox(height: 8),
+//           Container(
+//             width: double.infinity,
+//             height: 68,
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(10),
+//               border: Border.all(width: 3, color: Colors.transparent),
+//               gradient: LinearGradient(
+//                 colors: [
+//                   GuestTopUpTheme.yellow,
+//                   GuestTopUpTheme.blue,
+//                   GuestTopUpTheme.purple,
+//                   GuestTopUpTheme.lightPink,
+//                   GuestTopUpTheme.purple,
+//                   GuestTopUpTheme.orange
+//                 ],
+//                 begin: Alignment.topLeft,
+//                 end: Alignment.bottomRight,
+//               ),
+//             ),
+//             child: TextField(
+//               maxLines: 1,
+//               style: TextStyle(
+//                 fontSize: 40 ,
+//                 fontWeight: FontWeight.w700,
+//                 color: GuestTopUpTheme.amountTextColor,  // Same text color as the label
+//               ),
+//               onChanged: onChanged, // onChanged event passed here
+//               keyboardType: TextInputType.number,  // Ensure numeric input
+//               textAlign: TextAlign.center,  // Center the text inside the field
+//               decoration: InputDecoration(
+//                 prefixText: ' \$', // Add dollar sign before the value
+//                 prefixStyle: TextStyle(
+//                   fontSize: 40,
+//                   fontWeight: FontWeight.w700,
+//                   color: GuestTopUpTheme.amountTextColor,  // Same text color as the label
+//                 ),
+//                 hintText: hint,
+//                 hintStyle: TextStyle(
+//                   fontSize: 40 ,
+//                   fontWeight: FontWeight.w700,
+//                   color: Colors.deepPurple.withValues(alpha: .2),  // Same text color as the label
+//                 ),
+//                 filled: true,
+//                 fillColor: Colors.white, // White background
+//                 border: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(10),
+//                   borderSide: BorderSide.none, // Hide default border
+//                 ),
+//                 contentPadding: EdgeInsets.only( top: 5, bottom: 5,right: 10),
+//               ),
+//             ),
+//           ),
+//           SizedBox(height: 8),
+//           Text(
+//             'enter top up amount',  // Text displayed below input
+//             style: TextStyle(
+//               fontSize: 12,
+//               fontWeight: FontWeight.w400,
+//               color: Colors.black,  // Same text color as label
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
@@ -27,13 +122,13 @@ class _GradientInputFieldState extends State<GradientInputField> {
   @override
   void initState() {
     super.initState();
-    _controller.text = GuestTopUpTheme.amountDefaultValue;
+    _controller.text = '\$15.00';
   }
 
   void _handleInputChange(String raw) {
     if (_isFormatting) return;
 
-    final cleaned = _keepDigitsAndDot(raw);
+    final cleaned = raw.replaceAll(RegExp(r'[^0-9.]'), '');
     if (cleaned.isEmpty) {
       _isFormatting = true;
       _controller.clear();
@@ -43,116 +138,109 @@ class _GradientInputFieldState extends State<GradientInputField> {
     }
 
     _isFormatting = true;
-    _controller.text = '\$$cleaned';
+    _controller.text = '\$${cleaned}';
     _controller.selection =
         TextSelection.collapsed(offset: _controller.text.length);
     _isFormatting = false;
     widget.onChanged(cleaned);
   }
 
-  String _keepDigitsAndDot(String value) {
-    final buffer = StringBuffer();
-    for (final codePoint in value.runes) {
-      final isDigit = codePoint >= 48 && codePoint <= 57;
-      final isDot = codePoint == 46;
-      if (isDigit || isDot) {
-        buffer.writeCharCode(codePoint);
-      }
-    }
-    return buffer.toString();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final innerRadius = GuestTopUpTheme.amountFieldRadius -
-        GuestTopUpTheme.amountFieldBorderWidth;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final fieldWidth =
+            (constraints.maxWidth - 136).clamp(200.0, constraints.maxWidth);
+        final startAtTopLeftAngle = math.atan2(-68 / 2, -fieldWidth / 2);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: GuestTopUpTheme.amountFieldOuterHorizontalPadding,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            widget.label,
-            textAlign: TextAlign.center,
-            style: GuestTopUpTheme.amountHelper,
-          ),
-          const SizedBox(height: GuestTopUpTheme.amountFieldLabelToFieldGap),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final startAtTopLeftAngle = math.atan2(
-                -GuestTopUpTheme.amountFieldHeight / 2,
-                -constraints.maxWidth / 2,
-              );
-
-              return SizedBox(
-                height: GuestTopUpTheme.amountFieldHeight,
-                width: double.infinity,
-                child: DecoratedBox(
+        return Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: fieldWidth,
+                height: 68,
+                child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                        GuestTopUpTheme.amountFieldRadius),
-                    // Anchor gradient start exactly at top-left for
-                    // consistent pixel positioning across widths.
+                    borderRadius: BorderRadius.circular(14),
                     gradient: SweepGradient(
-                      colors: GuestTopUpTheme.amountFieldBorderGradientColors,
-                      stops: GuestTopUpTheme.amountFieldBorderGradientStops,
+                      colors: [
+                        // Start: top-left
+                        GuestTopUpTheme.yellow,
+                        const Color(0xFF86C96A),
+                        GuestTopUpTheme.blue,
+                        // Top-right
+                        GuestTopUpTheme.purple,
+                        // Right side -> bottom-right
+                        GuestTopUpTheme.lightPink,
+                        GuestTopUpTheme.orange,
+                        // Bottom side
+                        GuestTopUpTheme.lightPink,
+                        GuestTopUpTheme.purple,
+                        // Left side -> back to top-left
+                        GuestTopUpTheme.blue,
+                        GuestTopUpTheme.yellow,
+                      ],
+                      stops: const [
+                        0.00, // yellow (top-left)
+                        0.08, // green blend
+                        0.22, // cyan/blue (top-mid)
+                        0.40, // purple (top-right)
+                        0.54, // pink (right-mid)
+                        0.66, // orange (bottom-right)
+                        0.76, // pink (bottom-mid)
+                        0.86, // purple (bottom-left)
+                        0.93, // blue (left-mid)
+                        1.00, // yellow (top-left close loop)
+                      ],
                       transform: GradientRotation(startAtTopLeftAngle),
                     ),
-                    boxShadow: const <BoxShadow>[
+                    boxShadow: [
                       BoxShadow(
-                        color: GuestTopUpTheme.amountFieldShadowColor,
-                        blurRadius: GuestTopUpTheme.amountFieldShadowBlur,
-                        offset:
-                            Offset(0, GuestTopUpTheme.amountFieldShadowOffsetY),
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(
-                        GuestTopUpTheme.amountFieldBorderWidth),
-                    child: DecoratedBox(
+                    padding: const EdgeInsets.all(3),
+                    child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(innerRadius),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      // The editable text area is inset by 68px on both sides
-                      // to match the Figma spacing.
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal:
-                              GuestTopUpTheme.amountFieldTextHorizontalInset,
-                        ),
-                        child: Center(
-                          child: TextField(
-                            controller: _controller,
-                            maxLines: 1,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            style: GuestTopUpTheme.amountInput,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              isCollapsed: true,
-                              hintText: '\$00.00',
-                              hintStyle: GuestTopUpTheme.amountHint,
-                            ),
-                            onChanged: _handleInputChange,
+                      alignment: Alignment.center,
+                      child: TextField(
+                        controller: _controller,
+                        maxLines: 1,
+                        style: GuestTopUpTheme.amountInput,
+                        onChanged: _handleInputChange,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        textAlign: TextAlign.center,
+                        textAlignVertical: TextAlignVertical.center,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: (68 - 32) / 2 + 1,
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              );
-            },
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'enter top up amount',
+                style: GuestTopUpTheme.amountHelper,
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

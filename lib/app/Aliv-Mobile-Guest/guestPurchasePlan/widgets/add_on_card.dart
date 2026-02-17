@@ -21,26 +21,19 @@ class AddOnCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconPath = PlanIconAssets.forType(PlanBenefitType.data);
-
-    debugPrint("----- AddOnCard -----");
-    debugPrint("PlanBenefitType.data: ${PlanBenefitType.data}");
-    debugPrint("iconPath: $iconPath");
-
     final isSvg = iconPath.toLowerCase().endsWith('.svg');
 
     return InkWell(
       onTap: onToggle,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        margin: GuestPurchasePlanTheme.addOnCardOuterMargin,
-        padding: GuestPurchasePlanTheme.addOnCardInnerPadding,
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected
-                ? GuestPurchasePlanTheme.brandPurple
-                : Colors.transparent,
+            color: selected ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
             width: 1.2,
           ),
           boxShadow: [
@@ -51,63 +44,59 @@ class AddOnCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            // Top row: title on left and checkbox on right.
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
+            // ===== Left content =====
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
                     addon.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GuestPurchasePlanTheme.addOnTitle,
                   ),
-                ),
+                  const SizedBox(height: 16),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (isSvg)
+                        SvgPicture.asset(iconPath, width: 16, height: 16)
+                      else
+                        Image.asset(iconPath, width: 16, height: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        addon.label, // data balance
+                        style: GuestPurchasePlanTheme.addOnLabel,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          addon.value, // 1gb
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GuestPurchasePlanTheme.addOnValue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 12),
+
+            // ===== Right side (checkbox + price) =====
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
                 _CheckBoxSquare(
                   checked: selected,
                   onTap: onToggle,
                 ),
-              ],
-            ),
-            const SizedBox(
-                height: GuestPurchasePlanTheme.addOnCardTitleToDetailsGap),
-            // Bottom row: icon + label + value on left and amount pill on right.
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (isSvg)
-                  SvgPicture.asset(
-                    iconPath,
-                    width: GuestPurchasePlanTheme.addOnCardInfoIconSize,
-                    height: GuestPurchasePlanTheme.addOnCardInfoIconSize,
-                  )
-                else
-                  Image.asset(
-                    iconPath,
-                    width: GuestPurchasePlanTheme.addOnCardInfoIconSize,
-                    height: GuestPurchasePlanTheme.addOnCardInfoIconSize,
-                  ),
-                const SizedBox(
-                    width: GuestPurchasePlanTheme.addOnCardIconToLabelGap),
-                Text(
-                  addon.label, // data balance
-                  style: GuestPurchasePlanTheme.addOnLabel,
-                ),
-                const SizedBox(
-                    width: GuestPurchasePlanTheme.addOnCardLabelToValueGap),
-                Expanded(
-                  child: Text(
-                    addon.value, // 1gb
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GuestPurchasePlanTheme.addOnValue,
-                  ),
-                ),
-                const SizedBox(
-                    width: GuestPurchasePlanTheme.addOnCardValueToPriceGap),
+                const SizedBox(height: 14),
                 _PricePill(price: addon.price),
               ],
             ),
@@ -127,8 +116,9 @@ class _PricePill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
       decoration: BoxDecoration(
+        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
         borderRadius: BorderRadius.circular(8),
-        color: GuestPurchasePlanTheme.addOnPricePillBackground,
+        color: Colors.white,
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -151,31 +141,18 @@ class _CheckBoxSquare extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(
-        GuestPurchasePlanTheme.addOnCheckboxRadius,
-      ),
+      borderRadius: BorderRadius.circular(6),
       child: Container(
-        width: GuestPurchasePlanTheme.addOnCheckboxSize,
-        height: GuestPurchasePlanTheme.addOnCheckboxSize,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
-          color: checked
-              ? GuestPurchasePlanTheme.addOnCheckboxCheckedFillColor
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(
-            GuestPurchasePlanTheme.addOnCheckboxRadius,
-          ),
-          border: Border.all(
-            color: GuestPurchasePlanTheme.addOnCheckboxBorderColor,
-            width: GuestPurchasePlanTheme.addOnCheckboxBorderWidth,
-          ),
+          color: checked ? GuestPurchasePlanTheme.brandPurple : Colors.transparent,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
         ),
         alignment: Alignment.center,
         child: checked
-            ? const Icon(
-                Icons.check,
-                size: GuestPurchasePlanTheme.addOnCheckboxCheckIconSize,
-                color: GuestPurchasePlanTheme.addOnCheckboxCheckIconColor,
-              )
+            ? const Icon(Icons.check, size: 16, color: Colors.white)
             : const SizedBox.shrink(),
       ),
     );

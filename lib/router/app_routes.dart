@@ -83,6 +83,7 @@ class AppRoutes {
   static const referFriendResponsePrepaidScreen = '/refer-friend-response-prepaid-screen';
 
   static const revBillPayPrepaidScreen = '/rev-bill-pay-prepaid-screen';
+  static const notificationScreen = '/notifications';
 
   static const revConfirmationPrepaidScreen = '/rev-confirmation-prepaid-screen';
   static const makePaymentConfirmationPostpaidScreen = '/make-payment-confirmation-postpaid-screen';
@@ -96,11 +97,13 @@ class AppRoutes {
   static const fingerPrintSecurityScreen = '/finger-print-security-screen';
 
   static const faceIdSecurityScreen = '/face-id-security-screen';
-  static const notificationScreen = '/notifications';
+
   static const revPaymentMethodPrepaidScreen = '/rev-payment-method-prepaid-screen';
   static const supportScreen = '/support';
   static const chatScreen = '/chat';
   static const callSupportScreen = '/call-support';
+
+
 
 
 }

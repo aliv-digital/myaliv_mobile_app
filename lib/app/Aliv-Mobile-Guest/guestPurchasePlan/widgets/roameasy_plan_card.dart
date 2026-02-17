@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
 import '../theme/theme.dart';
@@ -33,17 +31,16 @@ class RoamEasyPlanCard extends StatelessWidget {
     final PlanBenefit center = dataBenefit ?? plan.benefits.first;
 
     return Container(
-      margin: GuestPurchasePlanTheme.planCardOuterMargin,
-      padding: GuestPurchasePlanTheme.planCardInnerPadding,
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
-        color: GuestPurchasePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
-        boxShadow: const [
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
           BoxShadow(
-            color: GuestPurchasePlanTheme.planCardShadowColor,
-            blurRadius: GuestPurchasePlanTheme.planCardShadowBlur,
-            offset: GuestPurchasePlanTheme.planCardShadowOffset,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -55,9 +52,7 @@ class RoamEasyPlanCard extends StatelessWidget {
               Expanded(
                 child: InkWell(
                   onTap: onToggle,
-                  borderRadius: BorderRadius.circular(
-                    GuestPurchasePlanTheme.planCardHeaderTapRadius,
-                  ),
+                  borderRadius: BorderRadius.circular(10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -72,31 +67,33 @@ class RoamEasyPlanCard extends StatelessWidget {
                               plan.title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style:
-                                  GuestPurchasePlanTheme.planCardTitleTextStyle,
+                              style: const TextStyle(
+                                fontFamily: 'CircularPro',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                          const SizedBox(
-                            width:
-                                GuestPurchasePlanTheme.planCardTitleToArrowGap,
-                          ),
-                          SizedBox(
-                            child: SvgPicture.asset(
-                              expanded
-                                  ? AssetConstant.upArrowSVG
-                                  : AssetConstant.downArrowSVG,
-                              width: GuestPurchasePlanTheme
-                                  .planCardToggleArrowWidth,
-                              height: GuestPurchasePlanTheme
-                                  .planCardToggleArrowHeight,
-                              fit: BoxFit.contain,
+                          const SizedBox(width: 0),
+                          AnimatedRotation(
+                            duration: const Duration(milliseconds: 180),
+                            turns: expanded ? 0.5 : 0.0,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 28,
                             ),
                           ),
                         ],
                       ),
                       Text(
                         plan.subtitle,
-                        style: GuestPurchasePlanTheme.planCardSubtitleTextStyle,
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          color: GuestPurchasePlanTheme.subtitleColor,
+                        ),
                       ),
                     ],
                   ),
@@ -106,29 +103,33 @@ class RoamEasyPlanCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
+          const SizedBox(height: 16),
 
           // ===== Center metric (data) =====
           _CenterMetric(benefit: center),
 
-          const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
+          const SizedBox(height: 16),
 
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
-              padding: const EdgeInsets.only(
-                bottom: GuestPurchasePlanTheme.planCardDescriptionBottomSpacing,
-              ),
+              padding: const EdgeInsets.only(bottom: 16),
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
                   plan.description,
                   textAlign: TextAlign.start,
-                  style: GuestPurchasePlanTheme.planCardDescriptionTextStyle,
+                  style: const TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 10,
+                    height: 1.38,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF2C2C2C),
+                  ),
                 ),
               ),
             ),
@@ -138,45 +139,51 @@ class RoamEasyPlanCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: DefaultButton(
-                  label: expanded
-                      ? GuestPurchasePlanTheme.planCardHideDetailsLabel
-                      : GuestPurchasePlanTheme.planCardViewDetailsLabel,
-                  isLoading: false,
-                  onPressed: onViewDetails,
-                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
-                  contentPadding:
-                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
-                  backgroundColor:
-                      GuestPurchasePlanTheme.planCardViewDetailsBackgroundColor,
-                  textStyle:
-                      GuestPurchasePlanTheme.planCardViewDetailsTextStyle,
-                  borderSide: BorderSide(
-                    color:
-                        GuestPurchasePlanTheme.planCardViewDetailsBorderColor,
-                  ),
-                  borderRadius: BorderRadius.circular(
-                    GuestPurchasePlanTheme.planCardActionButtonRadius,
+                child: SizedBox(
+                  height: 40,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      backgroundColor: GuestPurchasePlanTheme.viewDetailsButtonColor,
+                    ),
+                    onPressed: onViewDetails,
+                    child: Text(
+                      expanded ? 'hide details' : 'view details',
+                      style: TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: GuestPurchasePlanTheme.brandPurple,
+                      ),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(
-                width: GuestPurchasePlanTheme.planCardActionButtonsGap,
-              ),
+              const SizedBox(width: 12),
               Expanded(
-                child: DefaultButton(
-                  label: GuestPurchasePlanTheme.planCardPurchaseNowLabel,
-                  isLoading: false,
-                  onPressed: onPurchaseNow,
-                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
-                  contentPadding:
-                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
-                  backgroundColor:
-                      GuestPurchasePlanTheme.planCardPurchaseNowBackgroundColor,
-                  textStyle:
-                      GuestPurchasePlanTheme.planCardPurchaseNowTextStyle,
-                  borderRadius: BorderRadius.circular(
-                    GuestPurchasePlanTheme.planCardActionButtonRadius,
+                child: SizedBox(
+                  height: 40,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: GuestPurchasePlanTheme.brandPurple,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                    ),
+                    onPressed: onPurchaseNow,
+                    child: const Text(
+                      'purchase now',
+                      style: TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -195,15 +202,19 @@ class _PricePill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: GuestPurchasePlanTheme.planPricePillPadding,
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
       decoration: BoxDecoration(
-        color: GuestPurchasePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
+        border: Border.all(color: GuestPurchasePlanTheme.brandPurple, width: 1),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
+        style: TextStyle(
+          fontFamily: 'CircularPro',
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: GuestPurchasePlanTheme.brandPurple,
+        ),
       ),
     );
   }

@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:country_picker/country_picker.dart';
 
 import '../model/guest_purchase_plan_input.dart';
 import 'guest_splash_event.dart';
 import 'guest_splash_state.dart';
 import '../repository/guest_splash_repository.dart';
+
 
 class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   final GuestSplashRepository repository;
@@ -15,16 +17,15 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
     on<GuestSplashPurchasePlanInit>(_onPurchasePlanInit);
     on<GuestSplashPurchasePlanCountryChanged>(_onPurchaseCountryChanged);
     on<GuestSplashPurchasePlanPhoneChanged>(_onPurchasePhoneChanged);
-    on<GuestSplashPurchasePlanConfirmPhoneChanged>(
-        _onPurchaseConfirmPhoneChanged);
+    on<GuestSplashPurchasePlanConfirmPhoneChanged>(_onPurchaseConfirmPhoneChanged);
     on<GuestSplashPurchasePlanSubmitted>(_onPurchaseSubmitted);
     on<GuestSplashPurchasePlanReset>(_onPurchaseReset);
   }
 
   Future<void> _onGuestSplashLoaded(
-    GuestSplashLoaded event,
-    Emitter<GuestSplashState> emit,
-  ) async {
+      GuestSplashLoaded event,
+      Emitter<GuestSplashState> emit,
+      ) async {
     try {
       final isLoaded = await repository.loadData();
       if (isLoaded) {
@@ -38,9 +39,9 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   }
 
   void _onPurchasePlanInit(
-    GuestSplashPurchasePlanInit event,
-    Emitter<GuestSplashState> emit,
-  ) {
+      GuestSplashPurchasePlanInit event,
+      Emitter<GuestSplashState> emit,
+      ) {
     final s = state;
     if (s is! GuestSplashLoadedState) return;
 
@@ -57,9 +58,9 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   }
 
   void _onPurchaseCountryChanged(
-    GuestSplashPurchasePlanCountryChanged event,
-    Emitter<GuestSplashState> emit,
-  ) {
+      GuestSplashPurchasePlanCountryChanged event,
+      Emitter<GuestSplashState> emit,
+      ) {
     final s = state;
     if (s is! GuestSplashLoadedState) return;
 
@@ -74,9 +75,9 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   }
 
   void _onPurchasePhoneChanged(
-    GuestSplashPurchasePlanPhoneChanged event,
-    Emitter<GuestSplashState> emit,
-  ) {
+      GuestSplashPurchasePlanPhoneChanged event,
+      Emitter<GuestSplashState> emit,
+      ) {
     final s = state;
     if (s is! GuestSplashLoadedState) return;
 
@@ -91,9 +92,9 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   }
 
   void _onPurchaseConfirmPhoneChanged(
-    GuestSplashPurchasePlanConfirmPhoneChanged event,
-    Emitter<GuestSplashState> emit,
-  ) {
+      GuestSplashPurchasePlanConfirmPhoneChanged event,
+      Emitter<GuestSplashState> emit,
+      ) {
     final s = state;
     if (s is! GuestSplashLoadedState) return;
 
@@ -108,9 +109,9 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   }
 
   void _onPurchaseSubmitted(
-    GuestSplashPurchasePlanSubmitted event,
-    Emitter<GuestSplashState> emit,
-  ) {
+      GuestSplashPurchasePlanSubmitted event,
+      Emitter<GuestSplashState> emit,
+      ) {
     final s = state;
     if (s is! GuestSplashLoadedState) return;
 
@@ -119,27 +120,20 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
     final p2 = s.purchaseConfirmPhone.trim();
 
     if (c == null) {
-      emit(s.copyWith(
-          purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Select a country'));
+      emit(s.copyWith(purchaseStatus: GuestSplashPurchasePlanStatus.failure, purchaseErrorMessage: 'Select a country'));
       return;
     }
     if (p1.isEmpty) {
-      emit(s.copyWith(
-          purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Enter mobile number'));
+      emit(s.copyWith(purchaseStatus: GuestSplashPurchasePlanStatus.failure, purchaseErrorMessage: 'Enter mobile number'));
       return;
     }
     if (p2.isEmpty) {
       emit(s.copyWith(
-          purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Confirm mobile number'));
+          purchaseStatus: GuestSplashPurchasePlanStatus.failure, purchaseErrorMessage: 'Confirm mobile number'));
       return;
     }
     if (p1 != p2) {
-      emit(s.copyWith(
-          purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Numbers do not match'));
+      emit(s.copyWith(purchaseStatus: GuestSplashPurchasePlanStatus.failure, purchaseErrorMessage: 'Numbers do not match'));
       return;
     }
 
@@ -160,9 +154,9 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
   }
 
   void _onPurchaseReset(
-    GuestSplashPurchasePlanReset event,
-    Emitter<GuestSplashState> emit,
-  ) {
+      GuestSplashPurchasePlanReset event,
+      Emitter<GuestSplashState> emit,
+      ) {
     final s = state;
     if (s is! GuestSplashLoadedState) return;
 

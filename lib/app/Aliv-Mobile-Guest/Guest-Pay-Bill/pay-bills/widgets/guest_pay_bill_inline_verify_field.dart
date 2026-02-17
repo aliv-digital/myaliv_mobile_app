@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../theme/guest_pay_bill_theme.dart';
-import 'guest_pay_bill_focused_input_border_wrapper.dart';
 
-class GuestPayBillInlineVerifyField extends StatefulWidget {
+class GuestPayBillInlineVerifyField extends StatelessWidget {
   final String hint;
   final TextInputType keyboardType;
   final bool enabled;
@@ -23,77 +21,40 @@ class GuestPayBillInlineVerifyField extends StatefulWidget {
   });
 
   @override
-  State<GuestPayBillInlineVerifyField> createState() =>
-      _GuestPayBillInlineVerifyFieldState();
-}
-
-class _GuestPayBillInlineVerifyFieldState
-    extends State<GuestPayBillInlineVerifyField> {
-  final FocusNode _focusNode = FocusNode();
-  bool _hasFocus = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(_onFocusChanged);
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  void _onFocusChanged() {
-    if (_hasFocus != _focusNode.hasFocus) {
-      setState(() {
-        _hasFocus = _focusNode.hasFocus;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return GuestPayBillFocusedInputBorderWrapper(
-      isFocused: _hasFocus,
-      child: Container(
-        height: GuestPayBillTheme.inlineVerifyFieldHeight,
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: GuestPayBillTheme.fieldBg,
-          borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                focusNode: _focusNode,
-                keyboardType: widget.keyboardType,
-                onChanged: widget.onChanged,
-                style: GuestPayBillTheme.inputTextStyle,
-                textAlignVertical: TextAlignVertical.center,
-                decoration: const InputDecoration(
-                  hintStyle: TextStyle(
-                    color: GuestPayBillTheme.placeholder,
-                    fontSize: 13,
-                    fontFamily: AppConstants.defaultFontFamily,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                ).copyWith(hintText: widget.hint),
-              ),
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: GuestPayBillTheme.fieldBg,
+        borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              keyboardType: keyboardType,
+              onChanged: onChanged,
+              textAlignVertical: TextAlignVertical.center,
+              decoration: const InputDecoration(
+                hintStyle: TextStyle(
+                  color: GuestPayBillTheme.placeholder,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                isCollapsed: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 8),
+              ).copyWith(hintText: hint),
             ),
-            const SizedBox(width: 8),
-            GuestPayBillInlineSubmitButton(
-              loading: widget.loading,
-              enabled: widget.enabled,
-              onTap: widget.onSubmit,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          GuestPayBillInlineSubmitButton(
+            loading: loading,
+            enabled: enabled,
+            onTap: onSubmit,
+          ),
+        ],
       ),
     );
   }
@@ -134,12 +95,7 @@ class GuestPayBillInlineSubmitButton extends StatelessWidget {
                 }
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text(
-                      'Please enter required details first.',
-                      style: TextStyle(
-                        fontFamily: AppConstants.defaultFontFamily,
-                      ),
-                    ),
+                    content: Text('Please enter required details first.'),
                   ),
                 );
               },
@@ -157,7 +113,6 @@ class GuestPayBillInlineSubmitButton extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
-                  fontFamily: AppConstants.defaultFontFamily,
                   fontWeight: FontWeight.w600,
                 ),
               ),

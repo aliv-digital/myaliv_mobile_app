@@ -40,8 +40,8 @@ class PrepaidBalanceCard extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: HomeScreen.purple
+                    borderRadius: BorderRadius.circular(100),
+                    color: HomeScreen.purple
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

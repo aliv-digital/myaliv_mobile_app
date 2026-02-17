@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/theme.dart';
 
 class ScallopBottomClipper extends CustomClipper<Path> {
   final double radius;
 
-  const ScallopBottomClipper({
-    this.radius = TopUpConfirmTheme.legacyScallopRadius,
-  });
+  const ScallopBottomClipper({this.radius = 8});
 
   @override
   Path getClip(Size size) {
@@ -14,7 +11,7 @@ class ScallopBottomClipper extends CustomClipper<Path> {
     path.addRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(0, 0, size.width, size.height - radius),
-        const Radius.circular(TopUpConfirmTheme.legacyScallopCornerRadius),
+        const Radius.circular(12),
       ),
     );
 

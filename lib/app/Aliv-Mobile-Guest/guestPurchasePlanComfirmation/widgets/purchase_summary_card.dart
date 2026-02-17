@@ -18,9 +18,7 @@ class PurchaseSummaryCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: GuestPurchasePlanConfirmationTheme.cardWhite,
-        borderRadius: BorderRadius.circular(
-          GuestPurchasePlanConfirmationTheme.purchaseSummaryCardRadius,
-        ),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: const [
           BoxShadow(
             blurRadius: 16,
@@ -29,64 +27,44 @@ class PurchaseSummaryCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header block: strict 16/14/16/14 spacing from Figma.
-          Padding(
-            padding:
-                GuestPurchasePlanConfirmationTheme.purchaseSummaryHeaderPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data.headerTitle,
-                  style: GuestPurchasePlanConfirmationTheme
-                      .purchaseSummaryHeaderTitleTextStyle,
-                ),
-                const SizedBox(
-                  height: GuestPurchasePlanConfirmationTheme
-                      .purchaseSummaryHeaderTitleToPhoneGap,
-                ),
-                Text(
-                  data.phoneNumber,
-                  style: GuestPurchasePlanConfirmationTheme
-                      .purchaseSummaryHeaderPhoneTextStyle,
-                ),
-              ],
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              data.headerTitle,
+              style: GuestPurchasePlanConfirmationTheme.t(18, weight: FontWeight.w700),
             ),
-          ),
+            const SizedBox(height: 2),
+            Text(
+              data.phoneNumber,
+              style: GuestPurchasePlanConfirmationTheme.t(
+                16,
+                weight: FontWeight.w500,
+                color: GuestPurchasePlanConfirmationTheme.textGrey,
+              ),
+            ),
+            const SizedBox(height: 10),
 
-          Divider(
-            height:
-                GuestPurchasePlanConfirmationTheme.purchaseSummaryDividerHeight,
-            thickness: GuestPurchasePlanConfirmationTheme
-                .purchaseSummaryDividerThickness,
-            color:
-                GuestPurchasePlanConfirmationTheme.purchaseSummaryDividerColor,
-          ),
+            const Divider(height: 1),
 
-          // Item blocks: strict 16/20/16/20 spacing from Figma.
-          for (int i = 0; i < data.items.length; i++) ...[
-            Padding(
-              padding: GuestPurchasePlanConfirmationTheme
-                  .purchaseSummaryItemSectionPadding,
-              child: PurchaseItemRow(
+            const SizedBox(height: 10),
+
+            // Items
+            for (int i = 0; i < data.items.length; i++) ...[
+              PurchaseItemRow(
                 item: data.items[i],
                 onRemove: () => onRemoveItem(data.items[i].id),
               ),
-            ),
-            if (i != data.items.length - 1)
-              Divider(
-                height: GuestPurchasePlanConfirmationTheme
-                    .purchaseSummaryDividerHeight,
-                thickness: GuestPurchasePlanConfirmationTheme
-                    .purchaseSummaryDividerThickness,
-                color: GuestPurchasePlanConfirmationTheme
-                    .purchaseSummaryDividerColor,
-              ),
+              if (i != data.items.length - 1) ...[
+                const SizedBox(height: 12),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
+              ],
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

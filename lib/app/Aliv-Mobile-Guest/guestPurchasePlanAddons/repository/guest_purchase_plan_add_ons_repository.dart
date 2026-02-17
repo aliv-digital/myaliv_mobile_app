@@ -42,14 +42,14 @@ class GuestPurchasePlanAddOnsRepository {
         title: 'liberty data 2',
         subtitleLabel: 'data balance',
         subtitleValue: '2gb',
-        price: 5.00,
+        price: 10.00,
       ),
       AddOnItem(
         id: 'a3',
         title: 'liberty data 3',
         subtitleLabel: 'data balance',
         subtitleValue: '3gb',
-        price: 5.00,
+        price: 15.00,
       ),
     ];
   }

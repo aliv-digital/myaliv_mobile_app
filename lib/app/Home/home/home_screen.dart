@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
   // final bool hasActivePlan = true;
   // final bool isPrepaid = false;
 
-  static const Color purple = Color(0xFF645D9C);//#463C6E
+  static const Color purple = Color(0xFF645D9C);
   static const Color darkPurple = Color(0xFF463C6E);//#463C6E
   static const Color bg = Color(0xFFF6F9FC);
   static const Color yellow = Color(0xFFF9D933);
@@ -110,6 +110,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
 
   Widget _noActivePlan(BuildContext context) {
     return Container(
@@ -207,11 +208,11 @@ class HomeScreen extends StatelessWidget {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           children: const [
-            ActionTile('assets/icons/ListStar.svg', 'buy\nplans'),
+            ActionTile('assets/icons/ListStarQuick.svg', 'buy\nplans'),
             ActionTile('assets/icons/ListHeart.svg', 'my\nfuture plans'),
             ActionTile('assets/icons/At.svg', 'update\nemail'),
             ActionTile('assets/icons/UsersThree.svg', 'refer a friend'),
-            ActionTile('assets/icons/aliv.svg', 'ALIV\ndeals'),
+            ActionTile('assets/icons/aliv_quick.svg', 'ALIV\ndeals'),
             ActionTile('assets/icons/headphone.svg', 'help & support'),
           ],
         ),
@@ -309,15 +310,16 @@ class HomeScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: onViewMore,
 
-                    child: const Text(
-                      'view more',
+                    child: Text(
+                      'view all',
                       style: TextStyle(
-                        color: const Color(0xFF007AD0),
-                        fontSize: 12,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF645D9C),
+                        fontSize: 13,
+                        fontFamily: 'Circular Pro',
+                        fontWeight: FontWeight.w700,
+                        decoration: TextDecoration.underline,
                       ),
-                    ),
+                    )
                   ),
               ],
             ),

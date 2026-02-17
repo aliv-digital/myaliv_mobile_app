@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/theme/theme.dart';
 
 class ReceiptBackButton extends StatelessWidget {
   const ReceiptBackButton({
@@ -11,6 +10,8 @@ class ReceiptBackButton extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
 
+  static const _purple = Color(0xFF655C9A);
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -19,14 +20,18 @@ class ReceiptBackButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: GuestPayBillReceiptTheme.backButtonBackgroundColor,
+          backgroundColor: const Color(0xFFEDEDF3),
           elevation: 0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
         ),
-        child: Text(
-          text,
-          style: GuestPayBillReceiptTheme.backButtonText,
+        child: const Text(
+          'back to home page',
+          style: TextStyle(
+            color: _purple,
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            fontFamily: 'CircularPro'
+          ),
         ),
       ),
     );

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
@@ -11,6 +11,7 @@ import '../bloc/confirm_topup_event.dart';
 import '../bloc/confirm_topup_state.dart';
 import '../repository/confirm_topup_repository.dart';
 import '../theme/theme.dart';
+import '../widgets/bottom_pay_bar.dart';
 import '../widgets/terms_and_conditions_text.dart';
 import '../widgets/topup_summary_card.dart';
 
@@ -27,24 +28,16 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (context) {
-        return GuestConfirmTopUpRepository();
-      },
+      create: (_) => GuestConfirmTopUpRepository(),
       child: BlocProvider(
-        create: (context) {
-          final repository = context.read<GuestConfirmTopUpRepository>();
-          final bloc = GuestConfirmTopUpBloc(repository: repository);
-
-          // Seed initial values for this screen from route arguments.
-          bloc.add(
+        create: (ctx) => GuestConfirmTopUpBloc(
+          repository: ctx.read<GuestConfirmTopUpRepository>(),
+        )..add(
             GuestConfirmTopUpStarted(
-              phoneNumber: '242-801-1616',//phoneNumber,
-              amount: 15.00,//amount,
+              phoneNumber: phoneNumber,
+              amount: amount,
             ),
-          );
-
-          return bloc;
-        },
+          ),
         child: const _GuestConfirmTopUpView(),
       ),
     );
@@ -54,20 +47,7 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
 class _GuestConfirmTopUpView extends StatelessWidget {
   const _GuestConfirmTopUpView();
 
-  String _formatCurrency(double amount) {
-    return '\$ ${amount.toStringAsFixed(2)}';
-  }
-
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TopUpConfirmTheme.snackBarText,
-        ),
-      ),
-    );
-  }
+  static const _bg = Color(0xFFF1F2FA);
 
   void _openTerms(BuildContext context) {
     // TODO: open terms page / modal / webview
@@ -77,20 +57,30 @@ class _GuestConfirmTopUpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
-      listenWhen: (previousState, currentState) {
-        final hasStatusChanged = previousState.status != currentState.status;
-        final hasTermsRequestChanged =
-            previousState.termsRequestId != currentState.termsRequestId;
-        return hasStatusChanged || hasTermsRequestChanged;
-      },
+      listenWhen: (prev, curr) =>
+          prev.status != curr.status ||
+          prev.termsRequestId != curr.termsRequestId,
       listener: (context, state) {
         if (state.status == GuestConfirmTopUpStatus.success) {
-          _showSnackBar(context, 'Payment successful');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Payment successful',
+                style: TopUpConfirmTheme.snackBarText,
+              ),
+            ),
+          );
         }
 
         if (state.status == GuestConfirmTopUpStatus.failure) {
-          final errorMessage = state.errorMessage ?? 'Payment failed';
-          _showSnackBar(context, errorMessage);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                state.errorMessage ?? 'Payment failed',
+                style: TopUpConfirmTheme.snackBarText,
+              ),
+            ),
+          );
         }
 
         if (state.termsRequestId != 0) {
@@ -98,153 +88,111 @@ class _GuestConfirmTopUpView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: TopUpConfirmTheme.screenBackgroundColor,
-        bottomNavigationBar:
-            BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
-          buildWhen: (previousState, currentState) {
-            // Bottom pay bar depends on total amount and loading status.
-            final hasTotalChanged = previousState.total != currentState.total;
-            final hasStatusChanged =
-                previousState.status != currentState.status;
-
-            return hasTotalChanged || hasStatusChanged;
-          },
+        backgroundColor: _bg,
+        bottomNavigationBar:  BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
           builder: (context, state) {
-            final amountText = _formatCurrency(state.total);
-            final isLoading = state.status == GuestConfirmTopUpStatus.loading;
-
-            return DefaultBottomPayBar(
-              amountText: amountText,
-              isLoading: isLoading,
-              buttonText: TopUpConfirmTheme.payNowLabel,
-              isVatExclusive: false,
-              backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
-              buttonColor: TopUpConfirmTheme.payBarButtonColor,
-              onPayNow: () {
-                // If payment should be done by BLoC flow, use:
-                // final bloc = context.read<GuestConfirmTopUpBloc>();
-                // bloc.add(
-                //   const GuestConfirmTopUpPayNowPressed(),
-                // );
-                context.push(AppRoutes.guestTopUpReceipt);
-              },
-            );
+            return BottomPayBar(
+                amountText: '\$ ${state.total.toStringAsFixed(2)}',
+                isLoading: state.status == GuestConfirmTopUpStatus.loading,
+                onPayNow: () {
+                  // context.read<GuestConfirmTopUpBloc>().add(
+                  //   const GuestConfirmTopUpPayNowPressed(),
+                  // );
+                  context.push(AppRoutes.guestTopUpReceipt);
+                });
           },
         ),
         body: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: DefaultAppBar(
-                  backgroundColor: TopUpConfirmTheme.appBarColor,
+            child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: DefaultAppBar(
+                backgroundColor: HexColor.fromHex('FF645D9C'),
                   title: 'confirmation and payment',
                   onBack: () {
                     context.pop();
+                  }),
+            ),
+            // 1) Top card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 29, right: 29, top: 31),
+                child:
+                    BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+                  buildWhen: (p, c) =>
+                      p.phoneNumber != c.phoneNumber || p.total != c.total,
+                  builder: (context, state) {
+                    return TopUpSummaryCard(
+                      phoneNumber: state.phoneNumber,
+                      amountText: '\$ ${state.total.toStringAsFixed(2)}',
+                    );
                   },
                 ),
               ),
+            ),
 
-              // 1) Top card
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: TopUpConfirmTheme.summaryWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc,
-                      GuestConfirmTopUpState>(
-                    buildWhen: (previousState, currentState) {
-                      // Rebuild only when the values shown in TopUpSummaryCard change.
-                      final hasPhoneNumberChanged =
-                          previousState.phoneNumber != currentState.phoneNumber;
-                      final hasAmountChanged =
-                          previousState.total != currentState.total;
+            // spacing
+            //const SliverToBoxAdapter(child: SizedBox(height: 14)),
 
-                      return hasPhoneNumberChanged || hasAmountChanged;
-                    },
-                    builder: (context, state) {
-                      return TopUpSummaryCard(
-                        phoneNumber: state.phoneNumber,
-                        amountText: _formatCurrency(state.total),
-                      );
-                    },
-                  ),
+            // 2) Terms text
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 29, right: 29, top: 17, bottom: 17),
+                child:
+                    BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+                  builder: (context, state) {
+                    return TermsAndConditionsText(
+                      onTapTerms: () =>
+                          context.read<GuestConfirmTopUpBloc>().add(
+                                const GuestConfirmTopUpTermsPressed(),
+                              ),
+                    );
+                  },
                 ),
               ),
+            ),
 
-              // 2) Terms text
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: TopUpConfirmTheme.termsWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc,
-                      GuestConfirmTopUpState>(
-                    builder: (context, state) {
-                      return TermsAndConditionsText(
-                        isChecked: state.isTermsChecked,
-                        onToggleChecked: () {
-                          final bloc = context.read<GuestConfirmTopUpBloc>();
-                          bloc.add(
-                              const GuestConfirmTopUpTermsCheckboxToggled());
-                        },
-                        onTapTerms: () {
-                          final bloc = context.read<GuestConfirmTopUpBloc>();
-                          bloc.add(const GuestConfirmTopUpTermsPressed());
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
+            //const SliverToBoxAdapter(child: SizedBox(height: 14)),
 
-              // 3) Payment breakdown
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: TopUpConfirmTheme.breakdownWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc,
-                      GuestConfirmTopUpState>(
-                    buildWhen: (previousState, currentState) {
-                      final hasSubTotalChanged =
-                          previousState.subTotal != currentState.subTotal;
-                      final hasVatChanged =
-                          previousState.vat != currentState.vat;
-                      final hasTotalChanged =
-                          previousState.total != currentState.total;
-
-                      return hasSubTotalChanged ||
-                          hasVatChanged ||
-                          hasTotalChanged;
-                    },
-                    builder: (context, state) {
-                      // Local card kept for reference:
-                      // return PaymentBreakdownCard(
-                      //   subTotal: state.subTotal,
-                      //   vat: state.vat,
-                      //   total: state.total,
-                      // );
-                      final items = <CustomPaymentBreakdownLineItem>[
-                        CustomPaymentBreakdownLineItem(
+            // 3) Payment breakdown
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 29, right: 29),
+                child:
+                    BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
+                  buildWhen: (p, c) =>
+                      p.subTotal != c.subTotal ||
+                      p.vat != c.vat ||
+                      p.total != c.total,
+                  builder: (context, state) {
+                    return DefaultPaymentBreakDownCard(
+                      placeDividerBeforeLastItem: true,
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+                      items: [
+                        PaymentBreakdownLineItem(
                           label: 'sub total',
-                          value: _formatCurrency(state.subTotal),
+                          value: '\$ ${state.subTotal.toStringAsFixed(2)}',
                         ),
-                        CustomPaymentBreakdownLineItem(
+                        PaymentBreakdownLineItem(
                           label: 'vat',
-                          value: _formatCurrency(state.vat),
+                          value: '\$ ${state.vat.toStringAsFixed(2)}',
                         ),
-                        CustomPaymentBreakdownLineItem(
+                        PaymentBreakdownLineItem(
                           label: 'total',
-                          value: _formatCurrency(state.total),
+                          value: '\$ ${state.total.toStringAsFixed(2)}',
                         ),
-                      ];
-
-                      return CustomPaymentBreakDownCard(items: items);
-                    },
-                  ),
+                      ],
+                    );
+                  },
                 ),
               ),
+            ),
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: TopUpConfirmTheme.bottomScrollSpacing),
-              ),
-            ],
-          ),
-        ),
+            // bottom spacing যাতে bottom bar এর সাথে collide না করে
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ],
+        )),
       ),
     );
   }

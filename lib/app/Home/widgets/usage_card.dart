@@ -24,18 +24,18 @@ class UsageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 154, //height: 124,
+      width: 160, //height: 124,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: const [
-          // BoxShadow(
-          //   color: Colors.black12,
-          //   blurRadius: 14,
-          //   offset: Offset(0, 6),
-          // ),
-        ],
+        borderRadius: BorderRadius.circular(8),
+        // boxShadow: const [
+        //   // BoxShadow(
+        //   //   color: Colors.black12,
+        //   //   blurRadius: 14,
+        //   //   offset: Offset(0, 6),
+        //   // ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,14 +58,14 @@ class UsageCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text.rich(
             TextSpan(
               children: [
                 TextSpan(
                   text: title == 'data' ? '2.4 GB' : 'unlimited',
                   style: TextStyle(
-                    color: const Color(0xFFFA762B),
+                    color: const Color(0xFF222222),
                     fontSize: 16,
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
@@ -96,12 +96,11 @@ class UsageCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _progressBar(),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
         ],
       ),
     );
   }
-
 
   // Widget _progressBar() {
   //   return ClipRRect(
@@ -124,7 +123,12 @@ class UsageCard extends StatelessWidget {
           return Stack(
             children: [
               // Background
-              Container(height: 6, color: color.withOpacity(0.2)),
+              Container(
+                height: 6,
+                color: title == 'data'
+                    ? color.withOpacity(0.2)
+                    : Color(0x3F808080),
+              ),
 
               // Gradient progress (width = percentage)
               AnimatedContainer(
@@ -132,13 +136,14 @@ class UsageCard extends StatelessWidget {
                 height: 6,
                 width: width,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: title == 'data'
-                        ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
-                        : title == 'sms'
-                        ? [const Color(0xFFCCC7F8), const Color(0xFF1F1B41)]
-                        : [const Color(0xFF97E3F8), const Color(0xFF00627D)],
-                  ),
+                  gradient: title == 'data'
+                      ? LinearGradient(
+                          colors: [Color(0xFFDD3038), Color(0xFFDD3038)],
+                          // : title == 'sms' || title == 'talk mins'
+                          // ? [const Color(0x3F808080), const Color(0x3F808080)]
+                          // : [],
+                        )
+                      : null,
                 ),
               ),
             ],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../theme/guest_pay_bill_theme.dart';
 
@@ -26,7 +25,6 @@ class GuestPayBillReadOnlyBox extends StatelessWidget {
         text,
         style: const TextStyle(
           fontSize: 13,
-          fontFamily: AppConstants.defaultFontFamily,
           fontWeight: FontWeight.w500,
           color: GuestPayBillTheme.labelText,
         ),

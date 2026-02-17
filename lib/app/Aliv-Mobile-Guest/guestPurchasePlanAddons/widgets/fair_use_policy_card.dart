@@ -32,13 +32,20 @@ class FairUsePolicyCard extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: Text(
                   policy.title,
-                  style: GuestPurchasePlanAddOnsTheme.fairUsePolicyLink,
+                  style: GuestPurchasePlanAddOnsTheme.t(
+                    12,
+                    weight: FontWeight.w700,
+                    color: GuestPurchasePlanAddOnsTheme.textBlack,
+                  ).copyWith(
+                    decoration: TextDecoration.underline,
+                    decorationThickness: 2,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 policy.description,
-                style: GuestPurchasePlanAddOnsTheme.fairUsePolicyDescription,
+                style: GuestPurchasePlanAddOnsTheme.addOnHelper,
               ),
             ],
           ),

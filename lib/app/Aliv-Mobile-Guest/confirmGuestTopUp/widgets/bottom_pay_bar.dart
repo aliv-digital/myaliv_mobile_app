@@ -7,10 +7,10 @@ class BottomPayBar extends StatelessWidget {
     required this.amountText,
     required this.onPayNow,
     this.isLoading = false,
-    this.buttonText = TopUpConfirmTheme.payNowLabel,
+    this.buttonText = 'pay now',
     this.isVatExclusive = false,
-    this.backgroundColor = TopUpConfirmTheme.payBarBackgroundColor,
-    this.buttonColor = TopUpConfirmTheme.payBarButtonColor,
+    this.backgroundColor = Colors.white,
+    this.buttonColor = const Color(0xFF655C9A),
   });
 
   final String amountText;
@@ -29,17 +29,18 @@ class BottomPayBar extends StatelessWidget {
 
     return Material(
       color: backgroundColor,
-      elevation: TopUpConfirmTheme.payBarElevation,
-      shadowColor: TopUpConfirmTheme.payBarShadowColor,
+      elevation: 10,
+      shadowColor: const Color(0x22000000),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: TopUpConfirmTheme.payBarHeight,
+          height: 75,
           child: Padding(
-            padding: TopUpConfirmTheme.payBarPadding,
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Left amount column
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -50,7 +51,9 @@ class BottomPayBar extends StatelessWidget {
                           children: [
                             TextSpan(
                               text: '\$',
-                              style: TopUpConfirmTheme.payBarCurrency,
+                              style: TopUpConfirmTheme.payBarAmount.copyWith(
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                             TextSpan(
                               text: ' $numericAmount',
@@ -59,42 +62,37 @@ class BottomPayBar extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(
-                          height: TopUpConfirmTheme.payBarAmountToVatGap),
+                      const SizedBox(height: 2),
                       Text(
-                        isVatExclusive
-                            ? TopUpConfirmTheme.vatExclusiveLabel
-                            : TopUpConfirmTheme.vatInclusiveLabel,
+                        isVatExclusive ? 'vat exclusive' : 'vat inclusive',
                         style: TopUpConfirmTheme.payBarVat,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: TopUpConfirmTheme.payBarSectionGap),
+
+                const SizedBox(width: 16),
+
+                // Right pill button
                 SizedBox(
-                  height: TopUpConfirmTheme.payBarButtonHeight,
-                  width: TopUpConfirmTheme.payBarButtonWidth,
+                  height: 44,
+                  width: 180,
                   child: ElevatedButton(
                     onPressed: isLoading ? null : onPayNow,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
-                      disabledBackgroundColor: buttonColor.withValues(
-                        alpha: TopUpConfirmTheme.payBarDisabledOpacity,
-                      ),
+                      disabledBackgroundColor: buttonColor.withValues(alpha: 0.7),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          TopUpConfirmTheme.payBarButtonRadius,
-                        ),
+                        borderRadius: BorderRadius.circular(22),
                       ),
                     ),
                     child: isLoading
-                        ? SizedBox(
-                            height: TopUpConfirmTheme.payBarLoadingSize,
-                            width: TopUpConfirmTheme.payBarLoadingSize,
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
                             child: CircularProgressIndicator(
-                              strokeWidth:
-                                  TopUpConfirmTheme.payBarLoadingStroke,
+                              strokeWidth: 2.4,
                               color: Colors.white,
                             ),
                           )

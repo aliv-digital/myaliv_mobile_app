@@ -15,7 +15,6 @@ class GuestConfirmTopUpState extends Equatable {
 
   /// ✅ UI action trigger: Terms clicked (increments each click)
   final int termsRequestId;
-  final bool isTermsChecked;
 
   const GuestConfirmTopUpState({
     required this.status,
@@ -25,7 +24,6 @@ class GuestConfirmTopUpState extends Equatable {
     required this.total,
     this.errorMessage,
     required this.termsRequestId,
-    required this.isTermsChecked,
   });
 
   factory GuestConfirmTopUpState.initial() {
@@ -37,7 +35,6 @@ class GuestConfirmTopUpState extends Equatable {
       total: 0,
       errorMessage: null,
       termsRequestId: 0,
-      isTermsChecked: false,
     );
   }
 
@@ -49,7 +46,6 @@ class GuestConfirmTopUpState extends Equatable {
     double? total,
     String? errorMessage,
     int? termsRequestId,
-    bool? isTermsChecked,
   }) {
     return GuestConfirmTopUpState(
       status: status ?? this.status,
@@ -59,19 +55,17 @@ class GuestConfirmTopUpState extends Equatable {
       total: total ?? this.total,
       errorMessage: errorMessage,
       termsRequestId: termsRequestId ?? this.termsRequestId,
-      isTermsChecked: isTermsChecked ?? this.isTermsChecked,
     );
   }
 
   @override
   List<Object?> get props => [
-        status,
-        phoneNumber,
-        subTotal,
-        vat,
-        total,
-        errorMessage,
-        termsRequestId,
-        isTermsChecked,
-      ];
+    status,
+    phoneNumber,
+    subTotal,
+    vat,
+    total,
+    errorMessage,
+    termsRequestId,
+  ];
 }

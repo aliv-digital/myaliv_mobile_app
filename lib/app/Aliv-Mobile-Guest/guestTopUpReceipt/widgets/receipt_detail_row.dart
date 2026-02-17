@@ -16,9 +16,7 @@ class ReceiptDetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: ReceiptTheme.successDetailRowVerticalPadding,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: Row(
         children: [
           Expanded(

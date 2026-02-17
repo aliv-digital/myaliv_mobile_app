@@ -38,9 +38,6 @@ class PaymentFailedTicket extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Figma-aligned content width guide shown as 300.
-    const double contentTextWidth = 300;
-
     return LayoutBuilder(
       builder: (context, c) {
         final width = c.maxWidth.clamp(260, 420).toDouble();
@@ -48,7 +45,7 @@ class PaymentFailedTicket extends StatelessWidget {
         return Center(
           child: SizedBox(
             width: width,
-            height: 649,
+            height: 500,
             child: CustomPaint(
               painter: _TicketBorderPainter(
                 borderColor: borderColor,
@@ -90,34 +87,28 @@ class PaymentFailedTicket extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
 
-                      SizedBox(
-                        width: contentTextWidth,
-                        child: Text(
-                          message,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 16,
-                            height: 1.35,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w400,
-                          ),
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 16,
+                          height: 1.35,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 12),
 
-                      SizedBox(
-                        width: contentTextWidth,
-                        child: Text(
-                          helperText,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 16,
-                            height: 1.35,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w400,
-                          ),
+                      Text(
+                        helperText,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 16,
+                          height: 1.35,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -133,8 +124,7 @@ class PaymentFailedTicket extends StatelessWidget {
                         ),
                       ),
 
-                      // Reduced to fit fixed 362px card height without overflow.
-                      const SizedBox(height: 33),
+                      const SizedBox(height: 64),
 
                       // dashed divider
                       SizedBox(
@@ -172,39 +162,23 @@ class _PillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 156,
-      height: 40,
-      child: Material(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(
-            width: 1,
-            color: Color(0xFFF1F1F8),
-          ),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(100),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: GuestPurchasePlanReceiptTheme.successButtonTextColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'CircularPro',
-                    height: 1,
-                  ),
-                ),
-              ),
+    return Material(
+      color: GuestPurchasePlanReceiptTheme.failedButtonBackgroundColor,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onPressed,
+        child: Container(
+          height: 44,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: GuestPurchasePlanReceiptTheme.successButtonTextColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'CircularPro',
             ),
           ),
         ),

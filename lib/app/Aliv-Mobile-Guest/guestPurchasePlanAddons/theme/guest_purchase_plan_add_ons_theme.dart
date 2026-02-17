@@ -41,12 +41,11 @@ class GuestPurchasePlanAddOnsTheme {
 
   static const String font = 'CircularPro';
 
-  static TextStyle t(
-    double size, {
-    FontWeight weight = FontWeight.w400,
-    Color? color,
-    double? height,
-  }) {
+  static TextStyle t(double size, {
+        FontWeight weight = FontWeight.w400,
+        Color? color,
+        double? height,
+      }) {
     return TextStyle(
       fontFamily: font,
       fontSize: size,
@@ -77,81 +76,39 @@ class GuestPurchasePlanAddOnsTheme {
     color: Colors.white,
   );
 
-  // Fair use policy description text:
-  // "add-ons can only be added to your active primary plan..."
-  static final TextStyle fairUsePolicyDescription = const TextStyle(
-    color: Color(0xFF222222),
-    fontSize: 12,
-    fontFamily: 'Circular Pro',
-    fontWeight: FontWeight.w700,
+  // Add-ons helper text
+  static final TextStyle addOnHelper = t(
+    12,
+    weight: FontWeight.w700,
+    color: addOnHelperColor,
+    height: 1.35,
   );
 
-  // "fair use policy" link text shown on top-right of FairUsePolicyCard.
-  static final TextStyle fairUsePolicyLink = const TextStyle(
-    color: Color(0xFF645D9C),
-    fontSize: 13,
-    fontFamily: 'Circular Pro',
-    fontWeight: FontWeight.w700,
-    decoration: TextDecoration.underline,
+  // Add-on card title
+  static final TextStyle addOnTitle = t(
+    18,
+    weight: FontWeight.w700,
+    color: textBlack,
   );
 
-  // ---------------- Add-on Card Layout Tokens ----------------
-  // Main add-on card corner radius.
-  static const double addOnCardRadius = 8;
-
-  // Internal card spacing: left, top, right, bottom.
-  static const EdgeInsets addOnCardPadding =
-      EdgeInsets.fromLTRB(16, 16, 16, 16);
-
-  // Gap between title row and details row.
-  static const double addOnCardTitleToDetailsGap = 16;
-
-  // Details row icon/text spacing.
-  static const double addOnCardIconToLabelGap = 2;
-  static const double addOnCardLabelToValueGap = 6;
-
-  // Amount chip visual style.
-  static const Color addOnAmountChipColor = Color(0xFFF4F4F6);
-  static const double addOnAmountChipRadius = 5;
-  static const EdgeInsets addOnAmountChipPadding = EdgeInsets.symmetric(
-    horizontal: 10,
-    vertical: 4,
+  // Add-on label (data balance)
+  static final TextStyle addOnLabel = t(
+    18,
+    weight: FontWeight.w500,
+    color: addOnLabelColor,
   );
 
-  // Checkbox visual style.
-  static const double addOnCheckboxSize = 15;
-  static const double addOnCheckboxRadius = 2;
-  static const double addOnCheckboxIconSize = 11;
-
-  // Add-on card title ("liberty data 1")
-  static const TextStyle addOnTitle = TextStyle(
-    color: Colors.black,
-    fontSize: 18,
-    fontFamily: 'Circular Pro',
-    fontWeight: FontWeight.w700,
-  );
-
-  // Add-on label text ("data balance")
-  static const TextStyle addOnLabel = TextStyle(
-    color: Color(0xFFFF6C36),
-    fontSize: 18,
-    fontFamily: 'Circular Pro',
-    fontWeight: FontWeight.w400,
-  );
-
-  // Add-on value text ("1gb", "2gb")
-  static const TextStyle addOnValue = TextStyle(
-    color: Color(0xFF222222),
-    fontSize: 24,
-    fontFamily: 'Circular Pro',
-    fontWeight: FontWeight.w700,
+  // Add-on value (1gb)
+  static final TextStyle addOnValue = t(
+    24,
+    weight: FontWeight.w700,
+    color: textBlack,
   );
 
   // Add-on price text
-  static const TextStyle addOnPrice = TextStyle(
-    color: Color(0xFF222222),
-    fontSize: 16,
-    fontFamily: 'Circular Pro',
-    fontWeight: FontWeight.w700,
+  static final TextStyle addOnPrice = t(
+    16,
+    weight: FontWeight.w700,
+    color: outlinePurple,
   );
 }

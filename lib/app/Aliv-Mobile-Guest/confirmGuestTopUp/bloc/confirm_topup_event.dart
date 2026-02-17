@@ -27,8 +27,3 @@ final class GuestConfirmTopUpPayNowPressed extends GuestConfirmTopUpEvent {
 final class GuestConfirmTopUpTermsPressed extends GuestConfirmTopUpEvent {
   const GuestConfirmTopUpTermsPressed();
 }
-
-final class GuestConfirmTopUpTermsCheckboxToggled
-    extends GuestConfirmTopUpEvent {
-  const GuestConfirmTopUpTermsCheckboxToggled();
-}

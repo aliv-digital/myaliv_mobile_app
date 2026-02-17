@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../theme/guest_pay_bill_confirm_theme.dart';
 
 class GuestPayBillConfirmHeaderCard extends StatelessWidget {
@@ -19,11 +18,10 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: GuestPayBillConfirmTheme.headerCardPadding,
+      padding: const EdgeInsets.only(top: 24,bottom: 24,left: 16,right: 16),
       decoration: BoxDecoration(
         color: GuestPayBillConfirmTheme.cardWhite,
-        borderRadius:
-            BorderRadius.circular(GuestPayBillConfirmTheme.headerCardRadius),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -32,18 +30,16 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(serviceName, style: GuestPayBillConfirmTheme.headerTitle),
-                const SizedBox(
-                    height: GuestPayBillConfirmTheme.headerToSubtitleGap),
+                Text(serviceName, style: GuestPayBillConfirmTheme.headerTitle()),
+                const SizedBox(height: 4),
                 Text(
                   '$identifierLabel $identifierValue',
-                  style: GuestPayBillConfirmTheme.headerSub,
+                  style: GuestPayBillConfirmTheme.headerSub(),
                 ),
               ],
             ),
           ),
-          const SizedBox(
-              width: GuestPayBillConfirmTheme.headerTextToAmountPillGap),
+          const SizedBox(width: 10),
           _AmountPill(amount: amount),
         ],
       ),
@@ -58,16 +54,20 @@ class _AmountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: GuestPayBillConfirmTheme.amountPillPadding,
+      padding: const EdgeInsets.only(left: 11,right: 11,top: 5,bottom: 5),
       decoration: BoxDecoration(
         color: GuestPayBillConfirmTheme.amountBackground,
-        borderRadius:
-            BorderRadius.circular(GuestPayBillConfirmTheme.amountPillRadius),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: GuestPayBillConfirmTheme.border, width: 1),
       ),
       child: Text(
         _money(amount),
-        textAlign: TextAlign.center,
-        style: GuestPayBillConfirmTheme.amountPill,
+        style:  TextStyle(
+          color: GuestPayBillConfirmTheme.amountText,
+          fontSize: 16,
+          fontFamily: 'CircularPro',
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

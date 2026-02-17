@@ -7,7 +7,7 @@ class HomePlanIconAssets {
   static const String data = AssetConstant.wifiIconPNG;
   static const String talk = AssetConstant.phoneIconPNG;
   static const String sms = AssetConstant.smsIconPNG;
-  static const String bonusData = AssetConstant.bonusDataIconSVG;
+  static const String bonusData = AssetConstant.bonusDataIconPNG;
   static const String intl = AssetConstant.phoneIconPNG; //talkTextIconPNG;
   static const String mms = AssetConstant.mmsIconPNG;
 

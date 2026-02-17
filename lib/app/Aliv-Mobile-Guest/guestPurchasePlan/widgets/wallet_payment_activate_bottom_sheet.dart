@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../theme/theme.dart';
 
 class WalletPaymentActivateBottomSheet extends StatelessWidget {
@@ -19,56 +20,62 @@ class WalletPaymentActivateBottomSheet extends StatelessWidget {
   final VoidCallback onBackPressed;
   final VoidCallback onActivateNowPressed;
 
+  static const double _sheetTopBottomPadding = 24;
+  static const double _sheetHorizontalPadding = 16;
+  static const double _sectionGap = 20;
+  static const double _warningInnerPadding = 10;
+  static const double _planCardHeight = 76;
+  static const double _pricePillHeight = 40;
+  static const double _actionButtonHeight = 50;
+  static const double _cornerRadius = 24;
+  static const double _backIconSize = 24;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.bottomSheetBackground,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-              GuestPurchasePlanTheme.bottomSheetTopCornerRadius),
-        ),
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(_cornerRadius)),
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: GuestPurchasePlanTheme.bottomSheetContentPadding,
+          padding: const EdgeInsets.fromLTRB(
+            _sheetHorizontalPadding,
+            _sheetTopBottomPadding,
+            _sheetHorizontalPadding,
+            _sheetTopBottomPadding,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header back action.
               Align(
                 alignment: Alignment.centerLeft,
                 child: InkWell(
                   onTap: onBackPressed,
-                  borderRadius: BorderRadius.circular(
-                    GuestPurchasePlanTheme.bottomSheetBackTapRadius,
-                  ),
-                  child: SizedBox(
-                    width: GuestPurchasePlanTheme.bottomSheetBackIconSize,
-                    height: GuestPurchasePlanTheme.bottomSheetBackIconSize,
+                  borderRadius: BorderRadius.circular(12),
+                  child: const SizedBox(
+                    width: _backIconSize,
+                    height: _backIconSize,
                     child: Icon(
                       Icons.arrow_back_rounded,
-                      size: GuestPurchasePlanTheme.bottomSheetBackIconSize,
-                      color: GuestPurchasePlanTheme.bottomSheetBackIconColor,
+                      size: _backIconSize,
+                      color: Colors.black,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                  height: GuestPurchasePlanTheme.bottomSheetSectionGap),
-              // Warning box.
+              const SizedBox(height: _sectionGap),
               Container(
-                padding: GuestPurchasePlanTheme.bottomSheetWarningPadding,
+                padding: const EdgeInsets.all(_warningInnerPadding),
                 decoration: BoxDecoration(
                   color: GuestPurchasePlanTheme.warningBackground,
-                  borderRadius: BorderRadius.circular(
-                    GuestPurchasePlanTheme.bottomSheetWarningRadius,
-                  ),
+                  borderRadius: BorderRadius.circular(4),
                   border: Border.all(
                     color: GuestPurchasePlanTheme.warningBorder,
-                    width: GuestPurchasePlanTheme.bottomSheetWarningBorderWidth,
+                    width: 1,
                   ),
                 ),
                 child: Text(
@@ -76,35 +83,28 @@ class WalletPaymentActivateBottomSheet extends StatelessWidget {
                   style: GuestPurchasePlanTheme.bottomSheetWarning,
                 ),
               ),
-              const SizedBox(
-                  height: GuestPurchasePlanTheme.bottomSheetSectionGap),
-              // Selected plan summary card.
+              const SizedBox(height: _sectionGap),
               _SelectedPlanSummaryCard(
                 planName: planName,
                 planDurationText: planDurationText,
                 planPriceText: planPriceText,
               ),
-              const SizedBox(
-                  height: GuestPurchasePlanTheme.bottomSheetSectionGap),
-              // Primary CTA: activate now.
+              const SizedBox(height: _sectionGap),
               SizedBox(
-                height: GuestPurchasePlanTheme.bottomSheetActionButtonHeight,
+                height: _actionButtonHeight,
                 child: ElevatedButton(
                   onPressed: onActivateNowPressed,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: GuestPurchasePlanTheme.activateNowButton,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        GuestPurchasePlanTheme
-                            .bottomSheetActionButtonCornerRadius,
-                      ),
+                      borderRadius:
+                          BorderRadius.circular(_actionButtonHeight / 2),
                     ),
                   ),
                   child: Text(
-                    GuestPurchasePlanTheme.bottomSheetActivateNowLabel,
-                    style: GuestPurchasePlanTheme
-                        .bottomSheetPrimaryActionSingleStyle,
+                    'activate now',
+                    style: GuestPurchasePlanTheme.bottomSheetPrimaryAction,
                   ),
                 ),
               ),
@@ -130,13 +130,11 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: GuestPurchasePlanTheme.bottomSheetSummaryCardHeight,
-      padding: GuestPurchasePlanTheme.bottomSheetSummaryCardInnerPadding,
+      height: WalletPaymentActivateBottomSheet._planCardHeight,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planSummaryBackground,
-        borderRadius: BorderRadius.circular(
-          GuestPurchasePlanTheme.bottomSheetSummaryCardRadius,
-        ),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
@@ -151,10 +149,7 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(
-                  height: GuestPurchasePlanTheme
-                      .bottomSheetSummaryNameToDurationGap,
-                ),
+                const SizedBox(height: 4),
                 Text(
                   planDurationText,
                   style: GuestPurchasePlanTheme.bottomSheetPlanDuration,
@@ -163,19 +158,25 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
             ),
           ),
           Container(
-            height: GuestPurchasePlanTheme.bottomSheetSummaryPricePillHeight,
-            padding: GuestPurchasePlanTheme.bottomSheetSummaryPricePillPadding,
+            height: WalletPaymentActivateBottomSheet._pricePillHeight,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color:
-                  GuestPurchasePlanTheme.bottomSheetSummaryPricePillBackground,
-              borderRadius: BorderRadius.circular(
-                GuestPurchasePlanTheme.bottomSheetSummaryPricePillRadius,
+              color: HexColor.fromHex('#EDEBF7'),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: GuestPurchasePlanTheme.planPriceBorder,
+                width: 1,
               ),
             ),
             alignment: Alignment.center,
             child: Text(
               planPriceText,
-              style: GuestPurchasePlanTheme.bottomSheetSummaryPriceTextStyle,
+              style: const TextStyle(
+                color: Color(0xFF5045A7),
+                fontSize: 16,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

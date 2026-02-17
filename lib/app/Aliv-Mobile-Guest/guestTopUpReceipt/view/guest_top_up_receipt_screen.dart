@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -35,10 +34,10 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
       leftType: 'top up',
       rightType: 'prepaid',
       dateText: dateText,
-      timeText: '7:30 am',//timeText,
+      timeText: timeText,
       phoneNumber: phoneNumber,
       paymentMethod: paymentMethod,
-      amount: 15.00//amount,
+      amount: amount,
     );
 
     return RepositoryProvider(
@@ -59,7 +58,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
-      listenWhen: (previous, current) => previous.backHomeRequestId != current.backHomeRequestId,
+      listenWhen: (p, c) => p.backHomeRequestId != c.backHomeRequestId,
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
           Navigator.of(context).popUntil((r) => r.isFirst);
@@ -72,7 +71,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
               slivers: [
                 SliverToBoxAdapter(
                   child: DefaultAppBar(
-                    backgroundColor: HexColor.fromHex('#645D9C'),
+
                     showBackArrow: false,
                       title: '   my receipt',
                       onBack:(){}
@@ -89,7 +88,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                           return ReceiptSuccessCard(
                             data: data,
                             onBackHome: () {
-                              context.go(AppRoutes.logIn);
+                              context.go(AppRoutes.home);
                             },
                             pageBackground: ReceiptTheme.circleBackground,
                           );

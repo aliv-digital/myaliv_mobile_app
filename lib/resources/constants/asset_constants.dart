@@ -13,7 +13,7 @@ class AssetConstant{
   static const smsIconPNG = 'assets/icons/sms_icon.svg';
   static const phoneIconPNG = 'assets/icons/phone_icon.svg';
   static const wifiIconPNG = 'assets/icons/wifi_icon.svg';
-  static const bonusDataIconSVG = 'assets/icons/bonus_data_icon.svg';
+  static const bonusDataIconPNG = 'assets/icons/bonus_data_icon.svg';
   static const talkTextIconPNG = 'assets/icons/talk_text_icon.svg';
   static const mmsIconPNG = 'assets/icons/mms_icon.svg';
 
@@ -48,18 +48,5 @@ class AssetConstant{
 
   static const viewIconSVG = 'assets/icons/view.svg';
   static const hideIconSVG = 'assets/icons/view_not.svg';
-  static const leftArrowSVG = 'assets/icons/arrow_left.svg';
-  static const phoneCallIconSVG = 'assets/icons/phone_call.svg';
-
-  static const upArrowSVG = 'assets/icons/up.svg';
-  static const downArrowSVG = 'assets/icons/bottom.svg';
-
-  static const notificationIconSVG = 'assets/icons/notification.svg';
-  static const planRedCardPNG = 'assets/images/plan.png';
-  static const trashIconSVG = 'assets/icons/trash.svg';
-
-  static const calenderIconSVG = 'assets/icons/calender.svg';
-
-
 
 }

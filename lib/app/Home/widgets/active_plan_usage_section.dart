@@ -62,14 +62,15 @@ class ActivePlanUsageSection extends StatelessWidget {
               context.go(AppRoutes.usage);
             },
             child: Text(
-              'view more',
+              'view all',
               style: TextStyle(
-                color: const Color(0xFF007AD0),
-                fontSize: 12,
+                color: const Color(0xFF645D9C),
+                fontSize: 13,
                 fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w700,
+                decoration: TextDecoration.underline,
               ),
-            ),
+            )
           ),
         ],
       ),
@@ -91,11 +92,11 @@ class ActivePlanUsageSection extends StatelessWidget {
             total: '14 GB',
             remainingLabel: 'remaining',
             progress: 0.17,
-            color: Color(0xFFF2994A),
+            color: Color(0xFFFF6C36),
           ),
           SizedBox(width: 12),
           UsageCard(
-            icon: 'assets/icons/Phone.svg',
+            icon: 'assets/icons/phone_call.svg',
             title: 'talk mins',
             value: 'unlimited',
             total: 'local',
@@ -131,7 +132,7 @@ class ActivePlanUsageSection extends StatelessWidget {
                 color: Colors.black,
                 fontSize: 18,
                 fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -139,7 +140,7 @@ class ActivePlanUsageSection extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 24),
           child: RoamingCard(
-            used: '1GB ',
+            used: '1.5 ',
             total: '2GB',
             progress: 0.5,
           ),

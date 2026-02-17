@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../models/guest_purchase_plan_confirmation_models.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
+
 
 class PurchaseItemRow extends StatelessWidget {
   final PurchaseLineItem item;
@@ -25,26 +25,28 @@ class PurchaseItemRow extends StatelessWidget {
             children: [
               Text(
                 item.label,
-                style: GuestPurchasePlanConfirmationTheme
-                    .purchaseItemLabelTextStyle,
+                style: GuestPurchasePlanConfirmationTheme.t(
+                  10,
+                  weight: FontWeight.w700,
+                  color: GuestPurchasePlanConfirmationTheme.textGrey,
+                ),
               ),
-              const SizedBox(
-                height: GuestPurchasePlanConfirmationTheme
-                    .purchaseItemLabelToTitleGap,
-              ),
+              const SizedBox(height: 2),
               Text(
                 item.title,
-                style: GuestPurchasePlanConfirmationTheme
-                    .purchaseItemTitleTextStyle,
+                style: GuestPurchasePlanConfirmationTheme.t(
+                  18,
+                  weight: FontWeight.w700,
+                ),
               ),
-              const SizedBox(
-                height: GuestPurchasePlanConfirmationTheme
-                    .purchaseItemTitleToSubtitleGap,
-              ),
+              const SizedBox(height: 2),
               Text(
                 item.subtitle,
-                style: GuestPurchasePlanConfirmationTheme
-                    .purchaseItemSubtitleTextStyle,
+                style: GuestPurchasePlanConfirmationTheme.t(
+                  11,
+                  weight: FontWeight.w700,
+                  color: GuestPurchasePlanConfirmationTheme.textGrey,
+                ),
               ),
             ],
           ),
@@ -52,53 +54,38 @@ class PurchaseItemRow extends StatelessWidget {
 
         // Price pill
         Container(
-          padding:
-              GuestPurchasePlanConfirmationTheme.purchaseItemAmountChipPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color:
-                GuestPurchasePlanConfirmationTheme.purchaseItemAmountChipColor,
-            borderRadius: BorderRadius.circular(
-              GuestPurchasePlanConfirmationTheme.purchaseItemAmountChipRadius,
+
+            color: HexColor.fromHex('#EDEBF7'),
+            border: Border.all(
+              color: GuestPurchasePlanConfirmationTheme.outlinePurple,
+              width: 1.4,
             ),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             '\$ ${item.price.toStringAsFixed(2)}',
-            style: GuestPurchasePlanConfirmationTheme
-                .purchaseItemAmountChipTextStyle,
+            style: GuestPurchasePlanConfirmationTheme.t(
+              14,
+              weight: FontWeight.w900,
+              color: GuestPurchasePlanConfirmationTheme.outlinePurple,
+            ),
           ),
         ),
 
-        const SizedBox(
-          width:
-              GuestPurchasePlanConfirmationTheme.purchaseItemPriceToDeleteGap,
-        ),
+        const SizedBox(width: 10),
 
         // Trash
         InkWell(
           onTap: onRemove,
           borderRadius: BorderRadius.circular(10),
           child: const Padding(
-            padding: EdgeInsets.all(
-              GuestPurchasePlanConfirmationTheme.purchaseItemDeleteTapPadding,
-            ),
-            child: _TrashIcon(),
+            padding: EdgeInsets.all(6),
+            child: Icon(Icons.delete_outline, size: 18),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _TrashIcon extends StatelessWidget {
-  const _TrashIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    return SvgPicture.asset(
-      AssetConstant.trashIconSVG,
-      width: GuestPurchasePlanConfirmationTheme.purchaseItemDeleteIconSize,
-      height: GuestPurchasePlanConfirmationTheme.purchaseItemDeleteIconSize,
-      fit: BoxFit.contain,
     );
   }
 }

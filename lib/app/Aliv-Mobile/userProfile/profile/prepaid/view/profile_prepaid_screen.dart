@@ -19,9 +19,9 @@ class ProfilePrepaidScreen extends StatelessWidget {
     return RepositoryProvider(
       create: (_) => ProfilePrepaidRepository(),
       child: BlocProvider(
-        create: (ctx) => ProfilePrepaidBloc(
-          repository: ctx.read<ProfilePrepaidRepository>(),
-        )..add(const ProfilePrepaidStarted()),
+        create: (ctx) =>
+            ProfilePrepaidBloc(repository: ctx.read<ProfilePrepaidRepository>())
+              ..add(const ProfilePrepaidStarted()),
         child: const _ProfilePrepaidView(),
       ),
     );
@@ -35,7 +35,7 @@ class _ProfilePrepaidView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<ProfilePrepaidBloc, ProfilePrepaidState>(
       listenWhen: (p, c) =>
-      p.backRequestId != c.backRequestId ||
+          p.backRequestId != c.backRequestId ||
           p.openRouteRequestId != c.openRouteRequestId,
       listener: (context, state) {
         if (state.backRequestId > 0) {
@@ -86,38 +86,46 @@ class _ProfilePrepaidView extends StatelessWidget {
                                 );
                               }
 
-                              return Column(
-                                children: [
-                                  const Divider(
-                                    height: 1,
-                                    thickness: 1,
-                                    color: ProfilePrepaidTheme.divider,
-                                  ),
-                                  ...state.items.map((item) {
-                                    return ProfileMenuItemTile(
-                                      title: item.title,
-                                      enabled: item.enabled,
-                                      onTap: () {
-                                        if (item.id == 'my_profile') {
-                                          context.push(
-                                            AppRoutes.myProfilePrepaidScreen,
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Column(
+                                  children: [
+                                    const Divider(
+                                      height: 1,
+                                      thickness: 1,
+                                      color: ProfilePrepaidTheme.divider,
+                                    ),
+                                    ...state.items.map((item) {
+                                      return ProfileMenuItemTile(
+                                        title: item.title,
+                                        enabled: item.enabled,
+                                        onTap: () {
+                                          if (item.id == 'my_profile') {
+                                            context.push(
+                                              AppRoutes.myProfilePrepaidScreen,
+                                            );
+                                          }
+                                          if (item.id == 'my_plans') {
+                                            context.go(AppRoutes.usage);
+
+                                          }
+
+                                          if (item.id == 'call_logs') {
+                                            context.push('${AppRoutes.callLogs}?tab=call_logs',);
+                                          }
+                                          if (item.id == 'rewards') {
+                                            context.push(
+                                              AppRoutes.rewardPrepaidScreen,
+                                            );
+                                          }
+                                          context.read<ProfilePrepaidBloc>().add(
+                                            ProfilePrepaidItemPressed(item),
                                           );
-                                        }
-                                        if (item.id == 'call_logs') {
-                                          context.push(AppRoutes.callLogs);
-                                        }
-                                        if (item.id == 'rewards') {
-                                          context.push(
-                                            AppRoutes.rewardPrepaidScreen,
-                                          );
-                                        }
-                                        context.read<ProfilePrepaidBloc>().add(
-                                          ProfilePrepaidItemPressed(item),
-                                        );
-                                      },
-                                    );
-                                  }),
-                                ],
+                                        },
+                                      );
+                                    }),
+                                  ],
+                                ),
                               );
                             },
                           ),

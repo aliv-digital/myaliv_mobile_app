@@ -23,8 +23,8 @@ class ActionTile extends StatelessWidget {
           // Icon(iconPath, color: HomeScreen.purple),
           SvgPicture.asset(
             iconPath,
-            width: 34,
-            height: 34,
+            width: 30,
+            height: 30,
             // color: HomeScreen.purple,
           ),
 

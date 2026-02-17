@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../model/guest_pay_bill_models.dart';
 import '../theme/guest_pay_bill_theme.dart';
@@ -33,7 +32,6 @@ class GuestPayBillServiceDropdown extends StatelessWidget {
             style: TextStyle(
               color: GuestPayBillTheme.labelText,
               fontSize: 13,
-              fontFamily: AppConstants.defaultFontFamily,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -46,7 +44,6 @@ class GuestPayBillServiceDropdown extends StatelessWidget {
                     service.label,
                     style: const TextStyle(
                       fontSize: 13,
-                      fontFamily: AppConstants.defaultFontFamily,
                       fontWeight: FontWeight.w500,
                       color: GuestPayBillTheme.labelText,
                     ),

@@ -86,7 +86,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(28, 34, 28, 18),
+                      padding: const EdgeInsets.fromLTRB(42, 24, 42, 24),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -94,7 +94,8 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                             child: Column(
                               children: [
                                 const EnterPasswordPostpaidHeader(),
-                                const SizedBox(height: 22),
+                                const SizedBox(height: 28),
+
                                 BlocBuilder<EnterPasswordPostpaidBloc,
                                     EnterPasswordPostpaidState>(
                                   buildWhen: (p, c) =>
@@ -117,9 +118,9 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                   },
                                 ),
 
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 20),
                                 const EnterPasswordPostpaidTermsText(),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 30),
 
                                 BlocBuilder<EnterPasswordPostpaidBloc,
                                     EnterPasswordPostpaidState>(
@@ -142,9 +143,11 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 22),
+
+                                const SizedBox(height: 38),
                                 const EnterPasswordPostpaidOrDivider(),
-                                const SizedBox(height: 18),
+                                const SizedBox(height: 30),
+
                                 EnterPasswordPostpaidBiometricButtons(
                                   onFaceId: () => context
                                       .read<EnterPasswordPostpaidBloc>()

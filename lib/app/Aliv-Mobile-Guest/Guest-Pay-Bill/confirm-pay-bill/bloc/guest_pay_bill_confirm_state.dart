@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import '../model/guest_pay_bill_confirm_models.dart';
 
 enum GuestPayBillConfirmLoadStatus { initial, loading, ready, failure }
-
 enum GuestPayBillConfirmPayStatus { idle, loading, success, failure }
 
 class GuestPayBillConfirmState extends Equatable {
@@ -10,7 +9,6 @@ class GuestPayBillConfirmState extends Equatable {
 
   final GuestPayBillConfirmLoadStatus loadStatus;
   final GuestPayBillConfirmPayStatus payStatus;
-  final bool isTermsChecked;
 
   final double vat;
   final String? errorMessage;
@@ -19,7 +17,6 @@ class GuestPayBillConfirmState extends Equatable {
     required this.args,
     required this.loadStatus,
     required this.payStatus,
-    required this.isTermsChecked,
     required this.vat,
     required this.errorMessage,
   });
@@ -31,7 +28,6 @@ class GuestPayBillConfirmState extends Equatable {
       args: args,
       loadStatus: GuestPayBillConfirmLoadStatus.initial,
       payStatus: GuestPayBillConfirmPayStatus.idle,
-      isTermsChecked: false,
       vat: 0.0,
       errorMessage: null,
     );
@@ -43,7 +39,6 @@ class GuestPayBillConfirmState extends Equatable {
   GuestPayBillConfirmState copyWith({
     GuestPayBillConfirmLoadStatus? loadStatus,
     GuestPayBillConfirmPayStatus? payStatus,
-    bool? isTermsChecked,
     double? vat,
     String? errorMessage,
   }) {
@@ -51,19 +46,11 @@ class GuestPayBillConfirmState extends Equatable {
       args: args,
       loadStatus: loadStatus ?? this.loadStatus,
       payStatus: payStatus ?? this.payStatus,
-      isTermsChecked: isTermsChecked ?? this.isTermsChecked,
       vat: vat ?? this.vat,
       errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [
-        args,
-        loadStatus,
-        payStatus,
-        isTermsChecked,
-        vat,
-        errorMessage,
-      ];
+  List<Object?> get props => [args, loadStatus, payStatus, vat, errorMessage];
 }

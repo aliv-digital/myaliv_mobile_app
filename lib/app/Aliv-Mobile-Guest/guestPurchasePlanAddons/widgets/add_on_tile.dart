@@ -23,20 +23,17 @@ class AddOnTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = GuestPurchasePlanAddOnsTheme.outlinePurple;
-    final cardRadius =
-        BorderRadius.circular(GuestPurchasePlanAddOnsTheme.addOnCardRadius);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () => onChanged(!selected),
-        borderRadius: cardRadius,
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
             color: GuestPurchasePlanAddOnsTheme.cardWhite,
-            borderRadius: cardRadius,
-            border:
-                selected ? Border.all(color: borderColor, width: 1.2) : null,
+            borderRadius: BorderRadius.circular(12),
+            border: selected ? Border.all(color: borderColor, width: 1.2) : null,
             boxShadow: const [
               BoxShadow(
                 blurRadius: 16,
@@ -46,7 +43,7 @@ class AddOnTile extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: GuestPurchasePlanAddOnsTheme.addOnCardPadding,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -66,9 +63,7 @@ class AddOnTile extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(
-                    height: GuestPurchasePlanAddOnsTheme
-                        .addOnCardTitleToDetailsGap),
+                const SizedBox(height: 16),
 
                 Row(
                   children: [
@@ -76,16 +71,12 @@ class AddOnTile extends StatelessWidget {
                       child: Row(
                         children: [
                           _DataIcon(),
-                          const SizedBox(
-                              width: GuestPurchasePlanAddOnsTheme
-                                  .addOnCardIconToLabelGap),
+                          const SizedBox(width: 2),
                           Text(
                             item.subtitleLabel,
                             style: GuestPurchasePlanAddOnsTheme.addOnLabel,
                           ),
-                          const SizedBox(
-                              width: GuestPurchasePlanAddOnsTheme
-                                  .addOnCardLabelToValueGap),
+                          const SizedBox(width: 6),
                           Text(
                             item.subtitleValue,
                             style: GuestPurchasePlanAddOnsTheme.addOnValue,
@@ -96,14 +87,10 @@ class AddOnTile extends StatelessWidget {
 
                     // price chip
                     Container(
-                      padding:
-                          GuestPurchasePlanAddOnsTheme.addOnAmountChipPadding,
+                      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
                       decoration: BoxDecoration(
-                        color:
-                            GuestPurchasePlanAddOnsTheme.addOnAmountChipColor,
-                        borderRadius: BorderRadius.circular(
-                          GuestPurchasePlanAddOnsTheme.addOnAmountChipRadius,
-                        ),
+                        border: Border.all(color: borderColor, width: 1),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '${item.currencySymbol} ${item.price.toStringAsFixed(2)}',
@@ -130,27 +117,20 @@ class _SquareCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = GuestPurchasePlanAddOnsTheme.outlinePurple;
-    final checkboxRadius = BorderRadius.circular(
-      GuestPurchasePlanAddOnsTheme.addOnCheckboxRadius,
-    );
 
     return InkWell(
       onTap: () => onChanged(!value),
-      borderRadius: checkboxRadius,
+      borderRadius: BorderRadius.circular(4),
       child: Container(
-        width: GuestPurchasePlanAddOnsTheme.addOnCheckboxSize,
-        height: GuestPurchasePlanAddOnsTheme.addOnCheckboxSize,
+        width: 24,
+        height: 24,
         decoration: BoxDecoration(
-          borderRadius: checkboxRadius,
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: borderColor, width: 1),
           color: value ? borderColor : Colors.transparent,
         ),
         child: value
-            ? const Icon(
-                Icons.check,
-                size: GuestPurchasePlanAddOnsTheme.addOnCheckboxIconSize,
-                color: Colors.white,
-              )
+            ? const Icon(Icons.check, size: 16, color: Colors.white)
             : const SizedBox.shrink(),
       ),
     );

@@ -18,7 +18,6 @@ dependencies:
   fluttertoast: ^9.0.0
   equatable: ^2.0.7
   country_picker: ^2.0.27
-  country_pickers: ^3.0.1
   flutter_svg: ^2.2.3
   iconsax_plus: ^1.0.0
   intl: ^0.20.2
@@ -27,6 +26,8 @@ dependencies:
   url_launcher: ^6.3.2
   table_calendar: ^3.2.0
   dropdown_button2: ^2.3.9
+  animated_toggle_switch: ^0.8.7
+
 
 dev_dependencies:
   flutter_test:
@@ -46,3 +47,4 @@ flutter:
         - asset: assets/fonts/CircularPro-Bold.otf
         - asset: assets/fonts/CircularPro-Book.otf
           weight: 700
+

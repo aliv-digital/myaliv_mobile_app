@@ -40,8 +40,7 @@ class HomeHeader extends StatelessWidget {
                 ],
               ),
               const SizedBox(width: 12),
-
-              ///notification removed
+              // const Icon(IconsaxPlusLinear.notification, color: Colors.white),
               // Stack(
               //   children: [
               //     Container(
@@ -65,7 +64,7 @@ class HomeHeader extends StatelessWidget {
               // ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 25),
           Text(
             'welcome back, Alicia',
             textAlign: TextAlign.center,

@@ -13,16 +13,13 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
     on<GuestPurchasePlanConfirmationStarted>(_onStarted);
     on<GuestPurchasePlanConfirmationRemoveItemPressed>(_onRemoveItem);
     on<GuestPurchasePlanConfirmationTermsPressed>(_onTerms);
-    on<GuestPurchasePlanConfirmationTermsCheckboxToggled>(
-      _onTermsCheckboxToggled,
-    );
     on<GuestPurchasePlanConfirmationPayNowPressed>(_onPayNow);
   }
 
   Future<void> _onStarted(
-    GuestPurchasePlanConfirmationStarted event,
-    Emitter<GuestPurchasePlanConfirmationState> emit,
-  ) async {
+      GuestPurchasePlanConfirmationStarted event,
+      Emitter<GuestPurchasePlanConfirmationState> emit,
+      ) async {
     emit(state.copyWith(status: GuestPurchasePlanConfirmationStatus.loading));
 
     try {
@@ -40,9 +37,9 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
   }
 
   void _onRemoveItem(
-    GuestPurchasePlanConfirmationRemoveItemPressed event,
-    Emitter<GuestPurchasePlanConfirmationState> emit,
-  ) {
+      GuestPurchasePlanConfirmationRemoveItemPressed event,
+      Emitter<GuestPurchasePlanConfirmationState> emit,
+      ) {
     final data = state.data;
     if (data == null) return;
 
@@ -64,25 +61,16 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
   }
 
   void _onTerms(
-    GuestPurchasePlanConfirmationTermsPressed event,
-    Emitter<GuestPurchasePlanConfirmationState> emit,
-  ) {
+      GuestPurchasePlanConfirmationTermsPressed event,
+      Emitter<GuestPurchasePlanConfirmationState> emit,
+      ) {
     emit(state.copyWith(openTermsRequestId: state.openTermsRequestId + 1));
   }
 
-  void _onTermsCheckboxToggled(
-    GuestPurchasePlanConfirmationTermsCheckboxToggled event,
-    Emitter<GuestPurchasePlanConfirmationState> emit,
-  ) {
-    emit(state.copyWith(isTermsChecked: event.isChecked));
-  }
-
   void _onPayNow(
-    GuestPurchasePlanConfirmationPayNowPressed event,
-    Emitter<GuestPurchasePlanConfirmationState> emit,
-  ) {
-    if (!state.isTermsChecked) return;
-
+      GuestPurchasePlanConfirmationPayNowPressed event,
+      Emitter<GuestPurchasePlanConfirmationState> emit,
+      ) {
     // Future: call API to create payment intent etc.
     emit(state.copyWith(payNowRequestId: state.payNowRequestId + 1));
   }

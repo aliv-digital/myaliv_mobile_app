@@ -1,11 +1,11 @@
 // lib/features/guest_top_up/guest_top_up/view/guest_top_up_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/defaultButton.dart';
@@ -23,14 +23,8 @@ class GuestTopUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) {
-        final bloc = GuestTopUpBloc(repository: const GuestTopUpRepository());
-
-        // Initialize default state values when this screen opens.
-        bloc.add(const GuestTopUpStarted());
-
-        return bloc;
-      },
+      create: (_) => GuestTopUpBloc(repository: const GuestTopUpRepository())
+        ..add(const GuestTopUpStarted()),
       child: const _GuestTopUpView(),
     );
   }
@@ -47,58 +41,19 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   static const CountryInfo _defaultCountry = CountryInfo(
     flagEmoji: '🇧🇸',
     dialCode: '1',
-    isoCode: 'BS',
   );
 
   CountryInfo _selectedCountry = _defaultCountry;
-
-  void _showErrorSnackBar(String? errorMessage) {
-    final resolvedMessage =
-        errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          resolvedMessage,
-          style: GuestTopUpTheme.snackBarText,
-        ),
-      ),
-    );
-  }
-
-  void _goToConfirmTopUp() {
-    context.push(AppRoutes.confirmGuestTopUp);
-  }
 
   void _pickCountry() {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
-      // Keep using the previous package while rendering flat flag assets.
-      customFlagBuilder: (Country country) {
-        // `country_pickers` does not include `ac.png`, so map AC -> SH asset.
-        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
-            ? 'sh'
-            : country.countryCode.toLowerCase();
-
-        return Image.asset(
-          'assets/$assetIsoCode.png',
-          package: 'country_pickers',
-          width: 26,
-          height: 20,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Text(country.flagEmoji,
-                style: const TextStyle(fontSize: 18));
-          },
-        );
-      },
-      onSelect: (Country country) {
+      onSelect: (country) {
         setState(() {
           _selectedCountry = CountryInfo(
             flagEmoji: country.flagEmoji,
             dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
-            isoCode: country.countryCode,
           );
         });
       },
@@ -107,20 +62,30 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
+
     return Scaffold(
-      backgroundColor: GuestTopUpTheme.screenBackgroundColor,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: BlocListener<GuestTopUpBloc, GuestTopUpState>(
-          listenWhen: (previousState, currentState) {
-            final hasStatusChanged =
-                previousState.status != currentState.status;
-            final isFailureState =
-                currentState.status == GuestTopUpStatus.failure;
-
-            return hasStatusChanged && isFailureState;
-          },
+          listenWhen: (prev, curr) =>
+              prev.status != curr.status &&
+              curr.status == GuestTopUpStatus.failure,
           listener: (context, state) {
-            _showErrorSnackBar(state.errorMessage);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  state.errorMessage ?? 'll',
+                  style: GuestTopUpTheme.snackBarText,
+                ),
+              ),
+            );
           },
           child: Column(
             children: [
@@ -134,72 +99,55 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
               Expanded(
                 child: CustomScrollView(
                   slivers: [
-                    // 1) Active prepaid number
+                    // enter phone number
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: GuestTopUpTheme.activePrepaidTopGap,
-                          left: GuestTopUpTheme.activePrepaidHorizontal,
-                          right: GuestTopUpTheme.activePrepaidHorizontal,
-                        ),
-                        child: CustomCountryPhoneInputRow(
-                          labelText: GuestTopUpTheme.activePrepaidLabel,
-                          labelStyle: GuestTopUpTheme.activePrepaidPrompt,
-                          hintText: GuestTopUpTheme.phoneHintText,
-                          flagEmoji: _selectedCountry.flagEmoji,
-                          dialCode: _selectedCountry.dialCode,
-                          countryIsoCode: _selectedCountry.isoCode,
-                          onTapCountryPicker: _pickCountry,
-                          onChanged: (value) {},
-                        ),
+                        padding: EdgeInsets.only(top: 25, left: 23, right: 23),
+                        child: LabeledInputField(
+                            label:
+                                'please enter an active prepaid number to top up',
+                            hintText: 'eg: 2428999999',
+                            country: _selectedCountry,
+                            enableCountryPicker: true,
+                            onPickCountry: _pickCountry,
+                            onChanged: (v) {}),
+                      ),
+                    ),
+                    // confirm phone number
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 20, left: 23, right: 23),
+                        child: LabeledInputField(
+                            label: 'confirm mobile number',
+                            hintText: 'eg: 2428999999',
+                            country: _selectedCountry,
+                            enableCountryPicker: false,
+                            onPickCountry: _pickCountry,
+                            onChanged: (v) {}),
                       ),
                     ),
 
-                    // 2) Confirm mobile number
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.only(top: 20, left: 23, right: 23),
-                        child: CustomCountryPhoneInputRow(
-                          labelText: GuestTopUpTheme.confirmMobileLabel,
-                          hintText: GuestTopUpTheme.phoneHintText,
-                          flagEmoji: _selectedCountry.flagEmoji,
-                          enableCountryPicker: false,
-                          showCountryArrow: false,
-                          dialCode: _selectedCountry.dialCode,
-                          countryIsoCode: _selectedCountry.isoCode,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ),
-
-                    // 3) Top-up amount
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 44, bottom: 44),
-                        child: GradientInputField(
-                          label: GuestTopUpTheme.amountLabel,
-                          hint: GuestTopUpTheme.amountHintText,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ),
-
-                    // 4) Next button
+                        child: Padding(
+                      padding: EdgeInsets.only(top: 44, bottom: 44),
+                      child: GradientInputField(
+                          label: 'enter top up amount',
+                          hint: '00.00',
+                          onChanged: (value) {}),
+                    )),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 43, right: 43),
                         child: BlocBuilder<GuestTopUpBloc, GuestTopUpState>(
                           builder: (context, state) {
                             return DefaultButton(
-                              height: 40,
                               backgroundColor: HexColor.fromHex('FF645D9C'),
                               onPressed: () {
-                                _goToConfirmTopUp();
+                                context.push(AppRoutes.confirmGuestTopUp);
                               },
                               fontWeight: FontWeight.w400,
                               fontSize: 13,
-                              label: GuestTopUpTheme.nextButtonLabel,
+                              label: 'next',
                               isLoading: false,
                             );
                           },
@@ -216,3 +164,49 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     );
   }
 }
+
+// class _TopBar extends StatelessWidget {
+//   const _TopBar({
+//     required this.title,
+//     required this.onBack,
+//   });
+//
+//   final String title;
+//   final VoidCallback onBack;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       height: 56,
+//       width: double.infinity,
+//       color: ColorManager.blueColor,
+//       padding: const EdgeInsets.symmetric(horizontal: 12),
+//       child: Row(
+//         children: [
+//           IconButton(
+//             onPressed: onBack,
+//             icon: const Icon(Icons.arrow_back_ios_new_rounded),
+//             color: Colors.white,
+//             iconSize: 20,
+//             splashRadius: 22,
+//           ),
+//           const SizedBox(width: 4),
+//           Expanded(
+//             child: Text(
+//               title,
+//               maxLines: 1,
+//               overflow: TextOverflow.ellipsis,
+//               style: const TextStyle(
+//                 fontSize: 16,
+//                 height: 1.25,
+//                 fontFamily: 'CircularPro',
+//                 fontWeight: FontWeight.w600,
+//                 color: Colors.white,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

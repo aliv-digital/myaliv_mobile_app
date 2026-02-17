@@ -1,7 +1,7 @@
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -13,7 +13,6 @@ import '../bloc/guest_pay_bill_state.dart';
 import '../model/guest_pay_bill_models.dart';
 import '../theme/guest_pay_bill_theme.dart';
 import '../widgets/guest_pay_bill_country_code_picker_box.dart';
-import '../widgets/guest_pay_bill_focused_text_field.dart';
 import '../widgets/guest_pay_bill_inline_verify_field.dart';
 import '../widgets/guest_pay_bill_primary_submit_button.dart';
 import '../widgets/guest_pay_bill_read_only_box.dart';
@@ -26,14 +25,7 @@ class GuestPayBillScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) {
-        final bloc = GuestPayBillBloc();
-
-        // Populate available services when the screen opens.
-        bloc.add(const GuestPayBillStarted());
-
-        return bloc;
-      },
+      create: (_) => GuestPayBillBloc()..add(const GuestPayBillStarted()),
       child: const _GuestPayBillView(),
     );
   }
@@ -41,42 +33,10 @@ class GuestPayBillScreen extends StatelessWidget {
 
 class _GuestPayBillView extends StatelessWidget {
   const _GuestPayBillView();
-
-  GuestPayBillBloc _bloc(BuildContext context) {
-    return context.read<GuestPayBillBloc>();
-  }
-
-  void _applySystemStatusBarStyle() {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-  }
-
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: GuestPayBillTheme.snackBarTextStyle,
-        ),
-      ),
-    );
-  }
-
-  void _onBlocStateChanged(BuildContext context, GuestPayBillState state) {
-    final errorMessage = state.errorMessage;
-    if (errorMessage != null && errorMessage.isNotEmpty) {
-      _showSnackBar(context, errorMessage);
-    }
-
-    if (state.submitStatus == GuestPayBillSubmitStatus.success) {
-      _showSnackBar(context, GuestPayBillTheme.submitSuccessMessage);
-    }
-  }
+  static const double _contentTopGapAfterAppBar = 32;
+  static const double _labelToFieldGap = 8;
+  static const double _sectionGap = 16;
+  static const double _submitTopGap = 30;
 
   void _pickCountry(BuildContext context) {
     showCountryPicker(
@@ -85,69 +45,283 @@ class _GuestPayBillView extends StatelessWidget {
       onSelect: (country) {
         final normalizedPhoneCode =
             country.phoneCode.replaceAll(' ', '').split('-').first;
-
-        final bloc = _bloc(context);
-        bloc.add(
-          GuestPayBillCountryChanged(
-            PayBillCountry(
-              flagEmoji: country.flagEmoji,
-              dialCode: normalizedPhoneCode,
-            ),
-          ),
-        );
+        context.read<GuestPayBillBloc>().add(
+              GuestPayBillCountryChanged(
+                PayBillCountry(
+                  flagEmoji: country.flagEmoji,
+                  dialCode: normalizedPhoneCode,
+                ),
+              ),
+            );
       },
     );
   }
 
-  void _onServiceChanged(BuildContext context, BillService? service) {
-    final bloc = _bloc(context);
-    bloc.add(GuestPayBillServiceChanged(service));
-  }
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
 
-  void _onMobileChanged(BuildContext context, String value) {
-    final bloc = _bloc(context);
-    bloc.add(GuestPayBillMobileChanged(value));
-  }
+    return BlocListener<GuestPayBillBloc, GuestPayBillState>(
+      listenWhen: (p, c) =>
+          p.errorMessage != c.errorMessage ||
+          p.submitStatus != c.submitStatus ||
+          p.verifyStatus != c.verifyStatus,
+      listener: (context, state) {
+        if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+        }
 
-  void _onConfirmMobileChanged(BuildContext context, String value) {
-    final bloc = _bloc(context);
-    bloc.add(GuestPayBillConfirmMobileChanged(value));
-  }
+        if (state.submitStatus == GuestPayBillSubmitStatus.success) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Payment submitted')));
+        }
+      },
+      child: Scaffold(
+        backgroundColor: GuestPayBillTheme.pageBg,
+        body: SafeArea(
+          child: Column(
+            children: [
+              DefaultAppBar(
+                title: 'pay bills',
+                backgroundColor: GuestPayBillTheme.primary,
+                onBack: () {
+                  context.pop();
+                },
+              ),
+              Expanded(
+                child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(
+                  builder: (context, state) {
+                    if (state.loadStatus == GuestPayBillLoadStatus.loading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-  void _onAccountNumberChanged(BuildContext context, String value) {
-    final bloc = _bloc(context);
-    bloc.add(GuestPayBillAccountNumberChanged(value));
-  }
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(
+                        23,
+                        _contentTopGapAfterAppBar,
+                        23,
+                        18,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const GuestPayBillRequiredLabel(
+                            text: 'select service',
+                          ),
+                          const SizedBox(height: _labelToFieldGap),
+                          GuestPayBillServiceDropdown(
+                            services: state.services,
+                            selected: state.selectedService,
+                            onChanged: (s) => context
+                                .read<GuestPayBillBloc>()
+                                .add(GuestPayBillServiceChanged(s)),
+                          ),
+                          const SizedBox(height: _labelToFieldGap),
+                          Text(
+                            'please select a service to complete the bill pay transaction',
+                            style: GuestPayBillTheme.helperStyle(),
+                          ),
+                          const SizedBox(height: _sectionGap),
 
-  void _onNameChanged(BuildContext context, String value) {
-    final bloc = _bloc(context);
-    bloc.add(GuestPayBillNameChanged(value));
-  }
+                          // =========================
+                          // Dynamic form by service
+                          // =========================
+                          if (state.isAlivPostpaid) ...[
+                            Text(
+                              'mobile number',
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
+                            const SizedBox(height: _labelToFieldGap),
+                            Row(
+                              children: [
+                                GuestPayBillCountryCodePickerBox(
+                                  country: state.selectedCountry,
+                                  showArrow: true,
+                                  onTap: () => _pickCountry(context),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextField(
+                                    keyboardType: TextInputType.phone,
+                                    onChanged: (v) => context
+                                        .read<GuestPayBillBloc>()
+                                        .add(GuestPayBillMobileChanged(v)),
+                                    decoration:
+                                        GuestPayBillTheme.fieldDecoration(
+                                      hint: 'eg: 2428999999',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: _sectionGap),
+                            Text(
+                              'confirm mobile number',
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
+                            const SizedBox(height: _labelToFieldGap),
+                            Row(
+                              children: [
+                                GuestPayBillCountryCodePickerBox(
+                                  country: state.selectedCountry,
+                                  showArrow: false,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: GuestPayBillInlineVerifyField(
+                                    hint: 'eg: 2428999999',
+                                    keyboardType: TextInputType.phone,
+                                    loading: state.verifyStatus ==
+                                        GuestPayBillVerifyStatus.loading,
+                                    enabled: state.canVerify,
+                                    onChanged: (v) => context
+                                        .read<GuestPayBillBloc>()
+                                        .add(
+                                          GuestPayBillConfirmMobileChanged(v),
+                                        ),
+                                    onSubmit: () => context
+                                        .read<GuestPayBillBloc>()
+                                        .add(const GuestPayBillVerifyPressed()),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ] else ...[
+                            Text(
+                              state.accountIdentifierLabel,
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
+                            const SizedBox(height: _labelToFieldGap),
+                            TextField(
+                              keyboardType: state.isAlivFibr
+                                  ? TextInputType.text
+                                  : TextInputType.number,
+                              onChanged: (v) => context
+                                  .read<GuestPayBillBloc>()
+                                  .add(GuestPayBillAccountNumberChanged(v)),
+                              decoration: GuestPayBillTheme.fieldDecoration(
+                                hint: state.accountIdentifierHint,
+                              ),
+                            ),
+                            const SizedBox(height: _sectionGap),
+                            Text('name', style: GuestPayBillTheme.labelStyle()),
+                            const SizedBox(height: _labelToFieldGap),
+                            GuestPayBillInlineVerifyField(
+                              hint: 'enter name',
+                              keyboardType: TextInputType.text,
+                              loading: state.verifyStatus ==
+                                  GuestPayBillVerifyStatus.loading,
+                              enabled: state.canVerify,
+                              onChanged: (v) => context
+                                  .read<GuestPayBillBloc>()
+                                  .add(GuestPayBillNameChanged(v)),
+                              onSubmit: () => context
+                                  .read<GuestPayBillBloc>()
+                                  .add(const GuestPayBillVerifyPressed()),
+                            ),
+                          ],
 
-  void _onAmountChanged(BuildContext context, String value) {
-    final bloc = _bloc(context);
-    bloc.add(GuestPayBillAmountChanged(value));
-  }
+                          const SizedBox(height: _sectionGap),
+                          Text(
+                            'account status',
+                            style: GuestPayBillTheme.labelStyle(),
+                          ),
+                          const SizedBox(height: _labelToFieldGap),
+                          GuestPayBillReadOnlyBox(
+                            text: state.accountInfo?.status ?? '------',
+                          ),
 
-  void _onVerifyPressed(BuildContext context) {
-    final bloc = _bloc(context);
-    bloc.add(const GuestPayBillVerifyPressed());
-  }
+                          // REV only
+                          if (!state.isAlivPostpaid) ...[
+                            const SizedBox(height: _sectionGap),
+                            Text(
+                              'account balance',
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
+                            const SizedBox(height: _labelToFieldGap),
+                            Text(
+                              state.accountInfo?.balance == null
+                                  ? '------'
+                                  : _money(state.accountInfo!.balance!),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: GuestPayBillTheme.labelText,
+                              ),
+                            ),
+                          ],
 
-  void _onSubmitPressed(BuildContext context, GuestPayBillState state) {
-    final bloc = _bloc(context);
-    bloc.add(const GuestPayBillSubmitPressed());
+                          const SizedBox(height: _sectionGap),
+                          Text(
+                            'enter a custom amount',
+                            style: GuestPayBillTheme.labelStyle(),
+                          ),
+                          const SizedBox(height: _labelToFieldGap),
+                          TextField(
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            onChanged: (v) => context
+                                .read<GuestPayBillBloc>()
+                                .add(GuestPayBillAmountChanged(v)),
+                            decoration: GuestPayBillTheme.fieldDecoration(
+                              hint: '\$ 0.00',
+                              prefix: const Padding(
+                                padding: EdgeInsets.only(left: 14, right: 6),
+                                child: Center(
+                                  widthFactor: 0,
+                                  child: Text(
+                                    '\$',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: GuestPayBillTheme.labelText,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
 
-    final confirmArgs = _buildConfirmArgs(state);
-    context.push(
-      AppRoutes.guestPayBillConfirm,
-      extra: confirmArgs,
+                          const SizedBox(height: _submitTopGap),
+                          GuestPayBillPrimarySubmitButton(
+                            enabled: state.canSubmit,
+                            loading: state.submitStatus ==
+                                GuestPayBillSubmitStatus.loading,
+                            onTap: () {
+                              context.read<GuestPayBillBloc>().add(
+                                    const GuestPayBillSubmitPressed(),
+                                  );
+                              final confirmArgs = _buildConfirmArgs(state);
+                              context.push(
+                                AppRoutes.guestPayBillConfirm,
+                                extra: confirmArgs,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  String _money(double amount) {
-    return '\$ ${amount.toStringAsFixed(2)}';
-  }
+  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
 
   GuestPayBillConfirmArgs _buildConfirmArgs(GuestPayBillState state) {
     final serviceName = state.selectedService?.label ?? '';
@@ -169,271 +343,10 @@ class _GuestPayBillView extends StatelessWidget {
     final digitsOnly = String.fromCharCodes(
       rawValue.codeUnits.where((unit) => unit >= 48 && unit <= 57),
     );
-
     if (digitsOnly.length != 10) {
       return rawValue;
     }
 
     return '${digitsOnly.substring(0, 3)}-${digitsOnly.substring(3, 6)}-${digitsOnly.substring(6)}';
-  }
-
-  List<Widget> _buildAlivPostpaidFields(
-    BuildContext context,
-    GuestPayBillState state,
-  ) {
-    return <Widget>[
-      Text(
-        GuestPayBillTheme.mobileNumberLabel,
-        style: GuestPayBillTheme.labelStyle(),
-      ),
-      const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
-      Row(
-        children: <Widget>[
-          GuestPayBillCountryCodePickerBox(
-            country: state.selectedCountry,
-            showArrow: true,
-            onTap: () {
-              _pickCountry(context);
-            },
-          ),
-          const SizedBox(width: GuestPayBillTheme.countryPickerToInputGap),
-          Expanded(
-            child: GuestPayBillFocusedTextField(
-              hint: GuestPayBillTheme.phoneHintText,
-              keyboardType: TextInputType.phone,
-              onChanged: (value) {
-                _onMobileChanged(context, value);
-              },
-            ),
-          ),
-        ],
-      ),
-      const SizedBox(height: GuestPayBillTheme.sectionGap),
-      Text(
-        GuestPayBillTheme.confirmMobileNumberLabel,
-        style: GuestPayBillTheme.labelStyle(),
-      ),
-      const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
-      Row(
-        children: <Widget>[
-          GuestPayBillCountryCodePickerBox(
-            country: state.selectedCountry,
-            showArrow: false,
-          ),
-          const SizedBox(width: GuestPayBillTheme.countryPickerToInputGap),
-          Expanded(
-            child: GuestPayBillInlineVerifyField(
-              hint: GuestPayBillTheme.phoneHintText,
-              keyboardType: TextInputType.phone,
-              loading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
-              enabled: state.canVerify,
-              onChanged: (value) {
-                _onConfirmMobileChanged(context, value);
-              },
-              onSubmit: () {
-                _onVerifyPressed(context);
-              },
-            ),
-          ),
-        ],
-      ),
-    ];
-  }
-
-  List<Widget> _buildNonPostpaidFields(
-    BuildContext context,
-    GuestPayBillState state,
-  ) {
-    return <Widget>[
-      Text(
-        state.accountIdentifierLabel,
-        style: GuestPayBillTheme.labelStyle(),
-      ),
-      const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
-      GuestPayBillFocusedTextField(
-        hint: state.accountIdentifierHint,
-        keyboardType:
-            state.isAlivFibr ? TextInputType.text : TextInputType.number,
-        onChanged: (value) {
-          _onAccountNumberChanged(context, value);
-        },
-      ),
-      const SizedBox(height: GuestPayBillTheme.sectionGap),
-      Text(
-        GuestPayBillTheme.nameLabel,
-        style: GuestPayBillTheme.labelStyle(),
-      ),
-      const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
-      GuestPayBillInlineVerifyField(
-        hint: GuestPayBillTheme.nameHintText,
-        keyboardType: TextInputType.text,
-        loading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
-        enabled: state.canVerify,
-        onChanged: (value) {
-          _onNameChanged(context, value);
-        },
-        onSubmit: () {
-          _onVerifyPressed(context);
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _applySystemStatusBarStyle();
-
-    return BlocListener<GuestPayBillBloc, GuestPayBillState>(
-      listenWhen: (previousState, currentState) {
-        final hasErrorChanged =
-            previousState.errorMessage != currentState.errorMessage;
-        final hasSubmitStatusChanged =
-            previousState.submitStatus != currentState.submitStatus;
-        final hasVerifyStatusChanged =
-            previousState.verifyStatus != currentState.verifyStatus;
-
-        return hasErrorChanged ||
-            hasSubmitStatusChanged ||
-            hasVerifyStatusChanged;
-      },
-      listener: (context, state) {
-        _onBlocStateChanged(context, state);
-      },
-      child: Scaffold(
-        backgroundColor: GuestPayBillTheme.pageBg,
-        body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              DefaultAppBar(
-                title: GuestPayBillTheme.appBarTitle,
-                backgroundColor: GuestPayBillTheme.primary,
-                onBack: () {
-                  context.pop();
-                },
-              ),
-              Expanded(
-                child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(
-                  builder: (context, state) {
-                    if (state.loadStatus == GuestPayBillLoadStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(
-                        GuestPayBillTheme.contentHorizontalPadding,
-                        GuestPayBillTheme.contentTopGapAfterAppBar,
-                        GuestPayBillTheme.contentHorizontalPadding,
-                        GuestPayBillTheme.contentBottomPadding,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const GuestPayBillRequiredLabel(
-                            text: GuestPayBillTheme.selectServiceLabel,
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          GuestPayBillServiceDropdown(
-                            services: state.services,
-                            selected: state.selectedService,
-                            onChanged: (selectedService) {
-                              _onServiceChanged(context, selectedService);
-                            },
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          Text(
-                            GuestPayBillTheme.selectServiceHelperText,
-                            style: GuestPayBillTheme.helperStyle(),
-                          ),
-                          const SizedBox(height: GuestPayBillTheme.sectionGap),
-
-                          // Dynamic form by selected service type.
-                          if (state.isAlivPostpaid)
-                            ..._buildAlivPostpaidFields(context, state)
-                          else
-                            ..._buildNonPostpaidFields(context, state),
-
-                          const SizedBox(height: GuestPayBillTheme.sectionGap),
-                          Text(
-                            GuestPayBillTheme.accountStatusLabel,
-                            style: GuestPayBillTheme.labelStyle(),
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          GuestPayBillReadOnlyBox(
-                            text: state.accountInfo?.status ??
-                                GuestPayBillTheme.statusPlaceholderText,
-                          ),
-
-                          if (!state.isAlivPostpaid) ...<Widget>[
-                            const SizedBox(
-                                height: GuestPayBillTheme.sectionGap),
-                            Text(
-                              GuestPayBillTheme.accountBalanceLabel,
-                              style: GuestPayBillTheme.labelStyle(),
-                            ),
-                            const SizedBox(
-                                height: GuestPayBillTheme.labelToFieldGap),
-                            Text(
-                              state.accountInfo?.balance == null
-                                  ? GuestPayBillTheme.statusPlaceholderText
-                                  : _money(state.accountInfo!.balance!),
-                              style: GuestPayBillTheme.accountBalanceValueStyle,
-                            ),
-                          ],
-
-                          const SizedBox(height: GuestPayBillTheme.sectionGap),
-                          Text(
-                            GuestPayBillTheme.customAmountLabel,
-                            style: GuestPayBillTheme.labelStyle(),
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          GuestPayBillFocusedTextField(
-                            hint: GuestPayBillTheme.amountHintText,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
-                            onChanged: (value) {
-                              _onAmountChanged(context, value);
-                            },
-                            prefix: const Padding(
-                              padding: EdgeInsets.only(
-                                left: GuestPayBillTheme.amountPrefixLeftPadding,
-                                right:
-                                    GuestPayBillTheme.amountPrefixRightPadding,
-                              ),
-                              child: Center(
-                                widthFactor: 0,
-                                child: Text(
-                                  r'$',
-                                  style: GuestPayBillTheme.amountPrefixStyle,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(
-                              height: GuestPayBillTheme.submitTopGap),
-                          GuestPayBillPrimarySubmitButton(
-                            enabled: state.canSubmit,
-                            loading: state.submitStatus ==
-                                GuestPayBillSubmitStatus.loading,
-                            onTap: () {
-                              _onSubmitPressed(context, state);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

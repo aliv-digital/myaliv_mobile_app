@@ -22,14 +22,14 @@ class RoamingCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24,20,24,20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 14,
-            offset: Offset(0, 6),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(8),
+        // boxShadow: const [
+        //   BoxShadow(
+        //     color: Colors.black12,
+        //     blurRadius: 14,
+        //     offset: Offset(0, 6),
+        //   ),
+        // ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -54,30 +54,15 @@ class RoamingCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '0',
-                  style: TextStyle(
-                    color: const Color(0xFFFA762B),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                TextSpan(
-                  text: ' of\n2 GB',
-                  style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
+          Text(
+            '1.5 of\n2 GB',
             textAlign: TextAlign.center,
+            style: TextStyle(
+              color: const Color(0xFF222222),
+              fontSize: 16,
+              fontFamily: 'Circular Pro',
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -103,7 +88,7 @@ class RoamingCard extends StatelessWidget {
                     Container(
                       height: 6,
                       width: 80,
-                      color: Color(0xFFE94408).withOpacity(0.2),
+                      color: Color(0xFF17B26A).withOpacity(0.2),
                     ),
 
                     // Gradient progress (width = percentage)
@@ -113,7 +98,7 @@ class RoamingCard extends StatelessWidget {
                       width: width,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFFF0D7CE), Color(0xFFE94408)],
+                          colors: [const Color(0x0017B26A), const Color(0xFF17B26A)],
                         ),
                       ),
                     ),

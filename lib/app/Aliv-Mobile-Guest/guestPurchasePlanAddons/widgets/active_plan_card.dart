@@ -890,7 +890,7 @@ class AutoRenewToggle extends StatelessWidget {
                 value ? 'on' : 'off',
                 style: GuestPurchasePlanAddOnsTheme.t(
                   15 * scale,
-                  weight: FontWeight.w800,
+                  weight: FontWeight.w700,
                   color: GuestPurchasePlanAddOnsTheme.textBlack,
                 ),
               ),
