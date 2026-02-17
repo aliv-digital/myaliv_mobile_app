@@ -15,7 +15,7 @@ class CreatePasswordHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(left: 16, top: 12),
+          padding: EdgeInsets.only(left: 16, top: 53),
           onPressed: () {
             context.pop();
             // custom logic

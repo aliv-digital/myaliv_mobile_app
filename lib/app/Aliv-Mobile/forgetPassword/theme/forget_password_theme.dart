@@ -33,8 +33,8 @@ class ForgetPasswordColors {
 
 class ForgetPasswordSizes {
   // Back-button placement aligned with login and loginOtp screens.
-  static const double backLeft = 16;
-  static const double backTopFromScreen = 53;
+  static const double backLeft = 16.64;
+  static const double backTopFromScreen = 53.31;
   static const double backIconWidth = 16.64;
   static const double backIconHeight = 14.43;
 
@@ -47,7 +47,7 @@ class ForgetPasswordSizes {
   static const double logoWidth = 99.24;
   static const double logoHeight = 50.79;
   static const double logoToTitleGap = 44;
-  static const double titleToSubtitleGap = 5;
+  static const double titleToSubtitleGap = 0;
   static const double subtitleWidth = 294;
 
   // Field sizes.
@@ -153,7 +153,7 @@ class ForgetPasswordGradients {
 class ForgetPasswordTheme {
   // Header title: "verify your number"
   static const TextStyle title = TextStyle(
-    fontSize: 24,
+    fontSize: 17,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     color: ForgetPasswordColors.textBlack,

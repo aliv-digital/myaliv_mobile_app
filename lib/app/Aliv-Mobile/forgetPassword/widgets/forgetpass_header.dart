@@ -63,7 +63,7 @@ class _LogoTitle extends StatelessWidget {
             style: ForgetPasswordTheme.subtitle,
           ),
         ),
-        SizedBox(height: 9)
+        SizedBox(height: 9.61)
       ],
     );
   }

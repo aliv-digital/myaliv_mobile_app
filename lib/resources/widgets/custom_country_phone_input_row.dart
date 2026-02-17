@@ -69,6 +69,8 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     this.countryFlagToDialGap = 4,
     this.countryDialToArrowGap = 2,
     this.countryArrowIconSize = 16,
+    this.countryArrowWidth,
+    this.countryArrowHeight,
     this.countryArrowColor = const Color(0xFFB0B0B5),
     this.countryArrowIcon = Icons.keyboard_arrow_down_rounded,
     this.labelToRowGap = 8,
@@ -123,6 +125,9 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final double countryFlagToDialGap;
   final double countryDialToArrowGap;
   final double countryArrowIconSize;
+  // Optional explicit arrow bounds for pixel-perfect UI (e.g. 9x6).
+  final double? countryArrowWidth;
+  final double? countryArrowHeight;
   final Color countryArrowColor;
   final IconData countryArrowIcon;
   final double labelToRowGap;
@@ -293,11 +298,26 @@ class _CustomCountryPhoneInputRowState
                   Text(widget.dialCode, style: resolvedDialStyle),
                   if (widget.showCountryArrow) ...[
                     SizedBox(width: widget.countryDialToArrowGap),
-                    Icon(
-                      widget.countryArrowIcon,
-                      size: widget.countryArrowIconSize,
-                      color: widget.countryArrowColor,
-                    ),
+                    if (widget.countryArrowWidth != null &&
+                        widget.countryArrowHeight != null)
+                      SizedBox(
+                        width: widget.countryArrowWidth,
+                        height: widget.countryArrowHeight,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Icon(
+                            widget.countryArrowIcon,
+                            size: widget.countryArrowIconSize,
+                            color: widget.countryArrowColor,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        widget.countryArrowIcon,
+                        size: widget.countryArrowIconSize,
+                        color: widget.countryArrowColor,
+                      ),
                   ],
                 ],
               ),

@@ -114,7 +114,7 @@ class _CreatePasswordView extends StatelessWidget {
 
                             Text(
                               'your password should contain letters and/or\n'
-                                  'numbers and be at least 4 characters long.',
+                                  'numbers and be at least 8 characters long.',
                               textAlign: TextAlign.center,
                               style: CreatePasswordTheme.helperText,
                             ),

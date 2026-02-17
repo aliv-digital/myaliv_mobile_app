@@ -39,7 +39,7 @@ class AuthModuleColors {
 class AuthModuleSizes {
   // Header placement values measured from full screen top.
   static const double backLeft = 16.64;
-  static const double backTopFromScreen = 40.31;
+  static const double backTopFromScreen = 53.31;
   static const double logoTopFromScreen = 60;
   static const double backIconWidth = 16.64;
   static const double backIconHeight = 14.43;
@@ -178,7 +178,7 @@ class AuthModuleTextStyles {
 
   // Header title style below ALIV logo.
   static const TextStyle welcomeBack = TextStyle(
-    fontSize: 24,
+    fontSize: 17,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     color: AuthModuleColors.textBlack,
