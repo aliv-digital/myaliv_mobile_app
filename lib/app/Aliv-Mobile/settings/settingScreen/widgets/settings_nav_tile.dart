@@ -32,8 +32,8 @@ class SettingsNavTile extends StatelessWidget {
               ),
               SvgPicture.asset(
                 AssetConstant.arrowRightIconSVG,
-                width: 24,
-                height: 24,
+                width: 20,
+                height: 20,
                 fit: BoxFit.contain,
               ),
             ],
