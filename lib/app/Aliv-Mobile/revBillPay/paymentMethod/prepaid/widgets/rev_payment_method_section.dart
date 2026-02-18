@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../model/rev_payment_method_prepaid_models.dart';
 import '../theme/rev_payment_method_prepaid_theme.dart';
 import 'rev_payment_method_tile.dart';
@@ -20,7 +22,7 @@ class RevPaymentMethodSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+      padding: RevPaymentMethodPrepaidTheme.sectionContentPadding,
       decoration: BoxDecoration(
         color: RevPaymentMethodPrepaidTheme.cardBg,
         borderRadius: BorderRadius.circular(10),
@@ -35,31 +37,46 @@ class RevPaymentMethodSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('payment method', style: RevPaymentMethodPrepaidTheme.sectionTitle),
-          const SizedBox(height: 10),
+          Text(
+            'payment method',
+            textAlign: TextAlign.center,
+            style: RevPaymentMethodPrepaidTheme.sectionTitle,
+          ),
+          const SizedBox(height: RevPaymentMethodPrepaidTheme.sectionTitleToFirstCardGap),
 
-          for (final m in methods) ...[
+          for (int i = 0; i < methods.length; i++) ...[
             RevPaymentMethodTile(
-              logoSvgAsset: m.logoSvgAsset,
-              title: '${_brandText(m)} ending in ${m.ending}',
-              subtitle: 'expiry ${m.expiry}',
-              selected: selectedId == m.id,
-              onTap: () => onSelect(m.id),
+              logoSvgAsset: methods[i].logoSvgAsset,
+              title: '${_brandText(methods[i])} ending in ${methods[i].ending}',
+              subtitle: 'expiry ${methods[i].expiry}',
+              selected: selectedId == methods[i].id,
+              onTap: () => onSelect(methods[i].id),
             ),
-            const SizedBox(height: 10),
+            if (i < methods.length - 1)
+              const SizedBox(height: RevPaymentMethodPrepaidTheme.betweenMethodCardsGap),
           ],
+          const SizedBox(height: RevPaymentMethodPrepaidTheme.lastCardToPayWithCardGap),
 
           InkWell(
             onTap: onPayWithCard,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: RevPaymentMethodPrepaidTheme.payWithCardRowPadding,
               child: Row(
                 children: [
-                  const Icon(Icons.add, size: 18, color: RevPaymentMethodPrepaidTheme.plus),
+                   Icon(Icons.add, size: 18, color: RevPaymentMethodPrepaidTheme.plus),
                   const SizedBox(width: 8),
                   Text('pay with card', style: RevPaymentMethodPrepaidTheme.addCard),
                   const Spacer(),
-                  const Icon(Icons.chevron_right, size: 18, color: RevPaymentMethodPrepaidTheme.muted),
+                  SizedBox(
+                    width: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                    height: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                    child: SvgPicture.asset(
+                      AssetConstant.arrowRightIconSVG,
+                      width: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                      height: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -76,7 +93,6 @@ class RevPaymentMethodSection extends StatelessWidget {
       case RevCardBrand.mastercard:
         return 'mastercard';
       case RevCardBrand.unknown:
-      default:
         return 'card';
     }
   }
