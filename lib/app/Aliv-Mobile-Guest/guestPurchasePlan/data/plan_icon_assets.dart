@@ -8,8 +8,10 @@ class PlanIconAssets {
   static const String talk = AssetConstant.phoneIconPNG;
   static const String sms = AssetConstant.smsIconPNG;
   static const String bonusData = AssetConstant.bonusDataIconSVG;
-  static const String intl = AssetConstant.phoneCallIconSVG;//phoneIconPNG;//talkTextIconPNG;
+  static const String phone = AssetConstant.phoneCallIconSVG;//phoneIconPNG;//talkTextIconPNG;
   static const String mms = AssetConstant.mmsIconPNG;
+  static const String usOrCanTalk = AssetConstant.talkTextIconSVG;
+
 
   static String forType(PlanBenefitType type) {
     switch (type) {
@@ -22,9 +24,9 @@ class PlanIconAssets {
       case PlanBenefitType.bonusData:
         return bonusData;
       case PlanBenefitType.intlTalkText:
-        return intl;
+        return usOrCanTalk;
       case PlanBenefitType.mms:
-        return mms;
+        return phone;
     }
   }
 }

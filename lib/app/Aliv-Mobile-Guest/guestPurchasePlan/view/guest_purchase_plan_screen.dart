@@ -224,7 +224,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    // Title-to-first-card gap target: 16px.
+                    // First card already contributes 10px top margin from theme,
+                    // so list adds 6px top padding.
+                    padding: const EdgeInsets.only(top: 6, bottom: 14),
 
                     //  addOns হলে addOns list, নাহলে plans list
                     itemCount: state.selectedTab == PlanTab.addOns

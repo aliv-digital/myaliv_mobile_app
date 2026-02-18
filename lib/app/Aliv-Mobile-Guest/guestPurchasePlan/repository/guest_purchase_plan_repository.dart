@@ -41,7 +41,26 @@ class GuestPurchasePlanRepository {
                   type: PlanBenefitType.sms,
                   label: 'sms',
                   value: '30',
-                  sub: 'local text')
+                  sub: 'local text'
+              ),
+              PlanBenefit(
+                   type: PlanBenefitType.bonusData,
+                   label: 'bonus data',
+                   value: 'unlimited',
+                   sub: 'whatsApp messaging'
+               ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
+              ),
             ],
           ),
           // PlanModel(
@@ -119,7 +138,26 @@ class GuestPurchasePlanRepository {
                   type: PlanBenefitType.sms,
                   label: 'sms',
                   value: 'unlimited',
-                  sub: 'local text'),
+                  sub: 'local text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: 'unlimited',
+                  sub: 'whatsApp messaging'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
+              ),
             ],
           ),
           PlanModel(
@@ -144,6 +182,25 @@ class GuestPurchasePlanRepository {
                   label: 'sms',
                   value: 'unlimited',
                   sub: 'local text'),
+
+              PlanBenefit(
+                  type: PlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: 'unlimited',
+                  sub: 'whatsApp messaging'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
+              ),
             ],
           ),
           PlanModel(
@@ -168,6 +225,25 @@ class GuestPurchasePlanRepository {
                   label: 'sms',
                   value: 'unlimited',
                   sub: 'local text'),
+
+              PlanBenefit(
+                  type: PlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: 'unlimited',
+                  sub: 'whatsApp messaging'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
+              ),
             ],
           ),
         ];
@@ -197,6 +273,25 @@ class GuestPurchasePlanRepository {
                   label: 'sms',
                   value: 'unlimited',
                   sub: 'local text'),
+
+              PlanBenefit(
+                  type: PlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: 'unlimited',
+                  sub: 'whatsApp messaging'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
+              ),
               // PlanBenefit(
               //     type: PlanBenefitType.bonusData,
               //     label: 'bonus data',
@@ -236,6 +331,25 @@ class GuestPurchasePlanRepository {
                   label: 'sms',
                   value: 'unlimited',
                   sub: 'local text'
+              ),
+
+              PlanBenefit(
+                  type: PlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: 'unlimited',
+                  sub: 'whatsApp messaging'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
               ),
               /*
               PlanBenefit(
@@ -279,6 +393,25 @@ class GuestPurchasePlanRepository {
                   label: 'sms',
                   value: 'unlimited',
                   sub: 'local text'
+              ),
+
+              PlanBenefit(
+                  type: PlanBenefitType.bonusData,
+                  label: 'bonus data',
+                  value: 'unlimited',
+                  sub: 'whatsApp messaging'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.intlTalkText,//.mms,
+                  label: 'us/can text',
+                  value: '30',
+                  sub: 'int’l text'
+              ),
+              PlanBenefit(
+                  type: PlanBenefitType.mms,//.mms,
+                  label: 'int\'l us/can text',
+                  value: '30',
+                  sub: 'int’l talk'
               ),
               /*
               PlanBenefit(

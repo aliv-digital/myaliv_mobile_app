@@ -4,7 +4,7 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestPurchasePlanTheme {
   // Screen background and app bar
-  static final Color screenBackground = HexColor.fromHex('#F6F6F8');
+  static final Color screenBackground = HexColor.fromHex('#F1F2FA');
   static final Color appBarColor = HexColor.fromHex('#5D5A8B');
 
   // Brand + shared colors
@@ -24,6 +24,7 @@ class GuestPurchasePlanTheme {
     horizontal: 15,
     vertical: 10,
   );
+  static const double addOnCardBorderRadius = 8;
   static const EdgeInsets addOnCardInnerPadding = EdgeInsets.all(16);
   static const double addOnCardTitleToDetailsGap = 16;
   static const double addOnCardInfoIconSize = 16;
@@ -81,7 +82,7 @@ class GuestPurchasePlanTheme {
   static final TextStyle addOnTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     color: Colors.black,
   );
 
@@ -98,7 +99,8 @@ class GuestPurchasePlanTheme {
   static final TextStyle addOnLabel = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 18,
-    fontWeight: FontWeight.w500,
+    // Flutter doesn't support w450 directly; w400 is the nearest available.
+    fontWeight: FontWeight.w400,
     color: HexColor.fromHex('#FF6C36'),
   );
 
@@ -107,7 +109,7 @@ class GuestPurchasePlanTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 24,
     fontWeight: FontWeight.w700,
-    color: Colors.black,
+    color: HexColor.fromHex('#222222'),
   );
 
   // Add-on price pill
@@ -132,7 +134,7 @@ class GuestPurchasePlanTheme {
   static final Color tabDivider = HexColor.fromHex('#E6E6EC');
 
   // Vertical distance between app bar bottom and the top of tab title text.
-  static const double tabTopGapFromAppBar = 30;
+  static const double tabTopGapFromAppBar = 10;
 
   // Selected plan tab label style (e.g., "monthly")
   // Used in: plan_tabs.dart for the currently selected tab text.
@@ -186,6 +188,13 @@ class GuestPurchasePlanTheme {
     fontWeight: FontWeight.w400,
     color: HexColor.fromHex('#8B8B8B'),
   );
+
+  // Vertical separator between benefit items inside daily plan card.
+  static final Color planBenefitDividerColor = HexColor.fromHex('#707070');
+  static const double planBenefitDividerWidth = 1;
+  static const double planBenefitDividerHeight = 21;
+  static const EdgeInsets planBenefitDividerHorizontalMargin =
+      EdgeInsets.symmetric(horizontal: 12);
 
   // Bottom-sheet shared colors
   static final Color bottomSheetBackground = HexColor.fromHex('#F1F2FA');
@@ -302,8 +311,8 @@ class GuestPurchasePlanTheme {
 
   // Expand/collapse arrow icon size used beside each plan title.
   // Used in all plan card headers when switching between up/down SVGs.
-  static const double planCardToggleArrowWidth = 6;
-  static const double planCardToggleArrowHeight = 12;
+  static const double planCardToggleArrowWidth = 5;
+  static const double planCardToggleArrowHeight = 10;
 
   // Header text styles (title + subtitle).
   static final TextStyle planCardTitleTextStyle = TextStyle(
@@ -339,7 +348,7 @@ class GuestPurchasePlanTheme {
 
   // View details button visuals.
   static final Color planCardViewDetailsBorderColor = HexColor.fromHex(
-    '#E0E0E0',
+    '#F2F1F9',
   );
   static final Color planCardViewDetailsBackgroundColor = HexColor.fromHex(
     '#FFFFFF',

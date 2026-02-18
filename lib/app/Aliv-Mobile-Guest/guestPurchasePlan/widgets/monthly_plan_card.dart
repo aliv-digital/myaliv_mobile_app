@@ -283,10 +283,14 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                       ),
                       if (i != widget.benefits.length - 1)
                         Container(
-                          width: 1,
-                          height: 34, // 50 row এর ভিতরে balanced
-                          margin: const EdgeInsets.symmetric(horizontal: 12),
-                          color: GuestPurchasePlanTheme.dividerColor,
+                          width:
+                              GuestPurchasePlanTheme.planBenefitDividerWidth,
+                          height:
+                              GuestPurchasePlanTheme.planBenefitDividerHeight,
+                          margin: GuestPurchasePlanTheme
+                              .planBenefitDividerHorizontalMargin,
+                          color:
+                              GuestPurchasePlanTheme.planBenefitDividerColor,
                         ),
                     ],
                   );

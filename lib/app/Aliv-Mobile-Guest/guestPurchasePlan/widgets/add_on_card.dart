@@ -30,13 +30,17 @@ class AddOnCard extends StatelessWidget {
 
     return InkWell(
       onTap: onToggle,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(
+        GuestPurchasePlanTheme.addOnCardBorderRadius,
+      ),
       child: Container(
         margin: GuestPurchasePlanTheme.addOnCardOuterMargin,
         padding: GuestPurchasePlanTheme.addOnCardInnerPadding,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(
+            GuestPurchasePlanTheme.addOnCardBorderRadius,
+          ),
           border: Border.all(
             color: selected
                 ? GuestPurchasePlanTheme.brandPurple
