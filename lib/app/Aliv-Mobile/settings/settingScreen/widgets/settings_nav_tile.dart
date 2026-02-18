@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../theme/settings_theme.dart';
 
 class SettingsNavTile extends StatelessWidget {
@@ -29,10 +30,11 @@ class SettingsNavTile extends StatelessWidget {
               Expanded(
                 child: Text(title, style: SettingsTheme.tileText),
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: SettingsTheme.chevron,
-                size: 22,
+              SvgPicture.asset(
+                AssetConstant.arrowRightIconSVG,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
               ),
             ],
           ),
@@ -50,11 +52,11 @@ class _IconCircle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 34,
-      width: 34,
+      height: 40,
+      width: 40,
       decoration: BoxDecoration(
-        color: SettingsTheme.iconCircleBg,
-        borderRadius: BorderRadius.circular(10),
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Center(
         child: SvgPicture.asset(

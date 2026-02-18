@@ -4,7 +4,7 @@ class SettingsTheme {
   static const String fontFamily = 'CircularPro';
 
   // Colors
-  static const Color bg = Color(0xFFF2F3F7);
+  static const Color bg = Color(0xFFF1F2FA);
   static const Color appBarBg = Color(0xFF655C9A);
   static const Color cardBg = Colors.white;
   static const Color divider = Color(0xFFE8E9EE);
@@ -14,7 +14,7 @@ class SettingsTheme {
   static const Color textSecondary = Color(0xFF6B7280);
 
   // Layout
-  static const double appBarHeight = 56;
+  static const double appBarHeight = 63;
   static const double cardRadius = 12;
   static const double tileHeight = 56;
   static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 16, 16, 16);

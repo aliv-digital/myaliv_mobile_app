@@ -9,7 +9,7 @@ class FingerPrintSecurityTheme {
   static const Color textPrimary = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF6B7280);
 
-  static const double appBarHeight = 56;
+  static const double appBarHeight = 63;
 
   // Body content padding from design (left/right 16, top 24).
   static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 24, 16, 24);

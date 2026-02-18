@@ -20,7 +20,7 @@ class SecuritySection extends StatelessWidget {
         const SizedBox(height: 10),
         ...paragraphs.map(
               (p) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.only(bottom: 34),
             child: Text(p, style: SecurityTheme.body),
           ),
         ),

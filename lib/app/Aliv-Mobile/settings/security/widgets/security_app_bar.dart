@@ -15,7 +15,7 @@ class SecurityAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: SecurityTheme.appBarHeight,
+      //height: SecurityTheme.appBarHeight,
       child: DefaultAppBar(
         title: title,
         height: SecurityTheme.appBarHeight,

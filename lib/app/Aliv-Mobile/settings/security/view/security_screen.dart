@@ -57,6 +57,7 @@ class _SecurityView extends StatelessWidget {
                     },
                   ),
                 ),
+                const SizedBox(height: 14),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: SecurityTheme.pagePadding,
