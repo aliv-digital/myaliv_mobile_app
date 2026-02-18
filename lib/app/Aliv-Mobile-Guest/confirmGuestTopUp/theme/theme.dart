@@ -16,11 +16,11 @@ class TopUpConfirmTheme {
   static const Color summaryAmountPillBackgroundColor = Color(0xFFF1F2FA);
 
   // Terms and bottom bar colors.
-  static const Color termsTextColor = Color(0xFF111111);
+  static const Color termsTextColor = Colors.black;
   static const Color termsLinkColor = Color(0xFF645D9C);
-  static const Color termsCheckboxColor = Color(0xFF645D9C);
+  static const Color termsCheckboxColor = Color(0xFF5146A8);
   static const Color termsCheckboxUncheckedBackgroundColor = Color(0xFFFFFFFF);
-  static const Color termsCheckboxUncheckedBorderColor = Color(0xFF645D9C);
+  static const Color termsCheckboxBorderColor = Color(0xFF645D9C);
   static const Color termsCheckboxCheckIconColor = Color(0xFFFFFFFF);
   static const Color payBarBackgroundColor = Color(0xFFFFFFFF);
   static const Color payBarShadowColor = Color(0x22000000);
@@ -59,22 +59,22 @@ class TopUpConfirmTheme {
   static const double summaryHorizontalInset = 16;
   static const double summaryTopSectionVerticalPadding = 14;
   static const double summaryBottomSectionVerticalPadding = 24;
-  static const double summaryTitleToPhoneGap = 6;
+  static const double summaryTitleToPhoneGap = 2;
   static const double summaryDividerHeight = 1;
   static const double summaryAmountPillRadius = 5;
   static const double summaryAmountPillHorizontalPadding = 10;
   static const double summaryAmountPillVerticalPadding = 4;
 
   // Terms text layout.
-  static const double termsTopInset = 6;
-  static const double termsCheckboxSize = 24;
+  static const double termsTopInset = 0;
+  static const double termsCheckboxSize = 15;
   static const double termsCheckboxRadius = 4;
   static const double termsCheckboxToTextGap = 10;
-  static const double termsCheckboxTopOffset = 2;
+  static const double termsCheckboxTopOffset = 5;
   static const double termsCheckboxBorderWidth = 1;
-  static const double termsCheckboxIconSize = 18;
+  static const double termsCheckboxIconSize = 11;
   static const String termsLeadText = 'By checking this box, I agree to the ';
-  static const String termsLinkText = 'Terms &\nConditions.';
+  static const String termsLinkText = 'Terms & Conditions.';
 
   // Breakdown card layout and shape.
   static const EdgeInsets breakdownWrapperPadding =
@@ -197,8 +197,8 @@ class TopUpConfirmTheme {
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
     height: 1.43,
-    // Flutter has no named w450, so w500 is the closest available weight.
-    fontWeight: FontWeight.w500,
+    // Flutter has no exact w450; w400 is the closest available weight.
+    fontWeight: FontWeight.w400,
     color: termsTextColor,
   );
 
@@ -206,7 +206,7 @@ class TopUpConfirmTheme {
   static final TextStyle termsLink = TextStyle(
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w700,
     height: 1.43,
     color: termsLinkColor,
     decoration: TextDecoration.underline,

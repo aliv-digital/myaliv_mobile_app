@@ -37,13 +37,10 @@ class TermsAndConditionsText extends StatelessWidget {
                   borderRadius: BorderRadius.circular(
                     TopUpConfirmTheme.termsCheckboxRadius,
                   ),
-                  border: isChecked
-                      ? null
-                      : Border.all(
-                          color: TopUpConfirmTheme
-                              .termsCheckboxUncheckedBorderColor,
-                          width: TopUpConfirmTheme.termsCheckboxBorderWidth,
-                        ),
+                  border: Border.all(
+                    color: TopUpConfirmTheme.termsCheckboxBorderColor,
+                    width: TopUpConfirmTheme.termsCheckboxBorderWidth,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: isChecked

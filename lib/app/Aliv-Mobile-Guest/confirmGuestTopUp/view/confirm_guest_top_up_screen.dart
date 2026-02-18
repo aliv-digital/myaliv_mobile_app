@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
@@ -115,9 +117,10 @@ class _GuestConfirmTopUpView extends StatelessWidget {
 
             return DefaultBottomPayBar(
               amountText: amountText,
+              
               isLoading: isLoading,
               buttonText: TopUpConfirmTheme.payNowLabel,
-              isVatExclusive: false,
+              isVatExclusive: true,
               backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
               buttonColor: TopUpConfirmTheme.payBarButtonColor,
               onPayNow: () {
@@ -148,14 +151,11 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: TopUpConfirmTheme.summaryWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc,
-                      GuestConfirmTopUpState>(
+                  child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                     buildWhen: (previousState, currentState) {
                       // Rebuild only when the values shown in TopUpSummaryCard change.
-                      final hasPhoneNumberChanged =
-                          previousState.phoneNumber != currentState.phoneNumber;
-                      final hasAmountChanged =
-                          previousState.total != currentState.total;
+                      final hasPhoneNumberChanged = previousState.phoneNumber != currentState.phoneNumber;
+                      final hasAmountChanged = previousState.total != currentState.total;
 
                       return hasPhoneNumberChanged || hasAmountChanged;
                     },
@@ -173,15 +173,13 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: TopUpConfirmTheme.termsWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc,
-                      GuestConfirmTopUpState>(
+                  child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                     builder: (context, state) {
                       return TermsAndConditionsText(
                         isChecked: state.isTermsChecked,
                         onToggleChecked: () {
                           final bloc = context.read<GuestConfirmTopUpBloc>();
-                          bloc.add(
-                              const GuestConfirmTopUpTermsCheckboxToggled());
+                          bloc.add(const GuestConfirmTopUpTermsCheckboxToggled());
                         },
                         onTapTerms: () {
                           final bloc = context.read<GuestConfirmTopUpBloc>();
@@ -197,19 +195,13 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: TopUpConfirmTheme.breakdownWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc,
-                      GuestConfirmTopUpState>(
+                  child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                     buildWhen: (previousState, currentState) {
-                      final hasSubTotalChanged =
-                          previousState.subTotal != currentState.subTotal;
-                      final hasVatChanged =
-                          previousState.vat != currentState.vat;
-                      final hasTotalChanged =
-                          previousState.total != currentState.total;
+                      final hasSubTotalChanged = previousState.subTotal != currentState.subTotal;
+                      final hasVatChanged = previousState.vat != currentState.vat;
+                      final hasTotalChanged = previousState.total != currentState.total;
 
-                      return hasSubTotalChanged ||
-                          hasVatChanged ||
-                          hasTotalChanged;
+                      return hasSubTotalChanged || hasVatChanged || hasTotalChanged;
                     },
                     builder: (context, state) {
                       // Local card kept for reference:
@@ -220,20 +212,44 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                       // );
                       final items = <CustomPaymentBreakdownLineItem>[
                         CustomPaymentBreakdownLineItem(
+                          
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: AppConstants.defaultFontFamily,
+                            fontWeight: FontWeight.w500,
+                          ),
                           label: 'sub total',
                           value: _formatCurrency(state.subTotal),
                         ),
                         CustomPaymentBreakdownLineItem(
                           label: 'vat',
                           value: _formatCurrency(state.vat),
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: AppConstants.defaultFontFamily,
+                            fontWeight: FontWeight.w500,
+                          )
                         ),
                         CustomPaymentBreakdownLineItem(
                           label: 'total',
                           value: _formatCurrency(state.total),
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: AppConstants.defaultFontFamily,
+                            fontWeight: FontWeight.w500,
+                          )
                         ),
                       ];
 
-                      return CustomPaymentBreakDownCard(items: items);
+                      return CustomPaymentBreakDownCard(
+                        gapAfterDivider: 24,
+                        gapBeforeDivider: 24,
+                          backgroundColor: HexColor.fromHex('#645D9C'),
+                          items: items
+                      );
                     },
                   ),
                 ),
