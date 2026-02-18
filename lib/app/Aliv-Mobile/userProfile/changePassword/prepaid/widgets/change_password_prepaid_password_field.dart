@@ -67,12 +67,13 @@ class _ChangePasswordPrepaidPasswordFieldState
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Row(
           children: [
-            const Icon(
-              Icons.lock_outline,
-              size: 18,
-              color: ChangePasswordPrepaidTheme.brand,
-            ),
-            const SizedBox(width: 10),
+            SvgPicture.asset(AssetConstant.lockPassSVG2),
+            // const Icon(
+            //   Icons.lock_outline,
+            //   size: 18,
+            //   color: ChangePasswordPrepaidTheme.brand,
+            // ),
+            const SizedBox(width: 5),
             Expanded(
               child: TextField(
                 focusNode: _focusNode,

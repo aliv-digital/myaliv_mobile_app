@@ -45,6 +45,7 @@ class AssetConstant{
   static const lockIconSVG = 'assets/icons/lock.svg';
   static const securityIconSVG = 'assets/icons/security.svg';
   static const lockPassSVG = 'assets/icons/locks.svg';
+  static const lockPassSVG2 = 'assets/icons/lock_pass.svg';
 
   static const viewIconSVG = 'assets/icons/view.svg';
   static const hideIconSVG = 'assets/icons/view_not.svg';
