@@ -65,7 +65,15 @@ class _EnterPasswordPrepaidPasswordInputState
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(
           children: [
-            const Icon(Icons.lock_outline, size: 20, color: Color(0xFF6B7280)),
+            SvgPicture.asset(
+              AssetConstant.lockPassSVG,
+              width: 20,
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                Color(0xFF6B7280),
+                BlendMode.srcIn,
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: TextField(
