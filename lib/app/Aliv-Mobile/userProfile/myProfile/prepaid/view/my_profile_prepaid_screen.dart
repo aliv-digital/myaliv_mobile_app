@@ -60,7 +60,13 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 break;
               case MyProfilePrepaidNavAction.editEmail:
                 debugPrint("edit email");
-                context.push(AppRoutes.editEmailPrepaidScreen);
+                // context.push(AppRoutes.editEmailPrepaidScreen);
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  builder: (_) => const ChangeEmailBottomSheet(),
+                );
                 break;
               case MyProfilePrepaidNavAction.changePassword:
                 debugPrint("change password");
@@ -138,29 +144,21 @@ class _MyProfilePrepaidView extends StatelessWidget {
                                       activeOn: data.activeOn,
                                       email: data.email,
                                     ),
-                                    const SizedBox(height: 16),
+                                    //const SizedBox(height: 16),
 
-                                    MyProfilePrepaidDeviceCard(
-                                      title: data.deviceTitle,
-                                      deviceModel: data.deviceModel,
-                                    ),
+                                    // MyProfilePrepaidDeviceCard(
+                                    //   title: data.deviceTitle,
+                                    //   deviceModel: data.deviceModel,
+                                    // ),
                                     const SizedBox(height: 16),
 
                                     MyProfilePrepaidActionTile(
                                       iconPath: AssetConstant.emailIconSVG,
                                       title: 'edit email',
-                                      onTap: (){
-                                        showModalBottomSheet(
-                                          context: context,
-                                          backgroundColor: Colors.transparent,
-                                          isScrollControlled: true,
-                                          builder: (_) => const ChangeEmailBottomSheet(),
-                                        );
-                                      },
-                                      // onTap: () => context
-                                      //     .read<MyProfilePrepaidBloc>()
-                                      //     .add(
-                                      //         const MyProfilePrepaidEditEmailPressed()),
+                                      onTap: () => context
+                                          .read<MyProfilePrepaidBloc>()
+                                          .add(
+                                              const MyProfilePrepaidEditEmailPressed()),
                                     ),
                                     const SizedBox(height: 16),
 

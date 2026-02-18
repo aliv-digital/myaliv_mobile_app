@@ -4,13 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
+import '../../../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../router/app_routes.dart';
 import '../bloc/rev_payment_method_prepaid_bloc.dart';
 import '../bloc/rev_payment_method_prepaid_event.dart';
 import '../bloc/rev_payment_method_prepaid_state.dart';
 import '../repository/rev_payment_method_prepaid_repository_impl.dart';
 import '../theme/rev_payment_method_prepaid_theme.dart';
-import '../widgets/rev_payment_method_bottom_bar.dart';
 import '../widgets/rev_payment_method_section.dart';
 
 class REVPaymentMethodPrepaidScreen extends StatelessWidget {
@@ -72,11 +72,13 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
               MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: RevPaymentMethodPrepaidTheme.bg,
-            bottomNavigationBar: RevPaymentMethodBottomBar(
+            bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
-              vatNote: state.vatNote,
-              enabled: state.isPayNowEnabled,
-              loading: isSubmitting,
+              isVatExclusive:
+                  state.vatNote.trim().toLowerCase() == 'no vat applied',
+              isButtonEnabled: state.isPayNowEnabled,
+              isLoading: isSubmitting,
+              buttonColor: RevPaymentMethodPrepaidTheme.payBtnBg,
               onPayNow: () => context
                   .read<RevPaymentMethodPrepaidBloc>()
                   .add(const RevPayNowPressed()),
@@ -103,7 +105,12 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(29, 24, 29, 24),
+                        padding: const EdgeInsets.fromLTRB(
+                          RevPaymentMethodPrepaidTheme.screenHorizontalPadding,
+                          RevPaymentMethodPrepaidTheme.screenTopPadding,
+                          RevPaymentMethodPrepaidTheme.screenHorizontalPadding,
+                          RevPaymentMethodPrepaidTheme.screenBottomPadding,
+                        ),
                         sliver: SliverToBoxAdapter(
                           child: isLoading
                               ? const Center(child: CircularProgressIndicator())

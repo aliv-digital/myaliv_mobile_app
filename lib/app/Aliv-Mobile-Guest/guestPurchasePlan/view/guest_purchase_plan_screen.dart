@@ -38,8 +38,9 @@ class GuestPurchasePlanScreen extends StatelessWidget {
     );
 
     return BlocProvider(
-      create: (_) => GuestPurchasePlanBloc(GuestPurchasePlanRepository())
-        ..add(GuestPurchasePlanStarted()),
+      create: (_) =>
+          GuestPurchasePlanBloc(GuestPurchasePlanRepository())
+            ..add(GuestPurchasePlanStarted()),
       child: const _GuestPurchasePlanView(),
     );
   }
@@ -57,10 +58,14 @@ class _GuestPurchasePlanView extends StatelessWidget {
   String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 
   void _onPurchaseNowPressed(BuildContext context, PlanModel plan) {
-    context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanPurchaseNowPressed(plan));
+    context.read<GuestPurchasePlanBloc>().add(
+      GuestPurchasePlanPurchaseNowPressed(plan),
+    );
 
-    final PlanTab selectedTab =
-        context.read<GuestPurchasePlanBloc>().state.selectedTab;
+    final PlanTab selectedTab = context
+        .read<GuestPurchasePlanBloc>()
+        .state
+        .selectedTab;
     final hasActivePlan = _hasActivePlan(plan);
 
     showModalBottomSheet<void>(
@@ -125,13 +130,14 @@ class _GuestPurchasePlanView extends StatelessWidget {
         child: Column(
           children: [
             DefaultAppBar(
-              showBackArrow: false,
+              showBackArrow: true,
               showNotification: false,
-                showNotificationDotWhenZero: true,
-                title: 'plans',
-                onBack: () {
-                  context.pop();
-                }),
+              showNotificationDotWhenZero: true,
+              title: 'plans',
+              onBack: () {
+                context.pop();
+              },
+            ),
 
             // _TopBar(
             //   title: 'plans',
@@ -146,9 +152,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
                 return PlanTabs(
                   selected: state.selectedTab,
                   onChanged: (tab) {
-                    context
-                        .read<GuestPurchasePlanBloc>()
-                        .add(GuestPurchasePlanTabChanged(tab));
+                    context.read<GuestPurchasePlanBloc>().add(
+                      GuestPurchasePlanTabChanged(tab),
+                    );
                   },
                 );
               },
@@ -171,14 +177,15 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     title = 'choose a prepaid monthly primary plan';
                     break;
                   case PlanTab.roaming:
-                    title = 'choose a roaming data add-on. these add-ons will only work in the usa, canada and or digicel caribbean countries.';
+                    title =
+                        'choose a roaming data add-on. these add-ons will only work in the usa, canada and or digicel caribbean countries.';
                     break;
                   case PlanTab.roameasy:
                     title = 'choose a roameasy standalone plan';
                     break;
                   case PlanTab.addOns:
                     title =
-                    'add-ons can only be added to your active primary plan and '
+                        'add-ons can only be added to your active primary plan and '
                         'expires when it ends.';
                     break;
                   case PlanTab.mifi:
@@ -187,7 +194,6 @@ class _GuestPurchasePlanView extends StatelessWidget {
                   case PlanTab.libertyGlobal:
                     title = 'choose an international calling plan';
                     break;
-
                 }
 
                 return Padding(
@@ -238,8 +244,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
                       // ADD ONS TAB
                       if (state.selectedTab == PlanTab.addOns) {
                         final AddOnModel addon = state.addOns[index];
-                        final bool selected =
-                            state.selectedAddOnIds.contains(addon.id);
+                        final bool selected = state.selectedAddOnIds.contains(
+                          addon.id,
+                        );
 
                         return Padding(
                           padding: EdgeInsets.only(left: 15, right: 15),
@@ -248,7 +255,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             selected: selected,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleAddon(addon)
+                                GuestPurchasePlanToggleAddon(addon),
                               );
                             },
                           ),
@@ -267,11 +274,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -288,11 +297,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -309,11 +320,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -330,11 +343,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -351,11 +366,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -372,11 +389,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -393,11 +412,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             expanded: expanded,
                             onToggle: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onViewDetails: () {
                               context.read<GuestPurchasePlanBloc>().add(
-                                  GuestPurchasePlanToggleExpanded(plan.id));
+                                GuestPurchasePlanToggleExpanded(plan.id),
+                              );
                             },
                             onPurchaseNow: () {
                               _onPurchaseNowPressed(context, plan);
@@ -411,7 +432,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -40,7 +40,9 @@ class _MakePaymentPostPaidView extends StatelessWidget {
       },
       builder: (context, state) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: MakePaymentPostPaidTheme.bg,
             bottomNavigationBar: MpBottomBar(
@@ -48,7 +50,9 @@ class _MakePaymentPostPaidView extends StatelessWidget {
               subtitle: state.bottomSubtitle,
               enabled: state.canPayNow,
               onPayNow: () {
-                context.read<MakePaymentPostPaidBloc>().add(const MpPayNowPressed());
+                context.read<MakePaymentPostPaidBloc>().add(
+                  const MpPayNowPressed(),
+                );
               },
             ),
             body: Column(
@@ -63,8 +67,9 @@ class _MakePaymentPostPaidView extends StatelessWidget {
                       backgroundColor: MakePaymentPostPaidTheme.appBarBg,
                       showBackArrow: true,
                       showHome: true,
-                      onHomeTap: () =>
-                          Navigator.of(context).popUntil((route) => route.isFirst),
+                      onHomeTap: () => Navigator.of(
+                        context,
+                      ).popUntil((route) => route.isFirst),
                     ),
                   ),
                 ),
@@ -82,34 +87,34 @@ class _MakePaymentPostPaidView extends StatelessWidget {
                                 selectedOption: state.amountOption,
                                 customAmount: state.customAmount,
                                 onOptionChanged: (option) {
-                                  context
-                                      .read<MakePaymentPostPaidBloc>()
-                                      .add(MpAmountOptionChanged(option));
+                                  context.read<MakePaymentPostPaidBloc>().add(
+                                    MpAmountOptionChanged(option),
+                                  );
                                 },
                                 onCustomAmountChanged: (value) {
-                                  context
-                                      .read<MakePaymentPostPaidBloc>()
-                                      .add(MpCustomAmountChanged(value));
+                                  context.read<MakePaymentPostPaidBloc>().add(
+                                    MpCustomAmountChanged(value),
+                                  );
                                 },
                               ),
                               const SizedBox(height: 14),
                               MpTermsCheckbox(
                                 value: state.termsAccepted,
                                 onChanged: (value) {
-                                  context
-                                      .read<MakePaymentPostPaidBloc>()
-                                      .add(MpTermsToggled(value));
+                                  context.read<MakePaymentPostPaidBloc>().add(
+                                    MpTermsToggled(value),
+                                  );
                                 },
                                 onTermsTap: () {},
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 17),
                               MpPaymentMethodSection(
                                 methods: state.methods,
                                 selectedIndex: state.selectedMethodIndex,
                                 onSelect: (index) {
-                                  context
-                                      .read<MakePaymentPostPaidBloc>()
-                                      .add(MpPaymentMethodSelected(index));
+                                  context.read<MakePaymentPostPaidBloc>().add(
+                                    MpPaymentMethodSelected(index),
+                                  );
                                 },
                                 onAddCard: () {},
                               ),

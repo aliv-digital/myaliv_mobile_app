@@ -8,28 +8,12 @@ class EnterPasswordPrepaidHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: const [
-        SizedBox(height: 90),
-        Text(
-          'Enter Password',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF010101),
-            fontSize: 17,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Text('Enter Password', style: EnterPasswordPrepaidTheme.title),
         SizedBox(height: 4),
         Text(
-          'For security reasons, please enter your password to continue.',
+          'For security reasons, please enter your\npassword to continue.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF58677D),
-            fontSize: 15,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,
-            height: 1.47,
-          ),
+          style: EnterPasswordPrepaidTheme.subtitle,
         ),
       ],
     );

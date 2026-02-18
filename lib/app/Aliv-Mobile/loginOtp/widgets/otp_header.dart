@@ -20,7 +20,7 @@ class OtpHeader extends StatelessWidget {
         DefaultBackButton(
           padding: EdgeInsets.only(
             left: LoginOtpSizes.backLeft,
-            top: backTop,
+            top: 28,
           ),
           iconWidth: LoginOtpSizes.backIconWidth,
           iconHeight: LoginOtpSizes.backIconHeight,
@@ -28,7 +28,7 @@ class OtpHeader extends StatelessWidget {
             Navigator.of(context).maybePop();
           },
         ),
-        SizedBox(height: imageGapFromBackIcon),
+        SizedBox(height: 55),
         SvgPicture.asset(
           AssetConstant.otpPhoneSVG,
           width: LoginOtpSizes.otpImageWidth,

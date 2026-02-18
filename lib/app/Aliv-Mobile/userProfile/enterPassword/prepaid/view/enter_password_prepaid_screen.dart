@@ -83,7 +83,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(42, 34, 42, 18),
+                      padding: const EdgeInsets.fromLTRB(47, 93, 47, 18),
                       sliver: SliverToBoxAdapter(
                         child: Center(
                           child: ConstrainedBox(
@@ -130,18 +130,18 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                                       // Keep the button visually active from initial state.
                                       enabled: !isLoading,
                                       onTap: () {
-                                        if (!state.isValid) {
-                                          ScaffoldMessenger.of(context)
-                                            ..hideCurrentSnackBar()
-                                            ..showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                  'Please enter your password to continue.',
-                                                ),
-                                              ),
-                                            );
-                                          return;
-                                        }
+                                        // if (!state.isValid) {
+                                        //   ScaffoldMessenger.of(context)
+                                        //     ..hideCurrentSnackBar()
+                                        //     ..showSnackBar(
+                                        //       const SnackBar(
+                                        //         content: Text(
+                                        //           'Please enter your password to continue.',
+                                        //         ),
+                                        //       ),
+                                        //     );
+                                        //   return;
+                                        // }
 
                                         context
                                             .read<EnterPasswordPrepaidBloc>()

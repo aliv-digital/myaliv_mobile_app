@@ -18,60 +18,57 @@ class RevTermsCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        // SizedBox(
-        //   width: 20,
-        //   height: 20,
-        //   child: Checkbox(
-        //     value: value,
-        //     onChanged: (v) => onChanged(v ?? false),
-        //     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        //     visualDensity: VisualDensity.compact,
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(4),
-        //     ),
-        //     side: BorderSide(
-        //       color: RevConfirmationPrepaidTheme.checkboxBorder,
-        //       width: 1.2,
-        //     ),
-        //     activeColor: RevConfirmationPrepaidTheme.checkboxActive,
-        //   ),
-        // ),
-        // const SizedBox(width: 10),
-        Expanded(
-          child: Padding(
-            // checkbox height এর সাথে text baseline align করার জন্য
-            padding: const EdgeInsets.only(top: 2),
-            child: SizedBox(
-              width: 332,
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'By pressing “continue” you agree to the ',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w400,
-                        height: 1.43,
-                      ),
-                    ),
-                    TextSpan(
-                      text: 'Terms & Conditions.',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w400,
-                        decoration: TextDecoration.underline,
-                        height: 1.43,
-                      ),
-                    ),
-                  ],
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: InkWell(
+            onTap: () => onChanged(!value),
+            borderRadius: BorderRadius.circular(
+              RevConfirmationPrepaidTheme.checkboxCornerRadius,
+            ),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              width: RevConfirmationPrepaidTheme.checkboxSize,
+              height: RevConfirmationPrepaidTheme.checkboxSize,
+              decoration: BoxDecoration(
+                color: value
+                    ? RevConfirmationPrepaidTheme.checkboxActive
+                    : Colors.transparent,
+                border: Border.all(
+                  color: RevConfirmationPrepaidTheme.checkboxBorder,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(
+                  RevConfirmationPrepaidTheme.checkboxCornerRadius,
                 ),
               ),
-            )
+              child: value
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 12,
+                      color: RevConfirmationPrepaidTheme.checkboxCheckColor,
+                    )
+                  : null,
+            ),
+          ),
+        ),
+        const SizedBox(width: RevConfirmationPrepaidTheme.checkboxToTextGap),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: RevConfirmationPrepaidTheme.terms,
+              children: [
+                const TextSpan(
+                  text: 'By checking this box, I agree to the ',
+                ),
+                TextSpan(
+                  text: 'Terms & Conditions.',
+                  style: RevConfirmationPrepaidTheme.link,
+                  recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+                ),
+              ],
+            ),
           ),
         ),
       ],

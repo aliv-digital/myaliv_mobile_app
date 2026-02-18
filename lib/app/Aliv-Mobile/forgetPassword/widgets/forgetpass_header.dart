@@ -21,7 +21,7 @@ class ForgetPasswordHeader extends StatelessWidget {
         DefaultBackButton(
           padding: EdgeInsets.only(
             left: ForgetPasswordSizes.backLeft,
-            top: backTop,
+            top: 28,
           ),
           iconWidth: ForgetPasswordSizes.backIconWidth,
           iconHeight: ForgetPasswordSizes.backIconHeight,
@@ -30,7 +30,7 @@ class ForgetPasswordHeader extends StatelessWidget {
             // custom logic
           },
         ),
-        SizedBox(height: headerToLogoGap),
+        SizedBox(height: 64),
         const _LogoTitle(),
       ],
     );
@@ -63,7 +63,7 @@ class _LogoTitle extends StatelessWidget {
             style: ForgetPasswordTheme.subtitle,
           ),
         ),
-        SizedBox(height: 9)
+        SizedBox(height: 9.61)
       ],
     );
   }

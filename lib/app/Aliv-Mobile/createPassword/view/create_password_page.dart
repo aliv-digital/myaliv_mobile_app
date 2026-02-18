@@ -59,7 +59,7 @@ class _CreatePasswordView extends StatelessWidget {
                       child: CreatePasswordHeader(),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.only(right: 54, left: 40),
+                      padding: const EdgeInsets.only(right: 42, left: 42),
                       sliver: SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +73,7 @@ class _CreatePasswordView extends StatelessWidget {
                                   p.password != c.password,
                               builder: (context, state) {
                                 return PasswordInput(
-                                  hint: 'password',
+                                  hint: 'enter new password',
                                   obscureText: state.obscurePassword,
                                   onChanged: (v) => context
                                       .read<CreatePasswordBloc>()
@@ -87,7 +87,7 @@ class _CreatePasswordView extends StatelessWidget {
                               },
                             ),
 
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 15),
 
                             // confirm
                             BlocBuilder<CreatePasswordBloc, CreatePasswordState>(

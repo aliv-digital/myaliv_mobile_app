@@ -7,8 +7,7 @@ class ChangePasswordPrepaidHeaderText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Text(
-      'your new password may contain letters and/or\n'
-          'numbers and be at least 4 characters long',
+      'your password should contain letters and/or numbers and be at least 4 characters long.',
       textAlign: TextAlign.left,
       style: ChangePasswordPrepaidTheme.helper,
     );

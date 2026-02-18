@@ -65,7 +65,12 @@ class _RevPrepaidView extends StatelessWidget {
                 ),
 
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(24, 17, 24, 20),
+                  padding: const EdgeInsets.fromLTRB(
+                    RevPrepaidTheme.contentHorizontalPadding,
+                    RevPrepaidTheme.contentTopPadding,
+                    RevPrepaidTheme.contentHorizontalPadding,
+                    RevPrepaidTheme.contentBottomPadding,
+                  ),
                   sliver: SliverToBoxAdapter(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +79,7 @@ class _RevPrepaidView extends StatelessWidget {
                           label: 'service',
                           child: RevReadonlyField(text: state.service),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
                         RevLabeledSection(
                           label: 'Account Number',
                           child: RevTextField(
@@ -87,7 +92,7 @@ class _RevPrepaidView extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
 
                         RevLabeledSection(
                           label: 'Name',
@@ -105,7 +110,7 @@ class _RevPrepaidView extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
 
                         RevLabeledSection(
                           label: 'Account Status',
@@ -114,10 +119,10 @@ class _RevPrepaidView extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
 
-                        Text('account balance', style: RevPrepaidTheme.label),
-                        const SizedBox(height: 8),
+                        Text('account balance', style: RevPrepaidTheme.fieldTitle),
+                        const SizedBox(height: RevPrepaidTheme.labelToFieldGap),
                         Text(
                           state.accountBalanceText,
                           style: TextStyle(
@@ -128,17 +133,17 @@ class _RevPrepaidView extends StatelessWidget {
                             color: HexColor.fromHex('#707070'),
                           ),
                         ), //style: RevPrepaidTheme.value),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
                         RevLabeledSection(
                           label: 'enter a custom amount',
                           child: RevAmountField(
-                            value: state.amountFormatted,
+                            value: state.amountInputText,
                             onChanged: (v) => context
                                 .read<RevPrepaidBloc>()
                                 .add(RevAmountChanged(v)),
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: RevPrepaidTheme.proceedButtonTopGap),
                         RevPrimaryButton(
                           text: 'proceed',
                           enabled: state.canProceed,

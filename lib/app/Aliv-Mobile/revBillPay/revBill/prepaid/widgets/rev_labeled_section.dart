@@ -16,8 +16,8 @@ class RevLabeledSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: RevPrepaidTheme.label),
-        const SizedBox(height: 8),
+        Text(label, style: RevPrepaidTheme.fieldTitle),
+        const SizedBox(height: RevPrepaidTheme.labelToFieldGap),
         child,
       ],
     );

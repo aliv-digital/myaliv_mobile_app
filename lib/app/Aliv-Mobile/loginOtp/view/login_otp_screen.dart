@@ -38,14 +38,14 @@ class _LoginOtpView extends StatelessWidget {
         child: BlocListener<LoginOtpBloc, LoginOtpState>(
           listener: (context, state) {
             if (state.status == LoginOtpStatus.failure && state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.errorMessage!,
-                    style: LoginOtpTheme.snackBarText,
-                  ),
-                ),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text(
+              //       state.errorMessage!,
+              //       style: LoginOtpTheme.snackBarText,
+              //     ),
+              //   ),
+              // );
             }
           },
           child: Stack(

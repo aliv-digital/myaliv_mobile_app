@@ -27,41 +27,82 @@ class RevPaymentMethodTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: RevPaymentMethodPrepaidTheme.paymentTilePadding,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: selected
+              ? RevPaymentMethodPrepaidTheme.selectedCardBg
+              : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: borderColor, width: 1),
         ),
         child: Row(
           children: [
             SizedBox(
-              width: 34,
-              height: 22,
+              width: RevPaymentMethodPrepaidTheme.paymentTileLogoWidth,
+              height: RevPaymentMethodPrepaidTheme.paymentTileLogoHeight,
               child: SvgPicture.asset(
                 logoSvgAsset, // ✅ তুমি পরে path set করবে
                 fit: BoxFit.contain,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: RevPaymentMethodPrepaidTheme.paymentTileLogoToTextGap),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: RevPaymentMethodPrepaidTheme.methodTitle),
+                  Text(
+                    title,
+                    style: selected
+                        ? RevPaymentMethodPrepaidTheme.selectedMethodTitle
+                        : RevPaymentMethodPrepaidTheme.methodTitle,
+                  ),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: RevPaymentMethodPrepaidTheme.methodSubtitle),
+                  Text(
+                    subtitle,
+                    style: selected
+                        ? RevPaymentMethodPrepaidTheme.selectedMethodSubtitle
+                        : RevPaymentMethodPrepaidTheme.methodSubtitle,
+                  ),
                 ],
               ),
             ),
-            const SizedBox(width: 10),
-            Icon(
-              selected ? Icons.check_circle : Icons.radio_button_unchecked,
-              size: 18,
-              color: selected
-                  ? RevPaymentMethodPrepaidTheme.selectedBorder
-                  : RevPaymentMethodPrepaidTheme.border,
-            ),
+            const SizedBox(width: RevPaymentMethodPrepaidTheme.paymentTileTextToIndicatorGap),
+            selected
+                ? Container(
+                    width: RevPaymentMethodPrepaidTheme.selectedIndicatorSize,
+                    height: RevPaymentMethodPrepaidTheme.selectedIndicatorSize,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color:
+                          RevPaymentMethodPrepaidTheme.selectedIndicatorFillColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: RevPaymentMethodPrepaidTheme
+                            .selectedIndicatorBorderColor,
+                        width: 1,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size:
+                          RevPaymentMethodPrepaidTheme.selectedIndicatorCheckSize,
+                    ),
+                  )
+                : Container(
+                    width: RevPaymentMethodPrepaidTheme.selectedIndicatorSize,
+                    height: RevPaymentMethodPrepaidTheme.selectedIndicatorSize,
+                    decoration: BoxDecoration(
+                      color:
+                          RevPaymentMethodPrepaidTheme.unselectedIndicatorColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: RevPaymentMethodPrepaidTheme
+                            .unselectedIndicatorBorderColor,
+                        width: 1,
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),

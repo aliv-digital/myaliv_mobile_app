@@ -21,19 +21,17 @@ class EnterPasswordPrepaidBiometricButtons extends StatelessWidget {
             child: OutlinedButton(
               onPressed: onFaceId,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: EnterPasswordPrepaidTheme.brand),
+                side: const BorderSide(
+                  color: EnterPasswordPrepaidTheme.biometricButtonBorder,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
               child: const Text(
                 'Face ID',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: EnterPasswordPrepaidTheme.brand,
-                ),
+                textAlign: TextAlign.center,
+                style: EnterPasswordPrepaidTheme.biometricButtonText,
               ),
             ),
           ),
@@ -45,19 +43,17 @@ class EnterPasswordPrepaidBiometricButtons extends StatelessWidget {
             child: OutlinedButton(
               onPressed: onFingerprint,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: EnterPasswordPrepaidTheme.brand),
+                side: const BorderSide(
+                  color: EnterPasswordPrepaidTheme.biometricButtonBorder,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),
               child: const Text(
                 'Fingerprint',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: EnterPasswordPrepaidTheme.brand,
-                ),
+                textAlign: TextAlign.center,
+                style: EnterPasswordPrepaidTheme.biometricButtonText,
               ),
             ),
           ),

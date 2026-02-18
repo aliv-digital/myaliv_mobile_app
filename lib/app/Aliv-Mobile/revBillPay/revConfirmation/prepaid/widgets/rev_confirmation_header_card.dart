@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../theme/rev_confirmation_prepaid_theme.dart';
 
 class RevConfirmationHeaderCard extends StatelessWidget {
@@ -21,28 +20,37 @@ class RevConfirmationHeaderCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: RevConfirmationPrepaidTheme.cardBg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0C000000),
-            blurRadius: 16,
-            offset: Offset(8, 10),
-            spreadRadius: 0,
-          )
+            blurRadius: 10,
+            offset: Offset(0, 4),
+            color: Color(0x12000000),
+          ),
         ],
       ),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            padding: const EdgeInsets.fromLTRB(
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardNameVerticalPadding,
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardNameVerticalPadding,
+            ),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(customerName, style: RevConfirmationPrepaidTheme.name),
             ),
           ),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFCDC8F9)),
+          const Divider(height: 1, thickness: 1, color: Color(0xFFE6E6F2)),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
+            padding: const EdgeInsets.fromLTRB(
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardDetailsVerticalPadding,
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardDetailsVerticalPadding,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -76,30 +84,8 @@ class _ServiceBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(service,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-          ),
-            // style: RevConfirmationPrepaidTheme.service
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'acct no. 348340572044',
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            color: const Color(0xFF707070),
-            fontSize: 14,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w400,
-            height: 1.43,
-          ),
-        )
-        // Text('acct no. $accountNumber',
-        //     // style: RevConfirmationPrepaidTheme.smallMuted
-        // ),
+        Text(service, style: RevConfirmationPrepaidTheme.service),
+        Text('acct no. $accountNumber', style: RevConfirmationPrepaidTheme.smallMuted),
       ],
     );
   }
@@ -112,30 +98,18 @@ class _AmountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: RevConfirmationPrepaidTheme.amountPillHorizontalPadding,
+        vertical: RevConfirmationPrepaidTheme.amountPillVerticalPadding,
+      ),
       alignment: Alignment.center,
-      decoration: ShapeDecoration(
-        color: const Color(0xFFECEBF7),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            width: 1,
-            color: const Color(0xFF5045A7),
-          ),
-          borderRadius: BorderRadius.circular(8),
+      decoration: BoxDecoration(
+        color: RevConfirmationPrepaidTheme.amountPillBackground,
+        borderRadius: BorderRadius.circular(
+          RevConfirmationPrepaidTheme.amountPillRadius,
         ),
       ),
-      child:Text(
-        '\$ 200.00',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          color: const Color(0xFF5045A7),
-          fontSize: 16,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-        ),
-      )
-      //Text(text, style: RevConfirmationPrepaidTheme.amountPill),
+      child: Text(text, style: RevConfirmationPrepaidTheme.amountPill),
     );
   }
 }

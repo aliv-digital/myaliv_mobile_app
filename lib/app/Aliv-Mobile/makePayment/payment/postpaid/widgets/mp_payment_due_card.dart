@@ -35,14 +35,14 @@ class MpPaymentDueCard extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      padding: MakePaymentPostPaidTheme.paymentDueCardPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('payment due', style: MakePaymentPostPaidTheme.sectionLabel),
-          const SizedBox(height: 8),
+          const SizedBox(height: MakePaymentPostPaidTheme.paymentDueTitleToAmountGap),
           _AmountField(value: amountText),
-          const SizedBox(height: 12),
+          const SizedBox(height: MakePaymentPostPaidTheme.paymentDueAmountToOptionsGap),
           Row(
             children: [
               Expanded(
@@ -52,7 +52,7 @@ class MpPaymentDueCard extends StatelessWidget {
                   onTap: () => onOptionChanged(MpAmountOption.current),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: MakePaymentPostPaidTheme.paymentDueOptionsBetweenGap),
               Expanded(
                 child: _AmountOptionTile(
                   label: 'other\namount',
@@ -85,15 +85,34 @@ class _AmountField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sanitizedValue = value.replaceAll(r'$', '').trim();
+
     return Container(
       height: 38,
       alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: MakePaymentPostPaidTheme.paymentDueAmountFieldPadding,
       decoration: BoxDecoration(
         color: MakePaymentPostPaidTheme.amountFieldBg,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(value, style: MakePaymentPostPaidTheme.amountText),
+      child: Row(
+        children: [
+          Text(r'$', style: MakePaymentPostPaidTheme.amountText),
+          SizedBox(
+            width: MakePaymentPostPaidTheme.paymentDueCurrencyToValueGap,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal:
+                  MakePaymentPostPaidTheme.paymentDueAmountValueHorizontalPadding,
+            ),
+            child: Text(
+              sanitizedValue,
+              style: MakePaymentPostPaidTheme.amountText,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -111,12 +130,8 @@ class _AmountOptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = isSelected
-        ? MakePaymentPostPaidTheme.optionSelectedBorder
-        : MakePaymentPostPaidTheme.border;
-    final bgColor = isSelected
-        ? MakePaymentPostPaidTheme.optionSelectedBg
-        : Colors.white;
+    final borderColor = MakePaymentPostPaidTheme.border;
+    const bgColor = Colors.white;
     final textStyle = isSelected
         ? MakePaymentPostPaidTheme.optionTextSelected
         : MakePaymentPostPaidTheme.optionText;
@@ -125,8 +140,7 @@ class _AmountOptionTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        height: 56,
-        padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+        padding: MakePaymentPostPaidTheme.paymentDueOptionTilePadding,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(10),
@@ -137,6 +151,9 @@ class _AmountOptionTile extends StatelessWidget {
           children: [
             Expanded(
               child: Text(label, style: textStyle),
+            ),
+            const SizedBox(
+              width: MakePaymentPostPaidTheme.paymentDueOptionTextToIndicatorGap,
             ),
             _SelectionIndicator(selected: isSelected),
           ],
@@ -154,16 +171,21 @@ class _SelectionIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final border = selected
-        ? MakePaymentPostPaidTheme.primary
+        ? MakePaymentPostPaidTheme.radioSelectedBorder
         : MakePaymentPostPaidTheme.radioBorder;
 
     return Container(
-      width: 18,
-      height: 18,
+      width: MakePaymentPostPaidTheme.amountOptionIndicatorSize,
+      height: MakePaymentPostPaidTheme.amountOptionIndicatorSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: border, width: 2),
-        color: selected ? MakePaymentPostPaidTheme.primary : Colors.transparent,
+        border: Border.all(
+          color: border,
+          width: MakePaymentPostPaidTheme.amountOptionIndicatorBorderWidth,
+        ),
+        color: selected
+            ? MakePaymentPostPaidTheme.radioSelectedFill
+            : MakePaymentPostPaidTheme.radioFill,
       ),
       child: selected
           ? const Icon(Icons.check, size: 12, color: Colors.white)

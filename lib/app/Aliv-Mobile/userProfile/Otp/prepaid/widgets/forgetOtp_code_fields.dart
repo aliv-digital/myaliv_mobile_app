@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/focused_input_border_wrapper.dart';
 
 import '../../../../login/theme/login_theme.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
@@ -85,43 +85,45 @@ class _OtpBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 52,
-      height: 52,
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        textAlign: TextAlign.center,
-        textAlignVertical: TextAlignVertical.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: const TextStyle(
-          fontSize: 20,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w600,
-          color: AuthModuleColors.textBlack,
-        ),
-        decoration: InputDecoration(
-          isCollapsed: true,
-          contentPadding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),
-          counterText: '',
-          border: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: ColorManager.otpBoxBorderDefaultColor,
-              width: 1,
+    return AnimatedBuilder(
+      animation: focusNode,
+      builder: (context, _) {
+        return SizedBox(
+          width: 52,
+          height: 52,
+          child: FocusedInputBorderWrapper(
+            isFocused: focusNode.hasFocus,
+            unfocusedBorderColor: const Color(0xFFE0E0E0),
+            radius: 6,
+            borderWidth: 1,
+            child: Container(
+              color: Colors.white,
+              child: TextField(
+                controller: controller,
+                focusNode: focusNode,
+                textAlign: TextAlign.center,
+                textAlignVertical: TextAlignVertical.center,
+                keyboardType: TextInputType.number,
+                maxLength: 1,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w600,
+                  color: AuthModuleColors.textBlack,
+                ),
+                decoration: const InputDecoration(
+                  isCollapsed: true,
+                  contentPadding:
+                      EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),
+                  counterText: '',
+                  border: InputBorder.none,
+                ),
+                onChanged: onChanged,
+              ),
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: AuthModuleColors.alivPurple,
-              width: 1.4,
-            ),
-          ),
-        ),
-        onChanged: onChanged,
-      ),
+        );
+      },
     );
   }
 }

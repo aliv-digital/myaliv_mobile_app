@@ -115,7 +115,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 14),
+                                const SizedBox(height: 15),
                                 BlocBuilder<ChangePasswordPrepaidBloc,
                                     ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
@@ -138,7 +138,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                     );
                                   },
                                 ),
-                                const SizedBox(height: 24),
+                                const SizedBox(height: 38),
                                 BlocBuilder<ChangePasswordPrepaidBloc,
                                     ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
@@ -150,7 +150,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
 
                                     return ChangePasswordPrepaidSubmitButton(
                                       label: 'change password',
-                                      enabled: state.isValid && !isLoading,
+                                      enabled: !isLoading,
                                       isLoading: isLoading,
                                       onTap: () => context
                                           .read<ChangePasswordPrepaidBloc>()

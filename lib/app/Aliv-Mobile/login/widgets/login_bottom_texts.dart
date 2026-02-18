@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../router/app_routes.dart';
 import '../theme/login_theme.dart';
 
 class LoginBottomTexts extends StatelessWidget {
@@ -21,10 +19,7 @@ class LoginBottomTexts extends StatelessWidget {
         const SizedBox(height: AuthModuleSizes.activatePromptToLinkGap),
         TextButton(
           style: AuthModuleButtonStyles.inlineTextLink,
-          onPressed: () {
-            context.push(AppRoutes.forgetPassword);
-
-          },
+          onPressed: () {},
           child: const Text(
             'manage my password',
             style: AuthModuleTextStyles.manageMyPassword,

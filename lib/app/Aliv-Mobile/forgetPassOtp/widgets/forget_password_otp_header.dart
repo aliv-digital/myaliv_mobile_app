@@ -22,7 +22,7 @@ class ForgetPasswordOtpHeader extends StatelessWidget {
         DefaultBackButton(
           padding: EdgeInsets.only(
             left: ForgetPasswordOtpSizes.backLeft,
-            top: backTop,
+            top: 28,
           ),
           iconWidth: ForgetPasswordOtpSizes.backIconWidth,
           iconHeight: ForgetPasswordOtpSizes.backIconHeight,

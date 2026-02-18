@@ -86,6 +86,7 @@ class RevPrepaidBloc extends Bloc<RevPrepaidEvent, RevPrepaidState> {
 
   double _parseMoney(String raw, {required double fallback}) {
     final cleaned = raw.replaceAll('\$', '').replaceAll(' ', '').trim();
+    if (cleaned.isEmpty) return 0;
     final v = double.tryParse(cleaned);
     return v ?? fallback;
   }

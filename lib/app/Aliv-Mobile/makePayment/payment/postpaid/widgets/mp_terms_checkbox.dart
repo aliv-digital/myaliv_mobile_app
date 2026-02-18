@@ -18,18 +18,19 @@ class MpTermsCheckbox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         SizedBox(
-          width: 22,
-          height: 22,
+          width: 15,
+          height: 15,
           child: Checkbox(
             value: value,
             onChanged: (v) => onChanged(v ?? false),
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             visualDensity: VisualDensity.compact,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(2),
             ),
             side: BorderSide(
               color: MakePaymentPostPaidTheme.optionSelectedBorder,
@@ -41,7 +42,7 @@ class MpTermsCheckbox extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(top: 2),
+            padding: const EdgeInsets.only(top: 10),
             child: RichText(
               text: TextSpan(
                 style: MakePaymentPostPaidTheme.termsText,

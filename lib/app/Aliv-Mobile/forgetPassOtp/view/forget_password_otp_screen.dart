@@ -42,14 +42,14 @@ class _ForgetPasswordOtpView extends StatelessWidget {
           listener: (context, state) {
             if (state.status == ForgetPasswordOtpStatus.failure &&
                 state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.errorMessage!,
-                    style: ForgetPasswordOtpTheme.snackBarText,
-                  ),
-                ),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text(
+              //       state.errorMessage!,
+              //       style: ForgetPasswordOtpTheme.snackBarText,
+              //     ),
+              //   ),
+              // );
             }
             // success হলে next screen এ যাওয়ার logic এখানে দিতে পারো
           },

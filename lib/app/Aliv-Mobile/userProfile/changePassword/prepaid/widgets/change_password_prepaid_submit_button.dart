@@ -18,7 +18,7 @@ class ChangePasswordPrepaidSubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 52,
+      height: 40,
       child: ElevatedButton(
         onPressed: enabled ? onTap : null,
         style: ElevatedButton.styleFrom(
@@ -39,9 +39,9 @@ class ChangePasswordPrepaidSubmitButton extends StatelessWidget {
           label,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFFF1F1F8),
           ),
         ),
       ),

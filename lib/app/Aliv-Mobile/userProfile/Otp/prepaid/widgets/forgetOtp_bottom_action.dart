@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../../../resources/widgets/defaultButton.dart';
-import '../../../../login/theme/login_theme.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
 import '../bloc/forgetPass_otp_event.dart';
 import '../bloc/forgetPass_otp_state.dart';
@@ -17,8 +15,6 @@ class OtpProfilePrepaidBottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width; // (kept as-is for parity)
-
     return Column(
       children: [
         // verify button
@@ -55,11 +51,11 @@ class OtpProfilePrepaidBottomActions extends StatelessWidget {
                 const Text(
                   "didn't receive a code? ",
                   style: TextStyle(
+                    color: Color(0xFF121212),
                     fontSize: 14,
-                    fontWeight: FontWeight.w400,
                     fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w500,
                     height: 1.43,
-                    color: AuthModuleColors.textBlack,
                   ),
                 ),
                 GestureDetector(
@@ -71,11 +67,11 @@ class OtpProfilePrepaidBottomActions extends StatelessWidget {
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: ColorManager.textLinkColor,
-                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF645D9C),
+                      fontSize: 13,
                       fontFamily: 'CircularPro',
-                      height: 1.43,
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

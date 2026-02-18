@@ -22,18 +22,11 @@ class RevPaymentMethodBottomBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: SizedBox(
-        height: 80, // ✅ fixed height (important)
+        height: 72, // ✅ fixed height (important)
         child: DecoratedBox(
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                width: 1,
-                color: const Color(0xFFE1E1E1),
-              ),
-            ),
-          ),          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          decoration: const BoxDecoration(color: Colors.white),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             child: Row(
               children: [
                 Expanded(
@@ -41,27 +34,9 @@ class RevPaymentMethodBottomBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // // Text(amountText, style: RevPaymentMethodPrepaidTheme.bottomAmount),
-                      // const SizedBox(height: 4),
-                      // Text(vatNote, style: RevPaymentMethodPrepaidTheme.bottomVat),
-                      Text(
-                        '\$ 200.00',
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 22,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        'vat inclusive',
-                        style: TextStyle(
-                          color: const Color(0xFF707070),
-                          fontSize: 12,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
+                      Text(amountText, style: RevPaymentMethodPrepaidTheme.bottomAmount),
+                      const SizedBox(height: 4),
+                      Text(vatNote, style: RevPaymentMethodPrepaidTheme.bottomVat),
                     ],
                   ),
                 ),
@@ -86,16 +61,7 @@ class RevPaymentMethodBottomBar extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                        :Text(
-                      'pay now',
-                      style: TextStyle(
-                        color: const Color(0xFFF1F1F8),
-                        fontSize: 13,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                    // Text('pay now', style: RevPaymentMethodPrepaidTheme.payNow),
+                        : Text('pay now', style: RevPaymentMethodPrepaidTheme.payNow),
                   ),
                 ),
               ],

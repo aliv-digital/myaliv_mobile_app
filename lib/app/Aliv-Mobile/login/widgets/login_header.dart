@@ -23,7 +23,7 @@ class LoginHeader extends StatelessWidget {
     final sideSlotWidth = AuthModuleSizes.backLeft + AuthModuleSizes.backIconWidth;
 
     return Padding(
-      padding: EdgeInsets.only(top: topBase),
+      padding: EdgeInsets.only(top: 28),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,7 +32,7 @@ class LoginHeader extends StatelessWidget {
             child: DefaultBackButton(
               padding: EdgeInsets.only(
                 left: AuthModuleSizes.backLeft,
-                top: backInnerTop,
+                // top: ,
               ),
               iconWidth: AuthModuleSizes.backIconWidth,
               iconHeight: AuthModuleSizes.backIconHeight,
@@ -41,9 +41,10 @@ class LoginHeader extends StatelessWidget {
               },
             ),
           ),
+
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(top: logoInnerTop),
+              padding: EdgeInsets.only(top: 24),
               child: const _LogoTitle(),
             ),
           ),

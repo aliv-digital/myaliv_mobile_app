@@ -92,7 +92,7 @@ class _RowItem extends StatelessWidget {
       fontFamily: RevConfirmationPrepaidTheme.fontFamily,
       color: Colors.white,
       fontSize: 14,
-      fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+      fontWeight: isBold ? FontWeight.w800 : FontWeight.w500,
       height: 1.1,
     );
 
