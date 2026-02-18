@@ -14,7 +14,12 @@ class MakePaymentPostPaidTheme {
 
   static const Color border = Color(0xFFE6E6F2);
   static const Color primary = appBarBg;
-  static const Color radioBorder = Color(0xFFD3D1E8);
+  static const Color radioBorder = Color(0xFFCACACA);
+  static const Color radioFill = Color(0xFFE0E0E0);
+  static const Color radioSelectedBorder = Color(0xFF7F56D9);
+  static const Color radioSelectedFill = Color(0xFF645D9C);
+  static const double amountOptionIndicatorSize = 16;
+  static const double amountOptionIndicatorBorderWidth = 1;
 
   static const Color optionSelectedBg = Color(0xFFF2F0FA);
   static const Color optionSelectedBorder = Color(0xFF8B84C8);
@@ -25,7 +30,50 @@ class MakePaymentPostPaidTheme {
   static const Color bottomBarBg = Colors.white;
   static const Color payButtonDisabled = Color(0xFFD3D1E8);
 
+  // Payment method section (mirrors rev payment method design).
+  static const Color paymentMethodBorder = Color(0xFFE5E7EB);
+  static const Color paymentMethodSelectedBorder = Color(0xFF8B84C8);
+  static const Color paymentMethodSelectedCardBg = Color(0xFFF2F1F9);
+  static const Color paymentMethodSelectedIndicatorBorderColor =
+      Color(0xFF7F56D9);
+  static const Color paymentMethodSelectedIndicatorFillColor =
+      Color(0xFF645D9C);
+  static const Color paymentMethodUnselectedIndicatorColor =
+      Color(0xFFE0E0E0);
+  static const Color paymentMethodUnselectedIndicatorBorderColor =
+      Color(0xFFCACACA);
+  static const Color paymentMethodAccent = Color(0xFF645D9C);
+
   static const double appBarHeight = 56;
+
+  // Payment due card spacing (Figma-aligned).
+  static const EdgeInsets paymentDueCardPadding =
+      EdgeInsets.fromLTRB(16, 20, 16, 20);
+  static const double paymentDueTitleToAmountGap = 16;
+  static const double paymentDueAmountToOptionsGap = 16;
+  static const double paymentDueOptionsBetweenGap = 8;
+  static const EdgeInsets paymentDueAmountFieldPadding =
+      EdgeInsets.symmetric(horizontal: 16);
+  static const double paymentDueAmountValueHorizontalPadding = 8;
+  static const double paymentDueCurrencyToValueGap = 8;
+  static const EdgeInsets paymentDueOptionTilePadding = EdgeInsets.all(16);
+  static const double paymentDueOptionTextToIndicatorGap = 12;
+
+  static const EdgeInsets paymentMethodSectionPadding =
+      EdgeInsets.fromLTRB(12, 12, 12, 12);
+  static const double paymentMethodSectionTitleToFirstCardGap = 16;
+  static const double paymentMethodBetweenCardsGap = 8;
+  static const double paymentMethodLastCardToPayWithCardGap = 16;
+  static const EdgeInsets paymentMethodPayWithCardRowPadding = EdgeInsets.zero;
+  static const double paymentMethodPayWithCardChevronSize = 16;
+
+  static const EdgeInsets paymentMethodTilePadding = EdgeInsets.all(16);
+  static const double paymentMethodLogoWidth = 46;
+  static const double paymentMethodLogoHeight = 32;
+  static const double paymentMethodLogoToTextGap = 16;
+  static const double paymentMethodTextToIndicatorGap = 4;
+  static const double paymentMethodIndicatorSize = 16;
+  static const double paymentMethodIndicatorCheckSize = 12;
 
   static TextStyle get title => const TextStyle(
         fontFamily: fontFamily,
@@ -37,34 +85,34 @@ class MakePaymentPostPaidTheme {
 
   static TextStyle get sectionLabel => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
+        fontSize: 14,
+        height: 1.43,
         fontWeight: FontWeight.w700,
-        color: textPrimary,
+        color: Color(0xFF1C1C1C),
       );
 
   static TextStyle get amountText => const TextStyle(
         fontFamily: fontFamily,
         fontSize: 14,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: textPrimary,
+        height: 1.43,
+        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+        color: Color(0xFF101828),
       );
 
   static TextStyle get optionText => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
+        fontSize: 14,
+        height: 1.43,
+        fontWeight: FontWeight.w700,
+        color: Color(0xFF222222),
       );
 
   static TextStyle get optionTextSelected => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
+        fontSize: 14,
+        height: 1.43,
         fontWeight: FontWeight.w700,
-        color: primary,
+        color: Color(0xFF645D9C),
       );
 
   static TextStyle get helperLabel => const TextStyle(
@@ -93,59 +141,66 @@ class MakePaymentPostPaidTheme {
 
   static TextStyle get termsText => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.35,
-        fontWeight: FontWeight.w500,
-        color: textPrimary,
+        fontSize: 14,
+        height: 1.43,
+        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+        color: Colors.black,
       );
 
   static TextStyle get termsLink => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.35,
+        fontSize: 14,
+        height: 1.43,
         fontWeight: FontWeight.w700,
-        color: textPrimary,
+        color: Color(0xFF645D9C),
         decoration: TextDecoration.underline,
       );
 
-  static TextStyle get methodTitle => const TextStyle(
+  static TextStyle get paymentMethodSectionTitle => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
+        fontSize: 13,
+        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+        color: Colors.black,
+      );
+
+  static TextStyle get paymentMethodName => const TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 14,
         height: 1.2,
         fontWeight: FontWeight.w700,
         color: textPrimary,
       );
 
-  static TextStyle get methodName => const TextStyle(
+  static TextStyle get paymentMethodSelectedName => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
+        fontSize: 14,
+        height: 1.43,
         fontWeight: FontWeight.w700,
-        color: textPrimary,
+        color: paymentMethodAccent,
       );
 
-  static TextStyle get methodSelectedName => const TextStyle(
+  static TextStyle get paymentMethodExpiry => const TextStyle(
         fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: primary,
-      );
-
-  static TextStyle get methodExpiry => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 11,
+        fontSize: 14,
         height: 1.2,
         fontWeight: FontWeight.w500,
         color: textMuted,
+      );
+
+  static TextStyle get paymentMethodSelectedExpiry => const TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 14,
+        height: 1.43,
+        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+        color: Color(0xCC5146A8),
       );
 
   static TextStyle get addCard => const TextStyle(
         fontFamily: fontFamily,
         fontSize: 12,
         height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: primary,
+        fontWeight: FontWeight.w600,
+        color: paymentMethodAccent,
       );
 
   static TextStyle get bottomAmount => const TextStyle(
