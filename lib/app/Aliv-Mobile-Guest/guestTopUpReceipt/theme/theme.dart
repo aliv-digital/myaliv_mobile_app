@@ -13,7 +13,7 @@ class ReceiptTheme {
   static final Color successTitleColor = HexColor.fromHex('#111111');
   static final Color successBodyColor = HexColor.fromHex('#707070');
   static final Color successCardBackgroundColor = HexColor.fromHex('#FFFFFF');
-  static final Color successCardShadowColor = const Color(0x22000000);
+  static const Color successCardShadowColor = Colors.transparent;
   static final Color successCardBottomDividerColor =
       HexColor.fromHex('#E9E9EE');
   static final Color circleBackground = HexColor.fromHex('#FCE8E1');
@@ -36,7 +36,7 @@ class ReceiptTheme {
   // Success card layout values (ReceiptSuccessCard)
   // Outer card shape.
   static const double successCardCornerRadius = 12;
-  static const double successCardElevation = 10;
+  static const double successCardElevation = 0;
 
   // Card inner padding from Figma:
   // top = 32, left/right = 24, bottom = 24.
@@ -155,12 +155,19 @@ class ReceiptTheme {
   static final TextStyle backButtonText = TextStyle(
     color: successButtonTextColor,
     fontSize: 13,
+    // Flutter has no exact w450; w400 is the closest available weight.
     fontWeight: FontWeight.w400,
-    fontFamily: AppConstants.defaultFontFamily,
+    fontFamily: 'Circular Pro',
   );
 
-  // ReceiptBackButton background color.
-  static final Color backButtonBackgroundColor = HexColor.fromHex('#EDEDF3');
+  // ReceiptBackButton colors + shape.
+  static const Color backButtonBackgroundColor = Colors.white;
+  static final Color backButtonBorderColor = HexColor.fromHex('#F2F1F9');
+  static const double backButtonWidth = 156;
+  static const double backButtonHeight = 40;
+  static const double backButtonRadius = 100;
+  static const EdgeInsets backButtonPadding =
+      EdgeInsets.symmetric(horizontal: 24, vertical: 12);
 
   // PaymentFailedTicket title base (color applied via copyWith)
   static final TextStyle ticketTitleBase = TextStyle(

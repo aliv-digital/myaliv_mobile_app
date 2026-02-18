@@ -32,11 +32,11 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final receiptData = GuestTopUpReceiptData(
-      leftType: 'top up',
+      leftType: 'top-up',
       rightType: 'prepaid',
       dateText: dateText,
       timeText: '7:30 am',//timeText,
-      phoneNumber: phoneNumber,
+      phoneNumber: '242-801-1616',//phoneNumber,
       paymentMethod: paymentMethod,
       amount: 15.00//amount,
     );
