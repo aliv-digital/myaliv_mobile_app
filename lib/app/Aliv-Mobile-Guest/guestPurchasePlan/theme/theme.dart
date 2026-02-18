@@ -311,8 +311,8 @@ class GuestPurchasePlanTheme {
 
   // Expand/collapse arrow icon size used beside each plan title.
   // Used in all plan card headers when switching between up/down SVGs.
-  static const double planCardToggleArrowWidth = 5;
-  static const double planCardToggleArrowHeight = 10;
+  static const double planCardToggleArrowWidth = 12;
+  static const double planCardToggleArrowHeight = 6;
 
   // Header text styles (title + subtitle).
   static final TextStyle planCardTitleTextStyle = TextStyle(

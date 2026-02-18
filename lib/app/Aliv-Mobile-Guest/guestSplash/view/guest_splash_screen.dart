@@ -103,7 +103,7 @@ class GuestSplashView extends StatelessWidget {
                               Positioned.fill(
                                 child: Image.asset(
                                   AssetConstant.guestImagePNG,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fitWidth,
                                   alignment: const Alignment(0, -0.9),
                                 ),
                               ),

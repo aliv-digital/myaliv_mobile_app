@@ -605,7 +605,7 @@ class GuestPurchasePlanRepository {
             description: 'International talk plan for Liberty Global.',
             benefits: [
               PlanBenefit(
-                  type: PlanBenefitType.intlTalkText,
+                  type: PlanBenefitType.mms,
                   label: "int'l talk",
                   value: '30',
                   sub: 'talk mins'),
@@ -620,7 +620,7 @@ class GuestPurchasePlanRepository {
             description: 'International talk plan for Liberty Global.',
             benefits: [
               PlanBenefit(
-                  type: PlanBenefitType.intlTalkText,
+                  type: PlanBenefitType.mms,
                   label: "int'l talk",
                   value: '50',
                   sub: 'talk mins'),
@@ -634,7 +634,7 @@ class GuestPurchasePlanRepository {
             description: 'International talk plan for Liberty Global.',
             benefits: [
               PlanBenefit(
-                  type: PlanBenefitType.intlTalkText,
+                  type: PlanBenefitType.mms,
                   label: "int'l talk",
                   value: '250',
                   sub: 'talk mins'

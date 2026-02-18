@@ -126,7 +126,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
           children: [
             DefaultAppBar(
               showBackArrow: false,
-              showNotification: true,
+              showNotification: false,
                 showNotificationDotWhenZero: true,
                 title: 'plans',
                 onBack: () {
