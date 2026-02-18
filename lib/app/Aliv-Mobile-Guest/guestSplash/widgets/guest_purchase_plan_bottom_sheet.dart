@@ -19,9 +19,9 @@ Future<GuestSplashPurchasePlanInput?> showGuestSplashPurchasePlanBottomSheet(
   final initialCountry = service.findByCode('BS') ?? service.findByCode('US');
 
   // Init bottom-sheet state in same bloc
-  context
-      .read<GuestSplashBloc>()
-      .add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
+  context.read<GuestSplashBloc>().add(
+    GuestSplashPurchasePlanInit(initialCountry: initialCountry),
+  );
 
   return showModalBottomSheet<GuestSplashPurchasePlanInput>(
     context: context,
@@ -139,7 +139,8 @@ class _SheetBody extends StatelessWidget {
             const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
             const _Label('enter mobile number'),
             const SizedBox(
-                height: GuestSplashTheme.purchasePlanLabelToFieldGap),
+              height: GuestSplashTheme.purchasePlanLabelToFieldGap,
+            ),
             // Previous local wrapper kept for quick fallback:
             // PhoneRow(
             //   country: state.purchaseCountry,
@@ -160,8 +161,8 @@ class _SheetBody extends StatelessWidget {
               onTapCountryPicker: () => _pickCountry(context),
               onChanged: (v) {
                 context.read<GuestSplashBloc>().add(
-                      GuestSplashPurchasePlanPhoneChanged(v),
-                    );
+                  GuestSplashPurchasePlanPhoneChanged(v),
+                );
               },
               enableCountryPicker: true,
               showCountryArrow: true,
@@ -209,7 +210,8 @@ class _SheetBody extends StatelessWidget {
             const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
             const _Label('confirm mobile number'),
             const SizedBox(
-                height: GuestSplashTheme.purchasePlanLabelToFieldGap),
+              height: GuestSplashTheme.purchasePlanLabelToFieldGap,
+            ),
             // Previous local wrapper kept for quick fallback:
             // PhoneRow(
             //   country: state.purchaseCountry,
@@ -229,8 +231,8 @@ class _SheetBody extends StatelessWidget {
               countryIsoCode: state.purchaseCountry?.countryCode,
               onChanged: (v) {
                 context.read<GuestSplashBloc>().add(
-                      GuestSplashPurchasePlanConfirmPhoneChanged(v),
-                    );
+                  GuestSplashPurchasePlanConfirmPhoneChanged(v),
+                );
               },
               enableCountryPicker: false,
               showCountryArrow: false,
@@ -294,7 +296,8 @@ class _SheetBody extends StatelessWidget {
               backgroundColor: GuestSplashTheme.purchasePlanContinueButtonColor,
               borderRadius: const BorderRadius.all(
                 Radius.circular(
-                    GuestSplashTheme.purchasePlanContinueButtonRadius),
+                  GuestSplashTheme.purchasePlanContinueButtonRadius,
+                ),
               ),
               textStyle: GuestSplashTheme.continueButtonText,
               onPressed: () {
@@ -329,9 +332,9 @@ class _SheetBody extends StatelessWidget {
         );
       },
       onSelect: (country) {
-        context
-            .read<GuestSplashBloc>()
-            .add(GuestSplashPurchasePlanCountryChanged(country));
+        context.read<GuestSplashBloc>().add(
+          GuestSplashPurchasePlanCountryChanged(country),
+        );
       },
     );
   }
@@ -341,10 +344,7 @@ class _Header extends StatelessWidget {
   final String title;
   final VoidCallback onBack;
 
-  const _Header({
-    required this.title,
-    required this.onBack,
-  });
+  const _Header({required this.title, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -365,11 +365,9 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(
-            height: GuestSplashTheme.purchasePlanHeaderBackToTitleGap),
-        Text(
-          title,
-          style: GuestSplashTheme.sheetTitle,
+          height: GuestSplashTheme.purchasePlanHeaderBackToTitleGap,
         ),
+        Text(title, style: GuestSplashTheme.sheetTitle),
       ],
     );
   }
@@ -381,9 +379,6 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: GuestSplashTheme.fieldLabel,
-    );
+    return Text(text, style: GuestSplashTheme.fieldLabel);
   }
 }
