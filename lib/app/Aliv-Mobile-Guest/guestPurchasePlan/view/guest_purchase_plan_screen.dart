@@ -85,7 +85,16 @@ class _GuestPurchasePlanView extends StatelessWidget {
           );
         }
 
-        if (hasActivePlan) {
+        // if (selectedTab == PlanTab.monthly) {
+        //   return RoamBottomSheet(
+        //     onBackPressed: () => Navigator.of(sheetContext).pop(),
+        //     onActivateNowPressed: () {
+        //       Navigator.of(sheetContext).pop();
+        //       context.push(AppRoutes.roamingPlanConfirmation);
+        //     },
+        //   );
+        // }
+        if (hasActivePlan && selectedTab == PlanTab.addOns) {
           return WalletPaymentActivateOrFutureBottomSheet(
             warningText:
                 'activating now replaces the account owner current plan, '

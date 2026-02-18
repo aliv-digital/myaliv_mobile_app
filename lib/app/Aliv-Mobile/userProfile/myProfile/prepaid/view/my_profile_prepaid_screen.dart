@@ -31,8 +31,9 @@ class MyProfilePrepaidScreen extends StatelessWidget {
     );
 
     return BlocProvider(
-      create: (_) => MyProfilePrepaidBloc(MyProfilePrepaidRepository())
-        ..add(const MyProfilePrepaidStarted()),
+      create: (_) =>
+          MyProfilePrepaidBloc(MyProfilePrepaidRepository())
+            ..add(const MyProfilePrepaidStarted()),
       child: const _MyProfilePrepaidView(),
     );
   }
@@ -82,19 +83,20 @@ class _MyProfilePrepaidView extends StatelessWidget {
               Expanded(
                 child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     // Appbar (already done)
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
-                        onBack: (){
+                        onBack: () {
                           context.pop();
                         },
                         title: 'my profile',
                         showHome: true,
                         onHomeTap: () {
-                         // context.read<MyProfilePrepaidBloc>().add(const MyProfilePrepaidHomePressed());
-                         context.go(AppRoutes.home);
+                          // context.read<MyProfilePrepaidBloc>().add(const MyProfilePrepaidHomePressed());
+                          context.go(AppRoutes.home);
                         },
                       ),
                     ),
@@ -128,7 +130,9 @@ class _MyProfilePrepaidView extends StatelessWidget {
                           sliver: SliverToBoxAdapter(
                             child: Center(
                               child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 420),
+                                constraints: const BoxConstraints(
+                                  maxWidth: 420,
+                                ),
                                 child: Column(
                                   children: [
                                     // ✅ Header (avatar + name + status pill)
@@ -158,7 +162,8 @@ class _MyProfilePrepaidView extends StatelessWidget {
                                       onTap: () => context
                                           .read<MyProfilePrepaidBloc>()
                                           .add(
-                                              const MyProfilePrepaidEditEmailPressed()),
+                                            const MyProfilePrepaidEditEmailPressed(),
+                                          ),
                                     ),
                                     const SizedBox(height: 16),
 
@@ -168,7 +173,8 @@ class _MyProfilePrepaidView extends StatelessWidget {
                                       onTap: () => context
                                           .read<MyProfilePrepaidBloc>()
                                           .add(
-                                              const MyProfilePrepaidChangePasswordPressed()),
+                                            const MyProfilePrepaidChangePasswordPressed(),
+                                          ),
                                     ),
 
                                     const SizedBox(height: 24),
