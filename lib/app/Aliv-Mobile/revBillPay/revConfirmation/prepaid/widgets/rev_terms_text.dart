@@ -19,43 +19,54 @@ class RevTermsCheckbox extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 22,
-          height: 22,
-          child: Checkbox(
-            value: value,
-            onChanged: (v) => onChanged(v ?? false),
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            visualDensity: VisualDensity.compact,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: InkWell(
+            onTap: () => onChanged(!value),
+            borderRadius: BorderRadius.circular(
+              RevConfirmationPrepaidTheme.checkboxCornerRadius,
             ),
-            side: BorderSide(
-              color: RevConfirmationPrepaidTheme.checkboxBorder,
-              width: 1.2,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              width: RevConfirmationPrepaidTheme.checkboxSize,
+              height: RevConfirmationPrepaidTheme.checkboxSize,
+              decoration: BoxDecoration(
+                color: value
+                    ? RevConfirmationPrepaidTheme.checkboxActive
+                    : Colors.transparent,
+                border: Border.all(
+                  color: RevConfirmationPrepaidTheme.checkboxBorder,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(
+                  RevConfirmationPrepaidTheme.checkboxCornerRadius,
+                ),
+              ),
+              child: value
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 12,
+                      color: RevConfirmationPrepaidTheme.checkboxCheckColor,
+                    )
+                  : null,
             ),
-            activeColor: RevConfirmationPrepaidTheme.checkboxActive,
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: RevConfirmationPrepaidTheme.checkboxToTextGap),
         Expanded(
-          child: Padding(
-            // checkbox height এর সাথে text baseline align করার জন্য
-            padding: const EdgeInsets.only(top: 2),
-            child: RichText(
-              text: TextSpan(
-                style: RevConfirmationPrepaidTheme.terms,
-                children: [
-                  const TextSpan(
-                    text: 'By checking this box, I agree to the ',
-                  ),
-                  TextSpan(
-                    text: 'Terms & Conditions.',
-                    style: RevConfirmationPrepaidTheme.link,
-                    recognizer: TapGestureRecognizer()..onTap = onTermsTap,
-                  ),
-                ],
-              ),
+          child: RichText(
+            text: TextSpan(
+              style: RevConfirmationPrepaidTheme.terms,
+              children: [
+                const TextSpan(
+                  text: 'By checking this box, I agree to the ',
+                ),
+                TextSpan(
+                  text: 'Terms & Conditions.',
+                  style: RevConfirmationPrepaidTheme.link,
+                  recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+                ),
+              ],
             ),
           ),
         ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import '../theme/rev_confirmation_prepaid_theme.dart';
 
 class RevConfirmationHeaderCard extends StatelessWidget {
@@ -33,7 +32,12 @@ class RevConfirmationHeaderCard extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            padding: const EdgeInsets.fromLTRB(
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardNameVerticalPadding,
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardNameVerticalPadding,
+            ),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(customerName, style: RevConfirmationPrepaidTheme.name),
@@ -41,7 +45,12 @@ class RevConfirmationHeaderCard extends StatelessWidget {
           ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFE6E6F2)),
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+            padding: const EdgeInsets.fromLTRB(
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardDetailsVerticalPadding,
+              RevConfirmationPrepaidTheme.headerCardHorizontalPadding,
+              RevConfirmationPrepaidTheme.headerCardDetailsVerticalPadding,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -76,7 +85,6 @@ class _ServiceBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(service, style: RevConfirmationPrepaidTheme.service),
-        const SizedBox(height: 2),
         Text('acct no. $accountNumber', style: RevConfirmationPrepaidTheme.smallMuted),
       ],
     );
@@ -90,13 +98,16 @@ class _AmountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: RevConfirmationPrepaidTheme.amountPillHorizontalPadding,
+        vertical: RevConfirmationPrepaidTheme.amountPillVerticalPadding,
+      ),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: HexColor.fromHex('#EDEBF7'),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: RevConfirmationPrepaidTheme.amountPillBorder, width: 1),
+        color: RevConfirmationPrepaidTheme.amountPillBackground,
+        borderRadius: BorderRadius.circular(
+          RevConfirmationPrepaidTheme.amountPillRadius,
+        ),
       ),
       child: Text(text, style: RevConfirmationPrepaidTheme.amountPill),
     );
