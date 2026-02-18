@@ -106,4 +106,7 @@ class AppRoutes {
   static const enterPassword = '/enter-password';
   static const verificationCode = '/verification-code';
 
+  static const updateEmail = '/update-email';
+  static const verifyEmail = '/verify-email';
+
 }
