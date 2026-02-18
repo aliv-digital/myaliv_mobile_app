@@ -12,7 +12,8 @@ class DashedDivider extends StatelessWidget {
     this.height = 1,
     this.dashWidth = 6,
     this.dashGap = 6,
-    required this.color, this.width,
+    required this.color,
+    this.width
   });
 
   @override

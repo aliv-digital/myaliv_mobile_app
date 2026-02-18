@@ -6,10 +6,12 @@ class DefaultBottomPayBar extends StatelessWidget {
     required this.amountText,
     required this.onPayNow,
     this.isLoading = false,
+    this.isButtonEnabled = true,
     this.buttonText = 'pay now',
     this.isVatExclusive = false,
     this.backgroundColor = Colors.white,
     this.buttonColor = const Color(0xFF6B63A7),
+    this.disabledButtonColor,
   });
 
   final String amountText;
@@ -17,10 +19,12 @@ class DefaultBottomPayBar extends StatelessWidget {
   final VoidCallback onPayNow;
 
   final bool isLoading;
+  final bool isButtonEnabled;
   final String buttonText;
 
   final Color backgroundColor;
   final Color buttonColor;
+  final Color? disabledButtonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +59,11 @@ class DefaultBottomPayBar extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        isVatExclusive ? 'vat exclusive' : 'vat inclusive',
+                        isVatExclusive ? 'no vat applied' : 'vat inclusive',
                         style: const TextStyle(
                           fontSize: 12,
                           fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w200,
+                          fontWeight: FontWeight.w400,
                           color: Color(0xFF6D6D6D),
                           height: 1.0,
                         ),
@@ -75,11 +79,11 @@ class DefaultBottomPayBar extends StatelessWidget {
                   height: 40,
                   width: 169,
                   child: ElevatedButton(
-                    onPressed: isLoading ? null : onPayNow,
+                    onPressed: (isLoading || !isButtonEnabled) ? null : onPayNow,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
-                      disabledBackgroundColor:
-                          buttonColor.withValues(alpha: 0.7),
+                      disabledBackgroundColor: disabledButtonColor ??
+                          buttonColor.withValues(alpha: 0.45),
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       shape: RoundedRectangleBorder(

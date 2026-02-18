@@ -15,12 +15,13 @@ class GuestPayBillConfirmBloc
         super(GuestPayBillConfirmState.initial(args: args)) {
     on<GuestPayBillConfirmStarted>(_onStarted);
     on<GuestPayBillConfirmPayNowPressed>(_onPayNow);
+    on<GuestPayBillConfirmTermsCheckboxToggled>(_onTermsCheckboxToggled);
   }
 
   Future<void> _onStarted(
-      GuestPayBillConfirmStarted event,
-      Emitter<GuestPayBillConfirmState> emit,
-      ) async {
+    GuestPayBillConfirmStarted event,
+    Emitter<GuestPayBillConfirmState> emit,
+  ) async {
     emit(state.copyWith(
       loadStatus: GuestPayBillConfirmLoadStatus.loading,
       errorMessage: null,
@@ -45,10 +46,15 @@ class GuestPayBillConfirmBloc
   }
 
   Future<void> _onPayNow(
-      GuestPayBillConfirmPayNowPressed event,
-      Emitter<GuestPayBillConfirmState> emit,
-      ) async {
+    GuestPayBillConfirmPayNowPressed event,
+    Emitter<GuestPayBillConfirmState> emit,
+  ) async {
     if (state.payStatus == GuestPayBillConfirmPayStatus.loading) return;
+    if (!state.isTermsChecked) {
+      emit(state.copyWith(
+          errorMessage: 'Please check Terms & Conditions first.'));
+      return;
+    }
 
     emit(state.copyWith(
       payStatus: GuestPayBillConfirmPayStatus.loading,
@@ -69,5 +75,12 @@ class GuestPayBillConfirmBloc
         errorMessage: 'Payment failed. Try again.',
       ));
     }
+  }
+
+  void _onTermsCheckboxToggled(
+    GuestPayBillConfirmTermsCheckboxToggled event,
+    Emitter<GuestPayBillConfirmState> emit,
+  ) {
+    emit(state.copyWith(isTermsChecked: !state.isTermsChecked));
   }
 }

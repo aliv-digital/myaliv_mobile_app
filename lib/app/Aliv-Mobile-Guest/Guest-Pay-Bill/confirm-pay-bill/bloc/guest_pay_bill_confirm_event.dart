@@ -13,3 +13,7 @@ class GuestPayBillConfirmStarted extends GuestPayBillConfirmEvent {
 class GuestPayBillConfirmPayNowPressed extends GuestPayBillConfirmEvent {
   const GuestPayBillConfirmPayNowPressed();
 }
+
+class GuestPayBillConfirmTermsCheckboxToggled extends GuestPayBillConfirmEvent {
+  const GuestPayBillConfirmTermsCheckboxToggled();
+}

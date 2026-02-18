@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../theme/guest_pay_bill_theme.dart';
 
@@ -19,8 +20,10 @@ class GuestPayBillRequiredLabel extends StatelessWidget {
           '*',
           style: TextStyle(
             color: Colors.red,
-            fontSize: 13,
+            fontSize: 14,
+            fontFamily: AppConstants.defaultFontFamily,
             fontWeight: FontWeight.w700,
+            height: 1.43,
           ),
         ),
       ],

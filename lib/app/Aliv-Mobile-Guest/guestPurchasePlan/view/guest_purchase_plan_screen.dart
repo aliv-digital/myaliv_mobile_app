@@ -18,6 +18,7 @@ import '../widgets/add_on_card.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
 import '../widgets/plan_tabs.dart';
+import '../widgets/roam_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
 import '../widgets/weekly_plan_card.dart';
@@ -56,10 +57,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
   String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 
   void _onPurchaseNowPressed(BuildContext context, PlanModel plan) {
-    context
-        .read<GuestPurchasePlanBloc>()
-        .add(GuestPurchasePlanPurchaseNowPressed(plan));
+    context.read<GuestPurchasePlanBloc>().add(GuestPurchasePlanPurchaseNowPressed(plan));
 
+    final PlanTab selectedTab =
+        context.read<GuestPurchasePlanBloc>().state.selectedTab;
     final hasActivePlan = _hasActivePlan(plan);
 
     showModalBottomSheet<void>(
@@ -68,6 +69,17 @@ class _GuestPurchasePlanView extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.45),
       isScrollControlled: true,
       builder: (sheetContext) {
+        // Roaming flow only: allow selecting activation date from calendar.
+        if (selectedTab == PlanTab.roaming) {
+          return RoamBottomSheet(
+            onBackPressed: () => Navigator.of(sheetContext).pop(),
+            onActivateNowPressed: () {
+              Navigator.of(sheetContext).pop();
+              context.push(AppRoutes.roamingPlanConfirmation);
+            },
+          );
+        }
+
         if (hasActivePlan) {
           return WalletPaymentActivateOrFutureBottomSheet(
             warningText:
@@ -113,6 +125,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
         child: Column(
           children: [
             DefaultAppBar(
+              showBackArrow: false,
+              showNotification: true,
+                showNotificationDotWhenZero: true,
                 title: 'plans',
                 onBack: () {
                   context.pop();
@@ -156,22 +171,23 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     title = 'choose a prepaid monthly primary plan';
                     break;
                   case PlanTab.roaming:
-                    title = 'choose a prepaid roaming primary plan';
+                    title = 'choose a roaming data add-on. these add-ons will only work in the usa, canada and or digicel caribbean countries.';
                     break;
                   case PlanTab.roameasy:
-                    title = 'choose a prepaid roameasy primary plan';
+                    title = 'choose a roameasy standalone plan';
+                    break;
+                  case PlanTab.addOns:
+                    title =
+                    'add-ons can only be added to your active primary plan and '
+                        'expires when it ends.';
                     break;
                   case PlanTab.mifi:
                     title = 'choose a prepaid mifi primary plan';
                     break;
                   case PlanTab.libertyGlobal:
-                    title = 'choose a prepaid liberty global primary plan';
+                    title = 'choose an international calling plan';
                     break;
-                  case PlanTab.addOns:
-                    title =
-                        'add-ons can only be added to your active primary plan and '
-                        'expires when it ends.';
-                    break;
+
                 }
 
                 return Padding(
@@ -180,9 +196,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       title,
-                      style: state.selectedTab == PlanTab.addOns
-                          ? GuestPurchasePlanTheme.addOnHelper
-                          : GuestPurchasePlanTheme.sectionTitle,
+                      style: GuestPurchasePlanTheme.sectionTitle,
+                      // style: state.selectedTab == PlanTab.addOns
+                      //     ? GuestPurchasePlanTheme.addOnHelper
+                      //     : GuestPurchasePlanTheme.sectionTitle,
                     ),
                   ),
                 );
@@ -207,7 +224,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    // Title-to-first-card gap target: 16px.
+                    // First card already contributes 10px top margin from theme,
+                    // so list adds 6px top padding.
+                    padding: const EdgeInsets.only(top: 6, bottom: 14),
 
                     //  addOns হলে addOns list, নাহলে plans list
                     itemCount: state.selectedTab == PlanTab.addOns
@@ -227,9 +247,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
                             addon: addon,
                             selected: selected,
                             onToggle: () {
-                              context
-                                  .read<GuestPurchasePlanBloc>()
-                                  .add(GuestPurchasePlanToggleAddon(addon));
+                              context.read<GuestPurchasePlanBloc>().add(
+                                  GuestPurchasePlanToggleAddon(addon)
+                              );
                             },
                           ),
                         );

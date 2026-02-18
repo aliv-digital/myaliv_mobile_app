@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
   static const Color blueBackground = Color(0xFFF1F7FA);
 
   final HomeUiConfig config = const HomeUiConfig(
-    userType: UserType.postpaid, // 🔥 switch here for demo
+    userType: UserType.prepaid, // 🔥 switch here for demo
     hasActivePlan: true,
     isFuturePlan: false,
   );

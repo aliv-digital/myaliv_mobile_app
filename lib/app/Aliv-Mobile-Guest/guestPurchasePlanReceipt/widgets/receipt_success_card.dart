@@ -26,7 +26,7 @@ class ReceiptSuccessCard extends StatelessWidget {
     const double cardPad = 18;
     const double cornerRadius = 16;
 
-    const double iconSize = 54;
+    const double iconSize = 56;
     const double gapAfterIcon = 14;
     const double titleBoxH = 24; // fixed height to lock notch Y
     const double gapAfterTitle = 16;
@@ -57,15 +57,15 @@ class ReceiptSuccessCard extends StatelessWidget {
               height: iconSize,
               child: DecoratedBox(
                 decoration: const BoxDecoration(
-                  color: Color(0xFFE6F4EC),
+                  color: Color(0xFFE4F3ED),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
                   child: Container(
-                    width: 30,
-                    height: 30,
+                    width: 32,
+                    height: 32,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF2E9E5B),
+                      color: Color(0xFF23A26D),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.check, color: Colors.white, size: 18),
@@ -81,11 +81,12 @@ class ReceiptSuccessCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   'Payment Success!',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'CircularPro',
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111111),
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -102,7 +103,7 @@ class ReceiptSuccessCard extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(
-              'It will take a few moments for the top up\nto appear on the account.',
+              'It will take a few moments for the plan to appears on the account.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 /// DefaultAppBar (Reusable)
 /// - Back optional
@@ -14,16 +14,19 @@ class DefaultAppBar extends StatelessWidget {
     // Layout
     this.height = 64,
     this.backgroundColor = const Color(0xFF645D9C),
-    this.horizontalPadding = 14,
+    this.horizontalPadding = 24,
+    this.leadingToTitleSpacing = 12,
     this.titleAlignment = AppBarTitleAlignment.left,
     this.centerTitle = false,
 
     // Back
     this.showBackArrow = true,
     this.onBack,
-    this.backIconAssetPath = AssetConstant.whiteBackArrowIconPNG,
+    this.backIconAssetPath = AssetConstant.leftArrowSVG,
     this.backIconSize = 24,
     this.backSplashRadius = 22,
+    this.backIconAlignment = Alignment.centerLeft,
+    this.leadingWidth,
     this.leading,
 
     // Right side (actions)
@@ -57,6 +60,7 @@ class DefaultAppBar extends StatelessWidget {
   final double height;
   final Color backgroundColor;
   final double horizontalPadding;
+  final double leadingToTitleSpacing;
   final AppBarTitleAlignment titleAlignment;
   final bool centerTitle;
 
@@ -66,6 +70,8 @@ class DefaultAppBar extends StatelessWidget {
   final String backIconAssetPath;
   final double backIconSize;
   final double backSplashRadius;
+  final AlignmentGeometry backIconAlignment;
+  final double? leadingWidth;
   final Widget? leading;
 
   // Trailing / Actions
@@ -95,10 +101,10 @@ class DefaultAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = const TextStyle(
-        color: Colors.white,
-        fontSize: 17,
-        fontFamily: 'CircularPro',
-        fontWeight: FontWeight.w700,
+      fontSize: 17,
+      fontFamily: AppConstants.defaultFontFamily,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
     );
 
     return Material(
@@ -114,6 +120,8 @@ class DefaultAppBar extends StatelessWidget {
               child: Row(
                 children: [
                   _buildLeading(context),
+                  if (_hasVisibleLeading)
+                    SizedBox(width: leadingToTitleSpacing),
                   Expanded(
                     child: Align(
                       alignment: _titleAlign(),
@@ -123,7 +131,7 @@ class DefaultAppBar extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: titleStyle,
                         textAlign:
-                            centerTitle ? TextAlign.center : TextAlign.left,
+                            centerTitle ? TextAlign.left : TextAlign.left,
                       ),
                     ),
                   ),
@@ -150,6 +158,10 @@ class DefaultAppBar extends StatelessWidget {
     return Alignment.centerLeft;
   }
 
+  bool get _hasVisibleLeading {
+    return leading != null || showBackArrow;
+  }
+
   Widget _buildLeading(BuildContext context) {
     if (leading != null) return leading!;
 
@@ -157,14 +169,28 @@ class DefaultAppBar extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return IconButton(
-      onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-      icon: SvgPicture.asset(backIconAssetPath,height: 24,width: 24,),
-      color: Colors.white,
-      iconSize: backIconSize,
-      splashRadius: backSplashRadius,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+    final resolvedLeadingWidth = leadingWidth ?? backIconSize;
+
+    return SizedBox(
+      width: resolvedLeadingWidth,
+      height: 44,
+      child: Align(
+        alignment: backIconAlignment,
+        child: InkResponse(
+          onTap: onBack ?? () => Navigator.of(context).maybePop(),
+          radius: backSplashRadius,
+          child: SizedBox(
+            width: backIconSize,
+            height: backIconSize,
+            child: SvgPicture.asset(
+              backIconAssetPath,
+              width: backIconSize,
+              height: backIconSize,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -173,7 +199,7 @@ class DefaultAppBar extends StatelessWidget {
       return SizedBox(
         width: 88,
         child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.centerRight,
           child: trailing,
         ),
       );
@@ -207,12 +233,12 @@ class DefaultAppBar extends StatelessWidget {
           onTap: onActionTextTap,
           behavior: HitTestBehavior.opaque,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 24,8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             child: Text(
               actionText!,
               style: actionTextStyle ??
                   const TextStyle(
-                    fontFamily: 'CircularPro',
+                    fontFamily: AppConstants.defaultFontFamily,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -257,14 +283,28 @@ class _HomeButton extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(999),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            // Icon(icon, color: Colors.white, size: 24),
-            SvgPicture.asset('assets/icons/home.svg',height: 24,width: 24,color: Colors.white,),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: SvgPicture.asset(
+                AssetConstant.homeIconSVG,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
+                placeholderBuilder: (_) =>
+                    Icon(icon, color: Colors.white, size: 24),
+              ),
+            ),
             if (showBadge)
               Positioned(
                 right: -2,
@@ -274,15 +314,15 @@ class _HomeButton extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(999),
                     border: Border.all(color: Colors.white, width: 1.2),
                   ),
                   child: Text(
                     count! > 99 ? '99+' : '$count',
                     style: const TextStyle(
-                      fontFamily: 'CircularPro',
+                      fontFamily: AppConstants.defaultFontFamily,
                       fontSize: 10,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
                   ),
@@ -316,13 +356,28 @@ class _NotificationButton extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(999),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
-            Icon(icon, color: Colors.white, size: 24),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: SvgPicture.asset(
+                AssetConstant.notificationIconSVG,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
+                placeholderBuilder: (_) =>
+                    Icon(icon, color: Colors.white, size: 24),
+              ),
+            ),
             if (showCountBadge)
               Positioned(
                 right: -2,
@@ -332,15 +387,15 @@ class _NotificationButton extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(999),
                     border: Border.all(color: Colors.white, width: 1.2),
                   ),
                   child: Text(
                     countValue > 99 ? '99+' : '$countValue',
                     style: const TextStyle(
-                      fontFamily: 'CircularPro',
+                      fontFamily: AppConstants.defaultFontFamily,
                       fontSize: 10,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       color: Colors.white,
                     ),
                   ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
@@ -9,9 +11,9 @@ import '../bloc/guest_purchase_plan_add_ons_event.dart';
 import '../bloc/guest_purchase_plan_add_ons_state.dart';
 import '../repository/guest_purchase_plan_add_ons_repository.dart';
 import '../theme/guest_purchase_plan_add_ons_theme.dart';
-import '../widgets/active_plan_card_v2.dart';
 import '../widgets/add_on_tile.dart';
 import '../widgets/fair_use_policy_card.dart';
+import '../widgets/plan_red_image_card.dart';
 
 class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
   const GuestPurchasePlanAddOnsScreen({super.key});
@@ -72,12 +74,14 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
                 return DefaultBottomPayBar(
-                  isVatExclusive: false,
+                  isVatExclusive: true,
                   buttonText: 'proceed',
                   amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
-                  onPayNow: () => context
-                      .read<GuestPurchasePlanAddOnsBloc>()
-                      .add(const GuestPurchasePlanAddOnsProceedPressed()),
+                  onPayNow: () {
+                    context.read<GuestPurchasePlanAddOnsBloc>().add(
+                      const GuestPurchasePlanAddOnsProceedPressed(),
+                    );
+                  },
                 );
               },
             ),
@@ -133,18 +137,22 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                         return ListView(
                           padding: const EdgeInsets.fromLTRB(
                             _contentHorizontalPadding,
-                            14,
+                            20,
                             _contentHorizontalPadding,
                             16,
                           ),
                           children: [
-                            ActivePlanCardV2(
-                              plan: plan,
-                              onAutoRenewChanged: (v) => context
-                                  .read<GuestPurchasePlanAddOnsBloc>()
-                                  .add(
-                                    GuestPurchasePlanAddOnsAutoRenewToggled(v),
-                                  ),
+                            // SvgPicture.asset(
+
+                            //     AssetConstant.staticRedCreditCard
+                            // ),
+                            PlanRedImageCard(
+                              planLabel: plan.label,
+                              planName: plan.name,
+                              activeLabel: plan.activeDateLabel,
+                              activeDate: plan.activeDate,
+                              expireLabel: plan.expireDateLabel,
+                              expireDate: plan.expireDate,
                             ),
                             const SizedBox(height: 16),
                             FairUsePolicyCard(policy: policy, onTap: () {}),

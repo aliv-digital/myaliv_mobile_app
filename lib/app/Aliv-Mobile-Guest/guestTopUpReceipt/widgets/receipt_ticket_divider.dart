@@ -1,14 +1,15 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
 
 class ReceiptTicketDivider extends StatelessWidget {
   const ReceiptTicketDivider({
     super.key,
-    this.dashColor = const Color(0xFFDDDDDD),
+    this.dashColor,
     this.height = 22,
   });
 
-  final Color dashColor;
+  final Color? dashColor;
   final double height;
 
   @override
@@ -17,7 +18,9 @@ class ReceiptTicketDivider extends StatelessWidget {
       height: height,
       width: double.infinity,
       child: CustomPaint(
-        painter: _DashedLinePainter(color: dashColor),
+        painter: _DashedLinePainter(
+          color: dashColor ?? ReceiptTheme.defaultDashColor,
+        ),
       ),
     );
   }

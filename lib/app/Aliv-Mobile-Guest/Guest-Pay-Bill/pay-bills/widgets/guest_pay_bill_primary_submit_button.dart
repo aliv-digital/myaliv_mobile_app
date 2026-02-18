@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../theme/guest_pay_bill_theme.dart';
 
@@ -16,8 +17,9 @@ class GuestPayBillPrimarySubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor =
-        enabled ? GuestPayBillTheme.primary : GuestPayBillTheme.disabledBtn;
+    final buttonColor = enabled
+        ? GuestPayBillTheme.submitButtonColor
+        : GuestPayBillTheme.disabledBtn;
 
     return SizedBox(
       height: 48,
@@ -45,6 +47,7 @@ class GuestPayBillPrimarySubmitButton extends StatelessWidget {
                 style: TextStyle(
                   color: enabled ? Colors.white : Colors.white70,
                   fontSize: 13,
+                  fontFamily: AppConstants.defaultFontFamily,
                   fontWeight: FontWeight.w600,
                 ),
               ),

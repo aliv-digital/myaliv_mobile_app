@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 class GuestPurchasePlanConfirmationTheme {
   static const bg = Color(0xFFF1F2FA);
@@ -13,16 +14,159 @@ class GuestPurchasePlanConfirmationTheme {
 
   static const shadow = Color(0x14000000);
 
+  // ---------------- Purchase Summary Card Spacing ----------------
+  // Main card visual shape.
+  static const double purchaseSummaryCardRadius = 10;
+
+  // Header section (title + phone) padding:
+  // Figma: left/right 16, top/bottom 14.
+  static const EdgeInsets purchaseSummaryHeaderPadding = EdgeInsets.fromLTRB(
+    16,
+    14,
+    16,
+    14,
+  );
+
+  // Each item row section padding:
+  // Figma: left/right 16, top/bottom 20.
+  static const EdgeInsets purchaseSummaryItemSectionPadding =
+      EdgeInsets.fromLTRB(
+    16,
+    20,
+    16,
+    20,
+  );
+
+  // Vertical text spacing inside header.
+  static const double purchaseSummaryHeaderTitleToPhoneGap = 0;
+
+  // Divider between sections (header/items/items).
+  static const double purchaseSummaryDividerThickness = 1;
+  static const double purchaseSummaryDividerHeight = 1;
+  static const Color purchaseSummaryDividerColor = Color(0xFFE6E8F2);
+
+  // Spacing inside each purchase row.
+  static const double purchaseItemLabelToTitleGap = 0;
+  static const double purchaseItemTitleToSubtitleGap = 0;
+  static const double purchaseItemPriceToDeleteGap = 20;
+  static const double purchaseItemDeleteTapPadding = 6;
+  static const double purchaseItemDeleteIconSize = 16;
+
+  // ---------------- Purchase Item Amount Chip ----------------
+  // Amount chip container style (e.g. "$ 15.00")
+  static const Color purchaseItemAmountChipColor = Color(0xFFF4F4F6);
+  static const double purchaseItemAmountChipRadius = 5;
+  static const EdgeInsets purchaseItemAmountChipPadding = EdgeInsets.symmetric(
+    horizontal: 10,
+    vertical: 4,
+  );
+
+  // Amount chip text style.
+  static const TextStyle purchaseItemAmountChipTextStyle = TextStyle(
+    color: Color(0xFF222222),
+    fontSize: 16,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+  );
+
+  // ---------------- Purchase Summary Header Text Styles ----------------
+  // Header title style: "guest purchase a plan"
+  static const TextStyle purchaseSummaryHeaderTitleTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 18,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+  );
+
+  // Header phone number style: "242-801-1616"
+  // Figma uses w450; Flutter closest supported weight is w400.
+  static const TextStyle purchaseSummaryHeaderPhoneTextStyle = TextStyle(
+    color: Color(0xFF121212),
+    fontSize: 16,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w400,
+  );
+
+  // ---------------- Purchase Item Row Text Styles ----------------
+  // Row top label style: "primary plan", "add-on"
+  static const TextStyle purchaseItemLabelTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 10,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+  );
+
+  // Row main title style: "liberty70", "liberty data 1"
+  static const TextStyle purchaseItemTitleTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 18,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+  );
+
+  // Row subtitle style: "begins immediately"
+  // Figma uses w450; Flutter closest supported weight is w400.
+  static const TextStyle purchaseItemSubtitleTextStyle = TextStyle(
+    color: Color(0xFF707070),
+    fontSize: 10,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w400,
+  );
+
+  // ---------------- Terms Row ----------------
+  // Section spacing around the terms row (per Figma: 17 top, 17 bottom).
+  static const double termsNoticeTopSpacing = 17;
+  static const double termsNoticeBottomSpacing = 17;
+
+  // Horizontal page padding used by the terms row section.
+  static const double termsNoticeHorizontalPadding = 29;
+
+  // Width of the terms sentence block in the confirmation screen.
+  static const double termsNoticeTextWidth = 307;
+
+  // Checkbox size and spacing to the terms sentence.
+  static const double termsNoticeCheckboxSize = 15;
+  static const double termsNoticeCheckboxRadius = 2;
+  static const double termsNoticeCheckboxToTextGap = 10;
+  static const double termsNoticeCheckboxIconSize = 12;
+
+  // Fine alignment so checkbox lines up with first text line visually.
+  // Figma alignment: checkbox starts slightly lower than the first text line.
+  static const double termsNoticeCheckboxTopOffset = 5;
+
+  // Checkbox visual colors.
+  static const Color termsNoticeCheckboxBorderColor = Color(0xFF645D9C);
+  static const Color termsNoticeCheckboxCheckedFillColor = Color(0xFF5146A8);
+
+  // Figma uses w450 which is not available in Flutter.
+  // Using w400 as the closest supported weight.
+  static const TextStyle termsNoticeBodyTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 14,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w400,
+    height: 1.43,
+  );
+
+  static const TextStyle termsNoticeLinkTextStyle = TextStyle(
+    color: Color(0xFF645D9C),
+    fontSize: 14,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+    decoration: TextDecoration.underline,
+    height: 1.43,
+  );
+
   /// Common text style helper (CircularPro everywhere)
   static TextStyle t(
-      double size, {
-        FontWeight weight = FontWeight.w400,
-        Color color = textBlack,
-        double height = 1.2,
-        TextDecoration? decoration,
-      }) {
+    double size, {
+    FontWeight weight = FontWeight.w400,
+    Color color = textBlack,
+    double height = 1.2,
+    TextDecoration? decoration,
+  }) {
     return TextStyle(
-      fontFamily: 'CircularPro',
+      fontFamily: AppConstants.defaultFontFamily,
       fontSize: size,
       fontWeight: weight,
       height: height,

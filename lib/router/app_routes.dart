@@ -28,6 +28,8 @@ class AppRoutes {
   static const guestPurchasePlanAddOns = '/guest-purchase-plan-add-ons';
   static const guestPurchasePlanConfirmation = '/guest-purchase-plan-confirmation';
   static const guestPurchasePlanReceipt = '/guest-purchase-plan-receipt';
+  static const roamingPlanConfirmation = '/roaming-plan-confirmation';
+  static const guestPaymentMethodScreen = '/guest-payment-method-screen';
 
   static const profilePrepaidScreen = '/profile-prepaid-screen';
   static const profilePostpaidScreen = '/profile-postpaid-screen';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/guest_pay_bill_confirm_theme.dart';
 
 class GuestPayBillConfirmHeaderCard extends StatelessWidget {
@@ -18,28 +19,43 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(top: 24,bottom: 24,left: 16,right: 16),
+      padding: GuestPayBillConfirmTheme.headerCardPadding,
       decoration: BoxDecoration(
         color: GuestPayBillConfirmTheme.cardWhite,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius:
+            BorderRadius.circular(GuestPayBillConfirmTheme.headerCardRadius),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(serviceName, style: GuestPayBillConfirmTheme.headerTitle()),
-                const SizedBox(height: 4),
+                Text(
+                  serviceName,
+                  style: GuestPayBillConfirmTheme.headerTitle,
+                  strutStyle: const StrutStyle(
+                    height: 1,
+                    forceStrutHeight: true,
+                  ),
+                ),
+                const SizedBox(
+                    height: GuestPayBillConfirmTheme.headerToSubtitleGap),
                 Text(
                   '$identifierLabel $identifierValue',
-                  style: GuestPayBillConfirmTheme.headerSub(),
+                  style: GuestPayBillConfirmTheme.headerSub,
+                  strutStyle: const StrutStyle(
+                    height: 1,
+                    forceStrutHeight: true,
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(
+              width: GuestPayBillConfirmTheme.headerTextToAmountPillGap),
           _AmountPill(amount: amount),
         ],
       ),
@@ -54,20 +70,16 @@ class _AmountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 11,right: 11,top: 5,bottom: 5),
+      padding: GuestPayBillConfirmTheme.amountPillPadding,
       decoration: BoxDecoration(
         color: GuestPayBillConfirmTheme.amountBackground,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: GuestPayBillConfirmTheme.border, width: 1),
+        borderRadius:
+            BorderRadius.circular(GuestPayBillConfirmTheme.amountPillRadius),
       ),
       child: Text(
         _money(amount),
-        style:  TextStyle(
-          color: GuestPayBillConfirmTheme.amountText,
-          fontSize: 16,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-        ),
+        textAlign: TextAlign.center,
+        style: GuestPayBillConfirmTheme.amountPill,
       ),
     );
   }

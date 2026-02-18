@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_icon_assets.dart';
 import '../models/plan_model.dart';
+import '../theme/theme.dart';
 
 class PlanCard extends StatelessWidget {
   final PlanModel plan;
@@ -19,23 +22,20 @@ class PlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  static const Color _brand = Color(0xFF5D5A8B);
-  static const Color _muted = Color(0xFF8B8B8B);
-  static const Color _divider = Color(0xFFE9E9EE);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      margin: GuestPurchasePlanTheme.planCardOuterMargin,
+      padding: GuestPurchasePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
+        color: GuestPurchasePlanTheme.planCardBackgroundColor,
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
+            color: GuestPurchasePlanTheme.planCardShadowColor,
+            blurRadius: GuestPurchasePlanTheme.planCardShadowBlur,
+            offset: GuestPurchasePlanTheme.planCardShadowOffset,
           ),
         ],
       ),
@@ -47,23 +47,29 @@ class PlanCard extends StatelessWidget {
               Expanded(
                 child: InkWell(
                   onTap: onToggle,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardHeaderTapRadius,
+                  ),
                   child: Row(
                     children: [
                       Text(
                         plan.title,
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
+                        style: GuestPurchasePlanTheme.planCardTitleTextStyle,
                       ),
-                      const SizedBox(width: 6),
-                      AnimatedRotation(
-                        duration: const Duration(milliseconds: 180),
-                        turns: expanded ? 0.5 : 0.0,
-                        child: const Icon(Icons.keyboard_arrow_down, size: 22),
+                      const SizedBox(
+                        width: GuestPurchasePlanTheme.planCardTitleToArrowGap,
+                      ),
+                      SizedBox(
+                        child: SvgPicture.asset(
+                          expanded
+                              ? AssetConstant.upArrowSVG
+                              : AssetConstant.downArrowSVG,
+                          width:
+                              GuestPurchasePlanTheme.planCardToggleArrowWidth,
+                          height:
+                              GuestPurchasePlanTheme.planCardToggleArrowHeight,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ],
                   ),
@@ -79,12 +85,7 @@ class PlanCard extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Text(
               plan.subtitle,
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 11.5,
-                fontWeight: FontWeight.w400,
-                color: _muted,
-              ),
+              style: GuestPurchasePlanTheme.planCardSubtitleTextStyle,
             ),
           ),
 
@@ -95,26 +96,20 @@ class PlanCard extends StatelessWidget {
 
           // thin divider line like screenshot
           const SizedBox(height: 10),
-          Container(height: 1, color: _divider),
+          Container(height: 1, color: GuestPurchasePlanTheme.dividerColor),
           const SizedBox(height: 10),
 
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
-            expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
                 plan.description,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 12.2,
-                  height: 1.35,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF2C2C2C),
-                ),
+                style: GuestPurchasePlanTheme.planCardDescriptionTextStyle,
               ),
             ),
           ),
@@ -123,51 +118,43 @@ class PlanCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.grey.shade300),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                      backgroundColor: const Color(0xFFF1F1F6),
-                    ),
-                    onPressed: onViewDetails,
-                    child: Text(
-                      expanded ? 'hide details' : 'view details',
-                      style: const TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: _brand,
-                      ),
-                    ),
+                child: DefaultButton(
+                  label: expanded
+                      ? GuestPurchasePlanTheme.planCardHideDetailsLabel
+                      : GuestPurchasePlanTheme.planCardViewDetailsLabel,
+                  isLoading: false,
+                  onPressed: onViewDetails,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardViewDetailsBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardViewDetailsTextStyle,
+                  borderSide: BorderSide(
+                    color:
+                        GuestPurchasePlanTheme.planCardViewDetailsBorderColor,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _brand,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
-                      ),
-                    ),
-                    onPressed: onPurchaseNow,
-                    child: const Text(
-                      'purchase now',
-                      style: TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                child: DefaultButton(
+                  label: GuestPurchasePlanTheme.planCardPurchaseNowLabel,
+                  isLoading: false,
+                  onPressed: onPurchaseNow,
+                  height: GuestPurchasePlanTheme.planCardActionButtonHeight,
+                  contentPadding:
+                      GuestPurchasePlanTheme.planCardActionButtonContentPadding,
+                  backgroundColor:
+                      GuestPurchasePlanTheme.planCardPurchaseNowBackgroundColor,
+                  textStyle:
+                      GuestPurchasePlanTheme.planCardPurchaseNowTextStyle,
+                  borderRadius: BorderRadius.circular(
+                    GuestPurchasePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
@@ -183,24 +170,18 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
-  static const Color _brand = Color(0xFF5D5A8B);
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
-        border: Border.all(color: _brand, width: 1.2),
-        borderRadius: BorderRadius.circular(8),
+        color: GuestPurchasePlanTheme.planPricePillBackground,
+        borderRadius:
+            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
-        style: const TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 13.5,
-          fontWeight: FontWeight.w700,
-          color: _brand,
-        ),
+        style: GuestPurchasePlanTheme.planPricePillTextStyle,
       ),
     );
   }
@@ -247,10 +228,14 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                     ),
                     if (i != widget.benefits.length - 1)
                       Container(
-                        width: 1,
-                        height: 36,
-                        margin: const EdgeInsets.symmetric(horizontal: 12),
-                        color: const Color(0xFFE6E6EC),
+                        width:
+                            GuestPurchasePlanTheme.planBenefitDividerWidth,
+                        height:
+                            GuestPurchasePlanTheme.planBenefitDividerHeight,
+                        margin: GuestPurchasePlanTheme
+                            .planBenefitDividerHorizontalMargin,
+                        color:
+                            GuestPurchasePlanTheme.planBenefitDividerColor,
                       ),
                   ],
                 );
@@ -277,8 +262,8 @@ class _ScrollIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double trackW = 260;
-    const double trackH = 6;
-    const double thumbW = 58;
+    const double trackH = GuestPurchasePlanTheme.scrollBarThumbHeight;
+    const double thumbW = GuestPurchasePlanTheme.scrollBarThumbWidth;
 
     return Center(
       child: AnimatedBuilder(
@@ -310,33 +295,58 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
-    return Stack(
-      children: [
-        Container(
-          width: trackW,
-          height: trackH,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE9E9EE),
-            borderRadius: BorderRadius.circular(999),
-          ),
-        ),
-        Positioned(
-          left: left,
-          child: Container(
-            width: thumbW,
-            height: trackH,
-            decoration: BoxDecoration(
-              color: const Color(0xFFD8D8E2),
-              borderRadius: BorderRadius.circular(999),
+  Widget _indicatorUI(
+      double trackW, double trackH, double thumbW, double left) {
+    return SizedBox(
+      width: trackW,
+      height: GuestPurchasePlanTheme.scrollBarRenderBoxHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: trackW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+          Positioned(
+            left: left,
+            top: (GuestPurchasePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: thumbW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: GuestPurchasePlanTheme.scrollBarThumbColor,
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanTheme.scrollBarThumbRadius,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: GuestPurchasePlanTheme.scrollBarThumbShadowColor,
+                    blurRadius: GuestPurchasePlanTheme.scrollBarShadowBlur,
+                    offset: Offset(
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetX,
+                      GuestPurchasePlanTheme.scrollBarShadowOffsetY,
+                    ),
+                    spreadRadius: GuestPurchasePlanTheme.scrollBarShadowSpread,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
-
 
 class _AssetIcon extends StatelessWidget {
   final PlanBenefitType type;
@@ -404,7 +414,7 @@ class _BenefitItem extends StatelessWidget {
                       fontFamily: 'CircularPro',
                       fontSize: 14,
                       height: 1.0,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       color: Colors.black,
                     ),
                   ),

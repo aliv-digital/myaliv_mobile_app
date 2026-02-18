@@ -19,14 +19,17 @@ class PayBillAccountInfo {
 class PayBillCountry {
   final String flagEmoji;
   final String dialCode;
+  final String isoCode;
 
   const PayBillCountry({
     required this.flagEmoji,
     required this.dialCode,
+    required this.isoCode,
   });
 
   static const PayBillCountry defaultCountry = PayBillCountry(
     flagEmoji: '🇧🇸',
     dialCode: '1',
+    isoCode: 'BS',
   );
 }

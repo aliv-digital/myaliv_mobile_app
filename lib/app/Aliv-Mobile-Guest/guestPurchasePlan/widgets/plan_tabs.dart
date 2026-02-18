@@ -18,9 +18,9 @@ class PlanTabs extends StatelessWidget {
     PlanTab.monthly: 'monthly',
     PlanTab.roaming: 'roaming',
     PlanTab.roameasy: 'roameasy',
-    PlanTab.mifi: 'mifi',
-    PlanTab.libertyGlobal: 'liberty global',
     PlanTab.addOns: 'add ons',
+    PlanTab.mifi: 'mifi',
+    PlanTab.libertyGlobal: 'liberty global'
   };
 
   double _indicatorWidth(String label) {
@@ -36,7 +36,9 @@ class PlanTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: GuestPurchasePlanTheme.tabBarBackground,
-      padding: const EdgeInsets.only(top: 30),
+      padding: const EdgeInsets.only(
+        top: GuestPurchasePlanTheme.tabTopGapFromAppBar,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -56,6 +58,7 @@ class PlanTabs extends StatelessWidget {
                   onTap: () => onChanged(tab),
                   borderRadius: BorderRadius.circular(14),
                   child: Column(
+                    // Keep tab text row aligned to the bottom area.
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
@@ -64,19 +67,29 @@ class PlanTabs extends StatelessWidget {
                             ? GuestPurchasePlanTheme.tabLabelActive
                             : GuestPurchasePlanTheme.tabLabelInactive,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: isActive
+                            ? GuestPurchasePlanTheme
+                                .tabSelectedLabelToIndicatorGap
+                            : GuestPurchasePlanTheme
+                                .tabUnselectedLabelBottomGap,
+                      ),
 
                       // ✅ purple indicator
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
                         curve: Curves.easeOut,
-                        height: 3,
+                        height: isActive
+                            ? GuestPurchasePlanTheme.tabIndicatorHeight
+                            : 0,
                         width: isActive
                             ? _indicatorWidth(label)
                             : 0, // ✅ inactive হলে hide
                         decoration: BoxDecoration(
                           color: GuestPurchasePlanTheme.brandPurple,
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(
+                            GuestPurchasePlanTheme.tabIndicatorRadius,
+                          ),
                         ),
                       ),
                     ],

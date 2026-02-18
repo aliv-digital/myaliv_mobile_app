@@ -82,7 +82,7 @@ class _DashedLine extends StatelessWidget {
             return Container(
               width: dashWidth,
               height: 1,
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             );
           }),
         );

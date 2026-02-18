@@ -16,11 +16,17 @@ class AmountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: TopUpConfirmTheme.amountPillHorizontalPadding,
+        vertical: TopUpConfirmTheme.amountPillVerticalPadding,
+      ),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(width: 2, color: borderColor),
+        color: TopUpConfirmTheme.amountPillBackgroundColor,
+        borderRadius: BorderRadius.circular(TopUpConfirmTheme.amountPillRadius),
+        border: Border.all(
+          width: TopUpConfirmTheme.amountPillBorderWidth,
+          color: borderColor,
+        ),
       ),
       child: Text(
         amountText,

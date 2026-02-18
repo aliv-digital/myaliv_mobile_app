@@ -71,14 +71,14 @@ class DefaultPaymentBreakDownCard extends StatelessWidget {
     this.textColor = Colors.white,
 
     // Shape tuning (keep defaults; override only if design differs)
-    this.topCornerRadius = 20,
+    this.topCornerRadius = 18,
     this.ovalScallopHeight = 15,
     this.scallopGap = 8,
     this.edgeInset = 0,
     this.targetScallopCount = 12,
 
     // Spacing (figma-ish defaults)
-    this.padding = const EdgeInsets.fromLTRB(16, 20, 16, 20),
+    this.padding = const EdgeInsets.fromLTRB(16, 16, 16, 18),
 
     // If true: keep last item (usually total) below dashed divider.
     this.placeDividerBeforeLastItem = false,
@@ -439,20 +439,21 @@ class _BreakdownTheme {
         color: textColor,
         fontSize: 14,
         fontWeight: FontWeight.w500,
-
+        height: 1.1,
       ),
       emphasizedText: TextStyle(
         fontFamily: font,
         color: textColor,
         fontSize: 14,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w800,
         height: 1.1,
       ),
       inputHint: const TextStyle(
-        color: const Color(0xFFC9C9C9),
-        fontSize: 16,
-        fontFamily: 'CircularPro',
-        fontWeight: FontWeight.w700,
+        fontFamily: font,
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        height: 1.1,
+        color: Color(0xFFD0D0D0),
       ),
       inputText: const TextStyle(
         fontFamily: font,
@@ -462,10 +463,11 @@ class _BreakdownTheme {
         color: Color(0xFF655C9A),
       ),
       actionText: const TextStyle(
-        color: const Color(0xFF645D9C),
+        fontFamily: font,
         fontSize: 16,
-        fontFamily: 'CircularPro',
         fontWeight: FontWeight.w700,
+        height: 1.1,
+        color: Color(0xFF655C9A),
       ),
     );
   }

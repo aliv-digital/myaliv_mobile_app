@@ -14,18 +14,35 @@ class ReceiptBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 46,
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFEDEDF3),
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+      height: ReceiptTheme.backButtonHeight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: ReceiptTheme.backButtonWidth,
         ),
-        child: Text(
-          text,
-          style: ReceiptTheme.backButtonText,
+        child: OutlinedButton(
+          onPressed: onTap,
+          style: OutlinedButton.styleFrom(
+            backgroundColor: ReceiptTheme.backButtonBackgroundColor,
+            elevation: 0,
+            minimumSize: const Size(
+              ReceiptTheme.backButtonWidth,
+              ReceiptTheme.backButtonHeight,
+            ),
+            padding: ReceiptTheme.backButtonPadding,
+            side: BorderSide(
+              width: 1,
+              color: ReceiptTheme.backButtonBorderColor,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(ReceiptTheme.backButtonRadius),
+            ),
+          ),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: ReceiptTheme.backButtonText,
+          ),
         ),
       ),
     );

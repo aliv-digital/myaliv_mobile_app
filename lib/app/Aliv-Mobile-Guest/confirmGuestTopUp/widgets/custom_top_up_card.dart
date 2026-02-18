@@ -16,17 +16,16 @@ class CustomTopUpCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: TopUpConfirmTheme.customCardMargin,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TopUpConfirmTheme.customCardRadius),
       ),
-      elevation: 4,
+      elevation: TopUpConfirmTheme.customCardElevation,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: TopUpConfirmTheme.customCardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top-up title and phone number
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -40,10 +39,9 @@ class CustomTopUpCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Divider(color: Colors.grey),
-            const SizedBox(height: 8),
-            // Updated Top-up amount holder with button-like styling
+            const SizedBox(height: TopUpConfirmTheme.customCardGap),
+            const Divider(color: TopUpConfirmTheme.customCardDividerColor),
+            const SizedBox(height: TopUpConfirmTheme.customCardGap),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -52,11 +50,19 @@ class CustomTopUpCard extends StatelessWidget {
                   style: TopUpConfirmTheme.customCardLabel,
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: TopUpConfirmTheme.customCardAmountVerticalPadding,
+                    horizontal:
+                        TopUpConfirmTheme.customCardAmountHorizontalPadding,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.blueAccent),
+                    color: TopUpConfirmTheme.customCardAmountBackground,
+                    borderRadius: BorderRadius.circular(
+                      TopUpConfirmTheme.customCardAmountRadius,
+                    ),
+                    border: Border.all(
+                      color: TopUpConfirmTheme.customCardAmountBackground,
+                    ),
                   ),
                   child: Text(
                     '\$${amount.toStringAsFixed(2)}',
