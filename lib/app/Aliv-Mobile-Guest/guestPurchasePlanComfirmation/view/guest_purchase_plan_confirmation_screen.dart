@@ -92,6 +92,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                 children: [
                   /// Top app bar (fixed)
                   DefaultAppBar(
+                    height: 63,
                     title: 'confirmation and payment',
                     onBack: () => Navigator.of(context).maybePop(),
                     showBackArrow: true,

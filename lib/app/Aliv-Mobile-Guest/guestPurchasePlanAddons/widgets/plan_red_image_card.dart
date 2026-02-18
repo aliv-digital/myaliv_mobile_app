@@ -52,7 +52,7 @@ class PlanRedImageCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
+                  padding: GuestPurchasePlanAddOnsTheme.planRedCardContentPadding,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -70,7 +70,6 @@ class PlanRedImageCard extends StatelessWidget {
                           if (topRight != null) topRight!,
                         ],
                       ),
-                      const SizedBox(height: 4),
                       Text(
                         planName,
                         maxLines: 1,

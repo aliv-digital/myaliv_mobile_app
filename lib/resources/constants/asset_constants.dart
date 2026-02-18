@@ -66,6 +66,8 @@ class AssetConstant{
 
   static const downbluArrowSVG = 'assets/icons/down_blu.svg';
 
+  static const staticRedCreditCard = 'assets/images/red_credit_card.svg';
+
 
 
 

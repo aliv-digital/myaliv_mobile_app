@@ -90,7 +90,7 @@ class GuestPurchasePlanAddOnsTheme {
   static final TextStyle fairUsePolicyLink = const TextStyle(
     color: Color(0xFF645D9C),
     fontSize: 13,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
   );
@@ -127,7 +127,7 @@ class GuestPurchasePlanAddOnsTheme {
   static const TextStyle addOnTitle = TextStyle(
     color: Colors.black,
     fontSize: 18,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 
@@ -135,7 +135,7 @@ class GuestPurchasePlanAddOnsTheme {
   static const TextStyle addOnLabel = TextStyle(
     color: Color(0xFFFF6C36),
     fontSize: 18,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w400,
   );
 
@@ -143,7 +143,7 @@ class GuestPurchasePlanAddOnsTheme {
   static const TextStyle addOnValue = TextStyle(
     color: Color(0xFF222222),
     fontSize: 24,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 
@@ -151,7 +151,21 @@ class GuestPurchasePlanAddOnsTheme {
   static const TextStyle addOnPrice = TextStyle(
     color: Color(0xFF222222),
     fontSize: 16,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
+  );
+
+  // ---------------- Red Plan Card Layout Tokens ----------------
+  // Top gap from card edge to "active plan" text.
+  static const double planRedCardTopTextGap = 13;
+  // Bottom gap from card edge to active/expire date row.
+  static const double planRedCardBottomRowGap = 26;
+  // Horizontal padding inside red plan card.
+  static const double planRedCardHorizontalPadding = 16;
+  static const EdgeInsets planRedCardContentPadding = EdgeInsets.fromLTRB(
+    planRedCardHorizontalPadding,
+    planRedCardTopTextGap,
+    planRedCardHorizontalPadding,
+    planRedCardBottomRowGap,
   );
 }

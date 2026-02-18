@@ -38,7 +38,7 @@ class GuestPurchasePlanConfirmationTheme {
   );
 
   // Vertical text spacing inside header.
-  static const double purchaseSummaryHeaderTitleToPhoneGap = 2;
+  static const double purchaseSummaryHeaderTitleToPhoneGap = 0;
 
   // Divider between sections (header/items/items).
   static const double purchaseSummaryDividerThickness = 1;
