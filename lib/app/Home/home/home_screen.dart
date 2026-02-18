@@ -226,7 +226,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 10, 24, 15),
+        padding: const EdgeInsets.fromLTRB(24, 11, 24, 15),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -236,7 +236,7 @@ class HomeScreen extends StatelessWidget {
           child: Row(
             children: const [
               Padding(
-                padding: EdgeInsets.fromLTRB(14, 18, 12, 24),
+                padding: EdgeInsets.fromLTRB(14, 24, 14, 24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +250,7 @@ class HomeScreen extends StatelessWidget {
                         fontSize: 20,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 0.10,
+                        // letterSpacing: 0.10,
                       ),
                     ),
                     Text(
@@ -268,7 +268,7 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 13),
               TimerBox('00', 'Days'),
               TimerBox('03', 'Hours'),
               TimerBox('55', 'Min'),
@@ -315,7 +315,7 @@ class HomeScreen extends StatelessWidget {
                       style: TextStyle(
                         color: const Color(0xFF645D9C),
                         fontSize: 13,
-                        fontFamily: 'Circular Pro',
+                        fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                         decoration: TextDecoration.underline,
                       ),

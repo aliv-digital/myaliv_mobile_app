@@ -63,7 +63,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
           }
           if (state.status == ConfirmTopUpStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Top up confirmed')));
+            // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Top up confirmed')));
           }
         },
         builder: (context, state) {
@@ -72,7 +72,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
             appBar: _appBar(context),
             bottomNavigationBar: ConfirmTopUpBottomBar(
               total: state.breakdown.total,
-              vatExclusive: state.breakdown.vatExclusive,
+              vatExclusive: false,
               isLoading: state.status == ConfirmTopUpStatus.submitting,
               onContinue: () {
                 context.read<ConfirmTopUpPrepaidBloc>().add(const ContinuePressed());
@@ -117,7 +117,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: ConfirmTopUpPrepaidTheme.primary,
-      elevation: 0,
+      elevation: 0,centerTitle: false,toolbarHeight: 64,
       leading: Padding(
         padding: const EdgeInsets.only(left: 24.0),
         child: IconButton(
@@ -144,35 +144,47 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
   }
 
   Widget _termsLine(BuildContext context) {
-    return SizedBox(
-      width: 332,
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: 'By pressing “continue” you agree to the ',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 14,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
-                height: 1.43,
-              ),
-            ),
-            TextSpan(
-              text: 'Terms & Conditions.',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 14,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
-                decoration: TextDecoration.underline,
-                height: 1.43,
-              ),
-            ),
-          ],
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Icon(Icons.check_box_outlined),
+
+        Padding(
+          padding: const EdgeInsets.only(top: 3.0),
+          child: SvgPicture.asset('assets/icons/Checkbox=On.svg'),
         ),
-      ),
+        SizedBox(width: 10,),
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'By checking this box, I agree to the ',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w500,
+                    height: 1.43,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Terms & Conditions.',
+                  style: TextStyle(
+                    color: const Color(0xFF645D9C),
+                    fontSize: 14,
+                    fontFamily: 'Circular Pro',
+                    fontWeight: FontWeight.w700,
+                    decoration: TextDecoration.underline,
+                    height: 1.43,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -9,7 +9,7 @@ class ConfirmTopUpPrepaidTheme {
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color ticket = Color(0xFF645D9C);
   static const Color ticketText = Colors.white;
-  static const Color border = Color(0xFFE5E7EB);
+  static const Color border = Color(0xFFCDC8F9);
 
   static const String fontFamily = 'CircularPro';
 

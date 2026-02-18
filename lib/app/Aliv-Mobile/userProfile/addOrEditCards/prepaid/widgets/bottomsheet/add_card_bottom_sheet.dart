@@ -16,16 +16,14 @@ class AddCardBottomSheet extends StatefulWidget {
 
   /// ✅ show helper (returns selected month/year)
   static Future<AddCardExpiryResult?> show(
-      BuildContext context, {
-        required String last4,
-      }) {
+    BuildContext context, {
+    required String last4,
+  }) {
     return showModalBottomSheet<AddCardExpiryResult>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _SheetScaffold(
-        child: AddCardBottomSheet(last4: last4),
-      ),
+      builder: (_) => _SheetScaffold(child: AddCardBottomSheet(last4: last4)),
     );
   }
 
@@ -46,7 +44,9 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
   Widget build(BuildContext context) {
     return Padding(
       // ✅ iOS keyboard safe
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
         decoration: const BoxDecoration(
@@ -66,20 +66,28 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                     color: const Color(0xFFF2F0FA),
                     borderRadius: BorderRadius.circular(23),
                   ),
-                  child:SvgPicture.asset('assets/icons/Featured icon.svg',) //const Icon(Icons.credit_card_sharp, color: AddOrEditCardsPrepaidTheme.primary),
+                  child: SvgPicture.asset(
+                    'assets/icons/Featured icon.svg',
+                  ), //const Icon(Icons.credit_card_sharp, color: AddOrEditCardsPrepaidTheme.primary),
                 ),
                 const Spacer(),
                 InkWell(
                   onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 32,
+                  child: SvgPicture.asset(
+                    'assets/icons/ic_back_bold.svg',
                     height: 32,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFF1F1F1F)),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.close, size: 18, color: Color(0xFF1F1F1F)),
+                    width: 32,
                   ),
+                  // Container(
+                  //   width: 32,
+                  //   height: 32,
+                  //   decoration: BoxDecoration(
+                  //
+                  //     border: Border.all(color: const Color(0xFF1F1F1F), width: 2),
+                  //     shape: BoxShape.circle,
+                  //   ),
+                  //   child: const Icon(Icons.close, size: 18, color: Color(0xFF1F1F1F)),
+                  // ),
                 ),
               ],
             ),
@@ -105,7 +113,6 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               child: Text(
                 'confirm expiration date',
                 style: TextStyle(
-
                   color: const Color(0xFF707070),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
@@ -177,8 +184,18 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
 
   String _monthLabel(int m) {
     const names = [
-      'January','February','March','April','May','June',
-      'July','August','September','October','November','December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return names[(m - 1).clamp(0, 11)];
   }
@@ -191,10 +208,7 @@ class _SheetScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: child,
-      ),
+      child: Align(alignment: Alignment.bottomCenter, child: child),
     );
   }
 }
@@ -225,23 +239,26 @@ class _DropField<T> extends StatelessWidget {
         child: DropdownButton<T>(
           isExpanded: true,
           value: value,
-          icon: const Icon(Icons.keyboard_arrow_down, color: AddOrEditCardsPrepaidTheme.primary),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: AddOrEditCardsPrepaidTheme.primary,
+          ),
           items: items
               .map(
                 (e) => DropdownMenuItem<T>(
-              value: e,
-              child: Text(
-                labelBuilder(e),
-                style: const TextStyle(
-                  color: const Color(0xFF707070),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
-                  height: 1.43,
+                  value: e,
+                  child: Text(
+                    labelBuilder(e),
+                    style: const TextStyle(
+                      color: const Color(0xFF707070),
+                      fontSize: 14,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.43,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
+              )
               .toList(),
           onChanged: (v) {
             if (v != null) onChanged(v);

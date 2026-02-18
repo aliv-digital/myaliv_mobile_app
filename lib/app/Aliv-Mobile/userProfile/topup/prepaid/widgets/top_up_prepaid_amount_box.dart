@@ -141,17 +141,17 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
             ),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          'enter top up amount',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF222222),
-            fontSize: 12,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        // const SizedBox(height: 8),
+        // Text(
+        //   'enter top up amount',
+        //   textAlign: TextAlign.center,
+        //   style: TextStyle(
+        //     color: const Color(0xFF222222),
+        //     fontSize: 12,
+        //     fontFamily: 'CircularPro',
+        //     fontWeight: FontWeight.w500,
+        //   ),
+        // ),
       ],
     );
   }

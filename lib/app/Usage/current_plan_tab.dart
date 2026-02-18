@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/current_plan_active_card.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/purchase_addon_button.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_metric_row.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
@@ -20,7 +22,7 @@ class CurrentPlanTab extends StatelessWidget {
           // 🔴 Active plan card (reuse your existing widget)
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-            child: const PrepaidActivePlanCard(showRenewButton: false),
+            child: const PrepaidCurrentPlanActivePlanCard(showRenewButton: false),
           ),
 
           // const SizedBox(height: 16),
@@ -29,17 +31,25 @@ class CurrentPlanTab extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final Uri uri = Uri.parse('https://www.bealiv.com/fair-use-policy/');
+                  if (!await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication,
+                  )) {
+                  throw 'Could not launch dialer';
+                  }
+                },
                 child: Text(
                   'fair use policy',
                   style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 12,
+                    color: const Color(0xFF645D9C),
+                    fontSize: 13,
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
                   ),
-                ),
+                )
               ),
             ),
           ),
@@ -57,10 +67,10 @@ class CurrentPlanTab extends StatelessWidget {
             child: const _UsageSection(),
           ),
 
-          const SizedBox(height: 16),
+          // const SizedBox(height: 16),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
             child: const PurchaseAddOnButton(),
           ),
 
@@ -157,6 +167,7 @@ class CurrentPlanTab extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 8,),
           Container(
             // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -268,7 +279,7 @@ class _UsageSection extends StatelessWidget {
         Divider(color: divider),
 
         _LimitRow(
-          title: 'int’l talk mins',
+          title: 'int’l mins & sms',
           subtitle: '0 of 600',
           percentUsed: 55,
           progressColor: Color(0xFF6B63C5),
@@ -281,6 +292,8 @@ class _UsageSection extends StatelessWidget {
           percentUsed: 55,
           progressColor: Color(0xFF6B63C5),
         ),
+        Divider(color: divider),
+
         // UsageRow(
         //   title: 'data',
         //   subtitle: '2.4 GB of 14 GB',
@@ -326,7 +339,7 @@ class _LimitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

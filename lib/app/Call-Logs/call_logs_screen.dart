@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
 
 import 'call_log_tab.dart';
@@ -66,10 +67,11 @@ class _CallLogsScreenState extends State<CallLogsScreen>
         backgroundColor: purple,
         centerTitle: false,
         elevation: 0,
+        toolbarHeight: 64,
         leading: Padding(
           padding: const EdgeInsets.only(left: 22.0),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back,color: Colors.white,),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -80,7 +82,8 @@ class _CallLogsScreenState extends State<CallLogsScreen>
               title,
               style: const TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 17,color: Colors.white,
+                fontSize: 17,
+                color: Colors.white,
                 fontWeight: FontWeight.w700,
               ),
             );
@@ -99,7 +102,6 @@ class _CallLogsScreenState extends State<CallLogsScreen>
         children: const [TransactionsTab(), CallLogsTab()],
       ),
     );
-
   }
 }
 
@@ -110,8 +112,8 @@ class _CallLogsTabBar extends StatelessWidget {
 
   static const Color purple = Color(0xFF645D9C);
   static const Color grey = Color(0xFF9E9E9E);
-  static const Color blue =  Color(0xFF0143EC);
-  static const Color black =  Color(0xFF21232A);
+  static const Color blue = Color(0xFF0143EC);
+  static const Color black = Color(0xFF21232A);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -122,7 +124,6 @@ class _CallLogsTabBar extends StatelessWidget {
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(color: blue, width: 2),
           insets: EdgeInsets.symmetric(horizontal: 32),
-
         ),
         labelColor: black,
         unselectedLabelColor: grey,
@@ -181,7 +182,7 @@ class _MonthSelector extends StatelessWidget {
       height: 36,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -191,7 +192,7 @@ class _MonthSelector extends StatelessWidget {
           const Icon(Icons.calendar_today, size: 14),
           const SizedBox(width: 8),
           Text(
-            '2 July 2024',
+            'July 2024',
             style: TextStyle(
               color: const Color(0xFF222222),
               fontSize: 14,
@@ -200,10 +201,10 @@ class _MonthSelector extends StatelessWidget {
               height: 1.43,
             ),
           ),
-           SizedBox(width: 8),
-          const Icon(Icons.keyboard_arrow_down, size: 18),
-          const SizedBox(width: 8),
-
+          SizedBox(width: 8),
+          // Icon(Icons.chevron_down, size: 18),
+          SvgPicture.asset('assets/icons/CHEVRON-DOWN.svg'),
+          const SizedBox(width: 16),
         ],
       ),
     );

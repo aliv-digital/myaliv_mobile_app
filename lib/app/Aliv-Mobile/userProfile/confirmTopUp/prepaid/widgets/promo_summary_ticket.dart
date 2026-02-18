@@ -166,9 +166,9 @@ class PromoSummaryTicket extends StatelessWidget {
 
               // Figma: tighter dashes, lower opacity
               DashedDivider(
-                color: Colors.white.withValues(alpha: 0.35),
-                dashWidth: 4,
-                dashGap: 4,
+                color: const Color(0xFFEDEDED),
+                // dashWidth: 4,
+                // dashGap: 4,
                 height: 1,
               ),
               const SizedBox(height: 24),

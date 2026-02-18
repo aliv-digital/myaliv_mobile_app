@@ -10,7 +10,7 @@ class MenuScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Text(
-            'Menu',
+            'Secuirity',
             style: const TextStyle(
               fontFamily: 'CircularPro',
               fontSize: 24,

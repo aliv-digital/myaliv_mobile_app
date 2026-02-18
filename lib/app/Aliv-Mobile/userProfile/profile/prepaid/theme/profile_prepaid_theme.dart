@@ -26,7 +26,7 @@ class ProfilePrepaidTheme {
     );
   }
 
-  // Menu item label style from the approved Figma spec.
+  // Secuirity item label style from the approved Figma spec.
   static final TextStyle menuItemText = t(
     13,
     weight: FontWeight.w400,

@@ -12,7 +12,8 @@ class TimerBox extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 6),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        height: 64,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -29,7 +30,7 @@ class TimerBox extends StatelessWidget {
                 letterSpacing: 0.10,
               ),
             ),
-            const SizedBox(height: 4),
+            // const SizedBox(height: 4),
             Text(
               label,
               style: const TextStyle(

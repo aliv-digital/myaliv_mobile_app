@@ -324,7 +324,6 @@
 //   }
 // }
 
-
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -338,17 +337,16 @@ import '../bloc/guest_splash_event.dart';
 import '../bloc/guest_splash_state.dart';
 import '../model/guest_purchase_plan_input.dart';
 
-
 Future<GuestSplashPurchasePlanInput?> showGuestSplashPurchasePlanBottomSheet(
-    BuildContext context,
-    ) async {
+  BuildContext context,
+) async {
   final service = CountryService();
   final initialCountry = service.findByCode('BS') ?? service.findByCode('US');
 
   // Init bottom-sheet state in same bloc
-  context
-      .read<GuestSplashBloc>()
-      .add(GuestSplashPurchasePlanInit(initialCountry: initialCountry));
+  context.read<GuestSplashBloc>().add(
+    GuestSplashPurchasePlanInit(initialCountry: initialCountry),
+  );
 
   return showModalBottomSheet<GuestSplashPurchasePlanInput>(
     context: context,
@@ -469,9 +467,9 @@ class _SheetBody extends StatelessWidget {
               country: state.purchaseCountry,
               hint: 'eg: 242-899-9999',
               onPickCountry: () => _pickCountry(context),
-              onChanged: (v) => context
-                  .read<GuestSplashBloc>()
-                  .add(GuestSplashPurchasePlanPhoneChanged(v)),
+              onChanged: (v) => context.read<GuestSplashBloc>().add(
+                GuestSplashPurchasePlanPhoneChanged(v),
+              ),
               showPicker: true,
               showArrow: true,
             ),
@@ -484,9 +482,9 @@ class _SheetBody extends StatelessWidget {
               country: state.purchaseCountry,
               hint: 'eg: 242-899-9999',
               onPickCountry: () => _pickCountry(context),
-              onChanged: (v) => context
-                  .read<GuestSplashBloc>()
-                  .add(GuestSplashPurchasePlanConfirmPhoneChanged(v)),
+              onChanged: (v) => context.read<GuestSplashBloc>().add(
+                GuestSplashPurchasePlanConfirmPhoneChanged(v),
+              ),
               showPicker: false,
               showArrow: false,
             ),
@@ -515,7 +513,7 @@ class _SheetBody extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                 // context.read<GuestSplashBloc>().add(GuestSplashPurchasePlanSubmitted());
+                  // context.read<GuestSplashBloc>().add(GuestSplashPurchasePlanSubmitted());
 
                   context.push(AppRoutes.guestPurchasePlan);
                 },
@@ -536,9 +534,9 @@ class _SheetBody extends StatelessWidget {
       context: context,
       showPhoneCode: true,
       onSelect: (country) {
-        context
-            .read<GuestSplashBloc>()
-            .add(GuestSplashPurchasePlanCountryChanged(country));
+        context.read<GuestSplashBloc>().add(
+          GuestSplashPurchasePlanCountryChanged(country),
+        );
       },
     );
   }
@@ -548,10 +546,7 @@ class _Header extends StatelessWidget {
   final String title;
   final VoidCallback onBack;
 
-  const _Header({
-    required this.title,
-    required this.onBack,
-  });
+  const _Header({required this.title, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -567,10 +562,7 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Text(
-          title,
-          style: GuestSplashTheme.sheetTitle,
-        ),
+        Text(title, style: GuestSplashTheme.sheetTitle),
       ],
     );
   }
@@ -582,10 +574,7 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: GuestSplashTheme.fieldLabel,
-    );
+    return Text(text, style: GuestSplashTheme.fieldLabel);
   }
 }
 
@@ -632,10 +621,7 @@ class _PhoneRow extends StatelessWidget {
               children: [
                 Text(flag, style: GuestSplashTheme.flagEmoji),
                 const SizedBox(width: 6),
-                Text(
-                  dial,
-                  style: GuestSplashTheme.dialCode,
-                ),
+                Text(dial, style: GuestSplashTheme.dialCode),
                 if (showArrow) ...[
                   const SizedBox(width: 2),
                   const Icon(

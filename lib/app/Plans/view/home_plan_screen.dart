@@ -123,12 +123,12 @@ class _HomePlanView extends StatelessWidget {
             ),
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: SvgPicture.asset('assets/icons/bell with red.svg'),
-          ),
-        ],
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 20.0),
+        //     child: SvgPicture.asset('assets/icons/bell with red.svg'),
+        //   ),
+        // ],
       ),
       body: SafeArea(
         child: Column(

@@ -48,7 +48,7 @@ class SupportScreen extends StatelessWidget {
                     onTap: () {
                       context.push(AppRoutes.chatScreen);
                     },
-                    child: SupportTile(title: 'chat Bot'),
+                    child: SupportTile(title: 'chat bot'),
                   ),
                   GestureDetector(
                     onTap: () async {

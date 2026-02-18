@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import '../theme/confirm_top_up_prepaid_theme.dart';
 
 class ConfirmTopUpHeaderCard extends StatelessWidget {
@@ -58,25 +59,19 @@ class ConfirmTopUpHeaderCard extends StatelessWidget {
           ),
           const Divider(height: 1, color: ConfirmTopUpPrepaidTheme.border),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Row(
               children: [
                 Text(
-                  'top up',
+                  'top-up',
                   style: ConfirmTopUpPrepaidTheme.titleMd(context),
                 ),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 4),
                   decoration: ShapeDecoration(
-                    color: const Color(0xFFECEBF7),
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        width: 1,
-                        color: const Color(0xFF5045A7),
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    color: const Color(0xFFF3F3F6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -85,15 +80,26 @@ class ConfirmTopUpHeaderCard extends StatelessWidget {
                     spacing: 10,
                     children: [
                       Text(
-                        '\$ 15.00',
+                        AppUtils.formatPrice(15),
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: const Color(0xFF5045A7),
+                        style: const TextStyle(
+                          color: Color(0xFF222222),
                           fontSize: 16,
                           fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                         ),
-                      ),
+                      )
+
+                      // Text(
+                      //   '\$ 15.00',
+                      //   textAlign: TextAlign.center,
+                      //   style: TextStyle(
+                      //     color: const Color(0xFF222222),
+                      //     fontSize: 16,
+                      //     fontFamily: 'Circular Pro',
+                      //     fontWeight: FontWeight.w700,
+                      //   ),
+                      // )
                     ],
                   ),
                 )

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../router/app_routes.dart';
+import '../model/logout_bottom_sheet.dart';
 
 class AppMenuDrawer extends StatelessWidget {
   const AppMenuDrawer({super.key});
@@ -57,19 +58,13 @@ class AppMenuDrawer extends StatelessWidget {
                   //   icon: const Icon(Icons.close),
                   //   onPressed: () => Navigator.pop(context),
                   // ),
-                  InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFF1F1F1F)),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 18,
-                        color: Color(0xFF1F1F1F),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: SvgPicture.asset('assets/icons/ic_back_bold.svg',
+                        // Icons.close,
+                        // color: Color(0xFF1F1F1F),
                       ),
                     ),
                   ),
@@ -82,7 +77,7 @@ class AppMenuDrawer extends StatelessWidget {
             _item('assets/icons/profile.svg', 'profile', context),
             _item('assets/icons/purchase.svg', 'purchases', context),
             _item('assets/icons/refer.svg', 'refer a friend', context),
-            _item('assets/icons/notification.svg', 'notifications', context),
+            // _item('assets/icons/notification.svg', 'notifications', context),
             _item('assets/icons/bill.svg', 'REV bill pay', context),
             _item('assets/icons/settings.svg', 'settings', context),
             _item('assets/icons/support.svg', 'support', context),
@@ -102,9 +97,17 @@ class AppMenuDrawer extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     Navigator.of(context).pop(); // close drawer
-                    await Future.delayed(const Duration(milliseconds: 50));
+                    // await Future.delayed(const Duration(milliseconds: 50));
+                    //
+                    // context.go(AppRoutes.welcome);
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        isScrollControlled: true,
+                        builder: (_) => const LogoutBottomSheet(),
+                      );
 
-                    context.go(AppRoutes.welcome);
+
                   },
                   icon: SvgPicture.asset('assets/icons/logout.svg'),
                   label: const Text(

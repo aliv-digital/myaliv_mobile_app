@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
+import '../../../../../../resources/widgets/common_switch_button.dart';
+import '../../../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/widgets/dashed_divider.dart';
+import '../../../../../Home/widgets/auto_renew_toggle.dart';
 import '../theme/top_up_prepaid_theme.dart';
 import '../view/auto_renew_authorization_screen.dart';
 
@@ -35,136 +38,156 @@ class _TopUpPrepaidPlaceholderTabState
                 24,
                 32 + MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ================= SELECT CARD =================
-                    _SectionLabel('select card'),
-                    //_DropdownField('visa ending in 1234'),
-                    _CardDropdown(),
-                    const SizedBox(height: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
-                    // ================= ANY TIME =================
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Text(
-                            'any time',
-                            style: TextStyle(
-                              fontFamily: 'CircularPro',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                children: [
+                  // ================= SELECT CARD =================
+                  _SectionLabel('select card'),
+                  //_DropdownField('visa ending in 1234'),
+                  _CardDropdown(),
+                  const SizedBox(height: 20),
+
+                  // ================= ANY TIME =================
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'any time',
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
-                        Switch(
-                          value: anyTimeEnabled,
-                          onChanged: (v) => setState(() => anyTimeEnabled = v),
-                          activeThumbColor: TopUpPrepaidTheme.purple,
-                          inactiveThumbColor: Colors.white,
-                          activeTrackColor: Colors.white,
-                          inactiveTrackColor: TopUpPrepaidTheme.pillBg,
-                          trackColor: WidgetStateProperty.all(
-                            TopUpPrepaidTheme.lightBg,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ================= THRESHOLD =================
-                    _SectionLabel('when balance falls below'),
-                    _InputField(value: '\$ 10.00'),
-
-                    const SizedBox(height: 8),
-                    Text(
-                      'amount must be above \$ 10.00 and below \$ 10.000',
-                      style: TextStyle(
-                        color: const Color(0xFF5045A7),
-                        fontSize: 14,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
-                        height: 1.43,
                       ),
+                      // Spacer(),
+                      CommonSwitchButton(initialValue: true),
+
+                      // Switch(
+                      //   value: anyTimeEnabled,
+                      //   onChanged: (v) => setState(() => anyTimeEnabled = v),
+                      //   activeThumbColor: TopUpPrepaidTheme.purple,
+                      //   inactiveThumbColor: Colors.white,
+                      //   activeTrackColor: Colors.white,
+                      //   inactiveTrackColor: TopUpPrepaidTheme.pillBg,
+                      //   trackColor: WidgetStateProperty.all(
+                      //     TopUpPrepaidTheme.lightBg,
+                      //   ),
+                      // ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ================= THRESHOLD =================
+                  _SectionLabel('when balance falls below'),
+                  _InputField(value: '\$ 10.00'),
+
+                  const SizedBox(height: 8),
+                  Text(
+                    'amount must be above \$ 10.00 and below \$ 10.000',
+                    style: TextStyle(
+                      color: const Color(0xFF707070),
+                      fontSize: 14,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.43,
                     ),
+                  ),
 
-                    const SizedBox(height: 26),
+                  const SizedBox(height: 26),
 
-                    // ================= PRESET AMOUNTS =================
-                    _SectionLabel('select a top up amount'),
-                    const SizedBox(height: 10),
+                  // ================= PRESET AMOUNTS =================
+                  _SectionLabel('select a top-up amount'),
+                  const SizedBox(height: 10),
 
-                    _AmountGrid(
-                      selected: selectedAmount,
-                      onSelect: (v) => setState(() => selectedAmount = v),
-                    ),
+                  _AmountGrid(
+                    selected: selectedAmount,
+                    onSelect: (v) => setState(() => selectedAmount = v),
+                  ),
 
-                    const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                    // ================= OR DIVIDER =================
-                    Row(
-                      children: const [
-                        Expanded(child: Divider(thickness: 1)),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'or',
-                            style: TextStyle(
-                              fontFamily: 'CircularPro',
-                              color: const Color(0xFF222222),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              height: 1.56,
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Divider(thickness: 1)),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ================= CUSTOM AMOUNT =================
-                    _SectionLabel('custom amount'),
-                    TopUpFormInputField(
-                      hint: 'enter a custom amount',
-                      isAmountType: true,
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // ================= APPLY =================
-                    SizedBox(
-                      width: double.infinity,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const AutoRenewAuthorizationScreen(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF645D9C),//TopUpPrepaidTheme.purple,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                        ),
+                  // ================= OR DIVIDER =================
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DashedDivider(
+                        color: const Color(0xFF222222),
+                        width: MediaQuery.of(context).size.width / 2.8,  //dashWidth: 4,
+                        // dashGap: 4,
+                        height: 2,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         child: Text(
-                          'apply',
-                          style: TopUpPrepaidTheme.buttonText(),
+                          'or',
+                          style: TextStyle(
+                            fontFamily: 'CircularPro',
+                            color: const Color(0xFF222222),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            height: 1.56,
+                          ),
                         ),
                       ),
+                      DashedDivider(
+                        color: const Color(0xFF222222),
+                        width: MediaQuery.of(context).size.width / 2.8,
+
+                        // dashWidth: 4,
+                        // dashGap: 4,
+                        height: 2,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // ================= CUSTOM AMOUNT =================
+                  _SectionLabel('custom amount'),
+                  const SizedBox(height: 8),
+
+                  TopUpFormInputField(
+                    hint: 'enter a custom amount',
+                    isAmountType: true,
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // ================= APPLY =================
+                  SizedBox(
+                    width: double.infinity,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const AutoRenewAuthorizationScreen(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(
+                          0xFF645D9C,
+                        ), //TopUpPrepaidTheme.purple,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                      ),
+                      child: Text(
+                        'apply',
+                        style: TopUpPrepaidTheme.buttonText(),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           },
@@ -377,7 +400,6 @@ class _AmountGrid extends StatelessWidget {
               ),
             ),
           ),
-
         );
       },
     );

@@ -103,7 +103,7 @@ class AppRoutes {
   static const chatScreen = '/chat';
   static const callSupportScreen = '/call-support';
 
-
-
+  static const enterPassword = '/enter-password';
+  static const verificationCode = '/verification-code';
 
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../../../router/app_routes.dart';
 import 'auto_renew_toggle.dart';
 
 class PrepaidActivePlanCard extends StatelessWidget {
@@ -47,7 +49,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
             // 🔥 CONDITIONAL RENEW BUTTON
             if (showRenewButton) ...[
               const SizedBox(height: 14),
-              _renewButton(),
+              _renewButton(context),
             ],
             // showRenewButton? const SizedBox(height: 14):const SizedBox(height: 0),
             // showRenewButton?  _renewButton():const SizedBox(height: 0),
@@ -95,7 +97,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
           ],
         ),
         Spacer(),
-        AutoRenewToggle(initialValue: true),
+        AutoRenewToggle(initialValue: false),
       ],
     );
   }
@@ -122,17 +124,26 @@ class PrepaidActivePlanCard extends StatelessWidget {
     );
   }
 
-  Widget _renewButton() {
+  Widget _renewButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,isDismissible: true,
+            backgroundColor: Colors.transparent,
+            barrierColor: Colors.black.withOpacity(0.5),
+            builder: (_) => const _AutoRenewBottomSheet(),
+          );
+
+        },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF3F4FA),
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(100),
           ),
         ),
         child: Row(
@@ -202,6 +213,112 @@ class _DateBlock extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AutoRenewBottomSheet extends StatelessWidget {
+  const _AutoRenewBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+
+        decoration: const ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          shadows: [
+            BoxShadow(
+              color: Color(0x07101828),
+              blurRadius: 8,
+              offset: Offset(0, 8),
+              spreadRadius: -4,
+            ),
+            BoxShadow(
+              color: Color(0x14101828),
+              blurRadius: 24,
+              offset: Offset(0, 20),
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            /// Back Arrow
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.arrow_back, size: 24),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Text
+            Text(
+              'enable auto-renew using your credit card or wallet balance.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF121212),
+                fontSize: 16,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w400, // w450 ≈ w400 in Flutter
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            /// Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF645D9C),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push(
+                    AppRoutes.autoRenewPrepaidScreen,
+                  );
+
+                },
+                child: const Text(
+                  'ok',
+                  style: TextStyle(
+                    color: Color(0xFFF1F1F8),
+                    fontSize: 13,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

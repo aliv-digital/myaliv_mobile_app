@@ -73,81 +73,165 @@ class _IconCircle extends StatelessWidget {
 }
 
 /// Pixel-perfect toggle (matches provided figma screenshot)
+// class _FigmaToggle extends StatelessWidget {
+//   const _FigmaToggle({
+//     required this.value,
+//     required this.onChanged,
+//   });
+//
+//   final bool value;
+//   final ValueChanged<bool> onChanged;
+//
+//   static const double _w = 70;
+//   static const double _h = 34;
+//   static const double _pad = 3;
+//   static const double _knob = 28;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final trackColor = value ? SettingsTheme.appBarBg : Colors.white;
+//     final borderColor = value ? Colors.transparent : const Color(0xFFE5E7EB);
+//
+//     return GestureDetector(
+//       behavior: HitTestBehavior.opaque,
+//       child: SvgPicture.asset('assets/icons/Toggle=Off.svg'));
+//     //   AnimatedContainer(
+//     //     duration: const Duration(milliseconds: 180),
+//     //     curve: Curves.easeOut,
+//     //     width: _w,
+//     //     height: _h,
+//     //     padding: const EdgeInsets.all(_pad),
+//     //     decoration: BoxDecoration(
+//     //       color: trackColor,
+//     //       borderRadius: BorderRadius.circular(100),
+//     //       border: Border.all(color: borderColor, width: 1.2),
+//     //     ),
+//     //     child: Stack(
+//     //       children: [
+//     //         // OFF label (only when off)
+//     //         AnimatedOpacity(
+//     //           duration: const Duration(milliseconds: 150),
+//     //           opacity: value ? 0 : 1,
+//     //           child: const Align(
+//     //             alignment: Alignment.centerRight,
+//     //             child: Padding(
+//     //               padding: EdgeInsets.only(right: 10),
+//     //               child: Text(
+//     //                 'Off',
+//     //                 style: TextStyle(
+//     //                   fontFamily: SettingsTheme.fontFamily,
+//     //                   fontSize: 12,
+//     //                   fontWeight: FontWeight.w600,
+//     //                   color: Color(0xFF9CA3AF),
+//     //                   height: 1.0,
+//     //                 ),
+//     //               ),
+//     //             ),
+//     //           ),
+//     //         ),
+//     //
+//     //         // Knob
+//     //         AnimatedAlign(
+//     //           duration: const Duration(milliseconds: 180),
+//     //           curve: Curves.easeOut,
+//     //           alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+//     //           child: Container(
+//     //             width: _knob,
+//     //             height: _knob,
+//     //             decoration: BoxDecoration(
+//     //               color: Colors.white,
+//     //               borderRadius: BorderRadius.circular(999),
+//     //               boxShadow: const [
+//     //                 BoxShadow(
+//     //                   blurRadius: 10,
+//     //                   offset: Offset(0, 3),
+//     //                   color: Color(0x26000000),
+//     //                 ),
+//     //               ],
+//     //             ),
+//     //           ),
+//     //         ),
+//     //       ],
+//     //     ),
+//     //   ),
+//     // );
+//   }
+// }
+
+
 class _FigmaToggle extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
   const _FigmaToggle({
+    super.key,
     required this.value,
     required this.onChanged,
   });
 
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  static const double _w = 70;
-  static const double _h = 34;
-  static const double _pad = 3;
-  static const double _knob = 28;
+  static const double _width = 55;
+  static const double _height = 28;
+  static const double _knobSize = 24;
 
   @override
   Widget build(BuildContext context) {
-    final trackColor = value ? SettingsTheme.appBarBg : Colors.white;
-    final borderColor = value ? Colors.transparent : const Color(0xFFE5E7EB);
-
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
       onTap: () => onChanged(!value),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        width: _w,
-        height: _h,
-        padding: const EdgeInsets.all(_pad),
-        decoration: BoxDecoration(
-          color: trackColor,
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: borderColor, width: 1.2),
+        duration: const Duration(milliseconds: 200),
+        width: _width,
+        height: _height,
+        padding: EdgeInsets.only(
+          left: value ? 10 : 3,
+          right: value ? 3 : 10,
         ),
-        child: Stack(
-          children: [
-            // OFF label (only when off)
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 150),
-              opacity: value ? 0 : 1,
-              child: const Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Text(
-                    'Off',
-                    style: TextStyle(
-                      fontFamily: SettingsTheme.fontFamily,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF9CA3AF),
-                      height: 1.0,
-                    ),
-                  ),
+        decoration: BoxDecoration(
+          color: value ? const Color(0xFF645D9C) : Colors.white,
+          borderRadius: BorderRadius.circular(35.71),
+          border: value
+              ? null
+              : Border.all(
+            width: 0.71,
+            color: const Color(0xFFE2E2E2),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: value
+              ? [
+            /// ON TEXT
+            const SizedBox(
+              width: 12,
+              child: Text(
+                'On',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFFE4E0FF),
+                  fontSize: 8,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
 
-            // Knob
-            AnimatedAlign(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOut,
-              alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-              child: Container(
-                width: _knob,
-                height: _knob,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(999),
-                  boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                      color: Color(0x26000000),
-                    ),
-                  ],
+            /// KNOB
+            _knob(),
+          ]
+              : [
+            /// KNOB
+            _knob(withShadow: true),
+
+            /// OFF TEXT
+            const SizedBox(
+              width: 14,
+              child: Text(
+                'Off',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF707070),
+                  fontSize: 8,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
@@ -156,4 +240,25 @@ class _FigmaToggle extends StatelessWidget {
       ),
     );
   }
+
+  static Widget _knob({bool withShadow = false}) {
+    return Container(
+      width: _knobSize,
+      height: _knobSize,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(50),
+        boxShadow: withShadow
+            ? [
+          const BoxShadow(
+            color: Color(0x25000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          )
+        ]
+            : null,
+      ),
+    );
+  }
 }
+

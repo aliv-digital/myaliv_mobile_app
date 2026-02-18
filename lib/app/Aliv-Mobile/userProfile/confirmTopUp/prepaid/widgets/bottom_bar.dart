@@ -38,7 +38,8 @@ class ConfirmTopUpBottomBar extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    vatExclusive ? 'vat exclusive' : 'vat inclusive',
+                    'No vat applied',
+                    //vatExclusive ? 'vat exclusive' : 'vat inclusive',
                     style: TextStyle(
                       color: const Color(0xFF707070),
                       fontSize: 12,

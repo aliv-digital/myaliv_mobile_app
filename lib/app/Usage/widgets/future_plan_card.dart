@@ -18,7 +18,8 @@ class FuturePlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      height: 148,
+      padding: const EdgeInsets.fromLTRB(16,13,16,16),
       decoration: BoxDecoration(
         image: DecorationImage(
           image:  AssetImage(image),
@@ -41,9 +42,9 @@ class FuturePlanCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'future plan',
-            style: TextStyle(
+          Text( title == 'liberty45'?
+            'active plan':'future plan',
+            style: const TextStyle(
               color: Colors.white /* White-100% */,
               fontSize: 12,
               fontFamily: 'CircularPro',

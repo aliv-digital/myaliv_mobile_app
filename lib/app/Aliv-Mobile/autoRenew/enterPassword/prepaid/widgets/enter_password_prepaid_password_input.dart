@@ -28,7 +28,7 @@ class EnterPasswordAutoRenewPrepaidPasswordInput extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
-           SvgPicture.asset('assets/icons/leading_lock.svg', color: Color(0xFF6B7280)),
+           SvgPicture.asset('assets/icons/LockKey.svg',),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -58,7 +58,8 @@ class EnterPasswordAutoRenewPrepaidPasswordInput extends StatelessWidget {
             borderRadius: BorderRadius.circular(999),
             child:  Padding(
               padding: EdgeInsets.all(6),
-              child: SvgPicture.asset('assets/icons/eye.svg', color: Color(0xFF6B7280)),
+              child: SvgPicture.asset('assets/icons/EyeSlash.svg',
+              ),
 
             ),
           ),

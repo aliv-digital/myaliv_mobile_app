@@ -29,7 +29,7 @@ class TopUpPaymentPrepaidScreen extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
           }
           if (state.status == TopUpPaymentStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment successful')));
+            // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment successful')));
           }
         },
         builder: (context, state) {

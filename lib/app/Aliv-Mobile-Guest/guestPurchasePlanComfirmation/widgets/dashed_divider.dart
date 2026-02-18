@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class DashedDivider extends StatelessWidget {
   final double height;
   final double dashWidth;
+  final double? width;
   final double dashGap;
   final Color color;
 
@@ -11,14 +12,14 @@ class DashedDivider extends StatelessWidget {
     this.height = 1,
     this.dashWidth = 6,
     this.dashGap = 6,
-    required this.color,
+    required this.color, this.width,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
-      width: double.infinity,
+      width: width ?? double.infinity,
       child: CustomPaint(
         painter: _DashedPainter(
           dashWidth: dashWidth,

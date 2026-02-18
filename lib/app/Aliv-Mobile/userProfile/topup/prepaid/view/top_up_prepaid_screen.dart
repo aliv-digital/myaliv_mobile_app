@@ -15,9 +15,14 @@ import '../widgets/top_up_prepaid_amount_box.dart';
 import '../widgets/top_up_prepaid_primary_button.dart';
 import '../widgets/top_up_prepaid_placeholder_tab.dart';
 
-class TopUpPrepaidScreen extends StatelessWidget {
+class TopUpPrepaidScreen extends StatefulWidget {
   const TopUpPrepaidScreen({super.key});
 
+  @override
+  State<TopUpPrepaidScreen> createState() => _TopUpPrepaidScreenState();
+}
+
+class _TopUpPrepaidScreenState extends State<TopUpPrepaidScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -96,7 +101,7 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                       ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
-                    title: Text('top up', style: TopUpPrepaidTheme.appBarTitle()),
+                    title: Text('top-up', style: TopUpPrepaidTheme.appBarTitle()),
                   ),
 
                   // Tabs row (below appbar)
@@ -122,10 +127,10 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                           _MyNumberTab(state: state),
 
                           // Tab 1: placeholder (future)
-                          const TopUpPrepaidPlaceholderTab(title: 'auto top up'),
+                          const TopUpPrepaidPlaceholderTab(title: 'auto top-up'),
 
                           // Tab 2: placeholder (future)
-                           SendTopUpPlaceholderTab(title: 'send top up'),
+                           SendTopUpPlaceholderTab(title: 'send top-up'),
                         ],
                       ),
                     ),
@@ -159,17 +164,28 @@ class _MyNumberTab extends StatelessWidget {
             const SizedBox(height: 75),
 
             // Balance row
-            TopUpPrepaidBalanceRow(balance: state.balance),
-
-            const SizedBox(height: 20),
+            Text(
+              'enter top-up amount',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: const Color(0xFF222222),
+                fontSize: 12,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 4),
 
             // Amount input box (gradient border)
             TopUpPrepaidAmountBox(
               value: state.amountText,
               onChanged: (v) => bloc.add(TopUpPrepaidAmountChanged(v)),
             ),
+            const SizedBox(height: 16),
 
-            const SizedBox(height: 52),
+            TopUpPrepaidBalanceRow(balance: state.balance),
+
+            const SizedBox(height: 44),
 
             // CTA button
             TopUpPrepaidPrimaryButton(

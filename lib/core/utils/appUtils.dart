@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import '../../resources/color_manager.dart';
 
 class AppUtils {
@@ -7,6 +8,14 @@ class AppUtils {
   static void fieldFocusChange(BuildContext context, FocusNode current, FocusNode nextFocus) {
     current.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
+  }
+
+  static String formatPrice(num value) {
+    return NumberFormat.currency(
+      locale: 'en_US',
+      symbol: '\$ ',
+      decimalDigits: 2,
+    ).format(value);
   }
 
   static void showSuccessToast(String message) {

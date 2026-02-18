@@ -74,7 +74,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
           style: const TextStyle(
             color: Color(0xFFF1F1F8),
             fontSize: 14,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
           ),
 

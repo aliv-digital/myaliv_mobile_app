@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/view/guest_pay_bill_confirm_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
@@ -57,10 +58,12 @@ import '../app/Home/home/all_best_plan_screen.dart';
 import '../app/Home/home/data/home_ui_config.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
-import '../app/Menu/menu_screen.dart';
 import '../app/Notifications/notification_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
 import '../app/Plans/view/plans_entry_screen.dart';
+import '../app/Secuirity/menu_screen.dart';
+import '../app/Secuirity/secuirity_common_password_screen.dart';
+import '../app/Secuirity/secuirity_common_verification_code_page.dart';
 import '../app/Support/chatbot_screen.dart';
 import '../app/Support/quick_help_screen.dart';
 import '../app/Usage/upgrade_credit_limit.dart';
@@ -436,6 +439,39 @@ class AppRouter {
         path: AppRoutes.callSupportScreen,
         builder: (context, state) => const QuickHelpScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.enterPassword,
+        pageBuilder: (context, state) {
+          final title = state.uri.queryParameters['title'] ?? 'enter password';
+          final continueRoute =
+              state.uri.queryParameters['continue'] ?? AppRoutes.home;
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: CommonEnterPasswordPage(
+              appBarTitle: title,
+              continueRoute: continueRoute,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.verificationCode,
+        pageBuilder: (context, state) {
+          final nextRoute =
+              state.uri.queryParameters['next'] ?? AppRoutes.home;
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: VerificationCodePage(
+              nextRoute: nextRoute,
+            ),
+          );
+        },
+      ),
+
+
     ],
   );
 }

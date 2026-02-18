@@ -28,29 +28,29 @@ class PostpaidRoamingAddOnsScreen extends StatelessWidget {
             ),
           ),
         ),
-        actions: [
-          Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(right: 24),
-                child: SvgPicture.asset(
-                  'assets/icons/bell with red.svg',
-                  height: 32,
-                  width: 32,
-                  color: Colors.white,
-                ),
-              ),
-              Positioned(
-                right: 26,
-                top: 2,
-                child: CircleAvatar(
-                  radius: 6,
-                  backgroundColor: Color(0xFFED3434),
-                ),
-              ),
-            ],
-          ),
-        ],
+        // actions: [
+        //   Stack(
+        //     children: [
+        //       Padding(
+        //         padding: EdgeInsets.only(right: 24),
+        //         child: SvgPicture.asset(
+        //           'assets/icons/bell with red.svg',
+        //           height: 32,
+        //           width: 32,
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //       Positioned(
+        //         right: 26,
+        //         top: 2,
+        //         child: CircleAvatar(
+        //           radius: 6,
+        //           backgroundColor: Color(0xFFED3434),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ],
       ),
       body: SafeArea(
         child: ListView(

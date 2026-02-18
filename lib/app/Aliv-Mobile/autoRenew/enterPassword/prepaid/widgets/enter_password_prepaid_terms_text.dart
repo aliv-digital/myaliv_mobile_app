@@ -6,58 +6,120 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-            text: 'By pressing ‘Continue’ button you agree\nto the ',
-            style: TextStyle(
-              color: const Color(0xFF58677D),
-              fontSize: 12,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-            ),
+    return Column(
+      children: [
+        Text(
+          'By pressing ‘Continue’ button you agree',
+          style: TextStyle(
+            color: const Color(0xFF58677D),
+            fontSize: 12,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w500,
           ),
+        ),
+        Text.rich(
           TextSpan(
-            text: 'Terms & Conditionss',
-            style: TextStyle(
-              color: const Color(0xFF1CACE3),
-              fontSize: 12,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-              decoration: TextDecoration.underline,
-            ),
+            children: [
+              TextSpan(
+                text: 'to the ',
+                style: TextStyle(
+                  color: const Color(0xFF58677D),
+                  fontSize: 12,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              TextSpan(
+                text: 'Terms & Conditions',
+                style: TextStyle(
+                  color: const Color(0xFF645D9C),
+                  fontSize: 13,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+
+              TextSpan(
+                text: ' & ',
+                style: TextStyle(
+
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF58677D),
+                  fontSize: 12,
+                ),
+              ),
+              TextSpan(
+                text: 'Privacy Policy',
+                style: TextStyle(
+                  color: const Color(0xFF645D9C),
+                  fontSize: 13,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ],
           ),
-          TextSpan(
-            text: ' ',
-            style: TextStyle(
-              color: const Color(0xFF1CACE3),
-              fontSize: 12,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextSpan(
-            text: '& ',
-            style: TextStyle(
-              color: const Color(0xFF58677D),
-              fontSize: 12,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextSpan(
-            text: 'Privacy Policy',
-            style: TextStyle(
-              color: const Color(0xFF1CACE3),
-              fontSize: 12,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-              decoration: TextDecoration.underline,
-            ),
-          ),
-        ],
-      ),
-      textAlign: TextAlign.center,
-    ); }
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+    //  Text.rich(
+    //   TextSpan(
+    //     children: [
+    //       TextSpan(
+    //         text: 'By pressing ‘Continue’ button you agree\nto the ',
+    //         style: TextStyle(
+    //           color: const Color(0xFF58677D),
+    //           fontSize: 12,
+    //           fontFamily: 'CircularPro',
+    //           fontWeight: FontWeight.w500,
+    //         ),
+    //       ),
+    //       TextSpan(
+    //         text: 'Terms & Conditionss',
+    //         style: TextStyle(
+    //           color: const Color(0xFF1CACE3),
+    //           fontSize: 12,
+    //           fontFamily: 'CircularPro',
+    //           fontWeight: FontWeight.w500,
+    //           decoration: TextDecoration.underline,
+    //         ),
+    //       ),
+    //       TextSpan(
+    //         text: ' ',
+    //         style: TextStyle(
+    //           color: const Color(0xFF1CACE3),
+    //           fontSize: 12,
+    //           fontFamily: 'CircularPro',
+    //           fontWeight: FontWeight.w500,
+    //         ),
+    //       ),
+    //       TextSpan(
+    //         text: '& ',
+    //         style: TextStyle(
+    //           color: const Color(0xFF58677D),
+    //           fontSize: 12,
+    //           fontFamily: 'CircularPro',
+    //           fontWeight: FontWeight.w500,
+    //         ),
+    //       ),
+    //       TextSpan(
+    //         text: 'Privacy Policy',
+    //         style: TextStyle(
+    //           color: const Color(0xFF1CACE3),
+    //           fontSize: 12,
+    //           fontFamily: 'CircularPro',
+    //           fontWeight: FontWeight.w500,
+    //           decoration: TextDecoration.underline,
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    //   textAlign: TextAlign.center,
+    // );
+  }
 }

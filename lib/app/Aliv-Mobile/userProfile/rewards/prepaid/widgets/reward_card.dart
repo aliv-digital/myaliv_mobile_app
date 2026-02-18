@@ -48,7 +48,7 @@ class RewardPrepaidCard extends StatelessWidget {
           children: [
             Image.asset(
               AssetConstant.rewardsCardBackgroundPNG,
-              fit: BoxFit.none,
+              fit: BoxFit.fitHeight,
             ),
 
             Padding(
@@ -61,12 +61,17 @@ class RewardPrepaidCard extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          'assets/icons/giftbox.png',
-                          height: 60,
-                          width: 72,
+                        // Image.asset(
+                        //   'assets/icons/giftbox.png',
+                        //   height: 60,
+                        //   width: 72,
+                        // ),
+                        SvgPicture.asset('assets/icons/reward.svg',
+                          height: 48,
+                          width: 48,
                         ),
-                        const SizedBox(width: 8),
+
+                        const SizedBox(width: 20),
 
                         // Texts take remaining width; no overflow
                         Expanded(
@@ -108,14 +113,27 @@ class RewardPrepaidCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: SizedBox(
+                        child: Container(
                           height: 44,
-                          child: DefaultButton(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            label: 'get this',
-                            isLoading: false,
-                            onPressed: (){},
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                width: 1,
+                                color: const Color(0xFFF1F1F8),
+                              ),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
+                          child: Text(
+                            'read more',textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: const Color(0xFF645D9C),
+                              fontSize: 13,
+                              fontFamily: 'CircularPro',
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -126,7 +144,7 @@ class RewardPrepaidCard extends StatelessWidget {
                           child: DefaultButton(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            label: 'read more',
+                            label: 'get this',
                             isLoading: false,
                             onPressed: (){
                               context.push(

@@ -49,15 +49,17 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "didn't receive a code? ",
+                  'didn\'t receive a code?',
+                textAlign: TextAlign.center,
                   style: TextStyle(
+                    color: const Color(0xFF121212),
                     fontSize: 14,
-                    fontWeight: FontWeight.w400,
                     fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w500,
                     height: 1.43,
-                    color: AuthModuleColors.textBlack,
                   ),
                 ),
+                SizedBox(width: 8,),
                 GestureDetector(
                   onTap: resendLoading
                       ? null
@@ -72,6 +74,8 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontFamily: 'CircularPro',
                       height: 1.43,
+                      decoration: TextDecoration.underline,
+
                     ),
                   ),
                 ),

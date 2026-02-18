@@ -37,7 +37,7 @@ class _RewardDetailsView extends StatelessWidget {
           children: [
             DefaultAppBar(
               title: 'Freeport Giveaway',
-              showHome: true,
+              showHome: false,
               onHomeTap: () => context.go(AppRoutes.home),
               onBack: () => context.pop(),
             ),

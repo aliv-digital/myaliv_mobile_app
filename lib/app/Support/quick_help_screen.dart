@@ -59,8 +59,8 @@ class _Content extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 30, 24, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
+        children: [
+          const Text(
             'get quick help!',
             style: TextStyle(
               fontFamily: 'CircularPro',
@@ -69,8 +69,31 @@ class _Content extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          SizedBox(height: 12),
-          _CallSupportCard(),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: ShapeDecoration(
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              shadows: [
+                BoxShadow(
+                  color: Color(0x0C000000),
+                  blurRadius: 16,
+                  offset: Offset(8, 10),
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                SvgPicture.asset('assets/icons/support_help.svg'),
+                SizedBox(height: 8,),
+                const _CallSupportCard(),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -89,40 +112,71 @@ class _CallSupportCard extends StatelessWidget {
       onTap: () async {
         final uri = Uri(scheme: 'tel', path: '611');
 
-        if (!await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication,
-        )) {
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
           throw 'Could not launch dialer';
         }
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: border),
-        ),
-        child: Row(
+      child: Text.rich(
+        TextSpan(
           children: [
-            const Expanded(
-              child: Text(
-                'Please dial 611 from your mobile device for call center support',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
-                  height: 1.10,
-                  letterSpacing: 0.07,
-                ),
+            TextSpan(
+              text: 'Please dial ',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(width: 12),
-            SvgPicture.asset('assets/icons/phone-call-01.svg', color: const Color(0xFF645D9C)),
+            TextSpan(
+              text: '611',
+              style: TextStyle(
+                color: const Color(0xFF645D9C),
+                fontSize: 18,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: ' from your mobile device for call centre support',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
+        textAlign: TextAlign.center,
       ),
+      // Container(
+      //   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      //   // decoration: BoxDecoration(
+      //   //   color: Colors.white,
+      //   //   borderRadius: BorderRadius.circular(8),
+      //   //   border: Border.all(color: border),
+      //   // ),
+      //   child: Row(
+      //     children: [
+      //       const Expanded(
+      //         child: Text(
+      //           'Please dial 611 from your mobile device for call center support',
+      //           style: TextStyle(
+      //             color: Colors.black,
+      //             fontSize: 14,
+      //             fontFamily: 'CircularPro',
+      //             fontWeight: FontWeight.w500,
+      //             height: 1.10,
+      //             letterSpacing: 0.07,
+      //           ),
+      //         ),
+      //       ),
+      //       const SizedBox(width: 12),
+      //       SvgPicture.asset('assets/icons/phone-call-01.svg', color: const Color(0xFF645D9C)),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

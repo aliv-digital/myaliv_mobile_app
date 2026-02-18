@@ -73,14 +73,14 @@ class _UsageScreenState extends State<UsageScreen> {
               ),
             ),
           ),
-          actions: [
-            IconButton(
-              icon: SvgPicture.asset('assets/icons/bell with red.svg'),
-              color: Colors.white,
-              onPressed: () {},
-            ),
-            SizedBox(width: 13,)
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: SvgPicture.asset('assets/icons/bell with red.svg'),
+          //     color: Colors.white,
+          //     onPressed: () {},
+          //   ),
+          //   SizedBox(width: 13,)
+          // ],
           bottom:  PreferredSize(
             preferredSize: Size.fromHeight(82),
             child: UsageTabBar(tabs),

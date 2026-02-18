@@ -17,9 +17,9 @@ class FuturePlansTab extends StatelessWidget {
           const SizedBox(height: 16),
 
           // 🔹 STATIC BUTTON
-          // const _StartPlanButton(),
+          const _StartPlanButton(),
 
-          // const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           // 🔹 DYNAMIC SECTION
           const _DynamicFuturePlans(),
@@ -35,10 +35,10 @@ class _StaticFuturePlan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const FuturePlanCard(
-      title: 'Travel30',
+      title: 'liberty45',
       startDate: '06/01/25',
       endDate: '05/01/25',
-      image: 'assets/icons/Future Plan 1.png',
+      image: 'assets/images/Future Plan 1.png',
     );
   }
 }
@@ -52,7 +52,7 @@ class _StartPlanButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 40,
       child: ElevatedButton(
         onPressed: () {
           // TODO: Start plan logic
@@ -61,18 +61,18 @@ class _StartPlanButton extends StatelessWidget {
           backgroundColor: purple,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(100),
           ),
         ),
-        child: const Text(
+        child: Text(
           'start plan',
           style: TextStyle(
+            color: const Color(0xFFF1F1F8),
+            fontSize: 13,
             fontFamily: 'CircularPro',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+            fontWeight: FontWeight.w500,
           ),
-        ),
+        )
       ),
     );
   }
@@ -88,13 +88,13 @@ class _DynamicFuturePlans extends StatelessWidget {
         'title': 'freedom8',
         'start': '20/02/25',
         'end': '19/03/25',
-        'image': 'assets/icons/Home Active Plan.png',
+        'image': 'assets/images/Future Plan 2.png',
       },
       {
         'title': 'travel50.',
         'start': '20/01/25',
         'end': '19/02/25',
-        'image': 'assets/icons/Future Plan 3.png',
+        'image': 'assets/images/Future Plan 3.png',
       },
     ];
 
