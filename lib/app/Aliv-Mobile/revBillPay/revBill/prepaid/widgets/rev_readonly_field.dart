@@ -12,7 +12,7 @@ class RevReadonlyField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 44,
+      height: RevPrepaidTheme.inputFieldHeight,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       alignment: Alignment.centerLeft,

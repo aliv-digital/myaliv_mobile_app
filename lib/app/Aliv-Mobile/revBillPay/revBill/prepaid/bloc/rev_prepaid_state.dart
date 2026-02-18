@@ -57,6 +57,9 @@ class RevPrepaidState extends Equatable {
   String get accountBalanceText =>
       accountBalance == null ? '--------' : r'$ ' + accountBalance!.toStringAsFixed(2);
 
+  // Input display value for custom amount field (no dollar sign in typed text).
+  String get amountInputText => amount == 0 ? '' : amount.toStringAsFixed(2);
+
   String get amountFormatted => r'$ ' + amount.toStringAsFixed(2);
 
   RevPrepaidState copyWith({
