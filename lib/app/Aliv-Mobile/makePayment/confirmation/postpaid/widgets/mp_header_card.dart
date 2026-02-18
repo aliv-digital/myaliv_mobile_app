@@ -34,7 +34,7 @@ class MpHeaderCard extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            padding: MakePaymentConfirmationPostPaidTheme.headerTopSectionPadding,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Column(
@@ -44,7 +44,10 @@ class MpHeaderCard extends StatelessWidget {
                     customerName,
                     style: MakePaymentConfirmationPostPaidTheme.name,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(
+                    height: MakePaymentConfirmationPostPaidTheme
+                        .headerNameToAccountGap,
+                  ),
                   Text(
                     accountNumber,
                     style: MakePaymentConfirmationPostPaidTheme.accountNumber,
@@ -53,9 +56,14 @@ class MpHeaderCard extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFE6E6F2)),
+          const Divider(
+            height: MakePaymentConfirmationPostPaidTheme.headerDividerThickness,
+            thickness: MakePaymentConfirmationPostPaidTheme.headerDividerThickness,
+            color: MakePaymentConfirmationPostPaidTheme.headerDividerColor,
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+            padding:
+                MakePaymentConfirmationPostPaidTheme.headerBottomSectionPadding,
             child: Row(
               children: [
                 Expanded(
@@ -82,17 +90,12 @@ class _AmountPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 28,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: MakePaymentConfirmationPostPaidTheme.amountPillPadding,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: MakePaymentConfirmationPostPaidTheme.amountPillBg,
         borderRadius:
             BorderRadius.circular(MakePaymentConfirmationPostPaidTheme.pillRadius),
-        border: Border.all(
-          color: MakePaymentConfirmationPostPaidTheme.amountPillBorder,
-          width: 1,
-        ),
       ),
       child: Text(text, style: MakePaymentConfirmationPostPaidTheme.amountPill),
     );

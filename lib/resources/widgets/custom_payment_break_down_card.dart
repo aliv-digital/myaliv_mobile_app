@@ -57,11 +57,24 @@ class CustomPaymentBreakdownLineItem {
     required this.label,
     required this.value,
     this.isEmphasized = false,
+    this.textStyle,
+    this.labelStyle,
+    this.valueStyle,
   });
 
   final String label;
   final String value;
   final bool isEmphasized;
+
+  /// Optional row-level style override from UI.
+  /// If provided, this takes precedence over emphasized/default row style.
+  final TextStyle? textStyle;
+
+  /// Optional label-only override (applied on top of row/default style).
+  final TextStyle? labelStyle;
+
+  /// Optional value-only override (applied on top of row/default style).
+  final TextStyle? valueStyle;
 }
 
 class CustomPaymentBreakdownInputConfig {
@@ -267,12 +280,20 @@ class _CustomBreakdownRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedStyle = item.isEmphasized ? emphasizedTextStyle : textStyle;
+    final baseStyle = item.isEmphasized ? emphasizedTextStyle : textStyle;
+    final resolvedRowStyle =
+        item.textStyle == null ? baseStyle : baseStyle.merge(item.textStyle);
+    final resolvedLabelStyle = item.labelStyle == null
+        ? resolvedRowStyle
+        : resolvedRowStyle.merge(item.labelStyle);
+    final resolvedValueStyle = item.valueStyle == null
+        ? resolvedRowStyle
+        : resolvedRowStyle.merge(item.valueStyle);
 
     return Row(
       children: [
-        Expanded(child: Text(item.label, style: resolvedStyle)),
-        Text(item.value, style: resolvedStyle),
+        Expanded(child: Text(item.label, style: resolvedLabelStyle)),
+        Text(item.value, style: resolvedValueStyle),
       ],
     );
   }

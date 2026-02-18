@@ -7,10 +7,10 @@ import '../bloc/make_payment_confirmation_postpaid_event.dart';
 import '../bloc/make_payment_confirmation_postpaid_state.dart';
 import '../repository/make_payment_confirmation_postpaid_repository_impl.dart';
 import '../theme/make_payment_confirmation_postpaid_theme.dart';
-import '../widgets/mp_bottom_bar.dart';
 import '../widgets/mp_header_card.dart';
-import '../../../../../../resources/widgets/default_payment_break_down_card.dart';
+import '../../../../../../resources/widgets/custom_payment_break_down_card.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
+import '../../../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../router/app_routes.dart';
 
 class MakePaymentConfirmationPostPaidScreen extends StatelessWidget {
@@ -51,10 +51,13 @@ class _MakePaymentConfirmationPostPaidView extends StatelessWidget {
           ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: MakePaymentConfirmationPostPaidTheme.bg,
-            bottomNavigationBar: MpBottomBar(
+            bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.bottomAmount,
-              subtitle: state.bottomSubtitle,
-              onContinue: () {
+              isVatExclusive:
+                  state.bottomSubtitle.trim().toLowerCase() == 'no vat applied',
+              buttonText: 'continue',
+              buttonColor: MakePaymentConfirmationPostPaidTheme.continueBtnBg,
+              onPayNow: () {
                 context.read<MakePaymentConfirmationPostPaidBloc>().add(
                   const MakePaymentContinuePressed(),
                 );
@@ -96,47 +99,39 @@ class _MakePaymentConfirmationPostPaidView extends StatelessWidget {
                                 amountText: state.amountPill,
                               ),
                               const SizedBox(height: 14),
-                              DefaultPaymentBreakDownCard(
+                              CustomPaymentBreakDownCard(
                                 backgroundColor:
                                     MakePaymentConfirmationPostPaidTheme
                                         .receiptBg,
-                                targetScallopCount: 12,
-                                input: PaymentBreakdownInputConfig(
-                                  value: state.promoCode,
-                                  enabled: true,
-                                  hintText: 'promo code',
-                                  actionText: 'apply',
-                                  onChanged: (value) {
-                                    context
-                                        .read<
-                                          MakePaymentConfirmationPostPaidBloc
-                                        >()
-                                        .add(
-                                          MakePaymentPromoCodeChanged(value),
-                                        );
-                                  },
-                                  onActionTap: state.canApplyPromo
-                                      ? () {
-                                          context
-                                              .read<
-                                                MakePaymentConfirmationPostPaidBloc
-                                              >()
-                                              .add(
-                                                const MakePaymentPromoApplyPressed(),
-                                              );
-                                        }
-                                      : null,
-                                ),
+                                scallopCount: 12,
                                 items: [
-                                  PaymentBreakdownLineItem(
+                                  CustomPaymentBreakdownLineItem(
+                                    textStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontFamily: 'CircularPro',
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                     label: 'sub total',
                                     value: state.subtotal,
                                   ),
-                                  PaymentBreakdownLineItem(
+                                  CustomPaymentBreakdownLineItem(
+                                    textStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontFamily: 'CircularPro',
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                     label: 'vat',
                                     value: state.vat,
                                   ),
-                                  PaymentBreakdownLineItem(
+                                  CustomPaymentBreakdownLineItem(
+                                    textStyle: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontFamily: 'CircularPro',
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                     label: 'total',
                                     value: state.total,
                                     isEmphasized: true,
