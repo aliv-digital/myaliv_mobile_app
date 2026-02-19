@@ -24,7 +24,7 @@ class PrepaidCurrentPlanActivePlanCard extends StatelessWidget {
           ? const EdgeInsets.symmetric(horizontal: 24)
           : EdgeInsetsGeometry.zero,
       child: Container(
-        height: showRenewButton ? 200 : 160,
+        height: showRenewButton ? 200 : 150,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
         decoration: BoxDecoration(
           image: DecorationImage(

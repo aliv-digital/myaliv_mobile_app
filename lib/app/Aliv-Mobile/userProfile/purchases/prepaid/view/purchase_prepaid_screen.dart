@@ -143,7 +143,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-            userType: UserType.postpaid,
+            userType: UserType.prepaid,
             hasActivePlan: true,
             openMyLimits: true,
             isFuturePlan: false, // 🔥 KEY LINE

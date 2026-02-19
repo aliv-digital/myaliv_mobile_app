@@ -43,7 +43,7 @@ class AppMenuDrawer extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          '242.820.2246  ',
+                          '242-820-2246  ',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF1C1C1C) /* Black-100% */,
@@ -185,7 +185,7 @@ class AppMenuDrawer extends StatelessWidget {
         } else if (label == 'ALIVFibr') {
           Navigator.of(context).pop(); // close drawer)
 
-          final uri = Uri.parse('https://alivfibr.com/');
+          final uri = Uri.parse('https://portal.alivfibr.com/myfibr/login.aspx');
 
           if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
             throw 'Could not open store locator';

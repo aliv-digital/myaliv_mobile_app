@@ -387,7 +387,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.postpaid,
+                    userType: UserType.prepaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );
@@ -413,7 +413,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.postpaid,
+                    userType: UserType.prepaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );

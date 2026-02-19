@@ -20,7 +20,7 @@ import '../widgets/timer.dart';
 import 'data/home_ui_config.dart';
 
 final HomeUiConfig config = const HomeUiConfig(
-  userType: UserType.postpaid, // 🔥 switch here for demo
+  userType: UserType.prepaid, // 🔥 switch here for demo
   hasActivePlan: true,
   isFuturePlan: false,
 );
@@ -220,7 +220,7 @@ class HomeScreen extends StatelessWidget {
                   ),
             const ActionTile('assets/icons/At.svg', 'update\nemail'),
             const ActionTile('assets/icons/UsersThree.svg', 'refer a friend'),
-            const ActionTile('assets/icons/aliv_quick.svg', 'ALIV\ndeals'),
+            const ActionTile('assets/icons/aliv_quick.svg', 'ALIV deals'),
             const ActionTile('assets/icons/headphone.svg', 'help & support'),
           ],
         ),

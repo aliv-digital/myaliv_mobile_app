@@ -99,7 +99,7 @@ class ActivePlanUsageSection extends StatelessWidget {
               context.go(
                 AppRoutes.usage,
                 extra: HomeUiConfig(
-                  userType: UserType.postpaid,
+                  userType: UserType.prepaid,
                   hasActivePlan: true,
                   openMyLimits: true, // 🔥 KEY LINE
                   isFuturePlan: false,
@@ -122,7 +122,7 @@ class ActivePlanUsageSection extends StatelessWidget {
               context.go(
                 AppRoutes.usage,
                 extra: HomeUiConfig(
-                  userType: UserType.postpaid,
+                  userType: UserType.prepaid,
                   hasActivePlan: true,
                   openMyLimits: true, // 🔥 KEY LINE
                   isFuturePlan: false,
