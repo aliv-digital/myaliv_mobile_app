@@ -153,6 +153,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                   builder: (context, state) {
                     return PageView(
                       controller: _controller,
+
                       physics: _enableTabSwipe
                           ? const BouncingScrollPhysics()
                           : const NeverScrollableScrollPhysics(),
@@ -164,7 +165,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                       },
                       children: [
                         // Refer
-                        const SingleChildScrollView(
+                         SingleChildScrollView(
                           physics: BouncingScrollPhysics(),
                           child: ReferFriendPrepaidReferTab(),
                         ),
@@ -176,7 +177,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                         ),
 
                         // History
-                        _HistoryTab(history: state.history),
+                        // _HistoryTab(history: state.history),
                       ],
                     );
                   },

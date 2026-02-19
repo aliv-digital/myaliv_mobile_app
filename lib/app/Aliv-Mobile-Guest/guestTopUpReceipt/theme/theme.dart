@@ -157,7 +157,7 @@ class ReceiptTheme {
     fontSize: 13,
     // Flutter has no exact w450; w400 is the closest available weight.
     fontWeight: FontWeight.w400,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
   );
 
   // ReceiptBackButton colors + shape.

@@ -24,7 +24,7 @@ class EnterPasswordAutoRenewPrepaidOrDivider extends StatelessWidget {
           style: TextStyle(
             color: const Color(0xFF8A8A8F),
             fontSize: 13,
-            fontFamily: 'Circular Pro',
+            fontFamily: 'CircularPro',
             fontWeight: FontWeight.w500,
             height: 1.38,
             letterSpacing: -0.08,

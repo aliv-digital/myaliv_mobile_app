@@ -106,7 +106,7 @@ class BottomShell extends StatelessWidget {
                     asset: 'assets/icons/menu.svg',
                     isActive: false,
                   ),
-                  label: 'Secuirity',
+                  label: 'Menu',
                 ),
               ],
             ),

@@ -28,11 +28,11 @@ class ReferFriendPrepaidTabs extends StatelessWidget {
             active: selectedIndex == 1,
             onTap: () => onChanged(1),
           ),
-          _TabItem(
-            label: 'refer history',
-            active: selectedIndex == 2,
-            onTap: () => onChanged(2),
-          ),
+          // _TabItem(
+          //   label: 'refer history',
+          //   active: selectedIndex == 2,
+          //   onTap: () => onChanged(2),
+          // ),
         ],
       ),
     );
@@ -67,7 +67,7 @@ class _TabItem extends StatelessWidget {
             ),
             Container(
               height: 2,
-              width: 92,
+              width: MediaQuery.of(context).size.width * 0.45,
               decoration: BoxDecoration(
                 color: active ? ReferFriendPrepaidTheme.brand : Colors.transparent,
                 borderRadius: BorderRadius.circular(999),

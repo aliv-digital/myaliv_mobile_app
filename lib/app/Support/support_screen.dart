@@ -42,7 +42,7 @@ class SupportScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.only(left: 24,right: 20),
+                padding: const EdgeInsets.only(left: 24, right: 20),
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -73,7 +73,20 @@ class SupportScreen extends StatelessWidget {
 
                     child: SupportTile(title: 'support'),
                   ),
-                  SupportTile(title: 'whatsapp'),
+                  GestureDetector(
+                    onTap: () async {
+                      // https://wa.me/12423002548
+                      final Uri url = Uri.parse('https://wa.me/12423002548');
+
+                      if (!await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      )) {
+                        throw Exception('Could not launch WhatsApp');
+                      }
+                    },
+                    child: SupportTile(title: 'whatsapp'),
+                  ),
                   GestureDetector(
                     onTap: () async {
                       final uri = Uri.parse(
@@ -81,13 +94,14 @@ class SupportScreen extends StatelessWidget {
                       );
 
                       if (!await launchUrl(
-                      uri,
-                      mode: LaunchMode.externalApplication,
+                        uri,
+                        mode: LaunchMode.externalApplication,
                       )) {
-                      throw 'Could not open store locator';
+                        throw 'Could not open store locator';
                       }
                     },
-                      child: SupportTile(title: 'FAQ')),
+                    child: SupportTile(title: 'FAQ'),
+                  ),
                 ],
               ),
             ),

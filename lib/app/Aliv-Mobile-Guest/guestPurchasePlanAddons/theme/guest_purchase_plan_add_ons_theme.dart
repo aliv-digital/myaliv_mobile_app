@@ -82,7 +82,7 @@ class GuestPurchasePlanAddOnsTheme {
   static final TextStyle fairUsePolicyDescription = const TextStyle(
     color: Color(0xFF222222),
     fontSize: 12,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
   );
 

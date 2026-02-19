@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../home/data/home_ui_config.dart';
+import '../home/home_screen.dart';
+
 class RoamingCard extends StatelessWidget {
   final String used;
   final String total;
@@ -19,7 +22,7 @@ class RoamingCard extends StatelessWidget {
     const Color roamingColor = Color(0xFFF2994A);
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(24,20,24,20),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -55,7 +58,9 @@ class RoamingCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '1.5 of\n2 GB',
+            config.userType == UserType.postpaid
+                ? '0.6 GB of\n0.25 GB'
+                : '1.5 of\n2 GB',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: const Color(0xFF222222),
@@ -88,7 +93,9 @@ class RoamingCard extends StatelessWidget {
                     Container(
                       height: 6,
                       width: 80,
-                      color: Color(0xFF17B26A).withOpacity(0.2),
+                      color: config.userType == UserType.postpaid
+                          ? Color(0x26DD3038)
+                          : Color(0xFF17B26A).withOpacity(0.2),
                     ),
 
                     // Gradient progress (width = percentage)
@@ -98,7 +105,12 @@ class RoamingCard extends StatelessWidget {
                       width: width,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [const Color(0x0017B26A), const Color(0xFF17B26A)],
+                          colors: config.userType == UserType.postpaid
+                              ? [Color(0x00DD3038), const Color(0xFFDD3038)]
+                              : [
+                                  const Color(0x0017B26A),
+                                  const Color(0xFF17B26A),
+                                ],
                         ),
                       ),
                     ),

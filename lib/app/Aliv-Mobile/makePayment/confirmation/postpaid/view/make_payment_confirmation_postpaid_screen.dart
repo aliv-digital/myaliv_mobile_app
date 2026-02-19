@@ -72,14 +72,19 @@ class _MakePaymentConfirmationPostPaidView extends StatelessWidget {
                     height: MakePaymentConfirmationPostPaidTheme.appBarHeight,
                     child: DefaultAppBar(
                       title: state.title,
+                      onBack: (){
+                        context.pop();
+
+                      },
                       height: MakePaymentConfirmationPostPaidTheme.appBarHeight,
                       backgroundColor:
                           MakePaymentConfirmationPostPaidTheme.appBarBg,
                       showBackArrow: true,
                       showHome: true,
-                      onHomeTap: () => Navigator.of(
-                        context,
-                      ).popUntil((route) => route.isFirst),
+                      onHomeTap: () {
+                        context.go(AppRoutes.home);
+
+                      },
                     ),
                   ),
                 ),

@@ -265,13 +265,13 @@ class _GuestPayBillView extends StatelessWidget {
         phoneHintStyle: const TextStyle(
           color: GuestPayBillTheme.placeholder,
           fontSize: 13,
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontWeight: FontWeight.w500,
         ),
         dialCodeStyle: const TextStyle(
           color: GuestPayBillTheme.labelText,
           fontSize: 13,
-          fontFamily: 'Circular Pro',
+          fontFamily: 'CircularPro',
           fontWeight: FontWeight.w500,
         ),
         submitEnabled: state.canVerify,

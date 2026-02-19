@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/app/Usage/postpaid_usage_item.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/current_plan_active_card.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/postpage_usage_tile.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/purchase_addon_button.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_metric_row.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../Home/home/home_screen.dart';
 
 class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
@@ -15,14 +20,16 @@ class CurrentPlanTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: bg,
       child: ListView(
         // padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
         children: [
           // 🔴 Active plan card (reuse your existing widget)
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-            child: const PrepaidCurrentPlanActivePlanCard(showRenewButton: false),
+            child: config.isPostpaid == true
+                ? PostpaidCurrentPlan()
+                : PrepaidCurrentPlanActivePlanCard(showRenewButton: false),
           ),
 
           // const SizedBox(height: 16),
@@ -32,12 +39,14 @@ class CurrentPlanTab extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () async {
-                  final Uri uri = Uri.parse('https://www.bealiv.com/fair-use-policy/');
+                  final Uri uri = Uri.parse(
+                    'https://www.bealiv.com/fair-use-policy/',
+                  );
                   if (!await launchUrl(
-                  uri,
-                  mode: LaunchMode.externalApplication,
+                    uri,
+                    mode: LaunchMode.externalApplication,
                   )) {
-                  throw 'Could not launch dialer';
+                    throw 'Could not launch dialer';
                   }
                 },
                 child: Text(
@@ -49,132 +58,202 @@ class CurrentPlanTab extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
                   ),
-                )
+                ),
               ),
             ),
           ),
+
+          if (config.isPostpaid == false) const SizedBox(height: 16),
+          if (config.isPostpaid == true)
+            buildUsageSection([
+              PostpaidUsageItem(
+                title: "data roam free",
+                subtitle: "2.4 GB of 15 GB",
+                trailingText: "25% used",
+                progress: 0.25,
+              ),
+              PostpaidUsageItem(
+                title: "talk mins roam free",
+                subtitle: "0 of 800",
+                trailingText: "0% used",
+                progress: 0.0,
+              ),
+              PostpaidUsageItem(
+                title: "ALIV to ALIV mins",
+                subtitle: "unlimited",
+                trailingText: "unlimited",
+                isUnlimited: true,
+                progress: 0,
+              ),
+
+              PostpaidUsageItem(
+                title: "ALIV to ALIV sms",
+                subtitle: "unlimited",
+                trailingText: "unlimited",
+                isUnlimited: true,
+                progress: 0,
+              ),
+
+              PostpaidUsageItem(
+                title: "ALIV to ALIV mms",
+                subtitle: "0 of 800",
+                trailingText: "0% used",
+                isUnlimited: true,
+                progress: 0,
+              ),
+
+            ]),
+
+
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+              child: const _ActiveAddOns(),
+            ),
+
+          if (config.isPostpaid == false) const SizedBox(height: 16),
+
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+              child: const _UsageSection(),
+            ),
 
           // const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-            child: const _ActiveAddOns(),
-          ),
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+              child: const PurchaseAddOnButton(),
+            ),
 
-          const SizedBox(height: 16),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-            child: const _UsageSection(),
-          ),
-
-          // const SizedBox(height: 16),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-            child: const PurchaseAddOnButton(),
-          ),
-
-          Container(
-            // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            decoration: BoxDecoration(color: Color(0xFFF1F2FA)),
-            child: const Text(
-              'roaming plan',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
+          if (config.isPostpaid == false)
+            Container(
+              // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: BoxDecoration(color: Color(0xFFF1F2FA)),
+              child: const Text(
+                'roaming plan',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
-          Container(
-            // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            child: const _RoamingPlanSection(),
-          ),
-          const SizedBox(height: 16),
+          if (config.isPostpaid == false)
+            Container(
+              // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: const _RoamingPlanSection(),
+            ),
+          if (config.isPostpaid == false) const SizedBox(height: 16),
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            child: const UsageMetricRow(
-              title: 'roaming data',
-              subtitle: '0 of 2 GB',
-              progress: 0.0,
-              percentUsed: 0,
-              gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            child: const UsageMetricRow(
-              title: 'local data',
-              subtitle: '0 of 0 MB',
-              progress: 0.0,
-              percentUsed: 0,
-              gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            child: const UsageMetricRow(
-              title: 'roaming talk mins',
-              subtitle: '0 of 0 minutes',
-              progress: 0.02,
-              percentUsed: 2,
-              gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            child: const UsageMetricRow(
-              title: 'local talk mins',
-              subtitle: '0 of 0 minutes',
-              progress: 0.02,
-              percentUsed: 2,
-              gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            child: const UsageMetricRow(
-              title: 'roaming sms',
-              subtitle: '0 of 0 sms',
-              progress: 0.55,
-              percentUsed: 55,
-              gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-            child: const UsageMetricRow(
-              title: 'local sms',
-              subtitle: '0 of 0 sms',
-              progress: 0.55,
-              percentUsed: 55,
-              gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
-            child: Text(
-              'Roameasy Begins Immediately Bundle\nCalls Unlimited',
-              style: TextStyle(
-                color: const Color(0xFF222222),
-                fontSize: 12,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: const UsageMetricRow(
+                title: 'roaming data',
+                subtitle: '0 of 2 GB',
+                progress: 0.0,
+                percentUsed: 0,
+                gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
               ),
             ),
-          ),
-          SizedBox(height: 8,),
-          Container(
-            // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(color: Color(0xFFF1F2FA)),
-            child: SizedBox(height: 20,)
-          ),
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: const UsageMetricRow(
+                title: 'local data',
+                subtitle: '0 of 0 MB',
+                progress: 0.0,
+                percentUsed: 0,
+                gradient: [Color(0xFFFAD4C0), Color(0xFFF2994A)],
+              ),
+            ),
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: const UsageMetricRow(
+                title: 'roaming talk mins',
+                subtitle: '0 of 0 minutes',
+                progress: 0.02,
+                percentUsed: 2,
+                gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
+              ),
+            ),
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: const UsageMetricRow(
+                title: 'local talk mins',
+                subtitle: '0 of 0 minutes',
+                progress: 0.02,
+                percentUsed: 2,
+                gradient: [Color(0xFF9ADAF0), Color(0xFF2D9CDB)],
+              ),
+            ),
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: const UsageMetricRow(
+                title: 'roaming sms',
+                subtitle: '0 of 0 sms',
+                progress: 0.55,
+                percentUsed: 55,
+                gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+              ),
+            ),
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+              child: const UsageMetricRow(
+                title: 'local sms',
+                subtitle: '0 of 0 sms',
+                progress: 0.55,
+                percentUsed: 55,
+                gradient: [Color(0xFFC5C3E6), Color(0xFF6B63C5)],
+              ),
+            ),
+
+          if (config.isPostpaid == false)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
+              child: Text(
+                'Roameasy Begins Immediately Bundle\nCalls Unlimited',
+                style: TextStyle(
+                  color: const Color(0xFF222222),
+                  fontSize: 12,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          if (config.isPostpaid == false) SizedBox(height: 8),
+          if (config.isPostpaid == false)
+            Container(
+              // padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(color: Color(0xFFF1F2FA)),
+              child: SizedBox(height: 20),
+            ),
         ],
+      ),
+    );
+  }
+
+  Widget buildUsageSection(List<PostpaidUsageItem> items) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      color: Colors.white,
+      child: Column(
+        children: items
+            .map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: PostpaidUsageTile(item: e),
+              ),
+            )
+            .toList(),
       ),
     );
   }

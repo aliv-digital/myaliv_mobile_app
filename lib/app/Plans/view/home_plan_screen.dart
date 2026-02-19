@@ -94,6 +94,7 @@ class _HomePlanView extends StatelessWidget {
         //     },
         //   );
         // }
+
         if (hasActivePlan && selectedTab == HomePlanTab.addOns) {
           return HomePlanWalletPaymentActivateOrFutureBottomSheet(
             warningText:

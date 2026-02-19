@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart' show SizedBox;
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/view/start_plan_bottom_sheet.dart';
 
 class RoamingAddOnCard extends StatefulWidget {
@@ -112,6 +113,7 @@ class _Header extends StatelessWidget {
             fontFamily: 'CircularPro',
             fontSize: 10,
             color: Color(0xFF707070),
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -129,8 +131,8 @@ class _BalanceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.wifi, size: 18, color: Color(0xFFFF6C36)),
-        const SizedBox(width: 6),
+        // const Icon(Icons.wifi, size: 18, color: Color(0xFFFF6C36)),
+        SvgPicture.asset('assets/icons/Rss.svg'),
         const Text(
           'data balance',
           style: TextStyle(

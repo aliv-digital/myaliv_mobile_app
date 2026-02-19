@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/future_plan_card.dart';
 
+import '../Home/home/home_screen.dart';
+
 class FuturePlansTab extends StatelessWidget {
   const FuturePlansTab({super.key});
 
@@ -17,9 +19,9 @@ class FuturePlansTab extends StatelessWidget {
           const SizedBox(height: 16),
 
           // 🔹 STATIC BUTTON
-          const _StartPlanButton(),
+          if (config.isPostpaid == false)  const _StartPlanButton(),
 
-          const SizedBox(height: 16),
+          if (config.isPostpaid == false) const SizedBox(height: 16),
 
           // 🔹 DYNAMIC SECTION
           const _DynamicFuturePlans(),
@@ -34,7 +36,12 @@ class _StaticFuturePlan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const FuturePlanCard(
+    return  (config.isPostpaid == true) ? FuturePlanCard(
+      title: 'travel30',
+      startDate: '06/01/25',
+      endDate: '05/01/25',
+      image: 'assets/images/Future Plan 1.png',
+    ):  FuturePlanCard(
       title: 'liberty45',
       startDate: '06/01/25',
       endDate: '05/01/25',
@@ -98,20 +105,56 @@ class _DynamicFuturePlans extends StatelessWidget {
       },
     ];
 
-    return Column(
-      children: plans
-          .map(
-            (plan) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: FuturePlanCard(
-                title: plan['title'] as String,
-                startDate: plan['start'] as String,
-                endDate: plan['end'] as String,
-                image: plan['image'] as String,
-              ),
+    final future_plans = [
+      {
+        'title': 'travel30',
+        'start': '20/02/25',
+        'end': '19/03/25',
+        'image': 'assets/icons/Current Plan.png',
+      },
+      {
+        'title': 'travel50.',
+        'start': '20/01/25',
+        'end': '19/02/25',
+        'image': 'assets/images/Future Plan 3.png',
+      },
+    ];
+
+    if (config.isPostpaid == true){
+      return Column(
+        children: future_plans
+            .map(
+              (plan) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: FuturePlanCard(
+              title: plan['title'] as String,
+              startDate: plan['start'] as String,
+              endDate: plan['end'] as String,
+              image: plan['image'] as String,
             ),
-          )
-          .toList(),
-    );
+          ),
+        )
+            .toList(),
+      );
+
+    }else{
+      return Column(
+        children: plans
+            .map(
+              (plan) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: FuturePlanCard(
+              title: plan['title'] as String,
+              startDate: plan['start'] as String,
+              endDate: plan['end'] as String,
+              image: plan['image'] as String,
+            ),
+          ),
+        )
+            .toList(),
+      );
+
+    }
+
   }
 }

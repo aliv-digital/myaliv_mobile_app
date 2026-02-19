@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import '../../../../../../resources/widgets/defaultButton.dart';
+import '../../../../../../resources/widgets/top_toast.dart';
+import '../../../../../../router/app_routes.dart';
 import '../../../../login/theme/login_theme.dart';
 import '../bloc/otp_prepaid_bloc.dart';
 import '../bloc/otp_prepaid_event.dart';
@@ -28,10 +31,14 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
               label: 'verify',
               isLoading: loading,
               onPressed: () {
-                 context.read<OtpAutoRenewPrepaidBloc>().add(const OtpAutoRenewPrepaidSubmitted());
+                 // context.read<OtpAutoRenewPrepaidBloc>().add(const OtpAutoRenewPrepaidSubmitted());
+                 AppToast.show(
+                   message: "Success! Your card is now set for auto renew",
+                   type: ToastType.success,
+                 );
+                 context.go(AppRoutes.home);
 
                 // ✅ Update this route if your flow uses another screen
-               // context.push(AppRoutes.reviewInvoicePostPaidScreen);
               },
             );
           },

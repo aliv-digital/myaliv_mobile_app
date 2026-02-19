@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../../Home/home/home_screen.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -175,7 +177,15 @@ class _ProceedButton extends StatelessWidget {
             color: Colors.white,
           ),
         ) :
-        const Text(
+        config.userType == UserType.postpaid? const Text(
+          'use for auto pay',
+          style: TextStyle(
+            color: const Color(0xFFF1F1F8),
+            fontSize: 13,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w500,
+          ),
+        ):const Text(
           'proceed',
           style: TextStyle(
             color: const Color(0xFFF1F1F8),

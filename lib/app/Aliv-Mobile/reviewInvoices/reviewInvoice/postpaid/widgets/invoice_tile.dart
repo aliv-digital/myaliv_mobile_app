@@ -21,7 +21,7 @@ class InvoiceTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(ReviewInvoicePostpaidTheme.radius),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -40,7 +40,7 @@ class InvoiceTile extends StatelessWidget {
                           label: 'invoice date',
                           value: _formatDate(invoice.invoiceDate),
                         ),
-                        const SizedBox(width: 18),
+                        const SizedBox(width: 16),
                         _MetaBlock(
                           label: 'due date',
                           value: _formatDate(invoice.dueDate),
@@ -57,8 +57,8 @@ class InvoiceTile extends StatelessWidget {
                 children: [
                   SvgPicture.asset(
                     ReviewInvoicePostpaidAssets.pdfSvg,
-                    width: 24,
-                    height: 24,
+                    width: 32,
+                    height: 32,
                   ),
                   // const SizedBox(height: 2),
                   // const Text(

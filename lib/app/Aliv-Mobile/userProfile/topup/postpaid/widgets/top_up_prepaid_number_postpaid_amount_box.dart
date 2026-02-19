@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
 import '../theme/top_up_prepaid_number_postpaid_theme.dart';
 
 /// ✅ Gradient bordered amount box with fixed "$" prefix.
@@ -87,16 +88,34 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
 
     return Column(
       children: [
+        const SizedBox(height: 8),
+        Text(
+          'enter top up amount',
+          style: TopUpPrepaidNumberPostPaidTheme.amountHint(),
+        ),        const SizedBox(height: 8),
+
         Container(
           width: 280,
           height: 92,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: TopUpPrepaidNumberPostPaidTheme.amountBorderGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+
+            borderRadius: BorderRadius.circular(
+                GuestTopUpTheme.amountFieldRadius),
+            // Anchor gradient start exactly at top-left for
+            // consistent pixel positioning across widths.
+            gradient: SweepGradient(
+              colors: GuestTopUpTheme.amountFieldBorderGradientColors,
+              stops: GuestTopUpTheme.amountFieldBorderGradientStops,
+              transform: GradientRotation(60),
             ),
-            borderRadius: BorderRadius.circular(12),
+            boxShadow: const <BoxShadow>[
+              BoxShadow(
+                color: GuestTopUpTheme.amountFieldShadowColor,
+                blurRadius: GuestTopUpTheme.amountFieldShadowBlur,
+                offset:
+                Offset(0, GuestTopUpTheme.amountFieldShadowOffsetY),
+              ),
+            ],
           ),
           padding: const EdgeInsets.all(2),
           child: Container(
@@ -138,10 +157,10 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          'enter top up amount',
-          style: TopUpPrepaidNumberPostPaidTheme.amountHint(),
-        ),
+        // Text(
+        //   'enter top up amount',
+        //   style: TopUpPrepaidNumberPostPaidTheme.amountHint(),
+        // ),
       ],
     );
   }

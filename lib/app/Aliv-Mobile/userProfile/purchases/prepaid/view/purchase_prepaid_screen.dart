@@ -19,9 +19,9 @@ class PurchasesPrepaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PurchasePrepaidBloc(
-          repo: PurchasePrepaidRepository()
-      )..add(const PurchasePrepaidStarted()),
+      create: (_) =>
+          PurchasePrepaidBloc(repo: PurchasePrepaidRepository())
+            ..add(const PurchasePrepaidStarted()),
       child: const _PurchasePrepaidView(),
     );
   }
@@ -33,7 +33,8 @@ class _PurchasePrepaidView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<PurchasePrepaidBloc, PurchasePrepaidState>(
-      listenWhen: (p, c) => p.navigateTo != c.navigateTo || p.errorMessage != c.errorMessage,
+      listenWhen: (p, c) =>
+          p.navigateTo != c.navigateTo || p.errorMessage != c.errorMessage,
       listener: (context, state) {
         final err = state.errorMessage;
         if (err != null && err.isNotEmpty) {
@@ -45,7 +46,9 @@ class _PurchasePrepaidView extends StatelessWidget {
         final nav = state.navigateTo;
         if (nav != null) {
           _handleNavigation(context, nav);
-          context.read<PurchasePrepaidBloc>().add(const PurchasePrepaidNavigationConsumed());
+          context.read<PurchasePrepaidBloc>().add(
+            const PurchasePrepaidNavigationConsumed(),
+          );
         }
       },
       child: Scaffold(
@@ -72,31 +75,35 @@ class _PurchasePrepaidView extends StatelessWidget {
                     SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(
-                        child: Text(state.errorMessage ?? 'Something went wrong'),
+                        child: Text(
+                          state.errorMessage ?? 'Something went wrong',
+                        ),
                       ),
                     )
                   else ...[
-                      SliverPadding(
-                        padding: const EdgeInsets.only(top: 6),
-                        sliver: SliverToBoxAdapter(
-                          child: PurchasePrepaidMenuList(
-                            items: state.items,
-                            onTapItem: (item) {
-                              context.read<PurchasePrepaidBloc>().add(PurchasePrepaidItemTapped(item.action));
-                            },
-                          ),
+                    SliverPadding(
+                      padding: const EdgeInsets.only(top: 6),
+                      sliver: SliverToBoxAdapter(
+                        child: PurchasePrepaidMenuList(
+                          items: state.items,
+                          onTapItem: (item) {
+                            context.read<PurchasePrepaidBloc>().add(
+                              PurchasePrepaidItemTapped(item.action),
+                            );
+                          },
                         ),
                       ),
+                    ),
 
-                      // Bottom stripes pinned feel (like screenshot)
-                      const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: BottomStripes(),
-                        ),
+                    // Bottom stripes pinned feel (like screenshot)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: BottomStripes(),
                       ),
-                    ],
+                    ),
+                  ],
                 ],
               );
             },
@@ -124,10 +131,10 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-              userType: UserType.prepaid,
-              hasActivePlan: true,
-              openMyLimits: false,
-              isFuturePlan: true// 🔥 KEY LINE
+            userType: UserType.prepaid,
+            hasActivePlan: true,
+            openMyLimits: false,
+            isFuturePlan: true, // 🔥 KEY LINE
           ),
         );
         break;
@@ -136,10 +143,10 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-              userType: UserType.postpaid,
-              hasActivePlan: true,
-              openMyLimits: true,
-              isFuturePlan: false// 🔥 KEY LINE
+            userType: UserType.postpaid,
+            hasActivePlan: true,
+            openMyLimits: true,
+            isFuturePlan: false, // 🔥 KEY LINE
           ),
         );
         break;
@@ -150,13 +157,26 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.push(AppRoutes.autoRenewPrepaidScreen);
         break;
       case PurchasePrepaidAction.transactionHistory:
-        context.push('${AppRoutes.callLogs}?tab=transactions',);
+        context.push('${AppRoutes.callLogs}?tab=transactions');
         break;
       case PurchasePrepaidAction.makePayment:
         context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);
         break;
       case PurchasePrepaidAction.topUp:
         context.push(AppRoutes.topUpPrepaidScreen);
+        break;
+      case PurchasePrepaidAction.autoTopUp:
+        context.push(AppRoutes.topUpPrepaidScreen);
+        break;
+      case PurchasePrepaidAction.sendTopUp:
+        // TODO: Handle this case.
+        context.push(AppRoutes.topUpPrepaidScreen);
+        break;
+
+      case PurchasePrepaidAction.addOns:
+        // TODO: Handle this case.
+
+        context.push(AppRoutes.guestPurchasePlanAddOns);
         break;
     }
     //   case PurchasePrepaidAction.topUpPrepaidNumber:

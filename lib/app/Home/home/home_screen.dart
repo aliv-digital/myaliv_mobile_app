@@ -19,6 +19,12 @@ import '../widgets/prepaid_balance_card.dart';
 import '../widgets/timer.dart';
 import 'data/home_ui_config.dart';
 
+final HomeUiConfig config = const HomeUiConfig(
+  userType: UserType.prepaid, // 🔥 switch here for demo
+  hasActivePlan: true,
+  isFuturePlan: false,
+);
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -27,16 +33,10 @@ class HomeScreen extends StatelessWidget {
   // final bool isPrepaid = false;
 
   static const Color purple = Color(0xFF645D9C);
-  static const Color darkPurple = Color(0xFF463C6E);//#463C6E
+  static const Color darkPurple = Color(0xFF463C6E); //#463C6E
   static const Color bg = Color(0xFFF6F9FC);
   static const Color yellow = Color(0xFFF9D933);
   static const Color blueBackground = Color(0xFFF1F7FA);
-
-  final HomeUiConfig config = const HomeUiConfig(
-    userType: UserType.postpaid, // 🔥 switch here for demo
-    hasActivePlan: true,
-    isFuturePlan: false,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +80,7 @@ class HomeScreen extends StatelessWidget {
 
                   const SizedBox(height: 20),
                   _bestPlans(context),
+
                   // const SizedBox(height: 16),
                   Container(
                     padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
@@ -110,7 +111,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _noActivePlan(BuildContext context) {
     return Container(
@@ -207,13 +207,21 @@ class HomeScreen extends StatelessWidget {
           crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          children: const [
-            ActionTile('assets/icons/ListStarQuick.svg', 'buy\nplans'),
-            ActionTile('assets/icons/ListHeart.svg', 'my\nfuture plans'),
-            ActionTile('assets/icons/At.svg', 'update\nemail'),
-            ActionTile('assets/icons/UsersThree.svg', 'refer a friend'),
-            ActionTile('assets/icons/aliv_quick.svg', 'ALIV\ndeals'),
-            ActionTile('assets/icons/headphone.svg', 'help & support'),
+          children: [
+            const ActionTile('assets/icons/ListStarQuick.svg', 'buy\nplans'),
+            config.userType == UserType.postpaid
+                ? const ActionTile(
+                    'assets/icons/SortDescending.svg',
+                    'update\ncredit limit',
+                  )
+                : const ActionTile(
+                    'assets/icons/ListHeart.svg',
+                    'my\nfuture plans',
+                  ),
+            const ActionTile('assets/icons/At.svg', 'update\nemail'),
+            const ActionTile('assets/icons/UsersThree.svg', 'refer a friend'),
+            const ActionTile('assets/icons/aliv_quick.svg', 'ALIV\ndeals'),
+            const ActionTile('assets/icons/headphone.svg', 'help & support'),
           ],
         ),
       ),
@@ -319,7 +327,7 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         decoration: TextDecoration.underline,
                       ),
-                    )
+                    ),
                   ),
               ],
             ),

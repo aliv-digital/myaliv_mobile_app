@@ -21,6 +21,7 @@ import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_sc
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay_bill_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPaymentMethod/prepaid/view/guest_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
@@ -36,6 +37,7 @@ import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
 import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/refer_friend_prepaid_screen.dart';
+import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/success_screen.dart';
 import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_friend_response_prepaid_screen.dart';
 import '../app/Aliv-Mobile/revBillPay/paymentMethod/prepaid/view/rev_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/view/rev_confirmation_prepaid_screen.dart';
@@ -64,6 +66,7 @@ import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Notifications/notification_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
 import '../app/Plans/view/plans_entry_screen.dart';
+import '../app/Plans/view/purchase_confirmation_screen.dart';
 import '../app/Secuirity/menu_screen.dart';
 import '../app/Secuirity/secuirity_common_password_screen.dart';
 import '../app/Secuirity/secuirity_common_verification_code_page.dart';
@@ -75,12 +78,13 @@ import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid
 import '../app/Aliv-Mobile/userProfile/profile/postpaid/view/profile_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
 import '../app/splash/view/splash_page.dart';
+import '../resources/widgets/top_toast.dart';
 import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.splash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
-
+    navigatorKey: rootNavigatorKey, // ✅ HERE
     //forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
     routes: [
       GoRoute(
@@ -383,7 +387,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.postpaid,
+                    userType: UserType.prepaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );
@@ -409,7 +413,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.postpaid,
+                    userType: UserType.prepaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );
@@ -495,6 +499,50 @@ class AppRouter {
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
             child: VerifyEmailPage(email: email),
+          );
+        },
+      ),
+
+
+      GoRoute(
+        path: AppRoutes.guestPaymentMethodScreen,
+        builder: (context, state) => const GuestPaymentMethodPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.confirmation,
+        pageBuilder: (context, state) {
+          final showBeginOn =
+              state.uri.queryParameters['showBeginOn'] == 'true';
+
+          final beginDateString =
+          state.uri.queryParameters['beginDate'];
+
+          DateTime? beginDate;
+          if (beginDateString != null) {
+            beginDate = DateTime.tryParse(beginDateString);
+          }
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: ConfirmationScreen(
+              showBeginOn: showBeginOn,
+              beginDate: beginDate,
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppRoutes.invitingSuccess,
+        pageBuilder: (context, state) {
+          final referralCode =
+              state.uri.queryParameters['code'] ?? '';
+
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: InvitingSuccessScreen(
+              referralCode: referralCode,
+            ),
           );
         },
       ),

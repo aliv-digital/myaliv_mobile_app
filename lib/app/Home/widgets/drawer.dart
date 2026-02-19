@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../router/app_routes.dart';
 import '../model/logout_bottom_sheet.dart';
@@ -62,7 +63,8 @@ class AppMenuDrawer extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () => Navigator.pop(context),
-                      child: SvgPicture.asset('assets/icons/ic_back_bold.svg',
+                      child: SvgPicture.asset(
+                        'assets/icons/ic_back_bold.svg',
                         // Icons.close,
                         // color: Color(0xFF1F1F1F),
                       ),
@@ -100,14 +102,12 @@ class AppMenuDrawer extends StatelessWidget {
                     // await Future.delayed(const Duration(milliseconds: 50));
                     //
                     // context.go(AppRoutes.welcome);
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        isScrollControlled: true,
-                        builder: (_) => const LogoutBottomSheet(),
-                      );
-
-
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      builder: (_) => const LogoutBottomSheet(),
+                    );
                   },
                   icon: SvgPicture.asset('assets/icons/logout.svg'),
                   label: const Text(
@@ -178,12 +178,19 @@ class AppMenuDrawer extends StatelessWidget {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.notificationScreen);
-        }
-        else if (label == 'support') {
+        } else if (label == 'support') {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));
           context.push(AppRoutes.supportScreen);
-        }
+        } else if (label == 'ALIVFibr') {
+          Navigator.of(context).pop(); // close drawer)
+
+          final uri = Uri.parse('https://alivfibr.com/');
+
+          if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+            throw 'Could not open store locator';
+          }
+        } else {}
       },
     );
   }

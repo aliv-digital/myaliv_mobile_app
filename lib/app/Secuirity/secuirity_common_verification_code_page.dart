@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../resources/constants/asset_constants.dart';
+import '../../resources/widgets/top_toast.dart';
 import '../../router/app_routes.dart';
 import '../Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 
@@ -23,18 +24,19 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
 
   void _verify() {
     // final code =
-        // _controllers.map((c) => c.text).join();
-        //
-        // if (code.length < 5) return;
-        // context.go(widget.nextRoute); // replace stack
-    if(widget.nextRoute == 'call_logs'){
-      context.push('${AppRoutes.callLogs}?tab=call_logs',);
-      // context.push(
-      //   Uri(
-      //     path: AppRoutes.verificationCode,
-      //     queryParameters: {'next': widget.continueRoute},
-      //   ).toString(),
-      // );
+    // _controllers.map((c) => c.text).join();
+    //
+    // if (code.length < 5) return;
+    // context.go(widget.nextRoute); // replace stack
+    if (widget.nextRoute == 'call_logs') {
+      context.push('${AppRoutes.callLogs}?tab=call_logs');
+    }
+    if (widget.nextRoute == 'home') {
+      AppToast.show(
+        message: 'success! your credit limit has been upgraded',
+        type: ToastType.success,
+      );
+      context.go(AppRoutes.home);
     }
   }
 
@@ -194,7 +196,6 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
                     ),
 
                     // const SizedBox(height: 20),
-
                     Text(
                       'resend code',
                       style: TextStyle(

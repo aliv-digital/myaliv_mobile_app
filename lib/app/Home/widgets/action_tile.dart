@@ -22,14 +22,15 @@ class ActionTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Icon(iconPath, color: HomeScreen.purple),
-          iconPath == 'assets/icons/ListStarQuick.svg'
-              ? SvgPicture.asset(
-                  iconPath,
-                  width: 24,
-                  height: 24,
-                  // color: HomeScreen.purple,
-                )
-              : SvgPicture.asset(
+          // iconPath == 'assets/icons/ListStarQuick.svg'
+          //     // ? SvgPicture.asset(
+          //     //     iconPath,
+          //     //     width: 24,
+          //     //     height: 24,
+          //     //     // color: HomeScreen.purple,
+          //     //   )
+          //     // :
+          SvgPicture.asset(
                   iconPath,
                   width: 34,
                   height: 34,

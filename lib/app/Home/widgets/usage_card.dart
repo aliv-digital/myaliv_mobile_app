@@ -9,6 +9,7 @@ class UsageCard extends StatelessWidget {
   final String remainingLabel;
   final double progress;
   final Color color;
+  final bool isPostpaid;
 
   const UsageCard({
     super.key,
@@ -18,7 +19,7 @@ class UsageCard extends StatelessWidget {
     required this.total,
     required this.remainingLabel,
     required this.progress,
-    required this.color,
+    required this.color, required this.isPostpaid,
   });
 
   @override
@@ -59,7 +60,7 @@ class UsageCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text.rich(
+          isPostpaid == false ? Text.rich(
             TextSpan(
               children: [
                 TextSpan(
@@ -83,6 +84,32 @@ class UsageCard extends StatelessWidget {
               ],
             ),
             textAlign: TextAlign.center,
+          )
+              :
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: '$value of \n',
+                  style: TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 16,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                TextSpan(
+                  text: total,
+                  style: TextStyle(
+                    color: const Color(0xFF222222),
+                    fontSize: 16,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
           Text(
@@ -95,7 +122,7 @@ class UsageCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _progressBar(),
+          isPostpaid == false ? _progressBar():_postpaidprogressBar(),
           const SizedBox(height: 10),
         ],
       ),
@@ -152,4 +179,57 @@ class UsageCard extends StatelessWidget {
       ),
     );
   }
+  Widget _postpaidprogressBar() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(6),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
+
+          Color mainColor = Color(0x3F808080);
+          LinearGradient gradient = LinearGradient(
+            colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
+          );
+          if(progress < 0.35){
+            mainColor = Color(0x26DD3038);
+            gradient = LinearGradient(
+              colors: [const Color(0x00DD3038), const Color(0xFFDD3038)]);
+
+          }else  if(progress < 0.6){
+            mainColor = Color(0x26FFC627);
+            gradient = LinearGradient(
+                colors: [Color(0xFFFFC627), Color(0x26FFC627)]);
+
+          }else{
+            mainColor = Color(0x2617B26A);
+            gradient = LinearGradient(
+                colors: [Color(0xFF17B26A), Color(0x2617B26A)]);
+          }
+
+
+          return Stack(
+            children: [
+              // Background
+              Container(
+                height: 6,
+                color: mainColor,
+              ),
+
+              // Gradient progress (width = percentage)
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: 6,
+                width: width,
+                decoration: BoxDecoration(
+                  gradient:gradient
+
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
 }

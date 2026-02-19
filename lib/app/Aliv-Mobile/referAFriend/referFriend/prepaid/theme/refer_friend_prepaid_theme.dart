@@ -8,7 +8,7 @@ class ReferFriendPrepaidTheme {
   static const text = Color(0xFF111827);
   static const muted = Color(0xFF6B7280);
   static const border = Color(0xFFE6E6EC);
-  static const fieldBg = Color(0xFFF3F4F6);
+  static const fieldBg = Color(0xFFF1F1F8);
 
   static const title = TextStyle(
     fontFamily: 'CircularPro',

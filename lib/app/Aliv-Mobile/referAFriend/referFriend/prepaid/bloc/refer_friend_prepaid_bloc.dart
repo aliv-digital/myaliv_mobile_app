@@ -118,12 +118,12 @@ class ReferFriendPrepaidBloc extends Bloc<ReferFriendPrepaidEvent, ReferFriendPr
     try {
       await repository.redeemReferral(code: state.redeemCode.trim());
 
-      emit(
-        state.copyWith(
-          redeemStatus: ReferFriendPrepaidSubmitStatus.success,
-          toastMessage: 'Referral redeemed!',
-        ),
-      );
+      // emit(
+      //   state.copyWith(
+      //     redeemStatus: ReferFriendPrepaidSubmitStatus.success,
+      //     toastMessage: 'Referral redeemed!',
+      //   ),
+      // );
 
       emit(state.copyWith(redeemStatus: ReferFriendPrepaidSubmitStatus.idle));
     } catch (_) {

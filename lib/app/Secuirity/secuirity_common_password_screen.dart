@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/widgets/app_toast.dart';
 
+import '../../resources/widgets/top_toast.dart';
 import '../../router/app_routes.dart';
 
 class CommonEnterPasswordPage extends StatefulWidget {
@@ -28,7 +30,7 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
     // if (_controller.text.isEmpty) return;
 
     // context.go(widget.continueRoute);
-    if(widget.continueRoute == 'call_logs'){
+    if (widget.continueRoute == 'call_logs') {
       // context.push('${AppRoutes.callLogs}?tab=call_logs',);
       context.push(
         Uri(
@@ -37,7 +39,14 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
         ).toString(),
       );
     }
-
+    if (widget.continueRoute == 'home') {
+      context.push(
+        Uri(
+          path: AppRoutes.verificationCode,
+          queryParameters: {'next': widget.continueRoute},
+        ).toString(),
+      );
+    }
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../bloc/refer_friend_prepaid_bloc.dart';
 import '../bloc/refer_friend_prepaid_event.dart';
@@ -40,7 +41,7 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
                   ReferFriendPrepaidLabeledField(
                     label: "enter referral code",
                     hint: "405783",
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                     value: state.redeemCode,
                     onChanged: (v) => context
                         .read<ReferFriendPrepaidBloc>()
@@ -51,9 +52,12 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
                     label: 'redeem',
                     enabled: state.canRedeem && !loading,
                     isLoading: loading,
-                    onTap: () => context.read<ReferFriendPrepaidBloc>().add(
-                      const ReferFriendPrepaidRedeemPressed(),
-                    ),
+                    onTap: (){
+                      AppToast.show(message: 'success! you will receive bonus wallet credit via the myALIV app within 24 hours',);
+                    },
+                    // onTap: () => context.read<ReferFriendPrepaidBloc>().add(
+                    //   const ReferFriendPrepaidRedeemPressed(),
+                    // ),
                   ),
                 ],
               );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AppToast {
-  static void showSuccess(BuildContext context, String message) {
+class NotAppToast {
+  static void show(BuildContext context, String message) {
     final messenger = ScaffoldMessenger.of(context);
 
     // আগের banner থাকলে remove

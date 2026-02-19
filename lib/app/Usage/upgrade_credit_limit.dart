@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/common_terms_condition.dart';
 
 import '../../router/app_routes.dart';
 
-class UpgradeCreditLimitScreen extends StatelessWidget {
+class UpgradeCreditLimitScreen extends StatefulWidget {
   const UpgradeCreditLimitScreen({super.key});
 
   static const Color purple = Color(0xFF645D9C);
@@ -14,11 +15,18 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
   static const Color textMuted = Color(0xFF7A7A7A);
 
   @override
+  State<UpgradeCreditLimitScreen> createState() => _UpgradeCreditLimitScreenState();
+}
+
+class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
+  bool _agreed = true;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: purple,
+        backgroundColor: UpgradeCreditLimitScreen.purple,
         elevation: 0,
         centerTitle: false,
         leading: IconButton(
@@ -117,68 +125,86 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // ================= TERMS =================
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'B',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      height: 1.43,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'y pressing “update limits” you agree to the ',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      height: 1.43,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'terms & conditions',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.underline,
-                      height: 1.43,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      height: 1.43,
-                    ),
-                  ),
-                ],
-              ),
+            TermsAgreement(
+              value: _agreed,
+              onChanged: (val) {
+                setState(() => _agreed = val);
+              },
+              onTermsTap: () {
+                // context.push(AppRoutes.terms);
+              },
             ),
+            // Text.rich(
+            //   TextSpan(
+            //     children: [
+            //       TextSpan(
+            //         text: 'B',
+            //         style: TextStyle(
+            //           color: Colors.black,
+            //           fontSize: 14,
+            //           fontFamily: 'CircularPro',
+            //           fontWeight: FontWeight.w500,
+            //           height: 1.43,
+            //         ),
+            //       ),
+            //       TextSpan(
+            //         text: 'y pressing “update limits” you agree to the ',
+            //         style: TextStyle(
+            //           color: Colors.black,
+            //           fontSize: 14,
+            //           fontFamily: 'CircularPro',
+            //           fontWeight: FontWeight.w500,
+            //           height: 1.43,
+            //         ),
+            //       ),
+            //       TextSpan(
+            //         text: 'terms & conditions',
+            //         style: TextStyle(
+            //           color: Colors.black,
+            //           fontSize: 14,
+            //           fontFamily: 'CircularPro',
+            //           fontWeight: FontWeight.w500,
+            //           decoration: TextDecoration.underline,
+            //           height: 1.43,
+            //         ),
+            //       ),
+            //       TextSpan(
+            //         text: '.',
+            //         style: TextStyle(
+            //           color: Colors.black,
+            //           fontSize: 14,
+            //           fontFamily: 'CircularPro',
+            //           fontWeight: FontWeight.w500,
+            //           height: 1.43,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             const SizedBox(height: 30),
 
             // ================= CTA =================
             Padding(
-              padding: const EdgeInsets.only(left: 16.0,right: 16),
+              padding: const EdgeInsets.only(left: 42.0,right: 42),
               child: SizedBox(
                 width: double.infinity,
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
                     // UI only
+                    context.push(
+                      Uri(
+                        path: AppRoutes.enterPassword,
+                        queryParameters: {
+                          'title': 'auto renew security',
+                          'continue': 'home',
+                        },
+                      ).toString(),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: purple,
+                    backgroundColor: UpgradeCreditLimitScreen.purple,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(32),
@@ -194,8 +220,12 @@ class UpgradeCreditLimitScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+
               ),
+
             ),
+            const SizedBox(height: 30),
+
           ],
         ),
       ),

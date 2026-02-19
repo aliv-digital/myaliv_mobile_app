@@ -19,7 +19,7 @@ class WhyAlivTheme {
   // Heading 1 style
   static final TextStyle headingOne = TextStyle(
     fontSize: 18,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     color: Color(0xFF000000),
   );
@@ -27,7 +27,7 @@ class WhyAlivTheme {
   // Heading 2 style
   static final TextStyle headingTwo = TextStyle(
     fontSize: 18,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
     color: Color(0xFF000000),
   );
@@ -36,7 +36,7 @@ class WhyAlivTheme {
   static final TextStyle body = TextStyle(
     fontSize: 14,
     height: 1.43,
-    fontFamily: 'Circular Pro',
+    fontFamily: 'CircularPro',
     fontWeight: FontWeight.w400,
     color: Color(0xFF707070),
   );

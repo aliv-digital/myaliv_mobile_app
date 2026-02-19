@@ -38,12 +38,12 @@ class _OtpAutoRenewPrepaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<OtpAutoRenewPrepaidBloc, OtpAutoRenewPrepaidState>(
           listener: (context, state) {
-            if (state.status == OtpAutoRenewPrepaidStatus.failure &&
-                state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
-              );
-            }
+            // if (state.status == OtpAutoRenewPrepaidStatus.failure &&
+            //     state.errorMessage != null) {
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     SnackBar(content: Text(state.errorMessage!)),
+            //   );
+            // }
 
             // success হলে next screen এ যাওয়ার logic এখানে দিতে পারো
             // if (state.status == OtpAutoRenewPrepaidStatus.success) { ... }

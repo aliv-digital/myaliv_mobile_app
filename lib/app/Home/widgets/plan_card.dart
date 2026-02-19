@@ -21,78 +21,83 @@ class PlanCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: height,
-        decoration: BoxDecoration(
-          color: Color(plan.backgroundColor),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            // IMAGE
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-              child: SizedBox(
-                width: imageWidth,
-                height: double.infinity,
-                child: Image.network(
-                  plan.imageUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-
-            // CONTENT
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 24, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      plan.price,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                        // letterSpacing: 0.16,
-                      ),
-                    ),
-                    const Spacer(),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          plan.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.08,
-                          ),
-                        ),
-                        // const SizedBox(height: 4),
-                        Text(
-                          plan.subtitle,
-                          style: const TextStyle(
-                            color:  Color(0xFFE5D0D0),
-                            fontSize: 10,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          decoration: BoxDecoration(
+            // color: color,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Image.asset(plan.imageUrl,fit: BoxFit.fill,)
+        // decoration: BoxDecoration(
+        //   color: Color(plan.backgroundColor),
+        //   borderRadius: BorderRadius.circular(12),
+        // ),
+        // child: Row(
+        //   children: [
+        //     // IMAGE
+        //     ClipRRect(
+        //       borderRadius: const BorderRadius.only(
+        //         topLeft: Radius.circular(12),
+        //         bottomLeft: Radius.circular(12),
+        //       ),
+        //       child: SizedBox(
+        //         width: imageWidth,
+        //         height: double.infinity,
+        //         child: Image.network(
+        //           plan.imageUrl,
+        //           fit: BoxFit.cover,
+        //         ),
+        //       ),
+        //     ),
+        //
+        //     // CONTENT
+        //     Expanded(
+        //       child: Padding(
+        //         padding: const EdgeInsets.fromLTRB(20, 24, 24, 24),
+        //         child: Column(
+        //           crossAxisAlignment: CrossAxisAlignment.end,
+        //           children: [
+        //             Text(
+        //               plan.price,
+        //               style: const TextStyle(
+        //                 color: Colors.white,
+        //                 fontSize: 32,
+        //                 fontFamily: 'CircularPro',
+        //                 fontWeight: FontWeight.w700,
+        //                 // letterSpacing: 0.16,
+        //               ),
+        //             ),
+        //             const Spacer(),
+        //             Column(
+        //               crossAxisAlignment: CrossAxisAlignment.end,
+        //               children: [
+        //                 Text(
+        //                   plan.title,
+        //                   style: const TextStyle(
+        //                     color: Colors.white,
+        //                     fontSize: 16,
+        //                     fontFamily: 'CircularPro',
+        //                     fontWeight: FontWeight.w700,
+        //                     letterSpacing: 0.08,
+        //                   ),
+        //                 ),
+        //                 // const SizedBox(height: 4),
+        //                 Text(
+        //                   plan.subtitle,
+        //                   style: const TextStyle(
+        //                     color:  Color(0xFFE5D0D0),
+        //                     fontSize: 10,
+        //                     fontFamily: 'CircularPro',
+        //                     fontWeight: FontWeight.w500,
+        //                     letterSpacing: 0.04,
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ),
     );
   }

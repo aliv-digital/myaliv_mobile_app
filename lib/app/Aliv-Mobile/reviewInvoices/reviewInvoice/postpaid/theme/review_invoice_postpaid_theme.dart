@@ -37,7 +37,7 @@ class ReviewInvoicePostpaidTheme {
 
   static TextStyle amountStyle(BuildContext context) => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: FontWeight.w700,
     color: amount,
   );

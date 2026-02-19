@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
+import '../../../resources/widgets/defaultButton.dart';
+import '../../../router/app_routes.dart';
+import '../../Aliv-Mobile-Guest/guestPurchasePlan/theme/theme.dart';
 
 class StartPlanBottomSheet extends StatefulWidget {
   const StartPlanBottomSheet({super.key});
@@ -10,6 +16,14 @@ class StartPlanBottomSheet extends StatefulWidget {
 
 class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
   DateTime? selectedDate;
+
+  bool isDateSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,53 +75,52 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
             const SizedBox(height: 20),
             _InfoBanner(),
             const SizedBox(height: 20),
-            _StartFromField(date: selectedDate, onTap: _pickDate),
+            _StartFromField(
+              date: selectedDate,
+              onTap: _openCalendarPickerSheet,
+            ),
             const SizedBox(height: 24),
             _DividerOr(),
             const SizedBox(height: 24),
-            _ActivateButton(),
+            (isDateSelected == true)
+                ? _ActivateButton(selectedDate)
+                : _ActivateButton(null),
+            const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _pickDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
+  Future<void> _openCalendarPickerSheet() async {
+    final DateTime? pickedDate = await showModalBottomSheet<DateTime>(
       context: context,
-      initialDate: now,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365)),
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+      isScrollControlled: true,
+      builder: (calendarContext) {
+        return _RoamCalendarPickerSheet(
+          initialDate: selectedDate ?? DateTime.now(),
+        );
+      },
     );
 
-    if (picked != null) {
-      setState(() => selectedDate = picked);
+    if (pickedDate == null) return;
+
+    setState(() {
+      selectedDate = pickedDate;
+      isDateSelected = true;
+    });
+    if (mounted) {
+      context.push(
+        '${AppRoutes.confirmation}'
+        '?showBeginOn=true'
+        '&beginDate=${selectedDate!.toIso8601String()}',
+      );
     }
   }
 }
 
-Widget _Header(BuildContext context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () => Navigator.pop(context),
-      ),
-      const SizedBox(width: 8),
-      const Text(
-        'when to start?',
-        style: TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    ],
-  );
-}
 
 class _InfoBanner extends StatelessWidget {
   @override
@@ -174,7 +187,7 @@ class _StartFromField extends StatelessWidget {
                     ),
                   ),
                 ),
-                 SvgPicture.asset('assets/icons/calender.svg'),
+                SvgPicture.asset('assets/icons/calender.svg'),
               ],
             ),
           ),
@@ -209,6 +222,9 @@ Widget _DividerOr() {
 }
 
 class _ActivateButton extends StatelessWidget {
+  final DateTime? selectedDate;
+  const _ActivateButton(this.selectedDate);
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -217,7 +233,24 @@ class _ActivateButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           // TODO: activation logic
-          Navigator.pop(context);
+          // Navigator.pop(context);
+          final date = DateTime(2025, 8, 6);
+
+          if (selectedDate != null) {
+            final formatted = DateFormat('dd-MM-yy').format(date);
+
+            context.push(
+              '${AppRoutes.confirmation}'
+              '?showBeginOn=true'
+              '&beginDate=$formatted',
+            );
+          } else {
+            context.push(
+              '${AppRoutes.confirmation}'
+              '?showBeginOn=false'
+              '&beginDate=${date.toIso8601String()}',
+            );
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF645D9C),
@@ -229,6 +262,165 @@ class _ActivateButton extends StatelessWidget {
             fontFamily: 'CircularPro',
             fontSize: 13,
             color: Color(0xFFF1F1F8),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoamCalendarPickerSheet extends StatefulWidget {
+  const _RoamCalendarPickerSheet({required this.initialDate});
+
+  final DateTime initialDate;
+
+  @override
+  State<_RoamCalendarPickerSheet> createState() =>
+      _RoamCalendarPickerSheetState();
+}
+
+class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
+  late DateTime _draftSelectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _draftSelectedDate = widget.initialDate;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(
+            GuestPurchasePlanTheme.bottomSheetTopCornerRadius,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: GuestPurchasePlanTheme.roamCalendarContentPadding,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: Theme.of(context).colorScheme.copyWith(
+                    primary: GuestPurchasePlanTheme
+                        .roamCalendarSelectedDayBackgroundColor,
+                    onPrimary:
+                        GuestPurchasePlanTheme.roamCalendarSelectedDayTextColor,
+                    surface:
+                        GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
+                    onSurface: GuestPurchasePlanTheme.roamCalendarDayTextColor,
+                  ),
+                  datePickerTheme: DatePickerThemeData(
+                    backgroundColor:
+                        GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
+                    headerForegroundColor:
+                        GuestPurchasePlanTheme.roamCalendarDayTextColor,
+                    headerHeadlineStyle:
+                        GuestPurchasePlanTheme.roamCalendarHeaderTextStyle,
+                    weekdayStyle:
+                        GuestPurchasePlanTheme.roamCalendarWeekdayTextStyle,
+                    dayStyle: GuestPurchasePlanTheme.roamCalendarDayTextStyle,
+                    dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
+                      (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return GuestPurchasePlanTheme
+                              .roamCalendarSelectedDayTextColor;
+                        }
+                        return GuestPurchasePlanTheme.roamCalendarDayTextColor;
+                      },
+                    ),
+                    dayBackgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                      (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return GuestPurchasePlanTheme
+                              .roamCalendarSelectedDayBackgroundColor;
+                        }
+                        return Colors.transparent;
+                      },
+                    ),
+                    dayShape: const WidgetStatePropertyAll<OutlinedBorder>(
+                      CircleBorder(),
+                    ),
+                  ),
+                  textButtonTheme: TextButtonThemeData(
+                    style: TextButton.styleFrom(
+                      foregroundColor: GuestPurchasePlanTheme.brandPurple,
+                    ),
+                  ),
+                ),
+                child: SizedBox(
+                  height:
+                      GuestPurchasePlanTheme.roamCalendarPickerVisibleHeight,
+                  child: CalendarDatePicker(
+                    initialDate: _draftSelectedDate,
+                    firstDate: DateTime(2020, 1, 1),
+                    lastDate: DateTime(2035, 12, 31),
+                    onDateChanged: (DateTime nextDate) {
+                      setState(() {
+                        _draftSelectedDate = nextDate;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              Container(
+                height: 1,
+                color: GuestPurchasePlanTheme.roamCalendarDividerColor,
+              ),
+              const SizedBox(
+                height: GuestPurchasePlanTheme.roamCalendarDividerToActionsGap,
+              ),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: DefaultButton(
+                      label: GuestPurchasePlanTheme.roamCalendarCancelLabel,
+                      isLoading: false,
+                      onPressed: () => Navigator.of(context).pop(),
+                      height:
+                          GuestPurchasePlanTheme.roamCalendarActionButtonHeight,
+                      backgroundColor: GuestPurchasePlanTheme
+                          .roamCalendarCancelButtonBackgroundColor,
+                      textStyle:
+                          GuestPurchasePlanTheme.roamCalendarCancelTextStyle,
+                      borderRadius: BorderRadius.circular(
+                        GuestPurchasePlanTheme
+                            .bottomSheetActionButtonCornerRadius,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: GuestPurchasePlanTheme.roamCalendarActionButtonsGap,
+                  ),
+                  Expanded(
+                    child: DefaultButton(
+                      label: GuestPurchasePlanTheme.roamCalendarApplyLabel,
+                      isLoading: false,
+                      onPressed: () =>
+                          Navigator.of(context).pop(_draftSelectedDate),
+                      height:
+                          GuestPurchasePlanTheme.roamCalendarActionButtonHeight,
+                      backgroundColor: GuestPurchasePlanTheme.activateNowButton,
+                      textStyle:
+                          GuestPurchasePlanTheme.roamCalendarApplyTextStyle,
+                      borderRadius: BorderRadius.circular(
+                        GuestPurchasePlanTheme
+                            .bottomSheetActionButtonCornerRadius,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

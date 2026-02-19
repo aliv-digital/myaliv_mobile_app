@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
 
 void main() {
@@ -17,7 +18,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final AppRouter appRouter;
-  const MyApp({super.key, required this.appRouter});
+
+
+   MyApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {
