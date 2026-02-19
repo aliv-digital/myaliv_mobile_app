@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Plans/widgets/mifi_plan_card.dart';
@@ -19,6 +18,7 @@ import '../widgets/add_on_card.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
 import '../widgets/plan_tabs.dart';
+import '../widgets/roam_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
 import '../widgets/weekly_plan_card.dart';
@@ -38,7 +38,9 @@ class HomePlanScreen extends StatelessWidget {
     );
 
     return BlocProvider(
-      create: (_) => HomePlanBloc(HomePlanRepository())..add(HomePlanStarted()),
+      create: (_) =>
+          HomePlanBloc(HomePlanRepository())
+            ..add(HomePlanStarted()),
       child: const _HomePlanView(),
     );
   }
@@ -56,8 +58,14 @@ class _HomePlanView extends StatelessWidget {
   String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 
   void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
-    context.read<HomePlanBloc>().add(HomePlanPurchaseNowPressed(plan));
+    context.read<HomePlanBloc>().add(
+      HomePlanPurchaseNowPressed(plan),
+    );
 
+    final HomePlanTab selectedTab = context
+        .read<HomePlanBloc>()
+        .state
+        .selectedTab;
     final hasActivePlan = _hasActivePlan(plan);
 
     showModalBottomSheet<void>(
@@ -66,7 +74,27 @@ class _HomePlanView extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.45),
       isScrollControlled: true,
       builder: (sheetContext) {
-        if (hasActivePlan) {
+        // Roaming flow only: allow selecting activation date from calendar.
+        if (selectedTab == HomePlanTab.roaming) {
+          return HomePlanRoamBottomSheet(
+            onBackPressed: () => Navigator.of(sheetContext).pop(),
+            onActivateNowPressed: () {
+              Navigator.of(sheetContext).pop();
+              context.push(AppRoutes.roamingPlanConfirmation);
+            },
+          );
+        }
+
+        // if (selectedTab == HomePlanTab.monthly) {
+        //   return HomePlanRoamBottomSheet(
+        //     onBackPressed: () => Navigator.of(sheetContext).pop(),
+        //     onActivateNowPressed: () {
+        //       Navigator.of(sheetContext).pop();
+        //       context.push(AppRoutes.roamingPlanConfirmation);
+        //     },
+        //   );
+        // }
+        if (hasActivePlan && selectedTab == HomePlanTab.addOns) {
           return HomePlanWalletPaymentActivateOrFutureBottomSheet(
             warningText:
                 'activating now replaces the account owner current plan, '
@@ -107,41 +135,19 @@ class _HomePlanView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: HomePlanTheme.screenBackground,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF645D9C),
-        centerTitle: false,
-
-        title: Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Text(
-            'plans',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 20.0),
-        //     child: SvgPicture.asset('assets/icons/bell with red.svg'),
-        //   ),
-        // ],
-      ),
       body: SafeArea(
         child: Column(
           children: [
-            // DefaultAppBar(
-            //     showNotificationDotWhenZero: true,
-            //     notificationCount: 0,
-            //     showNotification: true,
-            //     showBackArrow: false,
-            //     title: 'plans',
-            //     onBack: () {
-            //       context.pop();
-            //     }),
+            DefaultAppBar(
+              showBackArrow: false,
+              showNotification: false,
+              showNotificationDotWhenZero: true,
+              title: 'plans',
+              onBack: () {
+                context.pop();
+              },
+            ),
+
             // _TopBar(
             //   title: 'plans',
             //   onBack: () => Navigator.of(context).maybePop(),
@@ -155,7 +161,9 @@ class _HomePlanView extends StatelessWidget {
                 return HomePlanTabs(
                   selected: state.selectedTab,
                   onChanged: (tab) {
-                    context.read<HomePlanBloc>().add(HomePlanTabChanged(tab));
+                    context.read<HomePlanBloc>().add(
+                      HomePlanTabChanged(tab),
+                    );
                   },
                 );
               },
@@ -178,33 +186,35 @@ class _HomePlanView extends StatelessWidget {
                     title = 'choose a prepaid monthly primary plan';
                     break;
                   case HomePlanTab.roaming:
-                    title = 'choose a prepaid roaming primary plan';
+                    title =
+                        'choose a roaming data add-on. these add-ons will only work in the usa, canada and or digicel caribbean countries.';
                     break;
                   case HomePlanTab.roameasy:
-                    title = 'choose a prepaid roameasy primary plan';
-                    break;
-                  case HomePlanTab.mifi:
-                    title = 'choose a prepaid mifi primary plan';
-                    break;
-                  case HomePlanTab.libertyGlobal:
-                    title = 'choose a prepaid liberty global primary plan';
+                    title = 'choose a roameasy standalone plan';
                     break;
                   case HomePlanTab.addOns:
                     title =
                         'add-ons can only be added to your active primary plan and '
                         'expires when it ends.';
                     break;
+                  case HomePlanTab.mifi:
+                    title = 'choose a prepaid mifi primary plan';
+                    break;
+                  case HomePlanTab.libertyGlobal:
+                    title = 'choose an international calling plan';
+                    break;
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.fromLTRB(43, 20, 32, 8),
+                  padding: const EdgeInsets.fromLTRB(31, 20, 16, 0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       title,
-                      style: state.selectedTab == HomePlanTab.addOns
-                          ? HomePlanTheme.addOnHelper
-                          : HomePlanTheme.sectionTitle,
+                      style: HomePlanTheme.sectionTitle,
+                      // style: state.selectedTab == HomePlanTab.addOns
+                      //     ? HomePlanTheme.addOnHelper
+                      //     : HomePlanTheme.sectionTitle,
                     ),
                   ),
                 );
@@ -229,7 +239,10 @@ class _HomePlanView extends StatelessWidget {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    // Title-to-first-card gap target: 16px.
+                    // First card already contributes 10px top margin from theme,
+                    // so list adds 6px top padding.
+                    padding: const EdgeInsets.only(top: 6, bottom: 14),
 
                     //  addOns হলে addOns list, নাহলে plans list
                     itemCount: state.selectedTab == HomePlanTab.addOns
@@ -245,7 +258,7 @@ class _HomePlanView extends StatelessWidget {
                         );
 
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanAddOnCard(
                             addon: addon,
                             selected: selected,
@@ -264,7 +277,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.monthly) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanMonthlyPlanCard(
                             plan: plan,
                             expanded: expanded,
@@ -287,7 +300,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.daily) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanDailyPlanCard(
                             plan: plan,
                             expanded: expanded,
@@ -310,7 +323,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.weekly) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanWeeklyPlanCard(
                             plan: plan,
                             expanded: expanded,
@@ -333,7 +346,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.roaming) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanRoamingPlanCard(
                             plan: plan,
                             expanded: expanded,
@@ -356,7 +369,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.roameasy) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanRoamEasyPlanCard(
                             plan: plan,
                             expanded: expanded,
@@ -379,7 +392,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.mifi) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanMifiPlanCard(
                             plan: plan,
                             expanded: expanded,
@@ -402,7 +415,7 @@ class _HomePlanView extends StatelessWidget {
 
                       if (state.selectedTab == HomePlanTab.libertyGlobal) {
                         return Padding(
-                          padding: EdgeInsets.only(left: 12, right: 12),
+                          padding: EdgeInsets.only(left: 15, right: 15),
                           child: HomePlanLibertyGlobalPlanCard(
                             plan: plan,
                             expanded: expanded,

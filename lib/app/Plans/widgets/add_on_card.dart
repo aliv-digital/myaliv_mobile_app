@@ -21,79 +21,97 @@ class HomePlanAddOnCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconPath = HomePlanIconAssets.forType(HomePlanBenefitType.data);
+
+    debugPrint("----- HomePlanAddOnCard -----");
+    debugPrint("HomePlanBenefitType.data: ${HomePlanBenefitType.data}");
+    debugPrint("iconPath: $iconPath");
+
     final isSvg = iconPath.toLowerCase().endsWith('.svg');
 
     return InkWell(
       onTap: onToggle,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(
+        HomePlanTheme.addOnCardBorderRadius,
+      ),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 31, vertical: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        margin: HomePlanTheme.addOnCardOuterMargin,
+        padding: HomePlanTheme.addOnCardInnerPadding,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(
+            HomePlanTheme.addOnCardBorderRadius,
+          ),
           border: Border.all(
-            color: selected ? HomePlanTheme.brandPurple : Colors.transparent,
+            color: selected
+                ? HomePlanTheme.brandPurple
+                : Colors.transparent,
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Color(0x0C000000),
-              blurRadius: 16,
-              offset: Offset(8, 10),
-              spreadRadius: 0,
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===== Left content =====
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+            // Top row: title on left and checkbox on right.
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
                     addon.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: HomePlanTheme.addOnTitle,
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (isSvg)
-                        SvgPicture.asset(iconPath, width: 16, height: 16)
-                      else
-                        Image.asset(iconPath, width: 16, height: 16),
-                      const SizedBox(width: 6),
-                      Text(
-                        addon.label, // data balance
-                        style: HomePlanTheme.addOnLabel,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          addon.value, // 1gb
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: HomePlanTheme.addOnValue,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                _CheckBoxSquare(
+                  checked: selected,
+                  onTap: onToggle,
+                ),
+              ],
             ),
-
-            const SizedBox(width: 12),
-
-            // ===== Right side (checkbox + price) =====
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            const SizedBox(
+                height: HomePlanTheme.addOnCardTitleToDetailsGap),
+            // Bottom row: icon + label + value on left and amount pill on right.
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _CheckBoxSquare(checked: selected, onTap: onToggle),
-                const SizedBox(height: 14),
+                if (isSvg)
+                  SvgPicture.asset(
+                    iconPath,
+                    width: HomePlanTheme.addOnCardInfoIconSize,
+                    height: HomePlanTheme.addOnCardInfoIconSize,
+                  )
+                else
+                  Image.asset(
+                    iconPath,
+                    width: HomePlanTheme.addOnCardInfoIconSize,
+                    height: HomePlanTheme.addOnCardInfoIconSize,
+                  ),
+                const SizedBox(
+                    width: HomePlanTheme.addOnCardIconToLabelGap),
+                Text(
+                  addon.label, // data balance
+                  style: HomePlanTheme.addOnLabel,
+                ),
+                const SizedBox(
+                    width: HomePlanTheme.addOnCardLabelToValueGap),
+                Expanded(
+                  child: Text(
+                    addon.value, // 1gb
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: HomePlanTheme.addOnValue,
+                  ),
+                ),
+                const SizedBox(
+                    width: HomePlanTheme.addOnCardValueToPriceGap),
                 _PricePill(price: addon.price),
               ],
             ),
@@ -112,12 +130,9 @@ class _PricePill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
-      decoration: ShapeDecoration(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          side: BorderSide(width: 1, color: const Color(0xFF645D9C)),
-          borderRadius: BorderRadius.circular(5),
-        ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: HomePlanTheme.addOnPricePillBackground,
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -131,24 +146,40 @@ class _CheckBoxSquare extends StatelessWidget {
   final bool checked;
   final VoidCallback onTap;
 
-  const _CheckBoxSquare({required this.checked, required this.onTap});
+  const _CheckBoxSquare({
+    required this.checked,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: BorderRadius.circular(
+        HomePlanTheme.addOnCheckboxRadius,
+      ),
       child: Container(
-        width: 20,
-        height: 20,
+        width: HomePlanTheme.addOnCheckboxSize,
+        height: HomePlanTheme.addOnCheckboxSize,
         decoration: BoxDecoration(
-          color: checked ? HomePlanTheme.brandPurple : Colors.transparent,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: HomePlanTheme.brandPurple, width: 1),
+          color: checked
+              ? HomePlanTheme.addOnCheckboxCheckedFillColor
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(
+            HomePlanTheme.addOnCheckboxRadius,
+          ),
+          border: Border.all(
+            color: HomePlanTheme.addOnCheckboxBorderColor,
+            width: HomePlanTheme.addOnCheckboxBorderWidth,
+          ),
         ),
         alignment: Alignment.center,
         child: checked
-            ? const Icon(Icons.check, size: 16, color: Colors.white)
+            ? const Icon(
+                Icons.check,
+                size: HomePlanTheme.addOnCheckboxCheckIconSize,
+                color: HomePlanTheme.addOnCheckboxCheckIconColor,
+              )
             : const SizedBox.shrink(),
       ),
     );

@@ -7,9 +7,11 @@ class HomePlanIconAssets {
   static const String data = AssetConstant.wifiIconPNG;
   static const String talk = AssetConstant.phoneIconPNG;
   static const String sms = AssetConstant.smsIconPNG;
-  static const String bonusData = AssetConstant.bonusDataIconPNG;
-  static const String intl = AssetConstant.phoneIconPNG; //talkTextIconPNG;
+  static final String bonusData = AssetConstant.bonusDataIconSVG;
+  static const String phone = AssetConstant.phoneCallIconSVG;//phoneIconPNG;//talkTextIconPNG;
   static const String mms = AssetConstant.mmsIconPNG;
+  static const String usOrCanTalk = AssetConstant.talkTextIconSVG;
+
 
   static String forType(HomePlanBenefitType type) {
     switch (type) {
@@ -22,9 +24,9 @@ class HomePlanIconAssets {
       case HomePlanBenefitType.bonusData:
         return bonusData;
       case HomePlanBenefitType.intlTalkText:
-        return intl;
+        return usOrCanTalk;
       case HomePlanBenefitType.mms:
-        return mms;
+        return phone;
     }
   }
 }

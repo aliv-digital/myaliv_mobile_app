@@ -18,9 +18,9 @@ class HomePlanTabs extends StatelessWidget {
     HomePlanTab.monthly: 'monthly',
     HomePlanTab.roaming: 'roaming',
     HomePlanTab.roameasy: 'roameasy',
-    HomePlanTab.mifi: 'mifi',
-    HomePlanTab.libertyGlobal: 'liberty global',
     HomePlanTab.addOns: 'add ons',
+    HomePlanTab.mifi: 'mifi',
+    HomePlanTab.libertyGlobal: 'liberty global'
   };
 
   double _indicatorWidth(String label) {
@@ -36,14 +36,16 @@ class HomePlanTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: HomePlanTheme.tabBarBackground,
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(
+        top: HomePlanTheme.tabTopGapFromAppBar,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: 46,
+            height: 44,
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
               separatorBuilder: (_, _) => const SizedBox(width: 26),
@@ -56,6 +58,7 @@ class HomePlanTabs extends StatelessWidget {
                   onTap: () => onChanged(tab),
                   borderRadius: BorderRadius.circular(14),
                   child: Column(
+                    // Keep tab text row aligned to the bottom area.
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
@@ -64,19 +67,29 @@ class HomePlanTabs extends StatelessWidget {
                             ? HomePlanTheme.tabLabelActive
                             : HomePlanTheme.tabLabelInactive,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: isActive
+                            ? HomePlanTheme
+                                .tabSelectedLabelToIndicatorGap
+                            : HomePlanTheme
+                                .tabUnselectedLabelBottomGap,
+                      ),
 
                       // ✅ purple indicator
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
                         curve: Curves.easeOut,
-                        height: 3,
+                        height: isActive
+                            ? HomePlanTheme.tabIndicatorHeight
+                            : 0,
                         width: isActive
                             ? _indicatorWidth(label)
                             : 0, // ✅ inactive হলে hide
                         decoration: BoxDecoration(
                           color: HomePlanTheme.brandPurple,
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(
+                            HomePlanTheme.tabIndicatorRadius,
+                          ),
                         ),
                       ),
                     ],

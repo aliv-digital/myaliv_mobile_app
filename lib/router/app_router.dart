@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/view/guest_pay_bill_confirm_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/view/rev_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/Otp/postpaid/view/otp_postpaid_screen.dart';
@@ -82,6 +83,10 @@ class AppRouter {
 
     //forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
     routes: [
+      GoRoute(
+        path: AppRoutes.roamingPlanConfirmation,
+        builder: (context, state) =>  RoamingPlanConfirmationScreen(phoneNumber: '242-801-1616',),
+      ),
       GoRoute(
         path: AppRoutes.revPaymentMethodPrepaidScreen,
         builder: (context, state) => const REVPaymentMethodPrepaidScreen(),

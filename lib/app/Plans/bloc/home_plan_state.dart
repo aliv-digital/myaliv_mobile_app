@@ -47,6 +47,7 @@ class HomePlanState {
     // ✅ AddOns
     List<HomePlanAddOnModel>? addOns,
     Set<String>? selectedAddOnIds,
+
     String? errorMessage,
   }) {
     return HomePlanState(
@@ -54,8 +55,10 @@ class HomePlanState {
       selectedTab: selectedTab ?? this.selectedTab,
       plans: plans ?? this.plans,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
+
       addOns: addOns ?? this.addOns,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
+
       errorMessage: errorMessage,
     );
   }

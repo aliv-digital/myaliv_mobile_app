@@ -21,17 +21,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     on<HomePlanToggleAddon>(_onToggleAddOns);
   }
 
-  Future<void> _onStarted(
-    HomePlanStarted event,
-    Emitter<HomePlanState> emit,
-  ) async {
+  Future<void> _onStarted(HomePlanStarted event, Emitter<HomePlanState> emit,
+      ) async {
     await _loadByTab(emit, tab: state.selectedTab);
   }
 
   Future<void> _onTabChanged(
-    HomePlanTabChanged event,
-    Emitter<HomePlanState> emit,
-  ) async {
+      HomePlanTabChanged event,
+      Emitter<HomePlanState> emit,
+      ) async {
     // user tab change korle ekhane eshe selected tab load hoy
     emit(state.copyWith(
       selectedTab: event.tab,
@@ -47,9 +45,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   void _onToggleExpanded(
-    HomePlanToggleExpanded event,
-    Emitter<HomePlanState> emit,
-  ) {
+      HomePlanToggleExpanded event,
+      Emitter<HomePlanState> emit,
+      ) {
     final next = Set<String>.from(state.expandedPlanIds);
     if (next.contains(event.planId)) {
       next.remove(event.planId);
@@ -61,20 +59,20 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
   // optional handlers (kept for pattern consistency)
   void _onViewDetailsPressed(
-    HomePlanViewDetailsPressed event,
-    Emitter<HomePlanState> emit,
-  ) {}
+      HomePlanViewDetailsPressed event,
+      Emitter<HomePlanState> emit,
+      ) {}
 
   void _onPurchaseNowPressed(
-    HomePlanPurchaseNowPressed event,
-    Emitter<HomePlanState> emit,
-  ) {}
+      HomePlanPurchaseNowPressed event,
+      Emitter<HomePlanState> emit,
+      ) {}
 
   // ✅ AddOns multi-select toggle
   void _onToggleAddOns(
-    HomePlanToggleAddon event,
-    Emitter<HomePlanState> emit,
-  ) {
+      HomePlanToggleAddon event,
+      Emitter<HomePlanState> emit,
+      ) {
     final next = Set<String>.from(state.selectedAddOnIds);
 
     // event.addon -> HomePlanAddOnModel (id)
@@ -89,9 +87,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
   // ✅ one loader that handles both: plans + addOns
   Future<void> _loadByTab(
-    Emitter<HomePlanState> emit, {
-    required HomePlanTab tab,
-  }) async {
+      Emitter<HomePlanState> emit, {
+        required HomePlanTab tab,
+      }) async {
     try {
       emit(state.copyWith(
         status: HomePlanStatus.loading,
@@ -127,9 +125,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
   // ✅ kept your old method too (existing delete korini)
   Future<void> _loadPlans(
-    Emitter<HomePlanState> emit, {
-    required HomePlanTab tab,
-  }) async {
+      Emitter<HomePlanState> emit, {
+        required HomePlanTab tab,
+      }) async {
     try {
       emit(state.copyWith(
         status: HomePlanStatus.loading,
