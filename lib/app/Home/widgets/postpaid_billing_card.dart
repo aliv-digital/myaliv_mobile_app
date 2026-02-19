@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../../resources/widgets/common_switch_button.dart';
 import '../home/home_screen.dart';
 import 'amount_text.dart';
+import 'auto_renew_toggle.dart';
 
 class PostpaidBillingCard extends StatefulWidget {
   const PostpaidBillingCard({super.key});
@@ -50,40 +52,9 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                 const Spacer(),
 
                 /// TEXT + REAL SWITCH (as in design)
-                SizedBox(
-                  height: 28,
-                  child: Row(
-                    children: [
-                      Switch(
-                        value: autoPayEnabled,
-                        onChanged: (value) {
-                          setState(() {
-                            autoPayEnabled = value;
-                          });
-                        },
-                        activeThumbColor: Colors.white,
-                        // activeTrackColor: purple,
-                        inactiveThumbColor: Colors.white,
-                        inactiveTrackColor: const Color(0xFFE0E0E8),
-                        trackColor: WidgetStateProperty.all(
-                          const Color(0xFFE0E0E8),
-                        ),
-                        thumbColor: WidgetStateProperty.all(purple),
-                        splashRadius: 14,
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      Text(
-                        autoPayEnabled ? 'On' : 'Off',
-                        style: const TextStyle(
-                          color: const Color(0xFF707070),
-                          fontSize: 8,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // CommonSwitchButton(initialValue: true),
+
+                _FigmaToggle(value: autoPayEnabled, onChanged: onChanged)
               ],
             ),
 
@@ -191,6 +162,113 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void onChanged(bool value) {
+    setState(() => autoPayEnabled = value);
+  }
+}
+
+class _FigmaToggle extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _FigmaToggle({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  static const double _width = 55;
+  static const double _height = 28;
+  static const double _knobSize = 24;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onChanged(!value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: _width,
+        height: _height,
+        padding: EdgeInsets.only(
+          left: value ? 10 : 3,
+          right: value ? 3 : 10,
+        ),
+        decoration: BoxDecoration(
+          color: value ? const Color(0xFF645D9C) : Colors.white,
+          borderRadius: BorderRadius.circular(35.71),
+          border: value
+              ? null
+              : Border.all(
+            width: 0.71,
+            color: const Color(0xFFE2E2E2),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: value
+              ? [
+            /// ON TEXT
+            const SizedBox(
+              width: 12,
+              child: Text(
+                'On',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFFE4E0FF),
+                  fontSize: 8,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+
+            /// KNOB
+            _knob(),
+          ]
+              : [
+            /// KNOB
+            _knob(withShadow: true),
+
+            /// OFF TEXT
+            const SizedBox(
+              width: 14,
+              child: Text(
+                'Off',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF707070),
+                  fontSize: 8,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _knob({bool withShadow = false}) {
+    return Container(
+      width: _knobSize,
+      height: _knobSize,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(50),
+        boxShadow: withShadow
+            ? [
+          const BoxShadow(
+            color: Color(0x25000000),
+            blurRadius: 8,
+            offset: Offset(0, 3),
+          )
+        ]
+            : null,
       ),
     );
   }
