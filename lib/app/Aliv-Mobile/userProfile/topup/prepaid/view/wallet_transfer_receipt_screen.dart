@@ -13,8 +13,9 @@ class WalletTransferReceiptScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6FB),
       appBar: AppBar(
+        toolbarHeight: 64,
         backgroundColor: const Color(0xFF645D9C),
-        elevation: 0,
+        elevation: 0,leading: SizedBox(),leadingWidth: 24,
         title: const Text(
           'my receipt',
           style: TextStyle(
@@ -24,6 +25,13 @@ class WalletTransferReceiptScreen extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+        // leading:Padding(
+        //   padding: const EdgeInsets.only(left: 24),
+        //   child: IconButton(
+        //     icon: const Icon(Icons.arrow_back,color: Colors.white,),
+        //     onPressed: () => Navigator.pop(context),
+        //   ),
+        // ),
         centerTitle: false,
       ),
       body: SafeArea(

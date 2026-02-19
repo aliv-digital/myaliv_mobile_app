@@ -57,7 +57,7 @@ class GuestTopUpTheme {
   );
 
   // Amount input field dimensions from design.
-  static const double amountFieldOuterHorizontalPadding = 68;
+  static const double amountFieldOuterHorizontalPadding = 54;
   static const double amountFieldHeight = 71;
   static const double amountFieldRadius = 10;
   static const double amountFieldBorderWidth = 3;

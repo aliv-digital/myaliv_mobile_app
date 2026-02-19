@@ -26,8 +26,8 @@ class TopUpPrepaidTabs extends StatelessWidget {
             unselectedLabelColor: TopUpPrepaidTheme.textMuted,
             tabs: const [
               Tab(text: 'my number'),
-              Tab(text: 'auto top up'),
-              Tab(text: 'send top up'),
+              Tab(text: 'auto top-up'),
+              Tab(text: 'send top-up'),
             ],
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 
+import '../../../core/utils/app_session.dart';
 import '../../../resources/extentions/hex_color.dart';
 import '../../../resources/widgets/custom_payment_break_down_card.dart';
 import '../../../resources/widgets/default_bottom_payBar.dart';
@@ -13,6 +14,8 @@ import '../../../router/app_routes.dart';
 import '../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/bloc/guest_purchase_plan_confirmation_bloc.dart';
 import '../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/bloc/guest_purchase_plan_confirmation_event.dart';
 import '../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_purchase_plan_confirmation_theme.dart';
+import '../../Aliv-Mobile/userProfile/topup/prepaid/view/send_top_up_confirmation_screen.dart';
+import '../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
 
 class ConfirmationScreen extends StatelessWidget {
   final bool showBeginOn;
@@ -61,16 +64,13 @@ class ConfirmationScreen extends StatelessWidget {
           ],
         ),
 
-        bottomNavigationBar:Container(
+        bottomNavigationBar: Container(
           width: 390,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: ShapeDecoration(
             color: Colors.white,
             shape: RoundedRectangleBorder(
-              side: BorderSide(
-                width: 1,
-                color: const Color(0xFFE1E1E1),
-              ),
+              side: BorderSide(width: 1, color: const Color(0xFFE1E1E1)),
             ),
           ),
           child: Row(
@@ -128,8 +128,18 @@ class ConfirmationScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  context.push(AppRoutes.guestPaymentMethodScreen);
+                onTap: () {
+                  if(AppSession.appRoute == 'sendTopUp'){
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => const PayFromWalletSheet(),
+                    );
+                  }else{
+                    context.push(AppRoutes.guestPaymentMethodScreen);
+
+                  }
                 },
                 child: Container(
                   width: 170,
@@ -189,8 +199,7 @@ class ConfirmationScreen extends StatelessWidget {
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'vat',
-                      value:
-                      '\$ 1.82',
+                      value: '\$ 1.82',
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'total',
@@ -237,18 +246,29 @@ class _PlanCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Alicia Major',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
+              children: [
+                AppSession.appRoute == 'sendTopUp'
+                    ? Text(
+                        'top-up',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontFamily: 'Circular Pro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    : const Text(
+                        'Alicia Major',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                const Text(
                   '242-801-1616',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -270,24 +290,46 @@ class _PlanCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "standalone",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      AppSession.appRoute == 'sendTopUp'
+                          ? Text(
+                              'top-up prepaid number',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 10,
+                                fontFamily: 'Circular Pro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          : Text(
+                              "standalone",
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                       const SizedBox(height: 6),
-                      const Text(
-                        'travel20 - 7 days',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      AppSession.appRoute == 'sendTopUp'
+                          ? Text(
+                              '242-899-9999',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontFamily: 'Circular Pro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          : Text(
+                              'travel20 - 7 days',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
 
                       (date != null)
                           ? Text(
@@ -322,19 +364,32 @@ class _PlanCard extends StatelessWidget {
                     color: const Color(0xFFF3F3F6),
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Text(
-                    '\$ 18.18',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: const Color(0xFF222222),
-                      fontSize: 16,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  child: AppSession.appRoute == 'sendTopUp'
+                      ? Text(
+                          '\$ 15.00',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: const Color(0xFF222222),
+                            fontSize: 16,
+                            fontFamily: 'Circular Pro',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      : Text(
+                          '\$ 18.18',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: const Color(0xFF222222),
+                            fontSize: 16,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                 ),
                 const SizedBox(width: 20),
-                SvgPicture.asset('assets/icons/trash.svg'),
+                AppSession.appRoute == 'sendTopUp'
+                    ? SizedBox(width: 1)
+                    : SvgPicture.asset('assets/icons/trash.svg'),
               ],
             ),
           ),
@@ -386,7 +441,7 @@ class _BeginOnCard extends StatelessWidget {
               ],
             ),
           ),
-          SvgPicture.asset('assets/icons/calender_post.svg',)
+          SvgPicture.asset('assets/icons/calender_post.svg'),
         ],
       ),
     );

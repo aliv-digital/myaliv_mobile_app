@@ -19,7 +19,8 @@ class UsageCard extends StatelessWidget {
     required this.total,
     required this.remainingLabel,
     required this.progress,
-    required this.color, required this.isPostpaid,
+    required this.color,
+    required this.isPostpaid,
   });
 
   @override
@@ -60,57 +61,57 @@ class UsageCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          isPostpaid == false ? Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: title == 'data' ? '2.4 GB' : 'unlimited',
-                  style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
+          isPostpaid == false
+              ? Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: title == 'data' ? '2.4 GB' : 'unlimited',
+                        style: TextStyle(
+                          color: const Color(0xFF222222),
+                          fontSize: 16,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      TextSpan(
+                        text: title == 'data' ? ' of\n14 GB' : '\nlocal',
+                        style: TextStyle(
+                          color: const Color(0xFF222222),
+                          fontSize: 16,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                TextSpan(
-                  text: title == 'data' ? ' of\n14 GB' : '\nlocal',
-                  style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
+                  textAlign: TextAlign.center,
+                )
+              : Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '$value of \n',
+                        style: TextStyle(
+                          color: const Color(0xFF222222),
+                          fontSize: 16,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      TextSpan(
+                        text: total,
+                        style: TextStyle(
+                          color: const Color(0xFF222222),
+                          fontSize: 16,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              ],
-            ),
-            textAlign: TextAlign.center,
-          )
-              :
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '$value of \n',
-                  style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                TextSpan(
-                  text: total,
-                  style: TextStyle(
-                    color: const Color(0xFF222222),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-            textAlign: TextAlign.center,
-          ),
           const SizedBox(height: 6),
           Text(
             remainingLabel,
@@ -122,24 +123,14 @@ class UsageCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          isPostpaid == false ? _progressBar():_postpaidprogressBar(),
+          isPostpaid == false ? _progressBar() : _postpaidprogressBar(),
           const SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  // Widget _progressBar() {
-  //   return ClipRRect(
-  //     borderRadius: BorderRadius.circular(6),
-  //     child: LinearProgressIndicator(
-  //       value: progress,
-  //       minHeight: 6,
-  //       backgroundColor: color.withOpacity(0.2),
-  //       valueColor: AlwaysStoppedAnimation(color),
-  //     ),
-  //   );
-  // }
+
   Widget _progressBar() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
@@ -179,6 +170,7 @@ class UsageCard extends StatelessWidget {
       ),
     );
   }
+
   Widget _postpaidprogressBar() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
@@ -190,40 +182,35 @@ class UsageCard extends StatelessWidget {
           LinearGradient gradient = LinearGradient(
             colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
           );
-          if(progress < 0.35){
+          if (progress < 0.35) {
             mainColor = Color(0x26DD3038);
             gradient = LinearGradient(
-              colors: [const Color(0x00DD3038), const Color(0xFFDD3038)]);
-
-          }else  if(progress < 0.6){
+              colors: [ const Color(0xFFDD3038),const Color(0x00DD3038),],
+            );
+          } else if (progress < 0.6) {
             mainColor = Color(0x26FFC627);
             gradient = LinearGradient(
-                colors: [Color(0xFFFFC627), Color(0x26FFC627)]);
-
-          }else{
+              colors: [Color(0x26FFC627),Color(0xFFFFC627), ],
+            );
+          } else {
             mainColor = Color(0x2617B26A);
             gradient = LinearGradient(
-                colors: [Color(0xFF17B26A), Color(0x2617B26A)]);
+              // colors: [Color(0xFF17B26A), Color(0x2617B26A)],
+              colors: [Color(0x2617B26A),Color(0xFF17B26A), ],
+            );
           }
-
 
           return Stack(
             children: [
               // Background
-              Container(
-                height: 6,
-                color: mainColor,
-              ),
+              Container(height: 6, color: mainColor),
 
               // Gradient progress (width = percentage)
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 6,
                 width: width,
-                decoration: BoxDecoration(
-                  gradient:gradient
-
-                ),
+                decoration: BoxDecoration(gradient: gradient),
               ),
             ],
           );
@@ -231,5 +218,4 @@ class UsageCard extends StatelessWidget {
       ),
     );
   }
-
 }

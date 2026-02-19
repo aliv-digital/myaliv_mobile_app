@@ -75,7 +75,7 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
-                        title: 'Call Log Security',
+                        title: 'security check',
                         showHome: false,
                         onBack: () {
                           context.pop();

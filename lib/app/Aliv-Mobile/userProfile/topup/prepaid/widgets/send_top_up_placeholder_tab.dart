@@ -1,6 +1,15 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/send_top_up_phone_field.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_amount_box.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../../../core/utils/app_session.dart';
+import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
+import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
+import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
+import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/phone_number_input.dart';
 import '../theme/top_up_prepaid_theme.dart';
 import '../view/send_top_up_confirmation_screen.dart';
 
@@ -16,6 +25,64 @@ class SendTopUpPlaceholderTab extends StatefulWidget {
 class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   String _amount = '15.00';
  // 🔥 default amount (matches design)
+  static const CountryInfo _defaultCountry = CountryInfo(
+    flagEmoji: '🇧🇸',
+    dialCode: '1',
+    isoCode: 'BS',
+  );
+
+  CountryInfo _selectedCountry = _defaultCountry;
+
+  void _showErrorSnackBar(String? errorMessage) {
+    final resolvedMessage =
+        errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          resolvedMessage,
+          style: GuestTopUpTheme.snackBarText,
+        ),
+      ),
+    );
+  }
+
+
+
+  void _pickCountry() {
+    showCountryPicker(
+      context: context,
+      showPhoneCode: true,
+      // Keep using the previous package while rendering flat flag assets.
+      customFlagBuilder: (Country country) {
+        // `country_pickers` does not include `ac.png`, so map AC -> SH asset.
+        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
+            ? 'sh'
+            : country.countryCode.toLowerCase();
+
+        return Image.asset(
+          'assets/$assetIsoCode.png',
+          package: 'country_pickers',
+          width: 26,
+          height: 20,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Text(country.flagEmoji,
+                style: const TextStyle(fontSize: 18));
+          },
+        );
+      },
+      onSelect: (Country country) {
+        setState(() {
+          _selectedCountry = CountryInfo(
+            flagEmoji: country.flagEmoji,
+            dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
+            isoCode: country.countryCode,
+          );
+        });
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,48 +102,75 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               const SizedBox(height: 24),
 
               // ================= ENTER NUMBER =================
-              const _SectionLabel('enter number to top up'),
-              const SizedBox(height: 8),
-              SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
+              // const _SectionLabel('enter number to top up'),
+              // const SizedBox(height: 8),
+              // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
+              CustomCountryPhoneInputRow(
+                labelText: GuestTopUpTheme.activePrepaidLabel,
+                labelStyle: GuestTopUpTheme.activePrepaidPrompt,
+                hintText: GuestTopUpTheme.phoneHintText,
+                flagEmoji: _selectedCountry.flagEmoji,
+                dialCode: _selectedCountry.dialCode,
+                countryIsoCode: _selectedCountry.isoCode,
+                onTapCountryPicker: _pickCountry,
+                onChanged: (value) {},
+              ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              const _SectionLabel('confirm number to top up'),
-              const SizedBox(height: 8),
-              SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
-
-              const SizedBox(height: 32),
+              // const _SectionLabel('confirm number to top up'),
+              // const SizedBox(height: 8),
+              // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
+              CustomCountryPhoneInputRow(
+                labelText: GuestTopUpTheme.confirmMobileLabel,
+                hintText: GuestTopUpTheme.phoneHintText,
+                flagEmoji: _selectedCountry.flagEmoji,
+                enableCountryPicker: false,
+                showCountryArrow: false,
+                dialCode: _selectedCountry.dialCode,
+                countryIsoCode: _selectedCountry.isoCode,
+                onChanged: (value) {},
+              ),
+              const SizedBox(height: 18),
 
               // ================= CURRENT BALANCE =================
-              Center(
-                child:Text(
-                  'current balance: \$129.00',
-                  style: TextStyle(
-                    color: const Color(0xFF1C1C1C) /* Black-100% */,
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                    height: 1.43,
-                  ),
-                )
-              ),
-
-              const SizedBox(height: 24),
+              // Center(
+              //   child:Text(
+              //     'current balance: \$129.00',
+              //     style: TextStyle(
+              //       color: const Color(0xFF1C1C1C) /* Black-100% */,
+              //       fontSize: 14,
+              //       fontFamily: 'CircularPro',
+              //       fontWeight: FontWeight.w700,
+              //       height: 1.43,
+              //     ),
+              //   )
+              // ),
+              //
+              // const SizedBox(height: 24),
 
               // ================= AMOUNT CARD =================
-
-              Center(
-                child: TopUpPrepaidAmountBox(
-                  value: _amount,
-                  onChanged: (v) {
-                    setState(() {
-                      _amount = v;
-                    });
-                  },
-                ),
+              GradientInputField(
+                label: GuestTopUpTheme.amountLabel,
+                hint: GuestTopUpTheme.amountHintText,
+                onChanged: (value) {},
               ),
+              // Center(
+              //   child:
+              //   TopUpPrepaidAmountBox(
+              //     value: _amount,
+              //     onChanged: (v) {
+              //       setState(() {
+              //         _amount = v;
+              //       });
+              //     },
+              //   ),
+              // ),
 
-              const SizedBox(height: 52),
+              const SizedBox(height: 30),
+              Center(child: TopUpPrepaidBalanceRow(balance: 129)),
+
+              const SizedBox(height: 56),
 
               // ================= PROCEED =================
               SizedBox(
@@ -84,11 +178,13 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const SendTopUpConfirmationScreen(),
-                      ),
-                    );
+                    AppSession.appRoute = 'sendTopUp';
+                    context.push(AppRoutes.confirmation);
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (_) => const SendTopUpConfirmationScreen(),
+                    //   ),
+                    // );
                   },
 
                   style: ElevatedButton.styleFrom(

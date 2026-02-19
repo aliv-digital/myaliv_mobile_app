@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/guest_purchase_plan_confirmation_bloc.dart';
 import '../bloc/guest_purchase_plan_confirmation_event.dart';
@@ -73,10 +76,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
               isVatExclusive: true,
               isButtonEnabled: state.isTermsChecked,
               buttonColor: const Color(0xFF645D9C),
-              onPayNow: () =>
-                  context.read<GuestPurchasePlanConfirmationBloc>().add(
-                        const GuestPurchasePlanConfirmationPayNowPressed(),
-                      ),
+              onPayNow: () {
+
+                context.push(AppRoutes.guestPurchasePlanReceipt);
+              },
               amountText: '\$ 75.00'//total.toString(),
             );
           },

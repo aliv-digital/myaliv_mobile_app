@@ -20,7 +20,7 @@ import '../widgets/timer.dart';
 import 'data/home_ui_config.dart';
 
 final HomeUiConfig config = const HomeUiConfig(
-  userType: UserType.prepaid, // 🔥 switch here for demo
+  userType: UserType.postpaid, // 🔥 switch here for demo
   hasActivePlan: true,
   isFuturePlan: false,
 );
