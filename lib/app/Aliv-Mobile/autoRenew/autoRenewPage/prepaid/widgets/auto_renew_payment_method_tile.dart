@@ -19,27 +19,34 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = selected
-        ? AutoRenewPrepaidTheme.primary.withValues(alpha: 0.55)
+        ? AutoRenewPrepaidTheme.selectedTileBorderColor()
         : AutoRenewPrepaidTheme.border;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius:
+          BorderRadius.circular(AutoRenewPrepaidTheme.cardTileTapRadius),
       child: Container(
         decoration: BoxDecoration(
-          color: selected ? Color(0xFFF1F1F8) : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: borderColor, width: 1),
+          color: selected
+              ? AutoRenewPrepaidTheme.cardBgSelected
+              : AutoRenewPrepaidTheme.cardBg,
+          borderRadius:
+              BorderRadius.circular(AutoRenewPrepaidTheme.cardTileRadius),
+          border: Border.all(
+            color: borderColor,
+            width: AutoRenewPrepaidTheme.tileBorderWidth,
+          ),
         ),
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        padding: AutoRenewPrepaidTheme.cardTilePadding,
         child: Row(
           children: [
             if (method.isCard)
               _BrandLogo(brand: method.card!.brand)
             else
               const SizedBox.shrink(),
-            if (method.isCard) const SizedBox(width: 12),
-
+            if (method.isCard)
+              const SizedBox(width: AutoRenewPrepaidTheme.tileLogoGap),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +56,9 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
                     style: AutoRenewPrepaidTheme.tileTitle(selected: selected),
                   ),
                   if (_subtitle() != null) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(
+                      height: AutoRenewPrepaidTheme.tileTitleSubtitleGap,
+                    ),
                     Text(
                       _subtitle()!,
                       style: AutoRenewPrepaidTheme.tileSubtitle(
@@ -60,8 +69,7 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
                 ],
               ),
             ),
-
-            const SizedBox(width: 10),
+            const SizedBox(width: AutoRenewPrepaidTheme.tileSelectionGap),
             _SelectionIndicator(selected: selected),
           ],
         ),
@@ -105,20 +113,28 @@ class _SelectionIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border = selected
-        ? AutoRenewPrepaidTheme.primary
-        : AutoRenewPrepaidTheme.border;
+    final border =
+        selected ? AutoRenewPrepaidTheme.primary : AutoRenewPrepaidTheme.border;
 
     return Container(
-      width: 20,
-      height: 20,
+      width: AutoRenewPrepaidTheme.selectionIndicatorSize,
+      height: AutoRenewPrepaidTheme.selectionIndicatorSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: border, width: 2),
-        color: selected ? AutoRenewPrepaidTheme.primary : Colors.transparent,
+        border: Border.all(
+          color: border,
+          width: AutoRenewPrepaidTheme.selectionIndicatorBorderWidth,
+        ),
+        color: selected
+            ? AutoRenewPrepaidTheme.primary
+            : AutoRenewPrepaidTheme.transparent,
       ),
       child: selected
-          ? const Icon(Icons.check, size: 14, color: Colors.white)
+          ? const Icon(
+              Icons.check,
+              size: AutoRenewPrepaidTheme.selectionCheckIconSize,
+              color: AutoRenewPrepaidTheme.white,
+            )
           : null,
     );
   }
@@ -133,13 +149,12 @@ class _BrandLogo extends StatelessWidget {
     final isVisa = brand == CardBrand.visa;
 
     return Container(
-      width: 52,
-      height: 38,
+      width: AutoRenewPrepaidTheme.cardLogoWidth,
+      height: AutoRenewPrepaidTheme.cardLogoHeight,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        // color: const Color(0xFFF4F5F7),
-        borderRadius: BorderRadius.circular(8),
-        // border: Border.all(color: AutoRenewPrepaidTheme.border),
+        borderRadius:
+            BorderRadius.circular(AutoRenewPrepaidTheme.cardTileRadius),
       ),
       child: SvgPicture.asset(
         isVisa ? AssetConstant.visaCardSVG : AssetConstant.masterCardSVG,

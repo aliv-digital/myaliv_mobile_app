@@ -78,7 +78,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
-                        title: 'review invoices',
+                        title: 'security check',
                         showHome: false,
                         onBack: () {
                           context.pop();

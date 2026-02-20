@@ -21,24 +21,22 @@ class EnterPasswordAutoRenewPrepaidContinueButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: enabled ? onTap : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: EnterPasswordAutoRenewPrepaidTheme.brand,
-          disabledBackgroundColor:
-          EnterPasswordAutoRenewPrepaidTheme.brand.withValues(alpha: 0.35),
+          backgroundColor: EnterPasswordAutoRenewPrepaidTheme.continueButtonColor,
+          disabledBackgroundColor: EnterPasswordAutoRenewPrepaidTheme.continueButtonColor.withValues(alpha: 0.35),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
         ),
-        child: isLoading
-            ? const SizedBox(
+        child: isLoading ? const SizedBox(
           width: 18,
           height: 18,
           child: CircularProgressIndicator(
             strokeWidth: 2,
             color: Colors.white,
           ),
-        )
-            : const Text(
+        ) :
+        const Text(
           'Continue',
           style: TextStyle(
             color: Colors.white,

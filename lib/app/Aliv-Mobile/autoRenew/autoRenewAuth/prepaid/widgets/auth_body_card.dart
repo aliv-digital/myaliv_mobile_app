@@ -10,11 +10,11 @@ class AuthBodyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AutoRenewAuthPrepaidTheme.cardBg,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AutoRenewAuthPrepaidTheme.border),
+        color: AutoRenewAuthPrepaidTheme.cardBackground,
+        borderRadius: AutoRenewAuthPrepaidTheme.authBodyCardRadius,
+        border: Border.all(color: AutoRenewAuthPrepaidTheme.cardBorder),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: AutoRenewAuthPrepaidTheme.authBodyCardPadding,
       child: child,
     );
   }

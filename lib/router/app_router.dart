@@ -67,9 +67,9 @@ import '../app/Notifications/notification_screen.dart';
 import '../app/Plans/view/home_plan_screen.dart';
 import '../app/Plans/view/plans_entry_screen.dart';
 import '../app/Plans/view/purchase_confirmation_screen.dart';
-import '../app/Secuirity/menu_screen.dart';
-import '../app/Secuirity/secuirity_common_password_screen.dart';
-import '../app/Secuirity/secuirity_common_verification_code_page.dart';
+import '../app/Security/menu_screen.dart';
+import '../app/Security/secuirity_common_password_screen.dart';
+import '../app/Security/secuirity_common_verification_code_page.dart';
 import '../app/Support/chatbot_screen.dart';
 import '../app/Support/quick_help_screen.dart';
 import '../app/Usage/upgrade_credit_limit.dart';
@@ -83,7 +83,7 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.home,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.autoRenewAuthPrepaidScreen,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
    // navigatorKey: rootNavigatorKey, // ✅ HERE
     //forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
     routes: [

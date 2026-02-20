@@ -21,7 +21,9 @@ class EnterPasswordAutoRenewPrepaidBiometricButtons extends StatelessWidget {
             child: OutlinedButton(
               onPressed: onFaceId,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: EnterPasswordAutoRenewPrepaidTheme.brand),
+                side: BorderSide(
+                  color: EnterPasswordAutoRenewPrepaidTheme.brand,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
                 ),
@@ -29,7 +31,7 @@ class EnterPasswordAutoRenewPrepaidBiometricButtons extends StatelessWidget {
               child: const Text(
                 'Face ID',
                 style: TextStyle(
-                  color: const Color(0xCC5146A8),
+                  color: Color(0xCC5146A8),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
@@ -46,7 +48,9 @@ class EnterPasswordAutoRenewPrepaidBiometricButtons extends StatelessWidget {
             child: OutlinedButton(
               onPressed: onFingerprint,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: EnterPasswordAutoRenewPrepaidTheme.brand),
+                side: BorderSide(
+                  color: EnterPasswordAutoRenewPrepaidTheme.brand,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
                 ),
@@ -54,7 +58,7 @@ class EnterPasswordAutoRenewPrepaidBiometricButtons extends StatelessWidget {
               child: const Text(
                 'Fingerprint',
                 style: TextStyle(
-                  color: const Color(0xCC5146A8),
+                  color: Color(0xCC5146A8),
                   fontSize: 14,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,

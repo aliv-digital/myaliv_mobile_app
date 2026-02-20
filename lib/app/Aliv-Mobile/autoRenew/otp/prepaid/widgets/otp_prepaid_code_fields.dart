@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 
-import '../../../../login/theme/login_theme.dart';
 import '../bloc/otp_prepaid_bloc.dart';
 import '../bloc/otp_prepaid_event.dart';
 import '../bloc/otp_prepaid_state.dart';
-
+import '../theme/otp_prepaid_theme.dart';
 
 class OtpAutoRenewPrepaidCodeFields extends StatefulWidget {
   const OtpAutoRenewPrepaidCodeFields({super.key});
@@ -18,9 +16,16 @@ class OtpAutoRenewPrepaidCodeFields extends StatefulWidget {
 
 class _OtpAutoRenewPrepaidCodeFieldsState
     extends State<OtpAutoRenewPrepaidCodeFields> {
-  final _controllers =
-  List.generate(5, (_) => TextEditingController(), growable: false);
-  final _focusNodes = List.generate(5, (_) => FocusNode(), growable: false);
+  final _controllers = List.generate(
+    OtpAutoRenewPrepaidTheme.otpLength,
+    (_) => TextEditingController(),
+    growable: false,
+  );
+  final _focusNodes = List.generate(
+    OtpAutoRenewPrepaidTheme.otpLength,
+    (_) => FocusNode(),
+    growable: false,
+  );
 
   @override
   void dispose() {
@@ -34,6 +39,8 @@ class _OtpAutoRenewPrepaidCodeFieldsState
   }
 
   void _onChanged(int index, String value) {
+    final int lastFieldIndex = OtpAutoRenewPrepaidTheme.otpLength - 1;
+
     if (value.length > 1) {
       value = value.characters.last;
       _controllers[index].text = value;
@@ -41,28 +48,30 @@ class _OtpAutoRenewPrepaidCodeFieldsState
           TextSelection.collapsed(offset: value.length);
     }
 
-    if (value.isNotEmpty && index < 4) {
+    if (value.isNotEmpty && index < lastFieldIndex) {
       _focusNodes[index + 1].requestFocus();
     } else if (value.isEmpty && index > 0) {
       _focusNodes[index - 1].requestFocus();
     }
 
     final code = _controllers.map((c) => c.text).join();
-    context.read<OtpAutoRenewPrepaidBloc>().add(OtpAutoRenewPrepaidCodeChanged(code));
+    context
+        .read<OtpAutoRenewPrepaidBloc>()
+        .add(OtpAutoRenewPrepaidCodeChanged(code));
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<OtpAutoRenewPrepaidBloc, OtpAutoRenewPrepaidState>(
       listenWhen: (p, c) =>
-      p.status != c.status && c.status == OtpAutoRenewPrepaidStatus.failure,
+          p.status != c.status && c.status == OtpAutoRenewPrepaidStatus.failure,
       listener: (context, state) {
         // চাইলে error হলে সব clear করতে পারো
         // for (final c in _controllers) c.clear();
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(5, (index) {
+        children: List.generate(OtpAutoRenewPrepaidTheme.otpLength, (index) {
           return _OtpBox(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
@@ -88,42 +97,59 @@ class _OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 52,
-      height: 52,
-      child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        textAlign: TextAlign.center,
-        textAlignVertical: TextAlignVertical.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: const TextStyle(
-          fontSize: 20,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w600,
-          color: AuthModuleColors.textBlack,
-        ),
-        decoration: InputDecoration(
-          isCollapsed: true,
-          contentPadding:
-          const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),
-          counterText: '',
-          border: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: ColorManager.otpBoxBorderDefaultColor,
-              width: 1,
+      width: OtpAutoRenewPrepaidTheme.otpBoxSize,
+      height: OtpAutoRenewPrepaidTheme.otpBoxSize,
+      child: AnimatedBuilder(
+        animation: focusNode,
+        builder: (context, _) {
+          final bool isFocused = focusNode.hasFocus;
+          final double innerRadius =
+              (OtpAutoRenewPrepaidTheme.otpBoxBorderRadius -
+                      OtpAutoRenewPrepaidTheme.otpBoxBorderWidth)
+                  .clamp(0.0, OtpAutoRenewPrepaidTheme.otpBoxBorderRadius);
+
+          return Container(
+            decoration: BoxDecoration(
+              gradient: isFocused
+                  ? OtpAutoRenewPrepaidTheme.otpFocusedBorderGradient
+                  : null,
+              border: isFocused
+                  ? null
+                  : Border.all(
+                      color: OtpAutoRenewPrepaidTheme.otpInputBorderColor,
+                      width: OtpAutoRenewPrepaidTheme.otpBoxBorderWidth,
+                    ),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(OtpAutoRenewPrepaidTheme.otpBoxBorderRadius),
+              ),
             ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(6)),
-            borderSide: BorderSide(
-              color: AuthModuleColors.alivPurple,
-              width: 1.4,
+            padding: const EdgeInsets.all(
+                OtpAutoRenewPrepaidTheme.otpBoxBorderWidth),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(innerRadius),
+              child: ColoredBox(
+                color: OtpAutoRenewPrepaidTheme.otpInputBackgroundColor,
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  textAlign: TextAlign.center,
+                  textAlignVertical: TextAlignVertical.center,
+                  keyboardType: TextInputType.number,
+                  maxLength: 1,
+                  style: OtpAutoRenewPrepaidTheme.otpDigitTextStyle,
+                  decoration: const InputDecoration(
+                    isCollapsed: true,
+                    contentPadding:
+                        OtpAutoRenewPrepaidTheme.otpFieldContentPadding,
+                    counterText: '',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: onChanged,
+                ),
+              ),
             ),
-          ),
-        ),
-        onChanged: onChanged,
+          );
+        },
       ),
     );
   }

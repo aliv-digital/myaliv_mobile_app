@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/auto_renew_auth_prepaid_bloc.dart';
 import '../bloc/auto_renew_auth_prepaid_event.dart';
@@ -27,13 +28,11 @@ class AutoRenewAuthPrepaidScreen extends StatelessWidget {
 class _AutoRenewAuthPrepaidView extends StatelessWidget {
   const _AutoRenewAuthPrepaidView();
 
-  static const double _appBarHeight = 56.0;
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<AutoRenewAuthPrepaidBloc, AutoRenewAuthPrepaidState>(
       listenWhen: (p, c) =>
-      p.errorMessage != c.errorMessage || p.navTarget != c.navTarget,
+          p.errorMessage != c.errorMessage || p.navTarget != c.navTarget,
       listener: (context, state) {
         final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
@@ -56,9 +55,10 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AutoRenewAuthPrepaidTheme.scaffoldBackground,
         body: SafeArea(
-          child: BlocBuilder<AutoRenewAuthPrepaidBloc, AutoRenewAuthPrepaidState>(
+          child:
+              BlocBuilder<AutoRenewAuthPrepaidBloc, AutoRenewAuthPrepaidState>(
             builder: (context, state) {
               final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
@@ -67,16 +67,16 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                   SliverPersistentHeader(
                     pinned: true,
                     delegate: _PinnedHeaderDelegate(
-                      height: _appBarHeight,
+                      height: AutoRenewAuthPrepaidTheme.appBarHeight,
                       child: DefaultAppBar(
                         showHome: false,
-                        title: state.content?.title ?? 'auto renew authorization form',
+                        title: 'auto renew authorization form',
                         onBack: () => Navigator.of(context).maybePop(),
-                        onHomeTap: () => bloc.add(const AutoRenewAuthHomePressed()),
+                        onHomeTap: () =>
+                            bloc.add(const AutoRenewAuthHomePressed()),
                       ),
                     ),
                   ),
-
                   if (state.loadStatus == AutoRenewAuthLoadStatus.loading)
                     const SliverFillRemaining(
                       hasScrollBody: false,
@@ -88,21 +88,23 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                       child: Center(
                         child: Text(
                           state.errorMessage ?? 'Something went wrong.',
-                          style: AutoRenewAuthPrepaidTheme.paragraphStyle(),
+                          style: AutoRenewAuthPrepaidTheme.paragraphTextStyle(),
                           textAlign: TextAlign.center,
                         ),
                       ),
                     )
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+                      padding: AutoRenewAuthPrepaidTheme.bodyPadding,
                       sliver: SliverToBoxAdapter(
                         child: _Body(
                           state: state,
-                          onNameChanged: (v) => bloc.add(AutoRenewAuthNameChanged(v)),
+                          onNameChanged: (v) =>
+                              bloc.add(AutoRenewAuthNameChanged(v)),
                           onSubmit: () {
                             //bloc.add(const AutoRenewAuthSubmitPressed());
-                            context.push(AppRoutes.enterPasswordAutoRenewPrepaidScreen);
+                            context.push(
+                                AppRoutes.enterPasswordAutoRenewPrepaidScreen);
                           },
                         ),
                       ),
@@ -134,29 +136,46 @@ class _Body extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(content.paragraph1, style: AutoRenewAuthPrepaidTheme.paragraphStyle()),
-        const SizedBox(height: 18),
-        Text(content.consentTitle, style: AutoRenewAuthPrepaidTheme.sectionHeaderStyle()),
-        const SizedBox(height: 10),
-        Text(content.paragraph2, style: AutoRenewAuthPrepaidTheme.paragraphStyle()),
-        const SizedBox(height: 18),
-        Text(content.signatureName, style: AutoRenewAuthPrepaidTheme.signatureStyle()),
-        const SizedBox(height: 26),
-        Text(content.nameLabel, style: AutoRenewAuthPrepaidTheme.fieldLabelStyle()),
-        const SizedBox(height: 10),
+        Text(content.paragraph1,
+            style: AutoRenewAuthPrepaidTheme.paragraphTextStyle()),
+        const SizedBox(
+          height: AutoRenewAuthPrepaidTheme.paragraphToConsentHeaderGap,
+        ),
+        Text(content.consentTitle,
+            style: AutoRenewAuthPrepaidTheme.sectionHeaderTextStyle()),
+        const SizedBox(
+          height: AutoRenewAuthPrepaidTheme.consentHeaderToParagraphGap,
+        ),
+        Text(content.paragraph2,
+            style: AutoRenewAuthPrepaidTheme.paragraphTextStyle()),
+        const SizedBox(
+          height: AutoRenewAuthPrepaidTheme.paragraphToSignatureGap,
+        ),
+        Text(content.signatureName,
+            style: AutoRenewAuthPrepaidTheme.signatureTextStyle()),
+        const SizedBox(
+          height: AutoRenewAuthPrepaidTheme.signatureToNameLabelGap,
+        ),
+        Text(content.nameLabel,
+            style: AutoRenewAuthPrepaidTheme.fieldLabelTextStyle()),
+        const SizedBox(height: AutoRenewAuthPrepaidTheme.nameLabelToInputGap),
         AuthNameInput(
           value: state.name,
           hintText: content.nameHint,
           onChanged: onNameChanged,
         ),
-        const SizedBox(height: 24),
+        const SizedBox(
+          height: AutoRenewAuthPrepaidTheme.inputToSubmitButtonGap,
+        ),
         _SubmitButton(
           enabled: state.canSubmit,
           loading: state.submitStatus == AutoRenewAuthSubmitStatus.submitting,
           text: content.submitText,
           onTap: onSubmit,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(
+          height: AutoRenewAuthPrepaidTheme.submitButtonToBottomGap,
+        ),
       ],
     );
   }
@@ -177,33 +196,17 @@ class _SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor:
-          AutoRenewAuthPrepaidTheme.primary.withValues(alpha: enabled ? 1 : 0.45),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-          elevation: 0,
-        ),
-        onPressed: enabled ? onTap : null,
-        child: loading
-            ? const SizedBox(
-          width: 22,
-          height: 22,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
-            : Text(
-          text,
-          style: const TextStyle(
-            color: const Color(0xFFF1F1F8),
-            fontSize: 13,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+    return DefaultButton(
+      label: text,
+      isLoading: loading,
+      onPressed: enabled ? onTap : null,
+      height: AutoRenewAuthPrepaidTheme.submitButtonHeight,
+      elevation: 0,
+      backgroundColor: AutoRenewAuthPrepaidTheme.submitButtonBackgroundColor(
+        isEnabled: enabled,
       ),
+      textStyle: AutoRenewAuthPrepaidTheme.submitButtonTextStyle(),
+      borderRadius: AutoRenewAuthPrepaidTheme.submitButtonBorderRadius,
     );
   }
 }
@@ -224,7 +227,8 @@ class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return SizedBox(height: height, child: child);
   }
 

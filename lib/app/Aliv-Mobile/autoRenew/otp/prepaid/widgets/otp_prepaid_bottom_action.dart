@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import '../../../../../../resources/widgets/defaultButton.dart';
 import '../../../../../../resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
-import '../../../../login/theme/login_theme.dart';
 import '../bloc/otp_prepaid_bloc.dart';
 import '../bloc/otp_prepaid_event.dart';
 import '../bloc/otp_prepaid_state.dart';
-
+import '../theme/otp_prepaid_theme.dart';
 
 class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
   const OtpAutoRenewPrepaidBottomActions({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width; // (kept as-is for parity)
-    // ignore: unused_local_variable
-    final _ = width;
-
     return Column(
       children: [
         // verify button
@@ -30,13 +24,19 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
             return DefaultButton(
               label: 'verify',
               isLoading: loading,
+              height: OtpAutoRenewPrepaidTheme.verifyButtonHeight,
+              elevation: OtpAutoRenewPrepaidTheme.verifyButtonElevation,
+              backgroundColor:
+                  OtpAutoRenewPrepaidTheme.verifyButtonBackgroundColor,
+              borderRadius: OtpAutoRenewPrepaidTheme.verifyButtonBorderRadius,
+              textStyle: OtpAutoRenewPrepaidTheme.verifyButtonTextStyle,
               onPressed: () {
-                 // context.read<OtpAutoRenewPrepaidBloc>().add(const OtpAutoRenewPrepaidSubmitted());
-                 AppToast.show(
-                   message: "Success! Your card is now set for auto renew",
-                   type: ToastType.success,
-                 );
-                 context.go(AppRoutes.home);
+                // context.read<OtpAutoRenewPrepaidBloc>().add(const OtpAutoRenewPrepaidSubmitted());
+                AppToast.show(
+                  message: "Success! Your card is now set for auto renew",
+                  type: ToastType.success,
+                );
+                context.go(AppRoutes.home);
 
                 // ✅ Update this route if your flow uses another screen
               },
@@ -44,7 +44,8 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(
+            height: OtpAutoRenewPrepaidTheme.verifyButtonToResendRowGap),
 
         // didn't receive / resend
         BlocBuilder<OtpAutoRenewPrepaidBloc, OtpAutoRenewPrepaidState>(
@@ -57,33 +58,20 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
               children: [
                 const Text(
                   'didn\'t receive a code?',
-                textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: const Color(0xFF121212),
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    height: 1.43,
-                  ),
+                  textAlign: TextAlign.center,
+                  style: OtpAutoRenewPrepaidTheme.resendPromptTextStyle,
                 ),
-                SizedBox(width: 8,),
+                const SizedBox(
+                    width: OtpAutoRenewPrepaidTheme.resendPromptToActionGap),
                 GestureDetector(
                   onTap: resendLoading
                       ? null
                       : () => context
-                      .read<OtpAutoRenewPrepaidBloc>()
-                      .add(const OtpAutoRenewPrepaidResendRequested()),
+                          .read<OtpAutoRenewPrepaidBloc>()
+                          .add(const OtpAutoRenewPrepaidResendRequested()),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: ColorManager.textLinkColor,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'CircularPro',
-                      height: 1.43,
-                      decoration: TextDecoration.underline,
-
-                    ),
+                    style: OtpAutoRenewPrepaidTheme.resendActionTextStyle,
                   ),
                 ),
               ],
@@ -91,7 +79,7 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: 113),
+        const SizedBox(height: OtpAutoRenewPrepaidTheme.resendRowToBottomGap),
 
         // change phone number (bottom orange text)
         // GestureDetector(

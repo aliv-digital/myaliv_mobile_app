@@ -20,21 +20,26 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AutoRenewPrepaidTheme.cardBg,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius:
+            BorderRadius.circular(AutoRenewPrepaidTheme.sectionRadius),
       ),
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      padding: AutoRenewPrepaidTheme.sectionPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('select payment method', style: AutoRenewPrepaidTheme.sectionTitle()),
-          const SizedBox(height: 16),
+          Text(
+            'select payment method',
+            style: AutoRenewPrepaidTheme.sectionTitleStyle,
+          ),
+          const SizedBox(height: AutoRenewPrepaidTheme.sectionTitleGap),
           for (int i = 0; i < methods.length; i++) ...[
             AutoRenewPaymentMethodTile(
               method: methods[i],
               selected: methods[i].id == selectedMethodId,
               onTap: () => onSelect(methods[i].id),
             ),
-            if (i != methods.length - 1) const SizedBox(height: 10),
+            if (i != methods.length - 1)
+              const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
           ],
         ],
       ),
