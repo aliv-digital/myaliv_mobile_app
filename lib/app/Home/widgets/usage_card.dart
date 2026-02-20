@@ -26,7 +26,7 @@ class UsageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 160, //height: 124,
+      width: 124, //height: 124,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -49,13 +49,16 @@ class UsageCard extends StatelessWidget {
             children: [
               SvgPicture.asset(icon, color: color, height: 18, width: 18),
               const SizedBox(width: 4),
-              Text(
-                title,
-                style: TextStyle(
-                  color: color,
-                  fontSize: 12,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
+              Flexible(
+                child: Text(
+                  title,overflow:TextOverflow.clip,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 12,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -112,7 +115,7 @@ class UsageCard extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 16),
           Text(
             remainingLabel,
             style: TextStyle(
@@ -124,7 +127,7 @@ class UsageCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           isPostpaid == false ? _progressBar() : _postpaidprogressBar(),
-          const SizedBox(height: 10),
+          const SizedBox(height: 0),
         ],
       ),
     );

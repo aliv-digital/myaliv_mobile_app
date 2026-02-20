@@ -13,7 +13,8 @@ class ActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(0),
+      // height: 68,width: 74,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -21,15 +22,7 @@ class ActionTile extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Icon(iconPath, color: HomeScreen.purple),
-          // iconPath == 'assets/icons/ListStarQuick.svg'
-          //     // ? SvgPicture.asset(
-          //     //     iconPath,
-          //     //     width: 24,
-          //     //     height: 24,
-          //     //     // color: HomeScreen.purple,
-          //     //   )
-          //     // :
+
           SvgPicture.asset(
                   iconPath,
                   width: 34,
@@ -50,6 +43,8 @@ class ActionTile extends StatelessWidget {
               letterSpacing: 0.06,
             ),
           ),
+          // const SizedBox(height: 7),
+
         ],
       ),
     );

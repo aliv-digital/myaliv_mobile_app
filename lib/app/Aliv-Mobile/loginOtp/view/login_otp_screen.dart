@@ -71,6 +71,8 @@ class _LoginOtpView extends StatelessWidget {
                                 OtpBottomActions(),
                                 SizedBox(height: LoginOtpSizes.contentBottomGap),
                                 _ChangePhoneNumberAction(),
+
+                                SizedBox(height: 113),
                               ],
                             ),
                           ),
@@ -88,13 +90,14 @@ class _LoginOtpView extends StatelessWidget {
                   ),
                 ],
               ),
-              if (!keyboardOpen)
-                const Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: BottomStripes.kHeight + LoginOtpSizes.changePhoneBottomOffset,
-                  child: SizedBox(),
-                ),
+
+              // if (!keyboardOpen)
+              //   const Positioned(
+              //     left: 0,
+              //     right: 0,
+              //     bottom: BottomStripes.kHeight + LoginOtpSizes.changePhoneBottomOffset,
+              //     child: _ChangePhoneNumberAction(),
+              //   ),
             ],
           ),
         ),

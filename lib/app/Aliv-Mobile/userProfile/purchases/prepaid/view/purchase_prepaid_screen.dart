@@ -131,7 +131,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-            userType: UserType.prepaid,
+            userType: UserType.postpaid,
             hasActivePlan: true,
             openMyLimits: false,
             isFuturePlan: true, // 🔥 KEY LINE
@@ -143,7 +143,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-            userType: UserType.prepaid,
+            userType: UserType.postpaid,
             hasActivePlan: true,
             openMyLimits: true,
             isFuturePlan: false, // 🔥 KEY LINE
@@ -175,7 +175,6 @@ class _PurchasePrepaidView extends StatelessWidget {
 
       case PurchasePrepaidAction.addOns:
         // TODO: Handle this case.
-
         context.push(AppRoutes.guestPurchasePlanAddOns);
         break;
     }
