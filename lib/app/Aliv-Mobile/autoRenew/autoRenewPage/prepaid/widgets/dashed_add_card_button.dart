@@ -9,40 +9,38 @@ class DashedAddCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const radius = 100.0;
+    const radius = AutoRenewPrepaidTheme.pillRadius;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(radius),
       child: SizedBox(
-        width: double.infinity, // ✅ full width
+        width: double.infinity,
         child: CustomPaint(
           painter: const DashedBorderPainter(
             color: AutoRenewPrepaidTheme.dashedBorder,
-            radius: radius, // ✅ pill radius
-            strokeWidth: 1.2,
-            dashLength: 6,
-            gapLength: 5,
+            radius: radius,
+            strokeWidth: AutoRenewPrepaidTheme.dashedStrokeWidth,
+            dashLength: AutoRenewPrepaidTheme.dashedDashLength,
+            gapLength: AutoRenewPrepaidTheme.dashedGapLength,
           ),
           child: Container(
-            height: 50, // ✅ match figma better
+            height: AutoRenewPrepaidTheme.primaryButtonHeight,
             width: double.infinity,
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: AutoRenewPrepaidTheme.addCardButtonPadding,
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add, color: AutoRenewPrepaidTheme.primary, size: 20),
-                SizedBox(width: 8),
+                Icon(
+                  Icons.add,
+                  color: AutoRenewPrepaidTheme.primary,
+                  size: AutoRenewPrepaidTheme.addCardIconSize,
+                ),
+                SizedBox(width: AutoRenewPrepaidTheme.addCardIconTextGap),
                 Text(
                   'add a new card',
-                  style: TextStyle(
-                    color: const Color(0xFF645D9C),
-                    fontSize: 13,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    height: 1.54,
-                  ),
+                  style: AutoRenewPrepaidTheme.addCardButtonTextStyle,
                 ),
               ],
             ),

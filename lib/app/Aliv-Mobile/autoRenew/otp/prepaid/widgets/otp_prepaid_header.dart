@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../../../../../../resources/widgets/defaultBackButton.dart';
-import '../../../../login/theme/login_theme.dart';
+import '../theme/otp_prepaid_theme.dart';
 
 class OtpAutoRenewPrepaidHeader extends StatelessWidget {
   const OtpAutoRenewPrepaidHeader({super.key});
@@ -16,38 +15,27 @@ class OtpAutoRenewPrepaidHeader extends StatelessWidget {
     return Column(
       children: [
         DefaultBackButton(
-          padding: const EdgeInsets.only(left: 24, top: 53),
+          padding: OtpAutoRenewPrepaidTheme.headerBackButtonPadding,
           onPressed: () {
             context.pop();
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: OtpAutoRenewPrepaidTheme.headerBackToIllustrationGap),
         SvgPicture.asset(
           AssetConstant.otpPhoneSVG,
-          width: 162,
-          height: 170,
+          width: OtpAutoRenewPrepaidTheme.headerIllustrationWidth,
+          height: OtpAutoRenewPrepaidTheme.headerIllustrationHeight,
         ),
-        const SizedBox(height: 21),
+        const SizedBox(height: OtpAutoRenewPrepaidTheme.headerIllustrationToTitleGap),
         const Text(
           'verification code',
-          style: TextStyle(
-            fontSize: 24,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            color: AuthModuleColors.textBlack,
-          ),
+          style: OtpAutoRenewPrepaidTheme.verificationTitleTextStyle,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: OtpAutoRenewPrepaidTheme.headerTitleToSubtitleGap),
         Text(
           'we have sent a verification code to your email\nand via sms',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            color: ColorManager.otpScreenTxtGray,
-            height: 1.4,
-            fontWeight: FontWeight.w400,
-            fontFamily: 'CircularPro',
-          ),
+          style: OtpAutoRenewPrepaidTheme.verificationSubtitleTextStyle(),
         ),
       ],
     );

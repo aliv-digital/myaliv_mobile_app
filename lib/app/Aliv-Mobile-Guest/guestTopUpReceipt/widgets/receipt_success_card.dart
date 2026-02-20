@@ -135,7 +135,12 @@ class ReceiptSuccessCard extends StatelessWidget {
               },
             ),
             const SizedBox(height: ReceiptTheme.successGapAfterMessage),
-
+            if (AppSession.appRoute == 'sendTopUp')
+              ReceiptDetailRow(
+                label: 'transferred number',
+                value: data.phoneNumber,
+                valueBold: false,
+              ),
             if (AppSession.appRoute == 'sendTopUp')
               ReceiptDetailRow(
                 label: 'subtotal',
@@ -174,6 +179,7 @@ class ReceiptSuccessCard extends StatelessWidget {
                 value: data.phoneNumber,
                 valueBold: false,
               ),
+
             if (AppSession.appRoute == '')
               ReceiptDetailRow(
                 label: 'payment method',

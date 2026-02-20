@@ -53,8 +53,7 @@ class _MakePaymentConfirmationPostPaidView extends StatelessWidget {
             backgroundColor: MakePaymentConfirmationPostPaidTheme.bg,
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.bottomAmount,
-              isVatExclusive:
-                  state.bottomSubtitle.trim().toLowerCase() == 'no vat applied',
+              isVatExclusive: true,//state.bottomSubtitle.trim().toLowerCase() == 'no vat applied',
               buttonText: 'continue',
               buttonColor: MakePaymentConfirmationPostPaidTheme.continueBtnBg,
               onPayNow: () {

@@ -94,10 +94,7 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                               children: [
                                 const EnterPasswordAutoRenewPrepaidHeader(),
                                 const SizedBox(height: 28),
-                                BlocBuilder<
-                                  EnterPasswordAutoRenewPrepaidBloc,
-                                  EnterPasswordAutoRenewPrepaidState
-                                >(
+                                BlocBuilder<EnterPasswordAutoRenewPrepaidBloc,EnterPasswordAutoRenewPrepaidState>(
                                   buildWhen: (p, c) =>
                                       p.password != c.password ||
                                       p.obscure != c.obscure,
@@ -125,28 +122,21 @@ class _EnterPasswordAutoRenewPrepaidView extends StatelessWidget {
                                 const SizedBox(height: 20),
                                 const EnterPasswordAutoRenewPrepaidTermsText(),
                                 const SizedBox(height: 30),
-                                BlocBuilder<
-                                  EnterPasswordAutoRenewPrepaidBloc,
-                                  EnterPasswordAutoRenewPrepaidState
-                                >(
+                                BlocBuilder<EnterPasswordAutoRenewPrepaidBloc, EnterPasswordAutoRenewPrepaidState>(
                                   buildWhen: (p, c) =>
                                       p.status != c.status ||
                                       p.isValid != c.isValid,
                                   builder: (context, state) {
-                                    final isLoading = state.status ==
-                                        EnterPasswordAutoRenewPrepaidStatus
-                                            .submitting;
+
+                                    final isLoading = state.status == EnterPasswordAutoRenewPrepaidStatus.submitting;
 
                                     return EnterPasswordAutoRenewPrepaidContinueButton(
                                       isLoading: isLoading,
                                       enabled: state.isValid && !isLoading,
                                       onTap: () {
-                                        context
-                                            .read<
-                                                EnterPasswordAutoRenewPrepaidBloc>()
-                                            .add(
-                                              const EnterPasswordAutoRenewPrepaidContinuePressed(),
-                                            );
+                                        context.read<EnterPasswordAutoRenewPrepaidBloc>().add(
+                                          const EnterPasswordAutoRenewPrepaidContinuePressed(),
+                                        );
 
                                         context.push(
                                           AppRoutes.otpAutoRenewPrepaidScreen,

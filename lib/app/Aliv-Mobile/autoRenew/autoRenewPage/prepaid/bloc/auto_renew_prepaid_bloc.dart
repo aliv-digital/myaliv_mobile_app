@@ -5,8 +5,7 @@ import '../repository/auto_renew_prepaid_repository.dart';
 import 'auto_renew_prepaid_event.dart';
 import 'auto_renew_prepaid_state.dart';
 
-class AutoRenewPrepaidBloc
-    extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidState> {
+class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidState> {
   final AutoRenewPrepaidRepository repository;
 
   AutoRenewPrepaidBloc({required this.repository}) : super(AutoRenewPrepaidState.initial()) {

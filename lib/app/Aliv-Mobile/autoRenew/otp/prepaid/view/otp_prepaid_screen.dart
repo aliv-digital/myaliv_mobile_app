@@ -4,6 +4,7 @@ import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/otp_prepaid_bloc.dart';
 import '../bloc/otp_prepaid_state.dart';
 import '../repository/otp_prepaid_repository.dart';
+import '../theme/otp_prepaid_theme.dart';
 import '../widgets/otp_prepaid_bottom_action.dart';
 import '../widgets/otp_prepaid_code_fields.dart';
 import '../widgets/otp_prepaid_header.dart';
@@ -27,10 +28,10 @@ class _OtpAutoRenewPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    final bool isKeyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: OtpAutoRenewPrepaidTheme.scaffoldBackground,
 
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
@@ -52,42 +53,50 @@ class _OtpAutoRenewPrepaidView extends StatelessWidget {
             children: [
               // ---------- Scrollable content ----------
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    slivers: [
-                      const SliverToBoxAdapter(
-                        child: OtpAutoRenewPrepaidHeader(),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 41, right: 41),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: const [
-                              SizedBox(height: 24),
-                              OtpAutoRenewPrepaidCodeFields(),
-                              SizedBox(height: 54),
-                              OtpAutoRenewPrepaidBottomActions(),
-                              SizedBox(height: 24),
-                            ],
-                          ),
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: OtpAutoRenewPrepaidHeader(),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding:
+                            OtpAutoRenewPrepaidTheme.contentHorizontalPadding,
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(
+                              height:
+                                  OtpAutoRenewPrepaidTheme.topGapBeforeOtpBoxes,
+                            ),
+                            OtpAutoRenewPrepaidCodeFields(),
+                            SizedBox(
+                              height: OtpAutoRenewPrepaidTheme
+                                  .otpBoxesToBottomActionsGap,
+                            ),
+                            OtpAutoRenewPrepaidBottomActions(),
+                            SizedBox(
+                              height: OtpAutoRenewPrepaidTheme
+                                  .bottomActionsToScrollEndGap,
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
 
               // ✅ Bottom stripes vanish when keyboard opens
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
+                duration:
+                    OtpAutoRenewPrepaidTheme.bottomStripeAnimationDuration,
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
-                child: keyboardOpen
+                child: isKeyboardOpen
                     ? const SizedBox.shrink()
                     : const BottomStripes(),
               ),

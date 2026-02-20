@@ -8,8 +8,7 @@ class EnterPasswordAutoRenewPrepaidBloc extends Bloc<
     EnterPasswordAutoRenewPrepaidEvent, EnterPasswordAutoRenewPrepaidState> {
   final EnterPasswordAutoRenewPrepaidRepository repository;
 
-  EnterPasswordAutoRenewPrepaidBloc(this.repository)
-      : super(EnterPasswordAutoRenewPrepaidState.initial()) {
+  EnterPasswordAutoRenewPrepaidBloc(this.repository) : super(EnterPasswordAutoRenewPrepaidState.initial()) {
     on<EnterPasswordAutoRenewPrepaidStarted>(_onStarted);
     on<EnterPasswordAutoRenewPrepaidBackPressed>(_onBack);
     on<EnterPasswordAutoRenewPrepaidPasswordChanged>(_onPasswordChanged);

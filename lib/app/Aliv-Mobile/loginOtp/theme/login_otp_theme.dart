@@ -41,6 +41,7 @@ class LoginOtpSizes {
   static const double contentHorizontalPadding = 41;
   static const double contentTopGap = 24;
   static const double otpToBottomActionsGap = 54;
+
   static const double contentBottomGap = 26;
 
   // Bottom fixed action placement over stripes.

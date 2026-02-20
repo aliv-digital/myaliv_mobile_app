@@ -74,8 +74,7 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
             backgroundColor: RevPaymentMethodPrepaidTheme.bg,
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
-              isVatExclusive:
-                  state.vatNote.trim().toLowerCase() == 'no vat applied',
+              isVatExclusive: true,//state.vatNote.trim().toLowerCase() == 'no vat applied',
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: RevPaymentMethodPrepaidTheme.payBtnBg,

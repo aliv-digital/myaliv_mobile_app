@@ -19,6 +19,7 @@ class AuthNameInput extends StatefulWidget {
 
 class _AuthNameInputState extends State<AuthNameInput> {
   late final TextEditingController _controller;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -32,7 +33,8 @@ class _AuthNameInputState extends State<AuthNameInput> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
-      _controller.selection = TextSelection.collapsed(offset: widget.value.length);
+      _controller.selection =
+          TextSelection.collapsed(offset: widget.value.length);
     }
   }
 
@@ -45,37 +47,44 @@ class _AuthNameInputState extends State<AuthNameInput> {
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      style: const TextStyle(
-        color:  Colors.black,
-        fontSize: 14,
-        fontFamily: 'CircularPro',
-        fontWeight: FontWeight.w500,
-        height: 1.43,
-      ),
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: TextStyle(
-          color: const Color(0xFF707070),
-          fontSize: 14,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-          height: 1.43,
-        ),
-        filled: true,
-        fillColor: AutoRenewAuthPrepaidTheme.textInputFillColor,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-      ),
+    return AnimatedBuilder(
+      animation: _focusNode,
+      builder: (BuildContext context, Widget? child) {
+        final bool isFocused = _focusNode.hasFocus;
+        final double activeBorderWidth =
+            isFocused ? AutoRenewAuthPrepaidTheme.nameInputBorderWidth : 0.0;
+        final double innerRadius =
+            (AutoRenewAuthPrepaidTheme.nameInputBorderRadius -
+                    activeBorderWidth)
+                .clamp(0.0, AutoRenewAuthPrepaidTheme.nameInputBorderRadius);
+
+        return Container(
+          decoration: BoxDecoration(
+            gradient: isFocused
+                ? AutoRenewAuthPrepaidTheme.focusedNameInputBorderGradient
+                : null,
+            borderRadius: AutoRenewAuthPrepaidTheme.nameInputBorderRadiusShape,
+          ),
+          padding: EdgeInsets.all(activeBorderWidth),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(innerRadius),
+            child: TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              style: AutoRenewAuthPrepaidTheme.nameInputValueTextStyle(),
+              decoration: AutoRenewAuthPrepaidTheme.nameInputDecoration(
+                hintText: widget.hintText,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

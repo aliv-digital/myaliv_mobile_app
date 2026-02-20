@@ -1,119 +1,230 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/pay_with_card_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/payment_method_tile.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
 import '../bloc/top_up_payment_prepaid_bloc.dart';
 import '../bloc/top_up_payment_prepaid_event.dart';
 import '../bloc/top_up_payment_prepaid_state.dart';
 import '../repository/top_up_payment_prepaid_repository.dart';
 import '../theme/top_up_payment_prepaid_theme.dart';
-import '../widgets/bottom_pay_bar.dart';
 import '../widgets/payment_method_card.dart';
-
 
 class TopUpPaymentPrepaidScreen extends StatelessWidget {
   const TopUpPaymentPrepaidScreen({super.key});
 
+  // Creates the feature Bloc and triggers initial loading.
+  TopUpPaymentPrepaidBloc _createTopUpPaymentPrepaidBloc(BuildContext context) {
+    final TopUpPaymentPrepaidRepository repository =
+        TopUpPaymentPrepaidRepositoryImpl();
+    final TopUpPaymentPrepaidBloc bloc = TopUpPaymentPrepaidBloc(repository);
+    bloc.add(const TopUpPaymentStarted());
+    return bloc;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => TopUpPaymentPrepaidBloc(TopUpPaymentPrepaidRepositoryImpl())
-        ..add(const TopUpPaymentStarted()),
-      child: BlocConsumer<TopUpPaymentPrepaidBloc, TopUpPaymentPrepaidState>(
-        listenWhen: (p, c) => p.errorMessage != c.errorMessage || p.status != c.status,
-        listener: (context, state) {
-          final msg = state.errorMessage;
-          if (msg != null && msg.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-          }
-          if (state.status == TopUpPaymentStatus.success) {
-            // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment successful')));
-          }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            backgroundColor: TopUpPaymentPrepaidTheme.background,
-            appBar: _appBar(context),
-            bottomNavigationBar: BottomPayBar(
-              total: state.summary.total,
-              vatInclusive: state.summary.vatInclusive,
-              isLoading: state.status == TopUpPaymentStatus.paying,
-              onPayNow: () => context.read<TopUpPaymentPrepaidBloc>().add(const PayNowPressed()),
-            ),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    PaymentMethodCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('payment method', style: TopUpPaymentPrepaidTheme.labelSm(context)),
-                          const SizedBox(height: 16),
+    return BlocProvider<TopUpPaymentPrepaidBloc>(
+      create: _createTopUpPaymentPrepaidBloc,
+      child: const _TopUpPaymentPrepaidView(),
+    );
+  }
+}
 
-                          ...state.methods.map((m) {
-                            final selected = state.selectedMethodId == m.id;
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: PaymentMethodTile(
-                                logoAsset: m.logoAsset,
-                                title: m.title,
-                                subtitle: 'expiry ${m.expiry}',
-                                isSelected: selected,
-                                onTap: () => context.read<TopUpPaymentPrepaidBloc>().add(PaymentMethodSelected(m.id)),
-                              ),
-                            );
-                          }),
+class _TopUpPaymentPrepaidView extends StatelessWidget {
+  const _TopUpPaymentPrepaidView();
 
-                          PayWithCardTile(
-                            onTap: () {
-                              context.read<TopUpPaymentPrepaidBloc>().add(const PayWithCardPressed());
-                              // TODO: Navigate to add card screen (GoRouter)
-                            },
-                          ),
-                        ],
-                      ),
+  // Controls when one-off side effects should run.
+  bool _shouldHandleStateChange(
+    TopUpPaymentPrepaidState previousState,
+    TopUpPaymentPrepaidState currentState,
+  ) {
+    return previousState.errorMessage != currentState.errorMessage ||
+        previousState.status != currentState.status;
+  }
+
+  // Handles transient UI feedback (for example, error snackbar).
+  void _handleStateChange(
+    BuildContext context,
+    TopUpPaymentPrepaidState state,
+  ) {
+    final String? errorMessage = state.errorMessage;
+    if (errorMessage != null && errorMessage.isNotEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<TopUpPaymentPrepaidBloc, TopUpPaymentPrepaidState>(
+      listenWhen: _shouldHandleStateChange,
+      listener: _handleStateChange,
+      builder: (BuildContext context, TopUpPaymentPrepaidState state) {
+        return _TopUpPaymentPrepaidScaffold(state: state);
+      },
+    );
+  }
+}
+
+class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
+  final TopUpPaymentPrepaidState state;
+
+  const _TopUpPaymentPrepaidScaffold({
+    required this.state,
+  });
+
+  // Converts numeric amount to display text used by bottom pay bar.
+  String _amountText(double amount) {
+    return '\$ ${amount.toStringAsFixed(2)}';
+  }
+
+  // Computes sticky header height including safe-area inset.
+  double _stickyHeaderHeight(BuildContext context) {
+    const double appBarContentHeight = 64.0;
+    final double topInset = MediaQuery.paddingOf(context).top;
+    return appBarContentHeight + topInset;
+  }
+
+  // Dispatches pay action to Bloc.
+  void _onPayNowPressed(BuildContext context) {
+    context.read<TopUpPaymentPrepaidBloc>().add(const PayNowPressed());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: TopUpPaymentPrepaidTheme.background,
+      bottomNavigationBar: DefaultBottomPayBar(
+        amountText: _amountText(state.summary.total),
+        isVatExclusive: !state.summary.vatInclusive,
+        isLoading: state.status == TopUpPaymentStatus.paying,
+        buttonColor: TopUpPaymentPrepaidTheme.primary,
+        onPayNow: () => _onPayNowPressed(context),
+      ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          // Sticky header that remains visible while body content scrolls.
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _PinnedHeaderDelegate(
+              height: _stickyHeaderHeight(context),
+              child: ColoredBox(
+                color: TopUpPaymentPrepaidTheme.primary,
+                child: SafeArea(
+                  bottom: false,
+                  child: SizedBox(
+                    height: 64,
+                    child: DefaultAppBar(
+                      title: 'payment',
+                      showHome: true,
+                      onBack: () => Navigator.of(context).maybePop(),
+                      onHomeTap: () {},
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          );
-        },
+          ),
+
+          // Main content section.
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+            sliver: SliverToBoxAdapter(
+              child: _PaymentMethodSection(state: state),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  PreferredSizeWidget _appBar(BuildContext context) {
-    // If your project has DefaultAppBar, replace this with it.
-    return AppBar(
-      backgroundColor: TopUpPaymentPrepaidTheme.primary,
-      elevation: 0,
-      centerTitle: false,
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 24.0),
-        child: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).maybePop(),
+class _PaymentMethodSection extends StatelessWidget {
+  final TopUpPaymentPrepaidState state;
+
+  const _PaymentMethodSection({
+    required this.state,
+  });
+
+  // Builds payment method rows from current state.
+  List<Widget> _buildPaymentMethodTiles(BuildContext context) {
+    return state.methods.map((paymentMethod) {
+      final bool isSelected = state.selectedMethodId == paymentMethod.id;
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: PaymentMethodTile(
+          logoAsset: paymentMethod.logoAsset,
+          title: paymentMethod.title,
+          subtitle: 'expiry ${paymentMethod.expiry}',
+          isSelected: isSelected,
+          onTap: () {
+            context.read<TopUpPaymentPrepaidBloc>().add(
+              PaymentMethodSelected(paymentMethod.id),
+            );
+          },
         ),
-      ),
-      title: Text(
-        'payment',
-        style: TopUpPaymentPrepaidTheme.titleMd(context).copyWith(color: Colors.white),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 20.0),
-          child: IconButton(
-            onPressed: (){},
-            icon: SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
+      );
+    }).toList(growable: false);
+  }
+
+  // Handles tap on "pay with card" tile.
+  void _onPayWithCardPressed(BuildContext context) {
+    context.read<TopUpPaymentPrepaidBloc>().add(const PayWithCardPressed());
+    // TODO: Navigate to add card screen when route is ready.
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PaymentMethodCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'payment method',
+            style: TopUpPaymentPrepaidTheme.labelSm(context),
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          ..._buildPaymentMethodTiles(context),
+          PayWithCardTile(
+            onTap: () => _onPayWithCardPressed(context),
+          ),
+        ],
+      ),
     );
+  }
+}
+
+class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double height;
+  final Widget child;
+
+  _PinnedHeaderDelegate({
+    required this.height,
+    required this.child,
+  });
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox(height: height, child: child);
+  }
+
+  @override
+  bool shouldRebuild(covariant _PinnedHeaderDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.child != child;
   }
 }

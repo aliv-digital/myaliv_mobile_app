@@ -15,10 +15,8 @@ class AddCardBottomSheet extends StatefulWidget {
     return showModalBottomSheet<AddCardExpiryResult>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
+      backgroundColor: AutoRenewPrepaidTheme.sheetBg,
+      shape: AutoRenewPrepaidTheme.sheetShape(),
       builder: (_) => const AddCardBottomSheet(),
     );
   }
@@ -33,78 +31,70 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final bottom = MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(18, 14, 18, 18 + bottom),
+      padding: AutoRenewPrepaidTheme.addCardBottomSheetPadding.copyWith(
+          bottom: AutoRenewPrepaidTheme.addCardBottomSheetBottomBase + bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 42,
-            height: 5,
+            width: AutoRenewPrepaidTheme.dragHandleWidth,
+            height: AutoRenewPrepaidTheme.dragHandleHeight,
             decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
-              borderRadius: BorderRadius.circular(999),
+              color: AutoRenewPrepaidTheme.dragHandle,
+              borderRadius: BorderRadius.circular(
+                AutoRenewPrepaidTheme.dragHandleRadius,
+              ),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetTitleGap),
           const Align(
             alignment: Alignment.centerLeft,
             child: Text(
               'add card expiry',
-              style: TextStyle(
-                fontFamily: AutoRenewPrepaidTheme.fontFamily,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AutoRenewPrepaidTheme.textDark,
-              ),
+              style: AutoRenewPrepaidTheme.addCardSheetTitleStyle,
             ),
           ),
-          const SizedBox(height: 12),
-
+          const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
           Row(
             children: [
-              Expanded(child: _Dropdown<int>(
-                value: _month,
-                items: List.generate(12, (i) => i + 1),
-                label: 'month',
-                onChanged: (v) => setState(() => _month = v),
-              )),
-              const SizedBox(width: 12),
-              Expanded(child: _Dropdown<int>(
-                value: _year,
-                items: List.generate(10, (i) => DateTime.now().year + i),
-                label: 'year',
-                onChanged: (v) => setState(() => _year = v),
-              )),
+              Expanded(
+                child: _Dropdown<int>(
+                  value: _month,
+                  items: List.generate(12, (i) => i + 1),
+                  label: 'month',
+                  onChanged: (v) => setState(() => _month = v),
+                ),
+              ),
+              const SizedBox(width: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
+              Expanded(
+                child: _Dropdown<int>(
+                  value: _year,
+                  items: List.generate(10, (i) => DateTime.now().year + i),
+                  label: 'year',
+                  onChanged: (v) => setState(() => _year = v),
+                ),
+              ),
             ],
           ),
-
-          const SizedBox(height: 16),
-
+          const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetButtonTopGap),
           SizedBox(
-            height: 52,
+            height: AutoRenewPrepaidTheme.bottomSheetActionHeight,
             width: double.infinity,
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
+              style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
                 backgroundColor: AutoRenewPrepaidTheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                elevation: 0,
               ),
               onPressed: () {
-                Navigator.of(context).pop(AddCardExpiryResult(month: _month, year: _year));
+                Navigator.of(context).pop(
+                  AddCardExpiryResult(month: _month, year: _year),
+                );
               },
               child: const Text(
                 'save',
-                style: TextStyle(
-                  fontFamily: AutoRenewPrepaidTheme.fontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
+                style: AutoRenewPrepaidTheme.addCardSheetSaveStyle,
               ),
             ),
           ),
@@ -130,16 +120,20 @@ class _Dropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InputDecorator(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      ),
+      decoration: AutoRenewPrepaidTheme.dropdownInputDecoration(label),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: value,
           isExpanded: true,
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text('$e'))).toList(),
+          items: items
+              .map(
+                (e) => DropdownMenuItem<T>(
+                  value: e,
+                  child: Text('$e',
+                      style: AutoRenewPrepaidTheme.dropdownItemStyle),
+                ),
+              )
+              .toList(),
           onChanged: (v) {
             if (v != null) onChanged(v);
           },
