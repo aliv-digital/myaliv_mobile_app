@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/data/plan_icon_assets.dart';
 
-import '../../../resources/constants/asset_constants.dart';
 import '../../../router/app_routes.dart';
 import '../model/demo_plans.dart';
 import '../widgets/action_tile.dart';
@@ -12,7 +9,6 @@ import '../widgets/active_plan.dart';
 import '../widgets/active_plan_card_postpaid.dart';
 import '../widgets/active_plan_usage_section.dart';
 import '../widgets/home_header.dart';
-import '../widgets/phone_dropdown.dart';
 import '../widgets/plan_card.dart';
 import '../widgets/postpaid_billing_card.dart';
 import '../widgets/prepaid_balance_card.dart';
@@ -62,8 +58,8 @@ class HomeScreen extends StatelessWidget {
 
                   config.hasActivePlan
                       ? config.userType == UserType.prepaid
-                            ? PrepaidActivePlanCard()
-                            : PostpaidActivePlanCard(config: config)
+                          ? PrepaidActivePlanCard()
+                          : PostpaidActivePlanCard(config: config)
                       : _noActivePlan(context),
 
                   config.userType == UserType.prepaid
@@ -74,7 +70,6 @@ class HomeScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
                       decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
-
                       child: const ActivePlanUsageSection(),
                     ),
 
@@ -88,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                     child: _quickActions(context),
                   ),
                   const SizedBox(height: 24),
-                  _limitedOffer(),
+                  _limitedOffer(context),
                 ],
               ),
             ),
@@ -169,14 +164,13 @@ class HomeScreen extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(color: Colors.white),
-
         height: 170,
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 11),
           scrollDirection: Axis.horizontal,
           itemCount: demoPlans.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 16),
-          itemBuilder: (_, index) {
+          separatorBuilder: (context, index) => const SizedBox(width: 16),
+          itemBuilder: (context, index) {
             return SizedBox(
               width: cardWidth,
               child: PlanCard(
@@ -230,58 +224,84 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ================= LIMITED OFFER =================
-  Widget _limitedOffer() {
+  Widget _limitedOffer(BuildContext context) {
+    const timers = [
+      ('00', 'Days'),
+      ('03', 'Hours'),
+      ('55', 'Min'),
+      ('29', 'Sec'),
+    ];
+
     return Container(
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 11, 24, 15),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          width: double.infinity,
+          height: 112,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: yellow,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
-            children: const [
-              Padding(
-                padding: EdgeInsets.fromLTRB(14, 24, 14, 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Limited \nTime Offer',
-                      style: TextStyle(
-                        color: const Color(
-                          0xFF101828,
-                        ) /* Colors-Text-text-primary-(900) */,
-                        fontSize: 20,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                        // letterSpacing: 0.10,
-                      ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final timerGap = constraints.maxWidth < 320 ? 4.0 : 6.0;
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Expanded(
+                    flex: 4,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Limited \nTime Offer',
+                          style: TextStyle(
+                            color: Color(0xFF101828),
+                            fontSize: 40 / 2,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                            height: 1.05,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'See the best product now',
+                          style: TextStyle(
+                            color: Color(0xFF101828),
+                            fontSize: 10,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.05,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'See the best product now',
-                      style: TextStyle(
-                        color: const Color(
-                          0xFF101828,
-                        ) /* Colors-Text-text-primary-(900) */,
-                        fontSize: 10,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.05,
-                      ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 7,
+                    child: Row(
+                      children: [
+                        for (int i = 0; i < timers.length; i++) ...[
+                          if (i > 0) SizedBox(width: timerGap),
+                          Expanded(
+                            child: TimerBox(
+                              timers[i].$1,
+                              timers[i].$2,
+                              compact: true,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 13),
-              TimerBox('00', 'Days'),
-              TimerBox('03', 'Hours'),
-              TimerBox('55', 'Min'),
-              TimerBox('29', 'Sec'),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -296,7 +316,6 @@ class HomeScreen extends StatelessWidget {
   }) {
     return Container(
       decoration: BoxDecoration(color: color),
-
       child: Column(
         children: [
           Padding(
@@ -317,7 +336,6 @@ class HomeScreen extends StatelessWidget {
                 if (onViewMore != null)
                   GestureDetector(
                     onTap: onViewMore,
-
                     child: Text(
                       'view all',
                       style: TextStyle(
