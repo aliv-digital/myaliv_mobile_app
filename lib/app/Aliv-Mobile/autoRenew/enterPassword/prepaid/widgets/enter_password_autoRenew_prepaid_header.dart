@@ -9,7 +9,7 @@ class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
     return const Column(
       children: [
         Text(
-          'Enter Password',
+          'password required',
           style: TextStyle(
             color: const Color(0xFF010101),
             fontSize: 17,

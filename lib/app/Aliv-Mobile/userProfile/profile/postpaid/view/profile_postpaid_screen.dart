@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import '../../../../../../router/app_routes.dart';
 import '../bloc/profile_postpaid_bloc.dart';
 import '../bloc/profile_postpaid_event.dart';
 import '../bloc/profile_postpaid_state.dart';
@@ -56,6 +58,8 @@ class _ProfilePostpaidView extends StatelessWidget {
                   title: 'profile',
                   onBack: () => context.read<ProfilePostpaidBloc>().add(const ProfilePostpaidBackPressed()),
                   showBackArrow: true,
+                    onHomeTap: () => context.go(AppRoutes.home)
+
                 ),
               ),
               SliverToBoxAdapter(

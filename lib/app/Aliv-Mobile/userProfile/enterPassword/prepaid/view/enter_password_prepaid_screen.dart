@@ -80,6 +80,8 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                         onBack: () {
                           context.pop();
                         },
+                          onHomeTap: () => context.go(AppRoutes.home)
+
                       ),
                     ),
                     SliverPadding(

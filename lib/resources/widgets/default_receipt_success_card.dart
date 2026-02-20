@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/widgets/receipt_detail_row.dart';
 import '../../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/widgets/receipt_ticket_divider.dart';
+import '../../core/utils/app_session.dart';
 
 class DefaultReceiptSuccessCard extends StatelessWidget {
   const DefaultReceiptSuccessCard({
@@ -37,7 +38,13 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
     const double notchRadius = 10;
 
     // Notch should align with the FIRST divider center (after Payment Success!)
-    final double notchCenterY = cardPad + iconSize + gapAfterIcon + titleBoxH + gapAfterTitle + (dividerH / 2);
+    final double notchCenterY =
+        cardPad +
+        iconSize +
+        gapAfterIcon +
+        titleBoxH +
+        gapAfterTitle +
+        (dividerH / 2);
 
     return PhysicalShape(
       clipper: _TicketSideNotchClipper(
@@ -70,7 +77,11 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
                       color: Color(0xFF23A26D),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.check, color: Colors.white, size: 18),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
               ),
@@ -160,39 +171,37 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
 }
 
 class _BackToLoginButton extends StatelessWidget {
-  const _BackToLoginButton({
-    required this.onTap,
-  });
+  const _BackToLoginButton({required this.onTap});
 
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    print(AppSession.appRoute);
     return SizedBox(
       width: 156,
       height: 40,
       child: Material(
         color: Colors.white,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(
-            width: 1,
-            color: Color(0xFFF1F1F8),
-          ),
+          side: const BorderSide(width: 1, color: Color(0xFFF1F1F8)),
           borderRadius: BorderRadius.circular(100),
         ),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(100),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Center(
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  'back to login page',
+                  (AppSession.appRoute == 'prepaidPlan')
+                      ? 'back to home page'
+                      : 'back to login page',
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Color(0xFF645D9C),
                     fontSize: 13,
                     fontFamily: AppConstants.defaultFontFamily,
@@ -234,10 +243,7 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
     // notch circles centered on the side edges (x=0, x=width) so they cut inward
     final holes = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: Offset(0, notchCenterY),
-          radius: notchRadius,
-        ),
+        Rect.fromCircle(center: Offset(0, notchCenterY), radius: notchRadius),
       )
       ..addOval(
         Rect.fromCircle(

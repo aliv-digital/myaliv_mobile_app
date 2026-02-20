@@ -168,7 +168,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               // ),
 
               const SizedBox(height: 30),
-              Center(child: TopUpPrepaidBalanceRow(balance: 129)),
+              TopUpPrepaidBalanceRow(balance: 129),
 
               const SizedBox(height: 56),
 

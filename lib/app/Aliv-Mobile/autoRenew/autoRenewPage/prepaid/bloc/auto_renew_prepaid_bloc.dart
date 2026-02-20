@@ -34,7 +34,7 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
 
       final methods = <AutoRenewPaymentMethod>[
         ...cards.map(AutoRenewPaymentMethod.card),
-        AutoRenewPaymentMethod.wallet,
+        // AutoRenewPaymentMethod.wallet,
         AutoRenewPaymentMethod.none,
       ];
 

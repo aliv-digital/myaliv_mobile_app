@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/app_session.dart';
 import '../../../router/app_routes.dart';
 import '../model/demo_plans.dart';
 import '../widgets/action_tile.dart';
@@ -21,7 +22,7 @@ final HomeUiConfig config = const HomeUiConfig(
   isFuturePlan: false,
 );
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   // /// FLAG → toggle UI
@@ -33,6 +34,17 @@ class HomeScreen extends StatelessWidget {
   static const Color bg = Color(0xFFF6F9FC);
   static const Color yellow = Color(0xFFF9D933);
   static const Color blueBackground = Color(0xFFF1F7FA);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    AppSession.resetAppRoute();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +70,8 @@ class HomeScreen extends StatelessWidget {
 
                   config.hasActivePlan
                       ? config.userType == UserType.prepaid
-                          ? PrepaidActivePlanCard()
-                          : PostpaidActivePlanCard(config: config)
+                            ? PrepaidActivePlanCard()
+                            : PostpaidActivePlanCard(config: config)
                       : _noActivePlan(context),
 
                   config.userType == UserType.prepaid
@@ -98,7 +110,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       height: 350,
       decoration: const BoxDecoration(
-        color: purple,
+        color: HomeScreen.purple,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
@@ -109,7 +121,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _noActivePlan(BuildContext context) {
     return Container(
-      color: blueBackground,
+      color: HomeScreen.blueBackground,
       width: MediaQuery.of(context).size.width,
       height: 190,
       child: Column(
@@ -135,13 +147,16 @@ class HomeScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              side: const BorderSide(color: purple),
+              side: const BorderSide(color: HomeScreen.purple),
             ),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               child: Text(
                 'purchase a new plan',
-                style: TextStyle(fontFamily: 'CircularPro', color: purple),
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  color: HomeScreen.purple,
+                ),
               ),
             ),
           ),
@@ -151,8 +166,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   // ================= ACTIVE PLAN =================
-
-  // ================= BEST PLANS =================
   Widget _bestPlans(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.75; // 🔥 3/4 width
@@ -241,7 +254,7 @@ class HomeScreen extends StatelessWidget {
           height: 112,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: yellow,
+            color: HomeScreen.yellow,
             borderRadius: BorderRadius.circular(8),
           ),
           child: LayoutBuilder(

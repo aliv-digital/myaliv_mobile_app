@@ -147,7 +147,7 @@ class PromoSummaryTicket extends StatelessWidget {
       ),
       child: ClipPath(
         // tweak notch look
-        clipper: TicketClipper(radius: 8, notchCount: 14),
+        clipper: TicketClipper(radius: 8, notchCount: 12),
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
           decoration: BoxDecoration(

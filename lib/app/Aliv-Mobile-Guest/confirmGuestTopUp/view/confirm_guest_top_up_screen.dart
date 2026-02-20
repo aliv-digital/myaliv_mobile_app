@@ -144,6 +144,8 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   onBack: () {
                     context.pop();
                   },
+                    onHomeTap: () => context.go(AppRoutes.home)
+
                 ),
               ),
 

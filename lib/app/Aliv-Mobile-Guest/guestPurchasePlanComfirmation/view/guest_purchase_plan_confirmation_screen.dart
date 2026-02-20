@@ -7,6 +7,8 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../../Aliv-Mobile/revBillPay/revConfirmation/prepaid/theme/rev_confirmation_prepaid_theme.dart';
+import '../../../Aliv-Mobile/userProfile/confirmTopUp/prepaid/theme/confirm_top_up_prepaid_theme.dart';
 import '../bloc/guest_purchase_plan_confirmation_bloc.dart';
 import '../bloc/guest_purchase_plan_confirmation_event.dart';
 import '../bloc/guest_purchase_plan_confirmation_state.dart';
@@ -78,6 +80,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
               buttonColor: const Color(0xFF645D9C),
               onPayNow: () {
 
+
                 context.push(AppRoutes.guestPurchasePlanReceipt);
               },
               amountText: '\$ 75.00'//total.toString(),
@@ -98,6 +101,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                     height: 63,
                     title: 'confirmation and payment',
                     onBack: () => Navigator.of(context).maybePop(),
+                    onHomeTap: () => context.go(AppRoutes.home),
                     showBackArrow: true,
                     backgroundColor: GuestPurchasePlanConfirmationTheme.purple,
                   ),
@@ -167,8 +171,33 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                           29, 0, 29, 0
                                       ),
                                       child: CustomPaymentBreakDownCard(
-                                        backgroundColor: HexColor.fromHex('#645D9C'),
+                                        backgroundColor: RevConfirmationPrepaidTheme.receiptBg,
+                                        scallopCount: 12,
+                                        input: (AppSession.appRoute == '')? null:CustomPaymentBreakdownInputConfig(
+                                          value: '',
+                                          enabled: true,
+                                          hintText: 'promo code',
+                                          actionText: 'apply',
+                                          onChanged: (v) {
+                                            // context
+                                            //     .read<RevConfirmationPrepaidBloc>()
+                                            //     .add(RevPromoCodeChanged(v));
+                                          },
+                                          onActionTap: () {
+                                            // context
+                                            //     .read<RevConfirmationPrepaidBloc>()
+                                            //     .add(const RevPromoApplyPressed());
+                                          },
+                                        ),
+                                        // backgroundColor: HexColor.fromHex('#645D9C'),
                                         items: <CustomPaymentBreakdownLineItem>[
+                                          // _promoInput(context),
+
+                                          CustomPaymentBreakdownLineItem(
+                                            label: 'sub total',
+                                            value: '\$ 75.00',
+                                            // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                          ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',
                                             value: '\$ 75.00',
@@ -206,4 +235,59 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
       ),
     );
   }
+  Widget _promoInput(BuildContext context) {
+    return Container(
+      height: 52, // match figma
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              // controller: controller,
+              onChanged: (s){
+
+              },
+              style: ConfirmTopUpPrepaidTheme.bodyMd(context).copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: 'promo code',
+                hintStyle: TextStyle(
+                  color: const Color(0xFFC9C9C9),
+                  fontSize: 16,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: (){
+
+            },
+            behavior: HitTestBehavior.opaque,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              child: Text(
+                'apply',
+                style: TextStyle(
+                  color: const Color(0xFF645D9C),
+                  fontSize: 16,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

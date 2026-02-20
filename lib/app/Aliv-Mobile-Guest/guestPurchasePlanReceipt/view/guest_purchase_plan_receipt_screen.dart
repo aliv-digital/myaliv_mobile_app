@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/repository/guest_purchase_plan_receipt_repository.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../core/utils/app_session.dart';
 import '../../../../resources/widgets/default_receipt_success_card.dart';
 import '../bloc/guest_purchase_plan_receipt_event.dart';
 import '../bloc/guest_purchase_plan_receipt_state.dart';
@@ -115,7 +116,13 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
 
                         data: data,
                         onBackHome: () {
-                          context.go(AppRoutes.logIn);
+                          if(AppSession.appRoute == 'prepaidPlan'){
+                            context.go(AppRoutes.home);
+                            AppSession.resetAppRoute();
+                          }else{
+                            context.go(AppRoutes.logIn);
+
+                          }
                         },
                         pageBackground: GuestPurchasePlanReceiptTheme.circleBackground,
                         statusMessage: statusMessage,

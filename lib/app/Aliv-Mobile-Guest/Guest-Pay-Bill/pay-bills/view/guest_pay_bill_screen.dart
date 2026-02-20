@@ -356,6 +356,8 @@ class _GuestPayBillView extends StatelessWidget {
                 onBack: () {
                   context.pop();
                 },
+                  onHomeTap: () => context.go(AppRoutes.home)
+
               ),
               Expanded(
                 child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(

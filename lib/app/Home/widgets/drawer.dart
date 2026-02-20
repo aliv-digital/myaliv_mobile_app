@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../router/app_routes.dart';
@@ -77,17 +78,45 @@ class AppMenuDrawer extends StatelessWidget {
             SizedBox(height: 22),
 
             _item('assets/icons/profile.svg', 'profile', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             _item('assets/icons/purchase.svg', 'purchases', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             _item('assets/icons/refer.svg', 'refer a friend', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             // _item('assets/icons/notification.svg', 'notifications', context),
             _item('assets/icons/bill.svg', 'REV bill pay', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             _item('assets/icons/settings.svg', 'settings', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             _item('assets/icons/support.svg', 'support', context),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+            ),
             _item(
               'assets/icons/magnet.svg',
               'ALIVFibr',
               external: true,
               context,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16),
+              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
             ),
 
             SizedBox(height: 22),
@@ -144,6 +173,7 @@ class AppMenuDrawer extends StatelessWidget {
     return ListTile(
       leading: SvgPicture.asset(icon, height: 20, width: 20),
       title: Text(label, style: const TextStyle(fontFamily: 'CircularPro')),
+
       trailing: label == 'refer a friend'
           ? null
           : label == 'notifications'
@@ -185,7 +215,9 @@ class AppMenuDrawer extends StatelessWidget {
         } else if (label == 'ALIVFibr') {
           Navigator.of(context).pop(); // close drawer)
 
-          final uri = Uri.parse('https://portal.alivfibr.com/myfibr/login.aspx');
+          final uri = Uri.parse(
+            'https://portal.alivfibr.com/myfibr/login.aspx',
+          );
 
           if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
             throw 'Could not open store locator';

@@ -88,7 +88,7 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
 
                 /// Title
                 const Text(
-                  "Enter Password",
+                  "password required",
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -103,7 +103,7 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
                 const SizedBox(
                   width: 308,
                   child: Text(
-                    "for security reasons, please enter your password to continue.",
+                    "For security reasons, please enter your password to continue.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 15,

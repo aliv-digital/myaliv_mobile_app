@@ -8,7 +8,7 @@ class DefaultBottomPayBar extends StatelessWidget {
     this.isLoading = false,
     this.isButtonEnabled = true,
     this.buttonText = 'pay now',
-    this.isVatExclusive = false,
+    this.isVatExclusive = true,
     this.backgroundColor = Colors.white,
     this.buttonColor = const Color(0xFF6B63A7),
     this.disabledButtonColor,

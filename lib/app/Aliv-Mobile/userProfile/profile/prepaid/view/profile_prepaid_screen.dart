@@ -69,6 +69,8 @@ class _ProfilePrepaidView extends StatelessWidget {
                           const ProfilePrepaidBackPressed(),
                         ),
                         showBackArrow: true,
+                          onHomeTap: () => context.go(AppRoutes.home)
+
                       ),
                     ),
 

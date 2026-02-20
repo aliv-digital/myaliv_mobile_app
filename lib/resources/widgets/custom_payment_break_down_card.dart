@@ -59,12 +59,13 @@ class CustomPaymentBreakdownLineItem {
     this.isEmphasized = false,
     this.textStyle,
     this.labelStyle,
-    this.valueStyle,
+    this.valueStyle, this.isInputField,
   });
 
   final String label;
   final String value;
   final bool isEmphasized;
+  final bool? isInputField;
 
   /// Optional row-level style override from UI.
   /// If provided, this takes precedence over emphasized/default row style.

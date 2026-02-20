@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import '../models/guest_purchase_plan_confirmation_models.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
 import 'purchase_item_row.dart';
@@ -39,7 +40,11 @@ class PurchaseSummaryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                (AppSession.appRoute == 'prepaidPlan')? Text(
+                  'Jade Turnquest',
+                  style: GuestPurchasePlanConfirmationTheme
+                      .purchaseSummaryHeaderTitleTextStyle,
+                ): Text(
                   data.headerTitle,
                   style: GuestPurchasePlanConfirmationTheme
                       .purchaseSummaryHeaderTitleTextStyle,

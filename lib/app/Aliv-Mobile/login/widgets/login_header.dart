@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../../../resources/widgets/defaultBackButton.dart';
+import '../../../../router/app_routes.dart';
 import '../theme/login_theme.dart';
 
 class LoginHeader extends StatelessWidget {
@@ -37,8 +38,11 @@ class LoginHeader extends StatelessWidget {
               iconWidth: AuthModuleSizes.backIconWidth,
               iconHeight: AuthModuleSizes.backIconHeight,
               onPressed: () {
-                context.pop();
-              },
+                if (context.canPop()) {
+                  context.pop();
+                } else {
+                  context.go(AppRoutes.splash); // or do nothing
+                }              },
             ),
           ),
 

@@ -20,9 +20,9 @@ class TicketClipper extends CustomClipper<Path> {
     // Holes (semi-circles) at bottom edge
     final holes = Path();
     final usableWidth = size.width - 24;
-    final gap = usableWidth / notchCount;
+    // final gap = usableWidth / notchCount;
     final startX = 12.0;
-
+    final gap = size.width / notchCount;
     for (int i = 0; i < notchCount; i++) {
       final cx = startX + (i * gap) + gap / 2;
       holes.addOval(

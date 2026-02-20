@@ -31,7 +31,7 @@ class GuestPurchasePlanConfirmationRepository {
     );
 
     return GuestPurchasePlanConfirmationData(
-      phoneNumber: phoneNumber,
+      phoneNumber: '242-801-1616',
       headerTitle: 'guest purchase a plan',
       items: items,
       totals: totals,

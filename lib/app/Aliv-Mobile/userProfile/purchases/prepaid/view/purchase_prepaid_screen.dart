@@ -63,6 +63,8 @@ class _PurchasePrepaidView extends StatelessWidget {
                     child: DefaultAppBar(
                       title: 'purchases',
                       onBack: () => Navigator.of(context).maybePop(),
+                        onHomeTap: () => context.go(AppRoutes.home)
+
                     ),
                   ),
 

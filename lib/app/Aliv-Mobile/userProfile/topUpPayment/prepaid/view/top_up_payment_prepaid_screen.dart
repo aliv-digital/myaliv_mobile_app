@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/pay_with_card_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/payment_method_tile.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
+import '../../../../../../router/app_routes.dart';
 import '../bloc/top_up_payment_prepaid_bloc.dart';
 import '../bloc/top_up_payment_prepaid_event.dart';
 import '../bloc/top_up_payment_prepaid_state.dart';
@@ -122,7 +124,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
                       title: 'payment',
                       showHome: true,
                       onBack: () => Navigator.of(context).maybePop(),
-                      onHomeTap: () {},
+                        onHomeTap: () => context.go(AppRoutes.home)
                     ),
                   ),
                 ),

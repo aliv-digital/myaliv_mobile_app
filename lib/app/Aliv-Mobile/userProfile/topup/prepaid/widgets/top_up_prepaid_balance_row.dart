@@ -16,7 +16,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
       decoration: BoxDecoration(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
@@ -25,7 +25,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
 
-              SvgPicture.asset('assets/icons/Wallet.svg'),
+              SvgPicture.asset('assets/icons/wallet.svg',height: 18,width: 18,),
               SizedBox(width: 10,),
 
               Text(

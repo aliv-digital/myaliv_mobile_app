@@ -217,6 +217,8 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                       onBack: () {
                         context.pop();
                       },
+                        onHomeTap: () => context.go(AppRoutes.home)
+
                     ),
                   ),
                   // Padded body container below app bar

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
+import 'package:myaliv_mobile_app/resources/widgets/common_switch_button_large.dart';
 import '../../../../../../resources/widgets/common_switch_button.dart';
 import '../../../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/widgets/dashed_divider.dart';
 import '../../../../../Home/widgets/auto_renew_toggle.dart';
@@ -63,130 +64,268 @@ class _TopUpPrepaidPlaceholderTabState
                         ),
                       ),
                       // Spacer(),
-                      CommonSwitchButton(initialValue: true),
+                      // CommonSwitchButtonLarge(initialValue: true),
+                      CommonSwitchButtonLarge(
+                        value: anyTimeEnabled,
+                        onChanged: (v) {
+                          setState(() => anyTimeEnabled = v);
+                        },
+                      ),
 
-                      // Switch(
-                      //   value: anyTimeEnabled,
-                      //   onChanged: (v) => setState(() => anyTimeEnabled = v),
-                      //   activeThumbColor: TopUpPrepaidTheme.purple,
-                      //   inactiveThumbColor: Colors.white,
-                      //   activeTrackColor: Colors.white,
-                      //   inactiveTrackColor: TopUpPrepaidTheme.pillBg,
-                      //   trackColor: WidgetStateProperty.all(
-                      //     TopUpPrepaidTheme.lightBg,
-                      //   ),
-                      // ),
                     ],
                   ),
 
                   const SizedBox(height: 20),
+                  // const SizedBox(height: 20),
 
-                  // ================= THRESHOLD =================
-                  _SectionLabel('when balance falls below'),
-                  _InputField(value: '\$ 10.00'),
+                  IgnorePointer(
+                    ignoring: !anyTimeEnabled,
+                    child: Opacity(
+                      opacity: anyTimeEnabled ? 1 : 0.4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                  const SizedBox(height: 8),
-                  Text(
-                    'amount must be above \$ 10.00 and below \$ 10.000',
-                    style: TextStyle(
-                      color: const Color(0xFF707070),
-                      fontSize: 14,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      height: 1.43,
+                          // ================= THRESHOLD =================
+                          _SectionLabel('when balance falls below'),
+                          _InputField(value: '\$ 10.00'),
+
+                          const SizedBox(height: 8),
+                          Text(
+                            'amount must be above \$ 10.00 and below \$ 10.000',
+                            style: const TextStyle(
+                              color: Color(0xFF707070),
+                              fontSize: 14,
+                              fontFamily: 'CircularPro',
+                              fontWeight: FontWeight.w500,
+                              height: 1.43,
+                            ),
+                          ),
+
+                          const SizedBox(height: 26),
+
+                          _SectionLabel('select a top-up amount'),
+                          const SizedBox(height: 10),
+
+                          _AmountGrid(
+                            selected: selectedAmount,
+                            onSelect: (v) => setState(() => selectedAmount = v),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // OR divider
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 38.0),
+                                  child: Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: Color(0xFFE6E6EC),
+                                  ),
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: Text(
+                                  'or',
+                                  style: TextStyle(
+                                    fontFamily: 'CircularPro',
+                                    color: Color(0xFF222222),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.56,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 38.0),
+                                  child: Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: Color(0xFFE6E6EC),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          _SectionLabel('custom amount'),
+                          const SizedBox(height: 8),
+
+                          TopUpFormInputField(
+                            hint: 'enter a custom amount',
+                            isAmountType: true,
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          SizedBox(
+                            width: double.infinity,
+                            height: 40,
+                            child: ElevatedButton(
+                              onPressed: anyTimeEnabled
+                                  ? () {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                    const AutoRenewAuthorizationScreen(),
+                                  ),
+                                );
+                              }
+                                  : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF645D9C),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                              ),
+                              child: Text(
+                                'apply',
+                                style: TopUpPrepaidTheme.buttonText(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-
-                  const SizedBox(height: 26),
-
-                  // ================= PRESET AMOUNTS =================
-                  _SectionLabel('select a top-up amount'),
-                  const SizedBox(height: 10),
-
-                  _AmountGrid(
-                    selected: selectedAmount,
-                    onSelect: (v) => setState(() => selectedAmount = v),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // ================= OR DIVIDER =================
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      DashedDivider(
-                        color: const Color(0xFF222222),
-                        width: MediaQuery.of(context).size.width / 2.8,  //dashWidth: 4,
-                        // dashGap: 4,
-                        height: 2,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text(
-                          'or',
-                          style: TextStyle(
-                            fontFamily: 'CircularPro',
-                            color: const Color(0xFF222222),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            height: 1.56,
-                          ),
-                        ),
-                      ),
-                      DashedDivider(
-                        color: const Color(0xFF222222),
-                        width: MediaQuery.of(context).size.width / 2.8,
-
-                        // dashWidth: 4,
-                        // dashGap: 4,
-                        height: 2,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // ================= CUSTOM AMOUNT =================
-                  _SectionLabel('custom amount'),
-                  const SizedBox(height: 8),
-
-                  TopUpFormInputField(
-                    hint: 'enter a custom amount',
-                    isAmountType: true,
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // ================= APPLY =================
-                  SizedBox(
-                    width: double.infinity,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const AutoRenewAuthorizationScreen(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(
-                          0xFF645D9C,
-                        ), //TopUpPrepaidTheme.purple,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      child: Text(
-                        'apply',
-                        style: TopUpPrepaidTheme.buttonText(),
-                      ),
-                    ),
-                  ),
+                  //
+                  // // ================= THRESHOLD =================
+                  // _SectionLabel('when balance falls below'),
+                  // _InputField(value: '\$ 10.00'),
+                  //
+                  // const SizedBox(height: 8),
+                  // Text(
+                  //   'amount must be above \$ 10.00 and below \$ 10.000',
+                  //   style: TextStyle(
+                  //     color: const Color(0xFF707070),
+                  //     fontSize: 14,
+                  //     fontFamily: 'CircularPro',
+                  //     fontWeight: FontWeight.w500,
+                  //     height: 1.43,
+                  //   ),
+                  // ),
+                  //
+                  // const SizedBox(height: 26),
+                  //
+                  // // ================= PRESET AMOUNTS =================
+                  // _SectionLabel('select a top-up amount'),
+                  // const SizedBox(height: 10),
+                  //
+                  // _AmountGrid(
+                  //   selected: selectedAmount,
+                  //   onSelect: (v) => setState(() => selectedAmount = v),
+                  // ),
+                  //
+                  // const SizedBox(height: 16),
+                  //
+                  // // ================= OR DIVIDER =================
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     // Divider(
+                  //     //   color: const Color(0xFF222222),
+                  //     //   // s: MediaQuery.of(context).size.width / 2.8,  //dashWidth: 4,
+                  //     //   // dashGap: 4,
+                  //     //   height: 1,
+                  //     // ),
+                  //     Expanded(
+                  //       child: Padding(
+                  //         padding: EdgeInsets.only(left: 38.0),
+                  //         child: Divider(
+                  //           height: 1,
+                  //           thickness: 1,
+                  //           color: Color(0xFFE6E6EC),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //
+                  //     const Padding(
+                  //       padding: EdgeInsets.symmetric(horizontal: 12),
+                  //       child: Text(
+                  //         'or',
+                  //         style: TextStyle(
+                  //           fontFamily: 'CircularPro',
+                  //           color: const Color(0xFF222222),
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.w700,
+                  //           height: 1.56,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Expanded(
+                  //       child: Padding(
+                  //         padding: EdgeInsets.only(right: 38.0),
+                  //         child: Divider(
+                  //           height: 1,
+                  //           thickness: 1,
+                  //           color: Color(0xFFE6E6EC),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     // DashedDivider(
+                  //     //   color: const Color(0xFF222222),
+                  //     //   width: MediaQuery.of(context).size.width / 2.8,
+                  //     //
+                  //     //   // dashWidth: 4,
+                  //     //   // dashGap: 4,
+                  //     //   height: 2,
+                  //     // ),
+                  //   ],
+                  // ),
+                  //
+                  // const SizedBox(height: 16),
+                  //
+                  // // ================= CUSTOM AMOUNT =================
+                  // _SectionLabel('custom amount'),
+                  // const SizedBox(height: 8),
+                  //
+                  // TopUpFormInputField(
+                  //   hint: 'enter a custom amount',
+                  //   isAmountType: true,
+                  // ),
+                  //
+                  // const SizedBox(height: 32),
+                  //
+                  // // ================= APPLY =================
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   height: 40,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       FocusManager.instance.primaryFocus?.unfocus();
+                  //       Navigator.of(context).push(
+                  //         MaterialPageRoute(
+                  //           builder: (_) =>
+                  //               const AutoRenewAuthorizationScreen(),
+                  //         ),
+                  //       );
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: const Color(
+                  //         0xFF645D9C,
+                  //       ), //TopUpPrepaidTheme.purple,
+                  //       elevation: 0,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(100),
+                  //       ),
+                  //     ),
+                  //     child: Text(
+                  //       'apply',
+                  //       style: TopUpPrepaidTheme.buttonText(),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             );

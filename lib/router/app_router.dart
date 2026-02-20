@@ -258,7 +258,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
         builder: (context, state) =>
-            const GuestPurchasePlanConfirmationScreen(phoneNumber: '23434545'),
+            const GuestPurchasePlanConfirmationScreen(phoneNumber: '242-801-1616'),
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,

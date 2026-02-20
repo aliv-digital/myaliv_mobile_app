@@ -157,49 +157,51 @@ class _MyNumberTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-        child: Column(
-          children: [
-            const SizedBox(height: 75),
+      child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+          child: Column(
+            children: [
+              const SizedBox(height: 75),
 
-            // Balance row
-            Text(
-              'enter top-up amount',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: const Color(0xFF222222),
-                fontSize: 12,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
+              // Balance row
+              Text(
+                'enter top-up amount',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: const Color(0xFF222222),
+                  fontSize: 12,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
+              const SizedBox(height: 4),
 
-            // Amount input box (gradient border)
-            TopUpPrepaidAmountBox(
-              value: state.amountText,
-              onChanged: (v) => bloc.add(TopUpPrepaidAmountChanged(v)),
-            ),
-            const SizedBox(height: 16),
+              // Amount input box (gradient border)
+              TopUpPrepaidAmountBox(
+                value: state.amountText,
+                onChanged: (v) => bloc.add(TopUpPrepaidAmountChanged(v)),
+              ),
+              const SizedBox(height: 16),
 
-            TopUpPrepaidBalanceRow(balance: state.balance),
+              TopUpPrepaidBalanceRow(balance: state.balance),
 
-            const SizedBox(height: 44),
+              const SizedBox(height: 44),
 
-            // CTA button
-            TopUpPrepaidPrimaryButton(
-              enabled: state.canSubmit,
-              loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
-              onTap: () {
-                //bloc.add(const TopUpPrepaidTopUpPressed());
-                context.push(AppRoutes.confirmTopUpPrepaidScreen);
-              }
-            ),
+              // CTA button
+              TopUpPrepaidPrimaryButton(
+                enabled: state.canSubmit,
+                loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
+                onTap: () {
+                  //bloc.add(const TopUpPrepaidTopUpPressed());
+                  context.push(AppRoutes.confirmTopUpPrepaidScreen);
+                }
+              ),
 
-            // Keep spacing similar to screenshot (keyboard will push anyway)
-            const Spacer(),
-          ],
+              // Keep spacing similar to screenshot (keyboard will push anyway)
+            ],
+          ),
         ),
       ),
     );

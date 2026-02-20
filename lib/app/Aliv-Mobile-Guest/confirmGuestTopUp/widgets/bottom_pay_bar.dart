@@ -8,7 +8,7 @@ class BottomPayBar extends StatelessWidget {
     required this.onPayNow,
     this.isLoading = false,
     this.buttonText = TopUpConfirmTheme.payNowLabel,
-    this.isVatExclusive = false,
+    this.isVatExclusive = true,
     this.backgroundColor = TopUpConfirmTheme.payBarBackgroundColor,
     this.buttonColor = TopUpConfirmTheme.payBarButtonColor,
   });

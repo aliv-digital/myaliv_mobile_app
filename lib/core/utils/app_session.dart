@@ -4,14 +4,13 @@ class AppSession {
   final UserType userType;
   final bool hasActivePlan;
 
-  AppSession({
-    required this.userType,
-    required this.hasActivePlan,
-  });
+  AppSession({required this.userType, required this.hasActivePlan});
 
   bool get isPostpaid => userType == UserType.postpaid;
 
   static String appRoute = ''; // sendTopUp
 
-
+  static void resetAppRoute() {
+    AppSession.appRoute = '';
+  }
 }

@@ -97,6 +97,8 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                   //context.read<GuestPurchasePlanAddOnsBloc>().add(const GuestPurchasePlanAddOnsSkipPressed());
                   context.push(AppRoutes.guestPurchasePlanConfirmation);
                 },
+                  onHomeTap: () => context.go(AppRoutes.home)
+
               ),
               Expanded(
                 child:

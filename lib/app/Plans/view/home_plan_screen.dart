@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Plans/widgets/monthly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Plans/widgets/roameasy_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Plans/widgets/roaming_plan_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import '../../../core/utils/app_session.dart';
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
 import '../bloc/home_plan_state.dart';
@@ -124,6 +125,7 @@ class _HomePlanView extends StatelessWidget {
           planPriceText: _priceText(plan.price),
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
+            AppSession.appRoute = 'prepaidPlan';
             Navigator.of(sheetContext).pop();
             context.push(AppRoutes.guestPurchasePlanAddOns);
           },
@@ -147,6 +149,8 @@ class _HomePlanView extends StatelessWidget {
               onBack: () {
                 context.pop();
               },
+                onHomeTap: () => context.go(AppRoutes.home)
+
             ),
 
             // _TopBar(

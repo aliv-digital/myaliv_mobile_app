@@ -100,6 +100,8 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                   showBackArrow: false,
                   title: 'my receipt',
                   onBack: () {},
+                    onHomeTap: () => context.go(AppRoutes.home)
+
                 ),
               ),
 
