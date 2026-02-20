@@ -68,7 +68,7 @@ class TopUpConfirmTheme {
   // Terms text layout.
   static const double termsTopInset = 0;
   static const double termsCheckboxSize = 15;
-  static const double termsCheckboxRadius = 4;
+  static const double termsCheckboxRadius = 2;
   static const double termsCheckboxToTextGap = 10;
   static const double termsCheckboxTopOffset = 5;
   static const double termsCheckboxBorderWidth = 1;

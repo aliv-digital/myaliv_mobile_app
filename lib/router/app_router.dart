@@ -67,7 +67,7 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash,//confirmGuestTopUp, //guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.guestPurchasePlan,//confirmGuestTopUp, //guestSplash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
 
     routes: [
       GoRoute(
