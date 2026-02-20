@@ -31,14 +31,14 @@ class PurchasePrepaidRepository {
         //   title: 'my limits',
         //   action: PurchasePrepaidAction.myLimits,
         // ),
-        PurchasePrepaidMenuItem(
-          title: 'auto renew',
-          action: PurchasePrepaidAction.autoRenew,
-        ),
-        PurchasePrepaidMenuItem(
-          title: 'review invoices',
-          action: PurchasePrepaidAction.reviewInvoices,
-        ),
+        // PurchasePrepaidMenuItem(
+        //   title: 'auto renew',
+        //   action: PurchasePrepaidAction.autoRenew,
+        // ),
+        // PurchasePrepaidMenuItem(
+        //   title: 'review invoices',
+        //   action: PurchasePrepaidAction.reviewInvoices,
+        // ),
         PurchasePrepaidMenuItem(
           title: 'transaction history',
           action: PurchasePrepaidAction.transactionHistory,
