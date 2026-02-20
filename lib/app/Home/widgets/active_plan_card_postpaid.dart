@@ -17,7 +17,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        height: 190,
+        height: 200,
         padding: const EdgeInsets.fromLTRB(16, 13, 16, 14),
         decoration: BoxDecoration(
           image: DecorationImage(

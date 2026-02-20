@@ -148,7 +148,7 @@ class ActivePlanUsageSection extends StatelessWidget {
 
   Widget _postpaidUsageCards() {
     return SizedBox(
-      height: 154,
+      height: 160,
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         scrollDirection: Axis.horizontal,
@@ -194,7 +194,7 @@ class ActivePlanUsageSection extends StatelessWidget {
 
   Widget _usageCards() {
     return SizedBox(
-      height: 154,
+      height: 160,
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         scrollDirection: Axis.horizontal,
