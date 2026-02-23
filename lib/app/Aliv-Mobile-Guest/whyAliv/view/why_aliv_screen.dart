@@ -51,7 +51,7 @@ class _WhyAlivView extends StatelessWidget {
     (
       title: '5. Total Account Control in One Powerful App',
       body:
-          'With the MyALIV app, you can top up, pay bills, track usage, and earn rewards all in one place. It’s fast, simple, and built to put you in control of your account.',
+          'With the MyALIV app, you can top-up, pay bills, track usage, and earn rewards all in one place. It’s fast, simple, and built to put you in control of your account.',
     ),
   ];
 

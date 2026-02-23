@@ -331,7 +331,7 @@ class _AmountCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             const Text(
-              'enter top up amount',
+              'enter top-up amount',
               style: TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 13,

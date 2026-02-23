@@ -32,7 +32,7 @@ class BottomPayBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(_money(total), style: TopUpPaymentPrepaidTheme.bottomPrice(context)),
-                  Text(vatInclusive ? 'vat inclusive' : 'vat exclusive', style: TopUpPaymentPrepaidTheme.bodySm(context)),
+                  Text('vat exclusive', style: TopUpPaymentPrepaidTheme.bodySm(context)),
                 ],
               ),
             ),

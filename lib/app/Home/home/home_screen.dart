@@ -17,7 +17,7 @@ import '../widgets/timer.dart';
 import 'data/home_ui_config.dart';
 
 final HomeUiConfig config = const HomeUiConfig(
-  userType: UserType.prepaid, // 🔥 switch here for demo
+  userType: UserType.postpaid, // 🔥 switch here for demo
   hasActivePlan: true,
   isFuturePlan: false,
 );
@@ -215,20 +215,57 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           children: [
-            const ActionTile('assets/icons/ListStarQuick.svg', 'buy\nplans'),
+            GestureDetector(
+              onTap: () {
+                context.go(AppRoutes.plans);
+              },
+              child: const ActionTile(
+                'assets/icons/ListStarQuick.svg',
+                'buy\nplans',
+              ),
+            ),
+
             config.userType == UserType.postpaid
                 ? const ActionTile(
                     'assets/icons/SortDescending.svg',
                     'update\ncredit limit',
                   )
-                : const ActionTile(
-                    'assets/icons/ListHeart.svg',
-                    'my\nfuture plans',
+                : GestureDetector(
+                    onTap: () {
+                      context.go(
+                        AppRoutes.usage,
+                        extra: HomeUiConfig(
+                          userType: config.userType,
+                          hasActivePlan: true,
+                          openMyLimits: true, // 🔥 KEY LINE
+                          isFuturePlan: true,
+                        ),
+                      );
+                    },
+                    child: const ActionTile(
+                      'assets/icons/ListHeart.svg',
+                      'my\nfuture plans',
+                    ),
                   ),
-            const ActionTile('assets/icons/At.svg', 'update\nemail'),
-            const ActionTile('assets/icons/UsersThree.svg', 'refer a friend'),
+            GestureDetector(
+              onTap: (){
+                context.push(AppRoutes.myProfilePrepaidScreen);
+
+              },
+                child: const ActionTile('assets/icons/At.svg', 'update\nemail')),
+            GestureDetector(
+              onTap: (){
+                context.push(AppRoutes.referFriendPrepaidScreen);
+
+              },
+                child: const ActionTile('assets/icons/UsersThree.svg', 'refer a friend')),
             const ActionTile('assets/icons/aliv_quick.svg', 'ALIV deals'),
-            const ActionTile('assets/icons/headphone.svg', 'help & support'),
+            GestureDetector(
+              onTap: (){
+                context.push(AppRoutes.callSupportScreen);
+
+              },
+                child: const ActionTile('assets/icons/headphone.svg', 'help & support')),
           ],
         ),
       ),

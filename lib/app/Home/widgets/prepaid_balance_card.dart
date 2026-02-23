@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../../../router/app_routes.dart';
 import '../home/home_screen.dart';
 
 class PrepaidBalanceCard extends StatelessWidget {
@@ -35,7 +37,9 @@ class PrepaidBalanceCard extends StatelessWidget {
             const SizedBox(height: 12),
 
             GestureDetector(
-              onTap: (){},
+              onTap: (){
+                context.push(AppRoutes.topUpPrepaidScreen);
+              },
               child: Container(
                 width: double.infinity,
                 height: 50,

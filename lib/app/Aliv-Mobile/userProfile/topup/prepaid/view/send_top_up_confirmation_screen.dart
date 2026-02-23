@@ -176,7 +176,7 @@ class _HeaderCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('top up prepaid number',
+                    Text('top-up prepaid number',
                         style: ConfirmTopUpPrepaidTheme.bodySm(context)),
                     const SizedBox(height: 4),
                     Text(topUpNumber,

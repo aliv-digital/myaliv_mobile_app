@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../Home/home/data/home_ui_config.dart';
@@ -133,7 +134,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-            userType: UserType.prepaid,
+            userType: config.userType,
             hasActivePlan: true,
             openMyLimits: false,
             isFuturePlan: true, // 🔥 KEY LINE
@@ -145,7 +146,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.go(
           AppRoutes.usage,
           extra: HomeUiConfig(
-            userType: UserType.prepaid,
+            userType: config.userType,
             hasActivePlan: true,
             openMyLimits: true,
             isFuturePlan: false, // 🔥 KEY LINE

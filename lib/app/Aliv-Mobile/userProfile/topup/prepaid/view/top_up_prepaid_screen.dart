@@ -72,9 +72,9 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
         }
 
         if (state.submitStatus == TopUpPrepaidSubmitStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Top up successful')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Top up successful')),
+          // );
         }
       },
       child: Scaffold(

@@ -12,7 +12,7 @@ class PurchasePrepaidRepository {
         ),
 
         PurchasePrepaidMenuItem(
-          title: 'top up',
+          title: 'top-up',
           action: PurchasePrepaidAction.topUp,
         ),
         // PurchasePrepaidMenuItem(
@@ -57,7 +57,7 @@ class PurchasePrepaidRepository {
         ),
 
         PurchasePrepaidMenuItem(
-          title: 'top up a prepaid number',
+          title: 'top-up a prepaid number',
           action: PurchasePrepaidAction.topUpPrepaidNumber,
         ),
         PurchasePrepaidMenuItem(

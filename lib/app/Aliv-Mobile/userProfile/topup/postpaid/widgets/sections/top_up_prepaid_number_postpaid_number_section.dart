@@ -16,7 +16,7 @@ class TopUpPrepaidNumberPostPaidNumberSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('enter number to top up', style: TopUpPrepaidNumberPostPaidTheme.label()),
+        Text('enter number to top-up', style: TopUpPrepaidNumberPostPaidTheme.label()),
         const SizedBox(height: 8),
         TextField(
           keyboardType: TextInputType.number,

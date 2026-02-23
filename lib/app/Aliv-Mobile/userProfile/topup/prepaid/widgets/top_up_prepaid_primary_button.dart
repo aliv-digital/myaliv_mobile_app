@@ -33,7 +33,7 @@ class TopUpPrepaidPrimaryButton extends StatelessWidget {
           height: 18,
           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
         )
-            : Text('top up now', style: TopUpPrepaidTheme.buttonText()),
+            : Text('top-up now', style: TopUpPrepaidTheme.buttonText()),
       ),
     );
   }

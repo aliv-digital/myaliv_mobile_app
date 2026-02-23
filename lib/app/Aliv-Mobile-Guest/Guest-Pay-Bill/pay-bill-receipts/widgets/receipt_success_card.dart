@@ -108,7 +108,7 @@ class ReceiptSuccessCard extends StatelessWidget {
 
             const SizedBox(height: gapAfterFirstDivider),
             Text(
-              'It will take a few moments for the top up\nto appear on the account.',
+              'It will take a few moments for the top-up\nto appear on the account.',
               textAlign: TextAlign.center,
               style: GuestPayBillReceiptTheme.successBody,
             ),

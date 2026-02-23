@@ -16,7 +16,7 @@ class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('confirm number to top up', style: TopUpPrepaidNumberPostPaidTheme.label()),
+        Text('confirm number to top-up', style: TopUpPrepaidNumberPostPaidTheme.label()),
         const SizedBox(height: 8),
         TextField(
           keyboardType: TextInputType.number,

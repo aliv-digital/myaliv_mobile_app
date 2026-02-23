@@ -49,7 +49,7 @@ class _CallLogsScreenState extends State<CallLogsScreen>
   }
 
   String _titleForIndex(int index) {
-    return index == 0 ? 'history' : 'call logs';
+    return index == 0 ? 'history' : 'history';
   }
 
   @override
@@ -122,7 +122,7 @@ class _CallLogsTabBar extends StatelessWidget {
         controller: controller,
         indicatorSize: TabBarIndicatorSize.tab,
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: blue, width: 2),
+          borderSide: BorderSide(color: purple, width: 2),
           insets: EdgeInsets.symmetric(horizontal: 32),
         ),
         labelColor: black,

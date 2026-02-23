@@ -135,7 +135,7 @@ class PrepaidActivePlanCard extends StatelessWidget {
             isScrollControlled: true,isDismissible: true,
             backgroundColor: Colors.transparent,
             barrierColor: Colors.black.withOpacity(0.5),
-            builder: (_) => const _AutoRenewBottomSheet(),
+            builder: (_) => const AutoRenewBottomSheet(),
           );
 
         },
@@ -217,8 +217,8 @@ class _DateBlock extends StatelessWidget {
   }
 }
 
-class _AutoRenewBottomSheet extends StatelessWidget {
-  const _AutoRenewBottomSheet({super.key});
+class AutoRenewBottomSheet extends StatelessWidget {
+  const AutoRenewBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

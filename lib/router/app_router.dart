@@ -83,9 +83,8 @@ import 'app_routes.dart';
 
 class AppRouter {
   late final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.home,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
-   // navigatorKey: rootNavigatorKey, // ✅ HERE
-    //forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    navigatorKey: rootNavigatorKey, // ✅ REQUIRED
+    initialLocation: AppRoutes.splash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.roamingPlanConfirmation,
@@ -387,7 +386,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.prepaid,
+                    userType: UserType.postpaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );
@@ -413,7 +412,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.prepaid,
+                    userType: UserType.postpaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );

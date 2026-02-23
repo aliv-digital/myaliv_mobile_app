@@ -18,7 +18,7 @@ class FuturePlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 148,
+      height: 151,
       padding: const EdgeInsets.fromLTRB(16,13,16,16),
       decoration: BoxDecoration(
         image: DecorationImage(

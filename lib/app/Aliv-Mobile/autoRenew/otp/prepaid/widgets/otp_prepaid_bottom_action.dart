@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
 import '../../../../../../resources/widgets/defaultButton.dart';
 import '../../../../../../resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
@@ -32,11 +33,32 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
               textStyle: OtpAutoRenewPrepaidTheme.verifyButtonTextStyle,
               onPressed: () {
                 // context.read<OtpAutoRenewPrepaidBloc>().add(const OtpAutoRenewPrepaidSubmitted());
-                AppToast.show(
-                  message: "Success! Your card is now set for auto renew",
-                  type: ToastType.success,
-                );
-                context.go(AppRoutes.home);
+                if(config.isPostpaid == true){
+                  AppToast.show(
+                    message: "Success! Your card is now set for auto renew",
+                    type: ToastType.success,
+                  );
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Future.delayed(const Duration(seconds: 1), () {
+                      if (context.mounted) {
+                        context.go(AppRoutes.home);
+                      }
+                    });
+                  });
+                }
+                if(config.isPrepaid == true){
+                  AppToast.show(
+                    message: "We’re working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+                    type: ToastType.success,
+                  );
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Future.delayed(const Duration(seconds: 1), () {
+                      if (context.mounted) {
+                        context.go(AppRoutes.home);
+                      }
+                    });
+                  });
+                }
 
                 // ✅ Update this route if your flow uses another screen
               },

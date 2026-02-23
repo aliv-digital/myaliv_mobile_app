@@ -90,7 +90,7 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
       children: [
         const SizedBox(height: 8),
         Text(
-          'enter top up amount',
+          'enter top-up amount',
           style: TopUpPrepaidNumberPostPaidTheme.amountHint(),
         ),        const SizedBox(height: 8),
 
