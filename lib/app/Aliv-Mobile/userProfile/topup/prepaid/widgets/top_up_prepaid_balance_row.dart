@@ -10,49 +10,27 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
 
-              SvgPicture.asset('assets/icons/wallet.svg',height: 18,width: 18,),
-              SizedBox(width: 10,),
+                SvgPicture.asset('assets/icons/wallet.svg',height: 18,width: 18,),
+                SizedBox(width: 10,),
 
-              Text(
-                'Current Balance will be',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFF222222),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(width: 10,),
-              Container(
-                // width: 63,
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                decoration: ShapeDecoration(
-                  color: const Color(0xFFF2F2F2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child:
-
-
-                  Text(
-                    AppUtils.formatPrice(129),
+                Text(
+                  'Current Balance will be',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: const Color(0xFF222222),
@@ -60,11 +38,35 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                   ),
-                )
-              ),
-            ],
-          ),
-        ],
+                ),
+                SizedBox(width: 10,),
+                Container(
+                  // width: 63,
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFF2F2F2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child:
+
+
+                    Text(
+                      AppUtils.formatPrice(129),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: const Color(0xFF222222),
+                      fontSize: 14,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
     // return Row(

@@ -343,7 +343,7 @@ class _PlanCard extends StatelessWidget {
                               ),
                             )
                           : const Text(
-                              'begins immediately',
+                              'immediately',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: const Color(0xFF707070),

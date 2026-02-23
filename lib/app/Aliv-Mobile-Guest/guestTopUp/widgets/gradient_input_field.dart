@@ -128,9 +128,9 @@ class _GradientInputFieldState extends State<GradientInputField> {
                         child: Center(
                           child: TextField(
                             controller: _controller,
-                            maxLines: 1,
+                            // maxLines: 1,
                             keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
+                              decimal: false,
                             ),
                             textAlign: TextAlign.center,
                             textAlignVertical: TextAlignVertical.center,
@@ -138,7 +138,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               isCollapsed: true,
-                              hintText: '\$00.00',
+                              hintText: '\$00',
                               hintStyle: GuestTopUpTheme.amountHint,
                             ),
                             onChanged: _handleInputChange,

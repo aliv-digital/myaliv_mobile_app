@@ -41,7 +41,7 @@ class TopUpFormInputField extends StatelessWidget {
           keyboardType: isAmountType == true
               ? TextInputType.number
               : TextInputType.name,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          inputFormatters: isAmountType == true? [FilteringTextInputFormatter.digitsOnly]:null,
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 14,
@@ -56,7 +56,7 @@ class TopUpFormInputField extends StatelessWidget {
               fontSize: 13,
               color: TopUpPrepaidTheme.textMuted,
             ),
-            prefixText: '\$ ',
+            prefixText:  isAmountType == true? '\$ ': null,
             prefixStyle: const TextStyle(
               fontFamily: 'CircularPro',
               fontSize: 14,

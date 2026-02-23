@@ -198,11 +198,11 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                             value: '\$ 75.00',
                                             // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
                                           ),
-                                          CustomPaymentBreakdownLineItem(
-                                            label: 'sub total',
-                                            value: '\$ 75.00',
-                                               // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
-                                          ),
+                                          // CustomPaymentBreakdownLineItem(
+                                          //   label: 'sub total',
+                                          //   value: '\$ 75.00',
+                                          //      // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                          // ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
                                             value:
