@@ -135,7 +135,7 @@ class DefaultAppBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _buildTrailing(context),
+                 // _buildTrailing(context),
                 ],
               ),
             ),

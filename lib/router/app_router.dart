@@ -12,10 +12,14 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/pre
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Support/support_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/view/plan_purchase_plan_add_ons_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
 import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
@@ -64,9 +68,9 @@ import '../app/Home/home/data/home_ui_config.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Notifications/notification_screen.dart';
-import '../app/Plans/view/home_plan_screen.dart';
-import '../app/Plans/view/plans_entry_screen.dart';
-import '../app/Plans/view/purchase_confirmation_screen.dart';
+//import '../app/Plans/view/home_plan_screen.dart';
+//import '../app/Plans/view/plans_entry_screen.dart';
+//import '../app/Plans/view/purchase_confirmation_screen.dart';
 import '../app/Security/menu_screen.dart';
 import '../app/Security/secuirity_common_password_screen.dart';
 import '../app/Security/secuirity_common_verification_code_page.dart';
@@ -89,6 +93,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.roamingPlanConfirmation,
         builder: (context, state) =>  RoamingPlanConfirmationScreen(phoneNumber: '242-801-1616',),
+      ),
+      GoRoute(
+        path: AppRoutes.homeRoamingConfirmation,
+        builder: (context, state) =>
+            const HomeRoamingConfirmationScreen(phoneNumber: '242-801-1616'),
       ),
       GoRoute(
         path: AppRoutes.revPaymentMethodPrepaidScreen,
@@ -262,6 +271,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,
         builder: (context, state) => const GuestPurchasePlanAddOnsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.homePurchasePlanAddOns,
+        builder: (context, state) => const PlanPurchasePlanAddOnsScreen(),
       ),
       GoRoute(
         path: AppRoutes.guestPayBillReceipt,

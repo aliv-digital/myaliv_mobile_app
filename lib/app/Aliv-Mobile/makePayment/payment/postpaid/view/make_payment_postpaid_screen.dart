@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/make_payment_postpaid_bloc.dart';
 import '../bloc/make_payment_postpaid_event.dart';
 import '../bloc/make_payment_postpaid_state.dart';
 import '../repository/make_payment_postpaid_repository_impl.dart';
 import '../theme/make_payment_postpaid_theme.dart';
-import '../widgets/mp_bottom_bar.dart';
 import '../widgets/mp_payment_due_card.dart';
 import '../widgets/mp_payment_method_section.dart';
 import '../widgets/mp_terms_checkbox.dart';
@@ -18,119 +17,154 @@ class MakePaymentPostPaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => MakePaymentPostPaidBloc(
-        repository: MakePaymentPostPaidRepositoryImpl(),
-      )..add(const MakePaymentPostPaidStarted()),
-      child: const _MakePaymentPostPaidView(),
+      create: (buildContext) {
+        final makePaymentBloc = MakePaymentPostPaidBloc(
+          repository: MakePaymentPostPaidRepositoryImpl(),
+        );
+        makePaymentBloc.add(const MakePaymentPostPaidStarted());
+        return makePaymentBloc;
+      },
+      child: const _MakePaymentPostPaidPage(),
     );
   }
 }
 
-class _MakePaymentPostPaidView extends StatelessWidget {
-  const _MakePaymentPostPaidView();
+class _MakePaymentPostPaidPage extends StatelessWidget {
+  const _MakePaymentPostPaidPage();
+
+  static const EdgeInsets _contentPadding = EdgeInsets.fromLTRB(29, 24, 29, 22);
+  static const double _paymentDueToTermsGap = 14;
+  static const double _termsToMethodsGap = 17;
+  static const double _bottomScrollSpacer = 90;
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MakePaymentPostPaidBloc, MakePaymentPostPaidState>(
-      listenWhen: (p, c) => p.navTarget != c.navTarget,
-      listener: (context, state) {
-        if (state.navTarget == MpNavTarget.next) {
-          context.read<MakePaymentPostPaidBloc>().add(const MpNavConsumed());
-        }
+      listenWhen: (previousState, currentState) {
+        return previousState.navTarget != currentState.navTarget;
       },
+      listener: _handleNavigationIntent,
       builder: (context, state) {
+        final paymentBloc = context.read<MakePaymentPostPaidBloc>();
+
         return MediaQuery(
           data: MediaQuery.of(
             context,
           ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
+            // Page-level layout shell.
             backgroundColor: MakePaymentPostPaidTheme.bg,
-            bottomNavigationBar: MpBottomBar(
-              amountText: state.bottomAmount,
-              subtitle: state.bottomSubtitle,
-              enabled: state.canPayNow,
-              onPayNow: () {
-                context.read<MakePaymentPostPaidBloc>().add(
-                  const MpPayNowPressed(),
-                );
-              },
-            ),
+            bottomNavigationBar: _buildBottomBar(paymentBloc, state),
             body: Column(
               children: [
-                SafeArea(
-                  bottom: false,
-                  child: SizedBox(
-                    height: MakePaymentPostPaidTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: state.title,
-                      height: MakePaymentPostPaidTheme.appBarHeight,
-                      backgroundColor: MakePaymentPostPaidTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: true,
-                      onHomeTap: () => Navigator.of(
-                        context,
-                      ).popUntil((route) => route.isFirst),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(29, 24, 29, 22),
-                        sliver: SliverToBoxAdapter(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              MpPaymentDueCard(
-                                amountText: state.paymentDueAmount,
-                                selectedOption: state.amountOption,
-                                customAmount: state.customAmount,
-                                onOptionChanged: (option) {
-                                  context.read<MakePaymentPostPaidBloc>().add(
-                                    MpAmountOptionChanged(option),
-                                  );
-                                },
-                                onCustomAmountChanged: (value) {
-                                  context.read<MakePaymentPostPaidBloc>().add(
-                                    MpCustomAmountChanged(value),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 14),
-                              MpTermsCheckbox(
-                                value: state.termsAccepted,
-                                onChanged: (value) {
-                                  context.read<MakePaymentPostPaidBloc>().add(
-                                    MpTermsToggled(value),
-                                  );
-                                },
-                                onTermsTap: () {},
-                              ),
-                              const SizedBox(height: 17),
-                              MpPaymentMethodSection(
-                                methods: state.methods,
-                                selectedIndex: state.selectedMethodIndex,
-                                onSelect: (index) {
-                                  context.read<MakePaymentPostPaidBloc>().add(
-                                    MpPaymentMethodSelected(index),
-                                  );
-                                },
-                                onAddCard: () {},
-                              ),
-                              const SizedBox(height: 90),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildHeader(context, state),
+                Expanded(child: _buildScrollableContent(paymentBloc, state)),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  // Handles one-time navigation intents emitted by the bloc.
+  void _handleNavigationIntent(
+    BuildContext context,
+    MakePaymentPostPaidState state,
+  ) {
+    if (state.navTarget != MpNavTarget.next) return;
+    context.read<MakePaymentPostPaidBloc>().add(const MpNavConsumed());
+  }
+
+  // Top app bar section.
+  Widget _buildHeader(BuildContext context, MakePaymentPostPaidState state) {
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: MakePaymentPostPaidTheme.appBarHeight,
+        child: DefaultAppBar(
+          title: state.title,
+          height: MakePaymentPostPaidTheme.appBarHeight,
+          backgroundColor: MakePaymentPostPaidTheme.appBarBg,
+          showBackArrow: true,
+          showHome: true,
+          onHomeTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
+      ),
+    );
+  }
+
+  // Bottom summary + primary action section.
+  Widget _buildBottomBar(
+    MakePaymentPostPaidBloc paymentBloc,
+    MakePaymentPostPaidState state,
+  ) {
+    return DefaultBottomPayBar(
+      amountText: state.bottomAmount,
+      isButtonEnabled: state.canPayNow,
+      backgroundColor: MakePaymentPostPaidTheme.bottomBarBg,
+      buttonColor: MakePaymentPostPaidTheme.primary,
+      disabledButtonColor: MakePaymentPostPaidTheme.payButtonDisabled,
+      onPayNow: () => paymentBloc.add(const MpPayNowPressed()),
+    );
+  }
+
+  // Main scrollable content section.
+  Widget _buildScrollableContent(
+    MakePaymentPostPaidBloc paymentBloc,
+    MakePaymentPostPaidState state,
+  ) {
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: _contentPadding,
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Payment amount selection section.
+                MpPaymentDueCard(
+                  amountText: state.paymentDueAmount,
+                  selectedOption: state.amountOption,
+                  customAmount: state.customAmount,
+                  onOptionChanged: (selectedOption) {
+                    paymentBloc.add(MpAmountOptionChanged(selectedOption));
+                  },
+                  onCustomAmountChanged: (customAmountText) {
+                    paymentBloc.add(MpCustomAmountChanged(customAmountText));
+                  },
+                ),
+                const SizedBox(height: _paymentDueToTermsGap),
+
+                // Terms acceptance section.
+                MpTermsCheckbox(
+                  value: state.termsAccepted,
+                  onChanged: (isAccepted) {
+                    paymentBloc.add(MpTermsToggled(isAccepted));
+                  },
+                  onTermsTap: () {},
+                ),
+                const SizedBox(height: _termsToMethodsGap),
+
+                // Payment method selection section.
+                MpPaymentMethodSection(
+                  methods: state.methods,
+                  selectedIndex: state.selectedMethodIndex,
+                  onSelect: (selectedMethodIndex) {
+                    paymentBloc.add(
+                      MpPaymentMethodSelected(selectedMethodIndex),
+                    );
+                  },
+                  onAddCard: () {},
+                ),
+                const SizedBox(height: _bottomScrollSpacer),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
