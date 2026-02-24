@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/monthly_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/roameasy_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/roaming_plan_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:myaliv_mobile_app/app/Plans/widgets/mifi_plan_card.dart';
-import 'package:myaliv_mobile_app/app/Plans/widgets/monthly_plan_card.dart';
-import 'package:myaliv_mobile_app/app/Plans/widgets/roameasy_plan_card.dart';
-import 'package:myaliv_mobile_app/app/Plans/widgets/roaming_plan_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-import '../../../core/utils/app_session.dart';
+import '../../../../core/utils/app_session.dart';
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
 import '../bloc/home_plan_state.dart';
@@ -18,6 +17,7 @@ import '../repository/home_plan_repository.dart';
 import '../widgets/add_on_card.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
+import '../widgets/mifi_plan_card.dart';
 import '../widgets/plan_tabs.dart';
 import '../widgets/roam_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_bottom_sheet.dart';
@@ -81,7 +81,7 @@ class _HomePlanView extends StatelessWidget {
             onBackPressed: () => Navigator.of(sheetContext).pop(),
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.roamingPlanConfirmation);
+              context.push(AppRoutes.homeRoamingConfirmation);
             },
           );
         }
@@ -91,7 +91,7 @@ class _HomePlanView extends StatelessWidget {
         //     onBackPressed: () => Navigator.of(sheetContext).pop(),
         //     onActivateNowPressed: () {
         //       Navigator.of(sheetContext).pop();
-        //       context.push(AppRoutes.roamingPlanConfirmation);
+        //       context.push(AppRoutes.homeRoamingConfirmation);
         //     },
         //   );
         // }
@@ -108,11 +108,11 @@ class _HomePlanView extends StatelessWidget {
             onBackPressed: () => Navigator.of(sheetContext).pop(),
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.guestPurchasePlanAddOns);
+              context.push(AppRoutes.homePurchasePlanAddOns);
             },
             onFuturePlanPressed: () {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.guestPurchasePlanAddOns);
+              context.push(AppRoutes.homePurchasePlanAddOns);
             },
           );
         }
@@ -127,7 +127,7 @@ class _HomePlanView extends StatelessWidget {
           onActivateNowPressed: () {
             AppSession.appRoute = 'prepaidPlan';
             Navigator.of(sheetContext).pop();
-            context.push(AppRoutes.guestPurchasePlanAddOns);
+            context.push(AppRoutes.homePurchasePlanAddOns);
           },
         );
       },

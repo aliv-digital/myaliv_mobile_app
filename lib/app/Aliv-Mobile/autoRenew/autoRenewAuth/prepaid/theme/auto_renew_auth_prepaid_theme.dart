@@ -153,9 +153,9 @@ class AutoRenewAuthPrepaidTheme {
   // Used for submit button label in auth screen.
   static TextStyle submitButtonTextStyle() => const TextStyle(
         color: buttonTextColor,
-        fontSize: 13,
+        fontSize: 15,
         fontFamily: fontFamily,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w700,
       );
 
   // ==================== Input Gradient ====================

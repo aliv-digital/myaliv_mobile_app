@@ -6,16 +6,14 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 
-import '../../../core/utils/app_session.dart';
-import '../../../resources/extentions/hex_color.dart';
-import '../../../resources/widgets/custom_payment_break_down_card.dart';
-import '../../../resources/widgets/default_bottom_payBar.dart';
-import '../../../router/app_routes.dart';
-import '../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/bloc/guest_purchase_plan_confirmation_bloc.dart';
-import '../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/bloc/guest_purchase_plan_confirmation_event.dart';
-import '../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_purchase_plan_confirmation_theme.dart';
-import '../../Aliv-Mobile/userProfile/topup/prepaid/view/send_top_up_confirmation_screen.dart';
-import '../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
+import '../../../../core/utils/app_session.dart';
+import '../../../../resources/extentions/hex_color.dart';
+import '../../../../resources/widgets/custom_payment_break_down_card.dart';
+import '../../../../router/app_routes.dart';
+import '../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_purchase_plan_confirmation_theme.dart';
+import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
+
+
 
 class ConfirmationScreen extends StatelessWidget {
   final bool showBeginOn;
