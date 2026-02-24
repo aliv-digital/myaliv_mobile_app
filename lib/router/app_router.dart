@@ -84,7 +84,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.splash,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
+    initialLocation: AppRoutes.makePaymentConfirmationPostpaidScreen,//forgetPasswordOtp,//otpReviewInvoicePostPaidScreen,//otpAutoRenewPrepaidScreen,//otpProfilePrepaidScreen, // initial Screen
     routes: [
       GoRoute(
         path: AppRoutes.roamingPlanConfirmation,

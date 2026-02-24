@@ -26,6 +26,26 @@ class MakePaymentPostPaidTheme {
 
   static const Color amountFieldBg = Color(0xFFF1F1F1);
   static const Color customAmountBg = Color(0xFFF1F1F5);
+  static const double customAmountBorderRadius = 8;
+  static const double customAmountBorderWidth = 1;
+
+  // Focused input border gradient (copied from login input focus style).
+  static const Color focusedInputBorderYellow = Color(0xFFFFC627);
+  static const Color focusedInputBorderBlue = Color(0xFF00B3E3);
+  static const Color focusedInputBorderPurple = Color(0xFF4B298C);
+  static const Color focusedInputBorderPink = Color(0xFFFF9BB1);
+  static const Color focusedInputBorderOrange = Color(0xFFFF6C36);
+  static const LinearGradient focusedInputBorderGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: <Color>[
+      focusedInputBorderYellow,
+      focusedInputBorderBlue,
+      focusedInputBorderPurple,
+      focusedInputBorderPink,
+      focusedInputBorderOrange,
+    ],
+  );
 
   static const Color bottomBarBg = Colors.white;
   static const Color payButtonDisabled = Color(0xFFD3D1E8);
@@ -38,8 +58,7 @@ class MakePaymentPostPaidTheme {
       Color(0xFF7F56D9);
   static const Color paymentMethodSelectedIndicatorFillColor =
       Color(0xFF645D9C);
-  static const Color paymentMethodUnselectedIndicatorColor =
-      Color(0xFFE0E0E0);
+  static const Color paymentMethodUnselectedIndicatorColor = Color(0xFFE0E0E0);
   static const Color paymentMethodUnselectedIndicatorBorderColor =
       Color(0xFFCACACA);
   static const Color paymentMethodAccent = Color(0xFF645D9C);
