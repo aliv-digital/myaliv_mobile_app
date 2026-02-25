@@ -61,98 +61,77 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // ✅ Outer gradient border
-        Container(
-          width: 280,
-          height: 92,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: TopUpPrepaidTheme.amountBorderGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: const EdgeInsets.all(2), // border thickness
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            alignment: Alignment.center,
+    final innerRadius = (TopUpPrepaidTheme.amountFieldRadius -
+            TopUpPrepaidTheme.amountFieldBorderWidth)
+        .clamp(0.0, TopUpPrepaidTheme.amountFieldRadius);
 
-            // ✅ "$" + amount centered together (pixel-ish like figma)
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    r'$',
-                    style: TopUpPrepaidTheme.amountText(),
+    return Container(
+      width: TopUpPrepaidTheme.amountFieldWidth,
+      height: TopUpPrepaidTheme.amountFieldHeight,
+      decoration: BoxDecoration(
+        gradient: TopUpPrepaidTheme.amountFieldFocusedBorderGradient,
+        borderRadius: BorderRadius.circular(TopUpPrepaidTheme.amountFieldRadius),
+      ),
+      padding: const EdgeInsets.all(TopUpPrepaidTheme.amountFieldBorderWidth),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(innerRadius),
+        child: Container(
+          color: TopUpPrepaidTheme.amountFieldBackground,
+          alignment: Alignment.center,
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  r'$',
+                  style: TopUpPrepaidTheme.amountText(),
+                ),
+                const SizedBox(width: TopUpPrepaidTheme.amountFieldCurrencyGap),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: TopUpPrepaidTheme.amountFieldMinInputWidth,
+                    maxWidth: TopUpPrepaidTheme.amountFieldMaxInputWidth,
                   ),
-                  const SizedBox(width: 6),
-
-                  // ✅ Input only numeric part
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minWidth: 80,
-                      maxWidth: 200,
-                    ),
-                    child: IntrinsicWidth(
-                      child: TextField(
-                        focusNode: _focusNode,
-                        controller: _controller,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                        ],
-                        textAlign: TextAlign.left,
-                        style: TopUpPrepaidTheme.amountText(),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (raw) {
-                          final cleaned = _sanitize(raw);
-
-                          // ✅ if formatter allowed something odd, normalize quietly
-                          if (cleaned != raw) {
-                            _controller.value = TextEditingValue(
-                              text: cleaned,
-                              selection: TextSelection.collapsed(
-                                offset: cleaned.length,
-                              ),
-                            );
-                          }
-
-                          widget.onChanged(cleaned);
-                        },
+                  child: IntrinsicWidth(
+                    child: TextField(
+                      focusNode: _focusNode,
+                      controller: _controller,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
                       ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                      ],
+                      textAlign: TextAlign.left,
+                      style: TopUpPrepaidTheme.amountText(),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      onChanged: (raw) {
+                        final cleaned = _sanitize(raw);
+
+                        if (cleaned != raw) {
+                          _controller.value = TextEditingValue(
+                            text: cleaned,
+                            selection: TextSelection.collapsed(
+                              offset: cleaned.length,
+                            ),
+                          );
+                        }
+
+                        widget.onChanged(cleaned);
+                      },
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-        // const SizedBox(height: 8),
-        // Text(
-        //   'enter top up amount',
-        //   textAlign: TextAlign.center,
-        //   style: TextStyle(
-        //     color: const Color(0xFF222222),
-        //     fontSize: 12,
-        //     fontFamily: 'CircularPro',
-        //     fontWeight: FontWeight.w500,
-        //   ),
-        // ),
-      ],
+      ),
     );
   }
 }

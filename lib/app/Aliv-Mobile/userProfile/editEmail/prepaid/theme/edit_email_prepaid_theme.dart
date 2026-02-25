@@ -6,6 +6,30 @@ class EditEmailPrepaidTheme {
   static const Color textMuted = Color(0xFF8B8B8B);
 
   static const Color inputBg = Color(0xFFF1F2FA);
+  static const Color inputBorder = Color(0xFFDFDFDF);
+
+  static const double inputBorderWidth = 1;
+  static const double editEmailInputRadius = 10;
+  static const double updateEmailInputRadius = 8;
+
+  // Focused input border gradient palette (login-like behavior).
+  static const Color focusedInputBorderYellow = Color(0xFFFFC627);
+  static const Color focusedInputBorderBlue = Color(0xFF00B3E3);
+  static const Color focusedInputBorderPurple = Color(0xFF4B298C);
+  static const Color focusedInputBorderPink = Color(0xFFFF9BB1);
+  static const Color focusedInputBorderOrange = Color(0xFFFF6C36);
+
+  static const LinearGradient focusedInputBorderGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: <Color>[
+      focusedInputBorderYellow,
+      focusedInputBorderBlue,
+      focusedInputBorderPurple,
+      focusedInputBorderPink,
+      focusedInputBorderOrange,
+    ],
+  );
 
   static const TextStyle fieldLabel = TextStyle(
     fontFamily: 'CircularPro',

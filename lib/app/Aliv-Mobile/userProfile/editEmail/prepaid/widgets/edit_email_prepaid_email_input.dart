@@ -19,11 +19,14 @@ class EditEmailPrepaidEmailInput extends StatefulWidget {
 
 class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput> {
   late final TextEditingController _c;
+  final FocusNode _focusNode = FocusNode();
+  bool _hasFocus = false;
 
   @override
   void initState() {
     super.initState();
     _c = TextEditingController(text: widget.initialValue);
+    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
@@ -37,31 +40,62 @@ class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput>
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
     _c.dispose();
     super.dispose();
   }
 
+  void _onFocusChanged() {
+    if (_hasFocus != _focusNode.hasFocus) {
+      setState(() {
+        _hasFocus = _focusNode.hasFocus;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final innerRadius = (EditEmailPrepaidTheme.editEmailInputRadius -
+            EditEmailPrepaidTheme.inputBorderWidth)
+        .clamp(0.0, EditEmailPrepaidTheme.editEmailInputRadius);
+
     return Container(
-      height: 50,
       decoration: BoxDecoration(
-        color: EditEmailPrepaidTheme.inputBg,
-        borderRadius: BorderRadius.circular(10),
+        gradient: _hasFocus ? EditEmailPrepaidTheme.focusedInputBorderGradient : null,
+        border: _hasFocus
+            ? null
+            : Border.all(
+                color: EditEmailPrepaidTheme.inputBorder,
+                width: EditEmailPrepaidTheme.inputBorderWidth,
+              ),
+        borderRadius: BorderRadius.circular(EditEmailPrepaidTheme.editEmailInputRadius),
       ),
-      padding: const EdgeInsets.only(left: 8,right: 8,top: 8,bottom: 8),
-      alignment: Alignment.center,
-      child: TextField(
-        controller: _c,
-        enabled: widget.enabled,
-        keyboardType: TextInputType.emailAddress,
-        style: EditEmailPrepaidTheme.fieldValue,
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          isCollapsed: true,
-          hintText: '',
+      padding: const EdgeInsets.all(EditEmailPrepaidTheme.inputBorderWidth),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(innerRadius),
+        child: Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: EditEmailPrepaidTheme.inputBg,
+            borderRadius: BorderRadius.circular(EditEmailPrepaidTheme.editEmailInputRadius),
+          ),
+          padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+          alignment: Alignment.center,
+          child: TextField(
+            focusNode: _focusNode,
+            controller: _c,
+            enabled: widget.enabled,
+            keyboardType: TextInputType.emailAddress,
+            style: EditEmailPrepaidTheme.fieldValue,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isCollapsed: true,
+              hintText: '',
+            ),
+            onChanged: widget.onChanged,
+          ),
         ),
-        onChanged: widget.onChanged,
       ),
     );
   }

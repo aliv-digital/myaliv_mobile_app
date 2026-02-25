@@ -1,12 +1,10 @@
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../topup/prepaid/theme/top_up_prepaid_theme.dart';
 import 'keyboard_overlay.dart';
 
-class TopUpFormInputField extends StatelessWidget {
+class TopUpFormInputField extends StatefulWidget {
   final String hint;
   final TextEditingController? controller;
   final bool? isAmountType;
@@ -19,9 +17,26 @@ class TopUpFormInputField extends StatelessWidget {
   });
 
   @override
+  State<TopUpFormInputField> createState() => _TopUpFormInputFieldState();
+}
+
+class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
+  bool _hasFocus = false;
+
+  @override
   Widget build(BuildContext context) {
+    final innerRadius = (TopUpPrepaidTheme.formInputRadius -
+            TopUpPrepaidTheme.formInputBorderWidth)
+        .clamp(0.0, TopUpPrepaidTheme.formInputRadius);
+
     return Focus(
       onFocusChange: (hasFocus) {
+        if (_hasFocus != hasFocus) {
+          setState(() {
+            _hasFocus = hasFocus;
+          });
+        }
+
         if (hasFocus) {
           KeyboardDoneOverlay.show(context);
         } else {
@@ -29,38 +44,54 @@ class TopUpFormInputField extends StatelessWidget {
         }
       },
       child: Container(
-        height: 52,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: TopUpPrepaidTheme.lightBg,
-          borderRadius: BorderRadius.circular(8),
+          gradient:
+              _hasFocus ? TopUpPrepaidTheme.focusedInputBorderGradient : null,
+          border: null,
+          borderRadius: BorderRadius.circular(TopUpPrepaidTheme.formInputRadius),
         ),
-        alignment: Alignment.centerLeft,
-        child: TextField(
-          controller: controller,
-          keyboardType: isAmountType == true
-              ? TextInputType.number
-              : TextInputType.name,
-          inputFormatters: isAmountType == true? [FilteringTextInputFormatter.digitsOnly]:null,
-          style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 14,
-            color: Colors.black,
-          ),
-          decoration: InputDecoration(
-            isCollapsed: true,
-            border: InputBorder.none,contentPadding: EdgeInsets.zero,
-            hintText: hint,
-            hintStyle: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 13,
-              color: TopUpPrepaidTheme.textMuted,
+        padding: const EdgeInsets.all(TopUpPrepaidTheme.formInputBorderWidth),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(innerRadius),
+          child: Container(
+            height: TopUpPrepaidTheme.formInputHeight,
+            padding: TopUpPrepaidTheme.formInputHorizontalPadding,
+            decoration: BoxDecoration(
+              color: TopUpPrepaidTheme.lightBg,
+              borderRadius:
+                  BorderRadius.circular(TopUpPrepaidTheme.formInputRadius),
             ),
-            prefixText:  isAmountType == true? '\$ ': null,
-            prefixStyle: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 14,
-              color: Colors.black,
+            alignment: Alignment.centerLeft,
+            child: TextField(
+              controller: widget.controller,
+              keyboardType: widget.isAmountType == true
+                  ? TextInputType.number
+                  : TextInputType.name,
+              inputFormatters: widget.isAmountType == true
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
+              style: const TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 14,
+                color: Colors.black,
+              ),
+              decoration: InputDecoration(
+                isCollapsed: true,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+                hintText: widget.hint,
+                hintStyle: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 13,
+                  color: TopUpPrepaidTheme.textMuted,
+                ),
+                prefixText: widget.isAmountType == true ? '\$ ' : null,
+                prefixStyle: const TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
             ),
           ),
         ),

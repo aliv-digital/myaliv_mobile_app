@@ -55,8 +55,7 @@ class GuestPayBillConfirmTermsRow extends StatelessWidget {
           ),
           const SizedBox(
               width: GuestPayBillConfirmTheme.termsCheckboxToTextGap),
-          SizedBox(
-            width: GuestPayBillConfirmTheme.termsTextWidth,
+          Expanded(
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: onTapTerms,

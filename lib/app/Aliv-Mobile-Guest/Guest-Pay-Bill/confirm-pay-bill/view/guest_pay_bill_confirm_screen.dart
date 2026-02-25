@@ -147,18 +147,13 @@ class _GuestPayBillConfirmView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: GuestPayBillConfirmTheme.pageBg,
         // Sticky bottom pay bar
-        bottomNavigationBar:
-            BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
+        bottomNavigationBar: BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
           buildWhen: (previousState, currentState) {
             final hasTotalChanged = previousState.total != currentState.total;
-            final hasPayStatusChanged =
-                previousState.payStatus != currentState.payStatus;
-            final hasTermsCheckedChanged =
-                previousState.isTermsChecked != currentState.isTermsChecked;
+            final hasPayStatusChanged = previousState.payStatus != currentState.payStatus;
+            final hasTermsCheckedChanged = previousState.isTermsChecked != currentState.isTermsChecked;
 
-            return hasTotalChanged ||
-                hasPayStatusChanged ||
-                hasTermsCheckedChanged;
+            return hasTotalChanged || hasPayStatusChanged || hasTermsCheckedChanged;
           },
           builder: (context, state) {
             // Shared default bottom pay bar component
@@ -189,12 +184,10 @@ class _GuestPayBillConfirmView extends StatelessWidget {
           // Rebuild body when core confirmation data changes
           child: BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
             buildWhen: (previousState, currentState) {
-              final hasLoadStatusChanged =
-                  previousState.loadStatus != currentState.loadStatus;
+              final hasLoadStatusChanged = previousState.loadStatus != currentState.loadStatus;
               final hasVatChanged = previousState.vat != currentState.vat;
               final hasArgsChanged = previousState.args != currentState.args;
-              final hasTermsCheckedChanged =
-                  previousState.isTermsChecked != currentState.isTermsChecked;
+              final hasTermsCheckedChanged = previousState.isTermsChecked != currentState.isTermsChecked;
 
               return hasLoadStatusChanged ||
                   hasVatChanged ||

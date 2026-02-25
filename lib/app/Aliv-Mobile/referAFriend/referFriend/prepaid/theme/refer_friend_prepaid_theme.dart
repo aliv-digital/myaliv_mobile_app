@@ -9,6 +9,28 @@ class ReferFriendPrepaidTheme {
   static const muted = Color(0xFF6B7280);
   static const border = Color(0xFFE6E6EC);
   static const fieldBg = Color(0xFFF1F1F8);
+  static const fieldRadius = 8.0;
+  static const fieldBorderWidth = 1.0;
+  static const fieldHorizontalPadding = 14.0;
+
+  // Focused input border gradient palette (login-like).
+  static const Color focusedInputBorderYellow = Color(0xFFFFC627);
+  static const Color focusedInputBorderBlue = Color(0xFF00B3E3);
+  static const Color focusedInputBorderPurple = Color(0xFF4B298C);
+  static const Color focusedInputBorderPink = Color(0xFFFF9BB1);
+  static const Color focusedInputBorderOrange = Color(0xFFFF6C36);
+
+  static const LinearGradient focusedInputBorderGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: <Color>[
+      focusedInputBorderYellow,
+      focusedInputBorderBlue,
+      focusedInputBorderPurple,
+      focusedInputBorderPink,
+      focusedInputBorderOrange,
+    ],
+  );
 
   static const title = TextStyle(
     fontFamily: 'CircularPro',
@@ -54,5 +76,20 @@ class ReferFriendPrepaidTheme {
     fontSize: 13,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
+  );
+
+  static const fieldHint = TextStyle(
+    color: Color(0xFF707070),
+    fontSize: 14,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w500,
+    height: 1.43,
+  );
+
+  static const fieldInput = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: Colors.black,
   );
 }

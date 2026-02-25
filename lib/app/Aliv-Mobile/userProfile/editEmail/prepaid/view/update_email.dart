@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../../router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
+import '../theme/edit_email_prepaid_theme.dart';
 
 
 class UpdateEmailPage extends StatefulWidget {
@@ -15,11 +16,29 @@ class UpdateEmailPage extends StatefulWidget {
 
 class _UpdateEmailPageState extends State<UpdateEmailPage> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode();
+  bool _hasEmailFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode.addListener(_onEmailFocusChanged);
+  }
 
   @override
   void dispose() {
+    _emailFocusNode.removeListener(_onEmailFocusChanged);
+    _emailFocusNode.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onEmailFocusChanged() {
+    if (_hasEmailFocus != _emailFocusNode.hasFocus) {
+      setState(() {
+        _hasEmailFocus = _emailFocusNode.hasFocus;
+      });
+    }
   }
 
   void _updateEmail() {
@@ -106,39 +125,67 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                     const SizedBox(height: 32),
             
                     /// Input Field
-                    Container(
-                      height: 50,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: const Color(0xFFDFDFDF),
-                        ),
-                      ),
-                      child: Row(
+                    Builder(
+                      builder: (context) {
+                        final innerRadius =
+                            (EditEmailPrepaidTheme.updateEmailInputRadius -
+                                    EditEmailPrepaidTheme.inputBorderWidth)
+                                .clamp(0.0, EditEmailPrepaidTheme.updateEmailInputRadius);
 
-                        children: [
-                          SvgPicture.asset('assets/icons/EnvelopeSimple.svg'),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: TextField(
-                              controller: _controller,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'enter a new email',
-                                hintStyle: TextStyle(
-                                  color: const Color(0xFF667085) /* Colors-Text-text-placeholder */,
-                                  fontSize: 14,
-                                  fontFamily: 'CircularPro',
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.43,
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: _hasEmailFocus
+                                ? EditEmailPrepaidTheme.focusedInputBorderGradient
+                                : null,
+                            border: _hasEmailFocus
+                                ? null
+                                : Border.all(
+                                    color: EditEmailPrepaidTheme.inputBorder,
+                                    width: EditEmailPrepaidTheme.inputBorderWidth,
+                                  ),
+                            borderRadius: BorderRadius.circular(
+                              EditEmailPrepaidTheme.updateEmailInputRadius,
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(EditEmailPrepaidTheme.inputBorderWidth),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(innerRadius),
+                            child: Container(
+                              height: 50,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(
+                                  EditEmailPrepaidTheme.updateEmailInputRadius,
                                 ),
+                              ),
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset('assets/icons/EnvelopeSimple.svg'),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: TextField(
+                                      focusNode: _emailFocusNode,
+                                      controller: _controller,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'enter a new email',
+                                        hintStyle: TextStyle(
+                                          color: Color(0xFF667085),
+                                          fontSize: 14,
+                                          fontFamily: 'CircularPro',
+                                          fontWeight: FontWeight.w500,
+                                          height: 1.43,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
             
                     const SizedBox(height: 32),

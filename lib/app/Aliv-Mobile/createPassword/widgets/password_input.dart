@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
-import '../../login/theme/login_theme.dart';
 import '../theme/create_password_theme.dart';
 
-
-class PasswordInput extends StatelessWidget {
+class PasswordInput extends StatefulWidget {
   const PasswordInput({
     super.key,
     required this.hint,
@@ -21,64 +19,108 @@ class PasswordInput extends StatelessWidget {
   final VoidCallback onToggle;
 
   @override
+  State<PasswordInput> createState() => _PasswordInputState();
+}
+
+class _PasswordInputState extends State<PasswordInput> {
+  final FocusNode _focusNode = FocusNode();
+  bool _hasFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChanged() {
+    if (_hasFocus != _focusNode.hasFocus) {
+      setState(() {
+        _hasFocus = _focusNode.hasFocus;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final innerRadius = (CreatePasswordTheme.inputRadius -
+            CreatePasswordTheme.inputBorderWidth)
+        .clamp(0.0, CreatePasswordTheme.inputRadius);
+
     return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          width: 1,
-          color: AuthModuleColors.textInputBorderColor//const Color(0xFFE6E6EA), // চাইলে #DFDFDF করে দিও
-        ),
+        gradient:
+            _hasFocus ? CreatePasswordTheme.focusedInputBorderGradient : null,
+        border: _hasFocus
+            ? null
+            : Border.all(
+                width: CreatePasswordTheme.inputBorderWidth,
+                color: CreatePasswordTheme.inputBorderColor,
+              ),
+        borderRadius: BorderRadius.circular(CreatePasswordTheme.inputRadius),
       ),
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            AssetConstant.lockPassSVG,
-            width: 18,
-            height: 18,
-            colorFilter: ColorFilter.mode(
-              AuthModuleColors.lockColor,
-              BlendMode.srcIn,
-            ),
-          ),
-          const SizedBox(width: 10),
-
-          // TextField (no extra padding)
-          Expanded(
-            child: TextField(
-              obscureText: obscureText,
-              onChanged: onChanged,
-              style: CreatePasswordTheme.inputText,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: CreatePasswordTheme.inputHint,
-                border: InputBorder.none,
-                isCollapsed: true, // important: removes default vertical padding
-                contentPadding: const EdgeInsets.symmetric(vertical: 15),
+      padding: const EdgeInsets.all(CreatePasswordTheme.inputBorderWidth),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(innerRadius),
+        child: Container(
+          height: CreatePasswordTheme.inputHeight,
+          padding: CreatePasswordTheme.inputHorizontalPadding,
+          color: CreatePasswordTheme.inputBackgroundColor,
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                AssetConstant.lockPassSVG,
+                width: CreatePasswordTheme.inputIconSize,
+                height: CreatePasswordTheme.inputIconSize,
+                colorFilter: const ColorFilter.mode(
+                  CreatePasswordTheme.inputIconColor,
+                  BlendMode.srcIn,
+                ),
               ),
-            ),
-          ),
+              const SizedBox(width: CreatePasswordTheme.iconToFieldGap),
 
-          const SizedBox(width: 10),
-
-          // Eye icon (fixed tap area, no IconButton padding issues)
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onToggle,
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: Icon(
-                obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                size: 18,
-                color:AuthModuleColors.lockColor,
+              Expanded(
+                child: TextField(
+                  focusNode: _focusNode,
+                  obscureText: widget.obscureText,
+                  onChanged: widget.onChanged,
+                  style: CreatePasswordTheme.inputText,
+                  decoration: InputDecoration(
+                    hintText: widget.hint,
+                    hintStyle: CreatePasswordTheme.inputHint,
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                ),
               ),
-            ),
+
+              const SizedBox(width: CreatePasswordTheme.iconToFieldGap),
+
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: widget.onToggle,
+                child: SizedBox(
+                  width: CreatePasswordTheme.suffixIconTapSize,
+                  height: CreatePasswordTheme.suffixIconTapSize,
+                  child: Icon(
+                    widget.obscureText
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    size: CreatePasswordTheme.inputIconSize,
+                    color: CreatePasswordTheme.inputIconColor,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
