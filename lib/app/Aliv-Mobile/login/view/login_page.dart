@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -56,7 +57,8 @@ class _LoginView extends StatelessWidget {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
-              // context.go(AppRoutes.home);
+              AppToast.show(message: 'login success');
+              //context.push(AppRoutes.loginOtp);
             }
           },
           child: Stack(
@@ -95,8 +97,8 @@ class _LoginView extends StatelessWidget {
                                           maintainSize: true,
                                           maintainState: true,
                                           maintainAnimation: true,
-                                          child: const Text(
-                                            'invalid credentials!',
+                                          child: Text(
+                                            state.errorMessage ?? 'invalid credentials!',
                                             style: AuthModuleTextStyles.invalidCredentials,
                                           ),
                                         ),
@@ -117,11 +119,9 @@ class _LoginView extends StatelessWidget {
                               },
                             ),
                             const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
-
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
-                                final loading =
-                                    state.status == LoginStatus.loading;
+                                final loading = state.status == LoginStatus.loading;
                                 return DefaultButton(
                                   label: 'sign in',
                                   isLoading: loading,
@@ -129,14 +129,11 @@ class _LoginView extends StatelessWidget {
                                   textStyle: AuthModuleTextStyles.signInButton,
                                   onPressed: () {
                                     context.read<LoginBloc>().add(const LoginSubmitted());
-                                    context.push(AppRoutes.loginOtp);
                                   },
                                 );
                               },
                             ),
                             const SizedBox(height: AuthModuleSizes.signInToSocialGap),
-
-
                             const LoginSocialButtons(),
                             const SizedBox(height: AuthModuleSizes.socialToBottomGap),
                             LoginBottomTexts(),

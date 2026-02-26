@@ -1,47 +1,27 @@
 class AuthResponse {
-  final int status;       // e.g. 200, 401
-  final String message;   // e.g. "OTP SMS sent successfully"
-  final String? phone;    // optional, যদি data এর ভেতরে থাকে
+  final String? twoFactorKey;
+  final String? message;
 
   const AuthResponse({
-    required this.status,
-    required this.message,
-    this.phone,
+    this.twoFactorKey,
+    this.message,
   });
 
   factory AuthResponse.fromJson(Map<String, dynamic>? json) {
-    if (json == null) {
-      return const AuthResponse(
-        status: -1,
-        message: 'Unexpected empty response',
-      );
-    }
+    if (json == null) return const AuthResponse();
 
-    final rawStatus = json['status'];
-    final status = rawStatus is int
-        ? rawStatus
-        : int.tryParse('$rawStatus') ?? -1;
+    final rawTwoFactorKey =
+        json['TwoFactorKey'] ?? json['twoFactorKey'] ?? json['two_factor_key'];
+    final twoFactorKey = rawTwoFactorKey?.toString();
 
-    final rawMessage = json['message'];
-    final message = rawMessage?.toString() ?? '';
+    final rawMessage = json['message'] ?? json['error'] ?? json['detail'];
+    final message = rawMessage?.toString();
 
-    // nested data safe parse
-    String? phone;
-    final data = json['data'];
-    if (data is Map<String, dynamic>) {
-      phone = data['phone']?.toString();
-    }
-
-    return AuthResponse(
-      status: status,
-      message: message,
-      phone: phone,
-    );
+    return AuthResponse(twoFactorKey: twoFactorKey, message: message);
   }
 
   Map<String, dynamic> toJson() => {
-    'status': status,
-    'message': message,
-    if (phone != null) 'phone': phone,
-  };
+        if (twoFactorKey != null) 'TwoFactorKey': twoFactorKey,
+        if (message != null) 'message': message,
+      };
 }

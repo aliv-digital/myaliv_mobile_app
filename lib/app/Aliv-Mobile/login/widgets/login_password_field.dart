@@ -45,7 +45,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
-        final hasError = state.status == LoginStatus.failure && state.errorMessage != null;
+        final hasError = state.passwordFieldError;
         final passwordField = Container(
           height: AuthModuleSizes.fieldHeight,
           decoration: BoxDecoration(
@@ -75,13 +75,17 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                     hintText: 'enter your password',
                     hintStyle: AuthModuleTextStyles.passwordHint,
                   ),
-                  onChanged: (value) => context.read<LoginBloc>().add(LoginPasswordChanged(value)),
+                  onChanged: (value) => context
+                      .read<LoginBloc>()
+                      .add(LoginPasswordChanged(value)),
                 ),
               ),
               GestureDetector(
                 onTap: () => setState(() => _obscure = !_obscure),
                 child: SvgPicture.asset(
-                  _obscure ? AssetConstant.hideIconSVG : AssetConstant.viewIconSVG,
+                  _obscure
+                      ? AssetConstant.hideIconSVG
+                      : AssetConstant.viewIconSVG,
                   width: AuthModuleSizes.eyeIconSize,
                   height: AuthModuleSizes.eyeIconSize,
                 ),
