@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/home_roaming_confirmation_bloc.dart';
 import '../bloc/home_roaming_confirmation_event.dart';
@@ -19,9 +20,11 @@ class HomeRoamingConfirmationScreen extends StatelessWidget {
   const HomeRoamingConfirmationScreen({
     super.key,
     required this.phoneNumber,
+    this.showDateField = true,
   });
 
   final String phoneNumber;
+  final bool showDateField;
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +34,18 @@ class HomeRoamingConfirmationScreen extends StatelessWidget {
         create: (ctx) => HomeRoamingConfirmationBloc(
           repository: ctx.read<HomeRoamingConfirmationRepository>(),
         )..add(HomeRoamingConfirmationStarted(phoneNumber)),
-        child: const _HomeRoamingConfirmationView(),
+        child: _HomeRoamingConfirmationView(showDateField: showDateField),
       ),
     );
   }
 }
 
 class _HomeRoamingConfirmationView extends StatelessWidget {
-  const _HomeRoamingConfirmationView();
+  const _HomeRoamingConfirmationView({
+    required this.showDateField,
+  });
+
+  final bool showDateField;
 
   @override
   Widget build(BuildContext context) {
@@ -73,14 +80,14 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
             }
 
             return DefaultBottomPayBar(
-               buttonText: 'continue',
+                buttonText: 'continue',
                 isVatExclusive: true,
                 isButtonEnabled: state.isTermsChecked,
                 buttonColor: const Color(0xFF645D9C),
                 onPayNow: () {
                   context.read<HomeRoamingConfirmationBloc>().add(
-                    const HomeRoamingConfirmationPayNowPressed(),
-                  );
+                        const HomeRoamingConfirmationPayNowPressed(),
+                      );
                   context.push(AppRoutes.guestPaymentMethodScreen);
                 },
                 amountText: '\$ 75.00' //total.toString(),
@@ -99,7 +106,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                   /// Top app bar (fixed)
                   DefaultAppBar(
                     showHome: true,
-                    onHomeTap: (){
+                    onHomeTap: () {
                       context.go(AppRoutes.home);
                     },
                     title: 'confirmation',
@@ -129,7 +136,9 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                             .contentHorizontalPadding,
                                         0,
                                       ),
-                                      child: HomeRoamingConfirmationPurchaseSummaryCard(
+                                      child:
+                                          HomeRoamingConfirmationPurchaseSummaryCard(
+                                        showDateField: showDateField,
                                         data: data,
                                         onRemoveItem: (id) => context
                                             .read<HomeRoamingConfirmationBloc>()
@@ -140,23 +149,26 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                     ),
                                   ),
 
-                                  /// Begins-on info card
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        HomeRoamingConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        HomeRoamingConfirmationTheme
-                                            .beginsOnCardTopSpacing,
-                                        HomeRoamingConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        0,
-                                      ),
-                                      child: HomeRoamingConfirmationBeginsOnCard(
-                                        dateText: data.beginsOnDateText,
+                                  if (showDateField)
+
+                                    /// Begins-on info card (optional via navigation flag)
+                                    SliverToBoxAdapter(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          HomeRoamingConfirmationTheme
+                                              .contentHorizontalPadding,
+                                          HomeRoamingConfirmationTheme
+                                              .beginsOnCardTopSpacing,
+                                          HomeRoamingConfirmationTheme
+                                              .contentHorizontalPadding,
+                                          0,
+                                        ),
+                                        child:
+                                            HomeRoamingConfirmationBeginsOnCard(
+                                          dateText: data.beginsOnDateText,
+                                        ),
                                       ),
                                     ),
-                                  ),
 
                                   /// Terms notice (your exact padding)
                                   SliverToBoxAdapter(
@@ -180,10 +192,17 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                                 !state.isTermsChecked,
                                               ),
                                             ),
-                                        onTermsTap: () => context
-                                            .read<HomeRoamingConfirmationBloc>()
-                                            .add(
-                                                const HomeRoamingConfirmationTermsPressed()),
+                                        onTermsTap: () async {
+                                          final uri = Uri.parse(
+                                            'https://www.bealiv.com/terms-of-use/',
+                                          );
+
+                                          await launchUrl(
+                                            uri,
+                                            mode:
+                                                LaunchMode.externalApplication,
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
@@ -216,7 +235,8 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value:'\$ 1.82' ,//'\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                            value:
+                                                '\$ 1.82', //'\$ ${data.totals.vat.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',

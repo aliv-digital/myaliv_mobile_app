@@ -6,12 +6,29 @@ import 'home_roaming_confirmation_purchase_item_row.dart';
 class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
   final HomeRoamingConfirmationData data;
   final void Function(String itemId) onRemoveItem;
+  final bool showDateField;
 
   const HomeRoamingConfirmationPurchaseSummaryCard({
+    this.showDateField = true,
     super.key,
     required this.data,
     required this.onRemoveItem,
   });
+
+  HomeRoamingConfirmationPurchaseLineItem _resolveDisplayItem(
+    HomeRoamingConfirmationPurchaseLineItem item,
+  ) {
+    if (showDateField) return item;
+
+    return HomeRoamingConfirmationPurchaseLineItem(
+      id: item.id,
+      type: item.type,
+      label: item.label,
+      title: item.title,
+      subtitle: 'begins immediately',
+      price: item.price,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +86,7 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
               padding: HomeRoamingConfirmationTheme
                   .purchaseSummaryItemSectionPadding,
               child: HomeRoamingConfirmationPurchaseItemRow(
-                item: data.items[i],
+                item: _resolveDisplayItem(data.items[i]),
                 onRemove: () => onRemoveItem(data.items[i].id),
               ),
             ),

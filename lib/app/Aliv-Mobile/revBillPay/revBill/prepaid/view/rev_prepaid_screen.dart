@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_input_field.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../router/app_routes.dart';
 import '../bloc/rev_prepaid_bloc.dart';
@@ -9,7 +10,6 @@ import '../bloc/rev_prepaid_event.dart';
 import '../bloc/rev_prepaid_state.dart';
 import '../repository/rev_prepaid_repository_impl.dart';
 import '../theme/rev_prepaid_theme.dart';
-import '../widgets/rev_amount_field.dart';
 import '../widgets/rev_app_bar_sliver.dart';
 import '../widgets/rev_labeled_section.dart';
 import '../widgets/rev_name_with_submit_field.dart';
@@ -136,8 +136,28 @@ class _RevPrepaidView extends StatelessWidget {
                         const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
                         RevLabeledSection(
                           label: 'enter a custom amount',
-                          child: RevAmountField(
+                          child: CustomInputField(
                             value: state.amountInputText,
+                            height: RevPrepaidTheme.inputFieldHeight,
+                            textAlign: TextAlign.start,
+                            textAlignVertical: TextAlignVertical.center,
+                            keyboardType:
+                                const TextInputType.numberWithOptions(
+                                  decimal: true,
+                                ),
+                            backgroundColor: RevPrepaidTheme.fieldBg,
+                            unfocusedBorderColor:RevPrepaidTheme.inputFieldBorderColor,
+                            radius: 8,
+                            borderWidth: RevPrepaidTheme.inputFieldBorderWidth,
+                            style: RevPrepaidTheme.input,
+                            hintText: r'$ 0.00',
+                            hintStyle: RevPrepaidTheme.hintText,
+                            contentPadding: const EdgeInsets.fromLTRB(
+                              14,
+                              10,
+                              14,
+                              12,
+                            ),
                             onChanged: (v) => context
                                 .read<RevPrepaidBloc>()
                                 .add(RevAmountChanged(v)),

@@ -89,7 +89,8 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.revBillPayPrepaidScreen,//autoRenewPrepaidScreen,
+    initialLocation:
+        AppRoutes.splash, //autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.addOnsConfirmation,
@@ -119,8 +120,24 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.homeRoamingConfirmation,
-        builder: (context, state) =>
-            const HomeRoamingConfirmationScreen(phoneNumber: '242-801-1616'),
+        builder: (context, state) {
+          // Read optional route flag from navigation extras.
+          final extra = state.extra;
+          bool showDateField = true;
+          if (extra is Map<String, dynamic>) {
+            final value = extra['showDateField'];
+            if (value is bool) {
+              showDateField = value;
+            } else if (value is String) {
+              showDateField = value.toLowerCase() == 'true';
+            }
+          }
+
+          return HomeRoamingConfirmationScreen(
+            phoneNumber: '242-801-1616',
+            showDateField: showDateField,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.revPaymentMethodPrepaidScreen,
@@ -296,8 +313,8 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
-        builder: (context, state) =>
-            const GuestPurchasePlanConfirmationScreen(phoneNumber: '242-801-1616'),
+        builder: (context, state) => const GuestPurchasePlanConfirmationScreen(
+            phoneNumber: '242-801-1616'),
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,
@@ -428,8 +445,7 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.usage,
             builder: (context, state) {
-              final config =
-                  (state.extra as HomeUiConfig?) ??
+              final config = (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
                     userType: UserType.prepaid,
                     hasActivePlan: true,
@@ -454,8 +470,7 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.plans,
             builder: (context, state) {
-              final config =
-                  (state.extra as HomeUiConfig?) ??
+              final config = (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
                     userType: UserType.prepaid,
                     hasActivePlan: true,
@@ -514,8 +529,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.verificationCode,
         pageBuilder: (context, state) {
-          final nextRoute =
-              state.uri.queryParameters['next'] ?? AppRoutes.home;
+          final nextRoute = state.uri.queryParameters['next'] ?? AppRoutes.home;
 
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
@@ -531,7 +545,7 @@ class AppRouter {
         pageBuilder: (context, state) {
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
-            child:  UpdateEmailPage(),
+            child: UpdateEmailPage(),
           );
         },
       ),
@@ -547,7 +561,6 @@ class AppRouter {
         },
       ),
 
-
       GoRoute(
         path: AppRoutes.guestPaymentMethodScreen,
         builder: (context, state) => const GuestPaymentMethodPrepaidScreen(),
@@ -558,8 +571,7 @@ class AppRouter {
           final showBeginOn =
               state.uri.queryParameters['showBeginOn'] == 'true';
 
-          final beginDateString =
-          state.uri.queryParameters['beginDate'];
+          final beginDateString = state.uri.queryParameters['beginDate'];
 
           DateTime? beginDate;
           if (beginDateString != null) {
@@ -579,8 +591,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.invitingSuccess,
         pageBuilder: (context, state) {
-          final referralCode =
-              state.uri.queryParameters['code'] ?? '';
+          final referralCode = state.uri.queryParameters['code'] ?? '';
 
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
@@ -590,8 +601,6 @@ class AppRouter {
           );
         },
       ),
-
-
     ],
   );
 }
