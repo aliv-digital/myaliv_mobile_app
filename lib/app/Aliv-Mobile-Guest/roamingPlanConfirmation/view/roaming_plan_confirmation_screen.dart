@@ -151,6 +151,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         0,
                                       ),
                                       child: PurchaseSummaryCard(
+                                        showDateField: showDateField,
                                         data: data,
                                         onRemoveItem: (id) => context
                                             .read<RoamingPlanConfirmationBloc>()

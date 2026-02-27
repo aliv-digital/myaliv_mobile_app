@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../router/app_routes.dart';
+import '../../../../../Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../bloc/rev_payment_method_prepaid_bloc.dart';
 import '../bloc/rev_payment_method_prepaid_event.dart';
 import '../bloc/rev_payment_method_prepaid_state.dart';
@@ -78,9 +79,21 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: RevPaymentMethodPrepaidTheme.payBtnBg,
-              onPayNow: () => context
-                  .read<RevPaymentMethodPrepaidBloc>()
-                  .add(const RevPayNowPressed()),
+              onPayNow: () {
+                context
+                    .read<RevPaymentMethodPrepaidBloc>()
+                    .add(const RevPayNowPressed());
+                context.push(AppRoutes.guestPayBillReceipt,extra:
+                  GuestPayBillReceiptArgs(
+                    serviceName: 'REV',
+                    identifierLabel: 'mobile no.',
+                    identifierValue: '242-801-0000',
+                    amount: 200.00,
+                    dateText: 'Mar 22, 2023',
+                    timeText: '07:30 am',
+                  ),
+                );
+              }
             ),
             body: Column(
               children: [

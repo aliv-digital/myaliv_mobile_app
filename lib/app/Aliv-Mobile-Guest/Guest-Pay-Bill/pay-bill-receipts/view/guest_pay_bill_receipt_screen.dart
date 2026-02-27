@@ -85,7 +85,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
       },
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
-          context.go(AppRoutes.home);
+          context.go(AppRoutes.logIn);
         }
       },
       child: Scaffold(

@@ -121,7 +121,7 @@ class _RevPrepaidView extends StatelessWidget {
 
                         const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
 
-                        Text('account balance', style: RevPrepaidTheme.fieldTitle),
+                        Text('amount due', style: RevPrepaidTheme.fieldTitle),
                         const SizedBox(height: RevPrepaidTheme.labelToFieldGap),
                         Text(
                           state.accountBalanceText,

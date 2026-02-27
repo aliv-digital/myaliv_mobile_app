@@ -29,8 +29,8 @@ class RevPrimaryButton extends StatelessWidget {
         child: Text(
           text,
           style: RevPrepaidTheme.button.copyWith(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
             color: enabled ? Colors.white : Colors.white.withValues(alpha: 0.75),
           ),
         ),
