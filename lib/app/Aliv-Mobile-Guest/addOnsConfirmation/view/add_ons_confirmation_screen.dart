@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/add_ons_confirmation_bloc.dart';
 import '../bloc/add_ons_confirmation_event.dart';
@@ -174,10 +175,17 @@ class _AddOnsConfirmationView extends StatelessWidget {
                                                 !state.isTermsChecked,
                                               ),
                                             ),
-                                        onTermsTap: () => context
-                                            .read<AddOnsConfirmationBloc>()
-                                            .add(
-                                                const AddOnsConfirmationTermsPressed()),
+                                        onTermsTap: () async {
+                                          final uri = Uri.parse(
+                                            'https://www.bealiv.com/terms-of-use/',
+                                          );
+
+                                          await launchUrl(
+                                            uri,
+                                            mode:
+                                                LaunchMode.externalApplication,
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
