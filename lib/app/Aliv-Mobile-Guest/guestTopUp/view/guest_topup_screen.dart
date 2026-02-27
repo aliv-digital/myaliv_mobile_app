@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -199,8 +200,14 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               onPressed: () {
                                 _goToConfirmTopUp();
                               },
-                              fontWeight: FontWeight.w400,
-                              fontSize: 13,
+                              textStyle: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: AppConstants.defaultFontFamily,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700
+                              ),
+                              //fontWeight: FontWeight.w400,
+                              //fontSize: 13,
                               label: GuestTopUpTheme.nextButtonLabel,
                               isLoading: false,
                             );

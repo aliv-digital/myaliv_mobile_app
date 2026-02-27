@@ -169,7 +169,7 @@ class _GuestPayBillView extends StatelessWidget {
 
   GuestPayBillConfirmArgs _buildConfirmArgs(GuestPayBillState state) {
     final serviceName = state.selectedService?.label ?? '';
-    final identifierLabel = state.isAlivPostpaid ? 'mobile no.' : 'Acc #';
+    final identifierLabel = state.isAlivPostpaid ? 'mobile no.' : 'account no.';
 
     final identifierValue = state.isAlivPostpaid
         ? '242-801-0000'
@@ -216,18 +216,8 @@ class _GuestPayBillView extends StatelessWidget {
         backgroundColor: GuestPayBillTheme.fieldBg,
         unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
         phoneInputStyle: GuestPayBillTheme.inputTextStyle,
-        phoneHintStyle: const TextStyle(
-          color: GuestPayBillTheme.placeholder,
-          fontSize: 13,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-        ),
-        dialCodeStyle: const TextStyle(
-          color: GuestPayBillTheme.labelText,
-          fontSize: 13,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-        ),
+        phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
+        dialCodeStyle: GuestPayBillTheme.inputTextStyle,
         flagStyle: const TextStyle(
           fontSize: 18,
           fontFamily: 'CircularPro',
@@ -262,18 +252,8 @@ class _GuestPayBillView extends StatelessWidget {
         borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
         keyboardType: TextInputType.phone,
         phoneInputStyle: GuestPayBillTheme.inputTextStyle,
-        phoneHintStyle: const TextStyle(
-          color: GuestPayBillTheme.placeholder,
-          fontSize: 13,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-        ),
-        dialCodeStyle: const TextStyle(
-          color: GuestPayBillTheme.labelText,
-          fontSize: 13,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w500,
-        ),
+        phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
+        dialCodeStyle: GuestPayBillTheme.inputTextStyle,
         submitEnabled: state.canVerify,
         submitLoading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
         onChanged: (value) {
@@ -356,7 +336,7 @@ class _GuestPayBillView extends StatelessWidget {
                 onBack: () {
                   context.pop();
                 },
-                  onHomeTap: () => context.go(AppRoutes.home)
+                  onHomeTap: () => context.go(AppRoutes.logIn)
 
               ),
               Expanded(

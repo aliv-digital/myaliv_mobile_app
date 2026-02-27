@@ -102,7 +102,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                     height: 63,
                     title: 'confirmation and payment',
                     onBack: () => Navigator.of(context).maybePop(),
-                    onHomeTap: () => context.go(AppRoutes.home),
+                    onHomeTap: () => context.go(AppRoutes.logIn),
                     showBackArrow: true,
                     backgroundColor: GuestPurchasePlanConfirmationTheme.purple,
                   ),

@@ -203,9 +203,9 @@ class _BackToLoginButton extends StatelessWidget {
                   maxLines: 1,
                   style: const TextStyle(
                     color: Color(0xFF645D9C),
-                    fontSize: 13,
+                    fontSize: 15,
                     fontFamily: AppConstants.defaultFontFamily,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w700,
                     height: 1,
                   ),
                 ),

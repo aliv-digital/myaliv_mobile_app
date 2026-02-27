@@ -218,7 +218,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                       onBack: () {
                         context.pop();
                       },
-                        onHomeTap: () => context.go(AppRoutes.home)
+                        onHomeTap: () => context.go(AppRoutes.logIn)
 
                     ),
                   ),

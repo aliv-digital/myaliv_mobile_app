@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../model/guest_pay_bill_models.dart';
@@ -32,12 +31,7 @@ class GuestPayBillServiceDropdown extends StatelessWidget {
           value: selected,
           hint: const Text(
             'ALIV Postpaid',
-            style: TextStyle(
-              color: GuestPayBillTheme.labelText,
-              fontSize: 13,
-              fontFamily: AppConstants.defaultFontFamily,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GuestPayBillTheme.inputHintTextStyle,
           ),
           icon: SizedBox(
             width: 20,
@@ -55,12 +49,7 @@ class GuestPayBillServiceDropdown extends StatelessWidget {
                   value: service,
                   child: Text(
                     service.label,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontFamily: AppConstants.defaultFontFamily,
-                      fontWeight: FontWeight.w500,
-                      color: GuestPayBillTheme.labelText,
-                    ),
+                    style: GuestPayBillTheme.inputTextStyle,
                   ),
                 ),
               )

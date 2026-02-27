@@ -51,12 +51,7 @@ class GuestPayBillCountryCodePickerBox extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             country.dialCode,
-            style: const TextStyle(
-              color: GuestPayBillTheme.labelText,
-              fontSize: 13,
-              fontFamily: AppConstants.defaultFontFamily,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GuestPayBillTheme.inputTextStyle,
           ),
           if (showArrow) ...[
             const SizedBox(width: 4),

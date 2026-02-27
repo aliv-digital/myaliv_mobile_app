@@ -74,16 +74,13 @@ class _GuestPayBillInlineVerifyFieldState
                 style: GuestPayBillTheme.inputTextStyle,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: const InputDecoration(
-                  hintStyle: TextStyle(
-                    color: GuestPayBillTheme.placeholder,
-                    fontSize: 13,
-                    fontFamily: AppConstants.defaultFontFamily,
-                    fontWeight: FontWeight.w500,
-                  ),
                   border: InputBorder.none,
                   isCollapsed: true,
                   contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                ).copyWith(hintText: widget.hint),
+                ).copyWith(
+                  hintText: widget.hint,
+                  hintStyle: GuestPayBillTheme.inputHintTextStyle,
+                ),
               ),
             ),
             const SizedBox(width: 8),

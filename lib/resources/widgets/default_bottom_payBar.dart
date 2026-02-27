@@ -103,9 +103,9 @@ class DefaultBottomPayBar extends StatelessWidget {
                             buttonText,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 13,
+                              fontSize: 15,
                               fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                   ),

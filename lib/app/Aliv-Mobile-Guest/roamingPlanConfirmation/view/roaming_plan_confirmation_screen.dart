@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../bloc/roaming_plan_confirmation_bloc.dart';
 import '../bloc/roaming_plan_confirmation_event.dart';
 import '../bloc/roaming_plan_confirmation_state.dart';
@@ -81,7 +82,18 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                   context.read<RoamingPlanConfirmationBloc>().add(
                     const RoamingPlanConfirmationPayNowPressed(),
                   );
-                  context.push(AppRoutes.guestPaymentMethodScreen);
+                  context.push(
+                    AppRoutes.guestPurchasePlanReceipt,
+                    // extra: GuestPayBillReceiptArgs(
+                    //   serviceName: 'liberty70',
+                    //   identifierLabel: 'mobile no.',
+                    //   identifierValue: '242-801-0000',
+                    //   amount: 200.00,
+                    //   dateText: 'Mar 22, 2023',
+                    //   timeText: '07:30 am'
+                    // )
+                  );
+                  //context.push(AppRoutes.guestPaymentMethodScreen);
                 },
                 amountText: '\$ 75.00' //total.toString(),
                 );
@@ -100,10 +112,12 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                   DefaultAppBar(
                     showHome: true,
                     onHomeTap: (){
-                      context.go(AppRoutes.home);
+                      context.go(AppRoutes.logIn);
                     },
-                    title: 'confirmation',
-                    onBack: () => Navigator.of(context).maybePop(),
+                    title: 'confirmation and payment',
+                    onBack: () {
+                      context.pop();
+                    },
                     showBackArrow: true,
                     backgroundColor: RoamingPlanConfirmationTheme.purple,
                   ),

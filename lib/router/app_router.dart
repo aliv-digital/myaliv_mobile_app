@@ -88,7 +88,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.splash,//autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.guestSplash,//autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.roamingPlanConfirmation,

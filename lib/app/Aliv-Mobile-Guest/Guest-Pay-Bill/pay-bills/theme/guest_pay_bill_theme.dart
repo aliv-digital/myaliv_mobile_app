@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestPayBillTheme {
   // ===== Screen strings =====
@@ -32,7 +33,7 @@ class GuestPayBillTheme {
   static const String accountStatusLabel = 'account status';
 
   // Used by: label above account balance value in non-postpaid flow.
-  static const String accountBalanceLabel = 'account balance';
+  static const String accountBalanceLabel = 'amount due';
 
   // Used by: label above amount input field.
   static const String customAmountLabel = 'enter a custom amount';
@@ -90,11 +91,17 @@ class GuestPayBillTheme {
   // Used by: service helper text color.
   static const Color helperText = Color(0xFF2E57E8);
 
-  // Used by: primary dark text color for labels and field text.
+  // Used by: field labels shown before each input.
   static const Color labelText = Color(0xFF1C1C1C);
 
-  // Used by: input hint/placeholder text color.
-  static const Color placeholder = Color(0xFF9A9AA3);
+  // Requested input hint color for all form fields.
+  static const Color inputHintTextColor = Color(0xFF667085);
+
+  // Requested input value color for all form fields.
+  static const Color inputTextColor = Color(0xFF344054);
+
+  // Backward-compatible alias used by existing widgets.
+  static const Color placeholder = inputHintTextColor;
 
   // Used by: all `OutlineInputBorder` states (transparent border look).
   static const Color border = Color(0x00000000);
@@ -125,11 +132,11 @@ class GuestPayBillTheme {
   static const double inlineVerifyFieldHeight = 50;
 
   // Used by: account balance value text in `guest_pay_bill_screen.dart`.
-  static const TextStyle accountBalanceValueStyle = TextStyle(
-    fontSize: 13,
+  static  TextStyle accountBalanceValueStyle = TextStyle(
+    fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w600,
-    color: GuestPayBillTheme.labelText,
+    fontWeight: FontWeight.w500,
+    color:HexColor.fromHex('#344054')// GuestPayBillTheme.labelText,
   );
 
   // Used by: `$` prefix text inside custom amount field.
@@ -140,12 +147,26 @@ class GuestPayBillTheme {
     color: GuestPayBillTheme.labelText,
   );
 
-  // Used by: direct input text style for phone, account, name, and amount fields.
+  // Shared hint style for every editable form field in pay-bills flow.
+  // Note: Figma uses w450, but Flutter supports 100-step weights only.
+  // `FontWeight.w400` is the closest supported option.
+  static const TextStyle inputHintTextStyle = TextStyle(
+    fontSize: 14,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w400,
+    height: 1.43,
+    color: inputHintTextColor,
+  );
+
+  // Shared input value style for every editable form field in pay-bills flow.
+  // Note: Figma uses w450, but Flutter supports 100-step weights only.
+  // `FontWeight.w400` is the closest supported option.
   static const TextStyle inputTextStyle = TextStyle(
-    fontSize: 13,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
-    color: GuestPayBillTheme.labelText,
+    fontSize: 14,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w400,
+    height: 1.43,
+    color: inputTextColor,
   );
 
   // Used by: all snackbar messages in this module screen.
@@ -153,17 +174,20 @@ class GuestPayBillTheme {
     fontFamily: AppConstants.defaultFontFamily,
   );
 
+  // Shared label style for all labels displayed before fields.
+  static const TextStyle fieldLabelTextStyle = TextStyle(
+    color: Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
   // Used by: all section labels and required labels.
   // Linked widgets:
   // - `GuestPayBillRequiredLabel`
   // - labels in `guest_pay_bill_screen.dart` (mobile number, account status, etc.)
-  static TextStyle labelStyle() => const TextStyle(
-        color: Color(0xFF1C1C1C),
-        fontSize: 14,
-        fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w700,
-        height: 1.43,
-      );
+  static TextStyle labelStyle() => fieldLabelTextStyle;
 
   // Used by: helper message under service dropdown.
   static TextStyle helperStyle() => const TextStyle(
@@ -186,12 +210,7 @@ class GuestPayBillTheme {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: placeholder,
-        fontSize: 13,
-        fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w500,
-      ),
+      hintStyle: inputHintTextStyle,
       filled: true,
       fillColor: fieldBg,
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
