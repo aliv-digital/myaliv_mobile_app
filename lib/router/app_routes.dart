@@ -30,6 +30,7 @@ class AppRoutes {
   static const guestPurchasePlanConfirmation = '/guest-purchase-plan-confirmation';
   static const guestPurchasePlanReceipt = '/guest-purchase-plan-receipt';
   static const roamingPlanConfirmation = '/roaming-plan-confirmation';
+  static const addOnsConfirmation = '/add-ons-confirmation';
   static const homeRoamingConfirmation = '/home-roaming-confirmation';
   static const guestPaymentMethodScreen = '/guest-payment-method-screen';
 

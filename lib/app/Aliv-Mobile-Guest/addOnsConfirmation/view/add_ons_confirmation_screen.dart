@@ -6,18 +6,16 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
-import '../../Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
-import '../bloc/roaming_plan_confirmation_bloc.dart';
-import '../bloc/roaming_plan_confirmation_event.dart';
-import '../bloc/roaming_plan_confirmation_state.dart';
-import '../repository/roaming_plan_confirmation_repository.dart';
-import '../theme/roaming_plan_confirmation_theme.dart';
-import '../widgets/begins_on_card.dart';
+import '../bloc/add_ons_confirmation_bloc.dart';
+import '../bloc/add_ons_confirmation_event.dart';
+import '../bloc/add_ons_confirmation_state.dart';
+import '../repository/add_ons_confirmation_repository.dart';
+import '../theme/add_ons_confirmation_theme.dart';
 import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
 
-class RoamingPlanConfirmationScreen extends StatelessWidget {
-  const RoamingPlanConfirmationScreen({
+class AddOnsConfirmationScreen extends StatelessWidget {
+  const AddOnsConfirmationScreen({
     super.key,
     required this.phoneNumber,
   });
@@ -27,24 +25,24 @@ class RoamingPlanConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (_) => RoamingPlanConfirmationRepository(),
+      create: (_) => AddOnsConfirmationRepository(),
       child: BlocProvider(
-        create: (ctx) => RoamingPlanConfirmationBloc(
-          repository: ctx.read<RoamingPlanConfirmationRepository>(),
-        )..add(RoamingPlanConfirmationStarted(phoneNumber)),
-        child: const _RoamingPlanConfirmationView(),
+        create: (ctx) => AddOnsConfirmationBloc(
+          repository: ctx.read<AddOnsConfirmationRepository>(),
+        )..add(AddOnsConfirmationStarted(phoneNumber)),
+        child: const _AddOnsConfirmationView(),
       ),
     );
   }
 }
 
-class _RoamingPlanConfirmationView extends StatelessWidget {
-  const _RoamingPlanConfirmationView();
+class _AddOnsConfirmationView extends StatelessWidget {
+  const _AddOnsConfirmationView();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<RoamingPlanConfirmationBloc,
-        RoamingPlanConfirmationState>(
+    return BlocListener<AddOnsConfirmationBloc,
+        AddOnsConfirmationState>(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
           p.payNowRequestId != c.payNowRequestId,
@@ -62,25 +60,25 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: RoamingPlanConfirmationTheme.bg,
+        backgroundColor: AddOnsConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<RoamingPlanConfirmationBloc,
-            RoamingPlanConfirmationState>(
+        bottomNavigationBar: BlocBuilder<AddOnsConfirmationBloc,
+            AddOnsConfirmationState>(
           builder: (context, state) {
-            if (state.status != RoamingPlanConfirmationStatus.ready ||
+            if (state.status != AddOnsConfirmationStatus.ready ||
                 state.data == null) {
               return const SizedBox.shrink();
             }
 
             return DefaultBottomPayBar(
-               buttonText: 'continue',
+                buttonText: 'continue',
                 isVatExclusive: true,
                 isButtonEnabled: state.isTermsChecked,
                 buttonColor: const Color(0xFF645D9C),
                 onPayNow: () {
-                  context.read<RoamingPlanConfirmationBloc>().add(
-                    const RoamingPlanConfirmationPayNowPressed(),
+                  context.read<AddOnsConfirmationBloc>().add(
+                    const AddOnsConfirmationPayNowPressed(),
                   );
                   context.push(
                     AppRoutes.guestPurchasePlanReceipt,
@@ -95,14 +93,14 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                   );
                   //context.push(AppRoutes.guestPaymentMethodScreen);
                 },
-                amountText: '\$ 75.00' //total.toString(),
-                );
+                amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+            );
           },
         ),
 
         body: SafeArea(
-          child: BlocBuilder<RoamingPlanConfirmationBloc,
-              RoamingPlanConfirmationState>(
+          child: BlocBuilder<AddOnsConfirmationBloc,
+              AddOnsConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -119,7 +117,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                       context.pop();
                     },
                     showBackArrow: true,
-                    backgroundColor: RoamingPlanConfirmationTheme.purple,
+                    backgroundColor: AddOnsConfirmationTheme.purple,
                   ),
 
                   /// Scrollable body (Slivers)
@@ -135,39 +133,21 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .contentHorizontalPadding,
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .purchaseSummaryCardTopSpacing,
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .contentHorizontalPadding,
                                         0,
                                       ),
                                       child: PurchaseSummaryCard(
                                         data: data,
                                         onRemoveItem: (id) => context
-                                            .read<RoamingPlanConfirmationBloc>()
+                                            .read<AddOnsConfirmationBloc>()
                                             .add(
-                                                RoamingPlanConfirmationRemoveItemPressed(
+                                                AddOnsConfirmationRemoveItemPressed(
                                                     id)),
-                                      ),
-                                    ),
-                                  ),
-
-                                  /// Begins-on info card
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        RoamingPlanConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        RoamingPlanConfirmationTheme
-                                            .beginsOnCardTopSpacing,
-                                        RoamingPlanConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        0,
-                                      ),
-                                      child: BeginsOnCard(
-                                        dateText: data.beginsOnDateText,
                                       ),
                                     ),
                                   ),
@@ -176,28 +156,28 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .termsNoticeHorizontalPadding,
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .termsNoticeTopSpacing,
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .termsNoticeHorizontalPadding,
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .termsNoticeBottomSpacing,
                                       ),
                                       child: TermsNotice(
                                         isChecked: state.isTermsChecked,
                                         onToggleChecked: () => context
-                                            .read<RoamingPlanConfirmationBloc>()
+                                            .read<AddOnsConfirmationBloc>()
                                             .add(
-                                              RoamingPlanConfirmationTermsCheckboxToggled(
+                                              AddOnsConfirmationTermsCheckboxToggled(
                                                 !state.isTermsChecked,
                                               ),
                                             ),
                                         onTermsTap: () => context
-                                            .read<RoamingPlanConfirmationBloc>()
+                                            .read<AddOnsConfirmationBloc>()
                                             .add(
-                                                const RoamingPlanConfirmationTermsPressed()),
+                                                const AddOnsConfirmationTermsPressed()),
                                       ),
                                     ),
                                   ),
@@ -206,10 +186,10 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .contentHorizontalPadding,
                                         0,
-                                        RoamingPlanConfirmationTheme
+                                        AddOnsConfirmationTheme
                                             .contentHorizontalPadding,
                                         0,
                                       ),
@@ -224,18 +204,19 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         ),
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
-                                            label: 'sub total',
-                                            value: '\$ 18.18',
-                                            // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                            label: 'subtotal',
+                                            value:
+                                                '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value:'\$ 0.0' ,//'\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                            value:
+                                                '\$ ${data.totals.vat.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value: '\$ 20.00',
-                                            //    '\$ ${data.totals.total.toStringAsFixed(2)}',
+                                            value:
+                                                '\$ ${data.totals.total.toStringAsFixed(2)}',
                                           ),
                                         ],
                                       ),
