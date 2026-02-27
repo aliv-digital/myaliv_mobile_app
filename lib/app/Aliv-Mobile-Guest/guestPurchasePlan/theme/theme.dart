@@ -60,7 +60,7 @@ class GuestPurchasePlanTheme {
   static final Color dataColor = HexColor.fromHex('#FF6C36');
   static final Color bonusDataColor = HexColor.fromHex('#00C4B3');
   static final Color intlTalkTextColor = HexColor.fromHex('#FF6C36');
-  static final Color mmsColor = HexColor.fromHex('#00C4B3');
+  static final Color mmsColor = HexColor.fromHex('#00B3E3');
 
   // Section title above plan list
   static final TextStyle sectionTitle = TextStyle(

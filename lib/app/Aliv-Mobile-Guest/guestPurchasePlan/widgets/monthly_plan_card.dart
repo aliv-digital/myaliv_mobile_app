@@ -530,7 +530,7 @@ class _BenefitItem extends StatelessWidget {
             SizedBox(
               height: 12,
               child: Text(
-                benefit.sub,
+               benefit.sub,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: subStyle,

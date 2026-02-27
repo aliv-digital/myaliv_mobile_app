@@ -200,7 +200,7 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                 height: GuestPurchasePlanTheme.roamBottomSheetOrToActivateNowGap,
               ),
 
-              // Primary CTA.
+              // Primary CTA. activate now
               DefaultButton(
                 label: GuestPurchasePlanTheme.bottomSheetActivateNowLabel,
                 isLoading: false,

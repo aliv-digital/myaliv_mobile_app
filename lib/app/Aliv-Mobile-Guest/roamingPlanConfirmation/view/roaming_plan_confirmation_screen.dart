@@ -5,8 +5,8 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
-import '../../Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../bloc/roaming_plan_confirmation_bloc.dart';
 import '../bloc/roaming_plan_confirmation_event.dart';
 import '../bloc/roaming_plan_confirmation_state.dart';
@@ -20,26 +20,33 @@ class RoamingPlanConfirmationScreen extends StatelessWidget {
   const RoamingPlanConfirmationScreen({
     super.key,
     required this.phoneNumber,
+    this.showDateField = false,
   });
 
   final String phoneNumber;
+  final bool showDateField;
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("showDateField: $showDateField");
     return RepositoryProvider(
       create: (_) => RoamingPlanConfirmationRepository(),
       child: BlocProvider(
         create: (ctx) => RoamingPlanConfirmationBloc(
           repository: ctx.read<RoamingPlanConfirmationRepository>(),
         )..add(RoamingPlanConfirmationStarted(phoneNumber)),
-        child: const _RoamingPlanConfirmationView(),
+        child: _RoamingPlanConfirmationView(showDateField: showDateField),
       ),
     );
   }
 }
 
 class _RoamingPlanConfirmationView extends StatelessWidget {
-  const _RoamingPlanConfirmationView();
+  const _RoamingPlanConfirmationView({
+    required this.showDateField,
+  });
+
+  final bool showDateField;
 
   @override
   Widget build(BuildContext context) {
@@ -154,23 +161,24 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                     ),
                                   ),
 
-                                  /// Begins-on info card
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        RoamingPlanConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        RoamingPlanConfirmationTheme
-                                            .beginsOnCardTopSpacing,
-                                        RoamingPlanConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        0,
-                                      ),
-                                      child: BeginsOnCard(
-                                        dateText: data.beginsOnDateText,
+                                  if (showDateField)
+                                    /// Begins-on info card (optional via navigation flag)
+                                    SliverToBoxAdapter(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          RoamingPlanConfirmationTheme
+                                              .contentHorizontalPadding,
+                                          RoamingPlanConfirmationTheme
+                                              .beginsOnCardTopSpacing,
+                                          RoamingPlanConfirmationTheme
+                                              .contentHorizontalPadding,
+                                          0,
+                                        ),
+                                        child: BeginsOnCard(
+                                          dateText: data.beginsOnDateText,
+                                        ),
                                       ),
                                     ),
-                                  ),
 
                                   /// Terms notice (your exact padding)
                                   SliverToBoxAdapter(
@@ -194,10 +202,17 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                                 !state.isTermsChecked,
                                               ),
                                             ),
-                                        onTermsTap: () => context
-                                            .read<RoamingPlanConfirmationBloc>()
-                                            .add(
-                                                const RoamingPlanConfirmationTermsPressed()),
+                                        onTermsTap: () async {
+                                          final uri = Uri.parse(
+                                            'https://www.bealiv.com/terms-of-use/',
+                                          );
+
+                                          await launchUrl(
+                                            uri,
+                                            mode:
+                                                LaunchMode.externalApplication,
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),

@@ -98,7 +98,24 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.roamingPlanConfirmation,
-        builder: (context, state) =>  RoamingPlanConfirmationScreen(phoneNumber: '242-801-1616',),
+        builder: (context, state) {
+          // Read optional route flag from navigation extras.
+          final extra = state.extra;
+          bool showDateField = true;
+          if (extra is Map<String, dynamic>) {
+            final value = extra['showDateField'];
+            if (value is bool) {
+              showDateField = value;
+            } else if (value is String) {
+              showDateField = value.toLowerCase() == 'true';
+            }
+          }
+
+          return RoamingPlanConfirmationScreen(
+            phoneNumber: '242-801-1616',
+            showDateField: showDateField,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.homeRoamingConfirmation,

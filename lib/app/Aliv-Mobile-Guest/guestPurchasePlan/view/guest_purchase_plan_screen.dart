@@ -126,10 +126,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
           expireDate: activePlan.expireDate,
         ),
         const SizedBox(height: 16),
-        FairUsePolicyCard(
-          policy: fairUsePolicy,
-          onTap: () {},
-        ),
+        FairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
         const SizedBox(height: 16),
         ...state.addOns.map((addOn) {
           final selected = state.selectedAddOnIds.contains(addOn.id);
@@ -172,9 +169,38 @@ class _GuestPurchasePlanView extends StatelessWidget {
         if (selectedTab == PlanTab.roaming) {
           return RoamBottomSheet(
             onBackPressed: () => Navigator.of(sheetContext).pop(),
-            onActivateNowPressed: () {
+            onDateApplied: (_) {
+              
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.roamingPlanConfirmation);
+              context.push(AppRoutes.roamingPlanConfirmation, extra: {
+                'showDateField': true,
+              });
+            },
+            onActivateNowPressed: () {
+              
+              Navigator.of(sheetContext).pop();
+              context.push(AppRoutes.roamingPlanConfirmation, extra: {
+                'showDateField': false,
+              });
+            },
+          );
+        }
+        if (selectedTab == PlanTab.roameasy) {
+          return RoamBottomSheet(
+            onBackPressed: () => Navigator.of(sheetContext).pop(),
+            onDateApplied: (_) {
+             
+              Navigator.of(sheetContext).pop();
+              context.push(AppRoutes.roamingPlanConfirmation, extra: {
+                'showDateField': true,
+              });
+            },
+            onActivateNowPressed: () {
+              
+              Navigator.of(sheetContext).pop();
+              context.push(AppRoutes.roamingPlanConfirmation, extra: {
+                'showDateField': false,
+              });
             },
           );
         }
@@ -231,34 +257,37 @@ class _GuestPurchasePlanView extends StatelessWidget {
       backgroundColor: GuestPurchasePlanTheme.screenBackground,
       bottomNavigationBar:
           BlocBuilder<GuestPurchasePlanBloc, GuestPurchasePlanState>(
-        buildWhen: (previous, current) {
-          return previous.selectedTab != current.selectedTab ||
-              previous.status != current.status ||
-              previous.selectedAddOnIds != current.selectedAddOnIds ||
-              previous.addOns != current.addOns;
-        },
-        builder: (context, state) {
-          if (state.selectedTab != PlanTab.addOns ||
-              state.status != GuestPurchasePlanStatus.loaded) {
-            return const SizedBox.shrink();
-          }
-
-          final total = _selectedAddOnsTotal(state);
-
-          return DefaultBottomPayBar(
-            isVatExclusive: true,
-            buttonText: 'proceed',
-            amountText: '\$ ${total.toStringAsFixed(2)}',
-            onPayNow: () {
-              context.push(AppRoutes.addOnsConfirmation);//guestPurchasePlanConfirmation);
+            buildWhen: (previous, current) {
+              return previous.selectedTab != current.selectedTab ||
+                  previous.status != current.status ||
+                  previous.selectedAddOnIds != current.selectedAddOnIds ||
+                  previous.addOns != current.addOns;
             },
-          );
-        },
-      ),
+            builder: (context, state) {
+              if (state.selectedTab != PlanTab.addOns ||
+                  state.status != GuestPurchasePlanStatus.loaded) {
+                return const SizedBox.shrink();
+              }
+
+              final total = _selectedAddOnsTotal(state);
+
+              return DefaultBottomPayBar(
+                isVatExclusive: true,
+                buttonText: 'proceed',
+                amountText: '\$ ${total.toStringAsFixed(2)}',
+                onPayNow: () {
+                  context.push(
+                    AppRoutes.addOnsConfirmation,
+                  ); //guestPurchasePlanConfirmation);
+                },
+              );
+            },
+          ),
       body: SafeArea(
         child: Column(
           children: [
             DefaultAppBar(
+              showHome: true,
               showBackArrow: true,
               showNotification: false,
               showNotificationDotWhenZero: true,
@@ -266,8 +295,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
               onBack: () {
                 context.pop();
               },
-                onHomeTap: () => context.go(AppRoutes.logIn)
-
+              onHomeTap: () => context.go(AppRoutes.logIn),
             ),
 
             // _TopBar(
