@@ -54,7 +54,7 @@ class AutoRenewPrepaidTheme {
   static const EdgeInsets addCardButtonPadding = EdgeInsets.symmetric(horizontal: 16);
   static const EdgeInsets addCardBottomSheetPadding = EdgeInsets.fromLTRB(18, 14, 18, 18);
   static const double addCardBottomSheetBottomBase = 18.0;
-  static const EdgeInsets addCardInputPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 10);
+  static const EdgeInsets addCardInputPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 0);
 
   static const double sectionItemGap = 10.0;
   static const double sectionTitleGap = 16.0;

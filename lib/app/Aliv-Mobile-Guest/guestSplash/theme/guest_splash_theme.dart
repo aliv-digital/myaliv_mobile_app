@@ -36,9 +36,9 @@ class GuestSplashTheme {
 
   // Bottom sheet primary button text: "continue"
   static const TextStyle continueButtonText = TextStyle(
-    fontSize: 14.5,
+    fontSize: 15,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
     color: Colors.white,
   );
 

@@ -70,7 +70,8 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
             Navigator.of(context).maybePop();
           },
           onHomeTap: () {
-            autoRenewPrepaidBloc.add(const AutoRenewHomePressed());
+            // autoRenewPrepaidBloc.add(const AutoRenewHomePressed());
+            context.go(AppRoutes.home);
           },
         ),
       ),

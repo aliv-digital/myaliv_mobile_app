@@ -36,69 +36,71 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
     return Padding(
       padding: AutoRenewPrepaidTheme.addCardBottomSheetPadding.copyWith(
           bottom: AutoRenewPrepaidTheme.addCardBottomSheetBottomBase + bottom),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: AutoRenewPrepaidTheme.dragHandleWidth,
-            height: AutoRenewPrepaidTheme.dragHandleHeight,
-            decoration: BoxDecoration(
-              color: AutoRenewPrepaidTheme.dragHandle,
-              borderRadius: BorderRadius.circular(
-                AutoRenewPrepaidTheme.dragHandleRadius,
-              ),
-            ),
-          ),
-          const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetTitleGap),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'add card expiry',
-              style: AutoRenewPrepaidTheme.addCardSheetTitleStyle,
-            ),
-          ),
-          const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
-          Row(
-            children: [
-              Expanded(
-                child: _Dropdown<int>(
-                  value: _month,
-                  items: List.generate(12, (i) => i + 1),
-                  label: 'month',
-                  onChanged: (v) => setState(() => _month = v),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: AutoRenewPrepaidTheme.dragHandleWidth,
+              height: AutoRenewPrepaidTheme.dragHandleHeight,
+              decoration: BoxDecoration(
+                color: AutoRenewPrepaidTheme.dragHandle,
+                borderRadius: BorderRadius.circular(
+                  AutoRenewPrepaidTheme.dragHandleRadius,
                 ),
               ),
-              const SizedBox(width: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
-              Expanded(
-                child: _Dropdown<int>(
-                  value: _year,
-                  items: List.generate(10, (i) => DateTime.now().year + i),
-                  label: 'year',
-                  onChanged: (v) => setState(() => _year = v),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetButtonTopGap),
-          SizedBox(
-            height: AutoRenewPrepaidTheme.bottomSheetActionHeight,
-            width: double.infinity,
-            child: ElevatedButton(
-              style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
-                backgroundColor: AutoRenewPrepaidTheme.primary,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(
-                  AddCardExpiryResult(month: _month, year: _year),
-                );
-              },
-              child: const Text(
-                'save',
-                style: AutoRenewPrepaidTheme.addCardSheetSaveStyle,
+            ),
+            const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetTitleGap),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'add card expiry',
+                style: AutoRenewPrepaidTheme.addCardSheetTitleStyle,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
+            Row(
+              children: [
+                Expanded(
+                  child: _Dropdown<int>(
+                    value: _month,
+                    items: List.generate(12, (i) => i + 1),
+                    label: 'month',
+                    onChanged: (v) => setState(() => _month = v),
+                  ),
+                ),
+                const SizedBox(width: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
+                Expanded(
+                  child: _Dropdown<int>(
+                    value: _year,
+                    items: List.generate(10, (i) => DateTime.now().year + i),
+                    label: 'year',
+                    onChanged: (v) => setState(() => _year = v),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetButtonTopGap),
+            SizedBox(
+              height: AutoRenewPrepaidTheme.bottomSheetActionHeight,
+              width: double.infinity,
+              child: ElevatedButton(
+                style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
+                  backgroundColor: AutoRenewPrepaidTheme.primary,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(
+                    AddCardExpiryResult(month: _month, year: _year),
+                  );
+                },
+                child: const Text(
+                  'save',
+                  style: AutoRenewPrepaidTheme.addCardSheetSaveStyle,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

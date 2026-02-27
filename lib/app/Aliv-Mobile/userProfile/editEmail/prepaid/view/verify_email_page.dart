@@ -75,7 +75,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             style: TextStyle(
                               color: const Color(0xFF58677D),
                               fontSize: 15,
-                              fontFamily: 'Circular Pro',
+                              fontFamily: 'CircularPro',
                               fontWeight: FontWeight.w500,
                               height: 1.47,
                             ),
@@ -85,7 +85,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             style: TextStyle(
                               color: const Color(0xFF58677D),
                               fontSize: 15,
-                              fontFamily: 'Circular Pro',
+                              fontFamily: 'CircularPro',
                               fontWeight: FontWeight.w700,
                               height: 1.47,
                             ),
@@ -95,7 +95,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             style: TextStyle(
                               color: const Color(0xFF58677D),
                               fontSize: 15,
-                              fontFamily: 'Circular Pro',
+                              fontFamily: 'CircularPro',
                               fontWeight: FontWeight.w500,
                               height: 1.47,
                             ),
@@ -129,7 +129,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 17,
-                              fontFamily: 'Circular Pro',
+                              fontFamily: 'CircularPro',
                               fontWeight: FontWeight.w700,
                               height: 1.80,
                             ),

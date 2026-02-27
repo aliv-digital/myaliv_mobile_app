@@ -51,13 +51,13 @@ class GuestPurchasePlanRepository {
                ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -148,13 +148,13 @@ class GuestPurchasePlanRepository {
               ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -191,13 +191,13 @@ class GuestPurchasePlanRepository {
               ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -234,13 +234,13 @@ class GuestPurchasePlanRepository {
               ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -282,13 +282,13 @@ class GuestPurchasePlanRepository {
               ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -299,7 +299,7 @@ class GuestPurchasePlanRepository {
               //     sub: 'gb'),
               // PlanBenefit(
               //     type: PlanBenefitType.intlTalkText,
-              //     label: "us/can text",
+              //     label: "us/can talk",
               //     value: '300',
               //     sub: 'sms text'),
               // PlanBenefit(
@@ -341,13 +341,13 @@ class GuestPurchasePlanRepository {
               ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -403,13 +403,13 @@ class GuestPurchasePlanRepository {
               ),
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
-                  label: 'us/can text',
+                  label: 'us/can talk',
                   value: '30',
                   sub: 'int’l text'
               ),
               PlanBenefit(
                   type: PlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),

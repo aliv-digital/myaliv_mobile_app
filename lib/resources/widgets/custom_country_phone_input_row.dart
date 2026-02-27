@@ -211,8 +211,9 @@ class _CustomCountryPhoneInputRowState
     final String? isoCode = widget.countryIsoCode;
     if (isoCode != null && isoCode.isNotEmpty) {
       // country_pickers does not include AC.png; use SH asset (same flag style).
-      final String assetIsoCode =
-          isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
+      final String assetIsoCode = isoCode.toUpperCase() == 'AC'
+          ? 'SH'
+          : isoCode.toUpperCase();
 
       return ClipRRect(
         borderRadius: BorderRadius.circular(widget.countryFlagBorderRadius),
@@ -234,7 +235,8 @@ class _CustomCountryPhoneInputRowState
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle resolvedLabelStyle = widget.labelStyle ??
+    final TextStyle resolvedLabelStyle =
+        widget.labelStyle ??
         const TextStyle(
           fontSize: 14,
           height: 1.43,
@@ -243,13 +245,15 @@ class _CustomCountryPhoneInputRowState
           color: Colors.black,
         );
 
-    final TextStyle resolvedFlagStyle = widget.flagStyle ??
+    final TextStyle resolvedFlagStyle =
+        widget.flagStyle ??
         const TextStyle(
           fontSize: 18,
           fontFamily: AppConstants.defaultFontFamily,
         );
 
-    final TextStyle resolvedDialStyle = widget.dialCodeStyle ??
+    final TextStyle resolvedDialStyle =
+        widget.dialCodeStyle ??
         const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -257,7 +261,8 @@ class _CustomCountryPhoneInputRowState
           color: Color(0xFF111111),
         );
 
-    final TextStyle resolvedPhoneInputStyle = widget.phoneInputStyle ??
+    final TextStyle resolvedPhoneInputStyle =
+        widget.phoneInputStyle ??
         const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -265,7 +270,8 @@ class _CustomCountryPhoneInputRowState
           color: Color(0xFF000000),
         );
 
-    final TextStyle resolvedPhoneHintStyle = widget.phoneHintStyle ??
+    final TextStyle resolvedPhoneHintStyle =
+        widget.phoneHintStyle ??
         const TextStyle(
           color: Color(0xB3707070),
           fontSize: 14,
@@ -297,6 +303,8 @@ class _CustomCountryPhoneInputRowState
               fit: BoxFit.scaleDown,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+
                 children: [
                   _buildCountryFlag(resolvedFlagStyle),
                   SizedBox(width: widget.countryFlagToDialGap),
@@ -324,6 +332,7 @@ class _CustomCountryPhoneInputRowState
                         color: widget.countryArrowColor,
                       ),
                   ],
+                  if (widget.showCountryArrow == false) SizedBox(width: 16),
                 ],
               ),
             ),
@@ -413,17 +422,18 @@ class _FocusedInputBorderWrapper extends StatelessWidget {
         border: isFocused
             ? null
             : (hideUnfocusedBorder
-                ? null
-                : Border.all(
-                    color: unfocusedBorderColor,
-                    width: borderWidth,
-                  )),
+                  ? null
+                  : Border.all(
+                      color: unfocusedBorderColor,
+                      width: borderWidth,
+                    )),
         borderRadius: BorderRadius.circular(radius),
       ),
       padding: EdgeInsets.all(borderWidth),
       child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular((radius - borderWidth).clamp(0.0, radius)),
+        borderRadius: BorderRadius.circular(
+          (radius - borderWidth).clamp(0.0, radius),
+        ),
         child: child,
       ),
     );

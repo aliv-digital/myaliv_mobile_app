@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/utils/app_session.dart';
 import '../../../router/app_routes.dart';
@@ -55,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _headerBackground(),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 100),
+              padding: const EdgeInsets.only(bottom: 24),
               child: Column(
                 children: [
                   HomeHeader(config: config),
@@ -181,13 +182,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 11),
           scrollDirection: Axis.horizontal,
-          itemCount: demoPlans.length,
+          itemCount: homePlans.length,
           separatorBuilder: (context, index) => const SizedBox(width: 16),
           itemBuilder: (context, index) {
             return SizedBox(
               width: cardWidth,
               child: PlanCard(
-                plan: demoPlans[index],
+                plan: homePlans[index],
                 height: 170,
                 imageWidth: cardWidth * 0.4, // 🔥 image scales too
               ),
@@ -259,7 +260,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
               },
                 child: const ActionTile('assets/icons/UsersThree.svg', 'refer a friend')),
-            const ActionTile('assets/icons/aliv_quick.svg', 'ALIV deals'),
+            GestureDetector(
+              onTap: () async {
+                ///https://www.bealiv.com/deals/
+                final uri = Uri.parse(
+                  'https://www.bealiv.com/deals/',
+                );
+
+                if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                throw 'Could not open store locator';
+                }
+              },
+                child: const ActionTile('assets/icons/aliv_quick.svg', 'ALIV deals')),
             GestureDetector(
               onTap: (){
                 context.push(AppRoutes.callSupportScreen);
@@ -285,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 11, 24, 15),
+        padding: const EdgeInsets.fromLTRB(24, 11, 24, 0),
         child: Container(
           width: double.infinity,
           height: 112,

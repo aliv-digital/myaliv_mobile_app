@@ -159,7 +159,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding:
-                            const EdgeInsets.only(top: 20, left: 23, right: 23),
+                            const EdgeInsets.only(top: 20,
+                                left: 23,
+                                right: 23),
                         child: CustomCountryPhoneInputRow(
                           labelText: GuestTopUpTheme.confirmMobileLabel,
                           hintText: GuestTopUpTheme.phoneHintText,

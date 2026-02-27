@@ -19,7 +19,7 @@ class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
         ),
         SizedBox(height: 3),
         Text(
-          'For security reasons, please enter your password to continue.',
+          'for security reasons, please enter your password to continue.',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: const Color(0xFF58677D),

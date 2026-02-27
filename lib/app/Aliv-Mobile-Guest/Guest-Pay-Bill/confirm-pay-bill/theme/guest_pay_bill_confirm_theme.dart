@@ -150,6 +150,7 @@ class GuestPayBillConfirmTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: termsLinkColor
   );
 
   static const TextStyle breakdownRow = TextStyle(

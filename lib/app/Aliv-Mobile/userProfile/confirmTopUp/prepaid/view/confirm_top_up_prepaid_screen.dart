@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/confirm_top_up_prepaid_bloc.dart';
 import '../bloc/confirm_top_up_prepaid_event.dart';
@@ -33,12 +34,29 @@ class ConfirmTopUpPrepaidScreen extends StatefulWidget {
 
 class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
   late final TextEditingController _promoController;
+  late TapGestureRecognizer _termsRecognizer;
 
   @override
   void initState() {
     super.initState();
     _promoController = TextEditingController();
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () async {
+        // ✅ Navigate to Terms
+        final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
+
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+          throw 'Could not open store locator';
+        }
+      };
+
   }
+  //
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _promoController = TextEditingController();
+  // }
 
   @override
   void dispose() {
@@ -126,7 +144,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
         ),
       ),
       title: Text(
-        'confirmation',
+        'confirmation & payment',
         style: ConfirmTopUpPrepaidTheme.titleMd(context).copyWith(color: Colors.white),
       ),
       actions: [
@@ -136,6 +154,7 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
             icon:  SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
             onPressed: () {
               // TODO: integrate GoRouter home route
+              context.go(AppRoutes.home);
             },
           ),
         ),
@@ -171,6 +190,8 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
                 ),
                 TextSpan(
                   text: 'Terms & Conditions.',
+                  recognizer: _termsRecognizer,
+
                   style: TextStyle(
                     color: const Color(0xFF645D9C),
                     fontSize: 14,

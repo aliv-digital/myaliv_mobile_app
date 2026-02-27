@@ -141,32 +141,63 @@ class UsageCard extends StatelessWidget {
         builder: (context, constraints) {
           final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
 
+          Color mainColor = Color(0x3F808080);
+          LinearGradient gradient = LinearGradient(
+            colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
+          );
+          if (progress < 0.35) {
+            mainColor = Color(0x26DD3038);
+            gradient = LinearGradient(
+              colors: [ const Color(0xFFDD3038),const Color(0x00DD3038),],
+            );
+          } else if (progress < 0.6) {
+            mainColor = Color(0x26FFC627);
+            gradient = LinearGradient(
+              colors: [Color(0x26FFC627),Color(0xFFFFC627), ],
+            );
+          } else {
+            mainColor = Color(0x2617B26A);
+            gradient = LinearGradient(
+              // colors: [Color(0xFF17B26A), Color(0x2617B26A)],
+              colors: [Color(0x2617B26A),Color(0xFF17B26A), ],
+            );
+          }
           return Stack(
             children: [
               // Background
-              Container(
-                height: 6,
-                color: title == 'data'
-                    ? color.withOpacity(0.2)
-                    : Color(0x3F808080),
-              ),
+
+              Container(height: 6, color: mainColor),
 
               // Gradient progress (width = percentage)
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 6,
                 width: width,
-                decoration: BoxDecoration(
-                  gradient: title == 'data'
-                      ? LinearGradient(
-                          colors: [Color(0xFFDD3038), Color(0xFFDD3038)],
-                          // : title == 'sms' || title == 'talk mins'
-                          // ? [const Color(0x3F808080), const Color(0x3F808080)]
-                          // : [],
-                        )
-                      : null,
-                ),
+                decoration: BoxDecoration(gradient: gradient),
               ),
+              // Container(
+              //   height: 6,
+              //   color: title == 'data'
+              //       ? color.withOpacity(0.2)
+              //       : Color(0x3F808080),
+              // ),
+              //
+              // // Gradient progress (width = percentage)
+              // AnimatedContainer(
+              //   duration: const Duration(milliseconds: 300),
+              //   height: 6,
+              //   width: width,
+              //   decoration: BoxDecoration(
+              //     gradient: title == 'data'
+              //         ? LinearGradient(
+              //             colors: [Color(0xFFDD3038), Color(0xFFDD3038)],
+              //             // : title == 'sms' || title == 'talk mins'
+              //             // ? [const Color(0x3F808080), const Color(0x3F808080)]
+              //             // : [],
+              //           )
+              //         : null,
+              //   ),
+              // ),
             ],
           );
         },

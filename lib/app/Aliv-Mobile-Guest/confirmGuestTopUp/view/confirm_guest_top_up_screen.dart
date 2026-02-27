@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_ca
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
 import '../bloc/confirm_topup_event.dart';
@@ -183,9 +184,16 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                           final bloc = context.read<GuestConfirmTopUpBloc>();
                           bloc.add(const GuestConfirmTopUpTermsCheckboxToggled());
                         },
-                        onTapTerms: () {
+                        onTapTerms: () async {
                           final bloc = context.read<GuestConfirmTopUpBloc>();
-                          bloc.add(const GuestConfirmTopUpTermsPressed());
+                          // bloc.add(const GuestConfirmTopUpTermsPressed());
+                          final uri = Uri.parse(
+                            'https://www.bealiv.com/terms-of-use/',
+                          );
+
+                          if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                          throw 'Could not open store locator';
+                          }
                         },
                       );
                     },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/custom_payment_break_down_card.dart';
@@ -33,11 +34,16 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RevConfirmationPrepaidBloc, RevConfirmationPrepaidState>(
+    return BlocConsumer<
+      RevConfirmationPrepaidBloc,
+      RevConfirmationPrepaidState
+    >(
       listenWhen: (p, c) => p.navTarget != c.navTarget,
       listener: (context, state) {
         if (state.navTarget != RevConfirmNavTarget.none) {
-          context.read<RevConfirmationPrepaidBloc>().add(const RevNavConsumed());
+          context.read<RevConfirmationPrepaidBloc>().add(
+            const RevNavConsumed(),
+          );
         }
 
         //  optional: show error if user presses continue without accepting terms
@@ -49,7 +55,9 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
       },
       builder: (context, state) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: RevConfirmationPrepaidTheme.bg,
             bottomNavigationBar: DefaultBottomPayBar(
@@ -70,7 +78,6 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                   child: SizedBox(
                     height: RevConfirmationPrepaidTheme.appBarHeight,
                     child: DefaultAppBar(
-
                       title: state.title,
                       height: RevConfirmationPrepaidTheme.appBarHeight,
                       backgroundColor: RevConfirmationPrepaidTheme.appBarBg,
@@ -101,7 +108,9 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                                 accountNumber: state.accountNumber,
                                 amountText: state.headerAmountPillText,
                               ),
-                              const SizedBox(height: RevConfirmationPrepaidTheme.sectionGap),
+                              const SizedBox(
+                                height: RevConfirmationPrepaidTheme.sectionGap,
+                              ),
 
                               // ✅ NEW: checkbox + link
                               RevTermsCheckbox(
@@ -109,16 +118,29 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                                 onChanged: (v) => context
                                     .read<RevConfirmationPrepaidBloc>()
                                     .add(RevTermsToggled(v)),
-                                onTermsTap: () {
+                                onTermsTap: () async {
                                   // TODO: open terms screen/bottomsheet
                                   // context.push(AppRoutes.terms);
+                                  final uri = Uri.parse(
+                                    'https://www.bealiv.com/terms-of-use/',
+                                  );
+
+                                  if (!await launchUrl(
+                                    uri,
+                                    mode: LaunchMode.externalApplication,
+                                  )) {
+                                    throw 'Could not open store locator';
+                                  }
                                 },
                               ),
 
-                              const SizedBox(height: RevConfirmationPrepaidTheme.sectionGap),
+                              const SizedBox(
+                                height: RevConfirmationPrepaidTheme.sectionGap,
+                              ),
 
                               CustomPaymentBreakDownCard(
-                                backgroundColor: RevConfirmationPrepaidTheme.receiptBg,
+                                backgroundColor:
+                                    RevConfirmationPrepaidTheme.receiptBg,
                                 scallopCount: 12,
                                 input: CustomPaymentBreakdownInputConfig(
                                   value: state.promoCode,

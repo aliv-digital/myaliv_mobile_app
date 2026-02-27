@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../Aliv-Mobile/revBillPay/revConfirmation/prepaid/theme/rev_confirmation_prepaid_theme.dart';
 import '../../../Aliv-Mobile/userProfile/confirmTopUp/prepaid/theme/confirm_top_up_prepaid_theme.dart';
@@ -155,11 +156,20 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                                 !state.isTermsChecked,
                                               ),
                                             ),
-                                        onTermsTap: () => context
-                                            .read<
-                                                GuestPurchasePlanConfirmationBloc>()
-                                            .add(
-                                                const GuestPurchasePlanConfirmationTermsPressed()),
+                                        onTermsTap: () async {
+                                          // context
+                                          //   .read<
+                                          //       GuestPurchasePlanConfirmationBloc>()
+                                          //   .add(
+                                          //       const GuestPurchasePlanConfirmationTermsPressed());
+                                          final uri = Uri.parse(
+                                            'https://www.bealiv.com/terms-of-use/',
+                                          );
+
+                                          if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                                          throw 'Could not open store locator';
+                                          }
+                                        },
                                       ),
                                     ),
                                   ),

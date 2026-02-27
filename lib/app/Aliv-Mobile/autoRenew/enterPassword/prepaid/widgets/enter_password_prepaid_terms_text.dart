@@ -1,8 +1,44 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/enter_password_autoRenew_prepaid_theme.dart';
 
-class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
+class EnterPasswordAutoRenewPrepaidTermsText extends StatefulWidget {
   const EnterPasswordAutoRenewPrepaidTermsText({super.key});
+
+  @override
+  State<EnterPasswordAutoRenewPrepaidTermsText> createState() =>
+      _EnterPasswordAutoRenewPrepaidTermsTextState();
+}
+
+class _EnterPasswordAutoRenewPrepaidTermsTextState
+    extends State<EnterPasswordAutoRenewPrepaidTermsText> {
+  late TapGestureRecognizer _termsRecognizer;
+  late TapGestureRecognizer _privacyRecognizer;
+  @override
+  void initState() {
+    super.initState();
+
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () async {
+        // ✅ Navigate to Terms
+        final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
+
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+          throw 'Could not open store locator';
+        }
+      };
+
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = () async {
+        // ✅ Navigate to Privacy
+        final uri = Uri.parse('https://www.bealiv.com/privacy-policy/');
+
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+          throw 'Could not open store locator';
+        }
+      };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +67,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
               ),
               TextSpan(
                 text: 'Terms & Conditions',
+                recognizer: _termsRecognizer,
                 style: TextStyle(
                   color: const Color(0xFF645D9C),
                   fontSize: 13,
@@ -44,7 +81,6 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
               TextSpan(
                 text: ' & ',
                 style: TextStyle(
-
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF58677D),
@@ -53,6 +89,7 @@ class EnterPasswordAutoRenewPrepaidTermsText extends StatelessWidget {
               ),
               TextSpan(
                 text: 'Privacy Policy',
+                recognizer: _privacyRecognizer,
                 style: TextStyle(
                   color: const Color(0xFF645D9C),
                   fontSize: 13,

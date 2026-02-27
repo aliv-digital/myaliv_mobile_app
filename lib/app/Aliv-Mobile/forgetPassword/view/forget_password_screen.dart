@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../router/app_routes.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_state.dart';
@@ -97,11 +98,25 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                                 return TermsAndPrivacyText(
                                   isTermsLoading: state.isTermsLoading,
                                   isPrivacyLoading: state.isPrivacyLoading,
-                                  onTermsTap: () {
+                                  onTermsTap: () async {
                                     //context.read<LegalBloc>().add(LoadTermsPressed());
+                                    final uri = Uri.parse(
+                                      'https://www.bealiv.com/terms-of-use/',
+                                    );
+
+                                    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                                    throw 'Could not open store locator';
+                                    }
                                   },
-                                  onPrivacyTap: () {
+                                  onPrivacyTap: () async {
                                     //context.read<LegalBloc>().add(LoadPrivacyPressed());
+                                    final uri = Uri.parse(
+                                      'https://www.bealiv.com/privacy-policy/',
+                                    );
+
+                                    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                                    throw 'Could not open store locator';
+                                    }
                                   },
                                 );
                               },

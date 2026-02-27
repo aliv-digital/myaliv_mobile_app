@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_ca
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/guest_pay_bill_confirm_bloc.dart';
 import '../bloc/guest_pay_bill_confirm_event.dart';
@@ -125,8 +126,15 @@ class _GuestPayBillConfirmView extends StatelessWidget {
     bloc.add(const GuestPayBillConfirmTermsCheckboxToggled());
   }
 
-  void _onTapTerms(BuildContext context) {
+  Future<void> _onTapTerms(BuildContext context) async {
     // TODO: open terms page / modal / webview when route is ready.
+    final uri = Uri.parse(
+      'https://www.bealiv.com/terms-of-use/',
+    );
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    throw 'Could not open store locator';
+    }
   }
 
   @override
@@ -166,13 +174,13 @@ class _GuestPayBillConfirmView extends StatelessWidget {
               backgroundColor: Colors.white,
               buttonColor: GuestPayBillConfirmTheme.primary,
               onPayNow: () {
-                if (!state.isTermsChecked) {
-                  _showSnackBar(
-                    context,
-                    GuestPayBillConfirmTheme.termsValidationMessage,
-                  );
-                  return;
-                }
+                // if (!state.isTermsChecked) {
+                //   _showSnackBar(
+                //     context,
+                //     GuestPayBillConfirmTheme.termsValidationMessage,
+                //   );
+                //   return;
+                // }
                 //context.push(AppRoutes.guestPayBillReceipt, extra: _buildReceiptArgs(state));
                 _onPayNowPressed(context);
               },

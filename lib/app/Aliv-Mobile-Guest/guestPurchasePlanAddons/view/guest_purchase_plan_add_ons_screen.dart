@@ -91,6 +91,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
               DefaultAppBar(
                 title: 'add-ons',
                 showBackArrow: false,
+
                 actionText: 'skip',
                 onActionTextTap: () {
                   debugPrint('[GuestPurchasePlanAddOns] skip tapped');

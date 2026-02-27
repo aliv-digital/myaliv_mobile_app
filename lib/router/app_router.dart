@@ -193,11 +193,19 @@ class AppRouter {
         path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
         builder: (context, state) => const TopUpPrepaidNumberPostPaid(),
       ),
-
       GoRoute(
         path: AppRoutes.topUpPrepaidScreen,
-        builder: (context, state) => const TopUpPrepaidScreen(),
+        builder: (context, state) {
+          final tabParam = state.uri.queryParameters['tab'];
+          final initialTab = int.tryParse(tabParam ?? '0') ?? 0;
+
+          return TopUpPrepaidScreen(initialTab: initialTab);
+        },
       ),
+      // GoRoute(
+      //   path: AppRoutes.topUpPrepaidScreen,
+      //   builder: (context, state) => const TopUpPrepaidScreen(),
+      // ),
       GoRoute(
         path: AppRoutes.addOrEditCardsPrepaidScreen,
         builder: (context, state) => const AddOrEditCardsPrepaidScreen(),

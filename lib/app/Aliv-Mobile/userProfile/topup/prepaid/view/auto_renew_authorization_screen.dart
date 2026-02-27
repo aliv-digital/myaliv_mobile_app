@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../../../core/utils/app_session.dart';
+import '../../../../../../router/app_routes.dart';
 import '../../../purchases/prepaid/widgets/currency_amount_input.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
@@ -141,6 +144,10 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     // UI only – no logic yet
+                    AppSession.appRoute = 'autoTopUp';
+
+                    context.push(
+                        AppRoutes.enterPasswordAutoRenewPrepaidScreen);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TopUpPrepaidTheme.purple,

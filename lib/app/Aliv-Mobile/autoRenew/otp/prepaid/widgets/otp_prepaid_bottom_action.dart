@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
+import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/defaultButton.dart';
 import '../../../../../../resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
@@ -33,7 +34,7 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
               textStyle: OtpAutoRenewPrepaidTheme.verifyButtonTextStyle,
               onPressed: () {
                 // context.read<OtpAutoRenewPrepaidBloc>().add(const OtpAutoRenewPrepaidSubmitted());
-                if(config.isPostpaid == true){
+                if (config.isPostpaid == true) {
                   AppToast.show(
                     message: "Success! Your card is now set for auto renew",
                     type: ToastType.success,
@@ -46,18 +47,37 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
                     });
                   });
                 }
-                if(config.isPrepaid == true){
-                  AppToast.show(
-                    message: "We’re working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
-                    type: ToastType.success,
-                  );
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    Future.delayed(const Duration(seconds: 1), () {
-                      if (context.mounted) {
-                        context.go(AppRoutes.home);
-                      }
+                if (config.isPrepaid == true) {
+                  if (AppSession.appRoute == 'autoTopUp') {
+                    AppToast.show(
+                      message: "auto top-up successfully started",
+                      type: ToastType.success,
+                    );
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Future.delayed(const Duration(seconds: 1), () {
+                        if (context.mounted) {
+                          AppSession.resetAppRoute();
+                          // context.go(AppRoutes.purchasesPrepaidScreen);
+                          context.pop();
+                          context.pop();
+                          context.pop();
+                        }
+                      });
                     });
-                  });
+                  } else {
+                    AppToast.show(
+                      message:
+                          "We’re working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+                      type: ToastType.success,
+                    );
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Future.delayed(const Duration(seconds: 1), () {
+                        if (context.mounted) {
+                          context.go(AppRoutes.home);
+                        }
+                      });
+                    });
+                  }
                 }
 
                 // ✅ Update this route if your flow uses another screen
@@ -67,7 +87,8 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
         ),
 
         const SizedBox(
-            height: OtpAutoRenewPrepaidTheme.verifyButtonToResendRowGap),
+          height: OtpAutoRenewPrepaidTheme.verifyButtonToResendRowGap,
+        ),
 
         // didn't receive / resend
         BlocBuilder<OtpAutoRenewPrepaidBloc, OtpAutoRenewPrepaidState>(
@@ -84,13 +105,14 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
                   style: OtpAutoRenewPrepaidTheme.resendPromptTextStyle,
                 ),
                 const SizedBox(
-                    width: OtpAutoRenewPrepaidTheme.resendPromptToActionGap),
+                  width: OtpAutoRenewPrepaidTheme.resendPromptToActionGap,
+                ),
                 GestureDetector(
                   onTap: resendLoading
                       ? null
-                      : () => context
-                          .read<OtpAutoRenewPrepaidBloc>()
-                          .add(const OtpAutoRenewPrepaidResendRequested()),
+                      : () => context.read<OtpAutoRenewPrepaidBloc>().add(
+                          const OtpAutoRenewPrepaidResendRequested(),
+                        ),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: OtpAutoRenewPrepaidTheme.resendActionTextStyle,

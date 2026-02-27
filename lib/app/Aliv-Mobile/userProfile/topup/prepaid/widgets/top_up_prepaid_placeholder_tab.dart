@@ -120,11 +120,11 @@ class _TopUpPrepaidPlaceholderTabState
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding: EdgeInsets.only(left: 38.0),
+                                  padding: EdgeInsets.only(left: 0.0),
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Color(0xFFE6E6EC),
+                                    color: Color(0xFF8A8A8F),
                                   ),
                                 ),
                               ),
@@ -134,7 +134,7 @@ class _TopUpPrepaidPlaceholderTabState
                                   'or',
                                   style: TextStyle(
                                     fontFamily: 'CircularPro',
-                                    color: Color(0xFF222222),
+                                    color: Color(0xFF8A8A8F),
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
                                     height: 1.56,
@@ -143,11 +143,11 @@ class _TopUpPrepaidPlaceholderTabState
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: EdgeInsets.only(right: 38.0),
+                                  padding: EdgeInsets.only(right: 0.0),
                                   child: Divider(
                                     height: 1,
                                     thickness: 1,
-                                    color: Color(0xFFE6E6EC),
+                                    color: Color(0xFF8A8A8F),
                                   ),
                                 ),
                               ),
@@ -384,13 +384,15 @@ class _DropdownField extends StatelessWidget {
     );
   }
 }
-
 class _CardDropdown extends StatefulWidget {
   @override
   State<_CardDropdown> createState() => _CardDropdownState();
 }
 
 class _CardDropdownState extends State<_CardDropdown> {
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
   String selectedCard = 'visa ending in 1234';
 
   final List<String> cards = [
@@ -399,81 +401,221 @@ class _CardDropdownState extends State<_CardDropdown> {
     'amex ending in 9012',
   ];
 
+  bool _isOpen = false;
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _openCardSelector(context),
-      child: Container(
-        height: 52,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: TopUpPrepaidTheme.lightBg,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                selectedCard,
-                style: const TextStyle(
-                  color: const Color(0xFF707070),
-                  fontSize: 14,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
-                  height: 1.43,
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: GestureDetector(
+        onTap: _toggleDropdown,
+        child: Container(
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: TopUpPrepaidTheme.lightBg,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  selectedCard,
+                  style: const TextStyle(
+                    color: Color(0xFF707070),
+                    fontSize: 14,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-            const Icon(Icons.keyboard_arrow_down),
-          ],
+              Icon(
+                _isOpen
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _openCardSelector(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: cards.map((card) {
-              final isSelected = card == selectedCard;
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _removeOverlay();
+    } else {
+      _showOverlay();
+    }
+  }
 
-              return ListTile(
-                title: Text(
-                  card,
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 15,
-                  ),
-                ),
-                trailing: isSelected
-                    ? const Icon(
-                        Icons.check_circle,
-                        color: TopUpPrepaidTheme.purple,
-                      )
-                    : const Icon(
-                        Icons.radio_button_off,
-                        color: TopUpPrepaidTheme.lightBg,
+  void _showOverlay() {
+    _overlayEntry = _createOverlay();
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() => _isOpen = true);
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    if (mounted) {
+      setState(() => _isOpen = false);
+    }
+  }
+
+  OverlayEntry _createOverlay() {
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: MediaQuery.of(context).size.width - 44, // match parent padding
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          offset: const Offset(0, 56), // below field
+          showWhenUnlinked: false,
+          child: Material(
+            elevation: 6,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: cards.map((card) {
+                  final isSelected = card == selectedCard;
+
+                  return InkWell(
+                    onTap: () {
+                      setState(() => selectedCard = card);
+                      _removeOverlay();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              card,
+                              style: const TextStyle(
+                                fontFamily: 'CircularPro',
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                          if (isSelected)
+                            const Icon(
+                              Icons.check_circle,
+                              color: TopUpPrepaidTheme.purple,
+                            ),
+                        ],
                       ),
-                onTap: () {
-                  setState(() => selectedCard = card);
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
+// class _CardDropdown extends StatefulWidget {
+//   @override
+//   State<_CardDropdown> createState() => _CardDropdownState();
+// }
+//
+// class _CardDropdownState extends State<_CardDropdown> {
+//   String selectedCard = 'visa ending in 1234';
+//
+//   final List<String> cards = [
+//     'visa ending in 1234',
+//     'mastercard ending in 5678',
+//     'amex ending in 9012',
+//   ];
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: () => _openCardSelector(context),
+//       child: Container(
+//         height: 52,
+//         padding: const EdgeInsets.symmetric(horizontal: 16),
+//         decoration: BoxDecoration(
+//           color: TopUpPrepaidTheme.lightBg,
+//           borderRadius: BorderRadius.circular(12),
+//         ),
+//         child: Row(
+//           children: [
+//             Expanded(
+//               child: Text(
+//                 selectedCard,
+//                 style: const TextStyle(
+//                   color: const Color(0xFF707070),
+//                   fontSize: 14,
+//                   fontFamily: 'CircularPro',
+//                   fontWeight: FontWeight.w500,
+//                   height: 1.43,
+//                 ),
+//               ),
+//             ),
+//             const Icon(Icons.keyboard_arrow_down),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   void _openCardSelector(BuildContext context) {
+//     showModalBottomSheet(
+//       context: context,
+//       backgroundColor: Colors.white,
+//       shape: const RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//       ),
+//       builder: (_) {
+//         return SafeArea(
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: cards.map((card) {
+//               final isSelected = card == selectedCard;
+//
+//               return ListTile(
+//                 title: Text(
+//                   card,
+//                   style: const TextStyle(
+//                     fontFamily: 'CircularPro',
+//                     fontSize: 15,
+//                   ),
+//                 ),
+//                 trailing: isSelected
+//                     ? const Icon(
+//                         Icons.check_circle,
+//                         color: TopUpPrepaidTheme.purple,
+//                       )
+//                     : const Icon(
+//                         Icons.radio_button_off,
+//                         color: TopUpPrepaidTheme.lightBg,
+//                       ),
+//                 onTap: () {
+//                   setState(() => selectedCard = card);
+//                   Navigator.pop(context);
+//                 },
+//               );
+//             }).toList(),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
 
 class _AmountGrid extends StatelessWidget {
   final int selected;

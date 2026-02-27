@@ -26,7 +26,7 @@ class GuestPurchasePlanTheme {
   );
   static const double addOnCardBorderRadius = 8;
   static const EdgeInsets addOnCardInnerPadding = EdgeInsets.all(16);
-  static const double addOnCardTitleToDetailsGap = 16;
+  static const double addOnCardTitleToDetailsGap = 20;
   static const double addOnCardInfoIconSize = 16;
   static const double addOnCardIconToLabelGap = 6;
   static const double addOnCardLabelToValueGap = 6;

@@ -16,7 +16,12 @@ import '../widgets/top_up_prepaid_primary_button.dart';
 import '../widgets/top_up_prepaid_placeholder_tab.dart';
 
 class TopUpPrepaidScreen extends StatefulWidget {
-  const TopUpPrepaidScreen({super.key});
+  final int initialTab;
+
+  const TopUpPrepaidScreen({
+    super.key,
+    this.initialTab = 0,
+  });
 
   @override
   State<TopUpPrepaidScreen> createState() => _TopUpPrepaidScreenState();
@@ -25,16 +30,24 @@ class TopUpPrepaidScreen extends StatefulWidget {
 class _TopUpPrepaidScreenState extends State<TopUpPrepaidScreen> {
   @override
   Widget build(BuildContext context) {
+    // return BlocProvider(
+    //   create: (_) => TopUpPrepaidBloc()..add(const TopUpPrepaidStarted()),
+    //   child: const _TopUpPrepaidView(),
+    // );
     return BlocProvider(
-      create: (_) => TopUpPrepaidBloc()..add(const TopUpPrepaidStarted()),
-      child: const _TopUpPrepaidView(),
+      create: (_) => TopUpPrepaidBloc()
+        ..add(const TopUpPrepaidStarted())
+        ..add(TopUpPrepaidTabChanged(widget.initialTab)),
+      child: _TopUpPrepaidView(initialTab: widget.initialTab),
     );
   }
 }
 
 class _TopUpPrepaidView extends StatefulWidget {
-  const _TopUpPrepaidView();
+  // const _TopUpPrepaidView();
+  final int initialTab;
 
+  const _TopUpPrepaidView({required this.initialTab});
   @override
   State<_TopUpPrepaidView> createState() => _TopUpPrepaidViewState();
 }
@@ -42,15 +55,32 @@ class _TopUpPrepaidView extends StatefulWidget {
 class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // _tabController = TabController(length: 3, vsync: this);
+  //   //
+  //   // // ✅ swipe করলে bloc এ state sync হবে
+  //   // _tabController.addListener(() {
+  //   //   if (_tabController.indexIsChanging) return;
+  //   //   context.read<TopUpPrepaidBloc>().add(TopUpPrepaidTabChanged(_tabController.index));
+  //   // });
+  // }
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
 
-    // ✅ swipe করলে bloc এ state sync হবে
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
+
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
-      context.read<TopUpPrepaidBloc>().add(TopUpPrepaidTabChanged(_tabController.index));
+      context
+          .read<TopUpPrepaidBloc>()
+          .add(TopUpPrepaidTabChanged(_tabController.index));
     });
   }
 

@@ -375,6 +375,7 @@ class _GuestPayBillView extends StatelessWidget {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           const GuestPayBillRequiredLabel(
                             text: GuestPayBillTheme.selectServiceLabel,

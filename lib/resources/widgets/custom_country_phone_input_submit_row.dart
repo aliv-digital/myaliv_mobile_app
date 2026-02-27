@@ -314,6 +314,7 @@ class _CustomCountryPhoneInputSubmitRowState
                       color: widget.countryArrowColor,
                     ),
                   ],
+                  if (widget.showCountryArrow == false)SizedBox(width: widget.countryArrowIconSize,)
                 ],
               ),
             ),

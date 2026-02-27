@@ -35,7 +35,7 @@ class PlanRedImageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
+        constraints: BoxConstraints(minWidth: maxWidth),
         child: SizedBox(
           width: double.infinity,
           height: height,

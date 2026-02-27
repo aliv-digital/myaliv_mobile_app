@@ -113,26 +113,33 @@ class RewardPrepaidCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          height: 44,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          decoration: ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                width: 1,
-                                color: const Color(0xFFF1F1F8),
+                        child: GestureDetector(
+                          onTap: (){
+                            context.push(
+                              AppRoutes.rewardDetailsPrepaidScreen,
+                            );
+                          },
+                          child: Container(
+                            height: 44,
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            decoration: ShapeDecoration(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  width: 1,
+                                  color: const Color(0xFFF1F1F8),
+                                ),
+                                borderRadius: BorderRadius.circular(100),
                               ),
-                              borderRadius: BorderRadius.circular(100),
                             ),
-                          ),
-                          child: Text(
-                            'read more',textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xFF645D9C),
-                              fontSize: 13,
-                              fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w500,
+                            child: Text(
+                              'read more',textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: const Color(0xFF645D9C),
+                                fontSize: 13,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
@@ -147,9 +154,11 @@ class RewardPrepaidCard extends StatelessWidget {
                             label: 'get this',
                             isLoading: false,
                             onPressed: (){
-                              context.push(
-                                AppRoutes.rewardDetailsPrepaidScreen,
-                              );                            },
+                              context.go(
+                                AppRoutes.plans,
+                              );
+
+                              },
                           ),
                         ),
                       ),

@@ -26,7 +26,7 @@ class InvitingSuccessScreen extends StatelessWidget {
             style: TextStyle(
               color: Colors.white,
               fontSize: 17,
-              fontFamily: 'Circular Pro',
+              fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -83,7 +83,7 @@ class InvitingSuccessScreen extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 18,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -97,7 +97,7 @@ class InvitingSuccessScreen extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFF707070),
                     fontSize: 16,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -111,7 +111,7 @@ class InvitingSuccessScreen extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFF707070),
                     fontSize: 16,
-                    fontFamily: 'Circular Pro',
+                    fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -159,7 +159,7 @@ class InvitingSuccessScreen extends StatelessWidget {
                           style: TextStyle(
                             color: const Color(0xFF645D9C),
                             fontSize: 13,
-                            fontFamily: 'Circular Pro',
+                            fontFamily: 'CircularPro',
                             fontWeight: FontWeight.w500,
                           ),
                         ),

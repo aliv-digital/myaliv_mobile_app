@@ -62,7 +62,7 @@ class PayFromWalletSheet extends StatelessWidget {
                       style: TextStyle(
                         color: const Color(0xFF222222),
                         fontSize: 14,
-                        fontFamily: 'Circular Pro',
+                        fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -74,7 +74,7 @@ class PayFromWalletSheet extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: ShapeDecoration(
-                        color: const Color(0xFFF2F2F2),
+                        color: const Color(0xFFF8F8FC),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -91,7 +91,7 @@ class PayFromWalletSheet extends StatelessWidget {
                             style: TextStyle(
                               color: const Color(0xFF222222),
                               fontSize: 14,
-                              fontFamily: 'Circular Pro',
+                              fontFamily: 'CircularPro',
                               fontWeight: FontWeight.w700,
                             ),
                           ),

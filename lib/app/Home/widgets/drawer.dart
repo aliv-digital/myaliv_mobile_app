@@ -171,7 +171,7 @@ class AppMenuDrawer extends StatelessWidget {
     bool external = false,
   }) {
     return ListTile(
-      leading: SvgPicture.asset(icon, height: 20, width: 20),
+      leading: SvgPicture.asset(icon, height: 18, width: 18),
       title: Text(label, style: const TextStyle(fontFamily: 'CircularPro')),
 
       trailing: label == 'refer a friend'

@@ -42,7 +42,7 @@ class RevConfirmationPrepaidState extends Equatable {
 
   factory RevConfirmationPrepaidState.initial() {
     return const RevConfirmationPrepaidState(
-      title: 'confirmation',
+      title: 'confirmation and payment',
       customerName: '',
       service: 'REV',
       accountNumber: '',

@@ -27,6 +27,16 @@ class PurchasePrepaidRepository {
           title: 'future plans',
           action: PurchasePrepaidAction.futurePlans,
         ),
+
+        PurchasePrepaidMenuItem(
+          title: 'auto top-up',
+          action: PurchasePrepaidAction.autoTopUp,
+        ),
+
+        PurchasePrepaidMenuItem(
+          title: 'send top-up',
+          action: PurchasePrepaidAction.sendTopUp,
+        ),
         // PurchasePrepaidMenuItem(
         //   title: 'my limits',
         //   action: PurchasePrepaidAction.myLimits,
@@ -43,9 +53,13 @@ class PurchasePrepaidRepository {
           title: 'transaction history',
           action: PurchasePrepaidAction.transactionHistory,
         ),
+        // PurchasePrepaidMenuItem(
+        //   title: 'make payment',
+        //   action: PurchasePrepaidAction.makePayment,
+        // ),
         PurchasePrepaidMenuItem(
-          title: 'make payment',
-          action: PurchasePrepaidAction.makePayment,
+          title: 'auto renew',
+          action: PurchasePrepaidAction.autoRenew,
         ),
       ];
 

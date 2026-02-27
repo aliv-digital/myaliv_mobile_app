@@ -6,7 +6,6 @@ import '../../../confirmTopUp/prepaid/widgets/bottom_bar.dart';
 import '../../../confirmTopUp/prepaid/widgets/promo_summary_ticket.dart';
 import '../widgets/pay_from_wallet.dart';
 
-
 class SendTopUpConfirmationScreen extends StatelessWidget {
   const SendTopUpConfirmationScreen({super.key});
 
@@ -33,7 +32,6 @@ class SendTopUpConfirmationScreen extends StatelessWidget {
             builder: (_) => const PayFromWalletSheet(),
           );
         },
-
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -78,9 +76,10 @@ class SendTopUpConfirmationScreen extends StatelessWidget {
         onPressed: () => Navigator.of(context).maybePop(),
       ),
       title: Text(
-        'confirmation',
-        style: ConfirmTopUpPrepaidTheme.titleMd(context)
-            .copyWith(color: Colors.white),
+        'confirmation and payment',
+        style: ConfirmTopUpPrepaidTheme.titleMd(
+          context,
+        ).copyWith(color: Colors.white),
       ),
       actions: [
         IconButton(
@@ -96,10 +95,20 @@ class SendTopUpConfirmationScreen extends StatelessWidget {
   Widget _termsLine(BuildContext context) {
     return RichText(
       text: TextSpan(
-        style: ConfirmTopUpPrepaidTheme.bodySm(context)
-            .copyWith(color: ConfirmTopUpPrepaidTheme.textPrimary),
+        style: ConfirmTopUpPrepaidTheme.bodySm(
+          context,
+        ).copyWith(color: ConfirmTopUpPrepaidTheme.textPrimary),
         children: [
-          const TextSpan(text: 'By pressing “continue” you agree to the '),
+          const TextSpan(
+            text: 'By pressing “continue” you agree to the ',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+              height: 1.43,
+            ),
+          ),
           TextSpan(
             text: 'Terms &\nConditions.',
             style: ConfirmTopUpPrepaidTheme.link(context),
@@ -110,7 +119,6 @@ class SendTopUpConfirmationScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _HeaderCard extends StatelessWidget {
   final String customerName;
@@ -151,15 +159,16 @@ class _HeaderCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(customerName,
-                          style: ConfirmTopUpPrepaidTheme.titleMd(context)),
+                      Text(
+                        customerName,
+                        style: ConfirmTopUpPrepaidTheme.titleMd(context),
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         customerPhone,
-                        style: ConfirmTopUpPrepaidTheme.bodySm(context)
-                            .copyWith(
-                            color:
-                            ConfirmTopUpPrepaidTheme.textPrimary),
+                        style: ConfirmTopUpPrepaidTheme.bodySm(
+                          context,
+                        ).copyWith(color: ConfirmTopUpPrepaidTheme.textPrimary),
                       ),
                     ],
                   ),
@@ -169,18 +178,21 @@ class _HeaderCard extends StatelessWidget {
           ),
           const Divider(height: 1, color: ConfirmTopUpPrepaidTheme.border),
           Padding(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('top-up prepaid number',
-                        style: ConfirmTopUpPrepaidTheme.bodySm(context)),
+                    Text(
+                      'top-up prepaid number',
+                      style: ConfirmTopUpPrepaidTheme.bodySm(context),
+                    ),
                     const SizedBox(height: 4),
-                    Text(topUpNumber,
-                        style: ConfirmTopUpPrepaidTheme.titleMd(context)),
+                    Text(
+                      topUpNumber,
+                      style: ConfirmTopUpPrepaidTheme.titleMd(context),
+                    ),
                     const SizedBox(height: 2),
                     Text(
                       'immediately',
@@ -191,17 +203,20 @@ class _HeaderCard extends StatelessWidget {
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(
-                        color: ConfirmTopUpPrepaidTheme.primary, width: 1.5),
+                      color: ConfirmTopUpPrepaidTheme.primary,
+                      width: 1.5,
+                    ),
                     borderRadius: BorderRadius.circular(999),
                     color: Colors.white,
                   ),
                   child: Text(
                     _money(amount),
-                    style:
-                    ConfirmTopUpPrepaidTheme.pillAmount(context),
+                    style: ConfirmTopUpPrepaidTheme.pillAmount(context),
                   ),
                 ),
               ],

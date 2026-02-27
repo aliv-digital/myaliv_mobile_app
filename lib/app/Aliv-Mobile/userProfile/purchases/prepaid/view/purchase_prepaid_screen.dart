@@ -128,6 +128,14 @@ class _PurchasePrepaidView extends StatelessWidget {
         break;
       case PurchasePrepaidAction.buyPlans:
         // TODO: Handle this case.
+        context.go(
+          AppRoutes.usage,
+          extra: HomeUiConfig(
+            userType: config.userType,
+            hasActivePlan: true,
+            isFuturePlan: false,
+          ),
+        );
         break;
       case PurchasePrepaidAction.futurePlans:
         // TODO: Handle this case.
@@ -165,15 +173,26 @@ class _PurchasePrepaidView extends StatelessWidget {
       case PurchasePrepaidAction.makePayment:
         context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);
         break;
+      // case PurchasePrepaidAction.topUp:
+      //   context.push(AppRoutes.topUpPrepaidScreen);
+      //   break;
+      // case PurchasePrepaidAction.autoTopUp:
+      //   context.push(AppRoutes.topUpPrepaidScreen);
+      //   break;
+      // case PurchasePrepaidAction.sendTopUp:
+      //   // TODO: Handle this case.
+      //   context.push(AppRoutes.topUpPrepaidScreen);
+      //   break;
       case PurchasePrepaidAction.topUp:
-        context.push(AppRoutes.topUpPrepaidScreen);
+        context.push('${AppRoutes.topUpPrepaidScreen}?tab=0');
         break;
+
       case PurchasePrepaidAction.autoTopUp:
-        context.push(AppRoutes.topUpPrepaidScreen);
+        context.push('${AppRoutes.topUpPrepaidScreen}?tab=1');
         break;
+
       case PurchasePrepaidAction.sendTopUp:
-        // TODO: Handle this case.
-        context.push(AppRoutes.topUpPrepaidScreen);
+        context.push('${AppRoutes.topUpPrepaidScreen}?tab=2');
         break;
 
       case PurchasePrepaidAction.addOns:

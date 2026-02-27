@@ -1,8 +1,10 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
 import '../../../../../../router/app_routes.dart';
@@ -34,6 +36,7 @@ class ReferFriendPrepaidReferTab extends StatefulWidget {
 }
 
 class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab> {
+
   CountryInfo _selectedCountry = ReferFriendPrepaidReferTab._defaultCountry;
 
    void _pickCountry(BuildContext context) {
@@ -70,7 +73,21 @@ class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab>
        },
      );
    }
+  late TapGestureRecognizer _termsRecognizer;
 
+  @override
+  void initState() {
+    super.initState();
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () async {
+        // ✅ Navigate to Terms
+        final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
+
+        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+          throw 'Could not open store locator';
+        }
+      };
+  }
    @override
   Widget build(BuildContext context) {
 
@@ -84,7 +101,7 @@ class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab>
 
           Padding(
             padding: const EdgeInsets.only(left: 32.0,right: 32),
-            child: Text.rich(
+            child:Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
@@ -97,6 +114,7 @@ class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab>
                     ),
                   ),
                   TextSpan(
+                    recognizer: _termsRecognizer,
                     text: 'Terms & Conditions',
                     style: TextStyle(
                       color: const Color(0xFF58677D),
@@ -117,7 +135,7 @@ class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab>
                 ],
               ),
               textAlign: TextAlign.center,
-            ),
+            )
           ),
 
           const SizedBox(height: 30),
@@ -178,7 +196,7 @@ class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab>
                     //     .read<ReferFriendPrepaidBloc>()
                     //     .add(const ReferFriendPrepaidSharePressed()),
                     onTap: (){
-                      context.go(
+                      context.push(
                         '${AppRoutes.invitingSuccess}?code=REF026BFDFEA12',
                       );
 

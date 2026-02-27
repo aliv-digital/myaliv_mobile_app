@@ -63,7 +63,7 @@ class AllBestPlansScreen extends StatelessWidget {
             _PlanCard(
               price: '\$120.00',
               title: 'Liberty120',
-              subtitle: 'Begins Immediately plan',
+              subtitle: '30 days plan',
               color: Color(0xFFE6B83E),
               imageUrl: 'assets/images/Group 176597.png'
               // 'https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg',
@@ -94,81 +94,87 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180,
+      height: 170,
       decoration: BoxDecoration(
         // color: color,
         borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(image: AssetImage(imageUrl),fit: BoxFit.fill)
       ),
-      child: Image.asset(imageUrl,fit: BoxFit.fill,)
-      // Row(
-      //   children: [
-      //     // ===== Image section =====
-      //     ClipRRect(
-      //       borderRadius: const BorderRadius.only(
-      //         topLeft: Radius.circular(16),
-      //         bottomLeft: Radius.circular(16),
-      //       ),
-      //       child: SizedBox(
-      //         width: 140,
-      //         height: double.infinity,
-      //         child: Image.network(
-      //           imageUrl,
-      //           fit: BoxFit.cover,
-      //           alignment: Alignment.topCenter,
-      //         ),
-      //       ),
-      //     ),
-      //
-      //     // ===== Content section =====
-      //     Expanded(
-      //       child: Padding(
-      //         padding: const EdgeInsets.fromLTRB(20, 24, 24, 24),
-      //         child: Column(
-      //           crossAxisAlignment: CrossAxisAlignment.end,
-      //           children: [
-      //             Text(
-      //               price,
-      //               style: const TextStyle(
-      //                 fontFamily: 'CircularPro',
-      //                 fontSize: 50,
-      //                 fontWeight: FontWeight.w700,
-      //                 color: Colors.white,
-      //                 letterSpacing: 0.25,
-      //               ),
-      //             ),
-      //             const Spacer(),
-      //             Column(
-      //               crossAxisAlignment: CrossAxisAlignment.end,
-      //               children: [
-      //                 Text(
-      //                   title,
-      //                   style: const TextStyle(
-      //                     fontFamily: 'CircularPro',
-      //                     fontSize: 24,
-      //                     fontWeight: FontWeight.w700,
-      //                     letterSpacing: 0.12,
-      //                     color: Colors.white,
-      //                   ),
-      //                 ),
-      //                 const SizedBox(height: 4),
-      //                 Text(
-      //                   subtitle,
-      //                   style: const TextStyle(
-      //                     color: Colors.white,
-      //                     fontSize: 13,
-      //                     fontFamily: 'Circular Pro',
-      //                     fontWeight: FontWeight.w500,
-      //                     letterSpacing: 0.07,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+      child:
+      //Image.asset(imageUrl,fit: BoxFit.fill,)
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // ===== Image section =====
+          // ClipRRect(
+          //   borderRadius: const BorderRadius.only(
+          //     topLeft: Radius.circular(16),
+          //     bottomLeft: Radius.circular(16),
+          //     topRight: Radius.circular(16),
+          //     bottomRight: Radius.circular(16),
+          //   ),
+          //   // child: Image.asset(imageUrl,fit: BoxFit.fill,)
+          //   // SizedBox(
+          //   //   width: 140,
+          //   //   height: double.infinity,
+          //   //   child: Image.network(
+          //   //     imageUrl,
+          //   //     fit: BoxFit.cover,
+          //   //     alignment: Alignment.topCenter,
+          //   //   ),
+          //   // ),
+          // ),
+
+          // ===== Content section =====
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 24, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 50,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 0.25,
+                    ),
+                  ),
+                  const Spacer(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.12,
+                          color: Colors.white,
+                        ),
+                      ),
+                      // const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: const Color(0xFFE5D0D0),
+                          fontSize: 13,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.07,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
