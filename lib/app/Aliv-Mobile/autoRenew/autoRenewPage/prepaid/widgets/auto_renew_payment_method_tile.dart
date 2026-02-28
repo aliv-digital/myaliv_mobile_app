@@ -53,7 +53,7 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
                 children: [
                   Text(
                     _title(),
-                    style: AutoRenewPrepaidTheme.tileTitle(selected: selected),
+                    style: _titleStyle(),
                   ),
                   if (_subtitle() != null) ...[
                     const SizedBox(
@@ -86,6 +86,20 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
       case AutoRenewMethodType.none:
         return "i don't want to auto renew";
     }
+  }
+
+  TextStyle _titleStyle() {
+    if (method.type == AutoRenewMethodType.none || method.type == AutoRenewMethodType.wallet) {
+      return const TextStyle(
+        color: Color(0xFF645D9C),
+        fontSize: 14,
+        fontFamily: 'CircularPro',
+        fontWeight: FontWeight.w700,
+        height: 1.43,
+      );
+    }
+
+    return AutoRenewPrepaidTheme.tileTitle(selected: selected);
   }
 
   String? _subtitle() {

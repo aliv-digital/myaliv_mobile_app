@@ -2,6 +2,54 @@ import 'package:equatable/equatable.dart';
 
 enum PurchaseLineType { primaryPlan, addOn }
 
+enum GuestPurchasePlanConfirmationEntryFlow { proceed, skip }
+
+class GuestPurchasePlanConfirmationSelectedAddOn extends Equatable {
+  final String id;
+  final String title;
+  final double price;
+
+  const GuestPurchasePlanConfirmationSelectedAddOn({
+    required this.id,
+    required this.title,
+    required this.price,
+  });
+
+  @override
+  List<Object?> get props => [id, title, price];
+}
+
+class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
+  final String phoneNumber;
+  final String accountHolderName;
+  final String primaryPlanName;
+  final double primaryPlanPrice;
+  final GuestPurchasePlanConfirmationEntryFlow flow;
+  final List<GuestPurchasePlanConfirmationSelectedAddOn> selectedAddOns;
+
+  const GuestPurchasePlanConfirmationRouteArgs({
+    required this.phoneNumber,
+    required this.accountHolderName,
+    required this.primaryPlanName,
+    required this.primaryPlanPrice,
+    required this.flow,
+    this.selectedAddOns = const <GuestPurchasePlanConfirmationSelectedAddOn>[],
+  });
+
+  bool get defaultTermsChecked =>
+      flow == GuestPurchasePlanConfirmationEntryFlow.skip;
+
+  @override
+  List<Object?> get props => [
+        phoneNumber,
+        accountHolderName,
+        primaryPlanName,
+        primaryPlanPrice,
+        flow,
+        selectedAddOns,
+      ];
+}
+
 class PurchaseLineItem extends Equatable {
   final String id;
   final PurchaseLineType type;

@@ -5,10 +5,12 @@ import '../repository/auto_renew_prepaid_repository.dart';
 import 'auto_renew_prepaid_event.dart';
 import 'auto_renew_prepaid_state.dart';
 
-class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidState> {
+class AutoRenewPrepaidBloc
+    extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidState> {
   final AutoRenewPrepaidRepository repository;
 
-  AutoRenewPrepaidBloc({required this.repository}) : super(AutoRenewPrepaidState.initial()) {
+  AutoRenewPrepaidBloc({required this.repository})
+      : super(AutoRenewPrepaidState.initial()) {
     on<AutoRenewPrepaidStarted>(_onStarted);
     on<AutoRenewMethodSelected>(_onSelected);
     on<AutoRenewAddNewCardPressed>(_onAddNewCardPressed);
@@ -19,9 +21,9 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
   }
 
   Future<void> _onStarted(
-      AutoRenewPrepaidStarted event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) async {
+    AutoRenewPrepaidStarted event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) async {
     emit(
       state.copyWith(
         loadStatus: AutoRenewLoadStatus.loading,
@@ -34,7 +36,7 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
 
       final methods = <AutoRenewPaymentMethod>[
         ...cards.map(AutoRenewPaymentMethod.card),
-        // AutoRenewPaymentMethod.wallet,
+        AutoRenewPaymentMethod.wallet,
         AutoRenewPaymentMethod.none,
       ];
 
@@ -59,9 +61,9 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
   }
 
   Future<void> _onSelected(
-      AutoRenewMethodSelected event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) async {
+    AutoRenewMethodSelected event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) async {
     emit(
       state.copyWith(
         selectedMethodId: event.methodId,
@@ -71,19 +73,19 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
   }
 
   void _onAddNewCardPressed(
-      AutoRenewAddNewCardPressed event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) {
+    AutoRenewAddNewCardPressed event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: AutoRenewNavTarget.addCard));
   }
 
   Future<void> _onSaveNewCardPressed(
-      AutoRenewSaveNewCardPressed event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) async {
+    AutoRenewSaveNewCardPressed event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) async {
     try {
       final card =
-      await repository.saveNewCard(month: event.month, year: event.year);
+          await repository.saveNewCard(month: event.month, year: event.year);
 
       final newMethods = <AutoRenewPaymentMethod>[
         AutoRenewPaymentMethod.card(card),
@@ -102,9 +104,9 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
   }
 
   Future<void> _onProceedPressed(
-      AutoRenewProceedPressed event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) async {
+    AutoRenewProceedPressed event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) async {
     final selected = state.selectedMethodId;
     if (selected == null) {
       emit(state.copyWith(errorMessage: 'Please select a payment method.'));
@@ -132,16 +134,16 @@ class AutoRenewPrepaidBloc extends Bloc<AutoRenewPrepaidEvent, AutoRenewPrepaidS
   }
 
   void _onHomePressed(
-      AutoRenewHomePressed event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) {
+    AutoRenewHomePressed event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: AutoRenewNavTarget.home));
   }
 
   void _onNavigationConsumed(
-      AutoRenewNavigationConsumed event,
-      Emitter<AutoRenewPrepaidState> emit,
-      ) {
+    AutoRenewNavigationConsumed event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: AutoRenewNavTarget.none));
   }
 }

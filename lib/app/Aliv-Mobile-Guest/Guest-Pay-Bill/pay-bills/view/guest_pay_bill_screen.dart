@@ -75,7 +75,8 @@ class _GuestPayBillView extends StatelessWidget {
     }
 
     if (state.submitStatus == GuestPayBillSubmitStatus.success) {
-      _showSnackBar(context, GuestPayBillTheme.submitSuccessMessage);
+     // _showSnackBar(context, GuestPayBillTheme.submitSuccessMessage);
+      // you can show toast here in future
     }
   }
 
@@ -171,9 +172,8 @@ class _GuestPayBillView extends StatelessWidget {
     final serviceName = state.selectedService?.label ?? '';
     final identifierLabel = state.isAlivPostpaid ? 'phone no.' : 'account no.';
 
-    final identifierValue = state.isAlivPostpaid
-        ? '242-801-0000'
-        : state.accountNumber.trim();
+    final identifierValue =
+        state.isAlivPostpaid ? '242-801-0000' : state.accountNumber.trim();
 
     return GuestPayBillConfirmArgs(
       serviceName: serviceName,
@@ -331,14 +331,12 @@ class _GuestPayBillView extends StatelessWidget {
           child: Column(
             children: <Widget>[
               DefaultAppBar(
-                title: GuestPayBillTheme.appBarTitle,
-                backgroundColor: GuestPayBillTheme.primary,
-                onBack: () {
-                  context.pop();
-                },
-                  onHomeTap: () => context.go(AppRoutes.logIn)
-
-              ),
+                  title: GuestPayBillTheme.appBarTitle,
+                  backgroundColor: GuestPayBillTheme.primary,
+                  onBack: () {
+                    context.pop();
+                  },
+                  onHomeTap: () => context.go(AppRoutes.logIn)),
               Expanded(
                 child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(
                   builder: (context, state) {
@@ -394,23 +392,19 @@ class _GuestPayBillView extends StatelessWidget {
                             text: state.accountInfo?.status ??
                                 GuestPayBillTheme.statusPlaceholderText,
                           ),
-
-                          if (!state.isAlivPostpaid) ...<Widget>[
-                            const SizedBox(
-                                height: GuestPayBillTheme.sectionGap),
-                            Text(
-                              GuestPayBillTheme.accountBalanceLabel,
-                              style: GuestPayBillTheme.labelStyle(),
-                            ),
-                            const SizedBox(
-                                height: GuestPayBillTheme.labelToFieldGap),
-                            Text(
-                              state.accountInfo?.balance == null
-                                  ? GuestPayBillTheme.statusPlaceholderText
-                                  : _money(state.accountInfo!.balance!),
-                              style: GuestPayBillTheme.accountBalanceValueStyle,
-                            ),
-                          ],
+                          const SizedBox(height: GuestPayBillTheme.sectionGap),
+                          Text(
+                            GuestPayBillTheme.accountBalanceLabel,
+                            style: GuestPayBillTheme.labelStyle(),
+                          ),
+                          const SizedBox(
+                              height: GuestPayBillTheme.labelToFieldGap),
+                          Text(
+                            state.accountInfo?.balance == null
+                                ? GuestPayBillTheme.statusPlaceholderText
+                                : _money(state.accountInfo!.balance!),
+                            style: GuestPayBillTheme.accountBalanceValueStyle,
+                          ),
 
                           const SizedBox(height: GuestPayBillTheme.sectionGap),
                           Text(

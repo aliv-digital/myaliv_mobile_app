@@ -34,6 +34,7 @@ import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_scr
 import '../app/Aliv-Mobile-Guest/guestPaymentMethod/prepaid/view/guest_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_plan_receipt_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
@@ -94,7 +95,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.welcome, //autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.autoRenewPrepaidScreen, //autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -367,8 +368,31 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
-        builder: (context, state) => const GuestPurchasePlanConfirmationScreen(
-            phoneNumber: '242-801-1616'),
+        builder: (context, state) {
+          final Object? extra = state.extra;
+          final GuestPurchasePlanConfirmationRouteArgs args;
+
+          if (extra is GuestPurchasePlanConfirmationRouteArgs) {
+            args = extra;
+          } else {
+            args = const GuestPurchasePlanConfirmationRouteArgs(
+              phoneNumber: '242-801-1616',
+              accountHolderName: 'guest purchase a plan',
+              primaryPlanName: 'liberty70',
+              primaryPlanPrice: 70,
+              flow: GuestPurchasePlanConfirmationEntryFlow.proceed,
+              selectedAddOns: <GuestPurchasePlanConfirmationSelectedAddOn>[
+                GuestPurchasePlanConfirmationSelectedAddOn(
+                  id: 'a1',
+                  title: 'liberty data 1',
+                  price: 5.00,
+                ),
+              ],
+            );
+          }
+
+          return GuestPurchasePlanConfirmationScreen(args: args);
+        },
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,

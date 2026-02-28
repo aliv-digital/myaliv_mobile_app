@@ -26,10 +26,11 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
     emit(state.copyWith(status: GuestPurchasePlanConfirmationStatus.loading));
 
     try {
-      final data = await repository.load(phoneNumber: event.phoneNumber);
+      final data = await repository.load(args: event.args);
       emit(state.copyWith(
         status: GuestPurchasePlanConfirmationStatus.ready,
         data: data,
+        isTermsChecked: event.args.defaultTermsChecked,
       ));
     } catch (e) {
       emit(state.copyWith(
