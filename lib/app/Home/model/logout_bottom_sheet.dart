@@ -100,9 +100,9 @@ class LogoutBottomSheet extends StatelessWidget {
                         'no',
                         style: TextStyle(
                           color: Color(0xFF645D9C),
-                          fontSize: 13,
+                          fontSize: 15,
                           fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),

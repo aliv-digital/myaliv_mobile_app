@@ -458,8 +458,8 @@ class HomePlanTheme {
   // Activate-only sheet action text style.
   static final TextStyle bottomSheetPrimaryActionSingleStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 17,
-    fontWeight: FontWeight.w400,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
     color: Colors.white,
     height: 1.0,
   );
@@ -571,10 +571,10 @@ class HomePlanTheme {
   // Roam bottom-sheet primary action ("activate now") text style.
   static final TextStyle roamBottomSheetActivateNowTextStyle = TextStyle(
     color: const Color(0xFFF1F1F8),
-    fontSize: 13,
+    fontSize: 15,
     fontFamily: AppConstants.defaultFontFamily,
     // Flutter does not support FontWeight.w450 directly; w400 is the closest.
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
   );
 
   // Calendar picker bottom sheet styles for roam date selection.

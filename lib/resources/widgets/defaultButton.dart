@@ -58,6 +58,7 @@ class DefaultButton extends StatelessWidget {
               fontSize: fontSize,
               fontFamily: 'CircularPro',
               fontWeight: fontWeight,
+
               height: 1.80,
             ))
         .copyWith(color: resolvedTextColor);
