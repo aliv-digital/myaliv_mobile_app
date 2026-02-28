@@ -143,9 +143,9 @@ class AppMenuDrawer extends StatelessWidget {
                     'logout',
                     style: TextStyle(
                       color: Colors.white /* White-100% */,
-                      fontSize: 13,
+                      fontSize: 15,
                       fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: -0.26,
                     ),
                   ),
@@ -171,7 +171,9 @@ class AppMenuDrawer extends StatelessWidget {
     bool external = false,
   }) {
     return ListTile(
-      leading: SvgPicture.asset(icon, height: 18, width: 18),
+      leading: (label == 'purchases')
+          ? SvgPicture.asset(icon, height: 12, width: 12)
+          : SvgPicture.asset(icon, height: 18, width: 18),
       title: Text(label, style: const TextStyle(fontFamily: 'CircularPro')),
 
       trailing: label == 'refer a friend'

@@ -1,5 +1,4 @@
-class AssetConstant{
-
+class AssetConstant {
   static const splashLogoSVG = 'assets/icons/aliv_splash_logo.svg';
   static const welcomeImagePNG = 'assets/images/welcome2.png';
   static const guestImagePNG = 'assets/images/guest_splash.png';
@@ -21,15 +20,16 @@ class AssetConstant{
 
   static const emailIconSVG = 'assets/icons/email.svg';
   static const passwordIconSVG = 'assets/icons/password.svg';
+
   ///home
   static const noPlanIcon = 'assets/icons/no_plan.svg';
 
   static const giftBoxSVG = 'assets/images/giftBox.svg';
   static const rewardsBackgroundSVG = 'assets/images/rewards_background.svg';
-  static const rewardsCardBackgroundPNG = 'assets/images/rewards_background.png';
+  static const rewardsCardBackgroundPNG =
+      'assets/images/rewards_background.png';
 
   static const giftBoxPNG = 'assets/images/gift_box.png';
-
 
   static const visaCardSVG = 'assets/images/visa_card.svg';
   static const masterCardSVG = 'assets/images/master_card.svg';
@@ -67,8 +67,11 @@ class AssetConstant{
   static const homeIconSVG = 'assets/icons/home_icon.svg';
   static const arrowRightIconSVG = 'assets/icons/arrow_right.svg';
 
-  static const downbluArrowSVG = 'assets/icons/down_blu.svg';
+  static const downBluArrowSVG = 'assets/icons/down_blu.svg';
 
   static const staticRedCreditCard = 'assets/images/red_credit_card.svg';
 
+  static const walletIconSVG = 'assets/icons/Wallet.svg';
+  static const addCardIconSVG = 'assets/icons/addcard.svg';
+  static const creditCardIconSVG = 'assets/icons/credit_card.svg';
 }

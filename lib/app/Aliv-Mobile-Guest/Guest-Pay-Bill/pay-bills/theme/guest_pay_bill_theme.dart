@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestPayBillTheme {
   // ===== Screen strings =====
@@ -132,11 +131,12 @@ class GuestPayBillTheme {
   static const double inlineVerifyFieldHeight = 50;
 
   // Used by: account balance value text in `guest_pay_bill_screen.dart`.
-  static  TextStyle accountBalanceValueStyle = TextStyle(
+  static TextStyle accountBalanceValueStyle = const TextStyle(
     fontSize: 14,
-    fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w500,
-    color:HexColor.fromHex('#344054')// GuestPayBillTheme.labelText,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w400,
+    height: 1.43,
+    color: Color(0xFF344054),
   );
 
   // Used by: `$` prefix text inside custom amount field.

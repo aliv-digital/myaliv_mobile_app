@@ -28,7 +28,8 @@ class SupportScreen extends StatelessWidget {
           ),
         ),
 
-        title: const Text('support',
+        title: const Text(textAlign: TextAlign.left,
+          'support',
           style: TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 17,

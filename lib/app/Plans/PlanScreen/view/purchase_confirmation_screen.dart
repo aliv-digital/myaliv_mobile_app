@@ -65,6 +65,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             ),
           ),
           actions: [
+           InkWell(
+             onTap: (){
+               context.go(AppRoutes.home);
+             },
+             child:
             GestureDetector(
               onTap: (){
                 context.go(AppRoutes.home);
@@ -76,7 +81,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   color: Colors.white,
                 ),
               ),
-            ),
+            ),)
           ],
         ),
 

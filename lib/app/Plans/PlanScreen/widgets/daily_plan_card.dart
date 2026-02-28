@@ -263,7 +263,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                                   HomePlanTheme.bonusDataColor;
                               break;
                             case HomePlanBenefitType.mms:
-                              labelColor = HomePlanTheme.mmsColor;
+                              labelColor = HomePlanTheme.talkMinsColor;
                               break;
                             case HomePlanBenefitType.talkMins:
                               labelColor = HomePlanTheme.talkMinsColor;

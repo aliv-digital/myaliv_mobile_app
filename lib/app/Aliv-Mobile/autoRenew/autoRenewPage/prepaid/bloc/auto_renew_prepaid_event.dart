@@ -37,6 +37,10 @@ class AutoRenewProceedPressed extends AutoRenewPrepaidEvent {
   const AutoRenewProceedPressed();
 }
 
+class AutoRenewPayFromWalletPressed extends AutoRenewPrepaidEvent {
+  const AutoRenewPayFromWalletPressed();
+}
+
 class AutoRenewHomePressed extends AutoRenewPrepaidEvent {
   const AutoRenewHomePressed();
 }

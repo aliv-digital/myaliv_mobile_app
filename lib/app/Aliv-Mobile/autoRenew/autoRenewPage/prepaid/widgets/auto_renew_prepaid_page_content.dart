@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../../../../userProfile/addOrEditCards/prepaid/widgets/bottomsheet/add_card_bottom_sheet.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -35,8 +36,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     BuildContext context,
     AutoRenewPrepaidState autoRenewPrepaidState,
   ) {
-    final AutoRenewPrepaidBloc autoRenewPrepaidBloc = context
-        .read<AutoRenewPrepaidBloc>();
+    final AutoRenewPrepaidBloc autoRenewPrepaidBloc = context.read<AutoRenewPrepaidBloc>();
 
     return CustomScrollView(
       slivers: [
@@ -122,11 +122,20 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
           onSelect: (String selectedMethodId) {
             autoRenewPrepaidBloc.add(AutoRenewMethodSelected(selectedMethodId));
           },
+          walletBalanceText: autoRenewPrepaidState.walletBalanceText,
+          onPayFromWallet: () {
+            autoRenewPrepaidBloc.add(const AutoRenewPayFromWalletPressed());
+          },
         ),
         const SizedBox(height: AutoRenewPrepaidTheme.sectionToDashedGap),
         DashedAddCardButton(
-          onTap: () {
-            autoRenewPrepaidBloc.add(const AutoRenewAddNewCardPressed());
+          onTap: () async {
+            await AddCardBottomSheet.show(
+              context,
+              last4: '1234',
+            );
+            // will do it later,,add the functionality when api working
+           // autoRenewPrepaidBloc.add(const AutoRenewAddNewCardPressed());
           },
         ),
         const SizedBox(height: AutoRenewPrepaidTheme.dashedToActionGap),

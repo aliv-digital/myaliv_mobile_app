@@ -41,7 +41,7 @@ class GuestPayBillConfirmTheme {
   static const double sectionGap = 17;
   static const double breakdownBottomGap = 18;
   static const double termsCheckboxSize = 15;
-  static const double termsCheckboxRadius = 4;
+  static const double termsCheckboxRadius = 2;
   static const double termsCheckboxTopInset = 5;
   static const double termsCheckboxBorderWidth = 1;
   static const double termsCheckboxCheckSize = 12;

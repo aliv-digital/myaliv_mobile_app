@@ -40,7 +40,7 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
                 children: [
                   ReferFriendPrepaidLabeledField(
                     label: "enter referral code",
-                    hint: "405783",
+                    hint: "code",
                     keyboardType: TextInputType.text,
                     value: state.redeemCode,
                     onChanged: (v) => context

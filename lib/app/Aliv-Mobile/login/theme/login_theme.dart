@@ -153,7 +153,7 @@ class AuthModuleTextStyles {
   // Label style for both social login action buttons.
   static const TextStyle socialMediaButton = TextStyle(
     color: AuthModuleColors.socialMediaButtonPurple,
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     height: 1.43,

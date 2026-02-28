@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../models/guest_purchase_plan_confirmation_models.dart';
 
 sealed class GuestPurchasePlanConfirmationEvent extends Equatable {
   const GuestPurchasePlanConfirmationEvent();
@@ -8,11 +9,11 @@ sealed class GuestPurchasePlanConfirmationEvent extends Equatable {
 
 final class GuestPurchasePlanConfirmationStarted
     extends GuestPurchasePlanConfirmationEvent {
-  final String phoneNumber;
-  const GuestPurchasePlanConfirmationStarted(this.phoneNumber);
+  final GuestPurchasePlanConfirmationRouteArgs args;
+  const GuestPurchasePlanConfirmationStarted(this.args);
 
   @override
-  List<Object?> get props => [phoneNumber];
+  List<Object?> get props => [args];
 }
 
 final class GuestPurchasePlanConfirmationRemoveItemPressed

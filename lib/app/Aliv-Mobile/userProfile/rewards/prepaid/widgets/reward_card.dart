@@ -136,9 +136,9 @@ class RewardPrepaidCard extends StatelessWidget {
                               'read more',textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: const Color(0xFF645D9C),
-                                fontSize: 13,
+                                fontSize: 15,
                                 fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
@@ -149,8 +149,8 @@ class RewardPrepaidCard extends StatelessWidget {
                         child: SizedBox(
                           height: 44,
                           child: DefaultButton(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
                             label: 'get this',
                             isLoading: false,
                             onPressed: (){

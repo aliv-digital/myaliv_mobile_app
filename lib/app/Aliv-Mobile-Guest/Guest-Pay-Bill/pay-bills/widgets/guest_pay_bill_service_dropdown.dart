@@ -37,7 +37,7 @@ class GuestPayBillServiceDropdown extends StatelessWidget {
             width: 20,
             height: 20,
             child: SvgPicture.asset(
-              AssetConstant.downbluArrowSVG,
+              AssetConstant.downBluArrowSVG,
               width: 20,
               height: 20,
               fit: BoxFit.contain,
