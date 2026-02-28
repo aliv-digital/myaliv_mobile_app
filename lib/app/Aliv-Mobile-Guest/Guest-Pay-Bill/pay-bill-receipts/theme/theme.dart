@@ -80,8 +80,8 @@ class GuestPayBillReceiptTheme {
   // ReceiptBackButton text style.
   static final TextStyle backButtonText = TextStyle(
     color: backButtonTextColor,
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
   );
 }
