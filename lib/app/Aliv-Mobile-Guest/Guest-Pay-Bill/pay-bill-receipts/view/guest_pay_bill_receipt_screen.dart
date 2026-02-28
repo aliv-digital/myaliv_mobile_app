@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../../../../../core/utils/app_session.dart';
 import '../bloc/guest_pay_bill_receipt_bloc.dart';
 import '../bloc/guest_pay_bill_receipt_event.dart';
 import '../bloc/guest_pay_bill_receipt_state.dart';
@@ -85,7 +86,12 @@ class _GuestPayBillReceiptView extends StatelessWidget {
       },
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
-          context.go(AppRoutes.logIn);
+          if(AppSession.appRoute == 'postpaidPayment'){
+            context.go(AppRoutes.home);
+
+          }else{
+            context.go(AppRoutes.logIn);
+          }
         }
       },
       child: Scaffold(
