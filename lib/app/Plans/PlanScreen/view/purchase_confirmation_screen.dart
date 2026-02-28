@@ -65,13 +65,18 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 24),
-              child: SvgPicture.asset(
-                'assets/icons/home.svg',
-                color: Colors.white,
-              ),
-            ),
+           InkWell(
+             onTap: (){
+               context.go(AppRoutes.home);
+             },
+             child:  Padding(
+               padding: const EdgeInsets.only(right: 24),
+               child: SvgPicture.asset(
+                 'assets/icons/home.svg',
+                 color: Colors.white,
+               ),
+             ),
+           ),
           ],
         ),
 

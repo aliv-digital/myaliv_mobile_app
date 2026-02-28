@@ -143,9 +143,9 @@ class AppMenuDrawer extends StatelessWidget {
                     'logout',
                     style: TextStyle(
                       color: Colors.white /* White-100% */,
-                      fontSize: 13,
+                      fontSize: 15,
                       fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: -0.26,
                     ),
                   ),

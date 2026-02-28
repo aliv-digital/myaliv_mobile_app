@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/add_or_edit_cards_prepaid_bloc.dart';
 import '../bloc/add_or_edit_cards_prepaid_event.dart';
@@ -99,8 +101,10 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: 20.0),
                         child: IconButton(
-                          onPressed: () =>
-                              bloc.add(const AddOrEditCardsPrepaidHomePressed()),
+                          onPressed: (){
+                            context.go(AppRoutes.home);
+                               // bloc.add(const AddOrEditCardsPrepaidHomePressed());
+                          },
                           icon:
                            SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
                         ),

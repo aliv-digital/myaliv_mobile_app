@@ -130,7 +130,7 @@ class _RevPrepaidView extends StatelessWidget {
                             fontSize: 14,
                             height: 1.2,
                             fontWeight: FontWeight.w500,
-                            color: HexColor.fromHex('#707070'),
+                            color: HexColor.fromHex('#344054'),
                           ),
                         ), //style: RevPrepaidTheme.value),
                         const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
@@ -141,10 +141,8 @@ class _RevPrepaidView extends StatelessWidget {
                             height: RevPrepaidTheme.inputFieldHeight,
                             textAlign: TextAlign.start,
                             textAlignVertical: TextAlignVertical.center,
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
-                                  decimal: true,
-                                ),
+                            keyboardType:TextInputType.number,
+
                             backgroundColor: RevPrepaidTheme.fieldBg,
                             unfocusedBorderColor:RevPrepaidTheme.inputFieldBorderColor,
                             radius: 8,
@@ -158,9 +156,9 @@ class _RevPrepaidView extends StatelessWidget {
                               14,
                               12,
                             ),
-                            onChanged: (v) => context
-                                .read<RevPrepaidBloc>()
-                                .add(RevAmountChanged(v)),
+                            onChanged: (v) {
+                              //context.read<RevPrepaidBloc>().add(RevAmountChanged(v));
+                            },
                           ),
                         ),
                         const SizedBox(height: RevPrepaidTheme.proceedButtonTopGap),
