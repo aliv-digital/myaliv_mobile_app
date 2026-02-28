@@ -358,9 +358,9 @@ class HomePlanTheme {
 
   static final TextStyle planCardViewDetailsTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 13,
+    fontSize: 15,
     // Flutter does not support FontWeight.w450, so w400 is the closest.
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     color: planCardViewDetailsTextColor,
   );
 
@@ -371,8 +371,8 @@ class HomePlanTheme {
   static const Color planCardPurchaseNowTextColor = Colors.white;
   static final TextStyle planCardPurchaseNowTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
     color: planCardPurchaseNowTextColor,
   );
 
