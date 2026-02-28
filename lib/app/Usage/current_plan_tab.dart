@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/usage_metric_row.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Home/home/data/home_ui_config.dart';
 import '../Home/home/home_screen.dart';
 
 class CurrentPlanTab extends StatelessWidget {
@@ -328,7 +329,7 @@ class _UsageSection extends StatelessWidget {
         _LimitRow(
           title: 'data',
           subtitle: '2.4 GB of 14 GB',
-          percentUsed: 25,
+          percentUsed: 0.25,
           progressColor: Color(0xFFE07A4E),
         ),
         Divider(color: divider),
@@ -336,7 +337,7 @@ class _UsageSection extends StatelessWidget {
         _LimitRow(
           title: 'sms',
           subtitle: 'unlimited Local',
-          percentUsed: 0,
+          percentUsed: 100,
           progressColor: Color(0xFF6CB7D4),
         ),
         Divider(color: divider),
@@ -344,7 +345,7 @@ class _UsageSection extends StatelessWidget {
         _LimitRow(
           title: 'talk mins',
           subtitle: 'unlimited Local',
-          percentUsed: 0,
+          percentUsed: 100,
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
@@ -352,7 +353,7 @@ class _UsageSection extends StatelessWidget {
         _LimitRow(
           title: 'bonus Data',
           subtitle: 'unlimited WhatsApp Messaging',
-          percentUsed: 0,
+          percentUsed: 100,
           progressColor: Color(0xFFBDBDBD),
         ),
         Divider(color: divider),
@@ -360,7 +361,7 @@ class _UsageSection extends StatelessWidget {
         _LimitRow(
           title: 'int’l mins & sms',
           subtitle: '0 of 600',
-          percentUsed: 55,
+          percentUsed: 100,
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
@@ -368,7 +369,7 @@ class _UsageSection extends StatelessWidget {
         _LimitRow(
           title: 'mms',
           subtitle: '0 of 60',
-          percentUsed: 55,
+          percentUsed: 100,
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
@@ -405,7 +406,7 @@ class _UsageSection extends StatelessWidget {
 class _LimitRow extends StatelessWidget {
   final String title;
   final String subtitle;
-  final int percentUsed;
+  final double percentUsed;
   final Color progressColor;
 
   const _LimitRow({
@@ -449,87 +450,177 @@ class _LimitRow extends StatelessWidget {
               ],
             ),
           ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = 80 * percentUsed.clamp(0.0, 1.0);
 
-          // RIGHT PROGRESS
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                width: 120,
-                child:
-                    // ClipRRect(
-                    //   borderRadius: BorderRadius.circular(6),
-                    //   child: LinearProgressIndicator(
-                    //     value: percentUsed / 100,
-                    //     minHeight: 6,
-                    //     backgroundColor: progressColor.withOpacity(0.2),
-                    //     valueColor: AlwaysStoppedAnimation(progressColor),
-                    //   ),
-                    // ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final width = 120 * percentUsed.clamp(0.0, 1.0);
+                return Stack(
+                  children: [
+                    // Background
+                    Container(
+                      height: 6,
+                      width: 80,
+                      color: config.userType == UserType.postpaid
+                          ? Color(0x26DD3038)
+                          : Color(0x2617B26A).withOpacity(0.2),
+                    ),
 
-                          return Stack(
-                            children: [
-                              // Background
-                              Container(
-                                height: 6,
-                                width: 120,
-                                color: Color(0x3F808080).withOpacity(0.2),
-                              ),
+                    // Gradient progress (width = percentage)
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: 8,
+                      width: width.toDouble(),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
 
-                              // Gradient progress (width = percentage)
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                height: 6,
-                                width: width.toDouble(),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: title == 'data'
-                                        ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
-                                        : title == 'local data'
-                                        ? [
-                                            const Color(0xFF97E3F8),
-                                            const Color(0xFF00627D),
-                                          ]
-                                        : title == 'local talk mins' ||
-                                              title == 'int’l talk mins'
-                                        ? [
-                                            const Color(0xFFCCC7F8),
-                                            const Color(0xFF1F1B41),
-                                          ]
-                                        : [
-                                            const Color(0x3F808080),
-                                            const Color(0x3F808080),
-                                          ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                        gradient: LinearGradient(
+                          colors: config.userType == UserType.postpaid
+                              ? [Color(0x00DD3038), const Color(0xFFDD3038)]
+                              : [
+                            const Color(0x0017B26A),
+                            const Color(0xFF17B26A),
+                          ],
+                        ),
                       ),
                     ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '$percentUsed% used',
-                style: const TextStyle(
-                  color: const Color(0xFF707070),
-                  fontSize: 12,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+                  ],
+                );
+              },
+            ),
           ),
+
+          // RIGHT PROGRESS
+          // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.end,
+          //   children: [
+          //     SizedBox(
+          //       width: 120,
+          //       child:
+          //           // ClipRRect(
+          //           //   borderRadius: BorderRadius.circular(6),
+          //           //   child: LinearProgressIndicator(
+          //           //     value: percentUsed / 100,
+          //           //     minHeight: 6,
+          //           //     backgroundColor: progressColor.withOpacity(0.2),
+          //           //     valueColor: AlwaysStoppedAnimation(progressColor),
+          //           //   ),
+          //           // ),
+          //           ClipRRect(
+          //             borderRadius: BorderRadius.circular(6),
+          //             child: LayoutBuilder(
+          //               builder: (context, constraints) {
+          //                 final width = 120 * percentUsed.clamp(0.0, 1.0);
+          //
+          //                 return Stack(
+          //                   children: [
+          //                     // Background
+          //                     Container(
+          //                       height: 6,
+          //                       width: 120,
+          //                       color: Color(0x3F808080).withOpacity(0.2),
+          //                     ),
+          //
+          //                     // Gradient progress (width = percentage)
+          //                     AnimatedContainer(
+          //                       duration: const Duration(milliseconds: 300),
+          //                       height: 6,
+          //                       width: width.toDouble(),
+          //                       decoration: BoxDecoration(
+          //                         gradient: LinearGradient(
+          //                           colors: title == 'data'
+          //                               ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
+          //                               : title == 'local data'
+          //                               ? [
+          //                                   const Color(0xFF97E3F8),
+          //                                   const Color(0xFF00627D),
+          //                                 ]
+          //                               : title == 'local talk mins' ||
+          //                                     title == 'int’l talk mins'
+          //                               ? [
+          //                                   const Color(0xFFCCC7F8),
+          //                                   const Color(0xFF1F1B41),
+          //                                 ]
+          //                               : [
+          //                                   const Color(0x3F808080),
+          //                                   const Color(0x3F808080),
+          //                                 ],
+          //                         ),
+          //                       ),
+          //                     ),
+          //                   ],
+          //                 );
+          //               },
+          //             ),
+          //           ),
+          //     ),
+          //     const SizedBox(height: 8),
+          //     Text(
+          //       '$percentUsed% used',
+          //       style: const TextStyle(
+          //         color: const Color(0xFF707070),
+          //         fontSize: 12,
+          //         fontFamily: 'CircularPro',
+          //         fontWeight: FontWeight.w500,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
   }
+  // Widget _progressBar() {
+  //   return ClipRRect(
+  //     borderRadius: BorderRadius.circular(6),
+  //     child: LayoutBuilder(
+  //       builder: (context, constraints) {
+  //         final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
+  //
+  //         Color mainColor = Color(0x3F808080);
+  //         LinearGradient gradient = LinearGradient(
+  //           colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
+  //         );
+  //         if (progress < 0.35) {
+  //           mainColor = Color(0x26DD3038);
+  //           gradient = LinearGradient(
+  //             colors: [ const Color(0xFFDD3038),const Color(0x00DD3038),],
+  //           );
+  //         } else if (progress < 0.6) {
+  //           mainColor = Color(0x26FFC627);
+  //           gradient = LinearGradient(
+  //             colors: [Color(0x26FFC627),Color(0xFFFFC627), ],
+  //           );
+  //         } else {
+  //           mainColor = Color(0x2617B26A);
+  //           gradient = LinearGradient(
+  //             // colors: [Color(0xFF17B26A), Color(0x2617B26A)],
+  //             colors: [Color(0x2617B26A),Color(0xFF17B26A), ],
+  //           );
+  //         }
+  //         return Stack(
+  //           children: [
+  //             // Background
+  //
+  //             Container(height: 6, color: mainColor),
+  //
+  //             // Gradient progress (width = percentage)
+  //             AnimatedContainer(
+  //               duration: const Duration(milliseconds: 300),
+  //               height: 6,
+  //               width: width,
+  //               decoration: BoxDecoration(
+  //                   gradient: gradient),
+  //             ),
+  //
+  //           ],
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
 }
 
 class UsageRow extends StatelessWidget {

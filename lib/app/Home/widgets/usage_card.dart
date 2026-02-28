@@ -173,31 +173,10 @@ class UsageCard extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 height: 6,
                 width: width,
-                decoration: BoxDecoration(gradient: gradient),
+                decoration: BoxDecoration(
+                    gradient: gradient),
               ),
-              // Container(
-              //   height: 6,
-              //   color: title == 'data'
-              //       ? color.withOpacity(0.2)
-              //       : Color(0x3F808080),
-              // ),
-              //
-              // // Gradient progress (width = percentage)
-              // AnimatedContainer(
-              //   duration: const Duration(milliseconds: 300),
-              //   height: 6,
-              //   width: width,
-              //   decoration: BoxDecoration(
-              //     gradient: title == 'data'
-              //         ? LinearGradient(
-              //             colors: [Color(0xFFDD3038), Color(0xFFDD3038)],
-              //             // : title == 'sms' || title == 'talk mins'
-              //             // ? [const Color(0x3F808080), const Color(0x3F808080)]
-              //             // : [],
-              //           )
-              //         : null,
-              //   ),
-              // ),
+
             ],
           );
         },

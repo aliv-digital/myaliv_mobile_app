@@ -161,9 +161,9 @@ class PrepaidActivePlanCard extends StatelessWidget {
               'renew your plan',
               style: TextStyle(
                 color: const Color(0xFFEF3A4B),
-                fontSize: 13,
+                fontSize: 15,
                 fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],

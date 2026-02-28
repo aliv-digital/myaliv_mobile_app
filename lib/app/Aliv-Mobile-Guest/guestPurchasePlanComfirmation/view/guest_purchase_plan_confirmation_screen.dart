@@ -45,8 +45,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPurchasePlanConfirmationBloc,
-        GuestPurchasePlanConfirmationState>(
+    return BlocListener<
+      GuestPurchasePlanConfirmationBloc,
+      GuestPurchasePlanConfirmationState
+    >(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
           p.payNowRequestId != c.payNowRequestId,
@@ -67,31 +69,31 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
         backgroundColor: GuestPurchasePlanConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<GuestPurchasePlanConfirmationBloc,
-            GuestPurchasePlanConfirmationState>(
-          builder: (context, state) {
-            if (state.status != GuestPurchasePlanConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+        bottomNavigationBar:
+            BlocBuilder<
+              GuestPurchasePlanConfirmationBloc,
+              GuestPurchasePlanConfirmationState
+            >(
+              builder: (context, state) {
+                if (state.status != GuestPurchasePlanConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-              isVatExclusive: true,
-              isButtonEnabled: state.isTermsChecked,
-              buttonColor: const Color(0xFF645D9C),
-              onPayNow: () {
-
-
-                context.push(AppRoutes.guestPurchasePlanReceipt);
+                return DefaultBottomPayBar(
+                  isVatExclusive: true,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    context.push(AppRoutes.guestPurchasePlanReceipt);
+                  },
+                  amountText:AppSession.appRoute == 'addOnsPrepaid' ? '\$ 15.00': '\$ 75.00', //total.toString(),AppSession.appRoute == 'addOnsPrepaid' ?
+                );
               },
-              amountText: '\$ 75.00'//total.toString(),
-            );
-          },
-        ),
+            ),
 
         body: SafeArea(
-          child: BlocBuilder<GuestPurchasePlanConfirmationBloc,
-              GuestPurchasePlanConfirmationState>(
+          child: BlocBuilder<GuestPurchasePlanConfirmationBloc, GuestPurchasePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -102,8 +104,13 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                     height: 63,
                     title: 'confirmation and payment',
                     onBack: () => Navigator.of(context).maybePop(),
-                    onHomeTap: () => context.go(AppRoutes.logIn),
+                    onHomeTap: () => AppSession.appRoute == 'addOnsPrepaid'
+                        ? context.go(AppRoutes.home)
+                        : context.go(AppRoutes.logIn),
                     showBackArrow: true,
+                    showHome: AppSession.appRoute == 'addOnsPrepaid'
+                        ? true
+                        : false,
                     backgroundColor: GuestPurchasePlanConfirmationTheme.purple,
                   ),
 
@@ -120,15 +127,22 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                          29, 17, 29, 0),
+                                        29,
+                                        17,
+                                        29,
+                                        0,
+                                      ),
                                       child: PurchaseSummaryCard(
                                         data: data,
                                         onRemoveItem: (id) => context
                                             .read<
-                                                GuestPurchasePlanConfirmationBloc>()
+                                              GuestPurchasePlanConfirmationBloc
+                                            >()
                                             .add(
-                                                GuestPurchasePlanConfirmationRemoveItemPressed(
-                                                    id)),
+                                              GuestPurchasePlanConfirmationRemoveItemPressed(
+                                                id,
+                                              ),
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -150,7 +164,8 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                         isChecked: state.isTermsChecked,
                                         onToggleChecked: () => context
                                             .read<
-                                                GuestPurchasePlanConfirmationBloc>()
+                                              GuestPurchasePlanConfirmationBloc
+                                            >()
                                             .add(
                                               GuestPurchasePlanConfirmationTermsCheckboxToggled(
                                                 !state.isTermsChecked,
@@ -166,8 +181,12 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                             'https://www.bealiv.com/terms-of-use/',
                                           );
 
-                                          if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-                                          throw 'Could not open store locator';
+                                          if (!await launchUrl(
+                                            uri,
+                                            mode:
+                                                LaunchMode.externalApplication,
+                                          )) {
+                                            throw 'Could not open store locator';
                                           }
                                         },
                                       ),
@@ -178,31 +197,37 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                          29, 0, 29, 0
+                                        29,
+                                        0,
+                                        29,
+                                        0,
                                       ),
                                       child: CustomPaymentBreakDownCard(
-                                        backgroundColor: RevConfirmationPrepaidTheme.receiptBg,
+                                        backgroundColor:
+                                            RevConfirmationPrepaidTheme
+                                                .receiptBg,
                                         scallopCount: 12,
-                                        input: (AppSession.appRoute == '')? null:CustomPaymentBreakdownInputConfig(
-                                          value: '',
-                                          enabled: true,
-                                          hintText: 'promo code',
-                                          actionText: 'apply',
-                                          onChanged: (v) {
-                                            // context
-                                            //     .read<RevConfirmationPrepaidBloc>()
-                                            //     .add(RevPromoCodeChanged(v));
-                                          },
-                                          onActionTap: () {
-                                            // context
-                                            //     .read<RevConfirmationPrepaidBloc>()
-                                            //     .add(const RevPromoApplyPressed());
-                                          },
-                                        ),
+                                        input: (AppSession.appRoute == '')
+                                            ? null
+                                            : CustomPaymentBreakdownInputConfig(
+                                                value: '',
+                                                enabled: true,
+                                                hintText: 'promo code',
+                                                actionText: 'apply',
+                                                onChanged: (v) {
+                                                  // context
+                                                  //     .read<RevConfirmationPrepaidBloc>()
+                                                  //     .add(RevPromoCodeChanged(v));
+                                                },
+                                                onActionTap: () {
+                                                  // context
+                                                  //     .read<RevConfirmationPrepaidBloc>()
+                                                  //     .add(const RevPromoApplyPressed());
+                                                },
+                                              ),
                                         // backgroundColor: HexColor.fromHex('#645D9C'),
                                         items: <CustomPaymentBreakdownLineItem>[
                                           // _promoInput(context),
-
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',
                                             value: '\$ 75.00',
@@ -245,6 +270,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
       ),
     );
   }
+
   Widget _promoInput(BuildContext context) {
     return Container(
       height: 52, // match figma
@@ -258,12 +284,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
           Expanded(
             child: TextField(
               // controller: controller,
-              onChanged: (s){
-
-              },
-              style: ConfirmTopUpPrepaidTheme.bodyMd(context).copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              onChanged: (s) {},
+              style: ConfirmTopUpPrepaidTheme.bodyMd(
+                context,
+              ).copyWith(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 isDense: true,
                 hintText: 'promo code',
@@ -278,9 +302,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: (){
-
-            },
+            onTap: () {},
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -299,5 +321,4 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
       ),
     );
   }
-
 }

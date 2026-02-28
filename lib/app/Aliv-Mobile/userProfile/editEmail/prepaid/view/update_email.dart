@@ -6,7 +6,6 @@ import '../../../../../../router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../theme/edit_email_prepaid_theme.dart';
 
-
 class UpdateEmailPage extends StatefulWidget {
   const UpdateEmailPage({super.key});
 
@@ -48,9 +47,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
     context.push(
       Uri(
         path: AppRoutes.verifyEmail,
-        queryParameters: {
-          'email': email,
-        },
+        queryParameters: {'email': email},
       ).toString(),
     );
     // call API here
@@ -60,8 +57,7 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar:
-      const SafeArea(top: false, child: BottomStripes()),
+      bottomNavigationBar: const SafeArea(top: false, child: BottomStripes()),
       // appBar: AppBar(
       //   backgroundColor:Colors.white,
       //   elevation: 0,
@@ -77,12 +73,29 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
       body: Stack(
         alignment: Alignment.topLeft,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 53.0,left: 16),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios,
-                  size: 17, color: Colors.black),
-              onPressed: () => context.pop(),
+          GestureDetector(
+            onTap: () {
+              print(GoRouter.of(context).canPop());
+              if (context.canPop()) {
+                context.pop();
+              }
+            },
+
+            child: Padding(
+              padding: const EdgeInsets.only(top: 53.0, left: 16),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 17,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  print(GoRouter.of(context).canPop());
+                  if (context.canPop()) {
+                    context.pop();
+                  }
+                },
+              ),
             ),
           ),
           SafeArea(
@@ -92,10 +105,8 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-            
-            
                     // const SizedBox(height: 40),
-            
+
                     /// Title
                     const Text(
                       'update email address',
@@ -107,9 +118,9 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-            
+
                     const SizedBox(height: 16),
-            
+
                     const Text(
                       'enter a new email address',
                       textAlign: TextAlign.center,
@@ -121,38 +132,47 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                         height: 1.47,
                       ),
                     ),
-            
+
                     const SizedBox(height: 32),
-            
+
                     /// Input Field
                     Builder(
                       builder: (context) {
                         final innerRadius =
                             (EditEmailPrepaidTheme.updateEmailInputRadius -
                                     EditEmailPrepaidTheme.inputBorderWidth)
-                                .clamp(0.0, EditEmailPrepaidTheme.updateEmailInputRadius);
+                                .clamp(
+                                  0.0,
+                                  EditEmailPrepaidTheme.updateEmailInputRadius,
+                                );
 
                         return Container(
                           decoration: BoxDecoration(
                             gradient: _hasEmailFocus
-                                ? EditEmailPrepaidTheme.focusedInputBorderGradient
+                                ? EditEmailPrepaidTheme
+                                      .focusedInputBorderGradient
                                 : null,
                             border: _hasEmailFocus
                                 ? null
                                 : Border.all(
                                     color: EditEmailPrepaidTheme.inputBorder,
-                                    width: EditEmailPrepaidTheme.inputBorderWidth,
+                                    width:
+                                        EditEmailPrepaidTheme.inputBorderWidth,
                                   ),
                             borderRadius: BorderRadius.circular(
                               EditEmailPrepaidTheme.updateEmailInputRadius,
                             ),
                           ),
-                          padding: const EdgeInsets.all(EditEmailPrepaidTheme.inputBorderWidth),
+                          padding: const EdgeInsets.all(
+                            EditEmailPrepaidTheme.inputBorderWidth,
+                          ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(innerRadius),
                             child: Container(
                               height: 50,
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(
@@ -161,7 +181,9 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                               ),
                               child: Row(
                                 children: [
-                                  SvgPicture.asset('assets/icons/EnvelopeSimple.svg'),
+                                  SvgPicture.asset(
+                                    'assets/icons/EnvelopeSimple.svg',
+                                  ),
                                   const SizedBox(width: 5),
                                   Expanded(
                                     child: TextField(
@@ -187,9 +209,9 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                         );
                       },
                     ),
-            
+
                     const SizedBox(height: 32),
-            
+
                     /// Button
                     GestureDetector(
                       onTap: _updateEmail,

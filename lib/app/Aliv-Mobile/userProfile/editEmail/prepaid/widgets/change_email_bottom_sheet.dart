@@ -111,8 +111,10 @@ class ChangeEmailBottomSheet extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    context.pop(); // close sheet
+                    Navigator.of(context).pop(); // close sheet
                     context.push(AppRoutes.updateEmail);
+                    // context.pop(); // close sheet
+                    // context.push(AppRoutes.updateEmail);
 
                     // Navigate to email update screen
                     // context.push('/update-email'); // change to your route

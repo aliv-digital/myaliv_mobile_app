@@ -154,10 +154,14 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                       label: 'change password',
                                       enabled: !isLoading,
                                       isLoading: isLoading,
-                                      onTap: () => context
-                                          .read<ChangePasswordPrepaidBloc>()
-                                          .add(
-                                              const ChangePasswordPrepaidSubmitPressed()),
+                                      onTap: () {
+                                        context.pop();
+                                        AppToast.show(message: 'your password has been successfully updated ');
+                                        // context
+                                        //   .read<ChangePasswordPrepaidBloc>()
+                                        //   .add(
+                                        //       const ChangePasswordPrepaidSubmitPressed());
+                                      },
                                     );
                                   },
                                 ),

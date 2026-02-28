@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../../../core/utils/app_session.dart';
 import '../../../../../Home/home/data/home_ui_config.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/purchase_prepaid_bloc.dart';
@@ -197,6 +198,8 @@ class _PurchasePrepaidView extends StatelessWidget {
 
       case PurchasePrepaidAction.addOns:
         // TODO: Handle this case.
+        AppSession.appRoute = 'addOnsPrepaid';
+
         context.push(AppRoutes.guestPurchasePlanAddOns);
         break;
     }

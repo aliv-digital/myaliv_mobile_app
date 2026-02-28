@@ -61,6 +61,10 @@ class PurchasePrepaidRepository {
           title: 'auto renew',
           action: PurchasePrepaidAction.autoRenew,
         ),
+        PurchasePrepaidMenuItem(
+          title: 'add-ons',
+          action: PurchasePrepaidAction.addOns,
+        ),
       ];
 
     }else{

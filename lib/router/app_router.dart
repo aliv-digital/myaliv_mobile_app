@@ -542,6 +542,7 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.updateEmail,
+        parentNavigatorKey: rootNavigatorKey,   // 🔥 ADD THIS
         pageBuilder: (context, state) {
           return MaterialPage(
             key: ValueKey(state.uri.toString()),

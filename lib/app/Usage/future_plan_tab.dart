@@ -75,9 +75,9 @@ class _StartPlanButton extends StatelessWidget {
           'start plan',
           style: TextStyle(
             color: const Color(0xFFF1F1F8),
-            fontSize: 13,
+            fontSize: 15,
             fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w700,
           ),
         )
       ),

@@ -4,8 +4,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../core/utils/app_session.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../../Home/widgets/auto_renew_toggle.dart';
 import '../bloc/guest_purchase_plan_add_ons_bloc.dart';
 import '../bloc/guest_purchase_plan_add_ons_event.dart';
 import '../bloc/guest_purchase_plan_add_ons_state.dart';
@@ -92,14 +94,15 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                 title: 'add-ons',
                 showBackArrow: false,
 
-                actionText: 'skip',
+                actionText: AppSession.appRoute == 'addOnsPrepaid'
+                    ? null
+                    : 'skip',
                 onActionTextTap: () {
                   debugPrint('[GuestPurchasePlanAddOns] skip tapped');
                   //context.read<GuestPurchasePlanAddOnsBloc>().add(const GuestPurchasePlanAddOnsSkipPressed());
                   context.push(AppRoutes.guestPurchasePlanConfirmation);
                 },
-                  onHomeTap: () => context.go(AppRoutes.logIn)
-
+                onHomeTap: () => context.go(AppRoutes.logIn),
               ),
               Expanded(
                 child:
@@ -156,6 +159,9 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                               activeDate: plan.activeDate,
                               expireLabel: plan.expireDateLabel,
                               expireDate: plan.expireDate,
+                              topRight: AppSession.appRoute == 'addOnsPrepaid'
+                                  ? AutoRenewToggle(initialValue: true)
+                                  : null,
                             ),
                             const SizedBox(height: 16),
                             FairUsePolicyCard(policy: policy, onTap: () {}),
