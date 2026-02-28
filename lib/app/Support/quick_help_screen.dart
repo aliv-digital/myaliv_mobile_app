@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QuickHelpScreen extends StatelessWidget {
@@ -25,7 +27,11 @@ class QuickHelpScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          SvgPicture.asset('assets/icons/home.svg', color: Colors.white),
+          GestureDetector(
+              onTap:(){
+                context.go(AppRoutes.home);
+    },
+      child: SvgPicture.asset('assets/icons/home.svg', color: Colors.white)),
           SizedBox(width: 24),
         ],
         title: const Text(

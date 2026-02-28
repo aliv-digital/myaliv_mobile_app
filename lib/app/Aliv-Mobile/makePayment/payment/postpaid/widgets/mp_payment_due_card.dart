@@ -40,7 +40,7 @@ class MpPaymentDueCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('payment due', style: MakePaymentPostPaidTheme.sectionLabel),
+          Text('amount due', style: MakePaymentPostPaidTheme.sectionLabel),
           const SizedBox(
             height: MakePaymentPostPaidTheme.paymentDueTitleToAmountGap,
           ),

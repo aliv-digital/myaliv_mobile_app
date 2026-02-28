@@ -80,13 +80,13 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
               date: selectedDate,
               onTap: _openCalendarPickerSheet,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             _DividerOr(),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             (isDateSelected == true)
                 ? _ActivateButton(selectedDate)
                 : _ActivateButton(null),
-            const SizedBox(height: 24),
+            const SizedBox(height: 44),
           ],
         ),
       ),
@@ -239,13 +239,14 @@ class _ActivateButton extends StatelessWidget {
 
           if (selectedDate != null) {
             final formatted = DateFormat('dd-MM-yy').format(date);
-
+            context.pop();
             context.push(
               '${AppRoutes.confirmation}'
               '?showBeginOn=true'
               '&beginDate=$formatted',
             );
           } else {
+            context.pop();
             context.push(
               '${AppRoutes.confirmation}'
               '?showBeginOn=false'
@@ -261,7 +262,8 @@ class _ActivateButton extends StatelessWidget {
           'activate now',
           style: TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 13,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
             color: Color(0xFFF1F1F8),
           ),
         ),

@@ -21,14 +21,14 @@ class SupportScreen extends StatelessWidget {
         centerTitle: false,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 29.0),
+          padding: const EdgeInsets.only(left: 20.0),
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.pop(context),
           ),
         ),
-        title: const Text(
-          'support',
+
+        title: const Text('support',
           style: TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 17,

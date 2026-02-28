@@ -65,11 +65,16 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 24),
-              child: SvgPicture.asset(
-                'assets/icons/home.svg',
-                color: Colors.white,
+            GestureDetector(
+              onTap: (){
+                context.go(AppRoutes.home);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 24),
+                child: SvgPicture.asset(
+                  'assets/icons/home.svg',
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
@@ -171,9 +176,9 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         'continue',
                         style: TextStyle(
                           color: const Color(0xFFF1F1F8),
-                          fontSize: 13,
+                          fontSize: 15,
                           fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],

@@ -78,6 +78,7 @@ class TermsAgreement extends StatelessWidget {
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
+                    decorationColor:  Color(0xFF645D9C),
                     height: 1.43,
                   ),
                   recognizer: TapGestureRecognizer()

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/common_terms_condition.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/upgrade_credit_limit_amount_input_field.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../resources/widgets/top_toast.dart';
 import '../../router/app_routes.dart';
+import '../Aliv-Mobile/revBillPay/revBill/prepaid/widgets/rev_amount_field.dart';
 
 class UpgradeCreditLimitScreen extends StatefulWidget {
   const UpgradeCreditLimitScreen({super.key});
@@ -99,7 +104,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                         ),
                       ),
                       Text(
-                        'current balance',
+                        'current balance due',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 13,
@@ -116,8 +121,8 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
             const SizedBox(height: 28),
 
             // ================= INPUTS =================
-            const _LimitField(label: 'local text', value: '30.00'),
-            const _LimitField(label: 'local data', value: '30.00'),
+            const _LimitField(label: 'local text', value: ''),
+            const _LimitField(label: 'local data', value: ''),
             const _LimitField(label: 'local talk mins', value: '30.00'),
             const _LimitField(label: 'int’l roaming', value: '150.00'),
             const _LimitField(label: 'int’l talk mins', value: '150.00'),
@@ -130,8 +135,14 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
               onChanged: (val) {
                 setState(() => _agreed = val);
               },
-              onTermsTap: () {
-                // context.push(AppRoutes.terms);
+              onTermsTap: () async {
+                final uri = Uri.parse(
+                  'https://www.bealiv.com/terms-of-use/',
+                );
+
+                if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                throw 'Could not open store locator';
+                }
               },
             ),
             // Text.rich(
@@ -192,16 +203,23 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
-                    // UI only
-                    context.push(
-                      Uri(
-                        path: AppRoutes.enterPassword,
-                        queryParameters: {
-                          'title': 'auto renew security',
-                          'continue': 'home',
-                        },
-                      ).toString(),
+
+                    AppToast.show(
+                      message: 'success! your credit limit has been upgraded',
+                      type: ToastType.success,
                     );
+                    context.go(AppRoutes.home);
+
+                    // UI only
+                    // context.push(
+                    //   Uri(
+                    //     path: AppRoutes.enterPassword,
+                    //     queryParameters: {
+                    //       'title': 'auto renew security',
+                    //       'continue': 'home',
+                    //     },
+                    //   ).toString(),
+                    // );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: UpgradeCreditLimitScreen.purple,
@@ -214,9 +232,9 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                     'proceed',
                     style: TextStyle(
                       color: const Color(0xFFF1F1F8),
-                      fontSize: 13,
+                      fontSize: 15,
                       fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -259,40 +277,41 @@ class _LimitField extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: ShapeDecoration(
-              color: const Color(0xFFF1F1F8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                const Text(
-                  '\$',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontFamily: 'Uber Move Text',
-                    fontWeight: FontWeight.w500,
-                    height: 1.25,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    color: const Color(0xFF707070),
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    height: 1.43,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          AmountInputField(value: value, onChanged: (String value) {  },)
+          // Container(
+          //   height: 48,
+          //   padding: const EdgeInsets.symmetric(horizontal: 16),
+          //   decoration: ShapeDecoration(
+          //     color: const Color(0xFFF1F1F8),
+          //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          //   ),
+          //   alignment: Alignment.centerLeft,
+          //   child: Row(
+          //     children: [
+          //       const Text(
+          //         '\$',
+          //         style: TextStyle(
+          //           color: Colors.black,
+          //           fontSize: 16,
+          //           fontFamily: 'Uber Move Text',
+          //           fontWeight: FontWeight.w500,
+          //           height: 1.25,
+          //         ),
+          //       ),
+          //       const SizedBox(width: 6),
+          //       Text(
+          //         value,
+          //         style: const TextStyle(
+          //           color: const Color(0xFF707070),
+          //           fontSize: 14,
+          //           fontFamily: 'CircularPro',
+          //           fontWeight: FontWeight.w500,
+          //           height: 1.43,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

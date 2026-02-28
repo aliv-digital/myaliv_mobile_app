@@ -89,7 +89,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.guestSplash,//autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.splash,//autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.addOnsConfirmation,
@@ -320,7 +320,7 @@ class AppRouter {
           return const GuestPayBillReceiptScreen(
             args: GuestPayBillReceiptArgs(
               serviceName: 'ALIV Postpaid',
-              identifierLabel: 'mobile no.',
+              identifierLabel: 'phone no.',
               identifierValue: '242-801-0000',
               amount: 200.00,
               dateText: 'Mar 22, 2023',
@@ -342,7 +342,7 @@ class AppRouter {
           return const GuestPayBillConfirmScreen(
             args: GuestPayBillConfirmArgs(
               serviceName: 'ALIV Postpaid',
-              identifierLabel: 'mobile no.',
+              identifierLabel: 'phone no.',
               identifierValue: '242-801-0000',
               amount: 200.00,
             ),
@@ -431,7 +431,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.prepaid,
+                    userType: UserType.postpaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );
@@ -457,7 +457,7 @@ class AppRouter {
               final config =
                   (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.prepaid,
+                    userType: UserType.postpaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );

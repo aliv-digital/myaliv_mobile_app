@@ -90,6 +90,6 @@ class ReferFriendPrepaidTheme {
     fontFamily: 'CircularPro',
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: Colors.black,
+    color: Color(0xFF344054),
   );
 }

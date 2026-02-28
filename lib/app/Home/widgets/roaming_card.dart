@@ -82,7 +82,7 @@ class RoamingCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(8),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final width = 80 * progress.clamp(0.0, 1.0);
@@ -104,6 +104,8 @@ class RoamingCard extends StatelessWidget {
                       height: 6,
                       width: width,
                       decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+
                         gradient: LinearGradient(
                           colors: config.userType == UserType.postpaid
                               ? [Color(0x00DD3038), const Color(0xFFDD3038)]

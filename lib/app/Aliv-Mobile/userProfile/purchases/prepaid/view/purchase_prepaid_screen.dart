@@ -127,15 +127,23 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.push(AppRoutes.topUpPrepaidNumberPostpaidScreen);
         break;
       case PurchasePrepaidAction.buyPlans:
-        // TODO: Handle this case.
-        context.go(
-          AppRoutes.usage,
-          extra: HomeUiConfig(
-            userType: config.userType,
-            hasActivePlan: true,
-            isFuturePlan: false,
-          ),
-        );
+        if(config.isPrepaid == true){
+          // TODO: Handle this case.
+          context.go(
+            AppRoutes.usage,
+            extra: HomeUiConfig(
+              userType: config.userType,
+              hasActivePlan: true,
+              isFuturePlan: false,
+            ),
+          );
+        }else{
+          // TODO: Handle this case.
+          context.go(
+            AppRoutes.plans,
+          );
+        }
+
         break;
       case PurchasePrepaidAction.futurePlans:
         // TODO: Handle this case.
