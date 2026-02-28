@@ -171,7 +171,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         );
         break;
       case PurchasePrepaidAction.reviewInvoices:
-        context.push(AppRoutes.enterPasswordReviewInvoicePostpaidScreen);
+        context.push(AppRoutes.reviewInvoicePostPaidScreen);
         break;
       case PurchasePrepaidAction.autoRenew:
         context.push(AppRoutes.autoRenewPrepaidScreen);

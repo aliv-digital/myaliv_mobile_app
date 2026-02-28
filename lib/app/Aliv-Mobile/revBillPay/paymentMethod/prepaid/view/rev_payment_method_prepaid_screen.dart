@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../router/app_routes.dart';
@@ -83,6 +84,7 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                 context
                     .read<RevPaymentMethodPrepaidBloc>()
                     .add(const RevPayNowPressed());
+                AppSession.appRoute = 'postpaidPayment';
                 context.push(AppRoutes.guestPayBillReceipt,extra:
                   GuestPayBillReceiptArgs(
                     serviceName: 'REV',

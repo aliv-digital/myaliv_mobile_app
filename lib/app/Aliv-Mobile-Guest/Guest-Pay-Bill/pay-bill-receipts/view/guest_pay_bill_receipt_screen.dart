@@ -87,9 +87,11 @@ class _GuestPayBillReceiptView extends StatelessWidget {
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
           if(AppSession.appRoute == 'postpaidPayment'){
+            AppSession.resetAppRoute();
             context.go(AppRoutes.home);
 
-          }else{
+          }
+          else{
             context.go(AppRoutes.logIn);
           }
         }

@@ -20,7 +20,7 @@ class ReviewInvoicePostpaidRepositoryImpl implements ReviewInvoicePostpaidReposi
       InvoiceItem(invoiceNo: 'inv.8612', invoiceDate: date, dueDate: date, amount: 109.99),
       InvoiceItem(invoiceNo: 'inv.1535', invoiceDate: date, dueDate: date, amount: 105.00),
       InvoiceItem(invoiceNo: 'inv.7400', invoiceDate: date, dueDate: date, amount: 110.32),
-      InvoiceItem(invoiceNo: 'Inv.3518', invoiceDate: date, dueDate: date, amount: 187.20),
+      // InvoiceItem(invoiceNo: 'Inv.3518', invoiceDate: date, dueDate: date, amount: 187.20),
     ];
   }
 }
