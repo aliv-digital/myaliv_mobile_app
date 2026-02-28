@@ -8,7 +8,7 @@ class MakePaymentConfirmationPostPaidRepositoryImpl
       title: 'confirmation',
       customerName: 'Alicia Major',
       accountNumber: '242-801-1616',
-      headerLabel: 'payment due',
+      headerLabel: 'amount due',
       amountPill: r'$ 129.00',
       subtotal: r'$ 129.00',
       vat: r'$ 0.00',

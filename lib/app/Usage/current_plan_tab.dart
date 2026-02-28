@@ -16,12 +16,12 @@ class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
 
   static const Color purple = Color(0xFF645D9C);
-  static const Color bg = Color(0xFFF4F6FB);
+  static const Color bg = Color(0xFFF1F2FA);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: bg,
+      color: Colors.white,
       child: ListView(
         // padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
         children: [
@@ -270,7 +270,7 @@ class _ActiveAddOns extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'active add-ons',
           style: TextStyle(
             color: const Color(0xFF222222),
@@ -279,9 +279,9 @@ class _ActiveAddOns extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         Wrap(
-          spacing: 8,
+          spacing: 10,
           children: const [
             _AddOnChip('voice'),
             _AddOnChip('sms'),
@@ -300,15 +300,17 @@ class _AddOnChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF645D9C)),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: ShapeDecoration(
+        color: const Color(0xFFF4F4F6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: const Color(0xFF645D9C),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: const Color(0xFF222222),
           fontSize: 14,
           fontFamily: 'CircularPro',
           fontWeight: FontWeight.w700,

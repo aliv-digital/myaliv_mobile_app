@@ -30,7 +30,7 @@ class ReferFriendResponsePrepaidButton extends StatelessWidget {
           label,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 13.5,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
             color: ReferFriendResponsePrepaidTheme.brand,
           ),

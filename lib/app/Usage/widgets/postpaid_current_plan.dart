@@ -299,9 +299,9 @@ class _AutoRenewBottomSheet extends StatelessWidget {
                   'ok',
                   style: TextStyle(
                     color: Color(0xFFF1F1F8),
-                    fontSize: 13,
+                    fontSize: 15,
                     fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),

@@ -31,13 +31,13 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
 
     // context.go(widget.continueRoute);
     if (widget.continueRoute == 'call_logs') {
-      // context.push('${AppRoutes.callLogs}?tab=call_logs',);
-      context.push(
-        Uri(
-          path: AppRoutes.verificationCode,
-          queryParameters: {'next': widget.continueRoute},
-        ).toString(),
-      );
+      context.push('${AppRoutes.callLogs}?tab=call_logs',);
+      // context.push(
+      //   Uri(
+      //     path: AppRoutes.verificationCode,
+      //     queryParameters: {'next': widget.continueRoute},
+      //   ).toString(),
+      // );
     }
     if (widget.continueRoute == 'home') {
       context.push(

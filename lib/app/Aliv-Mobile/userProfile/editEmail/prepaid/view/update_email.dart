@@ -58,46 +58,38 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: const SafeArea(top: false, child: BottomStripes()),
-      // appBar: AppBar(
-      //   backgroundColor:Colors.white,
-      //   elevation: 0,
-      //   leading: Padding(
-      //     padding: const EdgeInsets.only(top: 16.0,left: 16),
-      //     child: IconButton(
-      //       icon: const Icon(Icons.arrow_back_ios,
-      //           size: 17, color: Colors.black),
-      //       onPressed: () => context.pop(),
-      //     ),
-      //   ),
-      // ),
+      appBar: AppBar(
+        backgroundColor:Colors.white,toolbarHeight: 64,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 16.0,left: 24),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios,
+                size: 17, color: Colors.black),
+            onPressed: () => context.pop(),
+          ),
+        ),
+      ),
       body: Stack(
         alignment: Alignment.topLeft,
         children: [
-          GestureDetector(
-            onTap: () {
-              print(GoRouter.of(context).canPop());
-              if (context.canPop()) {
-                context.pop();
-              }
-            },
-
-            child: Padding(
-              padding: const EdgeInsets.only(top: 53.0, left: 16),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 17,
-                  color: Colors.black,
-                ),
-                onPressed: () {
-                  print(GoRouter.of(context).canPop());
-                  if (context.canPop()) {
-                    context.pop();
-                  }
-                },
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(top: 53.0, left: 16),
+          //   child: IconButton(
+          //     icon: const Icon(
+          //       Icons.arrow_back_ios,
+          //       size: 17,
+          //       color: Colors.black,
+          //     ),
+          //     onPressed: () {
+          //       // print(GoRouter.of(context).canPop());
+          //       // if (context.canPop()) {
+          //       //   context.pop();
+          //       // }
+          //       context.go(AppRoutes.myProfilePrepaidScreen);
+          //     },
+          //   ),
+          // ),
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(

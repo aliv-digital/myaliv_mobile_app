@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../../../../../resources/widgets/top_toast.dart';
 import '../bloc/auto_renew_auth_prepaid_bloc.dart';
 import '../bloc/auto_renew_auth_prepaid_event.dart';
 import '../bloc/auto_renew_auth_prepaid_state.dart';
@@ -104,8 +105,20 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                               bloc.add(AutoRenewAuthNameChanged(v)),
                           onSubmit: () {
                             //bloc.add(const AutoRenewAuthSubmitPressed());
-                            context.push(
-                                AppRoutes.enterPasswordAutoRenewPrepaidScreen);
+                            // context.push(
+                            //     AppRoutes.enterPasswordAutoRenewPrepaidScreen);
+                            AppToast.show(
+                              message:
+                              "We’re working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+                              type: ToastType.success,
+                            );
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              Future.delayed(const Duration(seconds: 1), () {
+                                if (context.mounted) {
+                                  context.go(AppRoutes.home);
+                                }
+                              });
+                            });
                           },
                         ),
                       ),

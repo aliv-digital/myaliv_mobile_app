@@ -127,8 +127,8 @@ class TopUpPrepaidTheme {
 
   static TextStyle buttonText() => const TextStyle(
     fontFamily: fontFamily,
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
     color: const Color(0xFFF1F1F8),
   );
 }

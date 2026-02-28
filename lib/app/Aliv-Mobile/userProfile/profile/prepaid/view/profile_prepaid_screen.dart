@@ -113,17 +113,17 @@ class _ProfilePrepaidView extends StatelessWidget {
                                           }
 
                                           if (item.id == 'call_logs') {
-                                            // context.push('${AppRoutes.callLogs}?tab=call_logs',);
+                                            context.push('${AppRoutes.callLogs}?tab=call_logs',);
                                             // context.push(AppRoutes.enterPassword);
-                                            context.push(
-                                              Uri(
-                                                path: AppRoutes.enterPassword,
-                                                queryParameters: {
-                                                  'title': 'enter password',
-                                                  'continue': 'call_logs',
-                                                },
-                                              ).toString(),
-                                            );
+                                            // context.push(
+                                            //   Uri(
+                                            //     path: AppRoutes.enterPassword,
+                                            //     queryParameters: {
+                                            //       'title': 'enter password',
+                                            //       'continue': 'call_logs',
+                                            //     },
+                                            //   ).toString(),
+                                            // );
 
                                           }
                                           if (item.id == 'rewards') {

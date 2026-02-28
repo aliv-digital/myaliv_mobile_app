@@ -28,8 +28,8 @@ class ReceiptBackButton extends StatelessWidget {
           'back to home page',
           style: TextStyle(
             color: _purple,
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
             fontFamily: 'CircularPro'
           ),
         ),

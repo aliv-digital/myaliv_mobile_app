@@ -337,7 +337,7 @@ class AppRouter {
           return const GuestPayBillReceiptScreen(
             args: GuestPayBillReceiptArgs(
               serviceName: 'ALIV Postpaid',
-              identifierLabel: 'mobile no.',
+              identifierLabel: 'phone no.',
               identifierValue: '242-801-0000',
               amount: 200.00,
               dateText: 'Mar 22, 2023',
@@ -359,7 +359,7 @@ class AppRouter {
           return const GuestPayBillConfirmScreen(
             args: GuestPayBillConfirmArgs(
               serviceName: 'ALIV Postpaid',
-              identifierLabel: 'mobile no.',
+              identifierLabel: 'phone no.',
               identifierValue: '242-801-0000',
               amount: 200.00,
             ),

@@ -89,6 +89,7 @@ class _HeaderBar extends StatelessWidget {
     return DefaultAppBar(
       title: 'success!',
       showHome: false,
+      showBackArrow: true,centerTitle: false,
       backgroundColor: ReferFriendResponsePrepaidTheme.brand,
       onBack: () {},
     );

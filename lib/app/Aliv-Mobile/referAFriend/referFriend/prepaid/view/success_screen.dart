@@ -17,8 +17,9 @@ class InvitingSuccessScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF645D9C),
         elevation: 0,
-        toolbarHeight: 64,
+        toolbarHeight: 64,automaticallyImplyLeading: false,
         centerTitle: false,
+        leading: null,
         title: Padding(
           padding: const EdgeInsets.only(left: 24.0),
           child: Text(
@@ -158,9 +159,9 @@ class InvitingSuccessScreen extends StatelessWidget {
                           'back to home page',
                           style: TextStyle(
                             color: const Color(0xFF645D9C),
-                            fontSize: 13,
+                            fontSize: 15,
                             fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],

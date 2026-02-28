@@ -94,17 +94,17 @@ class AutoRenewPrepaidTheme {
 
   static const TextStyle addCardButtonTextStyle = TextStyle(
     color: primary,
-    fontSize: 13,
+    fontSize: 15,
     fontFamily: fontFamily,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
     height: 1.54,
   );
 
   static const TextStyle primaryButtonTextStyle = TextStyle(
     color: textOnPrimary,
-    fontSize: 13,
+    fontSize: 15,
     fontFamily: fontFamily,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w700,
   );
 
   static const TextStyle addCardSheetTitleStyle = TextStyle(

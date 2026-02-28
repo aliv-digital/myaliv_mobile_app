@@ -86,7 +86,7 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                 context.push(AppRoutes.guestPayBillReceipt,extra:
                   GuestPayBillReceiptArgs(
                     serviceName: 'REV',
-                    identifierLabel: 'mobile no.',
+                    identifierLabel: 'phone no.',
                     identifierValue: '242-801-0000',
                     amount: 200.00,
                     dateText: 'Mar 22, 2023',

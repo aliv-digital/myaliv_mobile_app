@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../../core/utils/app_session.dart';
+import '../../../../../../resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
 import '../../../purchases/prepaid/widgets/currency_amount_input.dart';
 import '../theme/top_up_prepaid_theme.dart';
@@ -144,10 +145,22 @@ class AutoRenewAuthorizationScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     // UI only – no logic yet
-                    AppSession.appRoute = 'autoTopUp';
-
-                    context.push(
-                        AppRoutes.enterPasswordAutoRenewPrepaidScreen);
+                    // AppSession.appRoute = 'autoTopUp';
+                    //
+                    // context.push(
+                    //     AppRoutes.enterPasswordAutoRenewPrepaidScreen);
+                    AppToast.show(
+                      message:
+                      "We’re working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+                      type: ToastType.success,
+                    );
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Future.delayed(const Duration(seconds: 1), () {
+                        if (context.mounted) {
+                          context.go(AppRoutes.home);
+                        }
+                      });
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TopUpPrepaidTheme.purple,

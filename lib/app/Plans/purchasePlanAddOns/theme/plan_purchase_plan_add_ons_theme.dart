@@ -72,8 +72,8 @@ class PlanPurchasePlanAddOnsTheme {
   );
 
   static final TextStyle bottomBarButtonText = t(
-    13,
-    weight: FontWeight.w500,
+    15,
+    weight: FontWeight.w700,
     color: Colors.white,
   );
 

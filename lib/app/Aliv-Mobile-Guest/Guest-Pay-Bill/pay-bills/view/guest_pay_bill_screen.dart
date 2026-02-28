@@ -169,7 +169,7 @@ class _GuestPayBillView extends StatelessWidget {
 
   GuestPayBillConfirmArgs _buildConfirmArgs(GuestPayBillState state) {
     final serviceName = state.selectedService?.label ?? '';
-    final identifierLabel = state.isAlivPostpaid ? 'mobile no.' : 'account no.';
+    final identifierLabel = state.isAlivPostpaid ? 'phone no.' : 'account no.';
 
     final identifierValue = state.isAlivPostpaid
         ? '242-801-0000'

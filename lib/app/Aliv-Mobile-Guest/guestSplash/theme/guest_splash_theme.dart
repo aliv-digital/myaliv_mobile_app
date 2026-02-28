@@ -12,9 +12,9 @@ class GuestSplashTheme {
   // Guest splash option button text style.
   static final TextStyle optionButtonText = TextStyle(
     color: primaryButtonTextColor,
-    fontSize: 15,
+    fontSize: 13,
     fontFamily: AppConstants.defaultFontFamily,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.lerp(FontWeight.w400, FontWeight.w500, 0.5),
   );
 
   // Main title: "Please Select Option"

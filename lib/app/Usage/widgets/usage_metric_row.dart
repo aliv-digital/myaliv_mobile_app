@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../Home/home/data/home_ui_config.dart';
+import '../../Home/home/home_screen.dart';
+
 class UsageMetricRow extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -57,10 +60,47 @@ class UsageMetricRow extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  _ProgressBar(
-                    progress: progress,
-                    gradient: gradient,
+                  // _ProgressBar(
+                  //   progress: progress,
+                  //   gradient: gradient,
+                  // ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final width = 80 * percentUsed.clamp(0.0, 1.0);
+
+                        return Stack(
+                          children: [
+                            // Background
+                            Container(
+                              height: 6,
+                              width: 80,
+                              color:  Color(0x2617B26A).withValues(alpha: 0.2),
+                            ),
+
+                            // Gradient progress (width = percentage)
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              height: 8,
+                              width: width.toDouble(),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0x0017B26A),
+                                    const Color(0xFF17B26A),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
+
                   const SizedBox(height: 4),
                   Text(
                     '$percentUsed% used',
@@ -75,9 +115,9 @@ class UsageMetricRow extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 8),
         const Divider(height: 1),
-        const SizedBox(height: 14),
+        const SizedBox(height: 8),
       ],
     );
   }

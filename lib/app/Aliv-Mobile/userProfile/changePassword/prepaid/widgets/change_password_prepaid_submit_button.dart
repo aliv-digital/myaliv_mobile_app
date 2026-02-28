@@ -39,8 +39,8 @@ class ChangePasswordPrepaidSubmitButton extends StatelessWidget {
           label,
           style: const TextStyle(
             fontFamily: 'CircularPro',
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
             color: Color(0xFFF1F1F8),
           ),
         ),
