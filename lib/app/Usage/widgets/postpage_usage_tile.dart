@@ -10,59 +10,65 @@ class PostpaidUsageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(0),
       decoration: BoxDecoration(
         // color: Colors.white,
         // border: Border.all(color: const Color(0xFFDBDBDB)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
         children: [
-          /// LEFT SIDE
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: const TextStyle(
-                    color: Color(0xFF222222),
-                    fontSize: 12,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  item.subtitle,
-                  style: const TextStyle(
-                    color: Color(0xFF707070),
-                    fontSize: 12,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          /// RIGHT SIDE
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProgressBar(),
-              const SizedBox(height: 6),
-              Text(
-                item.trailingText,
-                style: const TextStyle(
-                  color: Color(0xFF707070),
-                  fontSize: 12,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
+              /// LEFT SIDE
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title,
+                      style: const TextStyle(
+                        color: Color(0xFF222222),
+                        fontSize: 12,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      item.subtitle,
+                      style: const TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: 12,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+
+              /// RIGHT SIDE
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildProgressBar(),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.trailingText,
+                    style: const TextStyle(
+                      color: Color(0xFF707070),
+                      fontSize: 12,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+          Divider(color: Color(0xFFDBDBDB),)
+
         ],
       ),
     );

@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../../resources/extentions/hex_color.dart';
+import '../../../../../../resources/widgets/custom_payment_break_down_card.dart';
 import '../bloc/confirm_top_up_prepaid_bloc.dart';
 import '../bloc/confirm_top_up_prepaid_event.dart';
 import '../bloc/confirm_top_up_prepaid_state.dart';
@@ -14,7 +17,6 @@ import '../theme/confirm_top_up_prepaid_theme.dart';
 import '../widgets/bottom_bar.dart';
 import '../widgets/confirm_top_up_header_card.dart';
 import '../widgets/promo_summary_ticket.dart';
-
 
 class ConfirmTopUpPrepaidScreen extends StatefulWidget {
   final String customerName;
@@ -29,7 +31,8 @@ class ConfirmTopUpPrepaidScreen extends StatefulWidget {
   });
 
   @override
-  State<ConfirmTopUpPrepaidScreen> createState() => _ConfirmTopUpPrepaidScreenState();
+  State<ConfirmTopUpPrepaidScreen> createState() =>
+      _ConfirmTopUpPrepaidScreenState();
 }
 
 class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
@@ -49,7 +52,6 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
           throw 'Could not open store locator';
         }
       };
-
   }
   //
   // @override
@@ -67,18 +69,23 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ConfirmTopUpPrepaidBloc(ConfirmTopUpPrepaidRepositoryImpl())
-        ..add(ConfirmTopUpStarted(
-          customerName: widget.customerName,
-          customerPhone: widget.customerPhone,
-          amount: widget.amount,
-        )),
+      create: (_) =>
+          ConfirmTopUpPrepaidBloc(ConfirmTopUpPrepaidRepositoryImpl())..add(
+            ConfirmTopUpStarted(
+              customerName: widget.customerName,
+              customerPhone: widget.customerPhone,
+              amount: widget.amount,
+            ),
+          ),
       child: BlocConsumer<ConfirmTopUpPrepaidBloc, ConfirmTopUpPrepaidState>(
-        listenWhen: (p, c) => p.errorMessage != c.errorMessage || p.status != c.status,
+        listenWhen: (p, c) =>
+            p.errorMessage != c.errorMessage || p.status != c.status,
         listener: (context, state) {
           final msg = state.errorMessage;
           if (msg != null && msg.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(msg)));
           }
           if (state.status == ConfirmTopUpStatus.success) {
             // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Top up confirmed')));
@@ -93,7 +100,9 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
               vatExclusive: false,
               isLoading: state.status == ConfirmTopUpStatus.submitting,
               onContinue: () {
-                context.read<ConfirmTopUpPrepaidBloc>().add(const ContinuePressed());
+                context.read<ConfirmTopUpPrepaidBloc>().add(
+                  const ContinuePressed(),
+                );
                 context.push(AppRoutes.topUpPaymentPrepaidScreen);
               },
             ),
@@ -114,14 +123,40 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
 
                     const SizedBox(height: 38),
 
-                    PromoSummaryTicket(
-                      controller: _promoController,
-                      onChanged: (v) => context.read<ConfirmTopUpPrepaidBloc>().add(PromoCodeChanged(v)),
-                      onApply: () => context.read<ConfirmTopUpPrepaidBloc>().add(const PromoCodeApplied()),
-                      subTotal: state.breakdown.subTotal,
-                      vat: state.breakdown.vat,
-                      total: state.breakdown.total,
-                    ),
+                    // if (config.isPostpaid == true)
+                      CustomPaymentBreakDownCard(
+                        backgroundColor: HexColor.fromHex('#645D9C'),
+                        input: (config.isPrepaid == true) ?
+                        const CustomPaymentBreakdownInputConfig(
+                          value: '',
+                          hintText: 'promo code',
+                          actionText: 'apply',
+                        ):null,
+                        items: <CustomPaymentBreakdownLineItem>[
+                          CustomPaymentBreakdownLineItem(
+                            label: 'sub total',
+                            value: '\$ 15.15',
+                            // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                          ),
+                          CustomPaymentBreakdownLineItem(
+                            label: 'vat',
+                            value: '\$ 0.00',
+                          ),
+                          CustomPaymentBreakdownLineItem(
+                            label: 'total',
+                            value: '\$ 20.00',
+                            //    '\$ ${data.totals.total.toStringAsFixed(2)}',
+                          ),
+                        ],
+                      ),
+                    // PromoSummaryTicket(
+                    //   controller: _promoController,
+                    //   onChanged: (v) => context.read<ConfirmTopUpPrepaidBloc>().add(PromoCodeChanged(v)),
+                    //   onApply: () => context.read<ConfirmTopUpPrepaidBloc>().add(const PromoCodeApplied()),
+                    //   subTotal: state.breakdown.subTotal,
+                    //   vat: state.breakdown.vat,
+                    //   total: state.breakdown.total,
+                    // ),
                   ],
                 ),
               ),
@@ -135,7 +170,9 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
   PreferredSizeWidget _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: ConfirmTopUpPrepaidTheme.primary,
-      elevation: 0,centerTitle: false,toolbarHeight: 64,
+      elevation: 0,
+      centerTitle: false,
+      toolbarHeight: 64,
       leading: Padding(
         padding: const EdgeInsets.only(left: 24.0),
         child: IconButton(
@@ -144,18 +181,22 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
         ),
       ),
       title: Text(
-        'confirmation & payment',
-        style: ConfirmTopUpPrepaidTheme.titleMd(context).copyWith(color: Colors.white),
+        'confirmation and payment',
+        style: ConfirmTopUpPrepaidTheme.titleMd(
+          context,
+        ).copyWith(color: Colors.white),
       ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 18.0),
           child: IconButton(
-            icon:  SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
+            icon: SvgPicture.asset(
+              'assets/icons/home.svg',
+              color: Colors.white,
+            ),
             onPressed: () {
               // TODO: integrate GoRouter home route
               context.go(AppRoutes.home);
-
             },
           ),
         ),
@@ -169,12 +210,11 @@ class _ConfirmTopUpPrepaidScreenState extends State<ConfirmTopUpPrepaidScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Icon(Icons.check_box_outlined),
-
         Padding(
           padding: const EdgeInsets.only(top: 3.0),
           child: SvgPicture.asset('assets/icons/Checkbox=On.svg'),
         ),
-        SizedBox(width: 10,),
+        SizedBox(width: 10),
         Expanded(
           child: Text.rich(
             TextSpan(

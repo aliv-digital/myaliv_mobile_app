@@ -72,6 +72,7 @@ class CurrentPlanTab extends StatelessWidget {
                 trailingText: "25% used",
                 progress: 0.25,
               ),
+
               PostpaidUsageItem(
                 title: "talk mins roam free",
                 subtitle: "0 of 800",
@@ -243,15 +244,17 @@ class CurrentPlanTab extends StatelessWidget {
 
   Widget buildUsageSection(List<PostpaidUsageItem> items) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
       color: Colors.white,
       child: Column(
         children: items
             .map(
-              (e) => Padding(
+              (e) {
+                return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: PostpaidUsageTile(item: e),
-              ),
+              );
+              },
             )
             .toList(),
       ),

@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/app_session.dart';
+import '../../../../resources/extentions/dateformatter.dart';
 import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/custom_payment_break_down_card.dart';
 import '../../../../router/app_routes.dart';
@@ -363,7 +364,7 @@ class _PlanCard extends StatelessWidget {
                               ),
                             )
                           : const Text(
-                              'immediately',
+                              'begins immediately',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: const Color(0xFF707070),
@@ -426,7 +427,8 @@ class _BeginOnCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatted = DateFormat('dd-MM-yy').format(date);
+    final formatted = formatWithOrdinal(date);
+    //DateFormat('dd-MM-yy').format(date);
 
     return Container(
       padding: const EdgeInsets.all(14),

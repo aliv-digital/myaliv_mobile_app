@@ -156,7 +156,7 @@ class _ReceiptCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'CircularPro',
                     fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xFF645D9C),
                   ),
                 ),

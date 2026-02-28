@@ -213,7 +213,8 @@ class _Actions extends StatelessWidget {
               expanded ? 'hide details' : 'view details',
               style: const TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
                 color: Color(0xFF645D9C),
               ),
             ),
@@ -234,7 +235,9 @@ class _Actions extends StatelessWidget {
               'purchase now',
               style: TextStyle(
                 fontFamily: 'CircularPro',
-                fontSize: 13,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+
                 color: Color(0xFFF1F1F8),
               ),
             ),

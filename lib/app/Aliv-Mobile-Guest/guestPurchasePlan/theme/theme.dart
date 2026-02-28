@@ -622,16 +622,16 @@ class GuestPurchasePlanTheme {
 
   static final TextStyle roamCalendarCancelTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 13,
+    fontSize: 15,
     // Flutter does not support FontWeight.w450 directly; w400 is the closest.
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     color: HexColor.fromHex('#645D9C'),
   );
 
   static final TextStyle roamCalendarApplyTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
     color: HexColor.fromHex('#F2F1F9'),
   );
 

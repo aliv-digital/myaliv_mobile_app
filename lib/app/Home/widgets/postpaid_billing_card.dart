@@ -92,19 +92,19 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                         'balance due',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontFamily: 'SF Pro',
                           fontWeight: FontWeight.w600,
                           height: 1.18,
                           letterSpacing: 0.06,
                         ),
                       ),
-                      SizedBox(height: 6),
+                      // SizedBox(height: 6),
                       Text(
                         'payment is due the 15th of each\nmonth',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 10,
+                          fontSize: 11,
                           fontFamily: 'SF Pro',
                           fontWeight: FontWeight.w400,
                           height: 1.30,
@@ -206,7 +206,7 @@ class _FigmaToggle extends StatelessWidget {
         height: _height,
         padding: EdgeInsets.only(left: value ? 10 : 3, right: value ? 3 : 10),
         decoration: BoxDecoration(
-          color: value ? const Color(0xFF645D9C) : Colors.white,
+          color: value ? const Color(0xFF645D9C) : Color(0xFF979797),
           borderRadius: BorderRadius.circular(35.71),
           border: value
               ? null
@@ -245,7 +245,7 @@ class _FigmaToggle extends StatelessWidget {
                       'Off',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Color(0xFF707070),
+                        color: Colors.white,//Color(0xFFF4F4F4),
                         fontSize: 8,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w400,

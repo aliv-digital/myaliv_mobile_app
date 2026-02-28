@@ -106,6 +106,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
 import '../theme/confirm_top_up_prepaid_theme.dart';
 import 'dashed_divider.dart';
 import 'ticket_clipper.dart';
@@ -145,19 +146,24 @@ class PromoSummaryTicket extends StatelessWidget {
           ),
         ],
       ),
-      child: ClipPath(
+      child:
+      ClipPath(
         // tweak notch look
         clipper: TicketClipper(radius: 8, notchCount: 12),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
           decoration: BoxDecoration(
             color: ConfirmTopUpPrepaidTheme.ticket,
             borderRadius: BorderRadius.circular(20),
+            image: const DecorationImage(
+              image: AssetImage('assets/images/Promo BG.png'),
+              fit: BoxFit.cover,
+            ),
           ),
           child: Column(
             children: [
-              _promoInput(context),
-              const SizedBox(height: 24),
+             if (config.isPrepaid == true)  _promoInput(context),
+              if (config.isPrepaid == true) const SizedBox(height: 24),
 
               _row(context, 'sub total', _money(subTotal)),
               const SizedBox(height: 14),

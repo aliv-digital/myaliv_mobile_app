@@ -154,9 +154,9 @@ class ReceiptTheme {
   // ReceiptBackButton label
   static final TextStyle backButtonText = TextStyle(
     color: successButtonTextColor,
-    fontSize: 13,
+    fontSize: 15,
     // Flutter has no exact w450; w400 is the closest available weight.
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     fontFamily: 'CircularPro',
   );
 
@@ -164,7 +164,7 @@ class ReceiptTheme {
   static const Color backButtonBackgroundColor = Colors.white;
   static final Color backButtonBorderColor = HexColor.fromHex('#F2F1F9');
   static const double backButtonWidth = 156;
-  static const double backButtonHeight = 40;
+  static const double backButtonHeight = 48;
   static const double backButtonRadius = 100;
   static const EdgeInsets backButtonPadding =
       EdgeInsets.symmetric(horizontal: 24, vertical: 12);

@@ -112,7 +112,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   DefaultAppBar(
                     showHome: true,
                     onHomeTap: (){
-                      context.go(AppRoutes.logIn);
+                      context.go(AppRoutes.home);
                     },
                     title: 'confirmation and payment',
                     onBack: () {

@@ -19,7 +19,7 @@ class MyLimitsTab extends StatelessWidget {
         children: [
           const _LimitRow(
             title: 'local text',
-            subtitle: '\10.00 of \$30.00 remaining',
+            subtitle: '\$15.00 of \$30.00 remaining',
             percentUsed: 50,
             progressColor: Color(0xFFE07A4E),
           ),
@@ -56,7 +56,7 @@ class MyLimitsTab extends StatelessWidget {
             progressColor: Color(0xFF6B63C5),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
           // ================= CTA =================
           SizedBox(
@@ -126,7 +126,7 @@ class _LimitRow extends StatelessWidget {
 
     }
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: const EdgeInsets.only(top: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

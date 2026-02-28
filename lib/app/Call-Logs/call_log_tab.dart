@@ -1,52 +1,92 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../router/app_routes.dart';
 
 class CallLogsTab extends StatelessWidget {
   const CallLogsTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-      children: const [
-        _CallLogItem(
-          number: '242-444-5555',
-          subtitle: 'outgoing call, 1 min 21 secs',
-          time: '12:00 PM',
-          date: 'July 02, 2024',
-          isVoicemail: false,
+    return Scaffold(
+      backgroundColor: Color(0xFFF1F2FA),
+
+      bottomNavigationBar: SafeArea(
+        child: GestureDetector(
+          onTap: (){
+            context.go(AppRoutes.home);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 68.0,vertical: 20),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 200),
+              child: Container(
+                width: 200, // ✅ fixed width
+                height: 48,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  'back to home page',
+                  style: TextStyle(
+                    color: Color(0xFF645D9C),
+                    fontSize: 15,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
-        _CallLogItem(
-          number: '242-800-5555',
-          subtitle: 'voicemail',
-          time: 'Friday',
-          date: 'July 02, 2024',
-          isVoicemail: true,
-        ),
-        _CallLogItem(
-          number: '242-444-5555',
-          subtitle: 'outgoing call, 1 min 21 secs',
-          time: '11:00 AM',
-          date: 'July 02, 2024',
-          isVoicemail: false,
-        ),
-        _CallLogItem(
-          number: '242-444-5555',
-          subtitle: 'outgoing call, 1 min 21 secs',
-          time: '12:00 PM',
-          date: 'July 02, 2024',
-          isVoicemail: false,
-        ),
-        _CallLogItem(
-          number: '242-800-5555',
-          subtitle: 'voicemail',
-          time: 'Friday',
-          date: 'July 02, 2024',
-          isVoicemail: true,
-        ),
-        SizedBox(height: 24),
-        // _BackHomeButton(),
-      ],
+      ),
+
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        children: const [
+          _CallLogItem(
+            number: '242-444-5555',
+            subtitle: 'outgoing call, 1 min 21 secs',
+            time: '12:00 PM',
+            date: 'July 02, 2024',
+            isVoicemail: false,
+          ),
+          _CallLogItem(
+            number: '242-800-5555',
+            subtitle: 'voicemail',
+            time: 'Friday',
+            date: 'July 02, 2024',
+            isVoicemail: true,
+          ),
+          _CallLogItem(
+            number: '242-444-5555',
+            subtitle: 'outgoing call, 1 min 21 secs',
+            time: '11:00 AM',
+            date: 'July 02, 2024',
+            isVoicemail: false,
+          ),
+          _CallLogItem(
+            number: '242-444-5555',
+            subtitle: 'outgoing call, 1 min 21 secs',
+            time: '12:00 PM',
+            date: 'July 02, 2024',
+            isVoicemail: false,
+          ),
+          _CallLogItem(
+            number: '242-800-5555',
+            subtitle: 'voicemail',
+            time: 'Friday',
+            date: 'July 02, 2024',
+            isVoicemail: true,
+          ),
+          SizedBox(height: 24),
+          // _BackHomeButton(),
+        ],
+      ),
     );
   }
 }

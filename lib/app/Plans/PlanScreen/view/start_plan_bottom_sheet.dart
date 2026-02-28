@@ -113,6 +113,7 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
       isDateSelected = true;
     });
     if (mounted) {
+      context.pop();
       context.push(
         '${AppRoutes.confirmation}'
         '?showBeginOn=true'

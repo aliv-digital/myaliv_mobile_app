@@ -121,8 +121,8 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
             const SizedBox(height: 28),
 
             // ================= INPUTS =================
-            const _LimitField(label: 'local text', value: ''),
-            const _LimitField(label: 'local data', value: ''),
+            const _LimitField(label: 'local text', value: '30.00'),
+            const _LimitField(label: 'local data', value: '30.00'),
             const _LimitField(label: 'local talk mins', value: '30.00'),
             const _LimitField(label: 'int’l roaming', value: '150.00'),
             const _LimitField(label: 'int’l talk mins', value: '150.00'),
