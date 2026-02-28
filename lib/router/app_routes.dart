@@ -115,4 +115,6 @@ class AppRoutes {
   static const verifyEmail = '/verify-email';
   static const confirmation = '/postpaid-payment-confirmation';
   static const invitingSuccess = '/inviting-success';
+
+  static const homePlanConfirmationScreen = '/home-plan-confirmation-screen';
 }

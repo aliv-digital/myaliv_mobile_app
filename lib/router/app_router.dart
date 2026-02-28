@@ -15,6 +15,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prep
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/view/home_plan_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Support/support_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
@@ -89,9 +91,34 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation:
-        AppRoutes.splash, //autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.home, //autoRenewPrepaidScreen,
     routes: [
+      GoRoute(
+        path: AppRoutes.homePlanConfirmationScreen,
+        builder: (context, state) {
+          final extra = state.extra;
+          final HomePlanConfirmationRouteArgs args;
+          if (extra is HomePlanConfirmationRouteArgs) {
+            args = extra;
+          } else {
+            args = const HomePlanConfirmationRouteArgs(
+              phoneNumber: '242-801-1616',
+              accountHolderName: 'Jade Turnquest',
+              primaryPlanName: 'liberty70',
+              primaryPlanPrice: 70,
+              flow: HomePlanConfirmationEntryFlow.proceed,
+              selectedAddOns: <HomePlanConfirmationSelectedAddOn>[
+                HomePlanConfirmationSelectedAddOn(
+                  id: 'addon1',
+                  title: 'liberty data 1',
+                  price: 5,
+                ),
+              ],
+            );
+          }
+          return HomePlanConfirmationScreen(args: args);
+        },
+      ),
       GoRoute(
         path: AppRoutes.addOnsConfirmation,
         builder: (context, state) =>

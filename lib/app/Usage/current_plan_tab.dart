@@ -421,7 +421,7 @@ class _LimitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -472,7 +472,7 @@ class _LimitRow extends StatelessWidget {
                     // Gradient progress (width = percentage)
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      height: 8,
+                      height: 6,
                       width: width.toDouble(),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),

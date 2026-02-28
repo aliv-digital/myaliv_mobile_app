@@ -123,6 +123,7 @@ class _HomePlanView extends StatelessWidget {
           activeDate: activePlan.activeDate,
           expireLabel: activePlan.expireDateLabel,
           expireDate: activePlan.expireDate,
+          autoRenew: activePlan.autoRenew,
         ),
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
@@ -271,7 +272,7 @@ class _HomePlanView extends StatelessWidget {
           children: [
             DefaultAppBar(
               showHome: true,
-              showBackArrow: true,
+              showBackArrow: false,
               showNotification: false,
               showNotificationDotWhenZero: true,
               title: 'plans',
