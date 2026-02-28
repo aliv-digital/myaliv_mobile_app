@@ -17,6 +17,9 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.d
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/view/home_plan_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Support/support_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
@@ -91,7 +94,8 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.home, //autoRenewPrepaidScreen,
+    initialLocation:
+        AppRoutes.homePlansPaymentMethodScreen, //autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -339,6 +343,30 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: AppRoutes.homePlanPurchaseReceiptScreen,
+        builder: (context, state) {
+          final Object? extra = state.extra;
+          bool hideSaveCreditCard = false;
+
+          if (extra is Map<String, dynamic>) {
+            final dynamic value = extra['hideSaveCreditCard'];
+            if (value is bool) {
+              hideSaveCreditCard = value;
+            } else if (value is String) {
+              hideSaveCreditCard = value.toLowerCase() == 'true';
+            }
+          }
+
+          return HomePlanPurchaseReceiptScreen(
+            phoneNumber: '242-801-1616',
+            amount: 75,
+            dateText: 'Mar 12, 2023',
+            timeText: '7:30 am',
+            hideSaveCreditCard: hideSaveCreditCard,
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.guestPurchasePlanConfirmation,
         builder: (context, state) => const GuestPurchasePlanConfirmationScreen(
             phoneNumber: '242-801-1616'),
@@ -569,7 +597,7 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.updateEmail,
-        parentNavigatorKey: rootNavigatorKey,   // 🔥 ADD THIS
+        parentNavigatorKey: rootNavigatorKey, // 🔥 ADD THIS
         pageBuilder: (context, state) {
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
@@ -592,6 +620,20 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestPaymentMethodScreen,
         builder: (context, state) => const GuestPaymentMethodPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.homePlansPaymentMethodScreen,
+        builder: (context, state) {
+          final Object? extra = state.extra;
+
+          HomePlansPaymentMethodRouteArgs routeArgs =
+              const HomePlansPaymentMethodRouteArgs();
+          if (extra is HomePlansPaymentMethodRouteArgs) {
+            routeArgs = extra;
+          }
+
+          return HomePlansPaymentMethodScreen(args: routeArgs);
+        },
       ),
       GoRoute(
         path: AppRoutes.confirmation,

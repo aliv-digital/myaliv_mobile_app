@@ -88,7 +88,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                   context.read<HomeRoamingConfirmationBloc>().add(
                         const HomeRoamingConfirmationPayNowPressed(),
                       );
-                  context.push(AppRoutes.guestPaymentMethodScreen);
+                  context.push(AppRoutes.homePlansPaymentMethodScreen);
                 },
                 amountText: '\$ 75.00' //total.toString(),
                 );
@@ -109,7 +109,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                     onHomeTap: () {
                       context.go(AppRoutes.home);
                     },
-                    title: 'confirmation',
+                    title: 'confirmation and payment',
                     onBack: () => Navigator.of(context).maybePop(),
                     showBackArrow: true,
                     backgroundColor: HomeRoamingConfirmationTheme.purple,
