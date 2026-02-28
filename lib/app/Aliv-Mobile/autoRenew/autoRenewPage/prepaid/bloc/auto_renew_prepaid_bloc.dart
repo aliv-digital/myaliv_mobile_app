@@ -16,6 +16,7 @@ class AutoRenewPrepaidBloc
     on<AutoRenewAddNewCardPressed>(_onAddNewCardPressed);
     on<AutoRenewSaveNewCardPressed>(_onSaveNewCardPressed);
     on<AutoRenewProceedPressed>(_onProceedPressed);
+    on<AutoRenewPayFromWalletPressed>(_onPayFromWalletPressed);
     on<AutoRenewHomePressed>(_onHomePressed);
     on<AutoRenewNavigationConsumed>(_onNavigationConsumed);
   }
@@ -36,7 +37,6 @@ class AutoRenewPrepaidBloc
 
       final methods = <AutoRenewPaymentMethod>[
         ...cards.map(AutoRenewPaymentMethod.card),
-        AutoRenewPaymentMethod.wallet,
         AutoRenewPaymentMethod.none,
       ];
 
@@ -131,6 +131,13 @@ class AutoRenewPrepaidBloc
         ),
       );
     }
+  }
+
+  void _onPayFromWalletPressed(
+    AutoRenewPayFromWalletPressed event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) {
+    emit(state.copyWith(navTarget: AutoRenewNavTarget.wallet));
   }
 
   void _onHomePressed(

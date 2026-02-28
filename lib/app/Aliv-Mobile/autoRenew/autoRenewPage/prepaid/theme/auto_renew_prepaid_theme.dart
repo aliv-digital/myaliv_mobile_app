@@ -51,10 +51,13 @@ class AutoRenewPrepaidTheme {
   static const EdgeInsets bodyPadding = EdgeInsets.fromLTRB(24, 32, 24, 18);
   static const EdgeInsets sectionPadding = EdgeInsets.all(14);
   static const EdgeInsets cardTilePadding = EdgeInsets.all(16);
-  static const EdgeInsets addCardButtonPadding = EdgeInsets.symmetric(horizontal: 16);
-  static const EdgeInsets addCardBottomSheetPadding = EdgeInsets.fromLTRB(18, 14, 18, 18);
+  static const EdgeInsets addCardButtonPadding =
+      EdgeInsets.symmetric(horizontal: 16);
+  static const EdgeInsets addCardBottomSheetPadding =
+      EdgeInsets.fromLTRB(18, 14, 18, 18);
   static const double addCardBottomSheetBottomBase = 18.0;
-  static const EdgeInsets addCardInputPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 0);
+  static const EdgeInsets addCardInputPadding =
+      EdgeInsets.symmetric(horizontal: 12, vertical: 0);
 
   static const double sectionItemGap = 10.0;
   static const double sectionTitleGap = 16.0;
@@ -64,6 +67,31 @@ class AutoRenewPrepaidTheme {
   static const double tileSelectionGap = 10.0;
   static const double tileTitleSubtitleGap = 4.0;
   static const double addCardIconTextGap = 8.0;
+  static const double payFromWalletTopGap = 22.0;
+  static const EdgeInsets payFromWalletRowPadding = EdgeInsets.zero;
+  static const double payFromWalletChevronSize = 16.0;
+  static const double walletChipHorizontalPadding = 8.0;
+  static const double walletChipVerticalPadding = 2.0;
+  static const double walletChipCornerRadius = 100.0;
+  static const Color walletChipBackground = Color(0xFFE6E6E6);
+  static const double walletPaymentSheetTopRadius = 24.0;
+  static const double walletPaymentHorizontalPadding = 16.0;
+  static const double walletPaymentTopPadding = 24.0;
+  static const double walletPaymentBottomPadding = 24.0;
+  static const double walletPaymentBackButtonSize = 24.0;
+  static const double walletPaymentBackIconSize = 24.0;
+  static const double walletPaymentBackToTitleGap = 8.0;
+  static const double walletPaymentTitleToBalanceGap = 20.0;
+  static const double walletPaymentBalanceToAmountGap = 20.0;
+  static const double walletPaymentAmountLabelToFieldGap = 8.0;
+  static const double walletPaymentAmountFieldToButtonGap = 20.0;
+  static const double walletPaymentWalletIconSize = 20.0;
+  static const double walletPaymentWalletIconToTextGap = 8.0;
+  static const double walletPaymentWalletTextToChipGap = 8.0;
+  static const double walletPaymentAmountFieldHeight = 48.0;
+  static const double walletPaymentAmountFieldRadius = 8.0;
+  static const Color walletPaymentAmountFieldBackground = Color(0xFFF2F1F9);
+  static const double walletPaymentConfirmButtonHeight = 52.0;
   static const double bottomSheetTitleGap = 14.0;
   static const double bottomSheetFieldsGap = 12.0;
   static const double bottomSheetButtonTopGap = 16.0;
@@ -98,6 +126,70 @@ class AutoRenewPrepaidTheme {
     fontFamily: fontFamily,
     fontWeight: FontWeight.w700,
     height: 1.54,
+  );
+
+  static const TextStyle payFromWalletTextStyle = TextStyle(
+    color: Color(0xFF5146A8),
+    fontSize: 13,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w400,
+    height: 1.2,
+  );
+
+  static const TextStyle walletAmountTextStyle = TextStyle(
+    color: black,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+  );
+
+  static const TextStyle walletPaymentTitleStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 18,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.22,
+  );
+
+  static const TextStyle walletPaymentWalletLabelStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
+  static const TextStyle walletPaymentWalletAmountStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
+  );
+
+  static const TextStyle walletPaymentAmountLabelStyle = TextStyle(
+    color: textSecondary,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
+  static const TextStyle walletPaymentAmountValueStyle = TextStyle(
+    color: Color(0xFF707070),
+    fontSize: 18,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    height: 1.22,
+  );
+
+  static const TextStyle walletPaymentConfirmButtonTextStyle = TextStyle(
+    color: textOnPrimary,
+    fontSize: 15,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
   );
 
   static const TextStyle primaryButtonTextStyle = TextStyle(
@@ -146,6 +238,14 @@ class AutoRenewPrepaidTheme {
   static RoundedRectangleBorder sheetShape() {
     return const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(sheetTopRadius)),
+    );
+  }
+
+  static RoundedRectangleBorder walletPaymentSheetShape() {
+    return const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(walletPaymentSheetTopRadius),
+      ),
     );
   }
 

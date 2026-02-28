@@ -5,6 +5,7 @@ import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
 import 'bottomsheet/add_card_bottom_sheet.dart';
+import 'bottomsheet/wallet_payment_bottom_sheet.dart';
 
 class AutoRenewPrepaidStateListener extends StatelessWidget {
   final Widget child;
@@ -48,6 +49,11 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
 
     if (state.navTarget == AutoRenewNavTarget.addCard) {
       await _handleAddCardFlow(context, autoRenewPrepaidBloc);
+      return;
+    }
+
+    if (state.navTarget == AutoRenewNavTarget.wallet) {
+      await _handleWalletPaymentFlow(context, autoRenewPrepaidBloc, state);
       return;
     }
 
@@ -97,6 +103,26 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
           year: addCardExpiryResult.year,
         ),
       );
+    }
+
+    autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());
+  }
+
+  // ==================== Wallet Payment Flow ====================
+  // Open wallet payment bottom sheet and clean nav target after close.
+  Future<void> _handleWalletPaymentFlow(
+    BuildContext context,
+    AutoRenewPrepaidBloc autoRenewPrepaidBloc,
+    AutoRenewPrepaidState state,
+  ) async {
+    await WalletPaymentBottomSheet.show(
+      context,
+      walletBalanceText: state.walletBalanceText,
+      amountText: state.walletPaymentAmountText,
+    );
+
+    if (!context.mounted) {
+      return;
     }
 
     autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());

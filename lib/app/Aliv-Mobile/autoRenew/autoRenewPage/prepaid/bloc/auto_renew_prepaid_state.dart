@@ -3,12 +3,14 @@ import '../models/auto_renew_prepaid_models.dart';
 
 enum AutoRenewLoadStatus { initial, loading, ready, failure }
 
-enum AutoRenewNavTarget { none, addCard, home, proceed }
+enum AutoRenewNavTarget { none, addCard, wallet, home, proceed }
 
 class AutoRenewPrepaidState extends Equatable {
   final AutoRenewLoadStatus loadStatus;
   final List<AutoRenewPaymentMethod> methods;
   final String? selectedMethodId;
+  final double walletBalance;
+  final double walletPaymentAmount;
 
   final AutoRenewNavTarget navTarget;
   final String? errorMessage;
@@ -18,26 +20,35 @@ class AutoRenewPrepaidState extends Equatable {
     required this.loadStatus,
     required this.methods,
     required this.selectedMethodId,
+    required this.walletBalance,
+    required this.walletPaymentAmount,
     required this.navTarget,
     required this.errorMessage,
     required this.savingSelection,
   });
 
   factory AutoRenewPrepaidState.initial() => const AutoRenewPrepaidState(
-    loadStatus: AutoRenewLoadStatus.initial,
-    methods: [],
-    selectedMethodId: null,
-    navTarget: AutoRenewNavTarget.none,
-    errorMessage: null,
-    savingSelection: false,
-  );
+        loadStatus: AutoRenewLoadStatus.initial,
+        methods: [],
+        selectedMethodId: null,
+        walletBalance: 129.00,
+        walletPaymentAmount: 75.00,
+        navTarget: AutoRenewNavTarget.none,
+        errorMessage: null,
+        savingSelection: false,
+      );
 
   bool get canProceed => selectedMethodId != null && !savingSelection;
+  String get walletBalanceText => '\$${walletBalance.toStringAsFixed(2)}';
+  String get walletPaymentAmountText =>
+      '\$ ${walletPaymentAmount.toStringAsFixed(2)}';
 
   AutoRenewPrepaidState copyWith({
     AutoRenewLoadStatus? loadStatus,
     List<AutoRenewPaymentMethod>? methods,
     String? selectedMethodId,
+    double? walletBalance,
+    double? walletPaymentAmount,
     AutoRenewNavTarget? navTarget,
     String? errorMessage,
     bool? savingSelection,
@@ -47,6 +58,8 @@ class AutoRenewPrepaidState extends Equatable {
       loadStatus: loadStatus ?? this.loadStatus,
       methods: methods ?? this.methods,
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
+      walletBalance: walletBalance ?? this.walletBalance,
+      walletPaymentAmount: walletPaymentAmount ?? this.walletPaymentAmount,
       navTarget: navTarget ?? this.navTarget,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       savingSelection: savingSelection ?? this.savingSelection,
@@ -55,11 +68,13 @@ class AutoRenewPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-    loadStatus,
-    methods,
-    selectedMethodId,
-    navTarget,
-    errorMessage,
-    savingSelection,
-  ];
+        loadStatus,
+        methods,
+        selectedMethodId,
+        walletBalance,
+        walletPaymentAmount,
+        navTarget,
+        errorMessage,
+        savingSelection,
+      ];
 }

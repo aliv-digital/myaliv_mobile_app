@@ -35,8 +35,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     BuildContext context,
     AutoRenewPrepaidState autoRenewPrepaidState,
   ) {
-    final AutoRenewPrepaidBloc autoRenewPrepaidBloc = context
-        .read<AutoRenewPrepaidBloc>();
+    final AutoRenewPrepaidBloc autoRenewPrepaidBloc = context.read<AutoRenewPrepaidBloc>();
 
     return CustomScrollView(
       slivers: [
@@ -121,6 +120,10 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
           selectedMethodId: autoRenewPrepaidState.selectedMethodId,
           onSelect: (String selectedMethodId) {
             autoRenewPrepaidBloc.add(AutoRenewMethodSelected(selectedMethodId));
+          },
+          walletBalanceText: autoRenewPrepaidState.walletBalanceText,
+          onPayFromWallet: () {
+            autoRenewPrepaidBloc.add(const AutoRenewPayFromWalletPressed());
           },
         ),
         const SizedBox(height: AutoRenewPrepaidTheme.sectionToDashedGap),
