@@ -186,7 +186,7 @@ class UsageCard extends StatelessWidget {
 
   Widget _postpaidprogressBar() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: BorderRadius.circular(8),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
@@ -223,7 +223,9 @@ class UsageCard extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 height: 6,
                 width: width,
-                decoration: BoxDecoration(gradient: gradient),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    gradient: gradient),
               ),
             ],
           );

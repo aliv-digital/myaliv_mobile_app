@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepa
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
+import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../router/app_routes.dart';
 import '../bloc/top_up_payment_prepaid_bloc.dart';
 import '../bloc/top_up_payment_prepaid_event.dart';
@@ -105,7 +106,11 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         isVatExclusive: !state.summary.vatInclusive,
         isLoading: state.status == TopUpPaymentStatus.paying,
         buttonColor: TopUpPaymentPrepaidTheme.primary,
-        onPayNow: () => _onPayNowPressed(context),
+        onPayNow: () {
+          // _onPayNowPressed(context);
+          AppSession.isTopUp = true;
+          context.push(AppRoutes.guestTopUpReceipt);
+        },
       ),
       body: CustomScrollView(
         slivers: <Widget>[

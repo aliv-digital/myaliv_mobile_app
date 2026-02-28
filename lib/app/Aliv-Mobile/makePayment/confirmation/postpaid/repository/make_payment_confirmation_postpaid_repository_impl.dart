@@ -5,7 +5,7 @@ class MakePaymentConfirmationPostPaidRepositoryImpl
   @override
   Future<MakePaymentConfirmationPostPaidData> fetchConfirmation() async {
     return const MakePaymentConfirmationPostPaidData(
-      title: 'confirmation',
+      title: 'confirmation and payment',
       customerName: 'Alicia Major',
       accountNumber: '242-801-1616',
       headerLabel: 'amount due',

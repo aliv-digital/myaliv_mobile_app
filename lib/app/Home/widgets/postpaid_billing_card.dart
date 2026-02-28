@@ -150,9 +150,9 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   'pay now',
                   style: TextStyle(
                     color: const Color(0xFFF1F1F8),
-                    fontSize: 13,
+                    fontSize: 15,
                     fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500, // 🔥 NOT WHITE
+                    fontWeight: FontWeight.w700, // 🔥 NOT WHITE
                   ),
                 ),
                 style: ElevatedButton.styleFrom(

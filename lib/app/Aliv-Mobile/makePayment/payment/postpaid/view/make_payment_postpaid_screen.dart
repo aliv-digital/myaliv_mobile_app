@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
+import '../../../../../../router/app_routes.dart';
+import '../../../../../Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../bloc/make_payment_postpaid_bloc.dart';
 import '../bloc/make_payment_postpaid_event.dart';
 import '../bloc/make_payment_postpaid_state.dart';
@@ -54,7 +59,7 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
           child: Scaffold(
             // Page-level layout shell.
             backgroundColor: MakePaymentPostPaidTheme.bg,
-            bottomNavigationBar: _buildBottomBar(paymentBloc, state),
+            bottomNavigationBar: _buildBottomBar(paymentBloc, state, context),
             body: Column(
               children: [
                 _buildHeader(context, state),
@@ -100,6 +105,7 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
   Widget _buildBottomBar(
     MakePaymentPostPaidBloc paymentBloc,
     MakePaymentPostPaidState state,
+    BuildContext context,
   ) {
     return DefaultBottomPayBar(
       amountText: state.bottomAmount,
@@ -107,7 +113,21 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
       backgroundColor: MakePaymentPostPaidTheme.bottomBarBg,
       buttonColor: MakePaymentPostPaidTheme.primary,
       disabledButtonColor: MakePaymentPostPaidTheme.payButtonDisabled,
-      onPayNow: () => paymentBloc.add(const MpPayNowPressed()),
+      // onPayNow: () => paymentBloc.add(const MpPayNowPressed()),
+      onPayNow: () {
+        AppSession.appRoute = 'postpaidPayment';
+        context.push(
+          AppRoutes.guestPayBillReceipt,
+          extra: GuestPayBillReceiptArgs(
+            serviceName: 'ALIV Postpaid',
+            identifierLabel: 'phone no.',
+            identifierValue: '242-801-1616',
+            amount: 129.00,
+            dateText: 'Mar 22, 2023',
+            timeText: '07:30 am',
+          ),
+        );
+      },
     );
   }
 
@@ -126,7 +146,7 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
               children: [
                 // Payment amount selection section.
                 MpPaymentDueCard(
-                  amountText: state.paymentDueAmount,
+                  amountText: '129.00', //state.paymentDueAmount,
                   selectedOption: state.amountOption,
                   customAmount: state.customAmount,
                   onOptionChanged: (selectedOption) {
@@ -144,7 +164,18 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
                   onChanged: (isAccepted) {
                     paymentBloc.add(MpTermsToggled(isAccepted));
                   },
-                  onTermsTap: () {},
+                  onTermsTap: () async {
+                    final uri = Uri.parse(
+                      'https://www.bealiv.com/terms-of-use/',
+                    );
+
+                    if (!await launchUrl(
+                      uri,
+                      mode: LaunchMode.externalApplication,
+                    )) {
+                      throw 'Could not open store locator';
+                    }
+                  },
                 ),
                 const SizedBox(height: _termsToMethodsGap),
 

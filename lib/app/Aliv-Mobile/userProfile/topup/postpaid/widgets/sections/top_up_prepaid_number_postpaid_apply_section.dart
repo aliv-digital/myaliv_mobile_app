@@ -38,8 +38,8 @@ class TopUpPrepaidNumberPostPaidApplySection extends StatelessWidget {
           'apply',
           style: TextStyle(
             fontFamily: TopUpPrepaidNumberPostPaidTheme.fontFamily,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
         ),

@@ -18,7 +18,7 @@ import '../widgets/timer.dart';
 import 'data/home_ui_config.dart';
 
 final HomeUiConfig config = const HomeUiConfig(
-  userType: UserType.prepaid, // 🔥 switch here for demo
+  userType: UserType.postpaid, // 🔥 switch here for demo
   hasActivePlan: true,
   isFuturePlan: false,
 );
@@ -227,10 +227,24 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             config.userType == UserType.postpaid
-                ? const ActionTile(
-                    'assets/icons/SortDescending.svg',
-                    'update\ncredit limit',
-                  )
+                ? GestureDetector(
+              onTap: ()
+                  {
+                    context.go(
+                      AppRoutes.usage,
+                      extra: HomeUiConfig(
+                          userType: config.userType,
+                          hasActivePlan: true,
+                          openMyLimits: true, // 🔥 KEY LINE
+                          isFuturePlan: false
+                      ),
+                    );
+                  },
+                  child: const ActionTile(
+                      'assets/icons/SortDescending.svg',
+                      'update\ncredit limit',
+                    ),
+                )
                 : GestureDetector(
                     onTap: () {
                       context.go(

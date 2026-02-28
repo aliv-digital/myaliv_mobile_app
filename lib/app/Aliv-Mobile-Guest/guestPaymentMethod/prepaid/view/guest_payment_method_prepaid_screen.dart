@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../router/app_routes.dart';
+import '../../../../../core/utils/app_session.dart';
+import '../../../Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
 import '../bloc/guest_payment_method_prepaid_bloc.dart';
 import '../bloc/guest_payment_method_prepaid_event.dart';
 import '../bloc/guest_payment_method_prepaid_state.dart';
@@ -45,12 +47,12 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
-        if (state.errorMessage != null &&
-            state.status == GuestPaymentMethodPrepaidStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
-        }
+        // if (state.errorMessage != null &&
+        //     state.status == GuestPaymentMethodPrepaidStatus.failure) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content: Text(state.errorMessage!)),
+        //   );
+        // }
 
         if (state.navTarget != GuestPaymentMethodNavTarget.none) {
           // TODO: handle navigation when you need
@@ -81,9 +83,24 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: GuestPaymentMethodPrepaidTheme.payBtnBg,
-              onPayNow: () => context
-                  .read<GuestPaymentMethodPrepaidBloc>()
-                  .add(const GuestPayNowPressed()),
+              // onPayNow: () => context
+              //     .read<GuestPaymentMethodPrepaidBloc>()
+              //     .add(const GuestPayNowPressed()),
+              onPayNow: (){
+                // context.go(AppRoutes.guestPurchasePlanReceipt,);
+                AppSession.appRoute = 'postpaidPayment';
+                context.push(
+                  AppRoutes.guestPayBillReceipt,
+                  extra: GuestPayBillReceiptArgs(
+                    serviceName: 'ALIV Postpaid',
+                    identifierLabel: 'phone no.',
+                    identifierValue: '242-801-1616',
+                    amount: 20.00,
+                    dateText: 'Mar 22, 2023',
+                    timeText: '07:30 am',
+                  ),
+                );
+              },
             ),
             body: Column(
               children: [

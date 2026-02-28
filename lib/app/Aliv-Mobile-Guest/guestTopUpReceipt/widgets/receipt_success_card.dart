@@ -223,11 +223,15 @@ class ReceiptSuccessCard extends StatelessWidget {
             ),
             const SizedBox(height: ReceiptTheme.successGapAfterBottomDivider),
 
-            (AppSession.appRoute == 'sendTopUp')
+            (AppSession.appRoute == 'sendTopUp' ||AppSession.isTopUp == true)
                 ? ReceiptBackButton(
                     onTap: (){
                       context.go(AppRoutes.home);
-                      AppSession.appRoute = '';
+                      AppSession.resetAppRoute();
+                      if(AppSession.isTopUp == true){
+                        AppSession.resetFlagForTopUp();
+
+                      }
                     },
                     text: 'back to home page',
                   )
