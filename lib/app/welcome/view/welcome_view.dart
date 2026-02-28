@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/welcome_bloc.dart';
 import '../bloc/welcome_event.dart';
@@ -43,6 +44,8 @@ class WelcomeView extends StatelessWidget {
   // ✅ Panel paddings (Figma-like)
   static const double _panelTopPadding = 22;
   static const double _panelBottomGap = 16;
+  static final Uri _alivFbrPortalUri =
+      Uri.parse('https://portal.alivfibr.com/myfibr/login.aspx');
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +150,22 @@ class WelcomeView extends StatelessWidget {
                             const SizedBox(height: 18),
                             CustomButton(
                               label: 'ALIVfbr',
-                              onPressed: () {},
+                              onPressed: () async {
+                                final bool isLaunched = await launchUrl(
+                                  _alivFbrPortalUri,
+                                  mode: LaunchMode.externalApplication,
+                                );
+
+                                if (!isLaunched && context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Could not open ALIVfbr portal.',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                             const SizedBox(height: 18),
                             CustomButton(
