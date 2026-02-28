@@ -35,7 +35,7 @@ class CurrentPlanTab extends StatelessWidget {
 
           // const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 20, 16),
+            padding: const EdgeInsets.fromLTRB(24, 0, 20, 8),
             child: Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -64,7 +64,6 @@ class CurrentPlanTab extends StatelessWidget {
             ),
           ),
 
-          if (config.isPostpaid == false) const SizedBox(height: 16),
           if (config.isPostpaid == true)
             buildUsageSection([
               PostpaidUsageItem(
@@ -327,6 +326,8 @@ class _UsageSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
         _LimitRow(
           title: 'data',
@@ -335,7 +336,7 @@ class _UsageSection extends StatelessWidget {
           progressColor: Color(0xFFE07A4E),
         ),
         Divider(color: divider),
-
+SizedBox(height: 8,),
         _LimitRow(
           title: 'sms',
           subtitle: 'unlimited Local',
@@ -343,6 +344,7 @@ class _UsageSection extends StatelessWidget {
           progressColor: Color(0xFF6CB7D4),
         ),
         Divider(color: divider),
+        SizedBox(height: 8,),
 
         _LimitRow(
           title: 'talk mins',
@@ -351,6 +353,7 @@ class _UsageSection extends StatelessWidget {
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
+        SizedBox(height: 8,),
 
         _LimitRow(
           title: 'bonus Data',
@@ -359,6 +362,7 @@ class _UsageSection extends StatelessWidget {
           progressColor: Color(0xFFBDBDBD),
         ),
         Divider(color: divider),
+        SizedBox(height: 8,),
 
         _LimitRow(
           title: 'int’l mins & sms',
@@ -367,6 +371,7 @@ class _UsageSection extends StatelessWidget {
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
+        SizedBox(height: 8,),
 
         _LimitRow(
           title: 'mms',
@@ -376,30 +381,7 @@ class _UsageSection extends StatelessWidget {
         ),
         Divider(color: divider),
 
-        // UsageRow(
-        //   title: 'data',
-        //   subtitle: '2.4 GB of 14 GB',
-        //   rightText: '25% used',
-        //   progress: 0.25,
-        // ),
-        // UsageRow(
-        //   title: 'sms',
-        //   subtitle: 'unlimited local',
-        //   rightText: 'unlimited',
-        //   progress: 1,
-        // ),
-        // UsageRow(
-        //   title: 'talk mins',
-        //   subtitle: 'unlimited local',
-        //   rightText: 'unlimited',
-        //   progress: 1,
-        // ),
-        // UsageRow(
-        //   title: 'bonus data',
-        //   subtitle: 'unlimited whatsapp messaging',
-        //   rightText: 'unlimited',
-        //   progress: 1,
-        // ),
+
       ],
     );
   }
@@ -421,7 +403,7 @@ class _LimitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.only(top: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -492,136 +474,12 @@ class _LimitRow extends StatelessWidget {
               },
             ),
           ),
+          // const SizedBox(height: 30),
 
-          // RIGHT PROGRESS
-          // Column(
-          //   crossAxisAlignment: CrossAxisAlignment.end,
-          //   children: [
-          //     SizedBox(
-          //       width: 120,
-          //       child:
-          //           // ClipRRect(
-          //           //   borderRadius: BorderRadius.circular(6),
-          //           //   child: LinearProgressIndicator(
-          //           //     value: percentUsed / 100,
-          //           //     minHeight: 6,
-          //           //     backgroundColor: progressColor.withOpacity(0.2),
-          //           //     valueColor: AlwaysStoppedAnimation(progressColor),
-          //           //   ),
-          //           // ),
-          //           ClipRRect(
-          //             borderRadius: BorderRadius.circular(6),
-          //             child: LayoutBuilder(
-          //               builder: (context, constraints) {
-          //                 final width = 120 * percentUsed.clamp(0.0, 1.0);
-          //
-          //                 return Stack(
-          //                   children: [
-          //                     // Background
-          //                     Container(
-          //                       height: 6,
-          //                       width: 120,
-          //                       color: Color(0x3F808080).withOpacity(0.2),
-          //                     ),
-          //
-          //                     // Gradient progress (width = percentage)
-          //                     AnimatedContainer(
-          //                       duration: const Duration(milliseconds: 300),
-          //                       height: 6,
-          //                       width: width.toDouble(),
-          //                       decoration: BoxDecoration(
-          //                         gradient: LinearGradient(
-          //                           colors: title == 'data'
-          //                               ? [Color(0xFFF0D7CE), Color(0xFFE94408)]
-          //                               : title == 'local data'
-          //                               ? [
-          //                                   const Color(0xFF97E3F8),
-          //                                   const Color(0xFF00627D),
-          //                                 ]
-          //                               : title == 'local talk mins' ||
-          //                                     title == 'int’l talk mins'
-          //                               ? [
-          //                                   const Color(0xFFCCC7F8),
-          //                                   const Color(0xFF1F1B41),
-          //                                 ]
-          //                               : [
-          //                                   const Color(0x3F808080),
-          //                                   const Color(0x3F808080),
-          //                                 ],
-          //                         ),
-          //                       ),
-          //                     ),
-          //                   ],
-          //                 );
-          //               },
-          //             ),
-          //           ),
-          //     ),
-          //     const SizedBox(height: 8),
-          //     Text(
-          //       '$percentUsed% used',
-          //       style: const TextStyle(
-          //         color: const Color(0xFF707070),
-          //         fontSize: 12,
-          //         fontFamily: 'CircularPro',
-          //         fontWeight: FontWeight.w500,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
   }
-  // Widget _progressBar() {
-  //   return ClipRRect(
-  //     borderRadius: BorderRadius.circular(6),
-  //     child: LayoutBuilder(
-  //       builder: (context, constraints) {
-  //         final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
-  //
-  //         Color mainColor = Color(0x3F808080);
-  //         LinearGradient gradient = LinearGradient(
-  //           colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
-  //         );
-  //         if (progress < 0.35) {
-  //           mainColor = Color(0x26DD3038);
-  //           gradient = LinearGradient(
-  //             colors: [ const Color(0xFFDD3038),const Color(0x00DD3038),],
-  //           );
-  //         } else if (progress < 0.6) {
-  //           mainColor = Color(0x26FFC627);
-  //           gradient = LinearGradient(
-  //             colors: [Color(0x26FFC627),Color(0xFFFFC627), ],
-  //           );
-  //         } else {
-  //           mainColor = Color(0x2617B26A);
-  //           gradient = LinearGradient(
-  //             // colors: [Color(0xFF17B26A), Color(0x2617B26A)],
-  //             colors: [Color(0x2617B26A),Color(0xFF17B26A), ],
-  //           );
-  //         }
-  //         return Stack(
-  //           children: [
-  //             // Background
-  //
-  //             Container(height: 6, color: mainColor),
-  //
-  //             // Gradient progress (width = percentage)
-  //             AnimatedContainer(
-  //               duration: const Duration(milliseconds: 300),
-  //               height: 6,
-  //               width: width,
-  //               decoration: BoxDecoration(
-  //                   gradient: gradient),
-  //             ),
-  //
-  //           ],
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
 
 }
 

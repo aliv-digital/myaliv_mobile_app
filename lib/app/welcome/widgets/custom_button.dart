@@ -26,9 +26,9 @@ class CustomButton extends StatelessWidget {
           label,
           style: TextStyle(
             color: ColorManager.welcomeScreenBloc,  // Text color
-            fontSize: 13,
+            fontSize: 15,
             fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,  // Font weight
+            fontWeight: FontWeight.w700,  // Font weight
           ),
         ),
       ),
