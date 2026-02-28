@@ -52,7 +52,7 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can talk',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               PlanBenefit(
@@ -149,7 +149,7 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can talk',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               PlanBenefit(
@@ -192,7 +192,7 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can talk',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               PlanBenefit(
@@ -235,7 +235,7 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can talk',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               PlanBenefit(
@@ -283,7 +283,7 @@ class GuestPurchasePlanRepository {
               PlanBenefit(
                   type: PlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can talk',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               PlanBenefit(

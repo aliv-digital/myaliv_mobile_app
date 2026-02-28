@@ -52,12 +52,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -149,12 +149,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -192,12 +192,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -235,12 +235,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -283,12 +283,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -342,12 +342,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
@@ -404,12 +404,12 @@ class HomePlanRepository {
               HomePlanBenefit(
                   type: HomePlanBenefitType.intlTalkText,//.mms,
                   label: 'us/can text',
-                  value: '30',
+                  value: '300',
                   sub: 'int’l text'
               ),
               HomePlanBenefit(
                   type: HomePlanBenefitType.mms,//.mms,
-                  label: 'int\'l us/can text',
+                  label: 'int\'l us/can talk',
                   value: '30',
                   sub: 'int’l talk'
               ),
