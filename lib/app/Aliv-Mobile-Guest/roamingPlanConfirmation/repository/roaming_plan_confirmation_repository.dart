@@ -12,7 +12,7 @@ class RoamingPlanConfirmationRepository {
         type: PurchaseLineType.primaryPlan,
         label: 'standalone',
         title: 'roam20 - 7 days',
-        subtitle: 'begins 06-08-25',
+        subtitle: 'begins immediately 06-08-25',
         price: 20.00,
       ),
     ];

@@ -16,7 +16,7 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
     this.autoRenew = true,
     this.onAutoRenewChanged,
     this.topRight,
-    this.maxWidth = 340,
+    this.maxWidth = 380,
     this.height = 150,
     this.borderRadius = 12,
   });

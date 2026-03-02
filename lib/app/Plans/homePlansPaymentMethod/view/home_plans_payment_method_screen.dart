@@ -6,6 +6,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../../../../router/app_routes.dart';
+import '../../../../core/utils/app_session.dart';
+import '../../../Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
+import '../../../Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/bottomsheet/wallet_payment_bottom_sheet.dart';
+import '../../homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import '../bloc/home_plans_payment_method_bloc.dart';
 import '../bloc/home_plans_payment_method_event.dart';
 import '../bloc/home_plans_payment_method_state.dart';
@@ -58,17 +62,19 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomePlansPaymentMethodBloc,
-        HomePlansPaymentMethodState>(
+    return BlocConsumer<
+      HomePlansPaymentMethodBloc,
+      HomePlansPaymentMethodState
+    >(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
         // Show API/validation errors from bloc.
         if (state.errorMessage != null &&
             state.status == HomePlansPaymentMethodStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
 
         // Handle one-time navigation targets from bloc.
@@ -82,9 +88,9 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
             // TODO: Add route when payment success screen is ready.
           }
 
-          context
-              .read<HomePlansPaymentMethodBloc>()
-              .add(const HomePlansPaymentNavConsumed());
+          context.read<HomePlansPaymentMethodBloc>().add(
+            const HomePlansPaymentNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
@@ -93,20 +99,25 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
             state.status == HomePlansPaymentMethodStatus.submitting;
 
         return MediaQuery(
-          data:
-              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: HomePlansPaymentMethodTheme.bg,
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
-              isVatExclusive: state.vatNote.toLowerCase().contains('no vat applied'),
+              isVatExclusive: state.vatNote.toLowerCase().contains(
+                'no vat applied',
+              ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
               onPayNow: () {
-                context.push(AppRoutes.homePlanPurchaseReceiptScreen,extra: {
-                  'hideSaveCreditCard' : true
-                });
+                AppSession.appRoute = 'prepaidPlan';
+                context.push(
+                  AppRoutes.homePlanPurchaseReceiptScreen,
+                  extra: {'hideSaveCreditCard': true},
+                );
                 // context
                 //     .read<HomePlansPaymentMethodBloc>()
                 //     .add(const HomePlansPayNowPressed());
@@ -142,10 +153,19 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
                                   methods: state.methods,
                                   selectedId: state.selectedMethodId,
                                   onSelect: (String id) {
-                                    context.read<HomePlansPaymentMethodBloc>().add(HomePlansPaymentMethodSelected(id));
+                                    context
+                                        .read<HomePlansPaymentMethodBloc>()
+                                        .add(
+                                          HomePlansPaymentMethodSelected(id),
+                                        );
                                   },
                                   onPayWithCard: () {
-                                    context.push(AppRoutes.homePlanPurchaseReceiptScreen);
+                                    AppSession.appRoute = 'prepaidPlan';
+
+                                    context.push(
+                                      AppRoutes.homePlanPurchaseReceiptScreen,
+
+                                    );
                                     // context.read<HomePlansPaymentMethodBloc>().add(
                                     //       const HomePlansPayWithCardPressed(),
                                     //     );
@@ -153,11 +173,25 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
                                   showPayFromWallet: state.isPrepaidUser,
                                   walletBalanceText: state.walletBalanceText,
                                   onPayFromWallet: () {
-                                    context
-                                        .read<HomePlansPaymentMethodBloc>()
-                                        .add(
-                                          const HomePlansPayFromWalletPressed(),
-                                        );
+                                    AppSession.appRoute = 'prepaidPlanPurchase';
+                                    showModalBottomSheet<bool>(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor:
+                                          AutoRenewPrepaidTheme.sheetBg,
+                                      shape:
+                                          AutoRenewPrepaidTheme.walletPaymentSheetShape(),
+                                      builder: (_) => WalletPaymentBottomSheet(
+                                        walletBalanceText:
+                                            state.walletBalanceText,
+                                        amountText: state.amountText,
+                                      ),
+                                    );
+                                    // context
+                                    //     .read<HomePlansPaymentMethodBloc>()
+                                    //     .add(
+                                    //       const HomePlansPayFromWalletPressed(),
+                                    //     );
                                   },
                                 ),
                         ),

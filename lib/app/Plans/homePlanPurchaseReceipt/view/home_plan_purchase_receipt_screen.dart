@@ -38,17 +38,30 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     /// Dynamic details list (future: API mapping will fill this)
     final details = <HomePlanPurchaseReceiptDetailItem>[
       HomePlanPurchaseReceiptDetailItem(
-          label: 'plan', value: 'liberty70', valueBold: false),
+        label: 'plan',
+        value: 'liberty70',
+        valueBold: false,
+      ),
       HomePlanPurchaseReceiptDetailItem(
-          label: 'add-on', value: 'liberty data 1'),
+        label: 'add-on',
+        value: 'liberty data 1',
+      ),
       HomePlanPurchaseReceiptDetailItem(label: 'date', value: dateText),
       HomePlanPurchaseReceiptDetailItem(
-          label: 'time', value: '7:30 am'), //timeText),
+        label: 'time',
+        value: '7:30 am',
+      ), //timeText),
       HomePlanPurchaseReceiptDetailItem(label: 'phone no.', value: phoneNumber),
       HomePlanPurchaseReceiptDetailItem(
-          label: 'email address', value: 'jade123@hotmail.com'),
+        label: 'email address',
+        value: 'jade123@hotmail.com',
+      ),
       HomePlanPurchaseReceiptDetailItem(
-          label: 'payment method', value: paymentMethod),
+        label: 'payment method',
+        value: AppSession.appRoute == 'prepaidPlanPurchase'
+            ? 'wallet'
+            : paymentMethod,
+      ),
     ];
 
     final receiptData = HomePlanPurchaseReceiptData(
@@ -105,8 +118,10 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomePlanPurchaseReceiptBloc,
-        HomePlanPurchaseReceiptState>(
+    return BlocListener<
+      HomePlanPurchaseReceiptBloc,
+      HomePlanPurchaseReceiptState
+    >(
       listenWhen: (p, c) => p.backHomeRequestId != c.backHomeRequestId,
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
@@ -134,33 +149,41 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                     top: 29,
                     bottom: 30,
                   ),
-                  child: BlocBuilder<HomePlanPurchaseReceiptBloc,
-                      HomePlanPurchaseReceiptState>(
-                    builder: (context, state) {
-                      final data = state.data;
-                      if (data == null) return const SizedBox.shrink();
+                  child:
+                      BlocBuilder<
+                        HomePlanPurchaseReceiptBloc,
+                        HomePlanPurchaseReceiptState
+                      >(
+                        builder: (context, state) {
+                          final data = state.data;
+                          if (data == null) return const SizedBox.shrink();
 
-                      return HomePlanPurchaseReceiptSuccessCard(
-                        data: data,
-                        onBackHome: () {
-                          if (AppSession.appRoute == 'prepaidPlan' ||
-                              AppSession.appRoute == 'addOnsPrepaid') {
-                            context.go(AppRoutes.home);
-                            AppSession.resetAppRoute();
-                          } else {
-                            context.go(AppRoutes.logIn);
-                          }
+                          return HomePlanPurchaseReceiptSuccessCard(
+                            data: data,
+                            onBackHome: () {
+                              if (AppSession.appRoute == 'prepaidPlan' ||
+                                  AppSession.appRoute ==
+                                      'prepaidPlanPurchase' ||
+                                  AppSession.appRoute == 'addOnsPrepaid') {
+                                context.go(AppRoutes.home);
+                                AppSession.resetAppRoute();
+                              } else {
+                                context.go(AppRoutes.logIn);
+                              }
+                            },
+                            onSaveCard: () {
+                              _showSaveCardBottomSheet(context);
+                            },
+                            hideSaveCreditCard:
+                                AppSession.appRoute == 'prepaidPlanPurchase'
+                                ? true
+                                : hideSaveCreditCard,
+                            pageBackground:
+                                HomePlanPurchaseReceiptTheme.circleBackground,
+                            statusMessage: statusMessage,
+                          );
                         },
-                        onSaveCard: () {
-                          _showSaveCardBottomSheet(context);
-                        },
-                        hideSaveCreditCard: hideSaveCreditCard,
-                        pageBackground:
-                            HomePlanPurchaseReceiptTheme.circleBackground,
-                        statusMessage: statusMessage,
-                      );
-                    },
-                  ),
+                      ),
                 ),
               ),
 

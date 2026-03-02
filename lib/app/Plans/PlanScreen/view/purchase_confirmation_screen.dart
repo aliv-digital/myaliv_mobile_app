@@ -31,14 +31,11 @@ class ConfirmationScreen extends StatefulWidget {
 }
 
 class _ConfirmationScreenState extends State<ConfirmationScreen> {
-
-
   @override
   void initState() {
     super.initState();
-
-
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -66,23 +63,23 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             ),
           ),
           actions: [
-           InkWell(
-             onTap: (){
-               context.go(AppRoutes.home);
-             },
-             child:
-            GestureDetector(
-              onTap: (){
+            InkWell(
+              onTap: () {
                 context.go(AppRoutes.home);
               },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 24),
-                child: SvgPicture.asset(
-                  'assets/icons/home.svg',
-                  color: Colors.white,
+              child: GestureDetector(
+                onTap: () {
+                  context.go(AppRoutes.home);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 24),
+                  child: SvgPicture.asset(
+                    'assets/icons/home.svg',
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),)
+            ),
           ],
         ),
 
@@ -200,7 +197,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _PlanCard(date: widget.beginDate),
+                _PlanCard(
+                  date: widget.beginDate,
+                  showBeginOn: widget.showBeginOn,
+                ),
                 const SizedBox(height: 16),
                 if (widget.showBeginOn && widget.beginDate != null)
                   _BeginOnCard(date: widget.beginDate!),
@@ -240,8 +240,9 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
 class _PlanCard extends StatelessWidget {
   final DateTime? date;
+  final bool? showBeginOn;
 
-  const _PlanCard({this.date});
+  const _PlanCard({this.date, this.showBeginOn});
 
   @override
   Widget build(BuildContext context) {
@@ -352,7 +353,7 @@ class _PlanCard extends StatelessWidget {
                               ),
                             ),
 
-                      (date != null)
+                      (showBeginOn == true && date != null)
                           ? Text(
                               'begins $formatted',
                               textAlign: TextAlign.center,
@@ -494,6 +495,7 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
         }
       };
   }
+
   @override
   Widget build(BuildContext context) {
     return Row(

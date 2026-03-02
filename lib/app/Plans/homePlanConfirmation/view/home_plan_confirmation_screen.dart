@@ -82,17 +82,19 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   context.read<HomePlanConfirmationBloc>().add(
                     const HomePlanConfirmationPayNowPressed(),
                   );
-                  context.push(
-                    AppRoutes.guestPurchasePlanReceipt,
-                    // extra: GuestPayBillReceiptArgs(
-                    //   serviceName: 'liberty70',
-                    //   identifierLabel: 'mobile no.',
-                    //   identifierValue: '242-801-0000',
-                    //   amount: 200.00,
-                    //   dateText: 'Mar 22, 2023',
-                    //   timeText: '07:30 am'
-                    // )
-                  );
+                  context.push(AppRoutes.homePlansPaymentMethodScreen);
+
+                  // context.push(
+                  //   AppRoutes.guestPurchasePlanReceipt,
+                  //   // extra: GuestPayBillReceiptArgs(
+                  //   //   serviceName: 'liberty70',
+                  //   //   identifierLabel: 'mobile no.',
+                  //   //   identifierValue: '242-801-0000',
+                  //   //   amount: 200.00,
+                  //   //   dateText: 'Mar 22, 2023',
+                  //   //   timeText: '07:30 am'
+                  //   // )
+                  // );
                   //context.push(AppRoutes.guestPaymentMethodScreen);
                 },
                 amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',

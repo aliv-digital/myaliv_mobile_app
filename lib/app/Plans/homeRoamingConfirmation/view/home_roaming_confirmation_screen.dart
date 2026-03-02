@@ -236,7 +236,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
                                             value:
-                                                '\$ 1.82', //'\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                                '\$ 0.00', //'\$ ${data.totals.vat.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',

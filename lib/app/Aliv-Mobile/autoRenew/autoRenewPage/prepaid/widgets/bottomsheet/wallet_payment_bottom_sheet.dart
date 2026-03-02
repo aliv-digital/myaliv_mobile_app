@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../../../../../../../core/utils/app_session.dart';
 import '../../theme/auto_renew_prepaid_theme.dart';
 
 /// Bottom sheet for wallet payment confirmation.
@@ -154,7 +155,7 @@ class WalletPaymentBottomSheet extends StatelessWidget {
         ),
       ),
       child: Text(
-        amountText,
+        (AppSession.appRoute == 'prepaidPlanPurchase')? '\$ 75.00' : amountText,
         style: AutoRenewPrepaidTheme.walletPaymentAmountValueStyle,
       ),
     );
@@ -167,7 +168,13 @@ class WalletPaymentBottomSheet extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           Navigator.of(context).pop(true);
-          context.push(AppRoutes.autoRenewAuthPrepaidScreen);
+          if(AppSession.appRoute == 'prepaidPlanPurchase'){
+            context.push(AppRoutes.homePlanPurchaseReceiptScreen);
+
+          }else{
+            context.push(AppRoutes.autoRenewAuthPrepaidScreen);
+
+          }
         },
         style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
           backgroundColor: AutoRenewPrepaidTheme.primary,

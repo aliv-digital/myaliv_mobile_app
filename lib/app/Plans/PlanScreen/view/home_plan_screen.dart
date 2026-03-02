@@ -262,7 +262,9 @@ class _HomePlanView extends StatelessWidget {
             buttonText: 'proceed',
             amountText: '\$ ${total.toStringAsFixed(2)}',
             onPayNow: () {
-              context.push(AppRoutes.confirmation);
+              context.push(AppRoutes.homePlanConfirmationScreen);
+
+              // context.push(AppRoutes.confirmation);
             },
           );
         },

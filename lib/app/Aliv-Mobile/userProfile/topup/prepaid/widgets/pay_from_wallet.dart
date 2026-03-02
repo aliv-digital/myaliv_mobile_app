@@ -131,8 +131,10 @@ class PayFromWalletSheet extends StatelessWidget {
                     '\$ 75.00',
                     style: TextStyle(
                       fontFamily: 'CircularPro',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF707070),
+
                     ),
                   ),
                 ),

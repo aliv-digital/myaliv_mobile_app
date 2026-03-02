@@ -180,7 +180,7 @@ class ReceiptSuccessCard extends StatelessWidget {
                 valueBold: false,
               ),
 
-            if (AppSession.appRoute == '')
+            if (AppSession.appRoute == '' )
               ReceiptDetailRow(
                 label: 'payment method',
                 value: data.paymentMethod,
@@ -223,14 +223,15 @@ class ReceiptSuccessCard extends StatelessWidget {
             ),
             const SizedBox(height: ReceiptTheme.successGapAfterBottomDivider),
 
-            (AppSession.appRoute == 'sendTopUp' ||AppSession.isTopUp == true)
+            (AppSession.appRoute == 'sendTopUp' ||
+                    AppSession.isTopUp == true ||
+                    AppSession.appRoute == 'prepaidPlanPurchase')
                 ? ReceiptBackButton(
-                    onTap: (){
+                    onTap: () {
                       context.go(AppRoutes.home);
                       AppSession.resetAppRoute();
-                      if(AppSession.isTopUp == true){
+                      if (AppSession.isTopUp == true) {
                         AppSession.resetFlagForTopUp();
-
                       }
                     },
                     text: 'back to home page',
