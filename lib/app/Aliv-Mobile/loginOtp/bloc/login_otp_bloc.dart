@@ -5,6 +5,7 @@ import 'login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
 
 class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
+  static const int _otpLength = 4;
   final LoginOtpRepository repository;
 
   LoginOtpBloc({required this.repository}) : super(const LoginOtpState()) {
@@ -21,7 +22,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   }
 
   Future<void> _onSubmitted(LoginOtpSubmitted event,Emitter<LoginOtpState> emit) async {
-    if (state.code.length < 5) {
+    if (state.code.length < _otpLength) {
       emit(state.copyWith(
         status: LoginOtpStatus.failure,
         errorMessage: 'Please enter the full code',

@@ -3,7 +3,7 @@ class LoginOtpRepository {
     // TODO: এখানে আসল API call বসাবে
     await Future.delayed(const Duration(seconds: 5));
 
-    if (code != '12345') {
+    if (code != '1234') {
       throw Exception('Invalid code');
     }
   }

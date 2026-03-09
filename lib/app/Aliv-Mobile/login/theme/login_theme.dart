@@ -55,12 +55,12 @@ class AuthModuleSizes {
 
   // Login page layout spacing.
   static const double contentHorizontalPadding = 47;
-  static const double welcomeToPhoneGap = 109.14;
+  static const double welcomeToPhoneGap = 48;
   static const double phoneToPasswordGap = 15;
   static const double passwordToErrorRowGap = 15;
   static const double errorRowToSignInGap = 15;
-  static const double signInToSocialGap = 56;
-  static const double socialToBottomGap = 60;
+  static const double signInToSocialGap = 32;
+  static const double socialToBottomGap = 32;
   static const double bottomScrollSafeGap = 113;
   static const double bottomTextsBottomOffset = 112;
   static const double bottomTextsHorizontalPadding = 41;

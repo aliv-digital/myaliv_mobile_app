@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   final AppRouter appRouter;
 
 
-   MyApp({super.key, required this.appRouter});
+   const MyApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {

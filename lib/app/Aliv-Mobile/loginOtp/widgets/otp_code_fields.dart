@@ -13,8 +13,11 @@ class OtpCodeFields extends StatefulWidget {
 }
 
 class _OtpCodeFieldsState extends State<OtpCodeFields> {
-  final _controllers = List.generate(5, (_) => TextEditingController(), growable: false);
-  final _focusNodes = List.generate(5, (_) => FocusNode(), growable: false);
+  static const int _otpLength = 4;
+  final _controllers =
+      List.generate(_otpLength, (_) => TextEditingController(), growable: false);
+  final _focusNodes =
+      List.generate(_otpLength, (_) => FocusNode(), growable: false);
 
   @override
   void dispose() {
@@ -34,7 +37,7 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
       _controllers[index].selection = TextSelection.collapsed(offset: value.length);
     }
 
-    if (value.isNotEmpty && index < 4) {
+    if (value.isNotEmpty && index < _otpLength - 1) {
       _focusNodes[index + 1].requestFocus();
     } else if (value.isEmpty && index > 0) {
       _focusNodes[index - 1].requestFocus();
@@ -54,7 +57,7 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(5, (index) {
+        children: List.generate(_otpLength, (index) {
           return _OtpBox(
             controller: _controllers[index],
             focusNode: _focusNodes[index],
