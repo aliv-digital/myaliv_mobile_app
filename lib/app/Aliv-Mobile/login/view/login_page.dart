@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -56,7 +57,13 @@ class _LoginView extends StatelessWidget {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
-              // context.go(AppRoutes.home);
+              AppToast.show(message: 'login success',type: ToastType.success);
+              //token jeta pabo sheta state theke nite hobe
+              context.push(AppRoutes.loginOtp,extra: {'key':state.twoFactorKey});
+            }
+            if (state.status == LoginStatus.failure) {
+              AppToast.show(message: state.errorMessage.toString(),type: ToastType.error);
+              //context.push(AppRoutes.loginOtp);
             }
           },
           child: Stack(
@@ -95,10 +102,12 @@ class _LoginView extends StatelessWidget {
                                           maintainSize: true,
                                           maintainState: true,
                                           maintainAnimation: true,
-                                          child: const Text(
-                                            'invalid credentials!',
-                                            style: AuthModuleTextStyles.invalidCredentials,
-                                          ),
+                                          child: Text(''),
+                                          // child: Text(
+                                          //   state.errorMessage ??
+                                          //       'invalid credentials!',
+                                          //   style: AuthModuleTextStyles.invalidCredentials,
+                                          // ),
                                         ),
                                       ),
                                     ),
@@ -129,7 +138,6 @@ class _LoginView extends StatelessWidget {
                                   textStyle: AuthModuleTextStyles.signInButton,
                                   onPressed: () {
                                     context.read<LoginBloc>().add(const LoginSubmitted());
-                                    context.push(AppRoutes.loginOtp);
                                   },
                                 );
                               },

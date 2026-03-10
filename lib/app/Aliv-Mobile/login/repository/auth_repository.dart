@@ -1,18 +1,71 @@
 // lib/login/login_repository.dart
-import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+
+import '../../../../core/networkService/api_paths.dart';
+import '../../../../core/networkService/app_http_client.dart';
+import '../model/auth_response_model.dart';
 
 class LoginRepository {
-  Future<void> login({
-    required String phone,
-    required String password,
-  }) async {
-    // TODO: এখানে তোমার API call বসাবে
-    await Future.delayed(const Duration(seconds: 1));
+  LoginRepository({ApiService? apiService}) : _api = apiService ?? ApiService();
 
-    debugPrint('phone: $phone, password: $password');
+  final ApiService _api;
 
-    // demo: সবসময় invalid করবে
-    // throw Exception('invalid credentials!');
+  Future<AuthResponse> login({required String username,required String password}) async {
+    final payload = <String, dynamic>{
+      'username': username,
+      'password': password,
+    };
+
+    debugPrint('Login API payload: $payload');
+
+    final response = await _api.postJson(Api.loginUrl, body: payload);
+
+    if (kDebugMode) {
+      debugPrint(
+        'Login API status: ${response.statusCode}, body: ${response.responseJson}',
+      );
+    }
+
+    final parsedJson = _tryDecodeMap(response.responseJson);
+    final authResponse = AuthResponse.fromJson(parsedJson);
+
+    if (ApiService.isSuccessStatusCode(response.statusCode)) {
+      final key = authResponse.twoFactorKey?.trim() ?? '';
+      if (key.isEmpty) {
+        throw Exception(
+          _resolveMessage(
+            authResponse.message,
+            fallback: 'TwoFactorKey missing in login response',
+          ),
+        );
+      }
+      return authResponse;
+    }
+    debugPrint("${authResponse.message}");
+    throw Exception(
+      ApiService.friendlyErrorFromResponse(
+        response,
+        backendMessage: authResponse.message,
+      ) ?? 'Request failed. Please try again.',
+    );
+  }
+
+  Map<String, dynamic>? _tryDecodeMap(String raw) {
+    if (raw.trim().isEmpty) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map<String, dynamic>) return decoded;
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _resolveMessage(String? message, {required String fallback}) {
+    final trimmed = message?.trim() ?? '';
+    if (trimmed.isNotEmpty) return trimmed;
+    return fallback;
   }
 }
-

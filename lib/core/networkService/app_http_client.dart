@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../model/apiResponseModel.dart';
+import 'api_error_message_resolver.dart';
 
 /// A small, readable HTTP client wrapper for typical app needs.
 /// - Auto-injects Authorization token if `tokenProvider` is supplied
@@ -26,9 +27,49 @@ class ApiService {
 
   ApiService({
     http.Client? client,
-    this.requestTimeout = const Duration(seconds: 20),
+    this.requestTimeout = const Duration(seconds: 300),
     this.tokenProvider,
   }) : _client = client ?? http.Client();
+
+  /// Shared success check for API response status codes.
+  static bool isSuccessStatusCode(int statusCode) {
+    return statusCode >= 200 && statusCode < 300;
+  }
+
+  /// Returns a user-friendly message for non-success API responses.
+  ///
+  /// For successful responses (2xx), returns null so feature code can decide
+  /// what success message (if any) to show.
+  static String? friendlyErrorMessage({
+    required int statusCode,
+    String? responseBody,
+    String? backendMessage,
+    bool preferBackendMessage = true,
+  }) {
+    if (isSuccessStatusCode(statusCode)) return null;
+    return ApiErrorMessageResolver.resolve(
+      statusCode: statusCode,
+      responseBody: responseBody,
+      backendMessage: backendMessage,
+      preferBackendMessage: preferBackendMessage,
+    );
+  }
+
+  /// Convenience wrapper when you already have an [ApiResponseModel].
+  ///
+  /// For successful responses (2xx), returns null.
+  static String? friendlyErrorFromResponse(
+    ApiResponseModel response, {
+    String? backendMessage,
+    bool preferBackendMessage = true,
+  }) {
+    return friendlyErrorMessage(
+      statusCode: response.statusCode,
+      responseBody: response.responseJson,
+      backendMessage: backendMessage,
+      preferBackendMessage: preferBackendMessage,
+    );
+  }
 
   // ---------------------------------------------------------------------------
   // Public, human-friendly methods
