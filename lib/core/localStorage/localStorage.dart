@@ -10,10 +10,28 @@ class LocalStorage {
 
 
 
-  static Future<void> storeSelectedActiveEventID({required int eventID}) async {
+  static Future<void> storeTicket({required String ticket}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('activeEventID', eventID);
+    await prefs.setString('ticket', ticket);
   }
+
+  static Future<String?> getTicket() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('ticket');
+  }
+
+  static Future<void> storeAccountID({required String accountID}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accountID',accountID);
+  }
+
+
+  static Future<String?> getAccountID() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accountID');
+  }
+
+
   // Get an integer value
   static Future<int?> getSelectedActiveEventId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

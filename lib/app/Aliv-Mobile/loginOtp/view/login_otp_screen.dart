@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
@@ -10,12 +11,26 @@ import '../widgets/otp_code_fields.dart';
 import '../widgets/otp_bottom_actions.dart';
 
 class LoginOtpScreen extends StatelessWidget {
-  const LoginOtpScreen({super.key});
+  const LoginOtpScreen({
+    super.key,
+    this.initialTwoFactorKey = '',
+    this.initialPhoneNumber = '',
+  });
+
+  /// Two-factor key passed from login route.
+  final String initialTwoFactorKey;
+  /// Phone number passed from login route.
+  final String initialPhoneNumber;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginOtpBloc(repository: LoginOtpRepository()),
+      // Seed OTP bloc state with route-provided twoFactorKey.
+      create: (_) => LoginOtpBloc(
+        repository: LoginOtpRepository(),
+        initialTwoFactorKey: initialTwoFactorKey,
+        initialPhoneNumber: initialPhoneNumber,
+      ),
       child: const _LoginOtpView(),
     );
   }
@@ -36,16 +51,43 @@ class _LoginOtpView extends StatelessWidget {
 
       body: SafeArea(
         child: BlocListener<LoginOtpBloc, LoginOtpState>(
+          listenWhen: (previous, current) {
+            return previous.status != current.status ||
+                previous.resendStatus != current.resendStatus ||
+                previous.errorMessage != current.errorMessage;
+          },
           listener: (context, state) {
+            if (state.status == LoginOtpStatus.success) {
+
+              AppToast.show(
+                message: 'OTP verified successfully',
+                type: ToastType.success,
+              );
+              // context.push(AppRoutes.home);
+            }
+
             if (state.status == LoginOtpStatus.failure && state.errorMessage != null) {
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   SnackBar(
-              //     content: Text(
-              //       state.errorMessage!,
-              //       style: LoginOtpTheme.snackBarText,
-              //     ),
-              //   ),
-              // );
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
+            }
+
+            if (state.resendStatus == LoginOtpResendStatus.done) {
+              AppToast.show(
+                message: 'Verification code resent successfully.',
+                type: ToastType.success,
+              );
+            }
+
+            if (state.resendStatus == LoginOtpResendStatus.idle &&
+                state.status != LoginOtpStatus.failure &&
+                state.errorMessage != null
+            ) {
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
             }
           },
           child: Stack(

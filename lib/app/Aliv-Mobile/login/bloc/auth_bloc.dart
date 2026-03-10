@@ -1,6 +1,7 @@
 // lib/login/login_bloc.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import '../repository/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -42,11 +43,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (isPhoneEmpty && isPasswordEmpty) {
         validationMessage = 'enter phone number and password';
       } else if (isPhoneEmpty) {
-        validationMessage = 'enter phone number';
+        validationMessage = 'phone number is required';
       } else {
-        validationMessage = 'enter password';
+        validationMessage = 'password is required';
       }
-
       emit(
         state.copyWith(
           status: LoginStatus.failure,
@@ -58,6 +58,30 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       return;
     }
+    final hasInvalidChar = RegExp(r'[^0-9]').hasMatch(state.phone.trim());
+    if (hasInvalidChar) {
+      emit(
+        state.copyWith(
+          status: LoginStatus.failure,
+          errorMessage: 'invalid format',
+          twoFactorKey: null,
+          phoneFieldError: true,
+          passwordFieldError: false,
+        ),
+      );
+      return;
+    }
+    final bool isConnected = await InternetConnection().hasInternetAccess;
+    if (isConnected == false) {
+      emit(state.copyWith(
+        status: LoginStatus.failure,
+        errorMessage: "No Internet Connection",
+        twoFactorKey: null,
+        phoneFieldError: false,
+        passwordFieldError: false,
+      ));
+      return;
+    }
 
     emit(state.copyWith(
       status: LoginStatus.loading,
@@ -66,6 +90,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       phoneFieldError: false,
       passwordFieldError: false,
     ));
+
     try {
       final authResponse = await repository.login(
         username: state.phone,
@@ -82,7 +107,29 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } catch (e) {
       final message = _extractErrorMessage(e);
       debugPrint('Login error: $message, $e');
-      emit(
+      if(message.toString() == "FailedSimpleValidation"){
+         emit(
+          state.copyWith(
+          status: LoginStatus.failure,
+          errorMessage: "The number you entered is invalid",
+          twoFactorKey: null,
+          phoneFieldError: false,
+          passwordFieldError: false,
+        ),
+      );
+      }else if(message.toString() == "FailedUsernameIsLocked"){
+        emit(
+          state.copyWith(
+            status: LoginStatus.failure,
+            errorMessage: "your account is locked out, please try again in 15 minutes",
+            twoFactorKey: null,
+            phoneFieldError: false,
+            passwordFieldError: false,
+          ),
+        );
+
+      } else{
+         emit(
         state.copyWith(
           status: LoginStatus.failure,
           errorMessage: message,
@@ -91,6 +138,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           passwordFieldError: false,
         ),
       );
+      }
+     
     }
   }
 

@@ -46,6 +46,7 @@ import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../app/Aliv-Mobile/forgetPassOtp/view/forget_password_otp_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
+import '../app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
 import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/refer_friend_prepaid_screen.dart';
 import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/success_screen.dart';
@@ -91,11 +92,11 @@ import '../app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_scre
 import '../app/splash/view/splash_page.dart';
 import '../resources/widgets/top_toast.dart';
 import 'app_routes.dart';
-
+//I/flutter (24566): Login API status: 202, body: {"TwoFactorKey":"b5aa1c17-10a9-48b9-9370-b0653917f888"}
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.logIn, //autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.splash, //autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -475,7 +476,16 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.loginOtp,
-        builder: (context, state) => const LoginOtpScreen(),
+        builder: (context, state) {
+          // Typed route payload keeps navigation data explicit and safe.
+          final extra = state.extra;
+          final args = extra is LoginOtpRouteArgs ? extra : const LoginOtpRouteArgs(twoFactorKey: '', phoneNumber: '');
+
+          return LoginOtpScreen(
+            initialTwoFactorKey: args.twoFactorKey,
+            initialPhoneNumber: args.phoneNumber,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.forgetPassword,

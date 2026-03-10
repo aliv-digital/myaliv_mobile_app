@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../loginOtp/model/login_otp_route_args.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -57,12 +58,31 @@ class _LoginView extends StatelessWidget {
         child: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
-              AppToast.show(message: 'login success',type: ToastType.success);
-              //token jeta pabo sheta state theke nite hobe
-              context.push(AppRoutes.loginOtp,extra: {'key':state.twoFactorKey});
+              AppToast.show(message: 'OTP sent successfully', type: ToastType.success);
+
+              // Read 2FA key from login state and forward it to OTP route.
+              final String? twoFactorKey = state.twoFactorKey;
+              if (twoFactorKey == null || twoFactorKey.isEmpty) {
+                AppToast.show(
+                  message: 'Two-factor key is missing from login response.',
+                  type: ToastType.error,
+                );
+                return;
+              }
+
+              context.push(
+                AppRoutes.loginOtp,
+                extra: LoginOtpRouteArgs(
+                  twoFactorKey: twoFactorKey,
+                  phoneNumber: state.phone.trim(),
+                ),
+              );
             }
             if (state.status == LoginStatus.failure) {
-              AppToast.show(message: state.errorMessage.toString(),type: ToastType.error);
+              AppToast.show(
+                message: state.errorMessage.toString(),
+                type: ToastType.error,
+              );
               //context.push(AppRoutes.loginOtp);
             }
           },

@@ -49,22 +49,21 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginOtpBloc, LoginOtpState>(
-      listenWhen: (p, c) => p.status != c.status && c.status == LoginOtpStatus.failure,
-      listener: (context, state) {
-        // চাইলে error হলে সব clear করতে পারো
-        // for (final c in _controllers) c.clear();
+    return BlocBuilder<LoginOtpBloc, LoginOtpState>(
+      builder: (context, state) {
+        final hasFieldError = state.codeFieldError;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(_otpLength, (index) {
+            return _OtpBox(
+              controller: _controllers[index],
+              focusNode: _focusNodes[index],
+              showError: hasFieldError,
+              onChanged: (v) => _onChanged(index, v),
+            );
+          }),
+        );
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(_otpLength, (index) {
-          return _OtpBox(
-            controller: _controllers[index],
-            focusNode: _focusNodes[index],
-            onChanged: (v) => _onChanged(index, v),
-          );
-        }),
-      ),
     );
   }
 }
@@ -72,11 +71,13 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
 class _OtpBox extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
+  final bool showError;
   final ValueChanged<String> onChanged;
 
   const _OtpBox({
     required this.controller,
     required this.focusNode,
+    required this.showError,
     required this.onChanged,
   });
 
@@ -89,17 +90,20 @@ class _OtpBox extends StatelessWidget {
         animation: focusNode,
         builder: (context, _) {
           final isFocused = focusNode.hasFocus;
+          final showFocusStyle = isFocused && !showError;
           final innerRadius =
               (LoginOtpSizes.otpBoxRadius - LoginOtpSizes.otpBoxBorderWidth)
                   .clamp(0.0, LoginOtpSizes.otpBoxRadius);
 
           return Container(
             decoration: BoxDecoration(
-              gradient: isFocused ? LoginOtpGradients.focusedInputBorder : null,
-              border: isFocused
+              gradient: showFocusStyle ? LoginOtpGradients.focusedInputBorder : null,
+              border: showFocusStyle
                   ? null
                   : Border.all(
-                      color: LoginOtpColors.otpBoxBorderDefault,
+                      color: showError
+                          ? LoginOtpColors.otpBoxBorderError
+                          : LoginOtpColors.otpBoxBorderDefault,
                       width: LoginOtpSizes.otpBoxBorderWidth,
                     ),
               borderRadius: BorderRadius.circular(LoginOtpSizes.otpBoxRadius),

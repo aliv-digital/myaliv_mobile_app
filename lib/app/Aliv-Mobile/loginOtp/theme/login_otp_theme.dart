@@ -10,6 +10,7 @@ class LoginOtpColors {
   // OTP box base fill and unfocused border color.
   static const Color otpBoxBackground = Color(0xFFFFFFFF);
   static const Color otpBoxBorderDefault = Color(0xFFE0E0E0);
+  static const Color otpBoxBorderError = Color(0xFFFF3B30);
 
   // Action/link colors on OTP screen.
   static const Color actionLinkPurple = Color(0xFF645D9C);

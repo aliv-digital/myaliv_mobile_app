@@ -193,11 +193,17 @@ class ApiErrorMessageResolver {
     if (value is Map) {
       const List<String> preferredKeys = <String>[
         'message',
+        'Message',
         'error',
+        'Error',
         'detail',
+        'Detail',
         'description',
+        'Description',
         'title',
+        'Title',
         'reason',
+        'Reason',
         'error_description',
       ];
 
