@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_event.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
@@ -106,14 +107,19 @@ class _LoginOtpView extends StatelessWidget {
                             padding: LoginOtpPaddings.contentHorizontal,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: const [
+                              children:  [
                                 SizedBox(height: LoginOtpSizes.contentTopGap),
                                 OtpCodeFields(),
                                 SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
                                 OtpBottomActions(),
                                 SizedBox(height: LoginOtpSizes.contentBottomGap),
                                 _ChangePhoneNumberAction(),
-
+                                // ElevatedButton(
+                                //     onPressed: (){
+                                //       context.read<LoginOtpBloc>().add(PrintStorage());
+                                //     },
+                                //     child: Text("print storage")
+                                // ),
                                 SizedBox(height: 113),
                               ],
                             ),

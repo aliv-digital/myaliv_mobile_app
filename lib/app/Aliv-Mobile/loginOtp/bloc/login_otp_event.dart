@@ -22,3 +22,7 @@ class LoginOtpSubmitted extends LoginOtpEvent {
 class LoginOtpResendRequested extends LoginOtpEvent {
   const LoginOtpResendRequested();
 }
+
+class PrintStorage extends LoginOtpEvent{
+  const PrintStorage();
+}

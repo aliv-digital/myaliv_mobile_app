@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
+import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import '../model/account_info_model.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
@@ -28,6 +30,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
     on<LoginOtpSubmitted>(_onSubmitted);
     on<LoginOtpResendRequested>(_onResendRequested);
+    on<PrintStorage>(_printStorage);
   }
 
   Future<void> _onSubmitted(LoginOtpSubmitted event,Emitter<LoginOtpState> emit) async {
@@ -96,6 +99,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         debugPrint("Account id : ${response.accountId}");
         await LocalStorage.storeTicket(ticket: response.ticket.toString());
         await LocalStorage.storeAccountID(accountID: response.accountId.toString());
+        await _saveAccountInfo(password: response.ticket.toString());
       });
 
 
@@ -124,6 +128,46 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         ));
       }
     }
+  }
+
+  Future<void>_saveAccountInfo({required String password})async{
+    // Fetch full account profile after OTP success.
+    final accountInfo = await repository.getAccountInfo(
+      username: AppConstants.userName,
+      password: password,
+    );
+
+    // Cache full payload so any screen can read specific fields when needed.
+    await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
+
+    /*
+    =========== USAGE ============
+
+    final map = await LocalStorage.getAccountInfoMap();
+    final account = AccountInfoModel.fromJson(map);
+
+    final email = account.email;
+    final accountStatus = account.accountStatus;
+    final accountType = account.accountType;
+
+     */
+  }
+
+  // for testing purpose only
+  Future<void> _printStorage(PrintStorage event,Emitter<LoginOtpState> emit) async {
+    final map = await LocalStorage.getAccountInfoMap();
+    final account = AccountInfoModel.fromJson(map);
+
+    final email = account.email;
+    final deviceAccountID = account.idAcc; // device account id
+    final accountStatus = account.accountStatus;
+    final accountType = account.accountType;
+    final paymentOption = account.paymentOption;
+    debugPrint("Email : $email");
+    debugPrint("Account Status : $accountStatus");
+    debugPrint("Account Type : $accountType");
+    debugPrint("Payment Option : $paymentOption");
+    debugPrint("Device Account ID : $deviceAccountID");
   }
 
   Future<void> _onResendRequested(LoginOtpResendRequested event,Emitter<LoginOtpState> emit) async {

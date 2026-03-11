@@ -4,5 +4,6 @@ class Api {
   static const verifyOtpUrl = '$baseUrl/v1/MyAliv/Auth/two-factor-auth';
   static const resendOtpUrl = '$baseUrl/v1/MyAliv/Auth/two-factor-auth/resend';
 
+  static const accountUrl = '$baseUrl/v1/MyAliv/Account';
 
 }

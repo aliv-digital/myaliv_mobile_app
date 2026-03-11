@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {
+  static const String _accountInfoKey = 'account_info_json';
+
   // Store an integer value
   static Future<void> storeIntValue({required String key, required int value}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,6 +33,36 @@ class LocalStorage {
   static Future<String?> getAccountID() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('accountID');
+  }
+
+  /// Stores the complete account response map as JSON.
+  static Future<void> storeAccountInfoMap({
+    required Map<String, dynamic> accountInfo,
+  }) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_accountInfoKey, jsonEncode(accountInfo));
+  }
+
+  /// Returns the raw JSON string if account info was cached.
+  static Future<String?> getAccountInfoJson() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_accountInfoKey);
+  }
+
+  /// Returns decoded account map. Always safe: returns empty map on bad/missing data.
+  static Future<Map<String, dynamic>> getAccountInfoMap() async {
+    final raw = await getAccountInfoJson();
+    return _decodeJsonMap(raw);
+  }
+
+  /// Reads a single value from cached account info.
+  ///
+  /// Supports dotted paths for nested objects, e.g.:
+  /// - PhoneNumber
+  /// - IdentificationInfo.NINumber
+  static Future<dynamic> getAccountInfoValue({required String path}) async {
+    final data = await getAccountInfoMap();
+    return _readValueByPath(data, path);
   }
 
 
@@ -129,5 +163,54 @@ class LocalStorage {
   static Future<void> clearAll() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  static Map<String, dynamic> _decodeJsonMap(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return <String, dynamic>{};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) {
+        final mapped = <String, dynamic>{};
+        for (final entry in decoded.entries) {
+          mapped[entry.key.toString()] = entry.value;
+        }
+        return mapped;
+      }
+      return <String, dynamic>{};
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+  }
+
+  static dynamic _readValueByPath(Map<String, dynamic> source, String path) {
+    if (path.trim().isEmpty) return null;
+    dynamic current = source;
+
+    for (final segment in path.split('.')) {
+      if (current is Map<String, dynamic>) {
+        if (current.containsKey(segment)) {
+          current = current[segment];
+          continue;
+        }
+
+        // Fallback: allow case-insensitive key lookup.
+        final lowerSegment = segment.toLowerCase();
+        String? matchedKey;
+        for (final key in current.keys) {
+          if (key.toLowerCase() == lowerSegment) {
+            matchedKey = key;
+            break;
+          }
+        }
+        if (matchedKey == null) return null;
+        current = current[matchedKey];
+        continue;
+      }
+
+      return null;
+    }
+
+    return current;
   }
 }

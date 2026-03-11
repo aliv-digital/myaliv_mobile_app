@@ -327,7 +327,10 @@ class ApiService {
     };
 
     final String? token = await tokenProvider?.call();
-    if (token != null && token.isNotEmpty) {
+    final hasAuthorizationHeader = headers.keys.any(
+      (key) => key.toLowerCase() == 'authorization',
+    );
+    if (!hasAuthorizationHeader && token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
     }
     return headers;
@@ -341,7 +344,10 @@ class ApiService {
     };
 
     final String? token = await tokenProvider?.call();
-    if (token != null && token.isNotEmpty) {
+    final hasAuthorizationHeader = headers.keys.any(
+      (key) => key.toLowerCase() == 'authorization',
+    );
+    if (!hasAuthorizationHeader && token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
     }
     return headers;

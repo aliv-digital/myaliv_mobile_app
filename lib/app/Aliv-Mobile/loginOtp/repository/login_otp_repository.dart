@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import '../../../../core/networkService/api_paths.dart';
 import '../../../../core/networkService/app_http_client.dart';
+import '../model/account_info_model.dart';
 import '../model/login_otp_resend_response_model.dart';
 import '../model/login_otp_verify_response_model.dart';
 
 class LoginOtpRepository {
-
   LoginOtpRepository({ApiService? apiService}) : _api = apiService ?? ApiService();
 
   final ApiService _api;
@@ -62,10 +62,7 @@ class LoginOtpRepository {
     );
   }
 
-  Future<LoginOtpResendResponse> resendCode({
-    required String phoneNumber,
-    required String twoFactorKey,
-  }) async {
+  Future<LoginOtpResendResponse> resendCode({required String phoneNumber, required String twoFactorKey}) async {
     final normalizedPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
     final payload = <String, dynamic>{
       'PhoneNumber': normalizedPhone,
@@ -110,6 +107,48 @@ class LoginOtpRepository {
     );
   }
 
+  /// Fetches account details using Basic Auth against [Api.accountUrl].
+  ///
+  /// Returns typed account info when status is 2xx.
+  Future<AccountInfoModel> getAccountInfo({required String username, required String password}) async {
+    final credentials = '$username:$password';
+    final basicAuthToken = base64Encode(utf8.encode(credentials));
+
+    if (kDebugMode) {
+      debugPrint('Account info request initiated for user: $username');
+    }
+
+    final response = await _api.get(
+      Api.accountUrl,
+      headers: <String, String>{
+        'Authorization': 'Basic $basicAuthToken',
+      },
+    );
+
+    if (kDebugMode) {
+      debugPrint(
+        'Account info status: ${response.statusCode}, body: ${response.responseJson}',
+      );
+    }
+
+    final parsedJson = _tryDecodeMap(response.responseJson);
+    final accountInfo = AccountInfoModel.fromJson(parsedJson);
+
+    if (ApiService.isSuccessStatusCode(response.statusCode)) {
+      if (parsedJson == null) {
+        throw Exception('Unexpected account response format');
+      }
+      return accountInfo;
+    }
+
+    throw Exception(
+      ApiService.friendlyErrorFromResponse(
+        response,
+        backendMessage: accountInfo.reason.isNotEmpty ? accountInfo.reason : _extractBackendMessage(parsedJson),
+      ) ?? 'Could not fetch account information. Please try again.',
+    );
+  }
+
   Map<String, dynamic>? _tryDecodeMap(String raw) {
     if (raw.trim().isEmpty) return null;
     try {
@@ -125,6 +164,19 @@ class LoginOtpRepository {
     final trimmed = message?.trim() ?? '';
     if (trimmed.isNotEmpty) return trimmed;
     return fallback;
+  }
+
+  String? _extractBackendMessage(Map<String, dynamic>? json) {
+    if (json == null) return null;
+    final message = json['message'] ??
+        json['Message'] ??
+        json['error'] ??
+        json['Error'] ??
+        json['detail'] ??
+        json['Detail'] ??
+        json['reason'] ??
+        json['Reason'];
+    return message?.toString();
   }
 }
 /*
