@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/logOut/repository/logout_repository.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../router/app_routes.dart';
 
@@ -114,9 +116,16 @@ class LogoutBottomSheet extends StatelessWidget {
                 /// YES BUTTON
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {
-                      context.pop();
-                      context.go(AppRoutes.welcome);
+                    onTap: () async{
+                      bool res = await LogoutRepository().logout();
+
+                      if(res == true){
+                        context.pop();
+                        context.go(AppRoutes.welcome);
+                      }else{
+                        AppToast.show(message: 'Logout failed. Please try again.', type: ToastType.error);
+                      }
+               
                       },
                     child: Container(
                       height: 50,

@@ -145,7 +145,15 @@ class WelcomeView extends StatelessWidget {
                             const SizedBox(height: 20),
                             CustomButton(
                               label: 'ALIV Mobile',
-                              onPressed: () => context.push(AppRoutes.logIn),
+                              onPressed: () async {
+                                // Ask bloc to decide where to go based on cached ticket.
+                                final route = await context
+                                    .read<WelcomeBloc>()
+                                    .resolveAlivMobileRoute();
+
+                                if (!context.mounted) return;
+                                context.go(route);
+                              },
                             ),
                             const SizedBox(height: 18),
                             CustomButton(

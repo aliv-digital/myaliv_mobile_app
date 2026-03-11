@@ -102,6 +102,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         await _saveAccountInfo(password: response.ticket.toString());
       });
 
+      await Future.delayed(Duration(milliseconds: 1500));
 
       emit(state.copyWith(
         status: LoginOtpStatus.success,

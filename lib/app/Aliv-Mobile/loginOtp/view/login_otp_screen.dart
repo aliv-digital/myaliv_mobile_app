@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_event.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import '../../../../router/app_routes.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
@@ -64,7 +66,7 @@ class _LoginOtpView extends StatelessWidget {
                 message: 'OTP verified successfully',
                 type: ToastType.success,
               );
-              // context.push(AppRoutes.home);
+               context.go(AppRoutes.home);
             }
 
             if (state.status == LoginOtpStatus.failure && state.errorMessage != null) {
