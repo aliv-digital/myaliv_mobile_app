@@ -158,6 +158,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   Future<void> _printStorage(PrintStorage event,Emitter<LoginOtpState> emit) async {
     final map = await LocalStorage.getAccountInfoMap();
     final account = AccountInfoModel.fromJson(map);
+    final ticket = await LocalStorage.getTicket();
 
     final email = account.email;
     final deviceAccountID = account.idAcc; // device account id
@@ -169,6 +170,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     debugPrint("Account Type : $accountType");
     debugPrint("Payment Option : $paymentOption");
     debugPrint("Device Account ID : $deviceAccountID");
+    debugPrint("Ticket : $ticket"); // works as password
   }
 
   Future<void> _onResendRequested(LoginOtpResendRequested event,Emitter<LoginOtpState> emit) async {

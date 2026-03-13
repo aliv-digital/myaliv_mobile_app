@@ -96,7 +96,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.splash, //autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.home, //autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -560,7 +560,7 @@ class AppRouter {
             builder: (context, state) {
               final config = (state.extra as HomeUiConfig?) ??
                   const HomeUiConfig(
-                    userType: UserType.postpaid,
+                    userType: UserType.prepaid,
                     hasActivePlan: true,
                     isFuturePlan: false,
                   );

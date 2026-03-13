@@ -30,3 +30,13 @@ class HomePlanToggleAddon extends HomePlanEvent {
   final HomePlanAddOnModel addon;
   HomePlanToggleAddon(this.addon);
 }
+
+/// Internal event to sync strict daily API data.
+/// UI rendering remains unchanged in current phase.
+class HomePlanDailyApiSyncRequested extends HomePlanEvent {
+  final bool printRawResponse;
+
+  HomePlanDailyApiSyncRequested({
+    this.printRawResponse = false,
+  });
+}

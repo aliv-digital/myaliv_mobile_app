@@ -6,4 +6,6 @@ class Api {
 
   static const accountUrl = '$baseUrl/v1/MyAliv/Account';
   static const logOutUrl = '$baseUrl/v1/MyAliv/Auth/logout';
+
+  static const getAllPlans = '$baseUrl/v1/MyAliv/device';
 }

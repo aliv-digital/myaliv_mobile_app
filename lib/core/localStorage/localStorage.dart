@@ -13,7 +13,7 @@ class LocalStorage {
 
 
 
-
+  // ticket works as password
   static Future<void> storeTicket({required String ticket}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('ticket', ticket);
