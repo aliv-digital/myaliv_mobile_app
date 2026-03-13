@@ -5,6 +5,7 @@ import '../../../../core/networkService/app_http_client.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import 'plan_repository_exception.dart';
 
 enum HomePlanTab {
   daily,
@@ -19,9 +20,7 @@ enum HomePlanTab {
 
 /// Converts one dynamic map to string-keyed map.
 Map<String, dynamic> _toStringKeyedMapInBackground(Map<dynamic, dynamic> item) {
-  return item.map((
-      dynamic key,
-      dynamic value) => MapEntry<String, dynamic>(key.toString(), value),
+  return item.map((dynamic key, dynamic value) => MapEntry<String, dynamic>(key.toString(), value),
   );
 }
 
@@ -37,15 +36,10 @@ String _normalizedUpperInBackground(dynamic value) {
 /// - Must stay top-level for `compute(...)`.
 /// - Must return only isolate-safe data structures.
 List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
-  final dynamic decoded;
-  try {
-    decoded = jsonDecode(rawBody);
-  } catch (_) {
-    return const <Map<String, dynamic>>[];
-  }
+  final dynamic decoded = jsonDecode(rawBody);
 
   if (decoded is! List) {
-    return const <Map<String, dynamic>>[];
+    throw const FormatException('Expected JSON array root for plans response.');
   }
 
   return decoded.whereType<Map>().map(_toStringKeyedMapInBackground).toList(growable: false);
@@ -57,24 +51,11 @@ List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
 /// Return payload shape:
 /// - `totalRawPlansCount`: number of normalized plan maps
 /// - `matchedRawPlans`: strict daily raw plan maps (PlanType=P, Frequency=D)
-Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(
-  String rawBody,
-) {
-  final dynamic decoded;
-  try {
-    decoded = jsonDecode(rawBody);
-  } catch (_) {
-    return <String, dynamic>{
-      'totalRawPlansCount': 0,
-      'matchedRawPlans': const <Map<String, dynamic>>[],
-    };
-  }
+Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(String rawBody) {
+  final dynamic decoded = jsonDecode(rawBody);
 
   if (decoded is! List) {
-    return <String, dynamic>{
-      'totalRawPlansCount': 0,
-      'matchedRawPlans': const <Map<String, dynamic>>[],
-    };
+    throw const FormatException('Expected JSON array root for plans response.');
   }
 
   int totalRawPlansCount = 0;
@@ -133,13 +114,12 @@ class HomePlanRepository {
     required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
-    final String? rawResponseBody = await _fetchPlansRawResponseBody(
+    final String rawResponseBody = await _fetchPlansRawResponseBody(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
-    if (rawResponseBody == null) return const <Map<String, dynamic>>[];
 
     // Step-3:
     // Decode JSON in background isolate to keep UI thread smooth.
@@ -151,10 +131,11 @@ class HomePlanRepository {
       if (kDebugMode) {
         debugPrint('getPlans: background decode failed: $e');
       }
-      return const <Map<String, dynamic>>[];
+      throw PlanRepositoryException(
+        type: PlanRepositoryErrorType.parsing,
+        debugMessage: 'Failed to decode plans response JSON in background.',
+      );
     }
-
-    if (plans.isEmpty) return const <Map<String, dynamic>>[];
 
     _lastFetchedPlans = plans;
     _lastFetchedAt = DateTime.now();
@@ -186,13 +167,12 @@ class HomePlanRepository {
   }) async {
     // Step-1:
     // Fetch full plans JSON response body.
-    final String? rawResponseBody = await _fetchPlansRawResponseBody(
+    final String rawResponseBody = await _fetchPlansRawResponseBody(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
-    if (rawResponseBody == null) return const <DailyPlanModel>[];
 
     // Step-2 (optimization):
     // Decode + strict-daily filter in the same background isolate.
@@ -208,7 +188,10 @@ class HomePlanRepository {
         debugPrint(
             'fetchDailyPlansFromApi: background decode/filter failed: $e');
       }
-      return const <DailyPlanModel>[];
+      throw PlanRepositoryException(
+        type: PlanRepositoryErrorType.parsing,
+        debugMessage: 'Failed to decode/filter daily plans in background.',
+      );
     }
 
     final int totalRawPlansCount = _asNonNegativeInt(
@@ -288,8 +271,9 @@ class HomePlanRepository {
 
   /// Shared API call for available plans.
   ///
-  /// Returns raw JSON response body on success, otherwise `null`.
-  Future<String?> _fetchPlansRawResponseBody({
+  /// Returns raw JSON response body on success.
+  /// Throws [PlanRepositoryException] for any network/API failure.
+  Future<String> _fetchPlansRawResponseBody({
     required String username,
     required String password,
     required String deviceAccountID,
@@ -320,7 +304,10 @@ class HomePlanRepository {
           'responseLength=${response.responseJson.length}',
         );
       }
-      return null;
+      throw _mapApiFailureToException(
+        statusCode: response.statusCode,
+        responseBody: response.responseJson,
+      );
     }
 
     if (kDebugMode && printRawResponse) {
@@ -331,6 +318,127 @@ class HomePlanRepository {
     }
 
     return response.responseJson;
+  }
+
+  /// Maps API status/body to typed repository exception.
+  PlanRepositoryException _mapApiFailureToException({
+    required int statusCode,
+    required String responseBody,
+  }) {
+    final String normalized = responseBody.trim().toLowerCase();
+    final String? serverMessage = _tryExtractServerMessage(responseBody);
+
+    if (statusCode == 0) {
+      if (normalized.contains('timeout')) {
+        return PlanRepositoryException(
+          type: PlanRepositoryErrorType.timeout,
+          statusCode: statusCode,
+          serverMessage: serverMessage,
+          debugMessage: responseBody,
+        );
+      }
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.noInternet,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    if (statusCode == 408) {
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.timeout,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    if (statusCode == 401) {
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.unauthorized,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    if (statusCode == 403) {
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.forbidden,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    if (statusCode == 404) {
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.notFound,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    if (statusCode >= 500) {
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.server,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    if (statusCode >= 400) {
+      return PlanRepositoryException(
+        type: PlanRepositoryErrorType.badResponse,
+        statusCode: statusCode,
+        serverMessage: serverMessage,
+        debugMessage: responseBody,
+      );
+    }
+
+    return PlanRepositoryException(
+      type: PlanRepositoryErrorType.unknown,
+      statusCode: statusCode,
+      serverMessage: serverMessage,
+      debugMessage: responseBody,
+    );
+  }
+
+  /// Tries to extract backend message text from JSON/primitive response body.
+  String? _tryExtractServerMessage(String responseBody) {
+    if (responseBody.trim().isEmpty) return null;
+
+    try {
+      final dynamic decoded = jsonDecode(responseBody);
+
+      if (decoded is String && decoded.trim().isNotEmpty) {
+        return decoded.trim();
+      }
+
+      if (decoded is Map) {
+        final List<String> keysToCheck = <String>[
+          'message',
+          'error',
+          'errorMessage',
+          'detail',
+          'title',
+        ];
+        for (final String key in keysToCheck) {
+          final dynamic value = decoded[key];
+          if (value is String && value.trim().isNotEmpty) {
+            return value.trim();
+          }
+        }
+      }
+    } catch (_) {
+      // Response is not JSON, fallback below.
+    }
+
+    final String trimmed = responseBody.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 
   /// Converts dynamic value to non-negative int.

@@ -5,18 +5,72 @@ import '../repository/home_plan_repository.dart';
 
 enum HomePlanStatus { initial, loading, loaded, failure }
 
-class HomePlanState {
+/// One-time toast payload for UI listener.
+class HomePlanToastMessage {
+  const HomePlanToastMessage({
+    required this.id,
+    required this.tab,
+    required this.message,
+  });
+
+  /// Unique id used by listenWhen to avoid duplicate toasts.
+  final int id;
+
+  /// Which tab produced the message.
+  final HomePlanTab tab;
+
+  /// User-friendly message text.
+  final String message;
+}
+
+/// Small UI-state model for a single tab.
+///
+/// Why this exists:
+/// - Keeps status/error together.
+/// - Makes code easier to read than two separate maps.
+class HomePlanTabUiState {
+  const HomePlanTabUiState({
+    required this.status,
+    this.errorMessage,
+  });
+
+  /// Current lifecycle state for one tab.
   final HomePlanStatus status;
+
+  /// Optional error for one tab.
+  final String? errorMessage;
+
+  /// Default state used on first app load.
+  factory HomePlanTabUiState.initial() {
+    return const HomePlanTabUiState(
+      status: HomePlanStatus.initial,
+      errorMessage: null,
+    );
+  }
+}
+
+class HomePlanState {
   final HomePlanTab selectedTab;
+
+  /// Explicit UI state per tab.
+  ///
+  /// This is intentionally verbose so future developers can
+  /// understand and debug tab behavior quickly.
+  final HomePlanTabUiState dailyTabUiState;
+  final HomePlanTabUiState weeklyTabUiState;
+  final HomePlanTabUiState monthlyTabUiState;
+  final HomePlanTabUiState roamingTabUiState;
+  final HomePlanTabUiState roameasyTabUiState;
+  final HomePlanTabUiState addOnsTabUiState;
+  final HomePlanTabUiState mifiTabUiState;
+  final HomePlanTabUiState libertyGlobalTabUiState;
 
   final List<HomePlanModel> plans;
   final Set<String> expandedPlanIds;
 
-  // ✅ AddOns support (new, existing delete kori নাই)
+  //  AddOns support (new, existing delete kori নাই)
   final List<HomePlanAddOnModel> addOns;
   final Set<String> selectedAddOnIds;
-
-  final String? errorMessage;
 
   /// Dedicated API data for Daily tab (not bound to UI yet).
   final List<DailyPlanModel> dailyApiPlans;
@@ -32,59 +86,163 @@ class HomePlanState {
   /// Time when Daily API data was last synced successfully.
   final DateTime? dailyApiLastSyncedAt;
 
+  /// One-time toast effect to be handled by UI listener.
+  final HomePlanToastMessage? pendingToast;
+
+  /// Monotonic id generator base for toast events.
+  final int toastSequence;
+
   const HomePlanState({
-    required this.status,
     required this.selectedTab,
+    required this.dailyTabUiState,
+    required this.weeklyTabUiState,
+    required this.monthlyTabUiState,
+    required this.roamingTabUiState,
+    required this.roameasyTabUiState,
+    required this.addOnsTabUiState,
+    required this.mifiTabUiState,
+    required this.libertyGlobalTabUiState,
     required this.plans,
     required this.expandedPlanIds,
     required this.addOns,
     required this.selectedAddOnIds,
-    this.errorMessage,
     required this.dailyApiPlans,
     required this.apiTabMeta,
+    required this.toastSequence,
     this.dailyApiLastSyncedAt,
+    this.pendingToast,
   });
 
   factory HomePlanState.initial() {
     return const HomePlanState(
-      status: HomePlanStatus.initial,
       selectedTab: HomePlanTab.monthly,
+      dailyTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      weeklyTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      monthlyTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      roamingTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      roameasyTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      addOnsTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      mifiTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
+      libertyGlobalTabUiState: HomePlanTabUiState(
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
       plans: [],
       expandedPlanIds: {},
       addOns: [],
       selectedAddOnIds: {},
       dailyApiPlans: [],
       apiTabMeta: {},
+      pendingToast: null,
+      toastSequence: 0,
     );
   }
 
   HomePlanState copyWith({
-    HomePlanStatus? status,
     HomePlanTab? selectedTab,
+    HomePlanTabUiState? dailyTabUiState,
+    HomePlanTabUiState? weeklyTabUiState,
+    HomePlanTabUiState? monthlyTabUiState,
+    HomePlanTabUiState? roamingTabUiState,
+    HomePlanTabUiState? roameasyTabUiState,
+    HomePlanTabUiState? addOnsTabUiState,
+    HomePlanTabUiState? mifiTabUiState,
+    HomePlanTabUiState? libertyGlobalTabUiState,
     List<HomePlanModel>? plans,
     Set<String>? expandedPlanIds,
 
     // ✅ AddOns
     List<HomePlanAddOnModel>? addOns,
     Set<String>? selectedAddOnIds,
-    String? errorMessage,
     List<DailyPlanModel>? dailyApiPlans,
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
+    HomePlanToastMessage? pendingToast,
+    int? toastSequence,
+    bool clearPendingToast = false,
   }) {
     return HomePlanState(
-      status: status ?? this.status,
       selectedTab: selectedTab ?? this.selectedTab,
+      dailyTabUiState: dailyTabUiState ?? this.dailyTabUiState,
+      weeklyTabUiState: weeklyTabUiState ?? this.weeklyTabUiState,
+      monthlyTabUiState: monthlyTabUiState ?? this.monthlyTabUiState,
+      roamingTabUiState: roamingTabUiState ?? this.roamingTabUiState,
+      roameasyTabUiState: roameasyTabUiState ?? this.roameasyTabUiState,
+      addOnsTabUiState: addOnsTabUiState ?? this.addOnsTabUiState,
+      mifiTabUiState: mifiTabUiState ?? this.mifiTabUiState,
+      libertyGlobalTabUiState:
+          libertyGlobalTabUiState ?? this.libertyGlobalTabUiState,
       plans: plans ?? this.plans,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
       addOns: addOns ?? this.addOns,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
-      errorMessage: errorMessage,
       dailyApiPlans: dailyApiPlans ?? this.dailyApiPlans,
       apiTabMeta: apiTabMeta ?? this.apiTabMeta,
       dailyApiLastSyncedAt: dailyApiLastSyncedAt ?? this.dailyApiLastSyncedAt,
+      pendingToast:
+          clearPendingToast ? null : (pendingToast ?? this.pendingToast),
+      toastSequence: toastSequence ?? this.toastSequence,
     );
   }
+
+  /// Returns full UI state for a specific tab.
+  HomePlanTabUiState uiStateFor(HomePlanTab tab) {
+    switch (tab) {
+      case HomePlanTab.daily:
+        return dailyTabUiState;
+      case HomePlanTab.weekly:
+        return weeklyTabUiState;
+      case HomePlanTab.monthly:
+        return monthlyTabUiState;
+      case HomePlanTab.roaming:
+        return roamingTabUiState;
+      case HomePlanTab.roameasy:
+        return roameasyTabUiState;
+      case HomePlanTab.addOns:
+        return addOnsTabUiState;
+      case HomePlanTab.mifi:
+        return mifiTabUiState;
+      case HomePlanTab.libertyGlobal:
+        return libertyGlobalTabUiState;
+    }
+  }
+
+  /// Status resolver for one tab.
+  HomePlanStatus statusFor(HomePlanTab tab) {
+    return uiStateFor(tab).status;
+  }
+
+  /// Error resolver for one tab.
+  String? errorFor(HomePlanTab tab) {
+    return uiStateFor(tab).errorMessage;
+  }
+
+  /// Convenience getter used by selected-tab UI widgets.
+  HomePlanStatus get selectedTabStatus => statusFor(selectedTab);
+
+  /// Convenience getter used by selected-tab error widgets.
+  String? get selectedTabErrorMessage => errorFor(selectedTab);
 }
 
 /// Lightweight per-tab API sync metadata.

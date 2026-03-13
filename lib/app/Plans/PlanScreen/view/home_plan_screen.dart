@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
@@ -54,100 +55,118 @@ class _HomePlanView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: HomePlanTheme.screenBackground,
-      bottomNavigationBar: BlocBuilder<HomePlanBloc, HomePlanState>(
-        buildWhen: (previous, current) {
-          return previous.selectedTab != current.selectedTab ||
-              previous.status != current.status ||
-              previous.selectedAddOnIds != current.selectedAddOnIds ||
-              previous.addOns != current.addOns;
-        },
-        builder: (context, state) {
-          return HomePlanAddOnsBottomPayBar(
-            state: state,
-            onPayNow: () {
-              context.push(AppRoutes.homePlanConfirmationScreen);
-            },
-          );
-        },
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            DefaultAppBar(
-              showHome: true,
-              showBackArrow: false,
-              showNotification: false,
-              showNotificationDotWhenZero: true,
-              title: 'plans',
-              onBack: () {
-                context.pop();
+    return BlocListener<HomePlanBloc, HomePlanState>(
+      listenWhen: (previous, current) {
+        final HomePlanToastMessage? previousToast = previous.pendingToast;
+        final HomePlanToastMessage? currentToast = current.pendingToast;
+        return previousToast?.id != currentToast?.id;
+      },
+      listener: (context, state) {
+        final HomePlanToastMessage? toast = state.pendingToast;
+        if (toast == null) return;
+
+        AppToast.show(
+          message: toast.message,
+          type: ToastType.error,
+        );
+        context.read<HomePlanBloc>().add(HomePlanToastConsumed());
+      },
+      child: Scaffold(
+        backgroundColor: HomePlanTheme.screenBackground,
+        bottomNavigationBar: BlocBuilder<HomePlanBloc, HomePlanState>(
+          buildWhen: (previous, current) {
+            return previous.selectedTab != current.selectedTab ||
+                previous.selectedTabStatus != current.selectedTabStatus ||
+                previous.selectedAddOnIds != current.selectedAddOnIds ||
+                previous.addOns != current.addOns;
+          },
+          builder: (context, state) {
+            return HomePlanAddOnsBottomPayBar(
+              state: state,
+              onPayNow: () {
+                context.push(AppRoutes.homePlanConfirmationScreen);
               },
-              onHomeTap: () => context.go(AppRoutes.home),
-            ),
-            BlocBuilder<HomePlanBloc, HomePlanState>(
-              buildWhen: (p, c) => p.selectedTab != c.selectedTab,
-              builder: (context, state) {
-                return HomePlanTabs(
-                  selected: state.selectedTab,
-                  onChanged: (tab) {
-                    context.read<HomePlanBloc>().add(HomePlanTabChanged(tab));
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 6),
-            BlocBuilder<HomePlanBloc, HomePlanState>(
-              buildWhen: (p, c) => p.selectedTab != c.selectedTab,
-              builder: (context, state) {
-                return HomePlanSectionHeader(selectedTab: state.selectedTab);
-              },
-            ),
-            Expanded(
-              child: BlocBuilder<HomePlanBloc, HomePlanState>(
+            );
+          },
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              DefaultAppBar(
+                showHome: true,
+                showBackArrow: false,
+                showNotification: false,
+                showNotificationDotWhenZero: true,
+                title: 'plans',
+                onBack: () {
+                  context.pop();
+                },
+                onHomeTap: () => context.go(AppRoutes.home),
+              ),
+              BlocBuilder<HomePlanBloc, HomePlanState>(
+                buildWhen: (p, c) => p.selectedTab != c.selectedTab,
                 builder: (context, state) {
-                  if (state.status == HomePlanStatus.loading ||
-                      state.status == HomePlanStatus.initial) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (state.status == HomePlanStatus.failure) {
-                    return Center(
-                      child: Text(
-                        state.errorMessage ?? 'Something went wrong',
-                        style: HomePlanTheme.errorText,
-                      ),
-                    );
-                  }
-
-                  if (state.selectedTab == HomePlanTab.addOns) {
-                    return HomePlanAddOnsTabContent(
-                      addOns: state.addOns,
-                      selectedAddOnIds: state.selectedAddOnIds,
-                      onToggleAddOn: (addOn) {
-                        context
-                            .read<HomePlanBloc>()
-                            .add(HomePlanToggleAddon(addOn));
-                      },
-                    );
-                  }
-
-                  return HomePlanPlansList(
-                    state: state,
-                    onToggleExpanded: (planId) {
-                      context
-                          .read<HomePlanBloc>()
-                          .add(HomePlanToggleExpanded(planId));
-                    },
-                    onPurchaseNow: (plan) {
-                      _onPurchaseNowPressed(context, plan);
+                  return HomePlanTabs(
+                    selected: state.selectedTab,
+                    onChanged: (tab) {
+                      context.read<HomePlanBloc>().add(HomePlanTabChanged(tab));
                     },
                   );
                 },
               ),
-            ),
-          ],
+              const SizedBox(height: 6),
+              BlocBuilder<HomePlanBloc, HomePlanState>(
+                buildWhen: (p, c) => p.selectedTab != c.selectedTab,
+                builder: (context, state) {
+                  return HomePlanSectionHeader(selectedTab: state.selectedTab);
+                },
+              ),
+              Expanded(
+                child: BlocBuilder<HomePlanBloc, HomePlanState>(
+                  builder: (context, state) {
+                    final HomePlanStatus currentTabStatus = state.selectedTabStatus;
+                    final String? currentTabError = state.selectedTabErrorMessage;
+
+                    if (currentTabStatus == HomePlanStatus.loading || currentTabStatus == HomePlanStatus.initial) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (currentTabStatus == HomePlanStatus.failure) {
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.only(left: 25,right: 25),
+                          child: Text(
+                            currentTabError ?? 'Something went wrong',
+                            style: HomePlanTheme.bodyErrorText,
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (state.selectedTab == HomePlanTab.addOns) {
+                      return HomePlanAddOnsTabContent(
+                        addOns: state.addOns,
+                        selectedAddOnIds: state.selectedAddOnIds,
+                        onToggleAddOn: (addOn) {
+                          context.read<HomePlanBloc>().add(HomePlanToggleAddon(addOn));
+                        },
+                      );
+                    }
+
+                    return HomePlanPlansList(
+                      state: state,
+                      onToggleExpanded: (planId) {
+                        context.read<HomePlanBloc>().add(HomePlanToggleExpanded(planId));
+                      },
+                      onPurchaseNow: (plan) {
+                        _onPurchaseNowPressed(context, plan);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

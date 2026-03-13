@@ -40,3 +40,9 @@ class HomePlanDailyApiSyncRequested extends HomePlanEvent {
     this.printRawResponse = false,
   });
 }
+
+/// UI one-time side effect consumed event.
+///
+/// After UI shows a toast, it dispatches this event
+/// to clear the pending toast from state.
+class HomePlanToastConsumed extends HomePlanEvent {}

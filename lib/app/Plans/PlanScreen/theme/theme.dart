@@ -78,6 +78,13 @@ class HomePlanTheme {
     color: Colors.black,
   );
 
+  static final TextStyle bodyErrorText = TextStyle(
+    fontFamily: AppConstants.defaultFontFamily,
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    color: Colors.grey,
+  );
+
   // Add-on card title
   static final TextStyle addOnTitle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,

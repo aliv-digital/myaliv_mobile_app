@@ -117,7 +117,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state.selectedTab != HomePlanTab.addOns ||
-        state.status != HomePlanStatus.loaded) {
+        state.statusFor(HomePlanTab.addOns) != HomePlanStatus.loaded) {
       return const SizedBox.shrink();
     }
 
