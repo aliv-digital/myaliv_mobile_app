@@ -9,13 +9,13 @@ class AssetConstant {
   static const otpPhoneSVG = 'assets/images/otp_mobile.svg';
   static const whiteBackArrowIconPNG = 'assets/icons/arrow-left.svg';
 
-  static const smsIconPNG = 'assets/icons/sms_icon.svg';
-  static const phoneIconPNG = 'assets/icons/phone_icon.svg';
-  static const wifiIconPNG = 'assets/icons/wifi_icon.svg';
+  static const smsIconSVG = 'assets/icons/sms_icon.svg';
+  static const phoneIconSVG = 'assets/icons/phone_icon.svg';
+  static const wifiIconSVG = 'assets/icons/wifi_icon.svg';
   static const bonusDataIconSVG = 'assets/icons/bonus_data_icon.svg';
-  static const bonusDataIconPNG = 'assets/icons/bonus_data_icon.svg';
+ // static const bonusDataIconSVG = 'assets/icons/bonus_data_icon.svg';
   static const talkTextIconSVG = 'assets/icons/talk_text_icon.svg';
-  static const talkTextIconPNG = 'assets/icons/talk_text_icon.svg';
+  //static const talkTextIconSVG = 'assets/icons/talk_text_icon.svg';
   static const mmsIconPNG = 'assets/icons/mms_icon.svg';
 
   static const emailIconSVG = 'assets/icons/email.svg';

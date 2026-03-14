@@ -34,8 +34,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     on<HomePlanToastConsumed>(_onToastConsumed);
   }
 
-  Future<void> _onStarted(
-      HomePlanStarted event, Emitter<HomePlanState> emit) async {
+  Future<void> _onStarted(HomePlanStarted event, Emitter<HomePlanState> emit) async {
     await _loadByTab(emit, tab: state.selectedTab);
   }
 
@@ -83,8 +82,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Loads data for one tab and updates only that tab's UI state.
-  Future<void> _loadByTab(Emitter<HomePlanState> emit,
-      {required HomePlanTab tab}) async {
+  Future<void> _loadByTab(Emitter<HomePlanState> emit, {required HomePlanTab tab}) async {
     try {
       _emitTabStatus(
         emit,

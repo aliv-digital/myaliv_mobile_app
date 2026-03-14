@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_icon_assets.dart';
@@ -8,7 +10,7 @@ import '../theme/theme.dart';
 
 // Daily plan card — aligned to HomePlanMonthlyPlanCard layout
 class HomePlanDailyPlanCard extends StatelessWidget {
-  final HomePlanModel plan;
+  final DailyPlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -62,16 +64,14 @@ class HomePlanDailyPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.title,
+                              plan.planName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style:
-                                  HomePlanTheme.planCardTitleTextStyle,
+                              style: HomePlanTheme.planCardTitleTextStyle,
                             ),
                           ),
                           const SizedBox(
-                            width:
-                                HomePlanTheme.planCardTitleToArrowGap,
+                            width: HomePlanTheme.planCardTitleToArrowGap,
                           ),
                           SizedBox(
                             child: SvgPicture.asset(
@@ -88,21 +88,21 @@ class HomePlanDailyPlanCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        plan.subtitle,
+                        '1 day',
                         style: HomePlanTheme.planCardSubtitleTextStyle,
                       ),
                     ],
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.planAmount),
             ],
           ),
 
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
 
           // Scrollable benefits row + indicator bar
-          _BenefitsRow(benefits: plan.benefits),
+          _PlanBuckets(benefits: plan.planBuckets),
 
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
 
@@ -119,7 +119,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  plan.description,
+                  plan.planDescription,
                   textAlign: TextAlign.start,
                   style: HomePlanTheme.planCardDescriptionTextStyle,
                 ),
@@ -132,9 +132,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: DefaultButton(
-                  label: expanded
-                      ? HomePlanTheme.planCardHideDetailsLabel
-                      : HomePlanTheme.planCardViewDetailsLabel,
+                  label: expanded ? HomePlanTheme.planCardHideDetailsLabel : HomePlanTheme.planCardViewDetailsLabel,
                   isLoading: false,
                   onPressed: onViewDetails,
                   height: HomePlanTheme.planCardActionButtonHeight,
@@ -202,15 +200,15 @@ class _PricePill extends StatelessWidget {
   }
 }
 
-class _BenefitsRow extends StatefulWidget {
-  final List<HomePlanBenefit> benefits;
-  const _BenefitsRow({required this.benefits});
+class _PlanBuckets extends StatefulWidget {
+  final List<DailyPlanBucketModel> benefits;
+  const _PlanBuckets({required this.benefits});
 
   @override
-  State<_BenefitsRow> createState() => _BenefitsRowState();
+  State<_PlanBuckets> createState() => _PlanBucketsRowState();
 }
 
-class _BenefitsRowState extends State<_BenefitsRow> {
+class _PlanBucketsRowState extends State<_PlanBuckets> {
   final ScrollController _controller = ScrollController();
 
   @override
@@ -244,29 +242,105 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(widget.benefits.length, (i) {
-                          final b = widget.benefits[i];
-
+                          final item = widget.benefits[i];
                           Color labelColor;
-                          switch (b.type) {
-                            case HomePlanBenefitType.data:
+
+                          BucketItemType itemType = BucketItemType.sms;
+
+                          if(item.bucketUnit == 'INS_Data' && item.unit == 'GB'){
+                            // data icon
+                           // labelColor = HomePlanTheme.dataColor;
+                            itemType = BucketItemType.data;
+
+                          }else if(item.bucketUnit == 'INS_DATA_UNLIMITED' && item.unit == 'GB'){
+                            // data icon
+                            //labelColor = HomePlanTheme.dataColor;
+                            itemType = BucketItemType.data;
+                          }else if(item.bucketUnit == 'INS_Whatsapp_Text_10201' && item.unit == 'Text'){
+                            itemType = BucketItemType.whatsApp;
+                            // whatsApp icon
+                          }else if(item.bucketUnit ==  'INS_Whatsapp_All' && item.unit == 'GB'){
+                            itemType = BucketItemType.whatsApp;
+
+                            // whatsapp icon
+                          }else if(item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Minutes'){
+                            //BucketUnit  ==   INS_LDI_US_CANADA && unit == Minutes → call icon
+                            itemType = BucketItemType.call;
+                          }else if(item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Text'){
+                            itemType = BucketItemType.message;
+                            // BucketUnit  ==   INS_LDI_US_CANADA && unit == Text → message icon
+                          }
+                          else if(item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Minutes'){
+                            // BucketUnit  ==   INS_Voice_Only_National && unit == Minutes → call icon
+                            itemType = BucketItemType.call;
+                            // BucketUnit  ==   INS_Voice_Only_National && unit == Minutes → call icon
+                          }else if(item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Text'){
+                            // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
+                            itemType = BucketItemType.sms;
+                           // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
+                           // Unlimited == true → need to show unlimited  else show the amount
+
+                        }else if(item.bucketUnit == 'INS_SMS_Only_National' && item.unit == 'Text'){
+                            itemType = BucketItemType.sms;
+                            //BucketUnit  ==  INS_SMS_Only_National && unit == Text → sms icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+                          }else if(item.bucketUnit == 'INS_SMS_US_Canada' && item.unit == 'Text'){
+                            itemType = BucketItemType.sms;
+                            //BucketUnit→  INS_SMS_US_Canada && unit == Text → sms icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+                          }else if(item.bucketUnit == 'INS_Voice_Nat_US' && item.unit == 'Minutes'){
+                            itemType = BucketItemType.call;
+                            //
+                           // BucketUnit→  INS_Voice_Nat_US && unit == Minutes → call icon
+                          //  Unlimited == true → need to show unlimited  else show the amount
+
+                          }else if(item.bucketUnit == 'INS_Sms_Nat_US' && item.unit == 'Text'){
+                            itemType = BucketItemType.sms;
+                            //BucketUnit→  INS_Sms_Nat_US && unit == Text → sms icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+
+                        }else if(item.bucketUnit == 'INS_Voice_Onnet' && item.unit == 'Minutes'){
+                            itemType = BucketItemType.call;
+                            //BucketUnit→  INS_Voice_Onnet && unit == Minutes → call icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+
+                          }else if(item.bucketUnit == 'INS_SMS_Onnet' && item.unit == 'Text'){
+                            itemType = BucketItemType.sms;
+                            //BucketUnit→  INS_SMS_Onnet && unit == Text → sms icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+                          }else if(item.bucketUnit == 'INS_MMS_Nat_US' && item.unit == 'Text'){
+                            itemType = BucketItemType.sms;
+                            //BucketUnit→  INS_MMS_Nat_US && unit == Text → sms icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+                          }else if(item.bucketUnit == 'INS_Data_MIFI' && item.unit == 'GB'){
+                            itemType = BucketItemType.data;
+                            //BucketUnit→  INS_Data_MIFI && unit == GB → data icon
+                            //Unlimited == true → need to show unlimited  else show the amount
+                          }else if(item.bucketUnit == 'INS_TikTok_10500' && item.unit == 'GB'){
+                            itemType = BucketItemType.data;
+                            //BucketUnit→  INS_TikTok_10500 && unit == GB → data icon
+                            // Unlimited == true → need to show unlimited  else show the amount
+                          }else if(item.bucketUnit == 'INS_Facebook_MSG_10403' && item.unit == 'GB'){
+                            itemType = BucketItemType.data;
+                            //BucketUnit→  INS_Facebook_MSG_10403 && unit == GB → data icon
+                            // Unlimited == true → need to show unlimited  else show the amount
+                          }
+
+                          switch (itemType) {
+                            case BucketItemType.data:
                               labelColor = HomePlanTheme.dataColor;
                               break;
-                            case HomePlanBenefitType.intlTalkText:
-                              labelColor =
-                                  HomePlanTheme.intlTalkTextColor;
+                            case BucketItemType.call:
+                              labelColor = HomePlanTheme.talkMinsColor;
                               break;
-                            case HomePlanBenefitType.sms:
+                            case BucketItemType.sms:
                               labelColor = HomePlanTheme.smsColor;
                               break;
-                            case HomePlanBenefitType.bonusData:
-                              labelColor =
-                                  HomePlanTheme.bonusDataColor;
+                            case BucketItemType.whatsApp:
+                              labelColor = HomePlanTheme.bonusDataColor;
                               break;
-                            case HomePlanBenefitType.mms:
-                              labelColor = HomePlanTheme.talkMinsColor;
-                              break;
-                            case HomePlanBenefitType.talkMins:
-                              labelColor = HomePlanTheme.talkMinsColor;
+                            case BucketItemType.message:
+                              labelColor = HomePlanTheme.intlTalkTextColor;
                               break;
                           }
 
@@ -274,21 +348,18 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                             children: [
                               SizedBox(
                                 height: rowH,
-                                child: _BenefitItem(
-                                  benefit: b,
-                                  labelColor: labelColor,
+                                child: _BucketItem(
+                                  benefit: item,
+                                  labelColor:  labelColor,
+                                  itemType: itemType,//labelColor,
                                 ),
                               ),
                               if (i != widget.benefits.length - 1)
                                 Container(
-                                  width:
-                                      HomePlanTheme.planBenefitDividerWidth,
-                                  height:
-                                      HomePlanTheme.planBenefitDividerHeight,
-                                  margin: HomePlanTheme
-                                      .planBenefitDividerHorizontalMargin,
-                                  color:
-                                      HomePlanTheme.planBenefitDividerColor,
+                                  width:HomePlanTheme.planBenefitDividerWidth,
+                                  height: HomePlanTheme.planBenefitDividerHeight,
+                                  margin: HomePlanTheme.planBenefitDividerHorizontalMargin,
+                                  color: HomePlanTheme.planBenefitDividerColor,
                                 ),
                             ],
                           );
@@ -406,14 +477,14 @@ class _ScrollIndicator extends StatelessWidget {
 }
 
 class _AssetIcon extends StatelessWidget {
-  final HomePlanBenefitType type;
+  final BucketItemType type;
   final double size;
 
   const _AssetIcon({required this.type, required this.size});
 
   @override
   Widget build(BuildContext context) {
-    final path = HomePlanIconAssets.forType(type);
+    final path = PlanBucketIcons.forType(type);
     final lower = path.toLowerCase();
     if (lower.endsWith('.svg')) {
       return SvgPicture.asset(
@@ -427,10 +498,11 @@ class _AssetIcon extends StatelessWidget {
   }
 }
 
-class _BenefitItem extends StatelessWidget {
-  final HomePlanBenefit benefit;
+class _BucketItem extends StatelessWidget {
+  final BucketItemType itemType;
+  final DailyPlanBucketModel benefit;
   final Color labelColor;
-  const _BenefitItem({required this.benefit, required this.labelColor});
+  const _BucketItem({required this.benefit, required this.labelColor,required this.itemType});
 
   double _measureTextWidth(BuildContext context, String text, TextStyle style) {
     final tp = TextPainter(
@@ -470,9 +542,9 @@ class _BenefitItem extends StatelessWidget {
       color: HomePlanTheme.subtitleColor,
     );
 
-    final labelW = _measureTextWidth(context, benefit.label, labelStyle);
-    final valueW = _measureTextWidth(context, benefit.value, valueStyle);
-    final subW = _measureTextWidth(context, benefit.sub, subStyle);
+    final labelW = _measureTextWidth(context, benefit.name, labelStyle);
+    final valueW = _measureTextWidth(context, benefit.unit, valueStyle);
+    final subW = _measureTextWidth(context, benefit.amount.toString(), subStyle);
     final line1W = iconSize + iconGap + labelW;
     final contentW = [line1W, valueW, subW].reduce((a, b) => a > b ? a : b);
     final dynamicW = contentW + 16;
@@ -494,10 +566,10 @@ class _BenefitItem extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: iconGap),
-                  child: _AssetIcon(type: benefit.type, size: iconSize),
+                  child: _AssetIcon(type: itemType, size: iconSize),
                 ),
                 Text(
-                  benefit.label,
+                  benefit.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: labelStyle,
@@ -508,7 +580,7 @@ class _BenefitItem extends StatelessWidget {
             SizedBox(
               height: 16,
               child: Text(
-                benefit.value,
+                benefit.amount.toString(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: valueStyle,
@@ -518,7 +590,7 @@ class _BenefitItem extends StatelessWidget {
             SizedBox(
               height: 12,
               child: Text(
-                benefit.sub,
+                benefit.unit,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: subStyle,
