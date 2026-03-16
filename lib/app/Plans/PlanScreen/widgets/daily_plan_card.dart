@@ -245,7 +245,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                           final item = widget.benefits[i];
                           Color labelColor;
 
-                          BucketItemType itemType = BucketItemType.sms;
+                          BucketItemType itemType = BucketItemType.whatsApp;
 
                           if(item.bucketUnit == 'INS_Data' && item.unit == 'GB'){
                             // data icon
@@ -267,7 +267,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                             //BucketUnit  ==   INS_LDI_US_CANADA && unit == Minutes → call icon
                             itemType = BucketItemType.call;
                           }else if(item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Text'){
-                            itemType = BucketItemType.message;
+                            itemType = BucketItemType.internationalSMS;
                             // BucketUnit  ==   INS_LDI_US_CANADA && unit == Text → message icon
                           }
                           else if(item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Minutes'){
@@ -285,7 +285,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                             //BucketUnit  ==  INS_SMS_Only_National && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
                           }else if(item.bucketUnit == 'INS_SMS_US_Canada' && item.unit == 'Text'){
-                            itemType = BucketItemType.sms;
+                            itemType = BucketItemType.internationalSMS;
                             //BucketUnit→  INS_SMS_US_Canada && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
                           }else if(item.bucketUnit == 'INS_Voice_Nat_US' && item.unit == 'Minutes'){
@@ -295,7 +295,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                           //  Unlimited == true → need to show unlimited  else show the amount
 
                           }else if(item.bucketUnit == 'INS_Sms_Nat_US' && item.unit == 'Text'){
-                            itemType = BucketItemType.sms;
+                            itemType = BucketItemType.internationalSMS;
                             //BucketUnit→  INS_Sms_Nat_US && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
 
@@ -309,7 +309,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                             //BucketUnit→  INS_SMS_Onnet && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
                           }else if(item.bucketUnit == 'INS_MMS_Nat_US' && item.unit == 'Text'){
-                            itemType = BucketItemType.sms;
+                            itemType = BucketItemType.internationalSMS;
                             //BucketUnit→  INS_MMS_Nat_US && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
                           }else if(item.bucketUnit == 'INS_Data_MIFI' && item.unit == 'GB'){
@@ -339,7 +339,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                             case BucketItemType.whatsApp:
                               labelColor = HomePlanTheme.bonusDataColor;
                               break;
-                            case BucketItemType.message:
+                            case BucketItemType.internationalSMS:
                               labelColor = HomePlanTheme.intlTalkTextColor;
                               break;
                           }
@@ -504,6 +504,17 @@ class _BucketItem extends StatelessWidget {
   final Color labelColor;
   const _BucketItem({required this.benefit, required this.labelColor,required this.itemType});
 
+  // API bucket amounts always arrive as doubles, but UI should hide
+  // meaningless trailing zero decimals like `3.000000` while preserving
+  // real fractional values such as `0.34` or `4.052`.
+  String _formatAmount(double amount) {
+    final bool hasOnlyZeroFraction = (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    if (hasOnlyZeroFraction) {
+      return amount.toStringAsFixed(0);
+    }
+    return amount.toString();
+  }
+
   double _measureTextWidth(BuildContext context, String text, TextStyle style) {
     final tp = TextPainter(
       text: TextSpan(text: text, style: style),
@@ -580,7 +591,7 @@ class _BucketItem extends StatelessWidget {
             SizedBox(
               height: 16,
               child: Text(
-                benefit.amount.toString(),
+                benefit.unlimited ? "unlimited" : _formatAmount(benefit.amount),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: valueStyle,
@@ -590,7 +601,7 @@ class _BucketItem extends StatelessWidget {
             SizedBox(
               height: 12,
               child: Text(
-                benefit.unit,
+                benefit.unit.toLowerCase(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: subStyle,

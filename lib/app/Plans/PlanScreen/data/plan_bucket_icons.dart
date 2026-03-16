@@ -23,7 +23,7 @@ class PlanBucketIcons {
         return sms;
       case BucketItemType.whatsApp:
         return whatsAppIcon;
-      case BucketItemType.message:
+      case BucketItemType.internationalSMS:
         return messageIcon;
 
     }
@@ -35,6 +35,6 @@ enum BucketItemType {
   whatsApp,
   call,
   sms,
-  message,
+  internationalSMS,
   data
 }
