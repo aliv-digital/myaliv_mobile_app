@@ -41,6 +41,16 @@ class HomePlanDailyApiSyncRequested extends HomePlanEvent {
   });
 }
 
+/// Internal event to sync strict weekly API data.
+/// UI rendering remains unchanged in current phase.
+class HomePlanWeeklyApiSyncRequested extends HomePlanEvent {
+  final bool printRawResponse;
+
+  HomePlanWeeklyApiSyncRequested({
+    this.printRawResponse = false,
+  });
+}
+
 /// UI one-time side effect consumed event.
 ///
 /// After UI shows a toast, it dispatches this event

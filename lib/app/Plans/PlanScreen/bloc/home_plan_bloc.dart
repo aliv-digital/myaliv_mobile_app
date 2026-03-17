@@ -6,6 +6,7 @@ import '../../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/weekly_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 import '../repository/plan_repository_exception.dart';
 import 'home_plan_event.dart';
@@ -16,6 +17,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
   /// Prevents duplicate Daily API sync calls when user taps Daily repeatedly.
   bool _isDailyApiSyncInProgress = false;
+
+  /// Prevents duplicate Weekly API sync calls when user taps Weekly repeatedly.
+  bool _isWeeklyApiSyncInProgress = false;
 
   HomePlanBloc(this.repository) : super(HomePlanState.initial()) {
     on<HomePlanStarted>(_onStarted);
@@ -31,6 +35,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
     // Daily API sync (state-only in current phase)
     on<HomePlanDailyApiSyncRequested>(_onDailyApiSyncRequested);
+    on<HomePlanWeeklyApiSyncRequested>(_onWeeklyApiSyncRequested);
     on<HomePlanToastConsumed>(_onToastConsumed);
   }
 
@@ -39,7 +44,14 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Handles tab switch and starts data load for that tab.
-  Future<void> _onTabChanged(HomePlanTabChanged event, Emitter<HomePlanState> emit) async {
+  Future<void> _onTabChanged(
+      HomePlanTabChanged event, Emitter<HomePlanState> emit) async {
+    // If user taps the already-selected tab, keep current state as-is.
+    // This prevents unnecessary reloads and repeated API calls.
+    if (event.tab == state.selectedTab) {
+      return;
+    }
+
     emit(state.copyWith(
       selectedTab: event.tab,
       expandedPlanIds: {},
@@ -109,14 +121,19 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       // All other tabs load plan list.
       final List<HomePlanModel> plans = await repository.fetchPlans(tab: tab);
 
-      // Daily special flow:
-      // Keep daily loader active until Daily API sync completes.
-      if (tab == HomePlanTab.daily) {
+      // Daily/Weekly special flow:
+      // Keep loader active until the real API sync completes.
+      if (tab == HomePlanTab.daily || tab == HomePlanTab.weekly) {
         emit(state.copyWith(
           plans: plans,
           addOns: const [],
         ));
-        _scheduleDailyApiSyncIfIdle();
+
+        if (tab == HomePlanTab.daily) {
+          _scheduleDailyApiSyncIfIdle();
+        } else {
+          _scheduleWeeklyApiSyncIfIdle();
+        }
         return;
       }
 
@@ -183,7 +200,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<DailyPlanModel> dailyPlans = await repository.fetchDailyPlansFromApi(
+      final List<DailyPlanModel> dailyPlans =
+          await repository.fetchDailyPlansFromApi(
         username: auth.username,
         password: auth.password,
         deviceAccountID: auth.deviceAccountID,
@@ -192,7 +210,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       );
 
       final DateTime syncedAt = DateTime.now();
-      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
       // next time etar upor base kore onek kichu kora jabe but ekhon etar currently active use nai
       nextApiTabMeta[HomePlanTab.daily] = HomePlanTabApiMeta(
         isLoaded: true,
@@ -203,7 +222,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
       //}
       debugPrint("First Indexed Data : ");
-      debugPrint("${dailyPlans[0].planName}");//${dailyPlans[0].toDebugMap()
+      debugPrint(dailyPlans[0].planName); // ${dailyPlans[0].toDebugMap()
       debugPrint("last synced : ${state.dailyApiLastSyncedAt}");
       // Optional debug print to verify first daily plan quickly.
       if (kDebugMode && dailyPlans.isNotEmpty) {
@@ -244,11 +263,102 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
   }
 
+  /// Sync strict Weekly API data and store in state.
+  ///
+  /// Why separate event:
+  /// - keeps `_loadByTab` readable
+  /// - avoids mixing demo UI loading with API data preparation
+  /// - easy to expand similar events for Monthly and others later
+  Future<void> _onWeeklyApiSyncRequested(
+      HomePlanWeeklyApiSyncRequested event, Emitter<HomePlanState> emit) async {
+    // Hard guard:
+    // Never allow more than one Weekly API sync at a time.
+    if (_isWeeklyApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('weekly-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    _isWeeklyApiSyncInProgress = true;
+
+    try {
+      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
+      if (auth == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'weekly-api-sync: skipped, missing username/password/deviceAccountID',
+          );
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.weekly,
+          errorMessage:
+              'Weekly plans are unavailable right now. Please login again.',
+        );
+        return;
+      }
+
+      final List<WeeklyPlanModel> weeklyPlans = await repository.fetchWeeklyPlansFromApi(
+        username: auth.username,
+        password: auth.password,
+        deviceAccountID: auth.deviceAccountID,
+        printRawResponse: event.printRawResponse,
+        printFilteredWeeklyPlans: false,
+      );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.weekly] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: weeklyPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      // Optional debug print to verify first weekly plan quickly.
+      if (kDebugMode && weeklyPlans.isNotEmpty) {
+        debugPrint('First Weekly Indexed Data :');
+        debugPrint(weeklyPlans[0].planName);
+      }
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.weekly,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        weeklyApiPlans: weeklyPlans,
+        apiTabMeta: nextApiTabMeta,
+        weeklyApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.weekly,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.weekly,
+          error: error,
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('weekly-api-sync: failed with error: $e');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.weekly,
+        errorMessage: 'Failed to sync weekly plans',
+      );
+    } finally {
+      _isWeeklyApiSyncInProgress = false;
+    }
+  }
+
   /// Clears one-time toast after UI handles it.
   void _onToastConsumed(
-    HomePlanToastConsumed event,
-    Emitter<HomePlanState> emit,
-  ) {
+      HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
     emit(state.copyWith(clearPendingToast: true));
   }
 
@@ -266,6 +376,22 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     // Lock ownership stays inside `_onDailyApiSyncRequested`.
     // Scheduler only dispatches the intent event.
     add(HomePlanDailyApiSyncRequested());
+  }
+
+  /// Schedules Weekly API sync only when no sync is running.
+  ///
+  /// This avoids redundant network calls on repeated Weekly tab taps.
+  void _scheduleWeeklyApiSyncIfIdle() {
+    if (_isWeeklyApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('weekly-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    // Lock ownership stays inside `_onWeeklyApiSyncRequested`.
+    // Scheduler only dispatches the intent event.
+    add(HomePlanWeeklyApiSyncRequested());
   }
 
   /// Returns one tab UI-state object.

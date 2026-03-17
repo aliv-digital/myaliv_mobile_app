@@ -5,6 +5,7 @@ import '../../../../core/networkService/app_http_client.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/weekly_plan_model.dart';
 import 'plan_repository_exception.dart';
 
 enum HomePlanTab {
@@ -20,7 +21,9 @@ enum HomePlanTab {
 
 /// Converts one dynamic map to string-keyed map.
 Map<String, dynamic> _toStringKeyedMapInBackground(Map<dynamic, dynamic> item) {
-  return item.map((dynamic key, dynamic value) => MapEntry<String, dynamic>(key.toString(), value),
+  return item.map(
+    (dynamic key, dynamic value) =>
+        MapEntry<String, dynamic>(key.toString(), value),
   );
 }
 
@@ -42,7 +45,10 @@ List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
     throw const FormatException('Expected JSON array root for plans response.');
   }
 
-  return decoded.whereType<Map>().map(_toStringKeyedMapInBackground).toList(growable: false);
+  return decoded
+      .whereType<Map>()
+      .map(_toStringKeyedMapInBackground)
+      .toList(growable: false);
 }
 
 /// Background worker:
@@ -51,7 +57,8 @@ List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
 /// Return payload shape:
 /// - `totalRawPlansCount`: number of normalized plan maps
 /// - `matchedRawPlans`: strict daily raw plan maps (PlanType=P, Frequency=D)
-Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(String rawBody) {
+Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(
+    String rawBody) {
   final dynamic decoded = jsonDecode(rawBody);
 
   if (decoded is! List) {
@@ -64,11 +71,14 @@ Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(String rawBody
   for (final dynamic item in decoded) {
     if (item is! Map) continue;
 
-    final Map<String, dynamic> normalizedPlan = _toStringKeyedMapInBackground(item);
+    final Map<String, dynamic> normalizedPlan =
+        _toStringKeyedMapInBackground(item);
     totalRawPlansCount++;
 
-    final String planType = _normalizedUpperInBackground(normalizedPlan['PlanType']);
-    final String frequency = _normalizedUpperInBackground(normalizedPlan['Frequency']);
+    final String planType =
+        _normalizedUpperInBackground(normalizedPlan['PlanType']);
+    final String frequency =
+        _normalizedUpperInBackground(normalizedPlan['Frequency']);
 
     if (planType == 'P' && frequency == 'D') {
       matchedRawPlans.add(normalizedPlan);
@@ -81,9 +91,50 @@ Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(String rawBody
   };
 }
 
+/// Background worker:
+/// Decodes raw JSON and returns only strict Weekly plans.
+///
+/// Return payload shape:
+/// - `totalRawPlansCount`: number of normalized plan maps
+/// - `matchedRawPlans`: strict weekly raw plan maps (PlanType=P, Frequency=W)
+Map<String, dynamic> _decodeAndFilterStrictWeeklyPlansInBackground(
+    String rawBody) {
+  final dynamic decoded = jsonDecode(rawBody);
+
+  if (decoded is! List) {
+    throw const FormatException('Expected JSON array root for plans response.');
+  }
+
+  int totalRawPlansCount = 0;
+  final List<Map<String, dynamic>> matchedRawPlans = <Map<String, dynamic>>[];
+
+  for (final dynamic item in decoded) {
+    if (item is! Map) continue;
+
+    final Map<String, dynamic> normalizedPlan =
+        _toStringKeyedMapInBackground(item);
+    totalRawPlansCount++;
+
+    final String planType =
+        _normalizedUpperInBackground(normalizedPlan['PlanType']);
+    final String frequency =
+        _normalizedUpperInBackground(normalizedPlan['Frequency']);
+
+    if (planType == 'P' && frequency == 'W') {
+      matchedRawPlans.add(normalizedPlan);
+    }
+  }
+
+  return <String, dynamic>{
+    'totalRawPlansCount': totalRawPlansCount,
+    'matchedRawPlans': matchedRawPlans,
+  };
+}
+
 // /v1/MyAliv/device/{{deviceAccountId}}/available-plans
 class HomePlanRepository {
-  HomePlanRepository({ApiService? apiService}) : _api = apiService ?? ApiService();
+  HomePlanRepository({ApiService? apiService})
+      : _api = apiService ?? ApiService();
 
   final ApiService _api;
 
@@ -99,6 +150,12 @@ class HomePlanRepository {
 
   /// Timestamp for latest successful strict daily filtering.
   DateTime? _lastFetchedDailyAt;
+
+  /// Holds strict weekly plans parsed from latest API payload.
+  List<WeeklyPlanModel> _lastFetchedWeeklyPlans = <WeeklyPlanModel>[];
+
+  /// Timestamp for latest successful strict weekly filtering.
+  DateTime? _lastFetchedWeeklyAt;
 
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -248,6 +305,105 @@ class HomePlanRepository {
     return dailyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
   }
 
+  /// Fetch and parse API payload into dedicated Weekly model list.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = P
+  /// - Frequency = W
+  ///
+  /// Notes:
+  /// - This mirrors the Daily repository flow.
+  Future<List<WeeklyPlanModel>> fetchWeeklyPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredWeeklyPlans = false,
+  }) async {
+    // Step-1:
+    // Fetch full plans JSON response body.
+    final String rawResponseBody = await _fetchPlansRawResponseBody(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    // Step-2:
+    // Decode + strict-weekly filter in the same background isolate.
+    // This keeps the UI thread free from large JSON work.
+    final Map<String, dynamic> weeklyRawResult;
+    try {
+      weeklyRawResult = await compute(
+        _decodeAndFilterStrictWeeklyPlansInBackground,
+        rawResponseBody,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'fetchWeeklyPlansFromApi: background decode/filter failed: $e',
+        );
+      }
+      throw PlanRepositoryException(
+        type: PlanRepositoryErrorType.parsing,
+        debugMessage: 'Failed to decode/filter weekly plans in background.',
+      );
+    }
+
+    final int totalRawPlansCount = _asNonNegativeInt(
+      weeklyRawResult['totalRawPlansCount'],
+    );
+    final List<Map<String, dynamic>> strictWeeklyRawPlans = _asMapList(
+      weeklyRawResult['matchedRawPlans'],
+    );
+
+    // Step-3:
+    // Parse only matched raw weekly maps into typed WeeklyPlanModel list.
+    // `includeRawPayload: false` keeps memory usage low in runtime.
+    final List<WeeklyPlanModel> strictWeeklyPlans = strictWeeklyRawPlans
+        .map(
+          (Map<String, dynamic> planMap) => WeeklyPlanModel.fromApiMap(
+            planMap,
+            includeRawPayload: false,
+          ),
+        )
+        .toList(growable: false);
+
+    _lastFetchedWeeklyPlans = strictWeeklyPlans;
+    _lastFetchedWeeklyAt = DateTime.now();
+
+    // Step-4:
+    // Optional debug summary/details in console.
+    if (printFilteredWeeklyPlans) {
+      _logWeeklyFilterResult(
+        totalRawPlansCount: totalRawPlansCount,
+        matchedRawPlansCount: strictWeeklyRawPlans.length,
+        weeklyPlans: strictWeeklyPlans,
+      );
+    }
+
+    return List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
+  }
+
+  /// Debug wrapper:
+  /// fetch strict weekly plans and print summary/details in console.
+  Future<List<Map<String, dynamic>>> debugFetchAndPrintWeeklyPlans({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+  }) async {
+    final List<WeeklyPlanModel> weeklyPlans = await fetchWeeklyPlansFromApi(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+      printFilteredWeeklyPlans: true,
+    );
+
+    return weeklyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+  }
+
   /// Read-only view of latest raw payload cache.
   List<Map<String, dynamic>> get lastFetchedPlans =>
       List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
@@ -261,6 +417,13 @@ class HomePlanRepository {
 
   /// Read-only latest strict daily filter timestamp.
   DateTime? get lastFetchedDailyAt => _lastFetchedDailyAt;
+
+  /// Read-only latest strict weekly plans cache.
+  List<WeeklyPlanModel> get lastFetchedWeeklyPlans =>
+      List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
+
+  /// Read-only latest strict weekly filter timestamp.
+  DateTime? get lastFetchedWeeklyAt => _lastFetchedWeeklyAt;
 
   /// Builds Basic Auth token from username/password pair.
   String _buildBasicAuthToken(
@@ -495,6 +658,48 @@ class HomePlanRepository {
       );
 
       for (final DailyPlanBucketModel bucket in plan.planBuckets) {
+        debugPrint(
+          '  bucket: name=${bucket.name}, '
+          'amount=${bucket.amount}, '
+          'unit=${bucket.unit}, '
+          'bucketUnit=${bucket.bucketUnit}, '
+          'unlimited=${bucket.unlimited}',
+        );
+      }
+    }
+  }
+
+  /// Logs weekly filter summary and per-plan bucket details.
+  void _logWeeklyFilterResult({
+    required int totalRawPlansCount,
+    required int matchedRawPlansCount,
+    required List<WeeklyPlanModel> weeklyPlans,
+  }) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'weekly-filter: total=$totalRawPlansCount, '
+      'matchedRaw=$matchedRawPlansCount, '
+      'parsedWeekly=${weeklyPlans.length}, '
+      'rule=(PlanType=P && Frequency=W)',
+    );
+
+    if (weeklyPlans.isEmpty) {
+      debugPrint('weekly-filter: no plan matched.');
+      return;
+    }
+
+    for (final WeeklyPlanModel plan in weeklyPlans) {
+      debugPrint(
+        'weekly-plan: id=${plan.planId}, '
+        'name=${plan.planName}, '
+        'amount=${plan.planAmount.toStringAsFixed(2)}, '
+        'group=${plan.planGroup}, '
+        'sort=${plan.planSortOrder}, '
+        'buckets=${plan.planBuckets.length}',
+      );
+
+      for (final WeeklyPlanBucketModel bucket in plan.planBuckets) {
         debugPrint(
           '  bucket: name=${bucket.name}, '
           'amount=${bucket.amount}, '

@@ -1,6 +1,7 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/weekly_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 
 enum HomePlanStatus { initial, loading, loaded, failure }
@@ -75,6 +76,9 @@ class HomePlanState {
   /// Dedicated API data for Daily tab (not bound to UI yet).
   final List<DailyPlanModel> dailyApiPlans;
 
+  /// Dedicated API data for Weekly tab (not bound to UI yet).
+  final List<WeeklyPlanModel> weeklyApiPlans;
+
   /// Lightweight API metadata per tab.
   ///
   /// Important:
@@ -85,6 +89,9 @@ class HomePlanState {
 
   /// Time when Daily API data was last synced successfully.
   final DateTime? dailyApiLastSyncedAt;
+
+  /// Time when Weekly API data was last synced successfully.
+  final DateTime? weeklyApiLastSyncedAt;
 
   /// One-time toast effect to be handled by UI listener.
   final HomePlanToastMessage? pendingToast;
@@ -107,9 +114,11 @@ class HomePlanState {
     required this.addOns,
     required this.selectedAddOnIds,
     required this.dailyApiPlans,
+    required this.weeklyApiPlans,
     required this.apiTabMeta,
     required this.toastSequence,
     this.dailyApiLastSyncedAt,
+    this.weeklyApiLastSyncedAt,
     this.pendingToast,
   });
 
@@ -153,6 +162,7 @@ class HomePlanState {
       addOns: [],
       selectedAddOnIds: {},
       dailyApiPlans: [],
+      weeklyApiPlans: [],
       apiTabMeta: {},
       pendingToast: null,
       toastSequence: 0,
@@ -176,8 +186,10 @@ class HomePlanState {
     List<HomePlanAddOnModel>? addOns,
     Set<String>? selectedAddOnIds,
     List<DailyPlanModel>? dailyApiPlans,
+    List<WeeklyPlanModel>? weeklyApiPlans,
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
+    DateTime? weeklyApiLastSyncedAt,
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
     bool clearPendingToast = false,
@@ -198,8 +210,10 @@ class HomePlanState {
       addOns: addOns ?? this.addOns,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
       dailyApiPlans: dailyApiPlans ?? this.dailyApiPlans,
+      weeklyApiPlans: weeklyApiPlans ?? this.weeklyApiPlans,
       apiTabMeta: apiTabMeta ?? this.apiTabMeta,
       dailyApiLastSyncedAt: dailyApiLastSyncedAt ?? this.dailyApiLastSyncedAt,
+      weeklyApiLastSyncedAt: weeklyApiLastSyncedAt ?? this.weeklyApiLastSyncedAt,
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,
