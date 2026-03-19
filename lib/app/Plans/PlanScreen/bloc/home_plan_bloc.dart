@@ -123,9 +123,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
       // Daily/Weekly special flow:
       // Keep loader active until the real API sync completes.
+      // These tabs already use dedicated API state lists in UI, so we skip
+      // the old mock `fetchPlans(...)` path completely.
       if (tab == HomePlanTab.daily || tab == HomePlanTab.weekly) {
         emit(state.copyWith(
-          plans: plans,
+          plans: const [],
           addOns: const [],
         ));
 
@@ -136,6 +138,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         }
         return;
       }
+
+      // All remaining tabs still load from the existing mock plan source.
+     // final List<HomePlanModel> plans = await repository.fetchPlans(tab: tab);
 
       // Non-daily tabs complete immediately.
       final HomePlanState nextState = _withTabStatus(
@@ -174,7 +179,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   Future<void> _onDailyApiSyncRequested(HomePlanDailyApiSyncRequested event, Emitter<HomePlanState> emit) async {
     // Hard guard:
     // Never allow more than one Daily API sync at a time.
-    if (_isDailyApiSyncInProgress) {
+    if (_isDailyApiSyncInProgress) { // parallel e jeno just ekta request chole eta korbo pore
       if (kDebugMode) {
         debugPrint('daily-api-sync: skipped, sync already in progress');
       }
@@ -221,13 +226,17 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       //if(nextApiTabMeta[HomePlanTab.daily]?.isLoaded == true){
 
       //}
-      debugPrint("First Indexed Data : ");
-      debugPrint(dailyPlans[0].planName); // ${dailyPlans[0].toDebugMap()
-      debugPrint("last synced : ${state.dailyApiLastSyncedAt}");
+     // debugPrint("First Indexed Data : ");
+     // debugPrint(dailyPlans[0].planName); // ${dailyPlans[0].toDebugMap()
+
       // Optional debug print to verify first daily plan quickly.
       if (kDebugMode && dailyPlans.isNotEmpty) {
+        debugPrint("=========== Daily Plan ==============");
         debugPrint('First Indexed Data :');
         debugPrint(dailyPlans[0].planName);
+        debugPrint("last synced : ${state.dailyApiLastSyncedAt}");
+      }else if(kDebugMode){
+        debugPrint("dailyPlans.isEmpty");
       }
 
       final HomePlanState nextState = _withTabStatus(
@@ -319,8 +328,12 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
       // Optional debug print to verify first weekly plan quickly.
       if (kDebugMode && weeklyPlans.isNotEmpty) {
+        debugPrint("=========== Weekly Plan ==============");
         debugPrint('First Weekly Indexed Data :');
         debugPrint(weeklyPlans[0].planName);
+        debugPrint("last synced : ${state.weeklyApiLastSyncedAt}");
+      }else if(kDebugMode){
+        debugPrint("weeklyPlans.isEmpty");
       }
 
       final HomePlanState nextState = _withTabStatus(

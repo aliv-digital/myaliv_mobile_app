@@ -51,86 +51,6 @@ List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
       .toList(growable: false);
 }
 
-/// Background worker:
-/// Decodes raw JSON and returns only strict Daily plans.
-///
-/// Return payload shape:
-/// - `totalRawPlansCount`: number of normalized plan maps
-/// - `matchedRawPlans`: strict daily raw plan maps (PlanType=P, Frequency=D)
-Map<String, dynamic> _decodeAndFilterStrictDailyPlansInBackground(
-    String rawBody) {
-  final dynamic decoded = jsonDecode(rawBody);
-
-  if (decoded is! List) {
-    throw const FormatException('Expected JSON array root for plans response.');
-  }
-
-  int totalRawPlansCount = 0;
-  final List<Map<String, dynamic>> matchedRawPlans = <Map<String, dynamic>>[];
-
-  for (final dynamic item in decoded) {
-    if (item is! Map) continue;
-
-    final Map<String, dynamic> normalizedPlan =
-        _toStringKeyedMapInBackground(item);
-    totalRawPlansCount++;
-
-    final String planType =
-        _normalizedUpperInBackground(normalizedPlan['PlanType']);
-    final String frequency =
-        _normalizedUpperInBackground(normalizedPlan['Frequency']);
-
-    if (planType == 'P' && frequency == 'D') {
-      matchedRawPlans.add(normalizedPlan);
-    }
-  }
-
-  return <String, dynamic>{
-    'totalRawPlansCount': totalRawPlansCount,
-    'matchedRawPlans': matchedRawPlans,
-  };
-}
-
-/// Background worker:
-/// Decodes raw JSON and returns only strict Weekly plans.
-///
-/// Return payload shape:
-/// - `totalRawPlansCount`: number of normalized plan maps
-/// - `matchedRawPlans`: strict weekly raw plan maps (PlanType=P, Frequency=W)
-Map<String, dynamic> _decodeAndFilterStrictWeeklyPlansInBackground(
-    String rawBody) {
-  final dynamic decoded = jsonDecode(rawBody);
-
-  if (decoded is! List) {
-    throw const FormatException('Expected JSON array root for plans response.');
-  }
-
-  int totalRawPlansCount = 0;
-  final List<Map<String, dynamic>> matchedRawPlans = <Map<String, dynamic>>[];
-
-  for (final dynamic item in decoded) {
-    if (item is! Map) continue;
-
-    final Map<String, dynamic> normalizedPlan =
-        _toStringKeyedMapInBackground(item);
-    totalRawPlansCount++;
-
-    final String planType =
-        _normalizedUpperInBackground(normalizedPlan['PlanType']);
-    final String frequency =
-        _normalizedUpperInBackground(normalizedPlan['Frequency']);
-
-    if (planType == 'P' && frequency == 'W') {
-      matchedRawPlans.add(normalizedPlan);
-    }
-  }
-
-  return <String, dynamic>{
-    'totalRawPlansCount': totalRawPlansCount,
-    'matchedRawPlans': matchedRawPlans,
-  };
-}
-
 // /v1/MyAliv/device/{{deviceAccountId}}/available-plans
 class HomePlanRepository {
   HomePlanRepository({ApiService? apiService})
@@ -206,6 +126,46 @@ class HomePlanRepository {
     return plans;
   }
 
+  /// Ensures the full available-plans response is loaded into repository cache.
+  ///
+  /// Why this exists:
+  /// - Daily and Weekly both come from the same API endpoint
+  /// - we should fetch that large payload only once
+  /// - later tab switches should reuse the in-memory normalized list
+  Future<List<Map<String, dynamic>>> _ensureFullPlansCacheLoaded({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    required bool printRawResponse,
+  }) async {
+    if (_lastFetchedPlans.isNotEmpty) {
+      return _lastFetchedPlans;
+    }
+
+    return getPlans(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+  }
+
+  /// Filters one tab's strict primary plans from the full cached response.
+  ///
+  /// This works on the already-normalized cache, so we avoid re-fetching the API
+  /// and avoid re-decoding the full response for every tab.
+  List<Map<String, dynamic>> _filterStrictPlansFromFullCache({required String planType, required String frequency}) {
+    final String normalizedPlanType = planType.trim().toUpperCase();
+    final String normalizedFrequency = frequency.trim().toUpperCase();
+
+    return _lastFetchedPlans.where((Map<String, dynamic> plan) {
+      final String currentPlanType = _normalizedUpperInBackground(plan['PlanType']);
+      final String currentFrequency = _normalizedUpperInBackground(plan['Frequency']);
+
+      return currentPlanType == normalizedPlanType && currentFrequency == normalizedFrequency;
+    }).toList(growable: false);
+  }
+
   /// Fetch and parse API payload into dedicated Daily model list.
   ///
   /// Filtering rule (strict):
@@ -223,39 +183,20 @@ class HomePlanRepository {
     bool printFilteredDailyPlans = false,
   }) async {
     // Step-1:
-    // Fetch full plans JSON response body.
-    final String rawResponseBody = await _fetchPlansRawResponseBody(
+    // Load the full plans response only once and keep it in repository memory.
+    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
-    // Step-2 (optimization):
-    // Decode + strict-daily filter in the same background isolate.
-    // This returns only matched daily maps to the main isolate.
-    final Map<String, dynamic> dailyRawResult;
-    try {
-      dailyRawResult = await compute(
-        _decodeAndFilterStrictDailyPlansInBackground,
-        rawResponseBody,
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint(
-            'fetchDailyPlansFromApi: background decode/filter failed: $e');
-      }
-      throw PlanRepositoryException(
-        type: PlanRepositoryErrorType.parsing,
-        debugMessage: 'Failed to decode/filter daily plans in background.',
-      );
-    }
-
-    final int totalRawPlansCount = _asNonNegativeInt(
-      dailyRawResult['totalRawPlansCount'],
-    );
-    final List<Map<String, dynamic>> strictDailyRawPlans = _asMapList(
-      dailyRawResult['matchedRawPlans'],
+    // Step-2:
+    // Filter Daily primary plans from the cached full list.
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictDailyRawPlans = _filterStrictPlansFromFullCache(
+      planType: 'P',
+      frequency: 'D',
     );
 
     // Step-3:
@@ -321,8 +262,9 @@ class HomePlanRepository {
     bool printFilteredWeeklyPlans = false,
   }) async {
     // Step-1:
-    // Fetch full plans JSON response body.
-    final String rawResponseBody = await _fetchPlansRawResponseBody(
+    // Load the full plans response only once and keep it in repository memory.
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
@@ -330,31 +272,12 @@ class HomePlanRepository {
     );
 
     // Step-2:
-    // Decode + strict-weekly filter in the same background isolate.
-    // This keeps the UI thread free from large JSON work.
-    final Map<String, dynamic> weeklyRawResult;
-    try {
-      weeklyRawResult = await compute(
-        _decodeAndFilterStrictWeeklyPlansInBackground,
-        rawResponseBody,
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint(
-          'fetchWeeklyPlansFromApi: background decode/filter failed: $e',
-        );
-      }
-      throw PlanRepositoryException(
-        type: PlanRepositoryErrorType.parsing,
-        debugMessage: 'Failed to decode/filter weekly plans in background.',
-      );
-    }
-
-    final int totalRawPlansCount = _asNonNegativeInt(
-      weeklyRawResult['totalRawPlansCount'],
-    );
-    final List<Map<String, dynamic>> strictWeeklyRawPlans = _asMapList(
-      weeklyRawResult['matchedRawPlans'],
+    // Filter Weekly primary plans from the cached full list.
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictWeeklyRawPlans =
+        _filterStrictPlansFromFullCache(
+      planType: 'P',
+      frequency: 'W',
     );
 
     // Step-3:
@@ -602,29 +525,6 @@ class HomePlanRepository {
 
     final String trimmed = responseBody.trim();
     return trimmed.isEmpty ? null : trimmed;
-  }
-
-  /// Converts dynamic value to non-negative int.
-  int _asNonNegativeInt(dynamic value) {
-    final int parsed;
-    if (value is int) {
-      parsed = value;
-    } else if (value is num) {
-      parsed = value.toInt();
-    } else {
-      parsed = int.tryParse(value?.toString() ?? '') ?? 0;
-    }
-    return parsed < 0 ? 0 : parsed;
-  }
-
-  /// Converts dynamic value to list of string-keyed maps safely.
-  List<Map<String, dynamic>> _asMapList(dynamic value) {
-    if (value is! List) return const <Map<String, dynamic>>[];
-
-    return value
-        .whereType<Map>()
-        .map(_toStringKeyedMapInBackground)
-        .toList(growable: false);
   }
 
   /// Logs daily filter summary and per-plan bucket details.
