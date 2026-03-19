@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../resources/widgets/common_switch_button.dart';
 import '../../../router/app_routes.dart';
-import '../home/home_screen.dart';
 import 'amount_text.dart';
 import 'auto_renew_toggle.dart';
 import 'enable_auto_payment_sheet.dart';
@@ -139,7 +138,6 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                 onPressed: () {
                   // UI only
                   context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);
-
                 },
                 icon: SvgPicture.asset(
                   'assets/icons/card-add.svg',
@@ -245,7 +243,7 @@ class _FigmaToggle extends StatelessWidget {
                       'Off',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white,//Color(0xFFF4F4F4),
+                        color: Colors.white, //Color(0xFFF4F4F4),
                         fontSize: 8,
                         fontFamily: 'CircularPro',
                         fontWeight: FontWeight.w400,

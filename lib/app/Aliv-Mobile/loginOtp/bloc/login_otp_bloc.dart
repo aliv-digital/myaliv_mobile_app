@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import '../../../../core/appConfig/app_ui_config_cubit.dart';
+import '../../../Home/home/data/home_ui_config.dart';
 import '../model/account_info_model.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
@@ -11,13 +14,16 @@ import '../repository/login_otp_repository.dart';
 class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   static const int _otpLength = 4;
   final LoginOtpRepository repository;
+  final AppUiConfigCubit appUiConfigCubit;
 
-  LoginOtpBloc({required this.repository,String initialTwoFactorKey = '',String initialPhoneNumber = ''}) :super(
-    LoginOtpState( 
-      twoFactorKey: initialTwoFactorKey,
-      phoneNumber: initialPhoneNumber,
-    )){
-
+  LoginOtpBloc({
+    required this.repository,
+    required this.appUiConfigCubit,
+    String initialTwoFactorKey = '',
+    String initialPhoneNumber = '',
+  }) : super(LoginOtpState(
+            twoFactorKey: initialTwoFactorKey,
+            phoneNumber: initialPhoneNumber)) {
     on<LoginOtpCodeChanged>((event, emit) {
       emit(state.copyWith(
         code: event.code,
@@ -33,7 +39,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     on<PrintStorage>(_printStorage);
   }
 
-  Future<void> _onSubmitted(LoginOtpSubmitted event,Emitter<LoginOtpState> emit) async {
+  Future<void> _onSubmitted(
+      LoginOtpSubmitted event, Emitter<LoginOtpState> emit) async {
     final phoneNumber = state.phoneNumber.trim();
     final twoFactorKey = state.twoFactorKey.trim();
     final enteredCode = state.code.trim();
@@ -69,7 +76,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     }
 
     final bool isConnected = await InternetConnection().hasInternetAccess;
-    if(isConnected == false){
+    if (isConnected == false) {
       emit(state.copyWith(
         status: LoginOtpStatus.failure,
         errorType: LoginOtpErrorType.unknown,
@@ -78,7 +85,6 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       ));
       return;
     }
-
 
     emit(state.copyWith(
       status: LoginOtpStatus.loading,
@@ -89,16 +95,18 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
     try {
       debugPrint("OTP CODE : ${state.code}");
-      await repository.verifyCode(
+      await repository
+          .verifyCode(
         phoneNumber: phoneNumber,
         twoFactorKey: twoFactorKey,
         pinCode: enteredCode,
-      ).then((response) async {
-
+      )
+          .then((response) async {
         debugPrint("Ticket : ${response.ticket}");
         debugPrint("Account id : ${response.accountId}");
         await LocalStorage.storeTicket(ticket: response.ticket.toString());
-        await LocalStorage.storeAccountID(accountID: response.accountId.toString());
+        await LocalStorage.storeAccountID(
+            accountID: response.accountId.toString());
         await _saveAccountInfo(password: response.ticket.toString());
       });
 
@@ -113,14 +121,14 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     } catch (e) {
       final message = _extractErrorMessage(e);
       final errorType = _mapErrorTypeFromMessage(message);
-      if(message.toString() == "Two Factor P I N Invalid"){
+      if (message.toString() == "Two Factor P I N Invalid") {
         emit(state.copyWith(
           status: LoginOtpStatus.failure,
           errorType: errorType,
           codeFieldError: _isCodeInputRelatedError(errorType),
           errorMessage: "Invalid OTP",
         ));
-      }else{
+      } else {
         emit(state.copyWith(
           status: LoginOtpStatus.failure,
           errorType: errorType,
@@ -131,7 +139,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     }
   }
 
-  Future<void>_saveAccountInfo({required String password})async{
+  Future<void> _saveAccountInfo({required String password}) async {
     // Fetch full account profile after OTP success.
     final accountInfo = await repository.getAccountInfo(
       username: AppConstants.userName,
@@ -140,6 +148,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
     // Cache full payload so any screen can read specific fields when needed.
     await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
+    _setLoggedInUserUiConfig();
 
     /*
     =========== USAGE ============
@@ -154,8 +163,38 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
      */
   }
 
+  /// Temporary central config setup after successful OTP verification.
+  ///
+  /// Later this method should map the real API response into `HomeUiConfig`
+  /// instead of using the hard-coded prepaid demo values.
+  Future<void> _setLoggedInUserUiConfig() async {
+    final map = await LocalStorage.getAccountInfoMap();
+    final account = AccountInfoModel.fromJson(map);
+    //final ticket = await LocalStorage.getTicket();
+
+    //final email = account.email;
+    //final deviceAccountID = account.idAcc; // device account id
+    // final accountStatus = account.accountStatus;
+    final accountType = account.accountType;
+    final paymentOption = account.paymentOption;
+
+    if (kDebugMode) {
+      debugPrint("Account Type : $accountType");
+    }
+
+    appUiConfigCubit.setConfig(
+      HomeUiConfig(
+        userType: paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
+        hasActivePlan: true,
+        isFuturePlan: false,
+        openMyLimits: false,
+      ),
+    );
+  }
+
   // for testing purpose only
-  Future<void> _printStorage(PrintStorage event,Emitter<LoginOtpState> emit) async {
+  Future<void> _printStorage(
+      PrintStorage event, Emitter<LoginOtpState> emit) async {
     final map = await LocalStorage.getAccountInfoMap();
     final account = AccountInfoModel.fromJson(map);
     final ticket = await LocalStorage.getTicket();
@@ -193,7 +232,6 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       ));
       return;
     }
-
 
     emit(state.copyWith(
       resendStatus: LoginOtpResendStatus.loading,

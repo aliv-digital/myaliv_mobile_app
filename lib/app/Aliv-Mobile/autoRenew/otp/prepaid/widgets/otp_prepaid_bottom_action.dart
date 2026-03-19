@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/defaultButton.dart';
 import '../../../../../../resources/widgets/top_toast.dart';
@@ -16,6 +16,8 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final config = context.watch<AppUiConfigCubit>().state;
+
     return Column(
       children: [
         // verify button
@@ -111,8 +113,8 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
                   onTap: resendLoading
                       ? null
                       : () => context.read<OtpAutoRenewPrepaidBloc>().add(
-                          const OtpAutoRenewPrepaidResendRequested(),
-                        ),
+                            const OtpAutoRenewPrepaidResendRequested(),
+                          ),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: OtpAutoRenewPrepaidTheme.resendActionTextStyle,

@@ -1,10 +1,11 @@
-import '../../../../../Home/home/home_screen.dart';
 import '../model/purchase_prepaid_models.dart';
 
 class PurchasePrepaidRepository {
-  Future<List<PurchasePrepaidMenuItem>> fetchMenuItems() async {
+  Future<List<PurchasePrepaidMenuItem>> fetchMenuItems({
+    required bool isPrepaid,
+  }) async {
     // Later: API integration
-    if(config.isPrepaid == true){
+    if (isPrepaid) {
       return const [
         PurchasePrepaidMenuItem(
           title: 'add/edit credit cards',
@@ -66,8 +67,7 @@ class PurchasePrepaidRepository {
           action: PurchasePrepaidAction.addOns,
         ),
       ];
-
-    }else{
+    } else {
       return const [
         PurchasePrepaidMenuItem(
           title: 'add/edit credit cards',
@@ -111,7 +111,6 @@ class PurchasePrepaidRepository {
           action: PurchasePrepaidAction.makePayment,
         ),
       ];
-
     }
   }
 }

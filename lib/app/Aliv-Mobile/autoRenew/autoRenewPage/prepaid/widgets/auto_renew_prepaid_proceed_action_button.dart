@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../Home/home/home_screen.dart';
+import '../../../../../../core/appConfig/app_ui_config_cubit.dart';
 import '../theme/auto_renew_prepaid_theme.dart';
 
 class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
@@ -19,6 +20,8 @@ class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
   // Keep primary action visuals consistent across the flow.
   @override
   Widget build(BuildContext context) {
+    final isPostpaid = context.watch<AppUiConfigCubit>().state.isPostpaid;
+
     return SizedBox(
       height: AutoRenewPrepaidTheme.primaryButtonHeight,
       width: double.infinity,
@@ -29,14 +32,14 @@ class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
           ),
         ),
         onPressed: isEnabled ? onPressed : null,
-        child: _buildButtonChild(),
+        child: _buildButtonChild(isPostpaid: isPostpaid),
       ),
     );
   }
 
   // ==================== Button Child ====================
   // Show spinner during submission, otherwise render call-to-action text.
-  Widget _buildButtonChild() {
+  Widget _buildButtonChild({required bool isPostpaid}) {
     if (isLoading) {
       return const SizedBox(
         width: AutoRenewPrepaidTheme.loaderSize,
@@ -49,14 +52,14 @@ class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
     }
 
     return Text(
-      _resolveButtonText(),
+      _resolveButtonText(isPostpaid: isPostpaid),
       style: AutoRenewPrepaidTheme.primaryButtonTextStyle,
     );
   }
 
   // ==================== Button Label ====================
   // Keep label decision centralized to avoid duplicate conditional text logic.
-  String _resolveButtonText() {
-    return config.isPostpaid ? 'use for auto pay' : 'proceed';
+  String _resolveButtonText({required bool isPostpaid}) {
+    return isPostpaid ? 'use for auto pay' : 'proceed';
   }
 }

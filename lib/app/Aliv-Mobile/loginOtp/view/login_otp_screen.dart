@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_event.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../router/app_routes.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
+import '../bloc/login_otp_event.dart';
 import '../bloc/login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
 import '../theme/login_otp_theme.dart';
@@ -22,6 +23,7 @@ class LoginOtpScreen extends StatelessWidget {
 
   /// Two-factor key passed from login route.
   final String initialTwoFactorKey;
+
   /// Phone number passed from login route.
   final String initialPhoneNumber;
 
@@ -29,8 +31,9 @@ class LoginOtpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       // Seed OTP bloc state with route-provided twoFactorKey.
-      create: (_) => LoginOtpBloc(
+      create: (context) => LoginOtpBloc(
         repository: LoginOtpRepository(),
+        appUiConfigCubit: context.read<AppUiConfigCubit>(),
         initialTwoFactorKey: initialTwoFactorKey,
         initialPhoneNumber: initialPhoneNumber,
       ),
@@ -61,15 +64,15 @@ class _LoginOtpView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
-
               AppToast.show(
                 message: 'OTP verified successfully',
                 type: ToastType.success,
               );
-               context.go(AppRoutes.home);
+              context.go(AppRoutes.home);
             }
 
-            if (state.status == LoginOtpStatus.failure && state.errorMessage != null) {
+            if (state.status == LoginOtpStatus.failure &&
+                state.errorMessage != null) {
               AppToast.show(
                 message: state.errorMessage!,
                 type: ToastType.error,
@@ -85,8 +88,7 @@ class _LoginOtpView extends StatelessWidget {
 
             if (state.resendStatus == LoginOtpResendStatus.idle &&
                 state.status != LoginOtpStatus.failure &&
-                state.errorMessage != null
-            ) {
+                state.errorMessage != null) {
               AppToast.show(
                 message: state.errorMessage!,
                 type: ToastType.error,
@@ -109,12 +111,15 @@ class _LoginOtpView extends StatelessWidget {
                             padding: LoginOtpPaddings.contentHorizontal,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children:  [
+                              children: [
                                 SizedBox(height: LoginOtpSizes.contentTopGap),
                                 OtpCodeFields(),
-                                SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
+                                SizedBox(
+                                    height:
+                                        LoginOtpSizes.otpToBottomActionsGap),
                                 OtpBottomActions(),
-                                SizedBox(height: LoginOtpSizes.contentBottomGap),
+                                SizedBox(
+                                    height: LoginOtpSizes.contentBottomGap),
                                 _ChangePhoneNumberAction(),
                                 // ElevatedButton(
                                 //     onPressed: (){
@@ -136,7 +141,9 @@ class _LoginOtpView extends StatelessWidget {
                     duration: LoginOtpMotion.stripeSwitcherDuration,
                     switchInCurve: LoginOtpMotion.stripeSwitcherInCurve,
                     switchOutCurve: LoginOtpMotion.stripeSwitcherOutCurve,
-                    child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
+                    child: keyboardOpen
+                        ? const SizedBox.shrink()
+                        : const BottomStripes(),
                   ),
                 ],
               ),

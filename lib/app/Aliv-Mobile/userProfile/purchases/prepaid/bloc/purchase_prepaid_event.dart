@@ -9,7 +9,12 @@ abstract class PurchasePrepaidEvent extends Equatable {
 }
 
 class PurchasePrepaidStarted extends PurchasePrepaidEvent {
-  const PurchasePrepaidStarted();
+  final bool isPrepaid;
+
+  const PurchasePrepaidStarted({required this.isPrepaid});
+
+  @override
+  List<Object?> get props => [isPrepaid];
 }
 
 class PurchasePrepaidItemTapped extends PurchasePrepaidEvent {

@@ -72,7 +72,6 @@ import '../app/Aliv-Mobile/userProfile/topUpPayment/prepaid/view/top_up_payment_
 import '../app/Aliv-Mobile/userProfile/topup/postpaid/view/top_up_prepaid_number_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/topup/prepaid/view/top_up_prepaid_screen.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
-import '../app/Home/home/data/home_ui_config.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Notifications/notification_screen.dart';
@@ -92,11 +91,12 @@ import '../app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_scre
 import '../app/splash/view/splash_page.dart';
 import '../resources/widgets/top_toast.dart';
 import 'app_routes.dart';
+
 //I/flutter (24566): Login API status: 202, body: {"TwoFactorKey":"b5aa1c17-10a9-48b9-9370-b0653917f888"}
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.home, //autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.splash, //autoRenewPrepaidScreen,
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -530,18 +530,10 @@ class AppRouter {
           //   path: AppRoutes.usage,
           //   builder: (context, state) => const UsageScreen(),
           // ),
+          //
           GoRoute(
             path: AppRoutes.usage,
-            builder: (context, state) {
-              final config = (state.extra as HomeUiConfig?) ??
-                  const HomeUiConfig(
-                    userType: UserType.postpaid,
-                    hasActivePlan: true,
-                    isFuturePlan: false,
-                  );
-
-              return UsageScreen(config: config);
-            },
+            builder: (context, state) => const UsageScreen(),
           ),
 
           GoRoute(
@@ -555,18 +547,10 @@ class AppRouter {
           //   path: AppRoutes.plans,
           //   builder: (context, state) => const HomePlanScreen(),
           // ),
+          // need to change here
           GoRoute(
             path: AppRoutes.plans,
-            builder: (context, state) {
-              final config = (state.extra as HomeUiConfig?) ??
-                  const HomeUiConfig(
-                    userType: UserType.prepaid,
-                    hasActivePlan: true,
-                    isFuturePlan: false,
-                  );
-
-              return PlansEntryScreen(config: config);
-            },
+            builder: (context, state) => const PlansEntryScreen(),
           ),
 
           GoRoute(

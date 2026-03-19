@@ -48,7 +48,7 @@ class HomePlanTabs extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
               itemCount: _tabs.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 26),
+              separatorBuilder: (_, __) => const SizedBox(width: 26),
               itemBuilder: (context, i) {
                 final tab = _tabs.keys.elementAt(i);
                 final label = _tabs[tab]!;
@@ -69,19 +69,15 @@ class HomePlanTabs extends StatelessWidget {
                       ),
                       SizedBox(
                         height: isActive
-                            ? HomePlanTheme
-                                .tabSelectedLabelToIndicatorGap
-                            : HomePlanTheme
-                                .tabUnselectedLabelBottomGap,
+                            ? HomePlanTheme.tabSelectedLabelToIndicatorGap
+                            : HomePlanTheme.tabUnselectedLabelBottomGap,
                       ),
 
                       // ✅ purple indicator
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 180),
                         curve: Curves.easeOut,
-                        height: isActive
-                            ? HomePlanTheme.tabIndicatorHeight
-                            : 0,
+                        height: isActive ? HomePlanTheme.tabIndicatorHeight : 0,
                         width: isActive
                             ? _indicatorWidth(label)
                             : 0, // ✅ inactive হলে hide

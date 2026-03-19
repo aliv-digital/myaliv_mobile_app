@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/future_plan_card.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
-import '../Home/home/home_screen.dart';
+import '../Home/home/data/home_ui_config.dart';
 
 class FuturePlansTab extends StatelessWidget {
   const FuturePlansTab({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
     return Container(
       color: Colors.white,
       child: ListView(
@@ -19,7 +23,7 @@ class FuturePlansTab extends StatelessWidget {
           const SizedBox(height: 16),
 
           // 🔹 STATIC BUTTON
-          if (config.isPostpaid == false)  const _StartPlanButton(),
+          if (config.isPostpaid == false) const _StartPlanButton(),
 
           if (config.isPostpaid == false) const SizedBox(height: 16),
 
@@ -36,17 +40,21 @@ class _StaticFuturePlan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  (config.isPostpaid == true) ? FuturePlanCard(
-      title: 'travel30',
-      startDate: '06/01/25',
-      endDate: '05/01/25',
-      image: 'assets/images/Future Plan 1.png',
-    ):  FuturePlanCard(
-      title: 'liberty45',
-      startDate: '06/01/25',
-      endDate: '05/01/25',
-      image: 'assets/images/Future Plan 1.png',
-    );
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
+    return (config.isPostpaid == true)
+        ? FuturePlanCard(
+            title: 'travel30',
+            startDate: '06/01/25',
+            endDate: '05/01/25',
+            image: 'assets/images/Future Plan 1.png',
+          )
+        : FuturePlanCard(
+            title: 'liberty45',
+            startDate: '06/01/25',
+            endDate: '05/01/25',
+            image: 'assets/images/Future Plan 1.png',
+          );
   }
 }
 
@@ -61,26 +69,25 @@ class _StartPlanButton extends StatelessWidget {
       width: double.infinity,
       height: 40,
       child: ElevatedButton(
-        onPressed: () {
-          // TODO: Start plan logic
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: purple,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
+          onPressed: () {
+            // TODO: Start plan logic
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: purple,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+            ),
           ),
-        ),
-        child: Text(
-          'start plan',
-          style: TextStyle(
-            color: const Color(0xFFF1F1F8),
-            fontSize: 15,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-          ),
-        )
-      ),
+          child: Text(
+            'start plan',
+            style: TextStyle(
+              color: const Color(0xFFF1F1F8),
+              fontSize: 15,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w700,
+            ),
+          )),
     );
   }
 }
@@ -90,6 +97,8 @@ class _DynamicFuturePlans extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
     final plans = [
       {
         'title': 'freedom8',
@@ -105,7 +114,7 @@ class _DynamicFuturePlans extends StatelessWidget {
       },
     ];
 
-    final future_plans = [
+    final futurePlans = [
       {
         'title': 'travel30',
         'start': '20/02/25',
@@ -120,41 +129,38 @@ class _DynamicFuturePlans extends StatelessWidget {
       },
     ];
 
-    if (config.isPostpaid == true){
+    if (config.isPostpaid == true) {
       return Column(
-        children: future_plans
+        children: futurePlans
             .map(
               (plan) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: FuturePlanCard(
-              title: plan['title'] as String,
-              startDate: plan['start'] as String,
-              endDate: plan['end'] as String,
-              image: plan['image'] as String,
-            ),
-          ),
-        )
+                padding: const EdgeInsets.only(bottom: 16),
+                child: FuturePlanCard(
+                  title: plan['title'] as String,
+                  startDate: plan['start'] as String,
+                  endDate: plan['end'] as String,
+                  image: plan['image'] as String,
+                ),
+              ),
+            )
             .toList(),
       );
-
-    }else{
+    } else {
       return Column(
         children: plans
             .map(
               (plan) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: FuturePlanCard(
-              title: plan['title'] as String,
-              startDate: plan['start'] as String,
-              endDate: plan['end'] as String,
-              image: plan['image'] as String,
-            ),
-          ),
-        )
+                padding: const EdgeInsets.only(bottom: 16),
+                child: FuturePlanCard(
+                  title: plan['title'] as String,
+                  startDate: plan['start'] as String,
+                  endDate: plan['end'] as String,
+                  image: plan['image'] as String,
+                ),
+              ),
+            )
             .toList(),
       );
-
     }
-
   }
 }

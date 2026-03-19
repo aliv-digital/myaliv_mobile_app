@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
 
 void main() {
@@ -19,22 +20,24 @@ void main() {
 class MyApp extends StatelessWidget {
   final AppRouter appRouter;
 
-
-   const MyApp({super.key, required this.appRouter});
+  const MyApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'My Aliv',
-      routerConfig: appRouter.router,
-      theme: ThemeData(
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: Colors.white,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.light,
+    return BlocProvider(
+      create: (_) => AppUiConfigCubit(),
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'My Aliv',
+        routerConfig: appRouter.router,
+        theme: ThemeData(
+          useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarColor: Colors.white,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+            ),
           ),
         ),
       ),

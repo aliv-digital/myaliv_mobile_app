@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../home/home_screen.dart';
-
 class ActionTile extends StatelessWidget {
   final String iconPath;
   final String label;
@@ -22,13 +20,12 @@ class ActionTile extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-
           SvgPicture.asset(
-                  iconPath,
-                  width: 34,
-                  height: 34,
-                  // color: HomeScreen.purple,
-                ),
+            iconPath,
+            width: 34,
+            height: 34,
+            // color: HomeScreen.purple,
+          ),
 
           const SizedBox(height: 12),
           Text(
@@ -44,7 +41,6 @@ class ActionTile extends StatelessWidget {
             ),
           ),
           // const SizedBox(height: 7),
-
         ],
       ),
     );

@@ -104,9 +104,9 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import '../theme/confirm_top_up_prepaid_theme.dart';
 import 'dashed_divider.dart';
 import 'ticket_clipper.dart';
@@ -134,6 +134,8 @@ class PromoSummaryTicket extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final config = context.watch<AppUiConfigCubit>().state;
+
     return Container(
       decoration: BoxDecoration(
         // Figma: card shadow is outside the clipped shape
@@ -146,8 +148,7 @@ class PromoSummaryTicket extends StatelessWidget {
           ),
         ],
       ),
-      child:
-      ClipPath(
+      child: ClipPath(
         // tweak notch look
         clipper: TicketClipper(radius: 8, notchCount: 12),
         child: Container(
@@ -162,7 +163,7 @@ class PromoSummaryTicket extends StatelessWidget {
           ),
           child: Column(
             children: [
-             if (config.isPrepaid == true)  _promoInput(context),
+              if (config.isPrepaid == true) _promoInput(context),
               if (config.isPrepaid == true) const SizedBox(height: 24),
 
               _row(context, 'sub total', _money(subTotal)),
@@ -181,7 +182,6 @@ class PromoSummaryTicket extends StatelessWidget {
 
               _row(context, 'total', _money(total), isTotal: true),
               const SizedBox(height: 16),
-
             ],
           ),
         ),
@@ -240,14 +240,19 @@ class PromoSummaryTicket extends StatelessWidget {
     );
   }
 
-  Widget _row(BuildContext context, String left, String right, {bool isTotal = false}) {
+  Widget _row(
+    BuildContext context,
+    String left,
+    String right, {
+    bool isTotal = false,
+  }) {
     final label = ConfirmTopUpPrepaidTheme.ticketLabel(context).copyWith(
-      fontWeight:   FontWeight.w500,
-      fontSize: 14
+      fontWeight: FontWeight.w500,
+      fontSize: 14,
     );
 
     final value = ConfirmTopUpPrepaidTheme.ticketValue(context).copyWith(
-      fontWeight:   FontWeight.w500,
+      fontWeight: FontWeight.w500,
     );
 
     return Row(

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../Home/home/data/home_ui_config.dart';
-import '../../Home/home/home_screen.dart';
-
 class UsageMetricRow extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -24,7 +21,7 @@ class UsageMetricRow extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 8.0,right: 8),
+          padding: const EdgeInsets.only(left: 8.0, right: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -76,7 +73,7 @@ class UsageMetricRow extends StatelessWidget {
                             Container(
                               height: 6,
                               width: 80,
-                              color:  Color(0x2617B26A).withValues(alpha: 0.2),
+                              color: Color(0x2617B26A).withValues(alpha: 0.2),
                             ),
 
                             // Gradient progress (width = percentage)
@@ -86,7 +83,6 @@ class UsageMetricRow extends StatelessWidget {
                               width: width.toDouble(),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-
                                 gradient: LinearGradient(
                                   colors: [
                                     const Color(0x0017B26A),
@@ -122,6 +118,7 @@ class UsageMetricRow extends StatelessWidget {
     );
   }
 }
+
 class _ProgressBar extends StatelessWidget {
   final double progress;
   final List<Color> gradient;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 
+import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../router/app_routes.dart';
 
 class PostpaidActivePlanCard extends StatelessWidget {
@@ -92,26 +94,20 @@ class PostpaidActivePlanCard extends StatelessWidget {
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // UI only
-                  // context.go(
-                  //   AppRoutes.usage,
-                  //   extra: config, // 👈 SAME HomeUiConfig
-                  // );
-                  context.go(
-                    AppRoutes.usage,
-                    extra: HomeUiConfig(
-                      userType: config.userType,
-                      hasActivePlan: true,
-                      openMyLimits: true, // 🔥 KEY LINE
-                      isFuturePlan: false
-                    ),
-                  );
+                  context.read<AppUiConfigCubit>().showMyLimitsView();
+                  context.go(AppRoutes.usage);
                 },
-                icon: SvgPicture.asset('assets/icons/card-add.svg',color:Color(0xFFEF3A4B) ,),
+                icon: SvgPicture.asset(
+                  'assets/icons/card-add.svg',
+                  colorFilter: const ColorFilter.mode(
+                    Color(0xFFEF3A4B),
+                    BlendMode.srcIn,
+                  ),
+                ),
                 label: const Text(
                   'upgrade credit limit',
                   style: TextStyle(
-                    color: const Color(0xFFEF3A4B),
+                    color: Color(0xFFEF3A4B),
                     fontSize: 15,
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
@@ -147,9 +143,8 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: alignRight
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         Text(
           label,

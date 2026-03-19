@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Usage/postpaid_usage_item.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/current_plan_active_card.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/postpage_usage_tile.dart';
@@ -7,10 +7,10 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/purchase_addon_button.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_metric_row.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Home/home/data/home_ui_config.dart';
-import '../Home/home/home_screen.dart';
 
 class CurrentPlanTab extends StatelessWidget {
   const CurrentPlanTab({super.key});
@@ -20,6 +20,8 @@ class CurrentPlanTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
     return Container(
       color: Colors.white,
       child: ListView(
@@ -72,7 +74,6 @@ class CurrentPlanTab extends StatelessWidget {
                 trailingText: "25% used",
                 progress: 0.25,
               ),
-
               PostpaidUsageItem(
                 title: "talk mins roam free",
                 subtitle: "0 of 800",
@@ -86,7 +87,6 @@ class CurrentPlanTab extends StatelessWidget {
                 isUnlimited: true,
                 progress: 0,
               ),
-
               PostpaidUsageItem(
                 title: "ALIV to ALIV sms",
                 subtitle: "unlimited",
@@ -94,7 +94,6 @@ class CurrentPlanTab extends StatelessWidget {
                 isUnlimited: true,
                 progress: 0,
               ),
-
               PostpaidUsageItem(
                 title: "ALIV to ALIV mms",
                 subtitle: "0 of 800",
@@ -102,9 +101,7 @@ class CurrentPlanTab extends StatelessWidget {
                 isUnlimited: true,
                 progress: 0,
               ),
-
             ]),
-
 
           if (config.isPostpaid == false)
             Padding(
@@ -247,16 +244,14 @@ class CurrentPlanTab extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
       color: Colors.white,
       child: Column(
-        children: items
-            .map(
-              (e) {
-                return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: PostpaidUsageTile(item: e),
-              );
-              },
-            )
-            .toList(),
+        children: items.map(
+          (e) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: PostpaidUsageTile(item: e),
+            );
+          },
+        ).toList(),
       ),
     );
   }
@@ -264,8 +259,6 @@ class CurrentPlanTab extends StatelessWidget {
 
 class _ActiveAddOns extends StatelessWidget {
   const _ActiveAddOns();
-
-  static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +299,6 @@ class _AddOnChip extends StatelessWidget {
       decoration: ShapeDecoration(
         color: const Color(0xFFF4F4F6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-
       ),
       child: Text(
         label,
@@ -339,7 +331,9 @@ class _UsageSection extends StatelessWidget {
           progressColor: Color(0xFFE07A4E),
         ),
         Divider(color: divider),
-SizedBox(height: 8,),
+        SizedBox(
+          height: 8,
+        ),
         _LimitRow(
           title: 'sms',
           subtitle: 'unlimited Local',
@@ -347,8 +341,9 @@ SizedBox(height: 8,),
           progressColor: Color(0xFF6CB7D4),
         ),
         Divider(color: divider),
-        SizedBox(height: 8,),
-
+        SizedBox(
+          height: 8,
+        ),
         _LimitRow(
           title: 'talk mins',
           subtitle: 'unlimited Local',
@@ -356,8 +351,9 @@ SizedBox(height: 8,),
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
-        SizedBox(height: 8,),
-
+        SizedBox(
+          height: 8,
+        ),
         _LimitRow(
           title: 'bonus Data',
           subtitle: 'unlimited WhatsApp Messaging',
@@ -365,8 +361,9 @@ SizedBox(height: 8,),
           progressColor: Color(0xFFBDBDBD),
         ),
         Divider(color: divider),
-        SizedBox(height: 8,),
-
+        SizedBox(
+          height: 8,
+        ),
         _LimitRow(
           title: 'int’l mins & sms',
           subtitle: '0 of 600',
@@ -374,8 +371,9 @@ SizedBox(height: 8,),
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
-        SizedBox(height: 8,),
-
+        SizedBox(
+          height: 8,
+        ),
         _LimitRow(
           title: 'mms',
           subtitle: '0 of 60',
@@ -383,8 +381,6 @@ SizedBox(height: 8,),
           progressColor: Color(0xFF6B63C5),
         ),
         Divider(color: divider),
-
-
       ],
     );
   }
@@ -405,6 +401,8 @@ class _LimitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
@@ -450,8 +448,8 @@ class _LimitRow extends StatelessWidget {
                       height: 6,
                       width: 80,
                       color: config.userType == UserType.postpaid
-                          ? Color(0x26DD3038)
-                          : Color(0x2617B26A).withOpacity(0.2),
+                          ? const Color(0x26DD3038)
+                          : const Color(0x2617B26A).withValues(alpha: 0.2),
                     ),
 
                     // Gradient progress (width = percentage)
@@ -461,14 +459,13 @@ class _LimitRow extends StatelessWidget {
                       width: width.toDouble(),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-
                         gradient: LinearGradient(
                           colors: config.userType == UserType.postpaid
                               ? [Color(0x00DD3038), const Color(0xFFDD3038)]
                               : [
-                            const Color(0x0017B26A),
-                            const Color(0xFF17B26A),
-                          ],
+                                  const Color(0x0017B26A),
+                                  const Color(0xFF17B26A),
+                                ],
                         ),
                       ),
                     ),
@@ -478,12 +475,10 @@ class _LimitRow extends StatelessWidget {
             ),
           ),
           // const SizedBox(height: 30),
-
         ],
       ),
     );
   }
-
 }
 
 class UsageRow extends StatelessWidget {

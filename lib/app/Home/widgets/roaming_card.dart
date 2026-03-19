@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 
+import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../home/data/home_ui_config.dart';
-import '../home/home_screen.dart';
 
 class RoamingCard extends StatelessWidget {
   final String used;
@@ -19,7 +19,7 @@ class RoamingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color roamingColor = Color(0xFFF2994A);
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
@@ -43,7 +43,6 @@ class RoamingCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SvgPicture.asset('assets/icons/Rss.svg', height: 18, width: 18),
-
               SizedBox(width: 4),
               Text(
                 'roaming data',
@@ -95,7 +94,7 @@ class RoamingCard extends StatelessWidget {
                       width: 80,
                       color: config.userType == UserType.postpaid
                           ? Color(0x26DD3038)
-                          : Color(0xFF17B26A).withOpacity(0.2),
+                          : const Color(0xFF17B26A).withValues(alpha: 0.2),
                     ),
 
                     // Gradient progress (width = percentage)
@@ -105,7 +104,6 @@ class RoamingCard extends StatelessWidget {
                       width: width,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-
                         gradient: LinearGradient(
                           colors: config.userType == UserType.postpaid
                               ? [Color(0x00DD3038), const Color(0xFFDD3038)]

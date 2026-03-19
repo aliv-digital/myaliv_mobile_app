@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/roaming_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
 
+import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../router/app_routes.dart';
-import '../home/home_screen.dart';
 
 class ActivePlanUsageSection extends StatelessWidget {
   const ActivePlanUsageSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -36,11 +38,9 @@ class ActivePlanUsageSection extends StatelessWidget {
         config.userType == UserType.postpaid
             ? _postpaidUsageCards()
             : _usageCards(),
-
         const SizedBox(height: 28),
-        _roamingSection(),
+        _roamingSection(config),
         const SizedBox(height: 20),
-
         if (config.userType == UserType.postpaid) _myLimitsHeader(context),
         if (config.userType == UserType.postpaid) const SizedBox(height: 10),
         if (config.userType == UserType.postpaid) _postpaidUsageCards(),
@@ -96,15 +96,8 @@ class ActivePlanUsageSection extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              context.go(
-                AppRoutes.usage,
-                extra: HomeUiConfig(
-                  userType: config.userType,
-                  hasActivePlan: true,
-                  openMyLimits: true, // 🔥 KEY LINE
-                  isFuturePlan: false,
-                ),
-              );
+              context.read<AppUiConfigCubit>().showMyLimitsView();
+              context.go(AppRoutes.usage);
             },
             child: Text(
               'my limits',
@@ -119,15 +112,8 @@ class ActivePlanUsageSection extends StatelessWidget {
           const Spacer(),
           GestureDetector(
             onTap: () {
-              context.go(
-                AppRoutes.usage,
-                extra: HomeUiConfig(
-                  userType: config.userType,
-                  hasActivePlan: true,
-                  openMyLimits: true, // 🔥 KEY LINE
-                  isFuturePlan: false,
-                ),
-              );
+              context.read<AppUiConfigCubit>().showMyLimitsView();
+              context.go(AppRoutes.usage);
             },
             child: Text(
               'view all',
@@ -164,7 +150,6 @@ class ActivePlanUsageSection extends StatelessWidget {
             isPostpaid: true,
           ),
           SizedBox(width: 12),
-
           UsageCard(
             icon: 'assets/icons/Rss.svg',
             title: 'local data',
@@ -216,7 +201,7 @@ class ActivePlanUsageSection extends StatelessWidget {
             value: 'unlimited',
             total: 'local',
             remainingLabel: 'remaining',
-            progress: 1,//0.8,
+            progress: 1, //0.8,
             color: Color(0xFF00B3E3),
             isPostpaid: false,
           ),
@@ -227,7 +212,7 @@ class ActivePlanUsageSection extends StatelessWidget {
             value: 'unlimited',
             total: 'local',
             remainingLabel: 'remaining',
-            progress: 1,//0.8,
+            progress: 1, //0.8,
             color: Color(0xFF5045A7),
             isPostpaid: false,
           ),
@@ -237,7 +222,7 @@ class ActivePlanUsageSection extends StatelessWidget {
   }
 
   // ================= Roaming =================
-  Widget _roamingSection() {
+  Widget _roamingSection(HomeUiConfig config) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

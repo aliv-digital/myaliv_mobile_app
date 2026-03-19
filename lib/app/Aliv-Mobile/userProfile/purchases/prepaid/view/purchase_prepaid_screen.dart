@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../core/utils/app_session.dart';
-import '../../../../../Home/home/data/home_ui_config.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/purchase_prepaid_bloc.dart';
 import '../bloc/purchase_prepaid_event.dart';
@@ -20,10 +19,11 @@ class PurchasesPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPrepaid = context.read<AppUiConfigCubit>().state.isPrepaid;
+
     return BlocProvider(
-      create: (_) =>
-          PurchasePrepaidBloc(repo: PurchasePrepaidRepository())
-            ..add(const PurchasePrepaidStarted()),
+      create: (_) => PurchasePrepaidBloc(repo: PurchasePrepaidRepository())
+        ..add(PurchasePrepaidStarted(isPrepaid: isPrepaid)),
       child: const _PurchasePrepaidView(),
     );
   }
@@ -49,8 +49,8 @@ class _PurchasePrepaidView extends StatelessWidget {
         if (nav != null) {
           _handleNavigation(context, nav);
           context.read<PurchasePrepaidBloc>().add(
-            const PurchasePrepaidNavigationConsumed(),
-          );
+                const PurchasePrepaidNavigationConsumed(),
+              );
         }
       },
       child: Scaffold(
@@ -63,11 +63,9 @@ class _PurchasePrepaidView extends StatelessWidget {
                   // App bar as in your project
                   SliverToBoxAdapter(
                     child: DefaultAppBar(
-                      title: 'purchases',
-                      onBack: () => Navigator.of(context).maybePop(),
-                        onHomeTap: () => context.go(AppRoutes.home)
-
-                    ),
+                        title: 'purchases',
+                        onBack: () => Navigator.of(context).maybePop(),
+                        onHomeTap: () => context.go(AppRoutes.home)),
                   ),
 
                   if (state.status == PurchasePrepaidLoadStatus.loading)
@@ -92,8 +90,8 @@ class _PurchasePrepaidView extends StatelessWidget {
                           items: state.items,
                           onTapItem: (item) {
                             context.read<PurchasePrepaidBloc>().add(
-                              PurchasePrepaidItemTapped(item.action),
-                            );
+                                  PurchasePrepaidItemTapped(item.action),
+                                );
                           },
                         ),
                       ),
@@ -118,6 +116,9 @@ class _PurchasePrepaidView extends StatelessWidget {
   }
 
   void _handleNavigation(BuildContext context, PurchasePrepaidAction action) {
+    final config = context.read<AppUiConfigCubit>().state;
+    final uiConfigCubit = context.read<AppUiConfigCubit>();
+
     // TODO: integrate GoRouter routes here
     // Example:
     switch (action) {
@@ -128,18 +129,9 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.push(AppRoutes.topUpPrepaidNumberPostpaidScreen);
         break;
       case PurchasePrepaidAction.buyPlans:
-        if(config.isPrepaid == true){
-          // TODO: Handle this case.
-          context.go(
-            AppRoutes.usage,
-            extra: HomeUiConfig(
-              userType: config.userType,
-              hasActivePlan: true,
-              isFuturePlan: false,
-            ),
-          );
-        }else{
-          // TODO: Handle this case.
+        if (config.isPrepaid == true) {
+          context.go(AppRoutes.usage);
+        } else {
           context.go(
             AppRoutes.plans,
           );
@@ -147,28 +139,12 @@ class _PurchasePrepaidView extends StatelessWidget {
 
         break;
       case PurchasePrepaidAction.futurePlans:
-        // TODO: Handle this case.
-        context.go(
-          AppRoutes.usage,
-          extra: HomeUiConfig(
-            userType: config.userType,
-            hasActivePlan: true,
-            openMyLimits: false,
-            isFuturePlan: true, // 🔥 KEY LINE
-          ),
-        );
+        uiConfigCubit.showFuturePlansView();
+        context.go(AppRoutes.usage);
         break;
       case PurchasePrepaidAction.myLimits:
-        // TODO: Handle this case.
-        context.go(
-          AppRoutes.usage,
-          extra: HomeUiConfig(
-            userType: config.userType,
-            hasActivePlan: true,
-            openMyLimits: true,
-            isFuturePlan: false, // 🔥 KEY LINE
-          ),
-        );
+        uiConfigCubit.showMyLimitsView();
+        context.go(AppRoutes.usage);
         break;
       case PurchasePrepaidAction.reviewInvoices:
         context.push(AppRoutes.reviewInvoicePostPaidScreen);

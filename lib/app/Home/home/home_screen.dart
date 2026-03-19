@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../core/utils/app_session.dart';
 import '../../../router/app_routes.dart';
 import '../model/demo_plans.dart';
@@ -16,12 +18,6 @@ import '../widgets/postpaid_billing_card.dart';
 import '../widgets/prepaid_balance_card.dart';
 import '../widgets/timer.dart';
 import 'data/home_ui_config.dart';
-
-final HomeUiConfig config = const HomeUiConfig(
-  userType: UserType.prepaid, // 🔥 switch here for demo
-  hasActivePlan: true,
-  isFuturePlan: false,
-);
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -49,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -71,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   config.hasActivePlan
                       ? config.userType == UserType.prepaid
-                            ? PrepaidActivePlanCard()
-                            : PostpaidActivePlanCard(config: config)
+                          ? PrepaidActivePlanCard()
+                          : PostpaidActivePlanCard(config: config)
                       : _noActivePlan(context),
 
                   config.userType == UserType.prepaid
@@ -93,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
                     decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
-                    child: _quickActions(context),
+                    child: _quickActions(context, config),
                   ),
                   const SizedBox(height: 24),
                   _limitedOffer(context),
@@ -201,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ================= QUICK ACTIONS =================
-  Widget _quickActions(BuildContext context) {
+  Widget _quickActions(BuildContext context, HomeUiConfig config) {
     return _section(
       title: 'quick actions',
       // onViewMore: () {
@@ -225,37 +223,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 'buy\nplans',
               ),
             ),
-
             config.userType == UserType.postpaid
                 ? GestureDetector(
-              onTap: ()
-                  {
-                    context.go(
-                      AppRoutes.usage,
-                      extra: HomeUiConfig(
-                          userType: config.userType,
-                          hasActivePlan: true,
-                          openMyLimits: true, // 🔥 KEY LINE
-                          isFuturePlan: false
-                      ),
-                    );
-                  },
-                  child: const ActionTile(
+                    onTap: () {
+                      context.read<AppUiConfigCubit>().showMyLimitsView();
+                      context.go(AppRoutes.usage);
+                    },
+                    child: const ActionTile(
                       'assets/icons/SortDescending.svg',
                       'update\ncredit limit',
                     ),
-                )
+                  )
                 : GestureDetector(
                     onTap: () {
-                      context.go(
-                        AppRoutes.usage,
-                        extra: HomeUiConfig(
-                          userType: config.userType,
-                          hasActivePlan: true,
-                          openMyLimits: true, // 🔥 KEY LINE
-                          isFuturePlan: true,
-                        ),
-                      );
+                      context.read<AppUiConfigCubit>().showFuturePlansView();
+                      context.go(AppRoutes.usage);
                     },
                     child: const ActionTile(
                       'assets/icons/ListHeart.svg',
@@ -263,35 +245,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
             GestureDetector(
-              onTap: (){
-                context.push(AppRoutes.myProfilePrepaidScreen);
-
-              },
-                child: const ActionTile('assets/icons/At.svg', 'update\nemail')),
+                onTap: () {
+                  context.push(AppRoutes.myProfilePrepaidScreen);
+                },
+                child:
+                    const ActionTile('assets/icons/At.svg', 'update\nemail')),
             GestureDetector(
-              onTap: (){
-                context.push(AppRoutes.referFriendPrepaidScreen);
-
-              },
-                child: const ActionTile('assets/icons/UsersThree.svg', 'refer a friend')),
+                onTap: () {
+                  context.push(AppRoutes.referFriendPrepaidScreen);
+                },
+                child: const ActionTile(
+                    'assets/icons/UsersThree.svg', 'refer a friend')),
             GestureDetector(
-              onTap: () async {
-                ///https://www.bealiv.com/deals/
-                final uri = Uri.parse(
-                  'https://www.bealiv.com/deals/',
-                );
+                onTap: () async {
+                  ///https://www.bealiv.com/deals/
+                  final uri = Uri.parse(
+                    'https://www.bealiv.com/deals/',
+                  );
 
-                if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-                throw 'Could not open store locator';
-                }
-              },
-                child: const ActionTile('assets/icons/aliv_quick.svg', 'ALIV deals')),
+                  if (!await launchUrl(uri,
+                      mode: LaunchMode.externalApplication)) {
+                    throw 'Could not open store locator';
+                  }
+                },
+                child: const ActionTile(
+                    'assets/icons/aliv_quick.svg', 'ALIV deals')),
             GestureDetector(
-              onTap: (){
-                context.push(AppRoutes.callSupportScreen);
-
-              },
-                child: const ActionTile('assets/icons/headphone.svg', 'help & support')),
+                onTap: () {
+                  context.push(AppRoutes.callSupportScreen);
+                },
+                child: const ActionTile(
+                    'assets/icons/headphone.svg', 'help & support')),
           ],
         ),
       ),
