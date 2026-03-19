@@ -156,9 +156,19 @@ class _HomePlanView extends StatelessWidget {
                     return HomePlanPlansList(
                       state: state,
                       onToggleExpanded: (planId) {
+                        debugPrint('planId: $planId');
                         context.read<HomePlanBloc>().add(HomePlanToggleExpanded(planId));
                       },
+                      onWeeklyPurchaseNow: (plan) {
+                        debugPrint('plan: ${plan.planName}');
+                       // _onPurchaseNowPressed(context, plan);
+                      },
+                      onDailyPurchaseNow: (plan) {
+                        debugPrint('plan: ${plan.planName}');
+                       // _onPurchaseNowPressed(context, plan);
+                      },
                       onPurchaseNow: (plan) {
+                        debugPrint('plan: ${plan.id}');
                         _onPurchaseNowPressed(context, plan);
                       },
                     );

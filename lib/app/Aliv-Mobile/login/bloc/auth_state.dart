@@ -13,6 +13,7 @@ class LoginState extends Equatable {
   final String? twoFactorKey;
   final bool phoneFieldError;
   final bool passwordFieldError;
+  final int errorToastId;
 
   const LoginState({
     this.phone = '',
@@ -22,6 +23,7 @@ class LoginState extends Equatable {
     this.twoFactorKey,
     this.phoneFieldError = false,
     this.passwordFieldError = false,
+    this.errorToastId = 0,
   });
 
   LoginState copyWith({
@@ -32,6 +34,7 @@ class LoginState extends Equatable {
     Object? twoFactorKey = _noChange,
     bool? phoneFieldError,
     bool? passwordFieldError,
+    int? errorToastId,
   }) {
     return LoginState(
       phone: phone ?? this.phone,
@@ -45,6 +48,7 @@ class LoginState extends Equatable {
           : twoFactorKey as String?,
       phoneFieldError: phoneFieldError ?? this.phoneFieldError,
       passwordFieldError: passwordFieldError ?? this.passwordFieldError,
+      errorToastId: errorToastId ?? this.errorToastId,
     );
   }
 
@@ -57,5 +61,6 @@ class LoginState extends Equatable {
         twoFactorKey,
         phoneFieldError,
         passwordFieldError,
+        errorToastId,
       ];
 }

@@ -56,6 +56,13 @@ class _LoginView extends StatelessWidget {
 
       body: SafeArea(
         child: BlocListener<LoginBloc, LoginState>(
+          listenWhen: (previous, current) {
+            final bool loginSuccessChanged = previous.status != current.status && current.status == LoginStatus.success;
+
+            final bool errorToastTriggered = previous.errorToastId != current.errorToastId;
+
+            return loginSuccessChanged || errorToastTriggered;
+          },
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
               AppToast.show(message: 'OTP sent successfully', type: ToastType.success);
@@ -78,7 +85,7 @@ class _LoginView extends StatelessWidget {
                 ),
               );
             }
-            if (state.status == LoginStatus.failure) {
+            if (state.status == LoginStatus.failure && state.errorMessage != null && state.errorMessage!.isNotEmpty) {
               AppToast.show(
                 message: state.errorMessage.toString(),
                 type: ToastType.error,
@@ -132,21 +139,23 @@ class _LoginView extends StatelessWidget {
                                       ),
                                     ),
                                     TextButton(
-                                      style: AuthModuleButtonStyles.inlineTextLink,
+                                      style:
+                                          AuthModuleButtonStyles.inlineTextLink,
                                       onPressed: () {
                                         context.push(AppRoutes.forgetPassword);
                                       },
                                       child: const Text(
                                         'forgot password?',
-                                        style: AuthModuleTextStyles.forgotPassword,
+                                        style:
+                                            AuthModuleTextStyles.forgotPassword,
                                       ),
                                     ),
                                   ],
                                 );
                               },
                             ),
-                            const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
-
+                            const SizedBox(
+                                height: AuthModuleSizes.errorRowToSignInGap),
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
                                 final loading =
@@ -157,18 +166,21 @@ class _LoginView extends StatelessWidget {
                                   height: AuthModuleSizes.fieldHeight,
                                   textStyle: AuthModuleTextStyles.signInButton,
                                   onPressed: () {
-                                    context.read<LoginBloc>().add(const LoginSubmitted());
+                                    context
+                                        .read<LoginBloc>()
+                                        .add(const LoginSubmitted());
                                   },
                                 );
                               },
                             ),
-                            const SizedBox(height: AuthModuleSizes.signInToSocialGap),
-
-
+                            const SizedBox(
+                                height: AuthModuleSizes.signInToSocialGap),
                             const LoginSocialButtons(),
-                            const SizedBox(height: AuthModuleSizes.socialToBottomGap),
+                            const SizedBox(
+                                height: AuthModuleSizes.socialToBottomGap),
                             LoginBottomTexts(),
-                            const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
+                            const SizedBox(
+                                height: AuthModuleSizes.bottomScrollSafeGap),
                           ],
                         ),
                       ),

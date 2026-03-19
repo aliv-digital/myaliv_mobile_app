@@ -6,7 +6,6 @@ import '../repository/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
-
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository repository;
 
@@ -34,7 +33,30 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginSubmitted>(_onSubmitted);
   }
 
-  Future<void> _onSubmitted(LoginSubmitted event, Emitter<LoginState> emit) async {
+  /// Emits failure state and bumps a unique toast id.
+  ///
+  /// This allows the UI listener to show the same error toast again
+  /// when the user taps the login button repeatedly.
+  void _emitFailure(
+    Emitter<LoginState> emit, {
+    required String message,
+    required bool phoneFieldError,
+    required bool passwordFieldError,
+  }) {
+    emit(
+      state.copyWith(
+        status: LoginStatus.failure,
+        errorMessage: message,
+        twoFactorKey: null,
+        phoneFieldError: phoneFieldError,
+        passwordFieldError: passwordFieldError,
+        errorToastId: state.errorToastId + 1,
+      ),
+    );
+  }
+
+  Future<void> _onSubmitted(
+      LoginSubmitted event, Emitter<LoginState> emit) async {
     final isPhoneEmpty = state.phone.trim().isEmpty;
     final isPasswordEmpty = state.password.trim().isEmpty;
 
@@ -47,39 +69,32 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else {
         validationMessage = 'password is required';
       }
-      emit(
-        state.copyWith(
-          status: LoginStatus.failure,
-          errorMessage: validationMessage,
-          twoFactorKey: null,
-          phoneFieldError: isPhoneEmpty,
-          passwordFieldError: isPasswordEmpty,
-        ),
+      _emitFailure(
+        emit,
+        message: validationMessage,
+        phoneFieldError: isPhoneEmpty,
+        passwordFieldError: isPasswordEmpty,
       );
       return;
     }
     final hasInvalidChar = RegExp(r'[^0-9]').hasMatch(state.phone.trim());
     if (hasInvalidChar) {
-      emit(
-        state.copyWith(
-          status: LoginStatus.failure,
-          errorMessage: 'invalid format',
-          twoFactorKey: null,
-          phoneFieldError: true,
-          passwordFieldError: false,
-        ),
+      _emitFailure(
+        emit,
+        message: 'invalid format',
+        phoneFieldError: true,
+        passwordFieldError: false,
       );
       return;
     }
     final bool isConnected = await InternetConnection().hasInternetAccess;
     if (isConnected == false) {
-      emit(state.copyWith(
-        status: LoginStatus.failure,
-        errorMessage: "No Internet Connection",
-        twoFactorKey: null,
+      _emitFailure(
+        emit,
+        message: "No Internet Connection",
         phoneFieldError: false,
         passwordFieldError: false,
-      ));
+      );
       return;
     }
 
@@ -107,39 +122,28 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } catch (e) {
       final message = _extractErrorMessage(e);
       debugPrint('Login error: $message, $e');
-      if(message.toString() == "FailedSimpleValidation"){
-         emit(
-          state.copyWith(
-          status: LoginStatus.failure,
-          errorMessage: "The number you entered is invalid",
-          twoFactorKey: null,
+      if (message.toString() == "FailedSimpleValidation") {
+        _emitFailure(
+          emit,
+          message: "The number you entered is invalid",
           phoneFieldError: false,
           passwordFieldError: false,
-        ),
-      );
-      }else if(message.toString() == "FailedUsernameIsLocked"){
-        emit(
-          state.copyWith(
-            status: LoginStatus.failure,
-            errorMessage: "your account is locked out, please try again in 15 minutes",
-            twoFactorKey: null,
-            phoneFieldError: false,
-            passwordFieldError: false,
-          ),
         );
-
-      } else{
-         emit(
-        state.copyWith(
-          status: LoginStatus.failure,
-          errorMessage: message,
-          twoFactorKey: null,
+      } else if (message.toString() == "FailedUsernameIsLocked") {
+        _emitFailure(
+          emit,
+          message: "your account is locked out, please try again in 15 minutes",
           phoneFieldError: false,
           passwordFieldError: false,
-        ),
-      );
+        );
+      } else {
+        _emitFailure(
+          emit,
+          message: message,
+          phoneFieldError: false,
+          passwordFieldError: false,
+        );
       }
-     
     }
   }
 
