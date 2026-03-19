@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
 import '../bloc/home_plan_state.dart';
+import '../models/monthly_plan_model.dart';
 import '../models/plan_model.dart';
 import '../repository/home_plan_repository.dart';
 import '../theme/theme.dart';
@@ -124,17 +125,20 @@ class _HomePlanView extends StatelessWidget {
               Expanded(
                 child: BlocBuilder<HomePlanBloc, HomePlanState>(
                   builder: (context, state) {
-                    final HomePlanStatus currentTabStatus = state.selectedTabStatus;
-                    final String? currentTabError = state.selectedTabErrorMessage;
+                    final HomePlanStatus currentTabStatus =
+                        state.selectedTabStatus;
+                    final String? currentTabError =
+                        state.selectedTabErrorMessage;
 
-                    if (currentTabStatus == HomePlanStatus.loading || currentTabStatus == HomePlanStatus.initial) {
+                    if (currentTabStatus == HomePlanStatus.loading ||
+                        currentTabStatus == HomePlanStatus.initial) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
                     if (currentTabStatus == HomePlanStatus.failure) {
                       return Center(
                         child: Padding(
-                          padding: EdgeInsetsGeometry.only(left: 25,right: 25),
+                          padding: EdgeInsetsGeometry.only(left: 25, right: 25),
                           child: Text(
                             currentTabError ?? 'Something went wrong',
                             style: HomePlanTheme.bodyErrorText,
@@ -148,7 +152,9 @@ class _HomePlanView extends StatelessWidget {
                         addOns: state.addOns,
                         selectedAddOnIds: state.selectedAddOnIds,
                         onToggleAddOn: (addOn) {
-                          context.read<HomePlanBloc>().add(HomePlanToggleAddon(addOn));
+                          context
+                              .read<HomePlanBloc>()
+                              .add(HomePlanToggleAddon(addOn));
                         },
                       );
                     }
@@ -157,15 +163,21 @@ class _HomePlanView extends StatelessWidget {
                       state: state,
                       onToggleExpanded: (planId) {
                         debugPrint('planId: $planId');
-                        context.read<HomePlanBloc>().add(HomePlanToggleExpanded(planId));
+                        context
+                            .read<HomePlanBloc>()
+                            .add(HomePlanToggleExpanded(planId));
                       },
                       onWeeklyPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.planName}');
-                       // _onPurchaseNowPressed(context, plan);
+                        // _onPurchaseNowPressed(context, plan);
                       },
                       onDailyPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.planName}');
-                       // _onPurchaseNowPressed(context, plan);
+                        // _onPurchaseNowPressed(context, plan);
+                      },
+                      onMonthlyPurchaseNow: (MonthlyPlanModel plan) {
+                        debugPrint('plan: ${plan.planName}');
+                        // _onPurchaseNowPressed(context, plan);
                       },
                       onPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.id}');

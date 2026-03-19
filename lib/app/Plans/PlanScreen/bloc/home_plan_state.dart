@@ -1,6 +1,7 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/monthly_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 
@@ -79,6 +80,9 @@ class HomePlanState {
   /// Dedicated API data for Weekly tab (not bound to UI yet).
   final List<WeeklyPlanModel> weeklyApiPlans;
 
+  /// Dedicated API data for Monthly tab (not bound to UI yet).
+  final List<MonthlyPlanModel> monthlyApiPlans;
+
   /// Lightweight API metadata per tab.
   ///
   /// Important:
@@ -92,6 +96,9 @@ class HomePlanState {
 
   /// Time when Weekly API data was last synced successfully.
   final DateTime? weeklyApiLastSyncedAt;
+
+  /// Time when Monthly API data was last synced successfully.
+  final DateTime? monthlyApiLastSyncedAt;
 
   /// One-time toast effect to be handled by UI listener.
   final HomePlanToastMessage? pendingToast;
@@ -115,10 +122,12 @@ class HomePlanState {
     required this.selectedAddOnIds,
     required this.dailyApiPlans,
     required this.weeklyApiPlans,
+    required this.monthlyApiPlans,
     required this.apiTabMeta,
     required this.toastSequence,
     this.dailyApiLastSyncedAt,
     this.weeklyApiLastSyncedAt,
+    this.monthlyApiLastSyncedAt,
     this.pendingToast,
   });
 
@@ -163,6 +172,7 @@ class HomePlanState {
       selectedAddOnIds: {},
       dailyApiPlans: [],
       weeklyApiPlans: [],
+      monthlyApiPlans: [],
       apiTabMeta: {},
       pendingToast: null,
       toastSequence: 0,
@@ -187,9 +197,11 @@ class HomePlanState {
     Set<String>? selectedAddOnIds,
     List<DailyPlanModel>? dailyApiPlans,
     List<WeeklyPlanModel>? weeklyApiPlans,
+    List<MonthlyPlanModel>? monthlyApiPlans,
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
     DateTime? weeklyApiLastSyncedAt,
+    DateTime? monthlyApiLastSyncedAt,
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
     bool clearPendingToast = false,
@@ -211,9 +223,13 @@ class HomePlanState {
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
       dailyApiPlans: dailyApiPlans ?? this.dailyApiPlans,
       weeklyApiPlans: weeklyApiPlans ?? this.weeklyApiPlans,
+      monthlyApiPlans: monthlyApiPlans ?? this.monthlyApiPlans,
       apiTabMeta: apiTabMeta ?? this.apiTabMeta,
       dailyApiLastSyncedAt: dailyApiLastSyncedAt ?? this.dailyApiLastSyncedAt,
-      weeklyApiLastSyncedAt: weeklyApiLastSyncedAt ?? this.weeklyApiLastSyncedAt,
+      weeklyApiLastSyncedAt:
+          weeklyApiLastSyncedAt ?? this.weeklyApiLastSyncedAt,
+      monthlyApiLastSyncedAt:
+          monthlyApiLastSyncedAt ?? this.monthlyApiLastSyncedAt,
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,

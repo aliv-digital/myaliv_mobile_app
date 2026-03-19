@@ -5,6 +5,7 @@ import '../../../../core/networkService/app_http_client.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/monthly_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import 'plan_repository_exception.dart';
 
@@ -21,9 +22,7 @@ enum HomePlanTab {
 
 /// Converts one dynamic map to string-keyed map.
 Map<String, dynamic> _toStringKeyedMapInBackground(Map<dynamic, dynamic> item) {
-  return item.map(
-    (dynamic key, dynamic value) =>
-        MapEntry<String, dynamic>(key.toString(), value),
+  return item.map((dynamic key, dynamic value) => MapEntry<String, dynamic>(key.toString(), value),
   );
 }
 
@@ -76,6 +75,12 @@ class HomePlanRepository {
 
   /// Timestamp for latest successful strict weekly filtering.
   DateTime? _lastFetchedWeeklyAt;
+
+  /// Holds strict monthly plans parsed from latest API payload.
+  List<MonthlyPlanModel> _lastFetchedMonthlyPlans = <MonthlyPlanModel>[];
+
+  /// Timestamp for latest successful strict monthly filtering.
+  DateTime? _lastFetchedMonthlyAt;
 
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -139,6 +144,7 @@ class HomePlanRepository {
     required bool printRawResponse,
   }) async {
     if (_lastFetchedPlans.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 450));
       return _lastFetchedPlans;
     }
 
@@ -159,10 +165,13 @@ class HomePlanRepository {
     final String normalizedFrequency = frequency.trim().toUpperCase();
 
     return _lastFetchedPlans.where((Map<String, dynamic> plan) {
-      final String currentPlanType = _normalizedUpperInBackground(plan['PlanType']);
-      final String currentFrequency = _normalizedUpperInBackground(plan['Frequency']);
+      final String currentPlanType =
+          _normalizedUpperInBackground(plan['PlanType']);
+      final String currentFrequency =
+          _normalizedUpperInBackground(plan['Frequency']);
 
-      return currentPlanType == normalizedPlanType && currentFrequency == normalizedFrequency;
+      return currentPlanType == normalizedPlanType &&
+          currentFrequency == normalizedFrequency;
     }).toList(growable: false);
   }
 
@@ -327,26 +336,105 @@ class HomePlanRepository {
     return weeklyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
   }
 
+  /// Fetch and parse API payload into dedicated Monthly model list.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = P
+  /// - Frequency = M
+  ///
+  /// Notes:
+  /// - This mirrors the Daily and Weekly repository flow.
+  Future<List<MonthlyPlanModel>> fetchMonthlyPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredMonthlyPlans = false,
+  }) async {
+    // Step-1:
+    // Load the full plans response only once and keep it in repository memory.
+    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    // Step-2:
+    // Filter Monthly primary plans from the cached full list.
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictMonthlyRawPlans =
+    _filterStrictPlansFromFullCache(
+      planType: 'P',
+      frequency: 'M',
+    );
+
+    // Step-3:
+    // Parse only matched raw monthly maps into typed MonthlyPlanModel list.
+    // `includeRawPayload: false` keeps memory usage low in runtime.
+    final List<MonthlyPlanModel> strictMonthlyPlans = strictMonthlyRawPlans.map((Map<String, dynamic> planMap) => MonthlyPlanModel.fromApiMap(
+            planMap,
+            includeRawPayload: false,
+          ),
+        ).toList(growable: false);
+    _lastFetchedMonthlyPlans = strictMonthlyPlans;
+    _lastFetchedMonthlyAt = DateTime.now();
+
+    // Step-4:
+    // Optional debug summary/details in console.
+    if (printFilteredMonthlyPlans) {
+      _logMonthlyFilterResult(
+        totalRawPlansCount: totalRawPlansCount,
+        matchedRawPlansCount: strictMonthlyRawPlans.length,
+        monthlyPlans: strictMonthlyPlans,
+      );
+    }
+
+    return List<MonthlyPlanModel>.unmodifiable(_lastFetchedMonthlyPlans);
+  }
+
+  /// Debug wrapper:
+  /// fetch strict monthly plans and print summary/details in console.
+  Future<List<Map<String, dynamic>>> debugFetchAndPrintMonthlyPlans({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+  }) async {
+    final List<MonthlyPlanModel> monthlyPlans = await fetchMonthlyPlansFromApi(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+      printFilteredMonthlyPlans: true,
+    );
+
+    return monthlyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+  }
+
   /// Read-only view of latest raw payload cache.
-  List<Map<String, dynamic>> get lastFetchedPlans =>
-      List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
+  List<Map<String, dynamic>> get lastFetchedPlans => List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
 
   /// Read-only view of latest payload fetch time.
   DateTime? get lastFetchedAt => _lastFetchedAt;
 
   /// Read-only latest strict daily plans cache.
-  List<DailyPlanModel> get lastFetchedDailyPlans =>
-      List<DailyPlanModel>.unmodifiable(_lastFetchedDailyPlans);
+  List<DailyPlanModel> get lastFetchedDailyPlans => List<DailyPlanModel>.unmodifiable(_lastFetchedDailyPlans);
 
   /// Read-only latest strict daily filter timestamp.
   DateTime? get lastFetchedDailyAt => _lastFetchedDailyAt;
 
   /// Read-only latest strict weekly plans cache.
-  List<WeeklyPlanModel> get lastFetchedWeeklyPlans =>
-      List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
+  List<WeeklyPlanModel> get lastFetchedWeeklyPlans => List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
 
   /// Read-only latest strict weekly filter timestamp.
   DateTime? get lastFetchedWeeklyAt => _lastFetchedWeeklyAt;
+
+  /// Read-only latest strict monthly plans cache.
+  List<MonthlyPlanModel> get lastFetchedMonthlyPlans => List<MonthlyPlanModel>.unmodifiable(_lastFetchedMonthlyPlans);
+
+  /// Read-only latest strict monthly filter timestamp.
+  DateTime? get lastFetchedMonthlyAt => _lastFetchedMonthlyAt;
 
   /// Builds Basic Auth token from username/password pair.
   String _buildBasicAuthToken(
@@ -600,6 +688,48 @@ class HomePlanRepository {
       );
 
       for (final WeeklyPlanBucketModel bucket in plan.planBuckets) {
+        debugPrint(
+          '  bucket: name=${bucket.name}, '
+          'amount=${bucket.amount}, '
+          'unit=${bucket.unit}, '
+          'bucketUnit=${bucket.bucketUnit}, '
+          'unlimited=${bucket.unlimited}',
+        );
+      }
+    }
+  }
+
+  /// Logs monthly filter summary and per-plan bucket details.
+  void _logMonthlyFilterResult({
+    required int totalRawPlansCount,
+    required int matchedRawPlansCount,
+    required List<MonthlyPlanModel> monthlyPlans,
+  }) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'monthly-filter: total=$totalRawPlansCount, '
+      'matchedRaw=$matchedRawPlansCount, '
+      'parsedMonthly=${monthlyPlans.length}, '
+      'rule=(PlanType=P && Frequency=M)',
+    );
+
+    if (monthlyPlans.isEmpty) {
+      debugPrint('monthly-filter: no plan matched.');
+      return;
+    }
+
+    for (final MonthlyPlanModel plan in monthlyPlans) {
+      debugPrint(
+        'monthly-plan: id=${plan.planId}, '
+        'name=${plan.planName}, '
+        'amount=${plan.planAmount.toStringAsFixed(2)}, '
+        'group=${plan.planGroup}, '
+        'sort=${plan.planSortOrder}, '
+        'buckets=${plan.planBuckets.length}',
+      );
+
+      for (final MonthlyPlanBucketModel bucket in plan.planBuckets) {
         debugPrint(
           '  bucket: name=${bucket.name}, '
           'amount=${bucket.amount}, '

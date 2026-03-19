@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
 
 import '../bloc/home_plan_state.dart';
@@ -20,6 +21,7 @@ class HomePlanPlansList extends StatelessWidget {
     required this.onToggleExpanded,
     required this.onPurchaseNow,
     this.onDailyPurchaseNow,
+    this.onMonthlyPurchaseNow,
     this.onWeeklyPurchaseNow,
   });
 
@@ -27,6 +29,7 @@ class HomePlanPlansList extends StatelessWidget {
   final ValueChanged<String> onToggleExpanded;
   final ValueChanged<HomePlanModel> onPurchaseNow;
   final ValueChanged<DailyPlanModel>? onDailyPurchaseNow;
+  final ValueChanged<MonthlyPlanModel>? onMonthlyPurchaseNow;
   final ValueChanged<WeeklyPlanModel>? onWeeklyPurchaseNow;
 
   @override
@@ -67,6 +70,28 @@ class HomePlanPlansList extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _buildCardForWeeklyTab(
+              plan: plan,
+              expanded: expanded,
+            ),
+          );
+        },
+      );
+    }
+
+    if (state.selectedTab == HomePlanTab.monthly) {
+      return ListView.builder(
+        // Title-to-first-card gap target: 16px.
+        // First card already contributes 10px top margin from theme,
+        // so list adds 6px top padding.
+        padding: const EdgeInsets.only(top: 6, bottom: 14),
+        itemCount: state.monthlyApiPlans.length,
+        itemBuilder: (context, index) {
+          final MonthlyPlanModel plan = state.monthlyApiPlans[index];
+          final bool expanded = state.expandedPlanIds.contains(plan.planId);
+
+          return Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _buildCardForMonthlyTab(
               plan: plan,
               expanded: expanded,
             ),
@@ -135,6 +160,25 @@ class HomePlanPlansList extends StatelessWidget {
     );
   }
 
+  Widget _buildCardForMonthlyTab({
+    required MonthlyPlanModel plan,
+    required bool expanded,
+  }) {
+    void toggle() => onToggleExpanded(plan.planId);
+
+    return HomePlanMonthlyPlanCard(
+      plan: plan,
+      expanded: expanded,
+      onToggle: toggle,
+      onViewDetails: toggle,
+      onPurchaseNow: () {
+        if (onMonthlyPurchaseNow != null) {
+          onMonthlyPurchaseNow!(plan);
+        }
+      },
+    );
+  }
+
   Widget _buildCardForTab({
     required HomePlanTab tab,
     required HomePlanModel plan,
@@ -144,13 +188,7 @@ class HomePlanPlansList extends StatelessWidget {
 
     switch (tab) {
       case HomePlanTab.monthly:
-        return HomePlanMonthlyPlanCard(
-          plan: plan,
-          expanded: expanded,
-          onToggle: toggle,
-          onViewDetails: toggle,
-          onPurchaseNow: () => onPurchaseNow(plan),
-        );
+        return const SizedBox.shrink();
       case HomePlanTab.daily:
         return const SizedBox.shrink();
       case HomePlanTab.weekly:

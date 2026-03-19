@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
-import '../data/plan_icon_assets.dart';
-import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
-// Monthly plan card — keep monthly UI here only
+// Monthly plan card — mirrors the Daily/Weekly API binding pattern.
 class HomePlanMonthlyPlanCard extends StatelessWidget {
-  final HomePlanModel plan;
+  final MonthlyPlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -23,20 +23,14 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
     required this.onPurchaseNow,
   });
 
-  //final Color _brand = HomePlanTheme.brandPurple;
-  //static const Color _muted = Color(0xFF8B8B8B);
-  //static const Color _divider = Color(0xFFE9E9EE);
-
   @override
   Widget build(BuildContext context) {
-    // Paste your FULL current PlanCard UI here (monthly version)
     return Container(
       margin: HomePlanTheme.planCardOuterMargin,
       padding: HomePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planCardRadius),
         boxShadow: const [
           BoxShadow(
             color: HomePlanTheme.planCardShadowColor,
@@ -47,7 +41,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // ===== Header row =====
+          // Header keeps the same layout as the other API-backed tabs.
           Row(
             children: [
               Expanded(
@@ -61,59 +55,50 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
-                        mainAxisSize: MainAxisSize.min, // IMPORTANT
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Flexible(
-                            fit: FlexFit.loose, // IMPORTANT
+                            fit: FlexFit.loose,
                             child: Text(
-                              plan.title,
+                              plan.planName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style:
-                                  HomePlanTheme.planCardTitleTextStyle,
+                              style: HomePlanTheme.planCardTitleTextStyle,
                             ),
                           ),
                           const SizedBox(
-                            width:
-                                HomePlanTheme.planCardTitleToArrowGap,
+                            width: HomePlanTheme.planCardTitleToArrowGap,
                           ),
                           SizedBox(
                             child: SvgPicture.asset(
                               expanded
                                   ? AssetConstant.upArrowSVG
                                   : AssetConstant.downArrowSVG,
-                              width: HomePlanTheme
-                                  .planCardToggleArrowWidth,
-                              height: HomePlanTheme
-                                  .planCardToggleArrowHeight,
+                              width: HomePlanTheme.planCardToggleArrowWidth,
+                              height: HomePlanTheme.planCardToggleArrowHeight,
                               fit: BoxFit.contain,
                             ),
+                          ),
+                          const SizedBox(
+                            width: HomePlanTheme.planCardTitleToArrowGap,
                           ),
                         ],
                       ),
                       Text(
-                        plan.subtitle,
+                        '30 day',
                         style: HomePlanTheme.planCardSubtitleTextStyle,
                       ),
                     ],
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.planAmount),
             ],
           ),
-
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
-
-          // Scrollable benefits row + indicator bar
-          _BenefitsRow(benefits: plan.benefits),
-
-          // thin divider line like screenshot
+          _PlanBuckets(benefits: plan.planBuckets),
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
-          //Container(height: 1, color: HomePlanTheme.dividerColor),
-
-          // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
             crossFadeState:
@@ -126,15 +111,13 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  plan.description,
+                  plan.planDescription,
                   textAlign: TextAlign.start,
                   style: HomePlanTheme.planCardDescriptionTextStyle,
                 ),
               ),
             ),
           ),
-
-          // ===== Buttons ALWAYS visible (collapsed + expanded) =====
           Row(
             children: [
               Expanded(
@@ -149,20 +132,16 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardViewDetailsBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardViewDetailsTextStyle,
+                  textStyle: HomePlanTheme.planCardViewDetailsTextStyle,
                   borderSide: BorderSide(
-                    color:
-                        HomePlanTheme.planCardViewDetailsBorderColor,
+                    color: HomePlanTheme.planCardViewDetailsBorderColor,
                   ),
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
-              const SizedBox(
-                width: HomePlanTheme.planCardActionButtonsGap,
-              ),
+              const SizedBox(width: HomePlanTheme.planCardActionButtonsGap),
               Expanded(
                 child: DefaultButton(
                   label: HomePlanTheme.planCardPurchaseNowLabel,
@@ -173,8 +152,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardPurchaseNowBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardPurchaseNowTextStyle,
+                  textStyle: HomePlanTheme.planCardPurchaseNowTextStyle,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
@@ -192,16 +170,13 @@ class _PricePill extends StatelessWidget {
   final double price;
   const _PricePill({required this.price});
 
-  //static const Color _brand = Color(0xFF5D5A8B);
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: HomePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -211,15 +186,15 @@ class _PricePill extends StatelessWidget {
   }
 }
 
-class _BenefitsRow extends StatefulWidget {
-  final List<HomePlanBenefit> benefits;
-  const _BenefitsRow({required this.benefits});
+class _PlanBuckets extends StatefulWidget {
+  final List<MonthlyPlanBucketModel> benefits;
+  const _PlanBuckets({required this.benefits});
 
   @override
-  State<_BenefitsRow> createState() => _BenefitsRowState();
+  State<_PlanBuckets> createState() => _PlanBucketsRowState();
 }
 
-class _BenefitsRowState extends State<_BenefitsRow> {
+class _PlanBucketsRowState extends State<_PlanBuckets> {
   final ScrollController _controller = ScrollController();
 
   @override
@@ -230,8 +205,8 @@ class _BenefitsRowState extends State<_BenefitsRow> {
 
   @override
   Widget build(BuildContext context) {
-    const double rowH = 50; // ✅ figma
-    const double sidePad = 2; // ✅ screenshot মত margins (22-26 tune)
+    const double rowH = 50;
+    const double sidePad = 2;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -240,69 +215,134 @@ class _BenefitsRowState extends State<_BenefitsRow> {
           height: rowH,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: sidePad),
-            child: SingleChildScrollView(
-              controller: _controller,
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: List.generate(widget.benefits.length, (i) {
-                  final b = widget.benefits[i];
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  controller: _controller,
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: List.generate(widget.benefits.length, (i) {
+                          final MonthlyPlanBucketModel item =
+                              widget.benefits[i];
+                          Color labelColor;
+                          BucketItemType itemType = BucketItemType.whatsApp;
 
-                  Color labelColor;
-                  switch (b.type) {
-                    case HomePlanBenefitType.data:
-                      labelColor = HomePlanTheme.dataColor;
-                      break;
-                    case HomePlanBenefitType.intlTalkText:
-                      labelColor = HomePlanTheme.intlTalkTextColor;
-                      break;
-                    case HomePlanBenefitType.sms:
-                      labelColor = HomePlanTheme.smsColor;
-                      break;
-                    case HomePlanBenefitType.bonusData:
-                      labelColor = HomePlanTheme.bonusDataColor;
-                      break;
-                    case HomePlanBenefitType.mms:
-                      labelColor = HomePlanTheme.talkMinsColor;
-                      break;
-                    case HomePlanBenefitType.talkMins:
-                      labelColor = HomePlanTheme.talkMinsColor;
-                      break;
-                  }
+                          if (item.bucketUnit == 'INS_Data' &&
+                              item.unit == 'GB') {
+                            itemType = BucketItemType.data;
+                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' &&
+                              item.unit == 'GB') {
+                            itemType = BucketItemType.data;
+                          } else if (item.bucketUnit ==
+                                  'INS_Whatsapp_Text_10201' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.whatsApp;
+                          } else if (item.bucketUnit == 'INS_Whatsapp_All' &&
+                              item.unit == 'GB') {
+                            itemType = BucketItemType.whatsApp;
+                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
+                              item.unit == 'Minutes') {
+                            itemType = BucketItemType.call;
+                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.internationalSMS;
+                          } else if (item.bucketUnit ==
+                                  'INS_Voice_Only_National' &&
+                              item.unit == 'Minutes') {
+                            itemType = BucketItemType.call;
+                          } else if (item.bucketUnit ==
+                                  'INS_Voice_Only_National' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.sms;
+                          } else if (item.bucketUnit ==
+                                  'INS_SMS_Only_National' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.sms;
+                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.internationalSMS;
+                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' &&
+                              item.unit == 'Minutes') {
+                            itemType = BucketItemType.call;
+                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.internationalSMS;
+                          } else if (item.bucketUnit == 'INS_Voice_Onnet' &&
+                              item.unit == 'Minutes') {
+                            itemType = BucketItemType.call;
+                          } else if (item.bucketUnit == 'INS_SMS_Onnet' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.sms;
+                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' &&
+                              item.unit == 'Text') {
+                            itemType = BucketItemType.internationalSMS;
+                          } else if (item.bucketUnit == 'INS_Data_MIFI' &&
+                              item.unit == 'GB') {
+                            itemType = BucketItemType.data;
+                          } else if (item.bucketUnit == 'INS_TikTok_10500' &&
+                              item.unit == 'GB') {
+                            itemType = BucketItemType.data;
+                          } else if (item.bucketUnit ==
+                                  'INS_Facebook_MSG_10403' &&
+                              item.unit == 'GB') {
+                            itemType = BucketItemType.data;
+                          }
 
-                  return Row(
-                    children: [
-                      SizedBox(
-                        // width: itemW,
-                        height: rowH, //  50
-                        child: _BenefitItem(
-                          benefit: b,
-                          labelColor: labelColor,
-                        ),
+                          switch (itemType) {
+                            case BucketItemType.data:
+                              labelColor = HomePlanTheme.dataColor;
+                              break;
+                            case BucketItemType.call:
+                              labelColor = HomePlanTheme.talkMinsColor;
+                              break;
+                            case BucketItemType.sms:
+                              labelColor = HomePlanTheme.smsColor;
+                              break;
+                            case BucketItemType.whatsApp:
+                              labelColor = HomePlanTheme.bonusDataColor;
+                              break;
+                            case BucketItemType.internationalSMS:
+                              labelColor = HomePlanTheme.intlTalkTextColor;
+                              break;
+                          }
+
+                          return Row(
+                            children: [
+                              SizedBox(
+                                height: rowH,
+                                child: _BucketItem(
+                                  benefit: item,
+                                  labelColor: labelColor,
+                                  itemType: itemType,
+                                ),
+                              ),
+                              if (i != widget.benefits.length - 1)
+                                Container(
+                                  width: HomePlanTheme.planBenefitDividerWidth,
+                                  height:
+                                      HomePlanTheme.planBenefitDividerHeight,
+                                  margin: HomePlanTheme
+                                      .planBenefitDividerHorizontalMargin,
+                                  color: HomePlanTheme.planBenefitDividerColor,
+                                ),
+                            ],
+                          );
+                        }),
                       ),
-                      if (i != widget.benefits.length - 1)
-                        Container(
-                          width:
-                              HomePlanTheme.planBenefitDividerWidth,
-                          height:
-                              HomePlanTheme.planBenefitDividerHeight,
-                          margin: HomePlanTheme
-                              .planBenefitDividerHorizontalMargin,
-                          color:
-                              HomePlanTheme.planBenefitDividerColor,
-                        ),
-                    ],
-                  );
-                }),
-              ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
-
         const SizedBox(height: 10),
-
-        //  indicator same side padding
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: sidePad),
           child: _ScrollIndicator(controller: _controller),
@@ -328,26 +368,26 @@ class _ScrollIndicator extends StatelessWidget {
         return AnimatedBuilder(
           animation: controller,
           builder: (context, _) {
-            // No attach yet
+            // Hide the scrollbar when the row is not scrollable yet.
+            // This keeps the UI clean for plans with only a few bucket items.
             if (!controller.hasClients || controller.positions.isEmpty) {
-              return _indicatorUI(trackW, trackH, thumbW, 0);
+              return const SizedBox.shrink();
             }
 
-            // IMPORTANT: avoid controller.position (it asserts if multiple clients)
-            final position = controller.positions.first;
-
+            final ScrollPosition position = controller.positions.first;
             if (!position.hasContentDimensions) {
-              return _indicatorUI(trackW, trackH, thumbW, 0);
+              return const SizedBox.shrink();
             }
 
-            final maxScroll = position.maxScrollExtent;
+            final double maxScroll = position.maxScrollExtent;
             if (maxScroll <= 0) {
-              return _indicatorUI(trackW, trackH, thumbW, 0);
+              return const SizedBox.shrink();
             }
 
-            final progress = (position.pixels / maxScroll).clamp(0.0, 1.0);
-            final maxThumbTravel = (trackW - thumbW).clamp(0.0, trackW);
-            final left = progress * maxThumbTravel;
+            final double progress =
+                (position.pixels / maxScroll).clamp(0.0, 1.0);
+            final double maxThumbTravel = (trackW - thumbW).clamp(0.0, trackW);
+            final double left = progress * maxThumbTravel;
 
             return _indicatorUI(trackW, trackH, thumbW, left);
           },
@@ -410,15 +450,15 @@ class _ScrollIndicator extends StatelessWidget {
 }
 
 class _AssetIcon extends StatelessWidget {
-  final HomePlanBenefitType type;
+  final BucketItemType type;
   final double size;
 
   const _AssetIcon({required this.type, required this.size});
 
   @override
   Widget build(BuildContext context) {
-    final path = HomePlanIconAssets.forType(type);
-    final lower = path.toLowerCase();
+    final String path = PlanBucketIcons.forType(type);
+    final String lower = path.toLowerCase();
     if (lower.endsWith('.svg')) {
       return SvgPicture.asset(
         path,
@@ -431,13 +471,30 @@ class _AssetIcon extends StatelessWidget {
   }
 }
 
-class _BenefitItem extends StatelessWidget {
-  final HomePlanBenefit benefit;
+class _BucketItem extends StatelessWidget {
+  final BucketItemType itemType;
+  final MonthlyPlanBucketModel benefit;
   final Color labelColor;
-  const _BenefitItem({required this.benefit, required this.labelColor});
+
+  const _BucketItem({
+    required this.benefit,
+    required this.labelColor,
+    required this.itemType,
+  });
+
+  // API bucket amounts always arrive as doubles, but UI should hide
+  // meaningless trailing zero decimals like `3.000000` while preserving
+  // real fractional values such as `0.34` or `4.052`.
+  String _formatAmount(double amount) {
+    final bool hasOnlyZeroFraction = (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    if (hasOnlyZeroFraction) {
+      return amount.toStringAsFixed(0);
+    }
+    return amount.toString();
+  }
 
   double _measureTextWidth(BuildContext context, String text, TextStyle style) {
-    final tp = TextPainter(
+    final TextPainter tp = TextPainter(
       text: TextSpan(text: text, style: style),
       maxLines: 1,
       textDirection: Directionality.of(context),
@@ -447,10 +504,10 @@ class _BenefitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const iconSize = 14.0;
-    const iconGap = 4.0;
+    const double iconSize = 14.0;
+    const double iconGap = 4.0;
 
-    final labelStyle = TextStyle(
+    final TextStyle labelStyle = TextStyle(
       fontFamily: 'CircularPro',
       fontSize: 12,
       height: 1.0,
@@ -458,7 +515,7 @@ class _BenefitItem extends StatelessWidget {
       color: labelColor,
     );
 
-    final valueStyle = const TextStyle(
+    final TextStyle valueStyle = const TextStyle(
       fontFamily: 'CircularPro',
       fontSize: 16,
       height: 1.0,
@@ -466,7 +523,7 @@ class _BenefitItem extends StatelessWidget {
       color: Colors.black,
     );
 
-    final subStyle = TextStyle(
+    final TextStyle subStyle = TextStyle(
       fontFamily: 'CircularPro',
       fontSize: 12,
       height: 1.0,
@@ -474,29 +531,28 @@ class _BenefitItem extends StatelessWidget {
       color: HomePlanTheme.subtitleColor,
     );
 
-    // measure widths
-    final labelW = _measureTextWidth(context, benefit.label, labelStyle);
-    final valueW = _measureTextWidth(context, benefit.value, valueStyle);
-    final subW = _measureTextWidth(context, benefit.sub, subStyle);
-
-    // label line has icon + gap
-    final line1W = iconSize + iconGap + labelW;
-
-    // final width depends on longest line
-    final contentW = [line1W, valueW, subW].reduce((a, b) => a > b ? a : b);
-
-    // add some horizontal breathing space
-    final dynamicW = contentW + 16; // padding feel
+    final double labelW = _measureTextWidth(context, benefit.name, labelStyle);
+    final double valueW = _measureTextWidth(
+      context,
+      benefit.unlimited ? 'unlimited' : _formatAmount(benefit.amount),
+      valueStyle,
+    );
+    final double subW =
+        _measureTextWidth(context, benefit.unit.toLowerCase(), subStyle);
+    final double line1W = iconSize + iconGap + labelW;
+    final double contentW = [line1W, valueW, subW].reduce(
+      (a, b) => a > b ? a : b,
+    );
+    final double dynamicW = contentW + 16;
 
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        // min/max তুমি চাইলে tune করতে পারো
+      constraints: const BoxConstraints(
         minWidth: 72,
         maxWidth: 160,
       ),
       child: SizedBox(
         width: dynamicW.clamp(72, 160),
-        height: 50, // figma row height
+        height: 50,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -506,11 +562,11 @@ class _BenefitItem extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: iconGap),
-                  child: _AssetIcon(type: benefit.type, size: iconSize),
+                  child: _AssetIcon(type: itemType, size: iconSize),
                 ),
                 Text(
-                  benefit.label,
-                  maxLines: 1, // dynamic width হলে 1 line better
+                  benefit.name,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: labelStyle,
                 ),
@@ -520,7 +576,7 @@ class _BenefitItem extends StatelessWidget {
             SizedBox(
               height: 16,
               child: Text(
-                benefit.value,
+                benefit.unlimited ? 'unlimited' : _formatAmount(benefit.amount),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: valueStyle,
@@ -530,7 +586,7 @@ class _BenefitItem extends StatelessWidget {
             SizedBox(
               height: 12,
               child: Text(
-                benefit.sub,
+                benefit.unit.toLowerCase(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: subStyle,
