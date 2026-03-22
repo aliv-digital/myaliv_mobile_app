@@ -20,6 +20,7 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
   }) : super(WelcomeInitial()) {
     // Registering the event handler for WelcomeLoaded
     on<WelcomeLoaded>(_onWelcomeLoaded);
+    //test
   }
 
   // Event handler method for WelcomeLoaded
