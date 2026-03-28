@@ -7,6 +7,7 @@ import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/roaming_plan_model.dart';
+import '../models/roameasy_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import 'plan_repository_exception.dart';
 
@@ -88,6 +89,13 @@ class HomePlanRepository {
 
   /// Timestamp for latest successful strict roaming filtering.
   DateTime? _lastFetchedRoamingAt;
+
+  /// Holds strict RoamEasy plans parsed from latest API payload.
+  List<RoamEasyPlanModel> _lastFetchedRoamEasyPlans =
+      <RoamEasyPlanModel>[];
+
+  /// Timestamp for latest successful strict RoamEasy filtering.
+  DateTime? _lastFetchedRoamEasyAt;
 
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -499,6 +507,69 @@ class HomePlanRepository {
     return roamingPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
   }
 
+  /// Fetch and parse API payload into dedicated RoamEasy model list.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = A
+  /// - PlanGroup = roameasy
+  Future<List<RoamEasyPlanModel>> fetchRoamEasyPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredRoamEasyPlans = false,
+  }) async {
+    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictRoamEasyRawPlans = _filterStrictPlansFromFullCacheByPlanGroup(
+      planType: 'A',
+      planGroup: 'roameasy',
+    );
+
+    final List<RoamEasyPlanModel> strictRoamEasyPlans = strictRoamEasyRawPlans.map((Map<String, dynamic> planMap) => RoamEasyPlanModel.fromApiMap(
+      planMap,
+      includeRawPayload: false),
+    ).toList(growable: false);
+
+    _lastFetchedRoamEasyPlans = strictRoamEasyPlans;
+    _lastFetchedRoamEasyAt = DateTime.now();
+
+    if (printFilteredRoamEasyPlans) {
+      _logRoamEasyFilterResult(
+        totalRawPlansCount: totalRawPlansCount,
+        matchedRawPlansCount: strictRoamEasyRawPlans.length,
+        roamEasyPlans: strictRoamEasyPlans,
+      );
+    }
+
+    return List<RoamEasyPlanModel>.unmodifiable(_lastFetchedRoamEasyPlans);
+  }
+
+  /// Debug wrapper:
+  /// fetch strict RoamEasy plans and print summary/details in console.
+  Future<List<Map<String, dynamic>>> debugFetchAndPrintRoamEasyPlans({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+  }) async {
+    final List<RoamEasyPlanModel> roamEasyPlans = await fetchRoamEasyPlansFromApi(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+      printFilteredRoamEasyPlans: true,
+    );
+
+    return roamEasyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+  }
+
   /// Read-only view of latest raw payload cache.
   List<Map<String, dynamic>> get lastFetchedPlans => List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
 
@@ -528,6 +599,13 @@ class HomePlanRepository {
 
   /// Read-only latest strict roaming filter timestamp.
   DateTime? get lastFetchedRoamingAt => _lastFetchedRoamingAt;
+
+  /// Read-only latest strict RoamEasy plans cache.
+  List<RoamEasyPlanModel> get lastFetchedRoamEasyPlans =>
+      List<RoamEasyPlanModel>.unmodifiable(_lastFetchedRoamEasyPlans);
+
+  /// Read-only latest strict RoamEasy filter timestamp.
+  DateTime? get lastFetchedRoamEasyAt => _lastFetchedRoamEasyAt;
 
   /// Builds Basic Auth token from username/password pair.
   String _buildBasicAuthToken({required String username, required String password}) {
@@ -860,6 +938,48 @@ class HomePlanRepository {
       );
 
       for (final RoamingPlanBucketModel bucket in plan.planBuckets) {
+        debugPrint(
+          '  bucket: name=${bucket.name}, '
+          'amount=${bucket.amount}, '
+          'unit=${bucket.unit}, '
+          'bucketUnit=${bucket.bucketUnit}, '
+          'unlimited=${bucket.unlimited}',
+        );
+      }
+    }
+  }
+
+  /// Logs RoamEasy filter summary and per-plan bucket details.
+  void _logRoamEasyFilterResult({
+    required int totalRawPlansCount,
+    required int matchedRawPlansCount,
+    required List<RoamEasyPlanModel> roamEasyPlans,
+  }) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'roameasy-filter: total=$totalRawPlansCount, '
+      'matchedRaw=$matchedRawPlansCount, '
+      'parsedRoamEasy=${roamEasyPlans.length}, '
+      'rule=(PlanType=A && PlanGroup=roameasy)',
+    );
+
+    if (roamEasyPlans.isEmpty) {
+      debugPrint('roameasy-filter: no plan matched.');
+      return;
+    }
+
+    for (final RoamEasyPlanModel plan in roamEasyPlans) {
+      debugPrint(
+        'roameasy-plan: id=${plan.planId}, '
+        'name=${plan.planName}, '
+        'amount=${plan.planAmount.toStringAsFixed(2)}, '
+        'group=${plan.planGroup}, '
+        'sort=${plan.planSortOrder}, '
+        'buckets=${plan.planBuckets.length}',
+      );
+
+      for (final RoamEasyPlanBucketModel bucket in plan.planBuckets) {
         debugPrint(
           '  bucket: name=${bucket.name}, '
           'amount=${bucket.amount}, '

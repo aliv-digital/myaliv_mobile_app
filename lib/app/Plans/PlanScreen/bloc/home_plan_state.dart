@@ -3,6 +3,7 @@ import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/roaming_plan_model.dart';
+import '../models/roameasy_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 
@@ -87,6 +88,9 @@ class HomePlanState {
   /// Dedicated API data for Roaming tab (not bound to UI yet).
   final List<RoamingPlanModel> roamingApiPlans;
 
+  /// Dedicated API data for RoamEasy tab (not bound to UI yet).
+  final List<RoamEasyPlanModel> roamEasyApiPlans;
+
   /// Lightweight API metadata per tab.
   ///
   /// Important:
@@ -106,6 +110,9 @@ class HomePlanState {
 
   /// Time when Roaming API data was last synced successfully.
   final DateTime? roamingApiLastSyncedAt;
+
+  /// Time when RoamEasy API data was last synced successfully.
+  final DateTime? roamEasyApiLastSyncedAt;
 
   /// One-time toast effect to be handled by UI listener.
   final HomePlanToastMessage? pendingToast;
@@ -131,12 +138,14 @@ class HomePlanState {
     required this.weeklyApiPlans,
     required this.monthlyApiPlans,
     required this.roamingApiPlans,
+    required this.roamEasyApiPlans,
     required this.apiTabMeta,
     required this.toastSequence,
     this.dailyApiLastSyncedAt,
     this.weeklyApiLastSyncedAt,
     this.monthlyApiLastSyncedAt,
     this.roamingApiLastSyncedAt,
+    this.roamEasyApiLastSyncedAt,
     this.pendingToast,
   });
 
@@ -183,6 +192,7 @@ class HomePlanState {
       weeklyApiPlans: [],
       monthlyApiPlans: [],
       roamingApiPlans: [],
+      roamEasyApiPlans: [],
       apiTabMeta: {},
       pendingToast: null,
       toastSequence: 0,
@@ -209,11 +219,13 @@ class HomePlanState {
     List<WeeklyPlanModel>? weeklyApiPlans,
     List<MonthlyPlanModel>? monthlyApiPlans,
     List<RoamingPlanModel>? roamingApiPlans,
+    List<RoamEasyPlanModel>? roamEasyApiPlans,
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
     DateTime? weeklyApiLastSyncedAt,
     DateTime? monthlyApiLastSyncedAt,
     DateTime? roamingApiLastSyncedAt,
+    DateTime? roamEasyApiLastSyncedAt,
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
     bool clearPendingToast = false,
@@ -237,6 +249,7 @@ class HomePlanState {
       weeklyApiPlans: weeklyApiPlans ?? this.weeklyApiPlans,
       monthlyApiPlans: monthlyApiPlans ?? this.monthlyApiPlans,
       roamingApiPlans: roamingApiPlans ?? this.roamingApiPlans,
+      roamEasyApiPlans: roamEasyApiPlans ?? this.roamEasyApiPlans,
       apiTabMeta: apiTabMeta ?? this.apiTabMeta,
       dailyApiLastSyncedAt: dailyApiLastSyncedAt ?? this.dailyApiLastSyncedAt,
       weeklyApiLastSyncedAt:
@@ -245,6 +258,8 @@ class HomePlanState {
           monthlyApiLastSyncedAt ?? this.monthlyApiLastSyncedAt,
       roamingApiLastSyncedAt:
           roamingApiLastSyncedAt ?? this.roamingApiLastSyncedAt,
+      roamEasyApiLastSyncedAt:
+          roamEasyApiLastSyncedAt ?? this.roamEasyApiLastSyncedAt,
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,

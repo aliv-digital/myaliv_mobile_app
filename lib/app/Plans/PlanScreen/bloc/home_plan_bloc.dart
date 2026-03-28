@@ -8,6 +8,7 @@ import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/roaming_plan_model.dart';
+import '../models/roameasy_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 import '../repository/plan_repository_exception.dart';
@@ -29,6 +30,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Prevents duplicate Roaming API sync calls when user taps Roaming repeatedly.
   bool _isRoamingApiSyncInProgress = false;
 
+  /// Prevents duplicate RoamEasy API sync calls when user taps RoamEasy repeatedly.
+  bool _isRoamEasyApiSyncInProgress = false;
+
   HomePlanBloc(this.repository) : super(HomePlanState.initial()) {
     on<HomePlanStarted>(_onStarted);
     on<HomePlanTabChanged>(_onTabChanged);
@@ -46,6 +50,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     on<HomePlanWeeklyApiSyncRequested>(_onWeeklyApiSyncRequested);
     on<HomePlanMonthlyApiSyncRequested>(_onMonthlyApiSyncRequested);
     on<HomePlanRoamingApiSyncRequested>(_onRoamingApiSyncRequested);
+    on<HomePlanRoamEasyApiSyncRequested>(_onRoamEasyApiSyncRequested);
     on<HomePlanToastConsumed>(_onToastConsumed);
   }
 
@@ -54,8 +59,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Handles tab switch and starts data load for that tab.
-  Future<void> _onTabChanged(
-      HomePlanTabChanged event, Emitter<HomePlanState> emit) async {
+  Future<void> _onTabChanged(HomePlanTabChanged event, Emitter<HomePlanState> emit) async {
     // If user taps the already-selected tab, keep current state as-is.
     // This prevents unnecessary reloads and repeated API calls.
     if (event.tab == state.selectedTab) {
@@ -134,8 +138,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       // the old mock `fetchPlans(...)` path completely.
       if (tab == HomePlanTab.daily ||
           tab == HomePlanTab.weekly ||
-          tab == HomePlanTab.monthly ||
-          tab == HomePlanTab.roaming) {
+          tab == HomePlanTab.monthly || tab == HomePlanTab.roaming || tab == HomePlanTab.roameasy) {
         emit(state.copyWith(
           plans: const [],
           addOns: const [],
@@ -147,8 +150,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
           _scheduleWeeklyApiSyncIfIdle();
         } else if (tab == HomePlanTab.monthly) {
           _scheduleMonthlyApiSyncIfIdle();
-        } else {
+        } else if (tab == HomePlanTab.roaming) {
           _scheduleRoamingApiSyncIfIdle();
+        } else {
+          _scheduleRoamEasyApiSyncIfIdle();
         }
         return;
       }
@@ -567,6 +572,97 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
   }
 
+  /// Sync strict RoamEasy API data and store in state.
+  Future<void> _onRoamEasyApiSyncRequested(
+      HomePlanRoamEasyApiSyncRequested event,
+      Emitter<HomePlanState> emit) async {
+    if (_isRoamEasyApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('roameasy-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    _isRoamEasyApiSyncInProgress = true;
+
+    try {
+      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
+      if (auth == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'roameasy-api-sync: skipped, missing username/password/deviceAccountID',
+          );
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.roameasy,
+          errorMessage:
+              'RoamEasy plans are unavailable right now. Please login again.',
+        );
+        return;
+      }
+
+      final List<RoamEasyPlanModel> roamEasyPlans =
+          await repository.fetchRoamEasyPlansFromApi(
+        username: auth.username,
+        password: auth.password,
+        deviceAccountID: auth.deviceAccountID,
+        printRawResponse: event.printRawResponse,
+        printFilteredRoamEasyPlans: false,
+      );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.roameasy] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: roamEasyPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      if (kDebugMode && roamEasyPlans.isNotEmpty) {
+        debugPrint("=========== RoamEasy Plan ==============");
+        debugPrint('First RoamEasy Indexed Data :');
+        debugPrint(roamEasyPlans[0].planName);
+        debugPrint("last synced : ${state.roamEasyApiLastSyncedAt}");
+      } else if (kDebugMode) {
+        debugPrint("roamEasyPlans.isEmpty");
+      }
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.roameasy,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        roamEasyApiPlans: roamEasyPlans,
+        apiTabMeta: nextApiTabMeta,
+        roamEasyApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.roameasy,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.roameasy,
+          error: error,
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('roameasy-api-sync: failed with error: $e');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.roameasy,
+        errorMessage: 'Failed to sync RoamEasy plans',
+      );
+    } finally {
+      _isRoamEasyApiSyncInProgress = false;
+    }
+  }
+
   /// Clears one-time toast after UI handles it.
   void _onToastConsumed(HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
     emit(state.copyWith(clearPendingToast: true));
@@ -630,6 +726,18 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
 
     add(HomePlanRoamingApiSyncRequested());
+  }
+
+  /// Schedules RoamEasy API sync only when no sync is running.
+  void _scheduleRoamEasyApiSyncIfIdle() {
+    if (_isRoamEasyApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('roameasy-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    add(HomePlanRoamEasyApiSyncRequested());
   }
 
   /// Returns one tab UI-state object.
