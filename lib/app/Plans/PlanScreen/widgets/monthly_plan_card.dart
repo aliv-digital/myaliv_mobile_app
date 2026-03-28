@@ -86,7 +86,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        '30 day',
+                        _durationText(plan),
                         style: HomePlanTheme.planCardSubtitleTextStyle,
                       ),
                     ],
@@ -164,6 +164,90 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
       ),
     );
   }
+}
+String _durationText(MonthlyPlanModel plan) {
+  if(plan.frequency == 'W'){
+    return '7 days';
+  }
+  if(plan.frequency == 'M'){
+    return '30 days';
+  }
+  if(plan.frequency == 'D'){
+    return '1 day';
+  }
+  if(plan.frequency == 'H'){
+    return '15 days';
+  }
+  if(plan.frequency == 'T'){
+    return '10 days';
+  }
+  if(plan.frequency == 'S'){
+    return '60 days';
+  }
+  if(plan.frequency == 'N'){
+    return '90 days';
+  }
+  if(plan.frequency == 'B'){
+    return '15 days';
+  }
+  if(plan.frequency == '3'){
+    return '3 days';
+  }
+  if(plan.frequency == '5'){
+    return '5 days';
+  }
+  if(plan.frequency == 'A'){
+    return '1 year';
+  }
+
+  /*
+    {
+       "Key": "daily",
+       "Value": "D"
+   },
+   {
+       "Key": "3-day",
+       "Value": "3"
+   },
+   {
+       "Key": "5-day",
+       "Value": "5"
+   },
+   {
+       "Key": "weekly",
+       "Value": "W"
+   },
+   {
+       "Key": "10-day",
+       "Value": "T"
+   },
+   {
+       "Key": "biweekly",
+       "Value": "B"
+   },
+   {
+       "Key": "15-day",
+       "Value": "H"
+   },
+   {
+       "Key": "monthly",
+       "Value": "M"
+   },
+   {
+       "Key": "60-day",
+       "Value": "S"
+   },
+   {
+       "Key": "90-day",
+       "Value": "N"
+   },
+   {
+       "Key": "annually",
+       "Value": "A"
+   }
+   */
+
+  return '';
 }
 
 class _PricePill extends StatelessWidget {

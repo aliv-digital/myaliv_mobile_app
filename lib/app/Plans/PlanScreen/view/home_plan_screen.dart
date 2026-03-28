@@ -11,6 +11,7 @@ import '../bloc/home_plan_event.dart';
 import '../bloc/home_plan_state.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/plan_model.dart';
+import '../models/roaming_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 import '../theme/theme.dart';
 import '../widgets/home_plan_add_ons_tab_content.dart';
@@ -42,6 +43,17 @@ class HomePlanScreen extends StatelessWidget {
 class _HomePlanView extends StatelessWidget {
   const _HomePlanView();
 
+  HomePlanModel _toPurchaseSheetPlan(RoamingPlanModel plan) {
+    return HomePlanModel(
+      id: plan.planId,
+      title: plan.planName,
+      subtitle: '',
+      price: plan.planAmount,
+      description: plan.planDescription,
+      benefits: const <HomePlanBenefit>[],
+    );
+  }
+
   void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
     context.read<HomePlanBloc>().add(HomePlanPurchaseNowPressed(plan));
 
@@ -52,6 +64,10 @@ class _HomePlanView extends StatelessWidget {
       plan: plan,
       selectedTab: selectedTab,
     );
+  }
+
+  void _onRoamingPurchaseNowPressed(BuildContext context,RoamingPlanModel plan) {
+    _onPurchaseNowPressed(context, _toPurchaseSheetPlan(plan));
   }
 
   @override
@@ -163,9 +179,7 @@ class _HomePlanView extends StatelessWidget {
                       state: state,
                       onToggleExpanded: (planId) {
                         debugPrint('planId: $planId');
-                        context
-                            .read<HomePlanBloc>()
-                            .add(HomePlanToggleExpanded(planId));
+                        context.read<HomePlanBloc>().add(HomePlanToggleExpanded(planId));
                       },
                       onWeeklyPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.planName}');
@@ -178,6 +192,10 @@ class _HomePlanView extends StatelessWidget {
                       onMonthlyPurchaseNow: (MonthlyPlanModel plan) {
                         debugPrint('plan: ${plan.planName}');
                         // _onPurchaseNowPressed(context, plan);
+                      },
+                      onRoamingPurchaseNow: (RoamingPlanModel plan) {
+                        debugPrint('plan: ${plan.planName}');
+                        _onRoamingPurchaseNowPressed(context, plan);
                       },
                       onPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.id}');

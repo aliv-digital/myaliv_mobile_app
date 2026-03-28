@@ -4,14 +4,14 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
 import '../data/plan_icon_assets.dart';
-import '../models/plan_model.dart';
+import '../models/roaming_plan_model.dart';
 import '../theme/theme.dart';
 
 class HomePlanRoamingPlanCard extends StatelessWidget {
-  final HomePlanModel plan;
+  final RoamingPlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
-  final VoidCallback onViewDetails; // ✅ use as toggle from button
+  final VoidCallback onViewDetails;
   final VoidCallback onPurchaseNow;
 
   const HomePlanRoamingPlanCard({
@@ -25,13 +25,9 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // roaming card center benefit: prefer data benefit if exists
-    final HomePlanBenefit? dataBenefit = plan.benefits
-        .where((b) => b.type == HomePlanBenefitType.data)
-        .cast<HomePlanBenefit?>()
-        .firstWhere((b) => b != null, orElse: () => null);
-
-    final HomePlanBenefit center = dataBenefit ?? plan.benefits.first;
+    final RoamingPlanBucketModel? center = _preferredCenterBucket(
+      plan.planBuckets,
+    );
 
     return Container(
       margin: HomePlanTheme.planCardOuterMargin,
@@ -70,11 +66,10 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.title,
+                              plan.planName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style:
-                                  HomePlanTheme.planCardTitleTextStyle,
+                              style: HomePlanTheme.planCardTitleTextStyle,
                             ),
                           ),
                           const SizedBox(
@@ -96,21 +91,21 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        plan.subtitle,
+                        _durationText(plan),
                         style: HomePlanTheme.planCardSubtitleTextStyle,
                       ),
                     ],
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.planAmount),
             ],
           ),
 
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
 
           // ===== Center metric (data only) =====
-          _CenterMetric(benefit: center),
+          if (center != null) _CenterMetric(bucket: center),
 
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
 
@@ -127,7 +122,7 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  plan.description,
+                  plan.planDescription,
                   textAlign: TextAlign.start,
                   style: HomePlanTheme.planCardDescriptionTextStyle,
                 ),
@@ -187,6 +182,133 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
       ),
     );
   }
+
+  RoamingPlanBucketModel? _preferredCenterBucket(
+    List<RoamingPlanBucketModel> buckets,
+  ) {
+    if (buckets.isEmpty) return null;
+
+    for (final RoamingPlanBucketModel bucket in buckets) {
+      if (bucket.unit.trim().toUpperCase() == 'GB') {
+        return bucket;
+      }
+    }
+
+    return buckets.first;
+  }
+
+  String _durationText(RoamingPlanModel plan) {
+    if(plan.frequency == 'W'){
+      return '7 days';
+    }
+    if(plan.frequency == 'M'){
+      return '30 days';
+    }
+    if(plan.frequency == 'D'){
+      return '1 day';
+    }
+    if(plan.frequency == 'H'){
+      return '15 days';
+    }
+    if(plan.frequency == 'T'){
+      return '10 days';
+    }
+    if(plan.frequency == 'S'){
+      return '60 days';
+    }
+    if(plan.frequency == 'N'){
+      return '90 days';
+    }
+    if(plan.frequency == 'B'){
+      return '15 days';
+    }
+    if(plan.frequency == '3'){
+      return '3 days';
+    }
+    if(plan.frequency == '5'){
+      return '5 days';
+    }
+    if(plan.frequency == 'A'){
+      return '1 year';
+    }
+
+    /*
+    {
+       "Key": "daily",
+       "Value": "D"
+   },
+   {
+       "Key": "3-day",
+       "Value": "3"
+   },
+   {
+       "Key": "5-day",
+       "Value": "5"
+   },
+   {
+       "Key": "weekly",
+       "Value": "W"
+   },
+   {
+       "Key": "10-day",
+       "Value": "T"
+   },
+   {
+       "Key": "biweekly",
+       "Value": "B"
+   },
+   {
+       "Key": "15-day",
+       "Value": "H"
+   },
+   {
+       "Key": "monthly",
+       "Value": "M"
+   },
+   {
+       "Key": "60-day",
+       "Value": "S"
+   },
+   {
+       "Key": "90-day",
+       "Value": "N"
+   },
+   {
+       "Key": "annually",
+       "Value": "A"
+   }
+     */
+
+    // final int? daysFromName = _extractDayCount(plan.planName);
+    // if (daysFromName != null) {
+    //   return '$daysFromName day${daysFromName == 1 ? '' : 's'}';
+    // }
+    //
+    // final int? daysFromDescription = _extractDayCount(plan.planDescription);
+    // if (daysFromDescription != null) {
+    //   return '$daysFromDescription day${daysFromDescription == 1 ? '' : 's'}';
+    // }
+
+    return '';
+  }
+
+  int? _extractDayCount(String text) {
+    String normalized = text.toLowerCase().replaceAll('-', ' ').trim();
+    while (normalized.contains('  ')) {
+      normalized = normalized.replaceAll('  ', ' ');
+    }
+
+    final List<String> tokens = normalized.isEmpty ? const <String>[] : normalized.split(' ');
+
+    for (int i = 0; i < tokens.length - 1; i++) {
+      final int? days = int.tryParse(tokens[i]);
+      if (days != null && tokens[i + 1].startsWith('day')) {
+        return days;
+      }
+    }
+
+    return null;
+  }
 }
 
 class _PricePill extends StatelessWidget {
@@ -211,12 +333,27 @@ class _PricePill extends StatelessWidget {
 }
 
 class _CenterMetric extends StatelessWidget {
-  final HomePlanBenefit benefit;
-  const _CenterMetric({required this.benefit});
+  final RoamingPlanBucketModel bucket;
+  const _CenterMetric({required this.bucket});
+
+  String _formatAmount(double amount) {
+    final bool hasOnlyZeroFraction = (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    if (hasOnlyZeroFraction) {
+      return amount.toStringAsFixed(0);
+    }
+    return amount.toString();
+  }
+
+  String _labelText(RoamingPlanBucketModel bucket) {
+    if (bucket.unit.trim().toUpperCase() == 'GB') {
+      return 'data';
+    }
+    return bucket.name.toLowerCase();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final iconPath = HomePlanIconAssets.forType(benefit.type);
+    final String iconPath = HomePlanIconAssets.data;
     final isSvg = iconPath.toLowerCase().endsWith('.svg');
 
     return Column(
@@ -230,7 +367,7 @@ class _CenterMetric extends StatelessWidget {
               Image.asset(iconPath, width: 16, height: 16),
             const SizedBox(width: 0),
             Text(
-              benefit.label.toLowerCase(),
+              _labelText(bucket),
               style: const TextStyle(
                 fontFamily: 'CircularPro',
                 fontSize: 12,
@@ -243,7 +380,7 @@ class _CenterMetric extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          benefit.value,
+          bucket.unlimited ? 'unlimited' : _formatAmount(bucket.amount),
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 22,
@@ -254,7 +391,7 @@ class _CenterMetric extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          benefit.sub,
+          bucket.unit.toLowerCase(),
           style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 12,
