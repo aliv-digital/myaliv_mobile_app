@@ -6,6 +6,7 @@ import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/monthly_plan_model.dart';
+import '../models/roaming_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import 'plan_repository_exception.dart';
 
@@ -81,6 +82,12 @@ class HomePlanRepository {
 
   /// Timestamp for latest successful strict monthly filtering.
   DateTime? _lastFetchedMonthlyAt;
+
+  /// Holds strict roaming plans parsed from latest API payload.
+  List<RoamingPlanModel> _lastFetchedRoamingPlans = <RoamingPlanModel>[];
+
+  /// Timestamp for latest successful strict roaming filtering.
+  DateTime? _lastFetchedRoamingAt;
 
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -172,6 +179,19 @@ class HomePlanRepository {
 
       return currentPlanType == normalizedPlanType &&
           currentFrequency == normalizedFrequency;
+    }).toList(growable: false);
+  }
+
+  /// Filters one tab's strict plans using PlanType + PlanGroup.
+  List<Map<String, dynamic>> _filterStrictPlansFromFullCacheByPlanGroup({required String planType,required String planGroup}) {
+    final String normalizedPlanType = planType.trim().toUpperCase();
+    final String normalizedPlanGroup = planGroup.trim().toUpperCase();
+
+    return _lastFetchedPlans.where((Map<String, dynamic> plan) {
+      final String currentPlanType = _normalizedUpperInBackground(plan['PlanType']);
+      final String currentPlanGroup = _normalizedUpperInBackground(plan['PlanGroup']);
+
+      return currentPlanType == normalizedPlanType && currentPlanGroup == normalizedPlanGroup;
     }).toList(growable: false);
   }
 
@@ -412,6 +432,73 @@ class HomePlanRepository {
     return monthlyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
   }
 
+  /// Fetch and parse API payload into dedicated Roaming model list.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = A
+  /// - PlanGroup = roaming
+  Future<List<RoamingPlanModel>> fetchRoamingPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredRoamingPlans = false,
+  }) async {
+    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictRoamingRawPlans = _filterStrictPlansFromFullCacheByPlanGroup(
+      planType: 'A',
+      planGroup: 'roaming',
+    );
+
+    final List<RoamingPlanModel> strictRoamingPlans = strictRoamingRawPlans
+        .map(
+          (Map<String, dynamic> planMap) => RoamingPlanModel.fromApiMap(
+            planMap,
+            includeRawPayload: false,
+          ),
+        )
+        .toList(growable: false);
+
+    _lastFetchedRoamingPlans = strictRoamingPlans;
+    _lastFetchedRoamingAt = DateTime.now();
+
+    if (printFilteredRoamingPlans) {
+      _logRoamingFilterResult(
+        totalRawPlansCount: totalRawPlansCount,
+        matchedRawPlansCount: strictRoamingRawPlans.length,
+        roamingPlans: strictRoamingPlans,
+      );
+    }
+
+    return List<RoamingPlanModel>.unmodifiable(_lastFetchedRoamingPlans);
+  }
+
+  /// Debug wrapper:
+  /// fetch strict roaming plans and print summary/details in console.
+  Future<List<Map<String, dynamic>>> debugFetchAndPrintRoamingPlans({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+  }) async {
+    final List<RoamingPlanModel> roamingPlans = await fetchRoamingPlansFromApi(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+      printFilteredRoamingPlans: true,
+    );
+
+    return roamingPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+  }
+
   /// Read-only view of latest raw payload cache.
   List<Map<String, dynamic>> get lastFetchedPlans => List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
 
@@ -436,9 +523,14 @@ class HomePlanRepository {
   /// Read-only latest strict monthly filter timestamp.
   DateTime? get lastFetchedMonthlyAt => _lastFetchedMonthlyAt;
 
+  /// Read-only latest strict roaming plans cache.
+  List<RoamingPlanModel> get lastFetchedRoamingPlans => List<RoamingPlanModel>.unmodifiable(_lastFetchedRoamingPlans);
+
+  /// Read-only latest strict roaming filter timestamp.
+  DateTime? get lastFetchedRoamingAt => _lastFetchedRoamingAt;
+
   /// Builds Basic Auth token from username/password pair.
-  String _buildBasicAuthToken(
-      {required String username, required String password}) {
+  String _buildBasicAuthToken({required String username, required String password}) {
     final String credentials = '$username:$password';
     return base64Encode(utf8.encode(credentials));
   }
@@ -730,6 +822,44 @@ class HomePlanRepository {
       );
 
       for (final MonthlyPlanBucketModel bucket in plan.planBuckets) {
+        debugPrint(
+          '  bucket: name=${bucket.name}, '
+          'amount=${bucket.amount}, '
+          'unit=${bucket.unit}, '
+          'bucketUnit=${bucket.bucketUnit}, '
+          'unlimited=${bucket.unlimited}',
+        );
+      }
+    }
+  }
+
+  /// Logs roaming filter summary and per-plan bucket details.
+  void _logRoamingFilterResult({required int totalRawPlansCount, required int matchedRawPlansCount,required List<RoamingPlanModel> roamingPlans,}) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'roaming-filter: total=$totalRawPlansCount, '
+      'matchedRaw=$matchedRawPlansCount, '
+      'parsedRoaming=${roamingPlans.length}, '
+      'rule=(PlanType=A && PlanGroup=roaming)',
+    );
+
+    if (roamingPlans.isEmpty) {
+      debugPrint('roaming-filter: no plan matched.');
+      return;
+    }
+
+    for (final RoamingPlanModel plan in roamingPlans) {
+      debugPrint(
+        'roaming-plan: id=${plan.planId}, '
+        'name=${plan.planName}, '
+        'amount=${plan.planAmount.toStringAsFixed(2)}, '
+        'group=${plan.planGroup}, '
+        'sort=${plan.planSortOrder}, '
+        'buckets=${plan.planBuckets.length}',
+      );
+
+      for (final RoamingPlanBucketModel bucket in plan.planBuckets) {
         debugPrint(
           '  bucket: name=${bucket.name}, '
           'amount=${bucket.amount}, '

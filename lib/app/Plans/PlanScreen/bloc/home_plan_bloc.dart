@@ -7,6 +7,7 @@ import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/monthly_plan_model.dart';
+import '../models/roaming_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 import '../repository/plan_repository_exception.dart';
@@ -25,6 +26,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Prevents duplicate Monthly API sync calls when user taps Monthly repeatedly.
   bool _isMonthlyApiSyncInProgress = false;
 
+  /// Prevents duplicate Roaming API sync calls when user taps Roaming repeatedly.
+  bool _isRoamingApiSyncInProgress = false;
+
   HomePlanBloc(this.repository) : super(HomePlanState.initial()) {
     on<HomePlanStarted>(_onStarted);
     on<HomePlanTabChanged>(_onTabChanged);
@@ -41,6 +45,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     on<HomePlanDailyApiSyncRequested>(_onDailyApiSyncRequested);
     on<HomePlanWeeklyApiSyncRequested>(_onWeeklyApiSyncRequested);
     on<HomePlanMonthlyApiSyncRequested>(_onMonthlyApiSyncRequested);
+    on<HomePlanRoamingApiSyncRequested>(_onRoamingApiSyncRequested);
     on<HomePlanToastConsumed>(_onToastConsumed);
   }
 
@@ -127,7 +132,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       // Keep loader active until the real API sync completes.
       // These tabs already use dedicated API state lists in UI, so we skip
       // the old mock `fetchPlans(...)` path completely.
-      if (tab == HomePlanTab.daily || tab == HomePlanTab.weekly || tab == HomePlanTab.monthly) {
+      if (tab == HomePlanTab.daily ||
+          tab == HomePlanTab.weekly ||
+          tab == HomePlanTab.monthly ||
+          tab == HomePlanTab.roaming) {
         emit(state.copyWith(
           plans: const [],
           addOns: const [],
@@ -137,8 +145,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
           _scheduleDailyApiSyncIfIdle();
         } else if (tab == HomePlanTab.weekly) {
           _scheduleWeeklyApiSyncIfIdle();
-        } else {
+        } else if (tab == HomePlanTab.monthly) {
           _scheduleMonthlyApiSyncIfIdle();
+        } else {
+          _scheduleRoamingApiSyncIfIdle();
         }
         return;
       }
@@ -410,8 +420,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<MonthlyPlanModel> monthlyPlans =
-          await repository.fetchMonthlyPlansFromApi(
+      final List<MonthlyPlanModel> monthlyPlans = await repository.fetchMonthlyPlansFromApi(
         username: auth.username,
         password: auth.password,
         deviceAccountID: auth.deviceAccountID,
@@ -420,8 +429,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       );
 
       final DateTime syncedAt = DateTime.now();
-      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
-          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
 
       nextApiTabMeta[HomePlanTab.monthly] = HomePlanTabApiMeta(
         isLoaded: true,
@@ -472,9 +480,95 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
   }
 
+  /// Sync strict Roaming API data and store in state.
+  Future<void> _onRoamingApiSyncRequested(HomePlanRoamingApiSyncRequested event, Emitter<HomePlanState> emit) async {
+    if (_isRoamingApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('roaming-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    _isRoamingApiSyncInProgress = true;
+
+    try {
+      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
+      if (auth == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'roaming-api-sync: skipped, missing username/password/deviceAccountID',
+          );
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.roaming,
+          errorMessage:
+              'Roaming plans are unavailable right now. Please login again.',
+        );
+        return;
+      }
+
+      final List<RoamingPlanModel> roamingPlans = await repository.fetchRoamingPlansFromApi(
+        username: auth.username,
+        password: auth.password,
+        deviceAccountID: auth.deviceAccountID,
+        printRawResponse: event.printRawResponse,
+        printFilteredRoamingPlans: false,
+      );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.roaming] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: roamingPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      if (kDebugMode && roamingPlans.isNotEmpty) {
+        debugPrint("=========== Roaming Plan ==============");
+        debugPrint('First Roaming Indexed Data :');
+        debugPrint(roamingPlans[0].planName);
+        debugPrint("last synced : ${state.roamingApiLastSyncedAt}");
+      } else if (kDebugMode) {
+        debugPrint("roamingPlans.isEmpty");
+      }
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.roaming,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        roamingApiPlans: roamingPlans,
+        apiTabMeta: nextApiTabMeta,
+        roamingApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.roaming,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.roaming,
+          error: error,
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('roaming-api-sync: failed with error: $e');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.roaming,
+        errorMessage: 'Failed to sync roaming plans',
+      );
+    } finally {
+      _isRoamingApiSyncInProgress = false;
+    }
+  }
+
   /// Clears one-time toast after UI handles it.
-  void _onToastConsumed(
-      HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
+  void _onToastConsumed(HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
     emit(state.copyWith(clearPendingToast: true));
   }
 
@@ -524,6 +618,18 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     // Lock ownership stays inside `_onMonthlyApiSyncRequested`.
     // Scheduler only dispatches the intent event.
     add(HomePlanMonthlyApiSyncRequested());
+  }
+
+  /// Schedules Roaming API sync only when no sync is running.
+  void _scheduleRoamingApiSyncIfIdle() {
+    if (_isRoamingApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('roaming-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    add(HomePlanRoamingApiSyncRequested());
   }
 
   /// Returns one tab UI-state object.

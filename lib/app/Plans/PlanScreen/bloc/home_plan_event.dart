@@ -61,6 +61,16 @@ class HomePlanMonthlyApiSyncRequested extends HomePlanEvent {
   });
 }
 
+/// Internal event to sync strict roaming API data.
+/// UI rendering remains unchanged in current phase.
+class HomePlanRoamingApiSyncRequested extends HomePlanEvent {
+  final bool printRawResponse;
+
+  HomePlanRoamingApiSyncRequested({
+    this.printRawResponse = false,
+  });
+}
+
 /// UI one-time side effect consumed event.
 ///
 /// After UI shows a toast, it dispatches this event
