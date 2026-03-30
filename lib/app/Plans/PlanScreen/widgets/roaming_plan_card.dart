@@ -327,6 +327,12 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
   Widget build(BuildContext context) {
     const double rowH = 50;
     const double sidePad = 2;
+    final List<RoamingPlanBucketModel> visibleBenefits =
+        widget.benefits.take(1).toList();
+
+    if (visibleBenefits.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -344,108 +350,22 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minWidth: constraints.maxWidth),
                     child: Align(
-                      alignment: widget.benefits.length == 1
-                          ? Alignment.center
-                          : Alignment.centerLeft,
+                      alignment: Alignment.center,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: List.generate(widget.benefits.length, (i) {
-                          final RoamingPlanBucketModel item = widget.benefits[i];
-                          Color labelColor;
-                          BucketItemType itemType = BucketItemType.whatsApp;
-
-                          if (item.bucketUnit == 'INS_Data' && item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_Whatsapp_Text_10201' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.whatsApp;
-                          } else if (item.bucketUnit == 'INS_Whatsapp_All' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.whatsApp;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit ==
-                                  'INS_Voice_Only_National' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit ==
-                                  'INS_Voice_Only_National' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit ==
-                                  'INS_SMS_Only_National' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Onnet' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_SMS_Onnet' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Data_MIFI' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_TikTok_10500' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit ==
-                                  'INS_Facebook_MSG_10403' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_Data_roam_as_home_v2' && item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          }else if(item.bucketUnit == 'INS_Data_roam_as_home' && item.unit == 'GB'){
-                            itemType = BucketItemType.data;
-                          }
-
-                          switch (itemType) {
-                            case BucketItemType.data:
-                              labelColor = HomePlanTheme.dataColor;
-                              break;
-                            case BucketItemType.call:
-                              labelColor = HomePlanTheme.talkMinsColor;
-                              break;
-                            case BucketItemType.sms:
-                              labelColor = HomePlanTheme.smsColor;
-                              break;
-                            case BucketItemType.whatsApp:
-                              labelColor = HomePlanTheme.bonusDataColor;
-                              break;
-                            case BucketItemType.internationalSMS:
-                              labelColor = HomePlanTheme.intlTalkTextColor;
-                              break;
-                          }
-
+                        children: List.generate(visibleBenefits.length, (i) {
+                          final RoamingPlanBucketModel item = visibleBenefits[i];
                           return Row(
                             children: [
                               SizedBox(
                                 height: rowH,
                                 child: _BucketItem(
                                   benefit: item,
-                                  labelColor: labelColor,
-                                  itemType: itemType,
+                                  labelColor: HomePlanTheme.dataColor,
+                                  itemType: BucketItemType.data,
                                 ),
                               ),
-                              if (i != widget.benefits.length - 1)
+                              if (i != visibleBenefits.length - 1)
                                 Container(
                                   width: HomePlanTheme.planBenefitDividerWidth,
                                   height:
@@ -683,7 +603,7 @@ class _BucketItem extends StatelessWidget {
                   child: _AssetIcon(type: itemType, size: iconSize),
                 ),
                 Text(
-                  benefit.name,
+                  "data",//benefit.name, roaming data hard coded
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: labelStyle,
