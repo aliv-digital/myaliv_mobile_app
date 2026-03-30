@@ -12,6 +12,7 @@ import '../bloc/home_plan_state.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/plan_model.dart';
 import '../models/roaming_plan_model.dart';
+import '../models/roameasy_plan_model.dart';
 import '../repository/home_plan_repository.dart';
 import '../theme/theme.dart';
 import '../widgets/home_plan_add_ons_tab_content.dart';
@@ -43,7 +44,18 @@ class HomePlanScreen extends StatelessWidget {
 class _HomePlanView extends StatelessWidget {
   const _HomePlanView();
 
-  HomePlanModel _toPurchaseSheetPlan(RoamingPlanModel plan) {
+  HomePlanModel _toRoamingPurchaseSheetPlan(RoamingPlanModel plan) {
+    return HomePlanModel(
+      id: plan.planId,
+      title: plan.planName,
+      subtitle: '',
+      price: plan.planAmount,
+      description: plan.planDescription,
+      benefits: const <HomePlanBenefit>[],
+    );
+  }
+
+  HomePlanModel _toRoamEasyPurchaseSheetPlan(RoamEasyPlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
       title: plan.planName,
@@ -67,7 +79,14 @@ class _HomePlanView extends StatelessWidget {
   }
 
   void _onRoamingPurchaseNowPressed(BuildContext context,RoamingPlanModel plan) {
-    _onPurchaseNowPressed(context, _toPurchaseSheetPlan(plan));
+    _onPurchaseNowPressed(context, _toRoamingPurchaseSheetPlan(plan));
+  }
+
+  void _onRoamEasyPurchaseNowPressed(
+    BuildContext context,
+    RoamEasyPlanModel plan,
+  ) {
+    _onPurchaseNowPressed(context, _toRoamEasyPurchaseSheetPlan(plan));
   }
 
   @override
@@ -196,6 +215,10 @@ class _HomePlanView extends StatelessWidget {
                       onRoamingPurchaseNow: (RoamingPlanModel plan) {
                         debugPrint('plan: ${plan.planName}');
                         _onRoamingPurchaseNowPressed(context, plan);
+                      },
+                      onRoamEasyPurchaseNow: (RoamEasyPlanModel plan) {
+                        debugPrint('plan: ${plan.planName}');
+                        _onRoamEasyPurchaseNowPressed(context, plan);
                       },
                       onPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.id}');

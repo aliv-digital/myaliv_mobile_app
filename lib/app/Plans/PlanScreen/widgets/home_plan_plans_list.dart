@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
 
 import '../bloc/home_plan_state.dart';
@@ -24,6 +25,7 @@ class HomePlanPlansList extends StatelessWidget {
     this.onDailyPurchaseNow,
     this.onMonthlyPurchaseNow,
     this.onRoamingPurchaseNow,
+    this.onRoamEasyPurchaseNow,
     this.onWeeklyPurchaseNow,
   });
 
@@ -33,6 +35,7 @@ class HomePlanPlansList extends StatelessWidget {
   final ValueChanged<DailyPlanModel>? onDailyPurchaseNow;
   final ValueChanged<MonthlyPlanModel>? onMonthlyPurchaseNow;
   final ValueChanged<RoamingPlanModel>? onRoamingPurchaseNow;
+  final ValueChanged<RoamEasyPlanModel>? onRoamEasyPurchaseNow;
   final ValueChanged<WeeklyPlanModel>? onWeeklyPurchaseNow;
 
   @override
@@ -114,6 +117,25 @@ class HomePlanPlansList extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _buildCardForRoamingTab(
+              plan: plan,
+              expanded: expanded,
+            ),
+          );
+        },
+      );
+    }
+
+    if (state.selectedTab == HomePlanTab.roameasy) {
+      return ListView.builder(
+        padding: const EdgeInsets.only(top: 6, bottom: 14),
+        itemCount: state.roamEasyApiPlans.length,
+        itemBuilder: (context, index) {
+          final RoamEasyPlanModel plan = state.roamEasyApiPlans[index];
+          final bool expanded = state.expandedPlanIds.contains(plan.planId);
+
+          return Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _buildCardForRoamEasyTab(
               plan: plan,
               expanded: expanded,
             ),
@@ -220,6 +242,25 @@ class HomePlanPlansList extends StatelessWidget {
     );
   }
 
+  Widget _buildCardForRoamEasyTab({
+    required RoamEasyPlanModel plan,
+    required bool expanded,
+  }) {
+    void toggle() => onToggleExpanded(plan.planId);
+
+    return HomePlanRoamEasyPlanCard(
+      plan: plan,
+      expanded: expanded,
+      onToggle: toggle,
+      onViewDetails: toggle,
+      onPurchaseNow: () {
+        if (onRoamEasyPurchaseNow != null) {
+          onRoamEasyPurchaseNow!(plan);
+        }
+      },
+    );
+  }
+
   Widget _buildCardForTab({
     required HomePlanTab tab,
     required HomePlanModel plan,
@@ -237,13 +278,7 @@ class HomePlanPlansList extends StatelessWidget {
       case HomePlanTab.roaming:
         return const SizedBox.shrink();
       case HomePlanTab.roameasy:
-        return HomePlanRoamEasyPlanCard(
-          plan: plan,
-          expanded: expanded,
-          onToggle: toggle,
-          onViewDetails: toggle,
-          onPurchaseNow: () => onPurchaseNow(plan),
-        );
+        return const SizedBox.shrink();
       case HomePlanTab.mifi:
         return HomePlanMifiPlanCard(
           plan: plan,
