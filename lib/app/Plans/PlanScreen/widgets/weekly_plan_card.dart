@@ -90,7 +90,10 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.planAmount),
+              _PricePill(
+                price: plan.planAmount,
+                vatAmount: plan.vatAmount,
+              ),
             ],
           ),
 
@@ -175,10 +178,17 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
 
 class _PricePill extends StatelessWidget {
   final double price;
-  const _PricePill({required this.price});
+  final double vatAmount;
+
+  const _PricePill({
+    required this.price,
+    required this.vatAmount,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final double finalPrice = price + vatAmount;
+
     return Container(
       padding: HomePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
@@ -186,7 +196,7 @@ class _PricePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
+        '\$ ${finalPrice.toStringAsFixed(2)}',
         style: HomePlanTheme.planPricePillTextStyle,
       ),
     );
