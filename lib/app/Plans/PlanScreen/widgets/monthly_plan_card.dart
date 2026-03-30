@@ -318,7 +318,9 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minWidth: constraints.maxWidth),
                     child: Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: widget.benefits.length == 1
+                          ? Alignment.center
+                          : Alignment.centerLeft,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(widget.benefits.length, (i) {
