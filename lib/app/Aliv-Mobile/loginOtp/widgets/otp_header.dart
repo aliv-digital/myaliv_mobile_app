@@ -9,12 +9,6 @@ class OtpHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.viewPaddingOf(context).top;
-    final backTop = (LoginOtpSizes.backTopFromScreen - topInset)
-        .clamp(0.0, double.infinity)
-        .toDouble();
-    final imageGapFromBackIcon = LoginOtpSizes.otpImageTopFromScreen - LoginOtpSizes.backTopFromScreen - LoginOtpSizes.backIconHeight;
-
     return Column(
       children: [
         DefaultBackButton(

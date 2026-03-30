@@ -17,7 +17,7 @@ class LoginOtpRepository {
     required String pinCode,
   }) async {
     // API expects a digits-only phone number (e.g. 2428997105).
-    final normalizedPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    final normalizedPhone = _digitsOnly(phoneNumber);
     final payload = <String, dynamic>{
       'PhoneNumber': normalizedPhone,
       'Key': twoFactorKey,
@@ -63,7 +63,7 @@ class LoginOtpRepository {
   }
 
   Future<LoginOtpResendResponse> resendCode({required String phoneNumber, required String twoFactorKey}) async {
-    final normalizedPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    final normalizedPhone = _digitsOnly(phoneNumber);
     final payload = <String, dynamic>{
       'PhoneNumber': normalizedPhone,
       'Key': twoFactorKey,
@@ -177,6 +177,22 @@ class LoginOtpRepository {
         json['reason'] ??
         json['Reason'];
     return message?.toString();
+  }
+
+  String _digitsOnly(String value) {
+    final StringBuffer digitsOnlyBuffer = StringBuffer();
+
+    for (int index = 0; index < value.length; index++) {
+      final String character = value[index];
+      final int codeUnit = character.codeUnitAt(0);
+      final bool isDigit = codeUnit >= 48 && codeUnit <= 57;
+
+      if (isDigit) {
+        digitsOnlyBuffer.write(character);
+      }
+    }
+
+    return digitsOnlyBuffer.toString();
   }
 }
 /*

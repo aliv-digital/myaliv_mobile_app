@@ -77,11 +77,20 @@ class _LoginView extends StatelessWidget {
                 return;
               }
 
+              final String? apiPhoneNumber = state.apiPhoneNumber;
+              if (apiPhoneNumber == null || apiPhoneNumber.isEmpty) {
+                AppToast.show(
+                  message: 'Phone number is missing from login state.',
+                  type: ToastType.error,
+                );
+                return;
+              }
+
               context.push(
                 AppRoutes.loginOtp,
                 extra: LoginOtpRouteArgs(
                   twoFactorKey: twoFactorKey,
-                  phoneNumber: state.phone.trim(),
+                  phoneNumber: apiPhoneNumber,
                 ),
               );
             }
@@ -129,25 +138,22 @@ class _LoginView extends StatelessWidget {
                                           maintainSize: true,
                                           maintainState: true,
                                           maintainAnimation: true,
-                                          child: Text(''),
-                                          // child: Text(
-                                          //   state.errorMessage ??
-                                          //       'invalid credentials!',
-                                          //   style: AuthModuleTextStyles.invalidCredentials,
-                                          // ),
+                                          //child: Text(''),
+                                          child: Text(
+                                            state.errorMessage ?? 'invalid credentials!',
+                                            style: AuthModuleTextStyles.invalidCredentials,
+                                          ),
                                         ),
                                       ),
                                     ),
                                     TextButton(
-                                      style:
-                                          AuthModuleButtonStyles.inlineTextLink,
+                                      style: AuthModuleButtonStyles.inlineTextLink,
                                       onPressed: () {
                                         context.push(AppRoutes.forgetPassword);
                                       },
                                       child: const Text(
                                         'forgot password?',
-                                        style:
-                                            AuthModuleTextStyles.forgotPassword,
+                                        style: AuthModuleTextStyles.forgotPassword,
                                       ),
                                     ),
                                   ],

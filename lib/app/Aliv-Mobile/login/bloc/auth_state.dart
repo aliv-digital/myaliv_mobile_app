@@ -1,6 +1,8 @@
 // lib/login/login_state.dart
 import 'package:equatable/equatable.dart';
 
+import '../model/login_country_selection.dart';
+
 enum LoginStatus { initial, loading, success, failure }
 
 class LoginState extends Equatable {
@@ -11,6 +13,8 @@ class LoginState extends Equatable {
   final LoginStatus status;
   final String? errorMessage;
   final String? twoFactorKey;
+  final String? apiPhoneNumber;
+  final LoginCountrySelection selectedCountry;
   final bool phoneFieldError;
   final bool passwordFieldError;
   final int errorToastId;
@@ -21,6 +25,8 @@ class LoginState extends Equatable {
     this.status = LoginStatus.initial,
     this.errorMessage,
     this.twoFactorKey,
+    this.apiPhoneNumber,
+    this.selectedCountry = LoginCountrySelection.defaultBahamas,
     this.phoneFieldError = false,
     this.passwordFieldError = false,
     this.errorToastId = 0,
@@ -32,6 +38,8 @@ class LoginState extends Equatable {
     LoginStatus? status,
     Object? errorMessage = _noChange,
     Object? twoFactorKey = _noChange,
+    Object? apiPhoneNumber = _noChange,
+    LoginCountrySelection? selectedCountry,
     bool? phoneFieldError,
     bool? passwordFieldError,
     int? errorToastId,
@@ -46,6 +54,10 @@ class LoginState extends Equatable {
       twoFactorKey: identical(twoFactorKey, _noChange)
           ? this.twoFactorKey
           : twoFactorKey as String?,
+      apiPhoneNumber: identical(apiPhoneNumber, _noChange)
+          ? this.apiPhoneNumber
+          : apiPhoneNumber as String?,
+      selectedCountry: selectedCountry ?? this.selectedCountry,
       phoneFieldError: phoneFieldError ?? this.phoneFieldError,
       passwordFieldError: passwordFieldError ?? this.passwordFieldError,
       errorToastId: errorToastId ?? this.errorToastId,
@@ -59,6 +71,8 @@ class LoginState extends Equatable {
         status,
         errorMessage,
         twoFactorKey,
+        apiPhoneNumber,
+        selectedCountry,
         phoneFieldError,
         passwordFieldError,
         errorToastId,

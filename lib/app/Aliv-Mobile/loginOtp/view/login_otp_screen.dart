@@ -6,7 +6,6 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../router/app_routes.dart';
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
-import '../bloc/login_otp_event.dart';
 import '../bloc/login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
 import '../theme/login_otp_theme.dart';

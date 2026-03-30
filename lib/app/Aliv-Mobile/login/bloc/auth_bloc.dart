@@ -3,19 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import '../repository/auth_repository.dart';
+import '../utils/login_phone_number_helper.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository repository;
+  final LoginPhoneNumberHelper phoneNumberHelper;
 
-  LoginBloc({required this.repository}) : super(const LoginState()) {
+  LoginBloc({
+    required this.repository,
+    LoginPhoneNumberHelper? phoneNumberHelper,
+  })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+        super(const LoginState()) {
     on<LoginPhoneChanged>((event, emit) {
       emit(state.copyWith(
         phone: event.phone,
         status: LoginStatus.initial,
         errorMessage: null,
         twoFactorKey: null,
+        apiPhoneNumber: null,
         phoneFieldError: false,
       ));
     });
@@ -26,7 +33,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.initial,
         errorMessage: null,
         twoFactorKey: null,
+        apiPhoneNumber: null,
         passwordFieldError: false,
+      ));
+    });
+
+    on<LoginCountryChanged>((event, emit) {
+      emit(state.copyWith(
+        selectedCountry: event.selectedCountry,
+        status: LoginStatus.initial,
+        errorMessage: null,
+        twoFactorKey: null,
+        apiPhoneNumber: null,
+        phoneFieldError: false,
       ));
     });
 
@@ -48,6 +67,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.failure,
         errorMessage: message,
         twoFactorKey: null,
+        apiPhoneNumber: null,
         phoneFieldError: phoneFieldError,
         passwordFieldError: passwordFieldError,
         errorToastId: state.errorToastId + 1,
@@ -77,11 +97,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       return;
     }
-    final hasInvalidChar = RegExp(r'[^0-9]').hasMatch(state.phone.trim());
-    if (hasInvalidChar) {
+    final LoginPhoneValidationResult phoneValidationResult =
+        phoneNumberHelper.validateAndBuildApiUsername(
+        rawPhoneNumber: state.phone,
+        selectedCountry: state.selectedCountry,
+    );
+
+    if (!phoneValidationResult.isValid ||
+        phoneValidationResult.phoneNumberForApi == null) {
       _emitFailure(
         emit,
-        message: 'invalid format',
+        message: phoneValidationResult.errorMessage ??
+            LoginPhoneNumberHelper.invalidPhoneNumberMessage,
         phoneFieldError: true,
         passwordFieldError: false,
       );
@@ -102,13 +129,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       status: LoginStatus.loading,
       errorMessage: null,
       twoFactorKey: null,
+      apiPhoneNumber: null,
       phoneFieldError: false,
       passwordFieldError: false,
     ));
 
     try {
       final authResponse = await repository.login(
-        username: state.phone,
+        username: phoneValidationResult.phoneNumberForApi!,
         password: state.password,
       );
 
@@ -116,6 +144,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.success,
         errorMessage: null,
         twoFactorKey: authResponse.twoFactorKey,
+        apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
         phoneFieldError: false,
         passwordFieldError: false,
       ));

@@ -6,40 +6,24 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../theme/login_theme.dart';
+import '../utils/login_phone_number_helper.dart';
 
-class LoginPhoneRow extends StatefulWidget {
+class LoginPhoneRow extends StatelessWidget {
   const LoginPhoneRow({super.key});
 
-  @override
-  State<LoginPhoneRow> createState() => _LoginPhoneRowState();
-}
+  void _openCountryPicker(BuildContext context) {
+    final LoginPhoneNumberHelper phoneNumberHelper =
+        const LoginPhoneNumberHelper();
 
-class _LoginPhoneRowState extends State<LoginPhoneRow> {
-  Country? _selectedCountry;
-
-  String get _flagEmoji =>
-      _selectedCountry?.flagEmoji ?? '🇧🇸'; // Bahamas default
-
-  String get _dialCode {
-    final raw = _selectedCountry?.phoneCode ?? '1';
-    // Handles both "1-242" and "1 242" forms and keeps first non-empty segment.
-    final normalized = raw.replaceAll('-', ' ');
-    return normalized
-        .split(' ')
-        .firstWhere((part) => part.trim().isNotEmpty, orElse: () => '1');
-  }
-
-  void _openCountryPicker() {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
-      onSelect: (country) {
-        setState(() {
-          _selectedCountry = country;
-        });
-
-        // চাইলে country bloc এ পাঠাতে পারো
-        // context.read<LoginBloc>().add(LoginCountryChanged(country));
+      onSelect: (Country country) {
+        context.read<LoginBloc>().add(
+              LoginCountryChanged(
+                phoneNumberHelper.selectionFromCountry(country),
+              ),
+            );
       },
     );
   }
@@ -55,10 +39,10 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
         return CustomCountryPhoneInputRow(
           hideUnfocusedInputBorder: false,
           hintText: 'eg: 242-899-9999',
-          flagEmoji: _flagEmoji,
-          dialCode: _dialCode,
-          countryIsoCode: _selectedCountry?.countryCode ?? 'BS',
-          onTapCountryPicker: _openCountryPicker,
+          flagEmoji: state.selectedCountry.flagEmoji,
+          dialCode: state.selectedCountry.dialCode,
+          countryIsoCode: state.selectedCountry.isoCode,
+          onTapCountryPicker: () => _openCountryPicker(context),
           onChanged: (value) =>
               context.read<LoginBloc>().add(LoginPhoneChanged(value)),
           backgroundColor: AuthModuleColors.pageBackground,

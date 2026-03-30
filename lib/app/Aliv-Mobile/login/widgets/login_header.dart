@@ -11,16 +11,6 @@ class LoginHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.viewPaddingOf(context).top;
-    final backTop = (AuthModuleSizes.backTopFromScreen - topInset)
-        .clamp(0.0, double.infinity)
-        .toDouble();
-    final logoTop = (AuthModuleSizes.logoTopFromScreen - topInset)
-        .clamp(0.0, double.infinity)
-        .toDouble();
-    final topBase = backTop < logoTop ? backTop : logoTop;
-    final backInnerTop = backTop - topBase;
-    final logoInnerTop = logoTop - topBase;
     final sideSlotWidth = AuthModuleSizes.backLeft + AuthModuleSizes.backIconWidth;
 
     return Padding(
