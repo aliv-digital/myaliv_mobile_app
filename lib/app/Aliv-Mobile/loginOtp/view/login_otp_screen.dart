@@ -18,6 +18,7 @@ class LoginOtpScreen extends StatelessWidget {
     super.key,
     this.initialTwoFactorKey = '',
     this.initialPhoneNumber = '',
+    this.initialApiPhoneNumber = '',
   });
 
   /// Two-factor key passed from login route.
@@ -25,6 +26,9 @@ class LoginOtpScreen extends StatelessWidget {
 
   /// Phone number passed from login route.
   final String initialPhoneNumber;
+
+  /// API-formatted phone number used for OTP verify/resend requests.
+  final String initialApiPhoneNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +39,7 @@ class LoginOtpScreen extends StatelessWidget {
         appUiConfigCubit: context.read<AppUiConfigCubit>(),
         initialTwoFactorKey: initialTwoFactorKey,
         initialPhoneNumber: initialPhoneNumber,
+        initialApiPhoneNumber: initialApiPhoneNumber,
       ),
       child: const _LoginOtpView(),
     );
@@ -102,7 +107,8 @@ class _LoginOtpView extends StatelessWidget {
                   Expanded(
                     child: CustomScrollView(
                       physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       slivers: [
                         const SliverToBoxAdapter(child: OtpHeader()),
                         SliverToBoxAdapter(

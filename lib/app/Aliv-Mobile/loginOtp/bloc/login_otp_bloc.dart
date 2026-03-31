@@ -20,9 +20,11 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     required this.appUiConfigCubit,
     String initialTwoFactorKey = '',
     String initialPhoneNumber = '',
+    String initialApiPhoneNumber = '',
   }) : super(LoginOtpState(
             twoFactorKey: initialTwoFactorKey,
-            phoneNumber: initialPhoneNumber)) {
+            phoneNumber: initialPhoneNumber,
+            apiPhoneNumber: initialApiPhoneNumber)) {
     on<LoginOtpCodeChanged>((event, emit) {
       emit(state.copyWith(
         code: event.code,
@@ -40,11 +42,11 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
   Future<void> _onSubmitted(
       LoginOtpSubmitted event, Emitter<LoginOtpState> emit) async {
-    final phoneNumber = state.phoneNumber.trim();
+    final apiPhoneNumber = state.apiPhoneNumber.trim();
     final twoFactorKey = state.twoFactorKey.trim();
     final enteredCode = state.code.trim();
 
-    if (phoneNumber.isEmpty || twoFactorKey.isEmpty) {
+    if (apiPhoneNumber.isEmpty || twoFactorKey.isEmpty) {
       emit(state.copyWith(
         status: LoginOtpStatus.failure,
         errorType: LoginOtpErrorType.missingVerificationContext,
@@ -96,7 +98,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       debugPrint("OTP CODE : ${state.code}");
       await repository
           .verifyCode(
-        phoneNumber: phoneNumber,
+        phoneNumber: apiPhoneNumber,
         twoFactorKey: twoFactorKey,
         pinCode: enteredCode,
       )
@@ -183,7 +185,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
     appUiConfigCubit.setConfig(
       HomeUiConfig(
-        userType: paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
+        userType:
+            paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
         hasActivePlan: true,
         isFuturePlan: false,
         openMyLimits: false,
@@ -211,11 +214,11 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     debugPrint("Ticket : $ticket"); // works as password
   }
 
-  Future<void> _onResendRequested(LoginOtpResendRequested event,Emitter<LoginOtpState> emit) async {
-    final phoneNumber = state.phoneNumber.trim();
+  Future<void> _onResendRequested(LoginOtpResendRequested event, Emitter<LoginOtpState> emit) async {
+    final apiPhoneNumber = state.apiPhoneNumber.trim();
     final twoFactorKey = state.twoFactorKey.trim();
 
-    if (phoneNumber.isEmpty || twoFactorKey.isEmpty) {
+    if (apiPhoneNumber.isEmpty || twoFactorKey.isEmpty) {
       emit(state.copyWith(
         resendStatus: LoginOtpResendStatus.idle,
         errorMessage: 'Missing verification details. Please login again.',
@@ -224,7 +227,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     }
 
     final bool isConnected = await InternetConnection().hasInternetAccess;
-    if(isConnected == false){
+    if (isConnected == false) {
       emit(state.copyWith(
         resendStatus: LoginOtpResendStatus.idle,
         errorMessage: 'No Internet Connection',
@@ -238,7 +241,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     ));
     try {
       final resendResponse = await repository.resendCode(
-        phoneNumber: phoneNumber,
+        phoneNumber: apiPhoneNumber,
         twoFactorKey: twoFactorKey,
       );
       final updatedKey = resendResponse.key ?? twoFactorKey;
@@ -269,7 +272,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       return raw.substring(prefix.length).trim();
     }
     final trimmed = raw.trim();
-    return trimmed.isEmpty ? 'OTP verification failed. Please try again.' : trimmed;
+    return trimmed.isEmpty
+        ? 'OTP verification failed. Please try again.'
+        : trimmed;
   }
 
   LoginOtpErrorType _mapErrorTypeFromMessage(String message) {

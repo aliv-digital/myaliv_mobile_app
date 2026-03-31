@@ -479,11 +479,18 @@ class AppRouter {
         builder: (context, state) {
           // Typed route payload keeps navigation data explicit and safe.
           final extra = state.extra;
-          final args = extra is LoginOtpRouteArgs ? extra : const LoginOtpRouteArgs(twoFactorKey: '', phoneNumber: '');
+          final args = extra is LoginOtpRouteArgs
+              ? extra
+              : const LoginOtpRouteArgs(
+                  twoFactorKey: '',
+                  phoneNumber: '',
+                  apiPhoneNumber: '',
+                );
 
           return LoginOtpScreen(
             initialTwoFactorKey: args.twoFactorKey,
             initialPhoneNumber: args.phoneNumber,
+            initialApiPhoneNumber: args.apiPhoneNumber,
           );
         },
       ),

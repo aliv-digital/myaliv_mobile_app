@@ -7,7 +7,7 @@ import 'package:equatable/equatable.dart';
 class LoginCountrySelection extends Equatable {
   static const LoginCountrySelection defaultBahamas = LoginCountrySelection(
     isoCode: 'BS',
-    dialCode: '242',
+    dialCode: '1',
     flagEmoji: '🇧🇸',
   );
 

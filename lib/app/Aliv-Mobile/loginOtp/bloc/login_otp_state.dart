@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 
 enum LoginOtpStatus { initial, loading, success, failure }
+
 enum LoginOtpResendStatus { idle, loading, done }
+
 enum LoginOtpErrorType {
   none,
   emptyCode,
@@ -15,6 +17,7 @@ class LoginOtpState extends Equatable {
   final String code;
   final String twoFactorKey;
   final String phoneNumber;
+  final String apiPhoneNumber;
   final LoginOtpStatus status;
   final LoginOtpResendStatus resendStatus;
   final LoginOtpErrorType errorType;
@@ -25,6 +28,7 @@ class LoginOtpState extends Equatable {
     this.code = '',
     this.twoFactorKey = '',
     this.phoneNumber = '',
+    this.apiPhoneNumber = '',
     this.status = LoginOtpStatus.initial,
     this.resendStatus = LoginOtpResendStatus.idle,
     this.errorType = LoginOtpErrorType.none,
@@ -36,6 +40,7 @@ class LoginOtpState extends Equatable {
     String? code,
     String? twoFactorKey,
     String? phoneNumber,
+    String? apiPhoneNumber,
     LoginOtpStatus? status,
     LoginOtpResendStatus? resendStatus,
     LoginOtpErrorType? errorType,
@@ -46,6 +51,7 @@ class LoginOtpState extends Equatable {
       code: code ?? this.code,
       twoFactorKey: twoFactorKey ?? this.twoFactorKey,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      apiPhoneNumber: apiPhoneNumber ?? this.apiPhoneNumber,
       status: status ?? this.status,
       resendStatus: resendStatus ?? this.resendStatus,
       errorType: errorType ?? this.errorType,
@@ -56,13 +62,14 @@ class LoginOtpState extends Equatable {
 
   @override
   List<Object?> get props => [
-    code,
-    twoFactorKey,
-    phoneNumber,
-    status,
-    resendStatus,
-    errorType,
-    codeFieldError,
-    errorMessage,
-  ];
+        code,
+        twoFactorKey,
+        phoneNumber,
+        apiPhoneNumber,
+        status,
+        resendStatus,
+        errorType,
+        codeFieldError,
+        errorMessage,
+      ];
 }

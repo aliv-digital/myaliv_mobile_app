@@ -4,9 +4,11 @@
 class LoginOtpRouteArgs {
   final String twoFactorKey;
   final String phoneNumber;
+  final String apiPhoneNumber;
 
   const LoginOtpRouteArgs({
     required this.twoFactorKey,
     required this.phoneNumber,
+    required this.apiPhoneNumber,
   });
 }

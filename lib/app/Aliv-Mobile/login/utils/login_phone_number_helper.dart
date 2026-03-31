@@ -27,16 +27,17 @@ class LoginPhoneNumberHelper {
   const LoginPhoneNumberHelper();
 
   static const String invalidPhoneNumberMessage = 'invalid phone number';
-  static const Map<String, String> _territoryDialCodeOverrides = <String, String>{
-    // Bahamas is a NANP territory. The picker package can surface the shared
-    // parent code `1`, but this login flow must keep the territory code `242`.
-    'BS': '242',
+  static const Map<String, String> _territoryDialCodeOverrides =
+      <String, String>{
+    // Bahamas is part of the shared NANP parent code and should display `1`
+    // in the picker, while the typed field keeps the local `242` area code.
+    'BS': '1',
   };
 
   /// country_picker returns composite codes such as `1-242` for Bahamas.
   ///
-  /// The login UX wants the territory-specific code shown to the user, so we
-  /// keep the last numeric segment instead of the shared parent code.
+  /// For Bahamas we keep the shared parent code `1`. Other composite codes
+  /// keep the last numeric segment as before.
   LoginCountrySelection selectionFromCountry(Country country) {
     final String isoCode = country.countryCode.toUpperCase();
 
@@ -105,6 +106,24 @@ class LoginPhoneNumberHelper {
     }
   }
 
+  /// Live validation stays quiet until the user starts typing.
+  ///
+  /// Once the field has some digits, we reuse the same country-aware validation
+  /// used on submit so the UI feedback stays consistent.
+  bool hasLiveValidationError({
+    required String rawPhoneNumber,
+    required LoginCountrySelection selectedCountry,
+  }) {
+    if (_digitsOnly(rawPhoneNumber).isEmpty) {
+      return false;
+    }
+
+    return !validateAndBuildApiUsername(
+      rawPhoneNumber: rawPhoneNumber,
+      selectedCountry: selectedCountry,
+    ).isValid;
+  }
+
   String _normalizeDisplayDialCode(String rawPhoneCode) {
     final List<String> phoneCodeSegments = rawPhoneCode
         .replaceAll('-', ' ')
@@ -150,9 +169,8 @@ class LoginPhoneNumberHelper {
   /// contain only the local part of the number:
   /// - Bangladesh keeps the local trunk prefix `0`, which makes the local input
   ///   one digit longer than the parsed NSN.
-  /// - Bahamas uses `242` in the picker, while libphonenumber internally keeps
-  ///   the shared `+1` country code. In that case the text field should contain
-  ///   only the subscriber part after `242`.
+  /// - Bahamas now shows the shared `1` in the picker, so the user types the
+  ///   full 10-digit local number beginning with `242`.
   bool _matchesExpectedLocalInput({
     required String enteredDigits,
     required PhoneNumber parsedPhone,
@@ -180,12 +198,16 @@ class LoginPhoneNumberHelper {
   /// Builds the username format expected by the login API.
   ///
   /// For regular countries this becomes `<countryCode><nsn>`.
-  /// For territories such as Bahamas, the parsed NSN already starts with the
-  /// displayed territory code (`242`), so we reuse the NSN directly.
+  /// For NANP numbers, the API expects the 10-digit NSN without the shared
+  /// parent code `1`.
   String _buildApiUsername({
     required PhoneNumber parsedPhone,
     required String displayDialCode,
   }) {
+    if (displayDialCode == '1' && parsedPhone.countryCode == '1') {
+      return parsedPhone.nsn;
+    }
+
     if (parsedPhone.nsn.startsWith(displayDialCode)) {
       return parsedPhone.nsn;
     }
