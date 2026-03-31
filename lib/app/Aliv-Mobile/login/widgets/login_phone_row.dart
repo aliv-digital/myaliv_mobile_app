@@ -6,6 +6,7 @@ import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../theme/login_theme.dart';
+import '../utils/bahamas_phone_input_formatter.dart';
 import '../utils/login_phone_number_helper.dart';
 
 class LoginPhoneRow extends StatefulWidget {
@@ -62,6 +63,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
+        final bool isBahamasSelected = state.selectedCountry.isoCode == 'BS';
         final bool showLivePhoneValidationError =
             _phoneNumberHelper.hasLiveValidationError(
           rawPhoneNumber: state.phone,
@@ -87,13 +89,18 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
             CustomCountryPhoneInputRow(
               focusNode: _phoneFocusNode,
               hideUnfocusedInputBorder: false,
-              hintText: 'eg: 242-899-9999',
+              hintText:
+                  isBahamasSelected ? '(242) 345-4356' : 'eg: 242-899-9999',
               flagEmoji: state.selectedCountry.flagEmoji,
               dialCode: state.selectedCountry.dialCode,
               countryIsoCode: state.selectedCountry.isoCode,
               onTapCountryPicker: () => _openCountryPicker(context),
               onChanged: (value) =>
                   context.read<LoginBloc>().add(LoginPhoneChanged(value)),
+              // Bahamas gets a presentation-only formatter in the field.
+              inputFormatters: isBahamasSelected
+                  ? const [BahamasPhoneInputFormatter()]
+                  : null,
               backgroundColor: AuthModuleColors.pageBackground,
               unfocusedBorderColor: phoneBorderColor,
               borderRadius: AuthModuleSizes.fieldRadius,
