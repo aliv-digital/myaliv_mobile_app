@@ -81,6 +81,26 @@ class HomePlanRoamEasyApiSyncRequested extends HomePlanEvent {
   });
 }
 
+/// Internal event to sync strict MiFi API data.
+/// UI rendering remains unchanged in current phase.
+class HomePlanMifiApiSyncRequested extends HomePlanEvent {
+  final bool printRawResponse;
+
+  HomePlanMifiApiSyncRequested({
+    this.printRawResponse = false,
+  });
+}
+
+/// Internal event to sync strict Liberty Global API data.
+/// UI rendering remains unchanged in current phase.
+class HomePlanLibertyGlobalApiSyncRequested extends HomePlanEvent {
+  final bool printRawResponse;
+
+  HomePlanLibertyGlobalApiSyncRequested({
+    this.printRawResponse = false,
+  });
+}
+
 /// UI one-time side effect consumed event.
 ///
 /// After UI shows a toast, it dispatches this event

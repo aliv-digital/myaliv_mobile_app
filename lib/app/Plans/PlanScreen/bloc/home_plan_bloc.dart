@@ -6,6 +6,8 @@ import '../../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/liberty_global_plan_model.dart';
+import '../models/mifi_plan_model.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
@@ -33,6 +35,12 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Prevents duplicate RoamEasy API sync calls when user taps RoamEasy repeatedly.
   bool _isRoamEasyApiSyncInProgress = false;
 
+  /// Prevents duplicate MiFi API sync calls when user taps MiFi repeatedly.
+  bool _isMifiApiSyncInProgress = false;
+
+  /// Prevents duplicate Liberty Global API sync calls when user taps the tab repeatedly.
+  bool _isLibertyGlobalApiSyncInProgress = false;
+
   HomePlanBloc(this.repository) : super(HomePlanState.initial()) {
     on<HomePlanStarted>(_onStarted);
     on<HomePlanTabChanged>(_onTabChanged);
@@ -51,6 +59,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     on<HomePlanMonthlyApiSyncRequested>(_onMonthlyApiSyncRequested);
     on<HomePlanRoamingApiSyncRequested>(_onRoamingApiSyncRequested);
     on<HomePlanRoamEasyApiSyncRequested>(_onRoamEasyApiSyncRequested);
+    on<HomePlanMifiApiSyncRequested>(_onMifiApiSyncRequested);
+    on<HomePlanLibertyGlobalApiSyncRequested>(
+      _onLibertyGlobalApiSyncRequested,
+    );
     on<HomePlanToastConsumed>(_onToastConsumed);
   }
 
@@ -138,7 +150,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       // the old mock `fetchPlans(...)` path completely.
       if (tab == HomePlanTab.daily ||
           tab == HomePlanTab.weekly ||
-          tab == HomePlanTab.monthly || tab == HomePlanTab.roaming || tab == HomePlanTab.roameasy) {
+          tab == HomePlanTab.monthly ||
+          tab == HomePlanTab.roaming ||
+          tab == HomePlanTab.roameasy ||
+          tab == HomePlanTab.mifi ||
+          tab == HomePlanTab.libertyGlobal) {
         emit(state.copyWith(
           plans: const [],
           addOns: const [],
@@ -152,8 +168,12 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
           _scheduleMonthlyApiSyncIfIdle();
         } else if (tab == HomePlanTab.roaming) {
           _scheduleRoamingApiSyncIfIdle();
-        } else {
+        } else if (tab == HomePlanTab.roameasy) {
           _scheduleRoamEasyApiSyncIfIdle();
+        } else if (tab == HomePlanTab.mifi) {
+          _scheduleMifiApiSyncIfIdle();
+        } else {
+          _scheduleLibertyGlobalApiSyncIfIdle();
         }
         return;
       }
@@ -663,6 +683,194 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
   }
 
+  /// Sync strict MiFi API data and store in state.
+  Future<void> _onMifiApiSyncRequested(
+    HomePlanMifiApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
+    if (_isMifiApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('mifi-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    _isMifiApiSyncInProgress = true;
+
+    try {
+      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
+      if (auth == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'mifi-api-sync: skipped, missing username/password/deviceAccountID',
+          );
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.mifi,
+          errorMessage: 'MiFi plans are unavailable right now. Please login again.',
+        );
+        return;
+      }
+
+      final List<MifiPlanModel> mifiPlans =
+          await repository.fetchMifiPlansFromApi(
+        username: auth.username,
+        password: auth.password,
+        deviceAccountID: auth.deviceAccountID,
+        printRawResponse: event.printRawResponse,
+        printFilteredMifiPlans: false,
+      );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.mifi] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: mifiPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      if (kDebugMode && mifiPlans.isNotEmpty) {
+        debugPrint("=========== MiFi Plan ==============");
+        debugPrint('First MiFi Indexed Data :');
+        debugPrint(mifiPlans[0].planName);
+        debugPrint("last synced : ${state.mifiApiLastSyncedAt}");
+      } else if (kDebugMode) {
+        debugPrint("mifiPlans.isEmpty");
+      }
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.mifi,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        mifiApiPlans: mifiPlans,
+        apiTabMeta: nextApiTabMeta,
+        mifiApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.mifi,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.mifi,
+          error: error,
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('mifi-api-sync: failed with error: $e');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.mifi,
+        errorMessage: 'Failed to sync MiFi plans',
+      );
+    } finally {
+      _isMifiApiSyncInProgress = false;
+    }
+  }
+
+  /// Sync strict Liberty Global API data and store in state.
+  Future<void> _onLibertyGlobalApiSyncRequested(
+    HomePlanLibertyGlobalApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
+    if (_isLibertyGlobalApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint(
+          'liberty-global-api-sync: skipped, sync already in progress',
+        );
+      }
+      return;
+    }
+
+    _isLibertyGlobalApiSyncInProgress = true;
+
+    try {
+      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
+      if (auth == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'liberty-global-api-sync: skipped, '
+            'missing username/password/deviceAccountID',
+          );
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.libertyGlobal,
+          errorMessage:
+              'Liberty Global plans are unavailable right now. Please login again.',
+        );
+        return;
+      }
+
+      final List<LibertyGlobalPlanModel> libertyGlobalPlans =
+          await repository.fetchLibertyGlobalPlansFromApi(
+        username: auth.username,
+        password: auth.password,
+        deviceAccountID: auth.deviceAccountID,
+        printRawResponse: event.printRawResponse,
+        printFilteredLibertyGlobalPlans: false,
+      );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.libertyGlobal] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: libertyGlobalPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      if (kDebugMode && libertyGlobalPlans.isNotEmpty) {
+        debugPrint("=========== Liberty Global Plan ==============");
+        debugPrint('First Liberty Global Indexed Data :');
+        debugPrint(libertyGlobalPlans[0].planName);
+        debugPrint(
+          "last synced : ${state.libertyGlobalApiLastSyncedAt}",
+        );
+      } else if (kDebugMode) {
+        debugPrint("libertyGlobalPlans.isEmpty");
+      }
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.libertyGlobal,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        libertyGlobalApiPlans: libertyGlobalPlans,
+        apiTabMeta: nextApiTabMeta,
+        libertyGlobalApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.libertyGlobal,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.libertyGlobal,
+          error: error,
+        ),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('liberty-global-api-sync: failed with error: $e');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.libertyGlobal,
+        errorMessage: 'Failed to sync Liberty Global plans',
+      );
+    } finally {
+      _isLibertyGlobalApiSyncInProgress = false;
+    }
+  }
+
   /// Clears one-time toast after UI handles it.
   void _onToastConsumed(HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
     emit(state.copyWith(clearPendingToast: true));
@@ -738,6 +946,32 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
 
     add(HomePlanRoamEasyApiSyncRequested());
+  }
+
+  /// Schedules MiFi API sync only when no sync is running.
+  void _scheduleMifiApiSyncIfIdle() {
+    if (_isMifiApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('mifi-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    add(HomePlanMifiApiSyncRequested());
+  }
+
+  /// Schedules Liberty Global API sync only when no sync is running.
+  void _scheduleLibertyGlobalApiSyncIfIdle() {
+    if (_isLibertyGlobalApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint(
+          'liberty-global-api-sync: skipped, sync already in progress',
+        );
+      }
+      return;
+    }
+
+    add(HomePlanLibertyGlobalApiSyncRequested());
   }
 
   /// Returns one tab UI-state object.

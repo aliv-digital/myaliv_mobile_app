@@ -103,12 +103,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         selectedCountry: state.selectedCountry,
     );
 
-    if (!phoneValidationResult.isValid ||
-        phoneValidationResult.phoneNumberForApi == null) {
+    if (!phoneValidationResult.isValid || phoneValidationResult.phoneNumberForApi == null) {
       _emitFailure(
         emit,
-        message: phoneValidationResult.errorMessage ??
-            LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+        message: phoneValidationResult.errorMessage ?? LoginPhoneNumberHelper.invalidPhoneNumberMessage,
         phoneFieldError: true,
         passwordFieldError: false,
       );
