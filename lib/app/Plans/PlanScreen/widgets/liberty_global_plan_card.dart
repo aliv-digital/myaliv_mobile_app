@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
-import '../data/plan_icon_assets.dart';
-import '../models/plan_model.dart';
+import '../data/plan_bucket_icons.dart';
+import '../models/liberty_global_plan_model.dart';
 import '../theme/theme.dart';
 
 class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
-  final HomePlanModel plan;
+  final LibertyGlobalPlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
-  final VoidCallback onViewDetails; // toggle expand/collapse
+  final VoidCallback onViewDetails;
   final VoidCallback onPurchaseNow;
 
   const HomePlanLibertyGlobalPlanCard({
@@ -24,17 +24,6 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ liberty global center metric: prefer intl talk benefit
-    final HomePlanBenefit? intlTalk = plan.benefits
-        .where((b) => b.type == HomePlanBenefitType.intlTalkText)
-        .cast<HomePlanBenefit?>()
-        .firstWhere((b) => b != null, orElse: () => null);
-
-    final HomePlanBenefit center = intlTalk ?? plan.benefits.first;
-
-    debugPrint("----- HomePlanLibertyGlobalPlanCard -----");
-    debugPrint("intlTalk: $intlTalk");
-
     return Container(
       margin: HomePlanTheme.planCardOuterMargin,
       padding: HomePlanTheme.planCardInnerPadding,
@@ -72,7 +61,7 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.title,
+                              plan.planName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style:
@@ -98,21 +87,23 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        plan.subtitle,
+                        _durationText(plan),
                         style: HomePlanTheme.planCardSubtitleTextStyle,
                       ),
                     ],
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(
+                price: plan.planAmount,
+                vatAmount: plan.vatAmount,
+              ),
             ],
           ),
 
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
 
-          // ===== Center metric (intl talk) =====
-          _CenterMetric(benefit: center),
+          _PlanBuckets(benefits: plan.planBuckets),
 
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
 
@@ -129,7 +120,7 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Text(
-                  plan.description,
+                  plan.planDescription,
                   textAlign: TextAlign.start,
                   style: HomePlanTheme.planCardDescriptionTextStyle,
                 ),
@@ -189,14 +180,59 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
       ),
     );
   }
+
+  String _durationText(LibertyGlobalPlanModel plan) {
+    if(plan.frequency == 'W'){
+      return '7 days';
+    }
+    if(plan.frequency == 'M'){
+      return '30 days';
+    }
+    if(plan.frequency == 'D'){
+      return '1 day';
+    }
+    if(plan.frequency == 'H'){
+      return '15 days';
+    }
+    if(plan.frequency == 'T'){
+      return '10 days';
+    }
+    if(plan.frequency == 'S'){
+      return '60 days';
+    }
+    if(plan.frequency == 'N'){
+      return '90 days';
+    }
+    if(plan.frequency == 'B'){
+      return '15 days';
+    }
+    if(plan.frequency == '3'){
+      return '3 days';
+    }
+    if(plan.frequency == '5'){
+      return '5 days';
+    }
+    if(plan.frequency == 'A'){
+      return '1 year';
+    }
+
+    return '';
+  }
 }
 
 class _PricePill extends StatelessWidget {
   final double price;
-  const _PricePill({required this.price});
+  final double vatAmount;
+
+  const _PricePill({
+    required this.price,
+    required this.vatAmount,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final double finalPrice = price + vatAmount;
+
     return Container(
       padding: HomePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
@@ -205,72 +241,340 @@ class _PricePill extends StatelessWidget {
             BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
+        '\$ ${finalPrice.toStringAsFixed(2)}',
         style: HomePlanTheme.planPricePillTextStyle,
       ),
     );
   }
 }
 
-class _CenterMetric extends StatelessWidget {
-  final HomePlanBenefit benefit;
-  const _CenterMetric({required this.benefit});
+class _PlanBuckets extends StatefulWidget {
+  final List<LibertyGlobalPlanBucketModel> benefits;
+  const _PlanBuckets({required this.benefits});
+
+  @override
+  State<_PlanBuckets> createState() => _PlanBucketsRowState();
+}
+
+class _PlanBucketsRowState extends State<_PlanBuckets> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final iconPath = HomePlanIconAssets.forType(benefit.type);
-    final isSvg = iconPath.toLowerCase().endsWith('.svg');
+    const double rowH = 50;
+    const double sidePad = 2;
+    final List<LibertyGlobalPlanBucketModel> visibleBenefits = widget.benefits.take(1).toList();
 
-    debugPrint("----- HomePlanAddOnCard -----");
-    debugPrint("HomePlanBenefitType.data: ${HomePlanBenefitType.data}");
-    debugPrint("iconPath: $iconPath");
-    debugPrint("benefit label: ${benefit.label}");
+    if (visibleBenefits.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
+        SizedBox(
+          height: rowH,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: sidePad),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  controller: _controller,
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: List.generate(visibleBenefits.length, (i) {
+                          final LibertyGlobalPlanBucketModel item =
+                              visibleBenefits[i];
+                          return Row(
+                            children: [
+                              SizedBox(
+                                height: rowH,
+                                child: _BucketItem(
+                                  benefit: item,
+                                  labelColor: HomePlanTheme.talkMinsColor,
+                                  itemType: BucketItemType.call,
+                                ),
+                              ),
+                              if (i != visibleBenefits.length - 1)
+                                Container(
+                                  width: HomePlanTheme.planBenefitDividerWidth,
+                                  height:
+                                      HomePlanTheme.planBenefitDividerHeight,
+                                  margin: HomePlanTheme
+                                      .planBenefitDividerHorizontalMargin,
+                                  color: HomePlanTheme.planBenefitDividerColor,
+                                ),
+                            ],
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePad),
+          child: _ScrollIndicator(controller: _controller),
+        ),
+      ],
+    );
+  }
+}
+
+class _ScrollIndicator extends StatelessWidget {
+  final ScrollController controller;
+  const _ScrollIndicator({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    const double trackH = HomePlanTheme.scrollBarThumbHeight;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double trackW = constraints.maxWidth;
+        const double thumbW = HomePlanTheme.scrollBarThumbWidth;
+
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            if (!controller.hasClients || controller.positions.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            final ScrollPosition position = controller.positions.first;
+            if (!position.hasContentDimensions) {
+              return const SizedBox.shrink();
+            }
+
+            final double maxScroll = position.maxScrollExtent;
+            if (maxScroll <= 0) {
+              return const SizedBox.shrink();
+            }
+
+            final double progress =
+                (position.pixels / maxScroll).clamp(0.0, 1.0);
+            final double maxThumbTravel = (trackW - thumbW).clamp(0.0, trackW);
+            final double left = progress * maxThumbTravel;
+
+            return _indicatorUI(trackW, trackH, thumbW, left);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
+    return SizedBox(
+      width: trackW,
+      height: HomePlanTheme.scrollBarRenderBoxHeight,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: 0,
+            top: (HomePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: trackW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: HomePlanTheme.scrollBarBackgroundColor,
+                borderRadius: BorderRadius.circular(
+                  HomePlanTheme.scrollBarThumbRadius,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: left,
+            top: (HomePlanTheme.scrollBarRenderBoxHeight - trackH) / 2,
+            child: Container(
+              width: thumbW,
+              height: trackH,
+              decoration: BoxDecoration(
+                color: HomePlanTheme.scrollBarThumbColor,
+                borderRadius: BorderRadius.circular(
+                  HomePlanTheme.scrollBarThumbRadius,
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: HomePlanTheme.scrollBarThumbShadowColor,
+                    blurRadius: HomePlanTheme.scrollBarShadowBlur,
+                    offset: Offset(
+                      HomePlanTheme.scrollBarShadowOffsetX,
+                      HomePlanTheme.scrollBarShadowOffsetY,
+                    ),
+                    spreadRadius: HomePlanTheme.scrollBarShadowSpread,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AssetIcon extends StatelessWidget {
+  final BucketItemType type;
+  final double size;
+
+  const _AssetIcon({required this.type, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final String path = PlanBucketIcons.forType(type);
+    final String lower = path.toLowerCase();
+    if (lower.endsWith('.svg')) {
+      return SvgPicture.asset(
+        path,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
+    }
+    return Image.asset(path, width: size, height: size, fit: BoxFit.contain);
+  }
+}
+
+class _BucketItem extends StatelessWidget {
+  final BucketItemType itemType;
+  final LibertyGlobalPlanBucketModel benefit;
+  final Color labelColor;
+
+  const _BucketItem({
+    required this.benefit,
+    required this.labelColor,
+    required this.itemType,
+  });
+
+  String _formatAmount(double amount) {
+    final bool hasOnlyZeroFraction =
+        (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    if (hasOnlyZeroFraction) {
+      return amount.toStringAsFixed(0);
+    }
+    return amount.toString();
+  }
+
+  double _measureTextWidth(BuildContext context, String text, TextStyle style) {
+    final TextPainter tp = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: Directionality.of(context),
+    )..layout();
+    return tp.width;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const double iconSize = 14.0;
+    const double iconGap = 4.0;
+
+    final TextStyle labelStyle = TextStyle(
+      fontFamily: 'CircularPro',
+      fontSize: 12,
+      height: 1.0,
+      fontWeight: FontWeight.w500,
+      color: labelColor,
+    );
+
+    final TextStyle valueStyle = const TextStyle(
+      fontFamily: 'CircularPro',
+      fontSize: 16,
+      height: 1.0,
+      fontWeight: FontWeight.w700,
+      color: Colors.black,
+    );
+
+    final TextStyle subStyle = TextStyle(
+      fontFamily: 'CircularPro',
+      fontSize: 12,
+      height: 1.0,
+      fontWeight: FontWeight.w400,
+      color: HomePlanTheme.subtitleColor,
+    );
+
+    final double labelW = _measureTextWidth(context, benefit.name, labelStyle);
+    final double valueW = _measureTextWidth(
+      context,
+      benefit.unlimited ? 'unlimited' : _formatAmount(benefit.amount),
+      valueStyle,
+    );
+    final double subW =
+        _measureTextWidth(context, benefit.unit.toLowerCase(), subStyle);
+    final double line1W = iconSize + iconGap + labelW;
+    final double contentW = [line1W, valueW, subW].reduce(
+      (a, b) => a > b ? a : b,
+    );
+    final double dynamicW = contentW + 16;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: 72,
+        maxWidth: 160,
+      ),
+      child: SizedBox(
+        width: dynamicW.clamp(72, 160),
+        height: 50,
+        child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (isSvg)
-              SvgPicture.asset(iconPath, width: 16, height: 16)
-            else
-              Image.asset(iconPath, width: 16, height: 16),
-            const SizedBox(width: 2),
-            Text(
-              benefit.label,
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 12,
-                height: 1.0,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF00A9D8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: iconGap),
+                  child: _AssetIcon(type: itemType, size: iconSize),
+                ),
+                Text(
+                  "int'l talk",//benefit.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: labelStyle,
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            SizedBox(
+              height: 16,
+              child: Text(
+                benefit.unlimited ? 'unlimited' : _formatAmount(benefit.amount),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: valueStyle,
+              ),
+            ),
+            const SizedBox(height: 2),
+            SizedBox(
+              height: 12,
+              child: Text(
+                benefit.unit.toLowerCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: subStyle,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 2),
-        Text(
-          benefit.value,
-          style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 16,
-            height: 1.0,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          benefit.sub,
-          style: const TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 12,
-            height: 1.0,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF707070),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

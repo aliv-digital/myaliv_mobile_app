@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/liberty_global_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/mifi_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
@@ -23,7 +25,9 @@ class HomePlanPlansList extends StatelessWidget {
     required this.onToggleExpanded,
     required this.onPurchaseNow,
     this.onDailyPurchaseNow,
+    this.onLibertyGlobalPurchaseNow,
     this.onMonthlyPurchaseNow,
+    this.onMifiPurchaseNow,
     this.onRoamingPurchaseNow,
     this.onRoamEasyPurchaseNow,
     this.onWeeklyPurchaseNow,
@@ -33,6 +37,8 @@ class HomePlanPlansList extends StatelessWidget {
   final ValueChanged<String> onToggleExpanded;
   final ValueChanged<HomePlanModel> onPurchaseNow;
   final ValueChanged<DailyPlanModel>? onDailyPurchaseNow;
+  final ValueChanged<LibertyGlobalPlanModel>? onLibertyGlobalPurchaseNow;
+  final ValueChanged<MifiPlanModel>? onMifiPurchaseNow;
   final ValueChanged<MonthlyPlanModel>? onMonthlyPurchaseNow;
   final ValueChanged<RoamingPlanModel>? onRoamingPurchaseNow;
   final ValueChanged<RoamEasyPlanModel>? onRoamEasyPurchaseNow;
@@ -136,6 +142,45 @@ class HomePlanPlansList extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _buildCardForRoamEasyTab(
+              plan: plan,
+              expanded: expanded,
+            ),
+          );
+        },
+      );
+    }
+
+    if (state.selectedTab == HomePlanTab.mifi) {
+      return ListView.builder(
+        padding: const EdgeInsets.only(top: 6, bottom: 14),
+        itemCount: state.mifiApiPlans.length,
+        itemBuilder: (context, index) {
+          final MifiPlanModel plan = state.mifiApiPlans[index];
+          final bool expanded = state.expandedPlanIds.contains(plan.planId);
+
+          return Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _buildCardForMifiTab(
+              plan: plan,
+              expanded: expanded,
+            ),
+          );
+        },
+      );
+    }
+
+    if (state.selectedTab == HomePlanTab.libertyGlobal) {
+      return ListView.builder(
+        padding: const EdgeInsets.only(top: 6, bottom: 14),
+        itemCount: state.libertyGlobalApiPlans.length,
+        itemBuilder: (context, index) {
+          final LibertyGlobalPlanModel plan =
+              state.libertyGlobalApiPlans[index];
+          final bool expanded = state.expandedPlanIds.contains(plan.planId);
+
+          return Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15),
+            child: _buildCardForLibertyGlobalTab(
               plan: plan,
               expanded: expanded,
             ),
@@ -261,13 +306,49 @@ class HomePlanPlansList extends StatelessWidget {
     );
   }
 
+  Widget _buildCardForMifiTab({
+    required MifiPlanModel plan,
+    required bool expanded,
+  }) {
+    void toggle() => onToggleExpanded(plan.planId);
+
+    return HomePlanMifiPlanCard(
+      plan: plan,
+      expanded: expanded,
+      onToggle: toggle,
+      onViewDetails: toggle,
+      onPurchaseNow: () {
+        if (onMifiPurchaseNow != null) {
+          onMifiPurchaseNow!(plan);
+        }
+      },
+    );
+  }
+
+  Widget _buildCardForLibertyGlobalTab({
+    required LibertyGlobalPlanModel plan,
+    required bool expanded,
+  }) {
+    void toggle() => onToggleExpanded(plan.planId);
+
+    return HomePlanLibertyGlobalPlanCard(
+      plan: plan,
+      expanded: expanded,
+      onToggle: toggle,
+      onViewDetails: toggle,
+      onPurchaseNow: () {
+        if (onLibertyGlobalPurchaseNow != null) {
+          onLibertyGlobalPurchaseNow!(plan);
+        }
+      },
+    );
+  }
+
   Widget _buildCardForTab({
     required HomePlanTab tab,
     required HomePlanModel plan,
     required bool expanded,
   }) {
-    void toggle() => onToggleExpanded(plan.id);
-
     switch (tab) {
       case HomePlanTab.monthly:
         return const SizedBox.shrink();
@@ -280,21 +361,9 @@ class HomePlanPlansList extends StatelessWidget {
       case HomePlanTab.roameasy:
         return const SizedBox.shrink();
       case HomePlanTab.mifi:
-        return HomePlanMifiPlanCard(
-          plan: plan,
-          expanded: expanded,
-          onToggle: toggle,
-          onViewDetails: toggle,
-          onPurchaseNow: () => onPurchaseNow(plan),
-        );
+        return const SizedBox.shrink();
       case HomePlanTab.libertyGlobal:
-        return HomePlanLibertyGlobalPlanCard(
-          plan: plan,
-          expanded: expanded,
-          onToggle: toggle,
-          onViewDetails: toggle,
-          onPurchaseNow: () => onPurchaseNow(plan),
-        );
+        return const SizedBox.shrink();
       case HomePlanTab.addOns:
         return const SizedBox.shrink();
     }

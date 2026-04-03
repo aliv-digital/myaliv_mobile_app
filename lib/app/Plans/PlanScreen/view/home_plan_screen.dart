@@ -9,6 +9,8 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
 import '../bloc/home_plan_state.dart';
+import '../models/liberty_global_plan_model.dart';
+import '../models/mifi_plan_model.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/plan_model.dart';
 import '../models/roaming_plan_model.dart';
@@ -66,6 +68,30 @@ class _HomePlanView extends StatelessWidget {
     );
   }
 
+  HomePlanModel _toMifiPurchaseSheetPlan(MifiPlanModel plan) {
+    return HomePlanModel(
+      id: plan.planId,
+      title: plan.planName,
+      subtitle: '',
+      price: plan.planAmount,
+      description: plan.planDescription,
+      benefits: const <HomePlanBenefit>[],
+    );
+  }
+
+  HomePlanModel _toLibertyGlobalPurchaseSheetPlan(
+    LibertyGlobalPlanModel plan,
+  ) {
+    return HomePlanModel(
+      id: plan.planId,
+      title: plan.planName,
+      subtitle: '',
+      price: plan.planAmount,
+      description: plan.planDescription,
+      benefits: const <HomePlanBenefit>[],
+    );
+  }
+
   void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
     context.read<HomePlanBloc>().add(HomePlanPurchaseNowPressed(plan));
 
@@ -87,6 +113,17 @@ class _HomePlanView extends StatelessWidget {
     RoamEasyPlanModel plan,
   ) {
     _onPurchaseNowPressed(context, _toRoamEasyPurchaseSheetPlan(plan));
+  }
+
+  void _onMifiPurchaseNowPressed(BuildContext context, MifiPlanModel plan) {
+    _onPurchaseNowPressed(context, _toMifiPurchaseSheetPlan(plan));
+  }
+
+  void _onLibertyGlobalPurchaseNowPressed(
+    BuildContext context,
+    LibertyGlobalPlanModel plan,
+  ) {
+    _onPurchaseNowPressed(context, _toLibertyGlobalPurchaseSheetPlan(plan));
   }
 
   @override
@@ -211,6 +248,15 @@ class _HomePlanView extends StatelessWidget {
                       onMonthlyPurchaseNow: (MonthlyPlanModel plan) {
                         debugPrint('plan: ${plan.planName}');
                         // _onPurchaseNowPressed(context, plan);
+                      },
+                      onMifiPurchaseNow: (MifiPlanModel plan) {
+                        debugPrint('plan: ${plan.planName}');
+                        _onMifiPurchaseNowPressed(context, plan);
+                      },
+                      onLibertyGlobalPurchaseNow:
+                          (LibertyGlobalPlanModel plan) {
+                        debugPrint('plan: ${plan.planName}');
+                        _onLibertyGlobalPurchaseNowPressed(context, plan);
                       },
                       onRoamingPurchaseNow: (RoamingPlanModel plan) {
                         debugPrint('plan: ${plan.planName}');
