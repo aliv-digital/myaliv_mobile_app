@@ -1,5 +1,6 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
 import '../models/monthly_plan_model.dart';
@@ -78,6 +79,12 @@ class HomePlanState {
   final List<HomePlanAddOnModel> addOns;
   final Set<String> selectedAddOnIds;
 
+  /// Dedicated API data for Add-ons tab `PrimaryPlans`.
+  ///
+  /// Repository keeps this list sorted by earliest `StartDate`, so
+  /// `addOnsApiPrimaryPlans.first` is the primary plan we want to show first.
+  final List<AddOnsPrimaryPlanModel> addOnsApiPrimaryPlans;
+
   /// Dedicated API data for Daily tab (not bound to UI yet).
   final List<DailyPlanModel> dailyApiPlans;
 
@@ -128,6 +135,9 @@ class HomePlanState {
   /// Time when Liberty Global API data was last synced successfully.
   final DateTime? libertyGlobalApiLastSyncedAt;
 
+  /// Time when Add-ons bundles API data was last synced successfully.
+  final DateTime? addOnsApiLastSyncedAt;
+
   /// One-time toast effect to be handled by UI listener.
   final HomePlanToastMessage? pendingToast;
 
@@ -148,6 +158,7 @@ class HomePlanState {
     required this.expandedPlanIds,
     required this.addOns,
     required this.selectedAddOnIds,
+    required this.addOnsApiPrimaryPlans,
     required this.dailyApiPlans,
     required this.weeklyApiPlans,
     required this.monthlyApiPlans,
@@ -164,6 +175,7 @@ class HomePlanState {
     this.roamEasyApiLastSyncedAt,
     this.mifiApiLastSyncedAt,
     this.libertyGlobalApiLastSyncedAt,
+    this.addOnsApiLastSyncedAt,
     this.pendingToast,
   });
 
@@ -206,6 +218,7 @@ class HomePlanState {
       expandedPlanIds: {},
       addOns: [],
       selectedAddOnIds: {},
+      addOnsApiPrimaryPlans: [],
       dailyApiPlans: [],
       weeklyApiPlans: [],
       monthlyApiPlans: [],
@@ -235,6 +248,7 @@ class HomePlanState {
     // ✅ AddOns
     List<HomePlanAddOnModel>? addOns,
     Set<String>? selectedAddOnIds,
+    List<AddOnsPrimaryPlanModel>? addOnsApiPrimaryPlans,
     List<DailyPlanModel>? dailyApiPlans,
     List<WeeklyPlanModel>? weeklyApiPlans,
     List<MonthlyPlanModel>? monthlyApiPlans,
@@ -250,6 +264,7 @@ class HomePlanState {
     DateTime? roamEasyApiLastSyncedAt,
     DateTime? mifiApiLastSyncedAt,
     DateTime? libertyGlobalApiLastSyncedAt,
+    DateTime? addOnsApiLastSyncedAt,
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
     bool clearPendingToast = false,
@@ -269,6 +284,8 @@ class HomePlanState {
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
       addOns: addOns ?? this.addOns,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
+      addOnsApiPrimaryPlans:
+          addOnsApiPrimaryPlans ?? this.addOnsApiPrimaryPlans,
       dailyApiPlans: dailyApiPlans ?? this.dailyApiPlans,
       weeklyApiPlans: weeklyApiPlans ?? this.weeklyApiPlans,
       monthlyApiPlans: monthlyApiPlans ?? this.monthlyApiPlans,
@@ -290,6 +307,8 @@ class HomePlanState {
       mifiApiLastSyncedAt: mifiApiLastSyncedAt ?? this.mifiApiLastSyncedAt,
       libertyGlobalApiLastSyncedAt:
           libertyGlobalApiLastSyncedAt ?? this.libertyGlobalApiLastSyncedAt,
+      addOnsApiLastSyncedAt:
+          addOnsApiLastSyncedAt ?? this.addOnsApiLastSyncedAt,
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,
@@ -333,6 +352,12 @@ class HomePlanState {
 
   /// Convenience getter used by selected-tab error widgets.
   String? get selectedTabErrorMessage => errorFor(selectedTab);
+
+  /// Earliest primary plan prepared for Add-ons tab UI.
+  AddOnsPrimaryPlanModel? get earliestAddOnsPrimaryPlan {
+    if (addOnsApiPrimaryPlans.isEmpty) return null;
+    return addOnsApiPrimaryPlans.first;
+  }
 }
 
 /// Lightweight per-tab API sync metadata.

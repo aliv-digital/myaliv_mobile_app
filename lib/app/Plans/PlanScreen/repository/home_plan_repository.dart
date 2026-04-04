@@ -4,6 +4,7 @@ import '../../../../core/networkService/api_paths.dart';
 import '../../../../core/networkService/app_http_client.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
 import '../models/mifi_plan_model.dart';
@@ -26,7 +27,9 @@ enum HomePlanTab {
 
 /// Converts one dynamic map to string-keyed map.
 Map<String, dynamic> _toStringKeyedMapInBackground(Map<dynamic, dynamic> item) {
-  return item.map((dynamic key, dynamic value) => MapEntry<String, dynamic>(key.toString(), value),
+  return item.map(
+    (dynamic key, dynamic value) =>
+        MapEntry<String, dynamic>(key.toString(), value),
   );
 }
 
@@ -52,6 +55,24 @@ List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
       .whereType<Map>()
       .map(_toStringKeyedMapInBackground)
       .toList(growable: false);
+}
+
+/// Background worker:
+/// Decodes bundles JSON and normalizes the root object into a string-keyed map.
+///
+/// Important:
+/// - Must stay top-level for `compute(...)`.
+/// - Must return only isolate-safe data structures.
+Map<String, dynamic> _decodeBundlesJsonInBackground(String rawBody) {
+  final dynamic decoded = jsonDecode(rawBody);
+
+  if (decoded is! Map) {
+    throw const FormatException(
+      'Expected JSON object root for bundles response.',
+    );
+  }
+
+  return _toStringKeyedMapInBackground(decoded);
 }
 
 // /v1/MyAliv/device/{{deviceAccountId}}/available-plans
@@ -93,8 +114,7 @@ class HomePlanRepository {
   DateTime? _lastFetchedRoamingAt;
 
   /// Holds strict RoamEasy plans parsed from latest API payload.
-  List<RoamEasyPlanModel> _lastFetchedRoamEasyPlans =
-      <RoamEasyPlanModel>[];
+  List<RoamEasyPlanModel> _lastFetchedRoamEasyPlans = <RoamEasyPlanModel>[];
 
   /// Timestamp for latest successful strict RoamEasy filtering.
   DateTime? _lastFetchedRoamEasyAt;
@@ -111,6 +131,22 @@ class HomePlanRepository {
 
   /// Timestamp for latest successful strict Liberty Global filtering.
   DateTime? _lastFetchedLibertyGlobalAt;
+
+  /// Holds the latest full bundles payload in normalized format.
+  ///
+  /// Add-ons tab reads `PrimaryPlans` from this cached response so repeated
+  /// tab switches do not trigger repeated network requests.
+  Map<String, dynamic> _lastFetchedBundlesResponse = <String, dynamic>{};
+
+  /// Timestamp for last successful bundles fetch.
+  DateTime? _lastFetchedBundlesAt;
+
+  /// Holds sorted Add-ons tab primary plans parsed from bundles API payload.
+  List<AddOnsPrimaryPlanModel> _lastFetchedAddOnsPrimaryPlans =
+      <AddOnsPrimaryPlanModel>[];
+
+  /// Timestamp for latest successful Add-ons primary-plan filtering.
+  DateTime? _lastFetchedAddOnsPrimaryPlansAt;
 
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -190,7 +226,8 @@ class HomePlanRepository {
   ///
   /// This works on the already-normalized cache, so we avoid re-fetching the API
   /// and avoid re-decoding the full response for every tab.
-  List<Map<String, dynamic>> _filterStrictPlansFromFullCache({required String planType, required String frequency}) {
+  List<Map<String, dynamic>> _filterStrictPlansFromFullCache(
+      {required String planType, required String frequency}) {
     final String normalizedPlanType = planType.trim().toUpperCase();
     final String normalizedFrequency = frequency.trim().toUpperCase();
 
@@ -206,15 +243,19 @@ class HomePlanRepository {
   }
 
   /// Filters one tab's strict plans using PlanType + PlanGroup.
-  List<Map<String, dynamic>> _filterStrictPlansFromFullCacheByPlanGroup({required String planType,required String planGroup}) {
+  List<Map<String, dynamic>> _filterStrictPlansFromFullCacheByPlanGroup(
+      {required String planType, required String planGroup}) {
     final String normalizedPlanType = planType.trim().toUpperCase();
     final String normalizedPlanGroup = planGroup.trim().toUpperCase();
 
     return _lastFetchedPlans.where((Map<String, dynamic> plan) {
-      final String currentPlanType = _normalizedUpperInBackground(plan['PlanType']);
-      final String currentPlanGroup = _normalizedUpperInBackground(plan['PlanGroup']);
+      final String currentPlanType =
+          _normalizedUpperInBackground(plan['PlanType']);
+      final String currentPlanGroup =
+          _normalizedUpperInBackground(plan['PlanGroup']);
 
-      return currentPlanType == normalizedPlanType && currentPlanGroup == normalizedPlanGroup;
+      return currentPlanType == normalizedPlanType &&
+          currentPlanGroup == normalizedPlanGroup;
     }).toList(growable: false);
   }
 
@@ -236,7 +277,8 @@ class HomePlanRepository {
   }) async {
     // Step-1:
     // Load the full plans response only once and keep it in repository memory.
-    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
@@ -246,7 +288,8 @@ class HomePlanRepository {
     // Step-2:
     // Filter Daily primary plans from the cached full list.
     final int totalRawPlansCount = fullPlans.length;
-    final List<Map<String, dynamic>> strictDailyRawPlans = _filterStrictPlansFromFullCache(
+    final List<Map<String, dynamic>> strictDailyRawPlans =
+        _filterStrictPlansFromFullCache(
       planType: 'P',
       frequency: 'D',
     );
@@ -396,7 +439,8 @@ class HomePlanRepository {
   }) async {
     // Step-1:
     // Load the full plans response only once and keep it in repository memory.
-    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
@@ -407,7 +451,7 @@ class HomePlanRepository {
     // Filter Monthly primary plans from the cached full list.
     final int totalRawPlansCount = fullPlans.length;
     final List<Map<String, dynamic>> strictMonthlyRawPlans =
-    _filterStrictPlansFromFullCache(
+        _filterStrictPlansFromFullCache(
       planType: 'P',
       frequency: 'M',
     );
@@ -415,11 +459,14 @@ class HomePlanRepository {
     // Step-3:
     // Parse only matched raw monthly maps into typed MonthlyPlanModel list.
     // `includeRawPayload: false` keeps memory usage low in runtime.
-    final List<MonthlyPlanModel> strictMonthlyPlans = strictMonthlyRawPlans.map((Map<String, dynamic> planMap) => MonthlyPlanModel.fromApiMap(
+    final List<MonthlyPlanModel> strictMonthlyPlans = strictMonthlyRawPlans
+        .map(
+          (Map<String, dynamic> planMap) => MonthlyPlanModel.fromApiMap(
             planMap,
             includeRawPayload: false,
           ),
-        ).toList(growable: false);
+        )
+        .toList(growable: false);
     _lastFetchedMonthlyPlans = strictMonthlyPlans;
     _lastFetchedMonthlyAt = DateTime.now();
 
@@ -452,7 +499,9 @@ class HomePlanRepository {
       printFilteredMonthlyPlans: true,
     );
 
-    return monthlyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+    return monthlyPlans
+        .map((plan) => plan.toDebugMap())
+        .toList(growable: false);
   }
 
   /// Fetch and parse API payload into dedicated Roaming model list.
@@ -467,7 +516,8 @@ class HomePlanRepository {
     bool printRawResponse = false,
     bool printFilteredRoamingPlans = false,
   }) async {
-    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
@@ -475,7 +525,8 @@ class HomePlanRepository {
     );
 
     final int totalRawPlansCount = fullPlans.length;
-    final List<Map<String, dynamic>> strictRoamingRawPlans = _filterStrictPlansFromFullCacheByPlanGroup(
+    final List<Map<String, dynamic>> strictRoamingRawPlans =
+        _filterStrictPlansFromFullCacheByPlanGroup(
       planType: 'A',
       planGroup: 'roaming',
     );
@@ -519,7 +570,9 @@ class HomePlanRepository {
       printFilteredRoamingPlans: true,
     );
 
-    return roamingPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+    return roamingPlans
+        .map((plan) => plan.toDebugMap())
+        .toList(growable: false);
   }
 
   /// Fetch and parse API payload into dedicated RoamEasy model list.
@@ -534,7 +587,8 @@ class HomePlanRepository {
     bool printRawResponse = false,
     bool printFilteredRoamEasyPlans = false,
   }) async {
-    final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
@@ -542,15 +596,18 @@ class HomePlanRepository {
     );
 
     final int totalRawPlansCount = fullPlans.length;
-    final List<Map<String, dynamic>> strictRoamEasyRawPlans = _filterStrictPlansFromFullCacheByPlanGroup(
+    final List<Map<String, dynamic>> strictRoamEasyRawPlans =
+        _filterStrictPlansFromFullCacheByPlanGroup(
       planType: 'A',
       planGroup: 'roameasy',
     );
 
-    final List<RoamEasyPlanModel> strictRoamEasyPlans = strictRoamEasyRawPlans.map((Map<String, dynamic> planMap) => RoamEasyPlanModel.fromApiMap(
-      planMap,
-      includeRawPayload: false),
-    ).toList(growable: false);
+    final List<RoamEasyPlanModel> strictRoamEasyPlans = strictRoamEasyRawPlans
+        .map(
+          (Map<String, dynamic> planMap) =>
+              RoamEasyPlanModel.fromApiMap(planMap, includeRawPayload: false),
+        )
+        .toList(growable: false);
 
     _lastFetchedRoamEasyPlans = strictRoamEasyPlans;
     _lastFetchedRoamEasyAt = DateTime.now();
@@ -574,7 +631,8 @@ class HomePlanRepository {
     required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
-    final List<RoamEasyPlanModel> roamEasyPlans = await fetchRoamEasyPlansFromApi(
+    final List<RoamEasyPlanModel> roamEasyPlans =
+        await fetchRoamEasyPlansFromApi(
       username: username,
       password: password,
       deviceAccountID: deviceAccountID,
@@ -582,7 +640,9 @@ class HomePlanRepository {
       printFilteredRoamEasyPlans: true,
     );
 
-    return roamEasyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+    return roamEasyPlans
+        .map((plan) => plan.toDebugMap())
+        .toList(growable: false);
   }
 
   /// Fetch and parse API payload into dedicated MiFi model list.
@@ -730,32 +790,154 @@ class HomePlanRepository {
         .toList(growable: false);
   }
 
+  /// Safely converts a root JSON field into a list of string-keyed maps.
+  List<Map<String, dynamic>> _asRootMapList(dynamic value) {
+    if (value is! List) {
+      return const <Map<String, dynamic>>[];
+    }
+
+    return value.whereType<Map>().map(_toStringKeyedMapInBackground).toList(growable: false);
+  }
+
+  /// Sorts primary plans by earliest valid `StartDate`.
+  ///
+  /// Rules:
+  /// 1. Valid earlier dates come first.
+  /// 2. Items without a valid date move to the end.
+  /// 3. Original relative order is preserved when dates are equal.
+  List<AddOnsPrimaryPlanModel> _sortPrimaryPlansByEarliestStartDate(List<AddOnsPrimaryPlanModel> primaryPlans) {
+    final List<_SortablePrimaryPlan> sortablePrimaryPlans = primaryPlans.asMap().entries.map(
+          (entry) => _SortablePrimaryPlan(
+            originalIndex: entry.key,
+            plan: entry.value,
+          ),
+        ).toList(growable: false);
+
+    sortablePrimaryPlans.sort((left, right) {
+      final DateTime? leftStartDate = left.plan.startDateTime;
+      final DateTime? rightStartDate = right.plan.startDateTime;
+
+      if (leftStartDate == null && rightStartDate == null) {
+        return left.originalIndex.compareTo(right.originalIndex);
+      }
+
+      if (leftStartDate == null) return 1;
+      if (rightStartDate == null) return -1;
+
+      final int dateCompare = leftStartDate.compareTo(rightStartDate);
+      if (dateCompare != 0) return dateCompare;
+
+      return left.originalIndex.compareTo(right.originalIndex);
+    });
+
+    return sortablePrimaryPlans.map((sortablePlan) => sortablePlan.plan).toList(growable: false);
+  }
+
+  /// Debug summary for Add-ons primary-plan filtering and sorting.
+  void _logAddOnsPrimaryPlansResult({required List<AddOnsPrimaryPlanModel> primaryPlans}) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'add-ons-primary-plans: parsed=${primaryPlans.length}, '
+      'selectionRule=earliest StartDate from PrimaryPlans',
+    );
+
+    if (primaryPlans.isEmpty) {
+      debugPrint('add-ons-primary-plans: no primary plan found.');
+      return;
+    }
+
+    final AddOnsPrimaryPlanModel selectedPlan = primaryPlans.first;
+    debugPrint(
+      'add-ons-primary-plans: selected=${selectedPlan.planName}, '
+      'startDate=${selectedPlan.startDate}, '
+      'boltOns=${selectedPlan.availableBoltOns.length}',
+    );
+  }
+
+  /// Builds the simple subtitle label used by current Add-ons UI tiles.
+  String _buildAddOnLabel(AddOnsPrimaryPlanModel addOnPlan) {
+    final AddOnsPrimaryPlanBucketModel? firstBucket = addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return 'balance';
+    }
+
+    final String normalizedBucketName = firstBucket.name.trim().toLowerCase();
+    if (normalizedBucketName.isEmpty) {
+      return 'balance';
+    }
+
+    switch (normalizedBucketName) {
+      case 'data':
+        return 'data balance';
+      case 'minutes':
+        return 'minutes balance';
+      case 'texts':
+        return 'text balance';
+      default:
+        return '$normalizedBucketName balance';
+    }
+  }
+
+  /// Builds the simple value text used by current Add-ons UI tiles.
+  String _buildAddOnValue(AddOnsPrimaryPlanModel addOnPlan) {
+    final AddOnsPrimaryPlanBucketModel? firstBucket =
+        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return '';
+    }
+
+    final String amountText = _formatWholeOrDecimal(firstBucket.amount);
+    final String unitText = firstBucket.unit.trim().toLowerCase();
+
+    if (unitText.isEmpty) {
+      return amountText;
+    }
+
+    return '$amountText$unitText';
+  }
+
+  /// Keeps UI value strings compact, e.g. `1` instead of `1.0`.
+  String _formatWholeOrDecimal(double value) {
+    if (value == value.truncateToDouble()) {
+      return value.toInt().toString();
+    }
+    return value.toString();
+  }
+
   /// Read-only view of latest raw payload cache.
-  List<Map<String, dynamic>> get lastFetchedPlans => List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
+  List<Map<String, dynamic>> get lastFetchedPlans =>
+      List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
 
   /// Read-only view of latest payload fetch time.
   DateTime? get lastFetchedAt => _lastFetchedAt;
 
   /// Read-only latest strict daily plans cache.
-  List<DailyPlanModel> get lastFetchedDailyPlans => List<DailyPlanModel>.unmodifiable(_lastFetchedDailyPlans);
+  List<DailyPlanModel> get lastFetchedDailyPlans =>
+      List<DailyPlanModel>.unmodifiable(_lastFetchedDailyPlans);
 
   /// Read-only latest strict daily filter timestamp.
   DateTime? get lastFetchedDailyAt => _lastFetchedDailyAt;
 
   /// Read-only latest strict weekly plans cache.
-  List<WeeklyPlanModel> get lastFetchedWeeklyPlans => List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
+  List<WeeklyPlanModel> get lastFetchedWeeklyPlans =>
+      List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
 
   /// Read-only latest strict weekly filter timestamp.
   DateTime? get lastFetchedWeeklyAt => _lastFetchedWeeklyAt;
 
   /// Read-only latest strict monthly plans cache.
-  List<MonthlyPlanModel> get lastFetchedMonthlyPlans => List<MonthlyPlanModel>.unmodifiable(_lastFetchedMonthlyPlans);
+  List<MonthlyPlanModel> get lastFetchedMonthlyPlans =>
+      List<MonthlyPlanModel>.unmodifiable(_lastFetchedMonthlyPlans);
 
   /// Read-only latest strict monthly filter timestamp.
   DateTime? get lastFetchedMonthlyAt => _lastFetchedMonthlyAt;
 
   /// Read-only latest strict roaming plans cache.
-  List<RoamingPlanModel> get lastFetchedRoamingPlans => List<RoamingPlanModel>.unmodifiable(_lastFetchedRoamingPlans);
+  List<RoamingPlanModel> get lastFetchedRoamingPlans =>
+      List<RoamingPlanModel>.unmodifiable(_lastFetchedRoamingPlans);
 
   /// Read-only latest strict roaming filter timestamp.
   DateTime? get lastFetchedRoamingAt => _lastFetchedRoamingAt;
@@ -768,7 +950,8 @@ class HomePlanRepository {
   DateTime? get lastFetchedRoamEasyAt => _lastFetchedRoamEasyAt;
 
   /// Read-only latest strict MiFi plans cache.
-  List<MifiPlanModel> get lastFetchedMifiPlans => List<MifiPlanModel>.unmodifiable(_lastFetchedMifiPlans);
+  List<MifiPlanModel> get lastFetchedMifiPlans =>
+      List<MifiPlanModel>.unmodifiable(_lastFetchedMifiPlans);
 
   /// Read-only latest strict MiFi filter timestamp.
   DateTime? get lastFetchedMifiAt => _lastFetchedMifiAt;
@@ -782,10 +965,223 @@ class HomePlanRepository {
   /// Read-only latest strict Liberty Global filter timestamp.
   DateTime? get lastFetchedLibertyGlobalAt => _lastFetchedLibertyGlobalAt;
 
+  /// Read-only latest bundles response cache.
+  Map<String, dynamic> get lastFetchedBundlesResponse =>
+      Map<String, dynamic>.unmodifiable(_lastFetchedBundlesResponse);
+
+  /// Read-only latest bundles fetch timestamp.
+  DateTime? get lastFetchedBundlesAt => _lastFetchedBundlesAt;
+
+  /// Read-only latest Add-ons primary-plan cache.
+  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
+      List<AddOnsPrimaryPlanModel>.unmodifiable(_lastFetchedAddOnsPrimaryPlans);
+
+  /// Read-only latest Add-ons primary-plan filter timestamp.
+  DateTime? get lastFetchedAddOnsPrimaryPlansAt =>
+      _lastFetchedAddOnsPrimaryPlansAt;
+
   /// Builds Basic Auth token from username/password pair.
-  String _buildBasicAuthToken({required String username, required String password}) {
+  String _buildBasicAuthToken(
+      {required String username, required String password}) {
     final String credentials = '$username:$password';
     return base64Encode(utf8.encode(credentials));
+  }
+
+  /// Fetches full bundles payload and normalizes it into a string-keyed map.
+  ///
+  /// Add-ons tab uses `PrimaryPlans` from this response instead of the
+  /// available-plans endpoint used by the other tabs.
+  Future<Map<String, dynamic>> fetchBundles({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    required bool printRawResponse,
+  }) async {
+    final String rawResponseBody = await _fetchBundlesRawResponseBody(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    final Map<String, dynamic> bundlesResponse;
+    try {
+      bundlesResponse = await compute(
+        _decodeBundlesJsonInBackground,
+        rawResponseBody,
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint('bundles-api: background decode failed: $error');
+      }
+      throw PlanRepositoryException(
+        type: PlanRepositoryErrorType.parsing,
+        debugMessage: 'Failed to decode bundles response JSON in background.',
+      );
+    }
+
+    _lastFetchedBundlesResponse = bundlesResponse;
+    _lastFetchedBundlesAt = DateTime.now();
+
+    if (kDebugMode) {
+      debugPrint(
+        'fetchBundles: decoded rootKeys=${bundlesResponse.keys.length}, '
+        'cachedAt=$_lastFetchedBundlesAt',
+      );
+    }
+
+    return Map<String, dynamic>.unmodifiable(_lastFetchedBundlesResponse);
+  }
+
+  /// Ensures the full bundles response is loaded into repository cache.
+  ///
+  /// Why this exists:
+  /// - Add-ons data comes from the bundles endpoint
+  /// - we should fetch that payload only once per repository lifecycle
+  /// - later Add-ons tab switches should reuse the in-memory response
+  Future<Map<String, dynamic>> _ensureBundlesCacheLoaded({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    required bool printRawResponse,
+  }) async {
+    if (_lastFetchedBundlesResponse.isNotEmpty) {
+      await Future.delayed(const Duration(milliseconds: 450));
+      return Map<String, dynamic>.unmodifiable(_lastFetchedBundlesResponse);
+    }
+
+    return fetchBundles(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+  }
+
+  /// Fetches `PrimaryPlans` for Add-ons tab and sorts them by earliest
+  /// `StartDate` so UI can always use the first item safely.
+  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredPrimaryPlans = false,
+  }) async {
+    final Map<String, dynamic> bundlesResponse =
+        await _ensureBundlesCacheLoaded(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    final List<Map<String, dynamic>> rawPrimaryPlans = _asRootMapList(
+      bundlesResponse['PrimaryPlans'],
+    );
+
+    final List<AddOnsPrimaryPlanModel> primaryPlans = rawPrimaryPlans
+        .map(
+          (Map<String, dynamic> primaryPlanMap) =>
+              AddOnsPrimaryPlanModel.fromApiMap(
+            primaryPlanMap,
+            includeRawPayload: false,
+          ),
+        )
+        .toList(growable: false);
+
+    final List<AddOnsPrimaryPlanModel> sortedPrimaryPlans =
+        _sortPrimaryPlansByEarliestStartDate(primaryPlans);
+
+    _lastFetchedAddOnsPrimaryPlans = sortedPrimaryPlans;
+    _lastFetchedAddOnsPrimaryPlansAt = DateTime.now();
+
+    if (printFilteredPrimaryPlans) {
+      _logAddOnsPrimaryPlansResult(primaryPlans: sortedPrimaryPlans);
+    }
+
+    return List<AddOnsPrimaryPlanModel>.unmodifiable(
+      _lastFetchedAddOnsPrimaryPlans,
+    );
+  }
+
+  /// Returns the first primary plan after repository sorting.
+  ///
+  /// The list is already sorted by earliest `StartDate`, so selecting the first
+  /// item keeps the decision rule explicit and easy to debug.
+  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<AddOnsPrimaryPlanModel> primaryPlans,
+  ) {
+    if (primaryPlans.isEmpty) return null;
+    return primaryPlans.first;
+  }
+
+  /// Maps the selected primary plan's `AvailableBoltOns` into the simple UI
+  /// add-on model already used by the current Add-ons tab widgets.
+  List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
+    required AddOnsPrimaryPlanModel primaryPlan,
+  }) {
+    return primaryPlan.availableBoltOns
+        .map(
+          (AddOnsPrimaryPlanModel addOnPlan) => HomePlanAddOnModel(
+            id: addOnPlan.planId,
+            title: addOnPlan.planName,
+            label: _buildAddOnLabel(addOnPlan),
+            value: _buildAddOnValue(addOnPlan),
+            price: addOnPlan.planAmount,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  /// Shared API call for bundles endpoint.
+  ///
+  /// Returns raw JSON response body on success.
+  /// Throws [PlanRepositoryException] for any network/API failure.
+  Future<String> _fetchBundlesRawResponseBody({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    required bool printRawResponse,
+  }) async {
+    final String basicAuthToken = _buildBasicAuthToken(
+      username: username,
+      password: password,
+    );
+
+    if (kDebugMode) {
+      debugPrint('bundles-api: request initiated for user=$username');
+    }
+
+    final response = await _api.get(
+      "${Api.getBundles}/$deviceAccountID/bundles",
+      headers: <String, String>{'Authorization': 'Basic $basicAuthToken'},
+    );
+
+    if (kDebugMode) {
+      debugPrint('bundles-api: status=${response.statusCode}');
+    }
+
+    if (!ApiService.isSuccessStatusCode(response.statusCode)) {
+      if (kDebugMode) {
+        debugPrint(
+          'bundles-api: failed, status=${response.statusCode}, '
+          'responseLength=${response.responseJson.length}',
+        );
+      }
+      throw _mapApiFailureToException(
+        statusCode: response.statusCode,
+        responseBody: response.responseJson,
+      );
+    }
+
+    if (kDebugMode && printRawResponse) {
+      _debugPrintChunked(
+        response.responseJson,
+        header: 'bundles-api raw response',
+      );
+    }
+
+    return response.responseJson;
   }
 
   /// Shared API call for available plans.
@@ -1087,7 +1483,11 @@ class HomePlanRepository {
   }
 
   /// Logs roaming filter summary and per-plan bucket details.
-  void _logRoamingFilterResult({required int totalRawPlansCount, required int matchedRawPlansCount,required List<RoamingPlanModel> roamingPlans,}) {
+  void _logRoamingFilterResult({
+    required int totalRawPlansCount,
+    required int matchedRawPlansCount,
+    required List<RoamingPlanModel> roamingPlans,
+  }) {
     if (!kDebugMode) return;
 
     debugPrint(
@@ -1914,43 +2314,26 @@ class HomePlanRepository {
         ];
 
       case HomePlanTab.addOns:
-        // ✅ AddOns tab এর জন্য plans না, addons আলাদা model হওয়া উচিত
-        // তাই এখানে empty list return করছি (screen addOns হলে fetchAddOns() call করবে)
+        // Add-ons tab no longer uses the old generic plan path.
+        // Bundles API now drives the dedicated Add-ons flow.
         return const [];
     }
   }
+}
 
-  // ✅ AddOns tab data (separate model for checkbox selection)
-  Future<List<HomePlanAddOnModel>> fetchAddOns() async {
-    await Future.delayed(const Duration(milliseconds: 350));
-    return const [
-      HomePlanAddOnModel(
-        id: 'a1',
-        title: 'liberty data 1',
-        label: 'data balance',
-        value: '1gb',
-        price: 5.00,
-      ),
-      HomePlanAddOnModel(
-        id: 'a2',
-        title: 'liberty data 2',
-        label: 'data balance',
-        value: '2gb',
-        price: 10.00,
-      ),
-      HomePlanAddOnModel(
-        id: 'a3',
-        title: 'liberty data 3',
-        label: 'data balance',
-        value: '3gb',
-        price: 16.00,
-      ),
-    ];
-  }
+class _SortablePrimaryPlan {
+  const _SortablePrimaryPlan({
+    required this.originalIndex,
+    required this.plan,
+  });
+
+  final int originalIndex;
+  final AddOnsPrimaryPlanModel plan;
 }
 
 /*
-JSON decode/parse is still on main isolate (can cause jank on slower phones).
-Daily tab still re-hits API each visit (fresh, but not fastest UX).
-No refresh strategy policy yet (TTL / stale-while-revalidate / manual pull-to-refresh).
+Current notes:
+- available-plans and bundles payloads are decoded in a background isolate
+- repository still favors fresh fetches over an explicit TTL strategy
+- old mock `fetchPlans(...)` path still exists for legacy cleanup later
  */

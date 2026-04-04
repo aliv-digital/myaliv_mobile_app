@@ -31,6 +31,18 @@ class HomePlanToggleAddon extends HomePlanEvent {
   HomePlanToggleAddon(this.addon);
 }
 
+/// Internal event to sync Add-ons bundles API data.
+///
+/// This fetches `PrimaryPlans`, sorts by earliest `StartDate`, and prepares
+/// the selected primary plan plus its available bolt-ons for later UI wiring.
+class HomePlanAddOnsApiSyncRequested extends HomePlanEvent {
+  final bool printRawResponse;
+
+  HomePlanAddOnsApiSyncRequested({
+    this.printRawResponse = false,
+  });
+}
+
 /// Internal event to sync strict daily API data.
 /// UI rendering remains unchanged in current phase.
 class HomePlanDailyApiSyncRequested extends HomePlanEvent {

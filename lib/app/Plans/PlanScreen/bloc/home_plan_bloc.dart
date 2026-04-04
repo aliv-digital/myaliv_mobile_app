@@ -5,6 +5,7 @@ import '../../../../core/localStorage/localStorage.dart';
 import '../../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
 import '../models/mifi_plan_model.dart';
@@ -41,6 +42,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Prevents duplicate Liberty Global API sync calls when user taps the tab repeatedly.
   bool _isLibertyGlobalApiSyncInProgress = false;
 
+  /// Prevents duplicate Add-ons bundles API sync calls when user taps repeatedly.
+  bool _isAddOnsApiSyncInProgress = false;
+
   HomePlanBloc(this.repository) : super(HomePlanState.initial()) {
     on<HomePlanStarted>(_onStarted);
     on<HomePlanTabChanged>(_onTabChanged);
@@ -52,6 +56,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
     // AddOns toggle
     on<HomePlanToggleAddon>(_onToggleAddOns);
+    on<HomePlanAddOnsApiSyncRequested>(_onAddOnsApiSyncRequested);
 
     // Daily API sync (state-only in current phase)
     on<HomePlanDailyApiSyncRequested>(_onDailyApiSyncRequested);
@@ -129,18 +134,12 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       );
 
       if (tab == HomePlanTab.addOns) {
-        // AddOns tab loads AddOns list.
-        final List<HomePlanAddOnModel> addOns = await repository.fetchAddOns();
-        final HomePlanState nextState = _withTabStatus(
-          currentState: state,
-          tab: tab,
-          status: HomePlanStatus.loaded,
-        ).copyWith(
-          addOns: addOns,
+        emit(state.copyWith(
           plans: const [],
-          expandedPlanIds: const {},
-        );
-        emit(nextState);
+          addOns: const [],
+          selectedAddOnIds: const {},
+        ));
+        _scheduleAddOnsApiSyncIfIdle();
         return;
       }
 
@@ -206,6 +205,103 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         tab: tab,
         errorMessage: 'Failed to load plans',
       );
+    }
+  }
+
+  /// Sync Add-ons bundles API data and store sorted `PrimaryPlans` in state.
+  ///
+  /// The repository already sorts by earliest `StartDate`, so UI can safely use
+  /// the first primary plan later without repeating selection logic.
+  Future<void> _onAddOnsApiSyncRequested(HomePlanAddOnsApiSyncRequested event, Emitter<HomePlanState> emit) async {
+    if (_isAddOnsApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('add-ons-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    _isAddOnsApiSyncInProgress = true;
+
+    try {
+      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
+      if (auth == null) {
+        if (kDebugMode) {
+          debugPrint(
+            'add-ons-api-sync: skipped, missing username/password/deviceAccountID',
+          );
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.addOns,
+          errorMessage: 'Add-ons are unavailable right now. Please login again.',
+        );
+        return;
+      }
+
+      final List<AddOnsPrimaryPlanModel> primaryPlans = await repository.fetchAddOnsPrimaryPlansFromApi(
+        username: auth.username,
+        password: auth.password,
+        deviceAccountID: auth.deviceAccountID,
+        printRawResponse: event.printRawResponse,
+        printFilteredPrimaryPlans: false,
+      );
+
+      final AddOnsPrimaryPlanModel? selectedPrimaryPlan = repository.selectEarliestAddOnsPrimaryPlan(primaryPlans);
+      final List<HomePlanAddOnModel> addOns = selectedPrimaryPlan == null ? const <HomePlanAddOnModel>[] : repository.mapAvailableBoltOnsToUiAddOns(
+        primaryPlan: selectedPrimaryPlan,
+      );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.addOns] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: primaryPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      if (kDebugMode && selectedPrimaryPlan != null) {
+        debugPrint('=========== Add-ons Primary Plan ==============');
+        debugPrint('Selected Primary Plan : ${selectedPrimaryPlan.planName}');
+        debugPrint('Selected Start Date : ${selectedPrimaryPlan.startDate}');
+        debugPrint('Available Bolt-Ons : ${addOns.length}');
+        debugPrint("last synced : ${state.addOnsApiLastSyncedAt}");
+      } else if (kDebugMode) {
+        debugPrint('add-ons-primary-plans: no primary plan available');
+      }
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.addOns,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        addOnsApiPrimaryPlans: primaryPlans,
+        addOns: addOns,
+        selectedAddOnIds: const {},
+        apiTabMeta: nextApiTabMeta,
+        addOnsApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.addOns,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.addOns,
+          error: error,
+        ),
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint('add-ons-api-sync: failed with error: $error');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.addOns,
+        errorMessage: 'Failed to sync add-ons bundles',
+      );
+    } finally {
+      _isAddOnsApiSyncInProgress = false;
     }
   }
 
@@ -348,7 +444,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<WeeklyPlanModel> weeklyPlans = await repository.fetchWeeklyPlansFromApi(
+      final List<WeeklyPlanModel> weeklyPlans =
+          await repository.fetchWeeklyPlansFromApi(
         username: auth.username,
         password: auth.password,
         deviceAccountID: auth.deviceAccountID,
@@ -445,7 +542,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<MonthlyPlanModel> monthlyPlans = await repository.fetchMonthlyPlansFromApi(
+      final List<MonthlyPlanModel> monthlyPlans =
+          await repository.fetchMonthlyPlansFromApi(
         username: auth.username,
         password: auth.password,
         deviceAccountID: auth.deviceAccountID,
@@ -454,7 +552,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       );
 
       final DateTime syncedAt = DateTime.now();
-      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
 
       nextApiTabMeta[HomePlanTab.monthly] = HomePlanTabApiMeta(
         isLoaded: true,
@@ -506,7 +605,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Sync strict Roaming API data and store in state.
-  Future<void> _onRoamingApiSyncRequested(HomePlanRoamingApiSyncRequested event, Emitter<HomePlanState> emit) async {
+  Future<void> _onRoamingApiSyncRequested(HomePlanRoamingApiSyncRequested event,
+      Emitter<HomePlanState> emit) async {
     if (_isRoamingApiSyncInProgress) {
       if (kDebugMode) {
         debugPrint('roaming-api-sync: skipped, sync already in progress');
@@ -533,7 +633,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<RoamingPlanModel> roamingPlans = await repository.fetchRoamingPlansFromApi(
+      final List<RoamingPlanModel> roamingPlans =
+          await repository.fetchRoamingPlansFromApi(
         username: auth.username,
         password: auth.password,
         deviceAccountID: auth.deviceAccountID,
@@ -542,7 +643,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       );
 
       final DateTime syncedAt = DateTime.now();
-      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
 
       nextApiTabMeta[HomePlanTab.roaming] = HomePlanTabApiMeta(
         isLoaded: true,
@@ -708,7 +810,8 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.mifi,
-          errorMessage: 'MiFi plans are unavailable right now. Please login again.',
+          errorMessage:
+              'MiFi plans are unavailable right now. Please login again.',
         );
         return;
       }
@@ -874,6 +977,20 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Clears one-time toast after UI handles it.
   void _onToastConsumed(HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
     emit(state.copyWith(clearPendingToast: true));
+  }
+
+  /// Schedules Add-ons bundles API sync only when no sync is running.
+  ///
+  /// This avoids redundant network calls on repeated Add-ons tab taps.
+  void _scheduleAddOnsApiSyncIfIdle() {
+    if (_isAddOnsApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('add-ons-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    add(HomePlanAddOnsApiSyncRequested());
   }
 
   /// Schedules Daily API sync only when no sync is running.
