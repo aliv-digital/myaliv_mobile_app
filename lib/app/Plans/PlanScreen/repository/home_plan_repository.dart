@@ -5,6 +5,8 @@ import '../../../../core/networkService/app_http_client.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/liberty_global_plan_model.dart';
+import '../models/mifi_plan_model.dart';
 import '../models/monthly_plan_model.dart';
 import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
@@ -96,6 +98,19 @@ class HomePlanRepository {
 
   /// Timestamp for latest successful strict RoamEasy filtering.
   DateTime? _lastFetchedRoamEasyAt;
+
+  /// Holds strict MiFi plans parsed from latest API payload.
+  List<MifiPlanModel> _lastFetchedMifiPlans = <MifiPlanModel>[];
+
+  /// Timestamp for latest successful strict MiFi filtering.
+  DateTime? _lastFetchedMifiAt;
+
+  /// Holds strict Liberty Global plans parsed from latest API payload.
+  List<LibertyGlobalPlanModel> _lastFetchedLibertyGlobalPlans =
+      <LibertyGlobalPlanModel>[];
+
+  /// Timestamp for latest successful strict Liberty Global filtering.
+  DateTime? _lastFetchedLibertyGlobalAt;
 
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -570,6 +585,151 @@ class HomePlanRepository {
     return roamEasyPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
   }
 
+  /// Fetch and parse API payload into dedicated MiFi model list.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = P
+  /// - PlanGroup = mifi (30 day)
+  Future<List<MifiPlanModel>> fetchMifiPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredMifiPlans = false,
+  }) async {
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictMifiRawPlans =
+        _filterStrictPlansFromFullCacheByPlanGroup(
+      planType: 'P',
+      planGroup: 'mifi (30 day)',
+    );
+
+    final List<MifiPlanModel> strictMifiPlans = strictMifiRawPlans
+        .map(
+          (Map<String, dynamic> planMap) => MifiPlanModel.fromApiMap(
+            planMap,
+            includeRawPayload: false,
+          ),
+        )
+        .toList(growable: false);
+
+    _lastFetchedMifiPlans = strictMifiPlans;
+    _lastFetchedMifiAt = DateTime.now();
+
+    if (printFilteredMifiPlans) {
+      _logMifiFilterResult(
+        totalRawPlansCount: totalRawPlansCount,
+        matchedRawPlansCount: strictMifiRawPlans.length,
+        mifiPlans: strictMifiPlans,
+      );
+    }
+
+    return List<MifiPlanModel>.unmodifiable(_lastFetchedMifiPlans);
+  }
+
+  /// Debug wrapper:
+  /// fetch strict MiFi plans and print summary/details in console.
+  Future<List<Map<String, dynamic>>> debugFetchAndPrintMifiPlans({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+  }) async {
+    final List<MifiPlanModel> mifiPlans = await fetchMifiPlansFromApi(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+      printFilteredMifiPlans: true,
+    );
+
+    return mifiPlans.map((plan) => plan.toDebugMap()).toList(growable: false);
+  }
+
+  /// Fetch and parse API payload into dedicated Liberty Global model list.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = A
+  /// - PlanGroup = liberty global
+  Future<List<LibertyGlobalPlanModel>> fetchLibertyGlobalPlansFromApi({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+    bool printFilteredLibertyGlobalPlans = false,
+  }) async {
+    final List<Map<String, dynamic>> fullPlans =
+        await _ensureFullPlansCacheLoaded(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+    );
+
+    final int totalRawPlansCount = fullPlans.length;
+    final List<Map<String, dynamic>> strictLibertyGlobalRawPlans =
+        _filterStrictPlansFromFullCacheByPlanGroup(
+      planType: 'A',
+      planGroup: 'liberty global',
+    );
+
+    final List<LibertyGlobalPlanModel> strictLibertyGlobalPlans =
+        strictLibertyGlobalRawPlans
+            .map(
+              (Map<String, dynamic> planMap) =>
+                  LibertyGlobalPlanModel.fromApiMap(
+                planMap,
+                includeRawPayload: false,
+              ),
+            )
+            .toList(growable: false);
+
+    _lastFetchedLibertyGlobalPlans = strictLibertyGlobalPlans;
+    _lastFetchedLibertyGlobalAt = DateTime.now();
+
+    if (printFilteredLibertyGlobalPlans) {
+      _logLibertyGlobalFilterResult(
+        totalRawPlansCount: totalRawPlansCount,
+        matchedRawPlansCount: strictLibertyGlobalRawPlans.length,
+        libertyGlobalPlans: strictLibertyGlobalPlans,
+      );
+    }
+
+    return List<LibertyGlobalPlanModel>.unmodifiable(
+      _lastFetchedLibertyGlobalPlans,
+    );
+  }
+
+  /// Debug wrapper:
+  /// fetch strict Liberty Global plans and print summary/details in console.
+  Future<List<Map<String, dynamic>>> debugFetchAndPrintLibertyGlobalPlans({
+    required String username,
+    required String password,
+    required String deviceAccountID,
+    bool printRawResponse = false,
+  }) async {
+    final List<LibertyGlobalPlanModel> libertyGlobalPlans =
+        await fetchLibertyGlobalPlansFromApi(
+      username: username,
+      password: password,
+      deviceAccountID: deviceAccountID,
+      printRawResponse: printRawResponse,
+      printFilteredLibertyGlobalPlans: true,
+    );
+
+    return libertyGlobalPlans
+        .map((plan) => plan.toDebugMap())
+        .toList(growable: false);
+  }
+
   /// Read-only view of latest raw payload cache.
   List<Map<String, dynamic>> get lastFetchedPlans => List<Map<String, dynamic>>.unmodifiable(_lastFetchedPlans);
 
@@ -606,6 +766,21 @@ class HomePlanRepository {
 
   /// Read-only latest strict RoamEasy filter timestamp.
   DateTime? get lastFetchedRoamEasyAt => _lastFetchedRoamEasyAt;
+
+  /// Read-only latest strict MiFi plans cache.
+  List<MifiPlanModel> get lastFetchedMifiPlans => List<MifiPlanModel>.unmodifiable(_lastFetchedMifiPlans);
+
+  /// Read-only latest strict MiFi filter timestamp.
+  DateTime? get lastFetchedMifiAt => _lastFetchedMifiAt;
+
+  /// Read-only latest strict Liberty Global plans cache.
+  List<LibertyGlobalPlanModel> get lastFetchedLibertyGlobalPlans =>
+      List<LibertyGlobalPlanModel>.unmodifiable(
+        _lastFetchedLibertyGlobalPlans,
+      );
+
+  /// Read-only latest strict Liberty Global filter timestamp.
+  DateTime? get lastFetchedLibertyGlobalAt => _lastFetchedLibertyGlobalAt;
 
   /// Builds Basic Auth token from username/password pair.
   String _buildBasicAuthToken({required String username, required String password}) {
@@ -980,6 +1155,90 @@ class HomePlanRepository {
       );
 
       for (final RoamEasyPlanBucketModel bucket in plan.planBuckets) {
+        debugPrint(
+          '  bucket: name=${bucket.name}, '
+          'amount=${bucket.amount}, '
+          'unit=${bucket.unit}, '
+          'bucketUnit=${bucket.bucketUnit}, '
+          'unlimited=${bucket.unlimited}',
+        );
+      }
+    }
+  }
+
+  /// Logs MiFi filter summary and per-plan bucket details.
+  void _logMifiFilterResult({
+    required int totalRawPlansCount,
+    required int matchedRawPlansCount,
+    required List<MifiPlanModel> mifiPlans,
+  }) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'mifi-filter: total=$totalRawPlansCount, '
+      'matchedRaw=$matchedRawPlansCount, '
+      'parsedMifi=${mifiPlans.length}, '
+      'rule=(PlanType=P && PlanGroup=mifi (30 day))',
+    );
+
+    if (mifiPlans.isEmpty) {
+      debugPrint('mifi-filter: no plan matched.');
+      return;
+    }
+
+    for (final MifiPlanModel plan in mifiPlans) {
+      debugPrint(
+        'mifi-plan: id=${plan.planId}, '
+        'name=${plan.planName}, '
+        'amount=${plan.planAmount.toStringAsFixed(2)}, '
+        'group=${plan.planGroup}, '
+        'sort=${plan.planSortOrder}, '
+        'buckets=${plan.planBuckets.length}',
+      );
+
+      for (final MifiPlanBucketModel bucket in plan.planBuckets) {
+        debugPrint(
+          '  bucket: name=${bucket.name}, '
+          'amount=${bucket.amount}, '
+          'unit=${bucket.unit}, '
+          'bucketUnit=${bucket.bucketUnit}, '
+          'unlimited=${bucket.unlimited}',
+        );
+      }
+    }
+  }
+
+  /// Logs Liberty Global filter summary and per-plan bucket details.
+  void _logLibertyGlobalFilterResult({
+    required int totalRawPlansCount,
+    required int matchedRawPlansCount,
+    required List<LibertyGlobalPlanModel> libertyGlobalPlans,
+  }) {
+    if (!kDebugMode) return;
+
+    debugPrint(
+      'liberty-global-filter: total=$totalRawPlansCount, '
+      'matchedRaw=$matchedRawPlansCount, '
+      'parsedLibertyGlobal=${libertyGlobalPlans.length}, '
+      'rule=(PlanType=A && PlanGroup=liberty global)',
+    );
+
+    if (libertyGlobalPlans.isEmpty) {
+      debugPrint('liberty-global-filter: no plan matched.');
+      return;
+    }
+
+    for (final LibertyGlobalPlanModel plan in libertyGlobalPlans) {
+      debugPrint(
+        'liberty-global-plan: id=${plan.planId}, '
+        'name=${plan.planName}, '
+        'amount=${plan.planAmount.toStringAsFixed(2)}, '
+        'group=${plan.planGroup}, '
+        'sort=${plan.planSortOrder}, '
+        'buckets=${plan.planBuckets.length}',
+      );
+
+      for (final LibertyGlobalPlanBucketModel bucket in plan.planBuckets) {
         debugPrint(
           '  bucket: name=${bucket.name}, '
           'amount=${bucket.amount}, '

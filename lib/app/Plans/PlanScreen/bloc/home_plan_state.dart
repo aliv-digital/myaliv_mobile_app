@@ -1,7 +1,9 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
+import '../models/liberty_global_plan_model.dart';
 import '../models/monthly_plan_model.dart';
+import '../models/mifi_plan_model.dart';
 import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
 import '../models/weekly_plan_model.dart';
@@ -91,6 +93,12 @@ class HomePlanState {
   /// Dedicated API data for RoamEasy tab (not bound to UI yet).
   final List<RoamEasyPlanModel> roamEasyApiPlans;
 
+  /// Dedicated API data for MiFi tab (not bound to UI yet).
+  final List<MifiPlanModel> mifiApiPlans;
+
+  /// Dedicated API data for Liberty Global tab (not bound to UI yet).
+  final List<LibertyGlobalPlanModel> libertyGlobalApiPlans;
+
   /// Lightweight API metadata per tab.
   ///
   /// Important:
@@ -113,6 +121,12 @@ class HomePlanState {
 
   /// Time when RoamEasy API data was last synced successfully.
   final DateTime? roamEasyApiLastSyncedAt;
+
+  /// Time when MiFi API data was last synced successfully.
+  final DateTime? mifiApiLastSyncedAt;
+
+  /// Time when Liberty Global API data was last synced successfully.
+  final DateTime? libertyGlobalApiLastSyncedAt;
 
   /// One-time toast effect to be handled by UI listener.
   final HomePlanToastMessage? pendingToast;
@@ -139,6 +153,8 @@ class HomePlanState {
     required this.monthlyApiPlans,
     required this.roamingApiPlans,
     required this.roamEasyApiPlans,
+    required this.mifiApiPlans,
+    required this.libertyGlobalApiPlans,
     required this.apiTabMeta,
     required this.toastSequence,
     this.dailyApiLastSyncedAt,
@@ -146,6 +162,8 @@ class HomePlanState {
     this.monthlyApiLastSyncedAt,
     this.roamingApiLastSyncedAt,
     this.roamEasyApiLastSyncedAt,
+    this.mifiApiLastSyncedAt,
+    this.libertyGlobalApiLastSyncedAt,
     this.pendingToast,
   });
 
@@ -193,6 +211,8 @@ class HomePlanState {
       monthlyApiPlans: [],
       roamingApiPlans: [],
       roamEasyApiPlans: [],
+      mifiApiPlans: [],
+      libertyGlobalApiPlans: [],
       apiTabMeta: {},
       pendingToast: null,
       toastSequence: 0,
@@ -220,12 +240,16 @@ class HomePlanState {
     List<MonthlyPlanModel>? monthlyApiPlans,
     List<RoamingPlanModel>? roamingApiPlans,
     List<RoamEasyPlanModel>? roamEasyApiPlans,
+    List<MifiPlanModel>? mifiApiPlans,
+    List<LibertyGlobalPlanModel>? libertyGlobalApiPlans,
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
     DateTime? weeklyApiLastSyncedAt,
     DateTime? monthlyApiLastSyncedAt,
     DateTime? roamingApiLastSyncedAt,
     DateTime? roamEasyApiLastSyncedAt,
+    DateTime? mifiApiLastSyncedAt,
+    DateTime? libertyGlobalApiLastSyncedAt,
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
     bool clearPendingToast = false,
@@ -250,6 +274,9 @@ class HomePlanState {
       monthlyApiPlans: monthlyApiPlans ?? this.monthlyApiPlans,
       roamingApiPlans: roamingApiPlans ?? this.roamingApiPlans,
       roamEasyApiPlans: roamEasyApiPlans ?? this.roamEasyApiPlans,
+      mifiApiPlans: mifiApiPlans ?? this.mifiApiPlans,
+      libertyGlobalApiPlans:
+          libertyGlobalApiPlans ?? this.libertyGlobalApiPlans,
       apiTabMeta: apiTabMeta ?? this.apiTabMeta,
       dailyApiLastSyncedAt: dailyApiLastSyncedAt ?? this.dailyApiLastSyncedAt,
       weeklyApiLastSyncedAt:
@@ -260,6 +287,9 @@ class HomePlanState {
           roamingApiLastSyncedAt ?? this.roamingApiLastSyncedAt,
       roamEasyApiLastSyncedAt:
           roamEasyApiLastSyncedAt ?? this.roamEasyApiLastSyncedAt,
+      mifiApiLastSyncedAt: mifiApiLastSyncedAt ?? this.mifiApiLastSyncedAt,
+      libertyGlobalApiLastSyncedAt:
+          libertyGlobalApiLastSyncedAt ?? this.libertyGlobalApiLastSyncedAt,
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,
