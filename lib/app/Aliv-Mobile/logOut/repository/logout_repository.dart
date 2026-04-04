@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:core/core.dart';
 import '../../../../core/localStorage/localStorage.dart';
 import '../../../../core/networkService/api_paths.dart';
 import '../../../../core/networkService/app_http_client.dart';
-import '../../../../resources/appConstants.dart';
 
 class LogoutRepository {
   LogoutRepository({ApiService? apiService})
@@ -12,52 +12,94 @@ class LogoutRepository {
 
   final ApiService _api;
 
-  /// Calls logout endpoint.
+  /// Calls logout endpoint and clears all auth state
   ///
-  /// Backend success response can be `{}` (or empty body), so this returns an
-  /// empty map for successful 2xx responses when no fields are present.
+  /// This method:
+  /// 1. Reads auth from GlobalState (fast, in-memory)
+  /// 2. Calls logout API endpoint
+  /// 3. Uses AuthManager to clear both SharedPreferences and GlobalState
+  /// 4. Clears NetworkService auth headers and cookies
+  ///
+  /// Backend success response can be `{}` (or empty body), so this returns
+  /// true for successful 2xx responses when no fields are present.
   Future<dynamic> logout() async {
-    // For this API, password in Basic Auth is the current ticket/session key.
-    final String? ticket = await LocalStorage.getTicket();
-    final String password = ticket?.trim() ?? '';
-    if (password.isEmpty) {
-      throw Exception('Missing session ticket. Please login again.');
-    }
+    try {
+      // Get auth from GlobalState (in-memory, fast)
+      final auth = globalState.authContext;
 
-    final credentials = '${AppConstants.userName}:$password';
-    final basicAuthToken = base64Encode(utf8.encode(credentials));
+      if (auth == null || !auth.isAuthenticated) {
+        if (kDebugMode) {
+          debugPrint('⚠️ No active session found, clearing local data only');
+        }
+        // Still clear local data even if no active session
+        await _clearAllAuthData();
+        return true;
+      }
 
-    if (kDebugMode) {
-      debugPrint('Logout request initiated for user: ${AppConstants.userName}');
-    }
+      if (kDebugMode) {
+        debugPrint('Logout request initiated for user: ${auth.username}');
+      }
 
-    final response = await _api.postJson(
-      Api.logOutUrl,
-      headers: <String, String>{'Authorization': 'Basic $basicAuthToken'},
-    );
-
-    if (kDebugMode) {
-      debugPrint(
-        'Logout status: ${response.statusCode}, body: ${response.responseJson}',
+      // Call logout API with auth token from GlobalState
+      final response = await _api.postJson(
+        Api.logOutUrl,
+        headers: <String, String>{'Authorization': 'Basic ${auth.basicAuthToken}'},
       );
+
+      if (kDebugMode) {
+        debugPrint(
+          'Logout status: ${response.statusCode}, body: ${response.responseJson}',
+        );
+      }
+
+      final parsedJson = _tryDecodeMap(response.responseJson);
+
+      if (ApiService.isSuccessStatusCode(response.statusCode)) {
+        // ========== Clear all auth data using AuthManager ==========
+        await _clearAllAuthData();
+
+        if (kDebugMode) {
+          debugPrint('✅ Logout: All auth data cleared');
+        }
+
+        return true;
+      }
+
+      // If API call failed but we want to logout anyway, still clear local data
+      // Uncomment the line below if you want to force logout even on API failure
+      // await _clearAllAuthData();
+
+      throw Exception(
+        ApiService.friendlyErrorFromResponse(
+              response,
+              backendMessage: _extractBackendMessage(parsedJson),
+            ) ??
+            'Could not logout. Please try again.',
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('❌ Logout failed: $e');
+      }
+      rethrow;
     }
+  }
 
-    final parsedJson = _tryDecodeMap(response.responseJson);
-
-    if (ApiService.isSuccessStatusCode(response.statusCode)) {
-      await LocalStorage.clearAll();
-      return true;
-      
-    }
-   // Clear local storage on logout failure as well
-
-    throw Exception(
-      ApiService.friendlyErrorFromResponse(
-            response,
-            backendMessage: _extractBackendMessage(parsedJson),
-          ) ??
-          'Could not logout. Please try again.',
+  /// Clear all authentication data from all layers
+  Future<void> _clearAllAuthData() async {
+    // 1. Use AuthManager to clear SharedPreferences + GlobalState
+    final authManager = instance<AuthManager>();
+    await authManager.clearAuth(
+      clearAllPreferences: LocalStorage.clearAll,
     );
+
+    // 2. Clear NetworkService auth and cookies
+    final networkService = instance<NetworkService>();
+    networkService.clearAuthHeaders();
+    await networkService.clearCookies();
+
+    if (kDebugMode) {
+      debugPrint('✅ All auth data cleared (SharedPreferences + GlobalState + NetworkService)');
+    }
   }
 
   Map<String, dynamic>? _tryDecodeMap(String raw) {

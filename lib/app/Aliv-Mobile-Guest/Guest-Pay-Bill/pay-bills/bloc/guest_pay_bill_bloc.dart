@@ -41,7 +41,7 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     } catch (_) {
       emit(state.copyWith(
         loadStatus: GuestPayBillLoadStatus.failure,
-        errorMessage: 'Failed to load services',
+        errorMessage: 'Failed to load network',
       ));
     }
   }

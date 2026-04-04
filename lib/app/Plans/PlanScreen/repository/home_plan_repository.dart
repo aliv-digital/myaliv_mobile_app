@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:core/core.dart';
 import '../../../../core/networkService/api_paths.dart';
-import '../../../../core/networkService/app_http_client.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/daily_plan_model.dart';
@@ -56,10 +56,10 @@ List<Map<String, dynamic>> _decodePlansJsonInBackground(String rawBody) {
 
 // /v1/MyAliv/device/{{deviceAccountId}}/available-plans
 class HomePlanRepository {
-  HomePlanRepository({ApiService? apiService})
-      : _api = apiService ?? ApiService();
+  HomePlanRepository({NetworkService? networkService})
+      : _networkService = networkService ?? instance<NetworkService>();
 
-  final ApiService _api;
+  final NetworkService _networkService;
 
   /// Holds the latest full payload in normalized format.
   /// This is repository-only cache for debug/inspection.
@@ -121,15 +121,9 @@ class HomePlanRepository {
   /// 4. Normalize to `List<Map<String, dynamic>>`.
   /// 5. Cache payload + fetch time.
   Future<List<Map<String, dynamic>>> getPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final String rawResponseBody = await _fetchPlansRawResponseBody(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -168,9 +162,6 @@ class HomePlanRepository {
   /// - we should fetch that large payload only once
   /// - later tab switches should reuse the in-memory normalized list
   Future<List<Map<String, dynamic>>> _ensureFullPlansCacheLoaded({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     required bool printRawResponse,
   }) async {
     if (_lastFetchedPlans.isNotEmpty) {
@@ -179,9 +170,6 @@ class HomePlanRepository {
     }
 
     return getPlans(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
   }
@@ -228,18 +216,12 @@ class HomePlanRepository {
   /// - Keeps UI untouched; this is API data preparation only.
   /// - Stores result in repository cache for later state update.
   Future<List<DailyPlanModel>> fetchDailyPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredDailyPlans = false,
   }) async {
     // Step-1:
     // Load the full plans response only once and keep it in repository memory.
     final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -282,15 +264,9 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict daily plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintDailyPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<DailyPlanModel> dailyPlans = await fetchDailyPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredDailyPlans: true,
     );
@@ -307,9 +283,6 @@ class HomePlanRepository {
   /// Notes:
   /// - This mirrors the Daily repository flow.
   Future<List<WeeklyPlanModel>> fetchWeeklyPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredWeeklyPlans = false,
   }) async {
@@ -317,9 +290,6 @@ class HomePlanRepository {
     // Load the full plans response only once and keep it in repository memory.
     final List<Map<String, dynamic>> fullPlans =
         await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -363,15 +333,9 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict weekly plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintWeeklyPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<WeeklyPlanModel> weeklyPlans = await fetchWeeklyPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredWeeklyPlans: true,
     );
@@ -388,18 +352,12 @@ class HomePlanRepository {
   /// Notes:
   /// - This mirrors the Daily and Weekly repository flow.
   Future<List<MonthlyPlanModel>> fetchMonthlyPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredMonthlyPlans = false,
   }) async {
     // Step-1:
     // Load the full plans response only once and keep it in repository memory.
     final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -439,15 +397,9 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict monthly plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintMonthlyPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<MonthlyPlanModel> monthlyPlans = await fetchMonthlyPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredMonthlyPlans: true,
     );
@@ -461,16 +413,10 @@ class HomePlanRepository {
   /// - PlanType = A
   /// - PlanGroup = roaming
   Future<List<RoamingPlanModel>> fetchRoamingPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredRoamingPlans = false,
   }) async {
     final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -506,15 +452,9 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict roaming plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintRoamingPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<RoamingPlanModel> roamingPlans = await fetchRoamingPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredRoamingPlans: true,
     );
@@ -528,16 +468,10 @@ class HomePlanRepository {
   /// - PlanType = A
   /// - PlanGroup = roameasy
   Future<List<RoamEasyPlanModel>> fetchRoamEasyPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredRoamEasyPlans = false,
   }) async {
     final List<Map<String, dynamic>> fullPlans = await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -569,15 +503,9 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict RoamEasy plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintRoamEasyPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<RoamEasyPlanModel> roamEasyPlans = await fetchRoamEasyPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredRoamEasyPlans: true,
     );
@@ -591,17 +519,11 @@ class HomePlanRepository {
   /// - PlanType = P
   /// - PlanGroup = mifi (30 day)
   Future<List<MifiPlanModel>> fetchMifiPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredMifiPlans = false,
   }) async {
     final List<Map<String, dynamic>> fullPlans =
         await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -638,15 +560,9 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict MiFi plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintMifiPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<MifiPlanModel> mifiPlans = await fetchMifiPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredMifiPlans: true,
     );
@@ -660,17 +576,11 @@ class HomePlanRepository {
   /// - PlanType = A
   /// - PlanGroup = liberty global
   Future<List<LibertyGlobalPlanModel>> fetchLibertyGlobalPlansFromApi({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
     bool printFilteredLibertyGlobalPlans = false,
   }) async {
     final List<Map<String, dynamic>> fullPlans =
         await _ensureFullPlansCacheLoaded(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
     );
 
@@ -711,16 +621,10 @@ class HomePlanRepository {
   /// Debug wrapper:
   /// fetch strict Liberty Global plans and print summary/details in console.
   Future<List<Map<String, dynamic>>> debugFetchAndPrintLibertyGlobalPlans({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     bool printRawResponse = false,
   }) async {
     final List<LibertyGlobalPlanModel> libertyGlobalPlans =
         await fetchLibertyGlobalPlansFromApi(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
       printRawResponse: printRawResponse,
       printFilteredLibertyGlobalPlans: true,
     );
@@ -782,61 +686,60 @@ class HomePlanRepository {
   /// Read-only latest strict Liberty Global filter timestamp.
   DateTime? get lastFetchedLibertyGlobalAt => _lastFetchedLibertyGlobalAt;
 
-  /// Builds Basic Auth token from username/password pair.
-  String _buildBasicAuthToken({required String username, required String password}) {
-    final String credentials = '$username:$password';
-    return base64Encode(utf8.encode(credentials));
-  }
-
   /// Shared API call for available plans.
   ///
   /// Returns raw JSON response body on success.
   /// Throws [PlanRepositoryException] for any network/API failure.
   Future<String> _fetchPlansRawResponseBody({
-    required String username,
-    required String password,
-    required String deviceAccountID,
     required bool printRawResponse,
   }) async {
-    final String basicAuthToken = _buildBasicAuthToken(
-      username: username,
-      password: password,
-    );
+    // Get auth from GlobalState (in-memory, fast)
+    final auth = globalState.authContext;
 
-    if (kDebugMode) {
-      debugPrint('plans-api: request initiated for user=$username');
+    if (auth == null || !auth.isAuthenticated) {
+      throw PlanRepositoryException(
+        type: PlanRepositoryErrorType.unauthorized,
+        serverMessage: 'Authentication required to fetch plans',
+        statusCode: 401,
+      );
     }
 
-    final response = await _api.get(
-      "${Api.getAllPlans}/$deviceAccountID/available-plans",
-      headers: <String, String>{'Authorization': 'Basic $basicAuthToken'},
+    if (kDebugMode) {
+      debugPrint('plans-api: request for device=${auth.deviceAccountID}');
+    }
+
+    // NetworkService already has auth headers from init()
+    final response = await _networkService.request<String>(
+      "${Api.getAllPlans}/${auth.deviceAccountID}/available-plans",
+      method: HttpMethod.get,
     );
 
     if (kDebugMode) {
       debugPrint('plans-api: status=${response.statusCode}');
     }
 
-    if (!ApiService.isSuccessStatusCode(response.statusCode)) {
+    // Check response status
+    if (response.statusCode == null || response.statusCode! < 200 || response.statusCode! >= 300) {
       if (kDebugMode) {
         debugPrint(
           'plans-api: failed, status=${response.statusCode}, '
-          'responseLength=${response.responseJson.length}',
+          'responseLength=${response.data?.length ?? 0}',
         );
       }
       throw _mapApiFailureToException(
-        statusCode: response.statusCode,
-        responseBody: response.responseJson,
+        statusCode: response.statusCode ?? 0,
+        responseBody: response.data ?? '',
       );
     }
 
     if (kDebugMode && printRawResponse) {
       _debugPrintChunked(
-        response.responseJson,
+        response.data ?? '',
         header: 'plans-api raw response',
       );
     }
 
-    return response.responseJson;
+    return response.data ?? '';
   }
 
   /// Maps API status/body to typed repository exception.

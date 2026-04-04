@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:core/core.dart';
 import '../../../../core/localStorage/localStorage.dart';
 import '../../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import '../models/plan_model.dart';
@@ -60,37 +60,45 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     on<HomePlanRoamingApiSyncRequested>(_onRoamingApiSyncRequested);
     on<HomePlanRoamEasyApiSyncRequested>(_onRoamEasyApiSyncRequested);
     on<HomePlanMifiApiSyncRequested>(_onMifiApiSyncRequested);
-    on<HomePlanLibertyGlobalApiSyncRequested>(
-      _onLibertyGlobalApiSyncRequested,
-    );
+    on<HomePlanLibertyGlobalApiSyncRequested>(_onLibertyGlobalApiSyncRequested);
     on<HomePlanToastConsumed>(_onToastConsumed);
   }
 
-  Future<void> _onStarted(HomePlanStarted event, Emitter<HomePlanState> emit) async {
+  Future<void> _onStarted(
+    HomePlanStarted event,
+    Emitter<HomePlanState> emit,
+  ) async {
     await _loadByTab(emit, tab: state.selectedTab);
   }
 
   /// Handles tab switch and starts data load for that tab.
-  Future<void> _onTabChanged(HomePlanTabChanged event, Emitter<HomePlanState> emit) async {
+  Future<void> _onTabChanged(
+    HomePlanTabChanged event,
+    Emitter<HomePlanState> emit,
+  ) async {
     // If user taps the already-selected tab, keep current state as-is.
     // This prevents unnecessary reloads and repeated API calls.
     if (event.tab == state.selectedTab) {
       return;
     }
 
-    emit(state.copyWith(
-      selectedTab: event.tab,
-      expandedPlanIds: {},
-      // Keep AddOns list only when AddOns tab is selected.
-      addOns: event.tab == HomePlanTab.addOns ? state.addOns : const [],
-    ));
+    emit(
+      state.copyWith(
+        selectedTab: event.tab,
+        expandedPlanIds: {},
+        // Keep AddOns list only when AddOns tab is selected.
+        addOns: event.tab == HomePlanTab.addOns ? state.addOns : const [],
+      ),
+    );
 
     await _loadByTab(emit, tab: event.tab);
   }
 
   /// Expands/collapses one plan card.
   void _onToggleExpanded(
-      HomePlanToggleExpanded event, Emitter<HomePlanState> emit) {
+    HomePlanToggleExpanded event,
+    Emitter<HomePlanState> emit,
+  ) {
     final next = Set<String>.from(state.expandedPlanIds);
     if (next.contains(event.planId)) {
       next.remove(event.planId);
@@ -101,9 +109,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   // Optional handlers (kept for pattern consistency).
-  void _onViewDetailsPressed(HomePlanViewDetailsPressed event, Emitter<HomePlanState> emit) {}
+  void _onViewDetailsPressed(
+    HomePlanViewDetailsPressed event,
+    Emitter<HomePlanState> emit,
+  ) {}
 
-  void _onPurchaseNowPressed(HomePlanPurchaseNowPressed event, Emitter<HomePlanState> emit) {}
+  void _onPurchaseNowPressed(
+    HomePlanPurchaseNowPressed event,
+    Emitter<HomePlanState> emit,
+  ) {}
 
   /// AddOns multi-select toggle handler.
   void _onToggleAddOns(HomePlanToggleAddon event, Emitter<HomePlanState> emit) {
@@ -120,13 +134,12 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Loads data for one tab and updates only that tab's UI state.
-  Future<void> _loadByTab(Emitter<HomePlanState> emit, {required HomePlanTab tab}) async {
+  Future<void> _loadByTab(
+    Emitter<HomePlanState> emit, {
+    required HomePlanTab tab,
+  }) async {
     try {
-      _emitTabStatus(
-        emit,
-        tab: tab,
-        status: HomePlanStatus.loading,
-      );
+      _emitTabStatus(emit, tab: tab, status: HomePlanStatus.loading);
 
       if (tab == HomePlanTab.addOns) {
         // AddOns tab loads AddOns list.
@@ -135,11 +148,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
           currentState: state,
           tab: tab,
           status: HomePlanStatus.loaded,
-        ).copyWith(
-          addOns: addOns,
-          plans: const [],
-          expandedPlanIds: const {},
-        );
+        ).copyWith(addOns: addOns, plans: const [], expandedPlanIds: const {});
         emit(nextState);
         return;
       }
@@ -155,10 +164,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
           tab == HomePlanTab.roameasy ||
           tab == HomePlanTab.mifi ||
           tab == HomePlanTab.libertyGlobal) {
-        emit(state.copyWith(
-          plans: const [],
-          addOns: const [],
-        ));
+        emit(state.copyWith(plans: const [], addOns: const []));
 
         if (tab == HomePlanTab.daily) {
           _scheduleDailyApiSyncIfIdle();
@@ -186,19 +192,13 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         currentState: state,
         tab: tab,
         status: HomePlanStatus.loaded,
-      ).copyWith(
-        plans: plans,
-        addOns: const [],
-      );
+      ).copyWith(plans: plans, addOns: const []);
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: tab,
-        errorMessage: _buildFriendlyMessageForTab(
-          tab: tab,
-          error: error,
-        ),
+        errorMessage: _buildFriendlyMessageForTab(tab: tab, error: error),
       );
     } catch (_) {
       _emitTabFailureWithToast(
@@ -215,7 +215,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// - keeps `_loadByTab` readable
   /// - avoids mixing demo UI loading with API data preparation
   /// - easy to expand similar events for Weekly/Monthly later
-  Future<void> _onDailyApiSyncRequested(HomePlanDailyApiSyncRequested event, Emitter<HomePlanState> emit) async {
+  Future<void> _onDailyApiSyncRequested(
+    HomePlanDailyApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
     // Hard guard:
     // Never allow more than one Daily API sync at a time.
     if (_isDailyApiSyncInProgress) {
@@ -229,30 +232,23 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isDailyApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
-          debugPrint(
-            'daily-api-sync: skipped, missing username/password/deviceAccountID',
-          );
+          debugPrint('daily-api-sync: skipped, user not authenticated');
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.daily,
-          errorMessage:
-              'Daily plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view daily plans',
         );
         return;
       }
 
-      final List<DailyPlanModel> dailyPlans =
-          await repository.fetchDailyPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredDailyPlans: false,
-      );
+      final List<DailyPlanModel> dailyPlans = await repository
+          .fetchDailyPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredDailyPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -279,15 +275,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("dailyPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.daily,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        dailyApiPlans: dailyPlans,
-        apiTabMeta: nextApiTabMeta,
-        dailyApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.daily,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            dailyApiPlans: dailyPlans,
+            apiTabMeta: nextApiTabMeta,
+            dailyApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -319,7 +316,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// - avoids mixing demo UI loading with API data preparation
   /// - easy to expand similar events for Monthly and others later
   Future<void> _onWeeklyApiSyncRequested(
-      HomePlanWeeklyApiSyncRequested event, Emitter<HomePlanState> emit) async {
+    HomePlanWeeklyApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
     // Hard guard:
     // Never allow more than one Weekly API sync at a time.
     if (_isWeeklyApiSyncInProgress) {
@@ -332,29 +331,23 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isWeeklyApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
-          debugPrint(
-            'weekly-api-sync: skipped, missing username/password/deviceAccountID',
-          );
+          debugPrint('weekly-api-sync: skipped, user not authenticated');
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.weekly,
-          errorMessage:
-              'Weekly plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view weekly plans',
         );
         return;
       }
 
-      final List<WeeklyPlanModel> weeklyPlans = await repository.fetchWeeklyPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredWeeklyPlans: false,
-      );
+      final List<WeeklyPlanModel> weeklyPlans = await repository
+          .fetchWeeklyPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredWeeklyPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -376,15 +369,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("weeklyPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.weekly,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        weeklyApiPlans: weeklyPlans,
-        apiTabMeta: nextApiTabMeta,
-        weeklyApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.weekly,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            weeklyApiPlans: weeklyPlans,
+            apiTabMeta: nextApiTabMeta,
+            weeklyApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -415,8 +409,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// - keeps `_loadByTab` readable
   /// - avoids mixing demo UI loading with API data preparation
   /// - follows the same pattern as Daily and Weekly
-  Future<void> _onMonthlyApiSyncRequested(HomePlanMonthlyApiSyncRequested event,
-      Emitter<HomePlanState> emit) async {
+  Future<void> _onMonthlyApiSyncRequested(
+    HomePlanMonthlyApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
     // Hard guard:
     // Never allow more than one Monthly API sync at a time.
     if (_isMonthlyApiSyncInProgress) {
@@ -429,32 +425,27 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isMonthlyApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
-          debugPrint(
-            'monthly-api-sync: skipped, missing username/password/deviceAccountID',
-          );
+          debugPrint('monthly-api-sync: skipped, user not authenticated');
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.monthly,
-          errorMessage:
-              'Monthly plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view monthly plans',
         );
         return;
       }
 
-      final List<MonthlyPlanModel> monthlyPlans = await repository.fetchMonthlyPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredMonthlyPlans: false,
-      );
+      final List<MonthlyPlanModel> monthlyPlans = await repository
+          .fetchMonthlyPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredMonthlyPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
-      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
 
       nextApiTabMeta[HomePlanTab.monthly] = HomePlanTabApiMeta(
         isLoaded: true,
@@ -472,15 +463,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("monthlyPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.monthly,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        monthlyApiPlans: monthlyPlans,
-        apiTabMeta: nextApiTabMeta,
-        monthlyApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.monthly,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            monthlyApiPlans: monthlyPlans,
+            apiTabMeta: nextApiTabMeta,
+            monthlyApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -506,7 +498,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Sync strict Roaming API data and store in state.
-  Future<void> _onRoamingApiSyncRequested(HomePlanRoamingApiSyncRequested event, Emitter<HomePlanState> emit) async {
+  Future<void> _onRoamingApiSyncRequested(
+    HomePlanRoamingApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
     if (_isRoamingApiSyncInProgress) {
       if (kDebugMode) {
         debugPrint('roaming-api-sync: skipped, sync already in progress');
@@ -517,32 +512,27 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isRoamingApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
-          debugPrint(
-            'roaming-api-sync: skipped, missing username/password/deviceAccountID',
-          );
+          debugPrint('roaming-api-sync: skipped, user not authenticated');
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.roaming,
-          errorMessage:
-              'Roaming plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view roaming plans',
         );
         return;
       }
 
-      final List<RoamingPlanModel> roamingPlans = await repository.fetchRoamingPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredRoamingPlans: false,
-      );
+      final List<RoamingPlanModel> roamingPlans = await repository
+          .fetchRoamingPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredRoamingPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
-      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
 
       nextApiTabMeta[HomePlanTab.roaming] = HomePlanTabApiMeta(
         isLoaded: true,
@@ -559,15 +549,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("roamingPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.roaming,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        roamingApiPlans: roamingPlans,
-        apiTabMeta: nextApiTabMeta,
-        roamingApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.roaming,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            roamingApiPlans: roamingPlans,
+            apiTabMeta: nextApiTabMeta,
+            roamingApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -594,8 +585,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
   /// Sync strict RoamEasy API data and store in state.
   Future<void> _onRoamEasyApiSyncRequested(
-      HomePlanRoamEasyApiSyncRequested event,
-      Emitter<HomePlanState> emit) async {
+    HomePlanRoamEasyApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
     if (_isRoamEasyApiSyncInProgress) {
       if (kDebugMode) {
         debugPrint('roameasy-api-sync: skipped, sync already in progress');
@@ -606,30 +598,23 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isRoamEasyApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
-          debugPrint(
-            'roameasy-api-sync: skipped, missing username/password/deviceAccountID',
-          );
+          debugPrint('roameasy-api-sync: skipped, user not authenticated');
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.roameasy,
-          errorMessage:
-              'RoamEasy plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view RoamEasy plans',
         );
         return;
       }
 
-      final List<RoamEasyPlanModel> roamEasyPlans =
-          await repository.fetchRoamEasyPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredRoamEasyPlans: false,
-      );
+      final List<RoamEasyPlanModel> roamEasyPlans = await repository
+          .fetchRoamEasyPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredRoamEasyPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -650,15 +635,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("roamEasyPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.roameasy,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        roamEasyApiPlans: roamEasyPlans,
-        apiTabMeta: nextApiTabMeta,
-        roamEasyApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.roameasy,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            roamEasyApiPlans: roamEasyPlans,
+            apiTabMeta: nextApiTabMeta,
+            roamEasyApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -698,29 +684,23 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isMifiApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
-          debugPrint(
-            'mifi-api-sync: skipped, missing username/password/deviceAccountID',
-          );
+          debugPrint('mifi-api-sync: skipped, user not authenticated');
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.mifi,
-          errorMessage: 'MiFi plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view MiFi plans',
         );
         return;
       }
 
-      final List<MifiPlanModel> mifiPlans =
-          await repository.fetchMifiPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredMifiPlans: false,
-      );
+      final List<MifiPlanModel> mifiPlans = await repository
+          .fetchMifiPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredMifiPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -741,15 +721,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("mifiPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.mifi,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        mifiApiPlans: mifiPlans,
-        apiTabMeta: nextApiTabMeta,
-        mifiApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.mifi,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            mifiApiPlans: mifiPlans,
+            apiTabMeta: nextApiTabMeta,
+            mifiApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -791,31 +772,25 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     _isLibertyGlobalApiSyncInProgress = true;
 
     try {
-      final _PlanApiAuthContext? auth = await _readPlanApiAuthContext();
-      if (auth == null) {
+      if (!globalState.isAuthenticated) {
         if (kDebugMode) {
           debugPrint(
-            'liberty-global-api-sync: skipped, '
-            'missing username/password/deviceAccountID',
+            'liberty-global-api-sync: skipped, user not authenticated',
           );
         }
         _emitTabFailureWithToast(
           emit,
           tab: HomePlanTab.libertyGlobal,
-          errorMessage:
-              'Liberty Global plans are unavailable right now. Please login again.',
+          errorMessage: 'Please login to view Liberty Global plans',
         );
         return;
       }
 
-      final List<LibertyGlobalPlanModel> libertyGlobalPlans =
-          await repository.fetchLibertyGlobalPlansFromApi(
-        username: auth.username,
-        password: auth.password,
-        deviceAccountID: auth.deviceAccountID,
-        printRawResponse: event.printRawResponse,
-        printFilteredLibertyGlobalPlans: false,
-      );
+      final List<LibertyGlobalPlanModel> libertyGlobalPlans = await repository
+          .fetchLibertyGlobalPlansFromApi(
+            printRawResponse: event.printRawResponse,
+            printFilteredLibertyGlobalPlans: false,
+          );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -831,22 +806,21 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("=========== Liberty Global Plan ==============");
         debugPrint('First Liberty Global Indexed Data :');
         debugPrint(libertyGlobalPlans[0].planName);
-        debugPrint(
-          "last synced : ${state.libertyGlobalApiLastSyncedAt}",
-        );
+        debugPrint("last synced : ${state.libertyGlobalApiLastSyncedAt}");
       } else if (kDebugMode) {
         debugPrint("libertyGlobalPlans.isEmpty");
       }
 
-      final HomePlanState nextState = _withTabStatus(
-        currentState: state,
-        tab: HomePlanTab.libertyGlobal,
-        status: HomePlanStatus.loaded,
-      ).copyWith(
-        libertyGlobalApiPlans: libertyGlobalPlans,
-        apiTabMeta: nextApiTabMeta,
-        libertyGlobalApiLastSyncedAt: syncedAt,
-      );
+      final HomePlanState nextState =
+          _withTabStatus(
+            currentState: state,
+            tab: HomePlanTab.libertyGlobal,
+            status: HomePlanStatus.loaded,
+          ).copyWith(
+            libertyGlobalApiPlans: libertyGlobalPlans,
+            apiTabMeta: nextApiTabMeta,
+            libertyGlobalApiLastSyncedAt: syncedAt,
+          );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -872,7 +846,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   /// Clears one-time toast after UI handles it.
-  void _onToastConsumed(HomePlanToastConsumed event, Emitter<HomePlanState> emit) {
+  void _onToastConsumed(
+    HomePlanToastConsumed event,
+    Emitter<HomePlanState> emit,
+  ) {
     emit(state.copyWith(clearPendingToast: true));
   }
 
@@ -1056,10 +1033,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       message: errorMessage,
     );
 
-    emit(tabFailureState.copyWith(
-      pendingToast: toast,
-      toastSequence: nextToastId,
-    ));
+    emit(
+      tabFailureState.copyWith(pendingToast: toast, toastSequence: nextToastId),
+    );
   }
 
   /// Maps typed repository errors to friendly tab-specific text.
@@ -1112,35 +1088,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
   }
 
-  // we need this as authorization token to fetch data
-  Future<_PlanApiAuthContext?> _readPlanApiAuthContext() async {
-    final Map<String, dynamic> map = await LocalStorage.getAccountInfoMap();
-    final AccountInfoModel account = AccountInfoModel.fromJson(map);
-    final String? password = await LocalStorage.getTicket();
-    final String username = AppConstants.userName;
-    final String deviceAccountID = account.idAcc.toString();
-
-    final bool invalidPassword = password == null || password.isEmpty;
-    final bool invalidUsername = username.isEmpty;
-    final bool invalidDeviceAccountID =
-        account.idAcc <= 0 || deviceAccountID.isEmpty;
-
-    if (invalidPassword || invalidUsername || invalidDeviceAccountID) {
-      return null;
-    }
-
-    return _PlanApiAuthContext(
-      username: username,
-      password: password,
-      deviceAccountID: deviceAccountID,
-    );
-  }
-
   Future<void> localData() async {
     final map = await LocalStorage.getAccountInfoMap();
     final account = AccountInfoModel.fromJson(map);
     final password = await LocalStorage.getTicket();
-    final username = AppConstants.userName;
+    final username = userName; // from core/constants
 
     final email = account.email;
     final deviceAccountID = account.idAcc; // device account id
@@ -1155,16 +1107,4 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     debugPrint("password : $password");
     debugPrint("username : $username");
   }
-}
-
-class _PlanApiAuthContext {
-  const _PlanApiAuthContext({
-    required this.username,
-    required this.password,
-    required this.deviceAccountID,
-  });
-
-  final String username;
-  final String password;
-  final String deviceAccountID;
 }

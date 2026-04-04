@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
-import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:core/core.dart';
 import '../../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../Home/home/data/home_ui_config.dart';
 import '../model/account_info_model.dart';
@@ -105,10 +105,38 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           .then((response) async {
         debugPrint("Ticket : ${response.ticket}");
         debugPrint("Account id : ${response.accountId}");
-        await LocalStorage.storeTicket(ticket: response.ticket.toString());
-        await LocalStorage.storeAccountID(
-            accountID: response.accountId.toString());
-        await _saveAccountInfo(password: response.ticket.toString());
+
+        final ticket = response.ticket.toString();
+        final accountId = response.accountId.toString();
+
+        // Fetch full account info
+        final accountInfo = await repository.getAccountInfo(
+          username: userName, // from core/constants
+          password: ticket,
+        );
+
+        // ========== Use AuthManager to save everything ==========
+        final authManager = instance<AuthManager>();
+        await authManager.saveAuth(
+          username: userName,
+          ticket: ticket,
+          deviceAccountID: accountId,
+          storeTicket: (t) => LocalStorage.storeTicket(ticket: t),
+          storeAccountID: (id) => LocalStorage.storeAccountID(accountID: id),
+          storeAccountInfoMap: (info) => LocalStorage.storeAccountInfoMap(accountInfo: info),
+          accountInfoMap: accountInfo.toJson(),
+        );
+
+        // ========== Update NetworkService headers ==========
+        final networkService = instance<NetworkService>();
+        networkService.updateAuthHeaders();
+
+        // Set UI config for logged-in user
+        await _setLoggedInUserUiConfig();
+
+        if (kDebugMode) {
+          debugPrint('✅ Login: Auth saved and NetworkService updated');
+        }
       });
 
       await Future.delayed(Duration(milliseconds: 1500));
@@ -140,29 +168,17 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     }
   }
 
-  Future<void> _saveAccountInfo({required String password}) async {
-    // Fetch full account profile after OTP success.
-    final accountInfo = await repository.getAccountInfo(
-      username: AppConstants.userName,
-      password: password,
-    );
-
-    // Cache full payload so any screen can read specific fields when needed.
-    await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
-    _setLoggedInUserUiConfig();
-
-    /*
-    =========== USAGE ============
-
-    final map = await LocalStorage.getAccountInfoMap();
-    final account = AccountInfoModel.fromJson(map);
-
-    final email = account.email;
-    final accountStatus = account.accountStatus;
-    final accountType = account.accountType;
-
-     */
-  }
+  // NOTE: This method is no longer needed as auth is now saved via AuthManager
+  // Kept for reference but can be removed in future cleanup
+  //
+  // Future<void> _saveAccountInfo({required String password}) async {
+  //   final accountInfo = await repository.getAccountInfo(
+  //     username: userName,
+  //     password: password,
+  //   );
+  //   await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
+  //   _setLoggedInUserUiConfig();
+  // }
 
   /// Temporary central config setup after successful OTP verification.
   ///

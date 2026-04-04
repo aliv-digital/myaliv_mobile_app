@@ -30,7 +30,7 @@ class GuestPayBillScreen extends StatelessWidget {
       create: (context) {
         final bloc = GuestPayBillBloc();
 
-        // Populate available services when the screen opens.
+        // Populate available network when the screen opens.
         bloc.add(const GuestPayBillStarted());
 
         return bloc;
