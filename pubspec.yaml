@@ -5,31 +5,31 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 3.0.0+7
 
 environment:
-  sdk: ^3.10.1
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   flutter_bloc: ^9.1.1
-  go_router: ^17.0.0
-  shared_preferences: ^2.5.4
+  go_router: ^17.2.0
+  shared_preferences: ^2.5.5
   http: ^1.6.0
   fluttertoast: ^9.0.0
-  equatable: ^2.0.7
+  equatable: ^2.0.8
   country_picker: ^2.0.27
   country_pickers: ^3.0.1
-  flutter_svg: ^2.2.3
+  flutter_svg: ^2.2.4
   iconsax_plus: ^1.0.0
   intl: ^0.20.2
   flutter_launcher_icons: ^0.14.4
   flutter_advanced_switch: ^3.1.0
   url_launcher: ^6.3.2
   table_calendar: ^3.2.0
-  dropdown_button2: ^2.3.9
+  dropdown_button2: ^3.0.0
   animated_toggle_switch: ^0.8.7
   internet_connection_checker_plus: ^2.9.1+2
-  phone_numbers_parser: ^9.0.20
+  phone_numbers_parser: ^9.0.21
 
 
 dev_dependencies:

@@ -17,7 +17,19 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     '242-801-1616',
   ];
 
-  String selected = '242-801-1616';
+  late final ValueNotifier<String> selectedNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedNotifier = ValueNotifier<String>('242-801-1616');
+  }
+
+  @override
+  void dispose() {
+    selectedNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +42,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton2<String>(
-          value: selected,
+          valueListenable: selectedNotifier,
           isExpanded: true,
 
           /// Remove default spacing that allows tick to render
@@ -39,7 +51,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
             selectedMenuItemBuilder: (ctx, child) {
               return  Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
-                  child: _buildPhoneItem2(selected)// SvgPicture.asset('assets/icons/selected.svg'),
+                  child: _buildPhoneItem2(selectedNotifier.value)// SvgPicture.asset('assets/icons/selected.svg'),
               );
             },
 
@@ -80,13 +92,14 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
 
           /// 🔥 IMPORTANT FIX IS HERE
           items: phoneNumbers.map((number) {
-            return DropdownMenuItem<String>(
+            return DropdownItem<String>(
               value: number,
+              height: 48,
               child: SizedBox(
                 width: double.infinity, // 👈 prevents default tick rendering
                 child: _buildPhoneItem(
                   number,
-                  showRadio: number == selected,
+                  showRadio: number == selectedNotifier.value,
                 ),
               ),
             );
@@ -94,7 +107,7 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
 
           onChanged: (value) {
             if (value != null) {
-              setState(() => selected = value);
+              selectedNotifier.value = value;
             }
           },
         ),
