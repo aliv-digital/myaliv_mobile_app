@@ -10,10 +10,6 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-
-import 'network_config.dart';
-import 'network_exceptions.dart';
-import 'network_types.dart';
 import 'network_interceptors.dart';
 
 /// Main network service for making HTTP requests
@@ -79,7 +75,7 @@ class NetworkService {
       baseUrl: baseUrl,
       headers: authToken != null
           ? {'Authorization': 'Basic $authToken'}
-          : {}, // No auth for guest/unauthenticated users
+          : {},
     );
 
     if (kDebugMode) {

@@ -1,5 +1,5 @@
 import '../models/add_on_model.dart';
-import '../repository/home_plan_repository.dart';
+import '../repository/plan_types.dart';
 import '../models/plan_model.dart';
 
 abstract class HomePlanEvent {}

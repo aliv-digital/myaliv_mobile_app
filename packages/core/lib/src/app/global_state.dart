@@ -10,7 +10,9 @@ class GlobalState {
 
   // Singleton
   static final GlobalState _instance = GlobalState._internal();
+
   static GlobalState get instance => _instance;
+
   GlobalState._internal();
 
   // ========== Generic Data Access (Existing Functionality) ==========
@@ -43,7 +45,8 @@ class GlobalState {
     _authContext = context;
     if (kDebugMode) {
       if (context != null) {
-        debugPrint('✅ GlobalState: Auth context set (user: ${context.username})');
+        debugPrint(
+            '✅ GlobalState: Auth context set (user: ${context.username})');
       } else {
         debugPrint('⚠️ GlobalState: Auth context cleared');
       }

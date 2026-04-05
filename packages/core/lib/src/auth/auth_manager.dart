@@ -56,7 +56,8 @@ class AuthManager {
         try {
           accountId = (accountInfo as dynamic).idAcc as int?;
         } catch (e) {
-          if (kDebugMode) debugPrint('⚠️ AuthManager: Could not extract idAcc: $e');
+          if (kDebugMode)
+            debugPrint('⚠️ AuthManager: Could not extract idAcc: $e');
         }
       }
 
@@ -76,7 +77,8 @@ class AuthManager {
       _globalState.setAuthContext(authContext);
 
       if (kDebugMode) {
-        debugPrint('✅ AuthManager: Loaded auth for device: ${authContext.deviceAccountID}');
+        debugPrint(
+            '✅ AuthManager: Loaded auth for device: ${authContext.deviceAccountID}');
       }
 
       return authContext;
@@ -103,7 +105,8 @@ class AuthManager {
     required String deviceAccountID,
     required Future<void> Function(String ticket) storeTicket,
     required Future<void> Function(String accountID) storeAccountID,
-    required Future<void> Function(Map<String, dynamic> accountInfo)? storeAccountInfoMap,
+    required Future<void> Function(Map<String, dynamic> accountInfo)?
+        storeAccountInfoMap,
     Map<String, dynamic>? accountInfoMap,
   }) async {
     try {

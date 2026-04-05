@@ -21,18 +21,23 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     String initialTwoFactorKey = '',
     String initialPhoneNumber = '',
     String initialApiPhoneNumber = '',
-  }) : super(LoginOtpState(
-            twoFactorKey: initialTwoFactorKey,
-            phoneNumber: initialPhoneNumber,
-            apiPhoneNumber: initialApiPhoneNumber)) {
+  }) : super(
+         LoginOtpState(
+           twoFactorKey: initialTwoFactorKey,
+           phoneNumber: initialPhoneNumber,
+           apiPhoneNumber: initialApiPhoneNumber,
+         ),
+       ) {
     on<LoginOtpCodeChanged>((event, emit) {
-      emit(state.copyWith(
-        code: event.code,
-        status: LoginOtpStatus.initial,
-        errorType: LoginOtpErrorType.none,
-        codeFieldError: false,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          code: event.code,
+          status: LoginOtpStatus.initial,
+          errorType: LoginOtpErrorType.none,
+          codeFieldError: false,
+          errorMessage: null,
+        ),
+      );
     });
 
     on<LoginOtpSubmitted>(_onSubmitted);
@@ -41,129 +46,149 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   }
 
   Future<void> _onSubmitted(
-      LoginOtpSubmitted event, Emitter<LoginOtpState> emit) async {
+    LoginOtpSubmitted event,
+    Emitter<LoginOtpState> emit,
+  ) async {
     final apiPhoneNumber = state.apiPhoneNumber.trim();
     final twoFactorKey = state.twoFactorKey.trim();
     final enteredCode = state.code.trim();
 
     if (apiPhoneNumber.isEmpty || twoFactorKey.isEmpty) {
-      emit(state.copyWith(
-        status: LoginOtpStatus.failure,
-        errorType: LoginOtpErrorType.missingVerificationContext,
-        codeFieldError: false,
-        errorMessage: 'Missing verification details. Please login again.',
-      ));
+      emit(
+        state.copyWith(
+          status: LoginOtpStatus.failure,
+          errorType: LoginOtpErrorType.missingVerificationContext,
+          codeFieldError: false,
+          errorMessage: 'Missing verification details. Please login again.',
+        ),
+      );
       return;
     }
 
     if (enteredCode.isEmpty) {
-      emit(state.copyWith(
-        status: LoginOtpStatus.failure,
-        errorType: LoginOtpErrorType.emptyCode,
-        codeFieldError: true,
-        errorMessage: 'Please enter the code',
-      ));
+      emit(
+        state.copyWith(
+          status: LoginOtpStatus.failure,
+          errorType: LoginOtpErrorType.emptyCode,
+          codeFieldError: true,
+          errorMessage: 'Please enter the code',
+        ),
+      );
       return;
     }
 
     if (enteredCode.length < _otpLength) {
-      emit(state.copyWith(
-        status: LoginOtpStatus.failure,
-        errorType: LoginOtpErrorType.incompleteCode,
-        codeFieldError: true,
-        errorMessage: 'Please enter the full code',
-      ));
+      emit(
+        state.copyWith(
+          status: LoginOtpStatus.failure,
+          errorType: LoginOtpErrorType.incompleteCode,
+          codeFieldError: true,
+          errorMessage: 'Please enter the full code',
+        ),
+      );
       return;
     }
 
     final bool isConnected = await InternetConnection().hasInternetAccess;
     if (isConnected == false) {
-      emit(state.copyWith(
-        status: LoginOtpStatus.failure,
-        errorType: LoginOtpErrorType.unknown,
-        codeFieldError: false,
-        errorMessage: 'No Internet Connection',
-      ));
+      emit(
+        state.copyWith(
+          status: LoginOtpStatus.failure,
+          errorType: LoginOtpErrorType.unknown,
+          codeFieldError: false,
+          errorMessage: 'No Internet Connection',
+        ),
+      );
       return;
     }
 
-    emit(state.copyWith(
-      status: LoginOtpStatus.loading,
-      errorType: LoginOtpErrorType.none,
-      codeFieldError: false,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        status: LoginOtpStatus.loading,
+        errorType: LoginOtpErrorType.none,
+        codeFieldError: false,
+        errorMessage: null,
+      ),
+    );
 
     try {
       debugPrint("OTP CODE : ${state.code}");
       await repository
           .verifyCode(
-        phoneNumber: apiPhoneNumber,
-        twoFactorKey: twoFactorKey,
-        pinCode: enteredCode,
-      )
+            phoneNumber: apiPhoneNumber,
+            twoFactorKey: twoFactorKey,
+            pinCode: enteredCode,
+          )
           .then((response) async {
-        debugPrint("Ticket : ${response.ticket}");
-        debugPrint("Account id : ${response.accountId}");
+            debugPrint("Ticket : ${response.ticket}");
+            debugPrint("Account id : ${response.accountId}");
 
-        final ticket = response.ticket.toString();
-        final accountId = response.accountId.toString();
+            final ticket = response.ticket.toString();
+            final accountId = response.accountId.toString();
 
-        // Fetch full account info
-        final accountInfo = await repository.getAccountInfo(
-          username: userName, // from core/constants
-          password: ticket,
-        );
+            // Fetch full account info
+            final accountInfo = await repository.getAccountInfo(
+              username: userName, // from core/constants
+              password: ticket,
+            );
 
-        // ========== Use AuthManager to save everything ==========
-        final authManager = instance<AuthManager>();
-        await authManager.saveAuth(
-          username: userName,
-          ticket: ticket,
-          deviceAccountID: accountId,
-          storeTicket: (t) => LocalStorage.storeTicket(ticket: t),
-          storeAccountID: (id) => LocalStorage.storeAccountID(accountID: id),
-          storeAccountInfoMap: (info) => LocalStorage.storeAccountInfoMap(accountInfo: info),
-          accountInfoMap: accountInfo.toJson(),
-        );
+            // ========== Use AuthManager to save everything ==========
+            final authManager = instance<AuthManager>();
+            await authManager.saveAuth(
+              username: userName,
+              ticket: ticket,
+              deviceAccountID: accountId,
+              storeTicket: (t) => LocalStorage.storeTicket(ticket: t),
+              storeAccountID: (id) =>
+                  LocalStorage.storeAccountID(accountID: id),
+              storeAccountInfoMap: (info) =>
+                  LocalStorage.storeAccountInfoMap(accountInfo: info),
+              accountInfoMap: accountInfo.toJson(),
+            );
 
-        // ========== Update NetworkService headers ==========
-        final networkService = instance<NetworkService>();
-        networkService.updateAuthHeaders();
+            // ========== Update NetworkService headers ==========
+            final networkService = instance<NetworkService>();
+            networkService.updateAuthHeaders();
 
-        // Set UI config for logged-in user
-        await _setLoggedInUserUiConfig();
+            // Set UI config for logged-in user
+            await _setLoggedInUserUiConfig();
 
-        if (kDebugMode) {
-          debugPrint('✅ Login: Auth saved and NetworkService updated');
-        }
-      });
+            if (kDebugMode) {
+              debugPrint('✅ Login: Auth saved and NetworkService updated');
+            }
+          });
 
       await Future.delayed(Duration(milliseconds: 1500));
 
-      emit(state.copyWith(
-        status: LoginOtpStatus.success,
-        errorType: LoginOtpErrorType.none,
-        codeFieldError: false,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: LoginOtpStatus.success,
+          errorType: LoginOtpErrorType.none,
+          codeFieldError: false,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
       final message = _extractErrorMessage(e);
       final errorType = _mapErrorTypeFromMessage(message);
       if (message.toString() == "Two Factor P I N Invalid") {
-        emit(state.copyWith(
-          status: LoginOtpStatus.failure,
-          errorType: errorType,
-          codeFieldError: _isCodeInputRelatedError(errorType),
-          errorMessage: "Invalid OTP",
-        ));
+        emit(
+          state.copyWith(
+            status: LoginOtpStatus.failure,
+            errorType: errorType,
+            codeFieldError: _isCodeInputRelatedError(errorType),
+            errorMessage: "Invalid OTP",
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: LoginOtpStatus.failure,
-          errorType: errorType,
-          codeFieldError: _isCodeInputRelatedError(errorType),
-          errorMessage: message,
-        ));
+        emit(
+          state.copyWith(
+            status: LoginOtpStatus.failure,
+            errorType: errorType,
+            codeFieldError: _isCodeInputRelatedError(errorType),
+            errorMessage: message,
+          ),
+        );
       }
     }
   }
@@ -201,8 +226,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
     appUiConfigCubit.setConfig(
       HomeUiConfig(
-        userType:
-            paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
+        userType: paymentOption == "PrePay"
+            ? UserType.prepaid
+            : UserType.postpaid,
         hasActivePlan: true,
         isFuturePlan: false,
         openMyLimits: false,
@@ -212,7 +238,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
   // for testing purpose only
   Future<void> _printStorage(
-      PrintStorage event, Emitter<LoginOtpState> emit) async {
+    PrintStorage event,
+    Emitter<LoginOtpState> emit,
+  ) async {
     final map = await LocalStorage.getAccountInfoMap();
     final account = AccountInfoModel.fromJson(map);
     final ticket = await LocalStorage.getTicket();
@@ -230,54 +258,69 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     debugPrint("Ticket : $ticket"); // works as password
   }
 
-  Future<void> _onResendRequested(LoginOtpResendRequested event, Emitter<LoginOtpState> emit) async {
+  Future<void> _onResendRequested(
+    LoginOtpResendRequested event,
+    Emitter<LoginOtpState> emit,
+  ) async {
     final apiPhoneNumber = state.apiPhoneNumber.trim();
     final twoFactorKey = state.twoFactorKey.trim();
 
     if (apiPhoneNumber.isEmpty || twoFactorKey.isEmpty) {
-      emit(state.copyWith(
-        resendStatus: LoginOtpResendStatus.idle,
-        errorMessage: 'Missing verification details. Please login again.',
-      ));
+      emit(
+        state.copyWith(
+          resendStatus: LoginOtpResendStatus.idle,
+          errorMessage: 'Missing verification details. Please login again.',
+        ),
+      );
       return;
     }
 
     final bool isConnected = await InternetConnection().hasInternetAccess;
     if (isConnected == false) {
-      emit(state.copyWith(
-        resendStatus: LoginOtpResendStatus.idle,
-        errorMessage: 'No Internet Connection',
-      ));
+      emit(
+        state.copyWith(
+          resendStatus: LoginOtpResendStatus.idle,
+          errorMessage: 'No Internet Connection',
+        ),
+      );
       return;
     }
 
-    emit(state.copyWith(
-      resendStatus: LoginOtpResendStatus.loading,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        resendStatus: LoginOtpResendStatus.loading,
+        errorMessage: null,
+      ),
+    );
     try {
       final resendResponse = await repository.resendCode(
         phoneNumber: apiPhoneNumber,
         twoFactorKey: twoFactorKey,
       );
       final updatedKey = resendResponse.key ?? twoFactorKey;
-      emit(state.copyWith(
-        resendStatus: LoginOtpResendStatus.done,
-        // Backend may rotate key on resend; keep state in sync.
-        twoFactorKey: updatedKey,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          resendStatus: LoginOtpResendStatus.done,
+          // Backend may rotate key on resend; keep state in sync.
+          twoFactorKey: updatedKey,
+          errorMessage: null,
+        ),
+      );
       // Reset to idle so future status changes do not re-trigger resend success UI.
-      emit(state.copyWith(
-        resendStatus: LoginOtpResendStatus.idle,
-        twoFactorKey: updatedKey,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          resendStatus: LoginOtpResendStatus.idle,
+          twoFactorKey: updatedKey,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        resendStatus: LoginOtpResendStatus.idle,
-        errorMessage: _extractErrorMessage(e),
-      ));
+      emit(
+        state.copyWith(
+          resendStatus: LoginOtpResendStatus.idle,
+          errorMessage: _extractErrorMessage(e),
+        ),
+      );
     }
   }
 

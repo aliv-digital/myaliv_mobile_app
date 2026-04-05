@@ -23,7 +23,7 @@ class AppMainInjection {
       getTicket: LocalStorage.getTicket,
       getAccountInfoMap: LocalStorage.getAccountInfoMap,
       parseAccountInfo: (map) => AccountInfoModel.fromJson(map),
-      username: userName, // from core/constants
+      username: userName,
     );
 
     // TODO: Initialize app-specific dependencies here if needed

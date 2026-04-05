@@ -12,13 +12,14 @@ import '../models/monthly_plan_model.dart';
 import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
 import '../models/weekly_plan_model.dart';
-import '../repository/home_plan_repository.dart';
+import '../repository/base_plan_repository.dart';
+import '../repository/plan_types.dart';
 import '../repository/plan_repository_exception.dart';
 import 'home_plan_event.dart';
 import 'home_plan_state.dart';
 
 class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
-  final HomePlanRepository repository;
+  final BasePlanRepository repository;
 
   /// Prevents duplicate Daily API sync calls when user taps Daily repeatedly.
   bool _isDailyApiSyncInProgress = false;
