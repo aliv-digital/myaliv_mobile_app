@@ -8,7 +8,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
 import '../bloc/home_plan_state.dart';
 import '../models/add_on_model.dart';
-import '../repository/home_plan_repository.dart';
+import '../repository/plan_types.dart';
 
 class HomePlanAddOnsTabContent extends StatelessWidget {
   const HomePlanAddOnsTabContent({

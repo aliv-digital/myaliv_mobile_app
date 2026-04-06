@@ -1,0 +1,38 @@
+name: core
+description: Core package containing shared utilities, models, extensions, and network for the HRMS application
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Networking
+  dio: ^5.4.0
+
+  # dependency injection
+  get_it: ^9.2.1
+
+  # Storage
+  shared_preferences: ^2.2.2
+  cookie_jar: ^4.0.8
+  dio_cookie_manager: ^3.1.1
+  path_provider: ^2.1.5
+
+  # UI
+  flutter_screenutil: ^5.9.0
+
+  # Utilities
+  intl: ^0.20.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

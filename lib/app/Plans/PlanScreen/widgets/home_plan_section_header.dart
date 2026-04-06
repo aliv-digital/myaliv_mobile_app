@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../repository/home_plan_repository.dart';
+import '../repository/plan_types.dart';
 import '../theme/theme.dart';
 
 class HomePlanSectionHeader extends StatelessWidget {

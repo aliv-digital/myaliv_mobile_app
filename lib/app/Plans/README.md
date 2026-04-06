@@ -98,23 +98,24 @@ Repository file:
 
 - `PlanScreen/repository/home_plan_repository.dart`
 
-Auth/context source used by bloc:
+Auth/context source:
 
-- `AppConstants.userName`
-- `LocalStorage.getTicket()`
-- `LocalStorage.getAccountInfoMap()`
+**New Centralized Auth System (Refactored):**
 
-The bloc reads those values through:
+- Auth is managed via `GlobalState.authContext` (in-memory cache)
+- Auth is loaded at app startup from `LocalStorage` via `AuthManager`
+- Bloc checks: `globalState.isAuthenticated`
+- Repository reads: `globalState.authContext` (contains pre-computed `basicAuthToken`)
+- No manual auth parameter passing - all auth flows through `GlobalState`
 
-- `_readPlanApiAuthContext()`
+**Legacy approach (REMOVED):**
+- ~~`_readPlanApiAuthContext()` - removed~~
+- ~~Manual username/password/deviceAccountID params - removed~~
 
-That produces:
-
-- `username`
-- `password`
-- `deviceAccountID`
-
-The repository then sends the request with Basic Auth.
+The repository now sends requests using `NetworkService.request<T>()` which:
+- Automatically includes auth headers from `GlobalState`
+- Uses pre-computed Basic Auth token (no repeated encoding)
+- Provides type-safe responses
 
 ## 6. Shared API Pattern
 

@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.
 
 import '../bloc/home_plan_state.dart';
 import '../models/plan_model.dart';
-import '../repository/home_plan_repository.dart';
+import '../repository/plan_types.dart';
 import 'daily_plan_card.dart';
 import 'liberty_global_plan_card.dart';
 import 'mifi_plan_card.dart';

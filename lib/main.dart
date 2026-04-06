@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
 
-void main() {
+import 'main_injection_container.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -14,6 +16,9 @@ void main() {
     ),
   );
   final appRouter = AppRouter();
+
+  await AppMainInjection().initInjection();
+
   runApp(MyApp(appRouter: appRouter));
 }
 

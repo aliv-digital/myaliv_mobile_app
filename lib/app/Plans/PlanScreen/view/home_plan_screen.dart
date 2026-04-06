@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:core/core.dart';
 
 import '../bloc/home_plan_bloc.dart';
 import '../bloc/home_plan_event.dart';
@@ -15,7 +16,8 @@ import '../models/monthly_plan_model.dart';
 import '../models/plan_model.dart';
 import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
-import '../repository/home_plan_repository.dart';
+import '../repository/plan_types.dart';
+import '../repository/home_plan_repository_v2.dart';
 import '../theme/theme.dart';
 import '../widgets/home_plan_add_ons_tab_content.dart';
 import '../widgets/home_plan_plans_list.dart';
@@ -37,7 +39,12 @@ class HomePlanScreen extends StatelessWidget {
     );
 
     return BlocProvider(
-      create: (_) => HomePlanBloc(HomePlanRepository())..add(HomePlanStarted()),
+      create: (_) => HomePlanBloc(
+        HomePlanRepositoryV2(
+          networkService: instance<NetworkService>(),
+          authManager: instance<AuthManager>(),
+        ),
+      )..add(HomePlanStarted()),
       child: const _HomePlanView(),
     );
   }

@@ -4,7 +4,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
 import '../models/plan_model.dart';
-import '../repository/home_plan_repository.dart';
+import '../repository/plan_types.dart';
 import 'roam_bottom_sheet.dart';
 import 'wallet_payment_activate_bottom_sheet.dart';
 import 'wallet_payment_activate_or_future_bottom_sheet.dart';

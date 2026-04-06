@@ -60,7 +60,7 @@ class ChangeEmailBottomSheet extends StatelessWidget {
             width: 358,
             child: Text(
               'updating your email address will send you a verification link.\n\n'
-                  'if your email is not verified within the allotted time, your services will be suspended.\n\n'
+                  'if your email is not verified within the allotted time, your network will be suspended.\n\n'
                   'would you like to continue?',
               textAlign: TextAlign.center,
               style: TextStyle(
