@@ -87,7 +87,7 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                               width: PlanPurchasePlanAddOnsTheme
                                   .addOnCardLabelToValueGap),
                           Text(
-                            item.subtitleValue,
+                            item.subtitleValue.toLowerCase().contains("minutes")  ? "min" : item.subtitleValue,
                             style: PlanPurchasePlanAddOnsTheme.addOnValue,
                           ),
                         ],

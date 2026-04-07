@@ -1,5 +1,6 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../models/monthly_plan_model.dart';
@@ -32,14 +33,20 @@ class MockPlanRepository implements BasePlanRepository {
   final List<RoamingPlanModel> _lastFetchedRoamingPlans = <RoamingPlanModel>[];
   DateTime? _lastFetchedRoamingAt;
 
-  final List<RoamEasyPlanModel> _lastFetchedRoamEasyPlans = <RoamEasyPlanModel>[];
+  final List<RoamEasyPlanModel> _lastFetchedRoamEasyPlans =
+      <RoamEasyPlanModel>[];
   DateTime? _lastFetchedRoamEasyAt;
 
   final List<MifiPlanModel> _lastFetchedMifiPlans = <MifiPlanModel>[];
   DateTime? _lastFetchedMifiAt;
 
-  final List<LibertyGlobalPlanModel> _lastFetchedLibertyGlobalPlans = <LibertyGlobalPlanModel>[];
+  final List<LibertyGlobalPlanModel> _lastFetchedLibertyGlobalPlans =
+      <LibertyGlobalPlanModel>[];
   DateTime? _lastFetchedLibertyGlobalAt;
+
+  List<AddOnsPrimaryPlanModel> _lastFetchedAddOnsPrimaryPlans =
+      <AddOnsPrimaryPlanModel>[];
+  DateTime? _lastFetchedAddOnsPrimaryPlansAt;
 
   @override
   Future<List<Map<String, dynamic>>> getPlans({
@@ -119,7 +126,8 @@ class MockPlanRepository implements BasePlanRepository {
       MonthlyPlanModel.fromApiMap(_createMockPlanMap(
         planId: 'm1',
         planName: 'liberty40',
-        planDescription: 'The ALIV Freedom 6 Plan provides users with unlimited talk and text within the Bahamas...',
+        planDescription:
+            'The ALIV Freedom 6 Plan provides users with unlimited talk and text within the Bahamas...',
         planAmount: 40.00,
         planType: 'P',
         data: 5.0,
@@ -882,30 +890,116 @@ class MockPlanRepository implements BasePlanRepository {
 
   @override
   Future<List<HomePlanAddOnModel>> fetchAddOns() async {
+    final primaryPlans = await fetchAddOnsPrimaryPlansFromApi();
+    final selectedPrimaryPlan = selectEarliestAddOnsPrimaryPlan(primaryPlans);
+
+    if (selectedPrimaryPlan == null) {
+      return const <HomePlanAddOnModel>[];
+    }
+
+    return mapAvailableBoltOnsToUiAddOns(primaryPlan: selectedPrimaryPlan);
+  }
+
+  @override
+  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+    bool printRawResponse = false,
+    bool printFilteredPrimaryPlans = false,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 350));
-    return const [
-      HomePlanAddOnModel(
-        id: 'a1',
-        title: 'liberty data 1',
-        label: 'data balance',
-        value: '1gb',
-        price: 5.00,
-      ),
-      HomePlanAddOnModel(
-        id: 'a2',
-        title: 'liberty data 2',
-        label: 'data balance',
-        value: '2gb',
-        price: 10.00,
-      ),
-      HomePlanAddOnModel(
-        id: 'a3',
-        title: 'liberty data 3',
-        label: 'data balance',
-        value: '3gb',
-        price: 16.00,
+
+    _lastFetchedAddOnsPrimaryPlans = <AddOnsPrimaryPlanModel>[
+      _createMockAddOnsPrimaryPlan(
+        planId: 'm2',
+        planName: 'liberty70',
+        planType: 'P',
+        planAmount: 70.00,
+        autoRenew: true,
+        availableBoltOns: <AddOnsPrimaryPlanModel>[
+          _createMockAddOnsPrimaryPlan(
+            planId: 'a1',
+            planName: 'liberty data 1',
+            planType: 'S',
+            planAmount: 5.00,
+            planBuckets: const <AddOnsPrimaryPlanBucketModel>[
+              AddOnsPrimaryPlanBucketModel(
+                name: 'Data',
+                amount: 1,
+                unit: 'gb',
+                bucketOrder: '1',
+                suppress: false,
+                unlimited: false,
+                bucketUnit: 'GB',
+              ),
+            ],
+          ),
+          _createMockAddOnsPrimaryPlan(
+            planId: 'a2',
+            planName: 'liberty data 2',
+            planType: 'S',
+            planAmount: 10.00,
+            planBuckets: const <AddOnsPrimaryPlanBucketModel>[
+              AddOnsPrimaryPlanBucketModel(
+                name: 'Data',
+                amount: 2,
+                unit: 'gb',
+                bucketOrder: '1',
+                suppress: false,
+                unlimited: false,
+                bucketUnit: 'GB',
+              ),
+            ],
+          ),
+          _createMockAddOnsPrimaryPlan(
+            planId: 'a3',
+            planName: 'liberty data 3',
+            planType: 'S',
+            planAmount: 16.00,
+            planBuckets: const <AddOnsPrimaryPlanBucketModel>[
+              AddOnsPrimaryPlanBucketModel(
+                name: 'Data',
+                amount: 3,
+                unit: 'gb',
+                bucketOrder: '1',
+                suppress: false,
+                unlimited: false,
+                bucketUnit: 'GB',
+              ),
+            ],
+          ),
+        ],
       ),
     ];
+    _lastFetchedAddOnsPrimaryPlansAt = DateTime.now();
+
+    return _lastFetchedAddOnsPrimaryPlans;
+  }
+
+  @override
+  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<AddOnsPrimaryPlanModel> primaryPlans,
+  ) {
+    if (primaryPlans.isEmpty) {
+      return null;
+    }
+
+    return primaryPlans.first;
+  }
+
+  @override
+  List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
+    required AddOnsPrimaryPlanModel primaryPlan,
+  }) {
+    return primaryPlan.availableBoltOns
+        .map(
+          (addOnPlan) => HomePlanAddOnModel(
+            id: addOnPlan.planId,
+            title: addOnPlan.planName,
+            label: _buildAddOnLabel(addOnPlan),
+            value: _buildAddOnValue(addOnPlan),
+            price: addOnPlan.planAmount,
+          ),
+        )
+        .toList(growable: false);
   }
 
   // ========== Read-Only Getters ==========
@@ -965,4 +1059,119 @@ class MockPlanRepository implements BasePlanRepository {
 
   @override
   DateTime? get lastFetchedLibertyGlobalAt => _lastFetchedLibertyGlobalAt;
+
+  @override
+  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
+      List<AddOnsPrimaryPlanModel>.unmodifiable(_lastFetchedAddOnsPrimaryPlans);
+
+  @override
+  DateTime? get lastFetchedAddOnsPrimaryPlansAt =>
+      _lastFetchedAddOnsPrimaryPlansAt;
+
+  AddOnsPrimaryPlanModel _createMockAddOnsPrimaryPlan({
+    required String planId,
+    required String planName,
+    required String planType,
+    double planAmount = 0,
+    String startDate = '2024-08-20 00:00:00',
+    String endDate = '2024-09-19 23:59:59',
+    bool autoRenew = false,
+    List<AddOnsPrimaryPlanModel> availableBoltOns =
+        const <AddOnsPrimaryPlanModel>[],
+    List<AddOnsPrimaryPlanBucketModel> planBuckets =
+        const <AddOnsPrimaryPlanBucketModel>[],
+  }) {
+    return AddOnsPrimaryPlanModel(
+      planId: planId,
+      planName: planName,
+      planDescription: '',
+      planAmount: planAmount,
+      planType: planType,
+      frequency: '',
+      featureCodes: '',
+      startDate: startDate,
+      endDate: endDate,
+      planDetails: '',
+      createdBy: '',
+      publishedBy: '',
+      retiredBy: '',
+      autoRenew: autoRenew,
+      isEditable: false,
+      voice: 0,
+      data: 0,
+      sms: 0,
+      mtSubscriptionId: '',
+      voiceUnlimited: false,
+      dataUnlimited: false,
+      smsUnlimited: false,
+      availableBoltOns: availableBoltOns,
+      currentlyAssigned: false,
+      planRenewable: false,
+      paymentOption: '',
+      canIcb: '',
+      hierarchyType: '',
+      planGroup: '',
+      planGroupId: '',
+      planGroupSortOrder: '',
+      prorateOnActivate: '',
+      prorateOnDeactivate: '',
+      planCapabilities: const <AddOnsPrimaryPlanCapabilityModel>[],
+      planBuckets: planBuckets,
+      channelTypes: '',
+      vipTypes: '',
+      roles: '',
+      cugs: '',
+      sugs: '',
+      unlimitedBuckets: '',
+      activeCCard: '',
+      subscriberLines: '',
+      purchaseLimit: '',
+      purchaseLimitStartDate: '',
+      purchaseLimitEndDate: '',
+      contractAge: '',
+      activatedAge: '',
+      contractTerm: '',
+      islands: '',
+      rank: '',
+      creditClass: '',
+      vatAmount: 0,
+      planSortOrder: '',
+      dataRules: null,
+    );
+  }
+
+  String _buildAddOnLabel(AddOnsPrimaryPlanModel addOnPlan) {
+    final firstBucket =
+        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return 'balance';
+    }
+
+    switch (firstBucket.name.trim().toLowerCase()) {
+      case 'data':
+        return 'data balance';
+      case 'minutes':
+        return 'minutes balance';
+      case 'texts':
+        return 'text balance';
+      default:
+        return 'balance';
+    }
+  }
+
+  String _buildAddOnValue(AddOnsPrimaryPlanModel addOnPlan) {
+    final firstBucket =
+        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return '';
+    }
+
+    final amountText =
+        firstBucket.amount == firstBucket.amount.truncateToDouble()
+            ? firstBucket.amount.toInt().toString()
+            : firstBucket.amount.toString();
+    return '$amountText${firstBucket.unit.trim().toLowerCase()}';
+  }
 }

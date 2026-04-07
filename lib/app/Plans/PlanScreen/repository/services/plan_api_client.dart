@@ -37,7 +37,8 @@ class PlanApiClient {
     }
 
     if (kDebugMode) {
-      debugPrint('PlanApiClient: Fetching plans for device=${auth.deviceAccountID}');
+      debugPrint(
+          'PlanApiClient: Fetching plans for device=${auth.deviceAccountID}');
     }
 
     // Make API request
@@ -51,6 +52,49 @@ class PlanApiClient {
     }
 
     // Validate response
+    if (response.statusCode == null ||
+        response.statusCode! < 200 ||
+        response.statusCode! >= 300) {
+      throw _mapErrorToException(
+        statusCode: response.statusCode ?? 0,
+        responseBody: response.data ?? '',
+      );
+    }
+
+    return response.data ?? '';
+  }
+
+  /// Fetch raw bundles JSON from API.
+  ///
+  /// Returns the raw response body as a string.
+  /// Throws [PlanRepositoryException] on errors.
+  Future<String> fetchRawBundlesJson() async {
+    final auth = _authManager.getCurrentAuth();
+
+    if (auth == null || !auth.isAuthenticated) {
+      throw PlanRepositoryException(
+        type: PlanRepositoryErrorType.unauthorized,
+        serverMessage: 'Authentication required to fetch add-ons',
+        statusCode: 401,
+      );
+    }
+
+    if (kDebugMode) {
+      debugPrint(
+        'PlanApiClient: Fetching bundles for device=${auth.deviceAccountID}',
+      );
+    }
+
+    final response = await _networkService.request<String>(
+      "${Api.getBundles}/${auth.deviceAccountID}/bundles",
+      method: HttpMethod.get,
+    );
+
+    if (kDebugMode) {
+      debugPrint(
+          'PlanApiClient: Bundles response status=${response.statusCode}');
+    }
+
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
@@ -148,7 +192,13 @@ class PlanApiClient {
 
       // Map response - check common error keys
       if (decoded is Map) {
-        for (final key in ['message', 'error', 'errorMessage', 'detail', 'title']) {
+        for (final key in [
+          'message',
+          'error',
+          'errorMessage',
+          'detail',
+          'title'
+        ]) {
           final value = decoded[key];
           if (value is String && value.trim().isNotEmpty) {
             return value.trim();
