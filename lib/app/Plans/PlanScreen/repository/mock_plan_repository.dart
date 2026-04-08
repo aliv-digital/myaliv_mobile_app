@@ -997,6 +997,7 @@ class MockPlanRepository implements BasePlanRepository {
             label: _buildAddOnLabel(addOnPlan),
             value: _buildAddOnValue(addOnPlan),
             price: addOnPlan.planAmount,
+            vatAmount: addOnPlan.vatAmount,
           ),
         )
         .toList(growable: false);

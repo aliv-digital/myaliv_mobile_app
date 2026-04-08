@@ -59,6 +59,7 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
       subtitleLabel: addOn.label,
       subtitleValue: addOn.value,
       price: addOn.price,
+      vatAmount: addOn.vatAmount,
     );
   }
 
@@ -125,7 +126,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
   double _selectedAddOnsTotal(HomePlanState state) {
     return state.addOns
         .where((addOn) => state.selectedAddOnIds.contains(addOn.id))
-        .fold<double>(0, (sum, addOn) => sum + addOn.price);
+        .fold<double>(0, (sum, addOn) => sum + addOn.totalPrice);
   }
 
   @override
@@ -138,7 +139,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
     final total = _selectedAddOnsTotal(state);
 
     return DefaultBottomPayBar(
-      isVatExclusive: true,
+      isVatExclusive: false,
       buttonText: 'proceed',
       amountText: '\$ ${total.toStringAsFixed(2)}',
       onPayNow: onPayNow,

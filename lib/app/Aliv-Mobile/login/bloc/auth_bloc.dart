@@ -52,15 +52,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginSubmitted>(_onSubmitted);
   }
 
-  /// Emits failure state and bumps a unique toast id.
+  /// Emits failure state.
   ///
-  /// This allows the UI listener to show the same error toast again
-  /// when the user taps the login button repeatedly.
+  /// Local validation errors stay inline in the form and should not trigger a
+  /// toast. Backend/API failures can opt-in to bumping `errorToastId`, which is
+  /// what the UI listener watches before showing a toast.
   void _emitFailure(
     Emitter<LoginState> emit, {
     required String message,
     required bool phoneFieldError,
     required bool passwordFieldError,
+    bool showToast = false,
   }) {
     emit(
       state.copyWith(
@@ -70,7 +72,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         apiPhoneNumber: null,
         phoneFieldError: phoneFieldError,
         passwordFieldError: passwordFieldError,
-        errorToastId: state.errorToastId + 1,
+        errorToastId: showToast ? state.errorToastId + 1 : state.errorToastId,
       ),
     );
   }
@@ -99,8 +101,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     }
     final LoginPhoneValidationResult phoneValidationResult =
         phoneNumberHelper.validateAndBuildApiUsername(
-        rawPhoneNumber: state.phone,
-        selectedCountry: state.selectedCountry,
+      rawPhoneNumber: state.phone,
+      selectedCountry: state.selectedCountry,
     );
 
     if (!phoneValidationResult.isValid || phoneValidationResult.phoneNumberForApi == null) {
@@ -116,7 +118,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (isConnected == false) {
       _emitFailure(
         emit,
-        message: "No Internet Connection",
+        message: 'No Internet Connection',
         phoneFieldError: false,
         passwordFieldError: false,
       );
@@ -152,9 +154,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (message.toString() == "FailedSimpleValidation") {
         _emitFailure(
           emit,
-          message: "The number you entered is invalid",
+          message: 'The number you entered is invalid',
           phoneFieldError: false,
           passwordFieldError: false,
+          showToast: true,
         );
       } else if (message.toString() == "FailedUsernameIsLocked") {
         _emitFailure(
@@ -162,6 +165,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           message: "your account is locked out, please try again in 15 minutes",
           phoneFieldError: false,
           passwordFieldError: false,
+          showToast: true,
         );
       } else {
         _emitFailure(
@@ -169,6 +173,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           message: message,
           phoneFieldError: false,
           passwordFieldError: false,
+          showToast: true,
         );
       }
     }

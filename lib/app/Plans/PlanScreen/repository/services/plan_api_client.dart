@@ -37,8 +37,7 @@ class PlanApiClient {
     }
 
     if (kDebugMode) {
-      debugPrint(
-          'PlanApiClient: Fetching plans for device=${auth.deviceAccountID}');
+      debugPrint('PlanApiClient: Fetching plans for device=${auth.deviceAccountID}');
     }
 
     // Make API request

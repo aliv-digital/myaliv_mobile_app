@@ -100,8 +100,7 @@ class HomePlanAddOnCard extends StatelessWidget {
                   addon.label, // data balance
                   style: HomePlanTheme.addOnLabel,
                 ),
-                const SizedBox(
-                    width: HomePlanTheme.addOnCardLabelToValueGap),
+                const SizedBox(width: HomePlanTheme.addOnCardLabelToValueGap),
                 Expanded(
                   child: Text(
                     addon.value, // 1gb
@@ -110,9 +109,8 @@ class HomePlanAddOnCard extends StatelessWidget {
                     style: HomePlanTheme.addOnValue,
                   ),
                 ),
-                const SizedBox(
-                    width: HomePlanTheme.addOnCardValueToPriceGap),
-                _PricePill(price: addon.price),
+                const SizedBox(width: HomePlanTheme.addOnCardValueToPriceGap),
+                _PricePill(price: addon.totalPrice),
               ],
             ),
           ],

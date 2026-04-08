@@ -2,12 +2,12 @@ import 'package:equatable/equatable.dart';
 
 class PlanPurchaseActivePlanSummary extends Equatable {
   final String label; // "active plan"
-  final String name;  // "liberty70"
+  final String name; // "liberty70"
   final bool autoRenew;
   final String activeDateLabel; // "active"
-  final String activeDate;      // "20/08/24"
+  final String activeDate; // "20/08/24"
   final String expireDateLabel; // "expire"
-  final String expireDate;      // "19/09/24"
+  final String expireDate; // "19/09/24"
 
   const PlanPurchaseActivePlanSummary({
     required this.label,
@@ -33,22 +33,23 @@ class PlanPurchaseActivePlanSummary extends Equatable {
 
   @override
   List<Object?> get props => [
-    label,
-    name,
-    autoRenew,
-    activeDateLabel,
-    activeDate,
-    expireDateLabel,
-    expireDate,
-  ];
+        label,
+        name,
+        autoRenew,
+        activeDateLabel,
+        activeDate,
+        expireDateLabel,
+        expireDate,
+      ];
 }
 
 class PlanPurchaseAddOnItem extends Equatable {
   final String id;
-  final String title;          // "liberty data 1"
-  final String subtitleLabel;  // "data balance"
-  final String subtitleValue;  // "1gb"
-  final double price;          // 5.00
+  final String title; // "liberty data 1"
+  final String subtitleLabel; // "data balance"
+  final String subtitleValue; // "1gb"
+  final double price; // base amount before VAT
+  final double vatAmount;
   final String currencySymbol; // "$"
 
   const PlanPurchaseAddOnItem({
@@ -57,15 +58,26 @@ class PlanPurchaseAddOnItem extends Equatable {
     required this.subtitleLabel,
     required this.subtitleValue,
     required this.price,
+    required this.vatAmount,
     this.currencySymbol = r'$',
   });
 
+  double get totalPrice => price + vatAmount;
+
   @override
-  List<Object?> get props => [id, title, subtitleLabel, subtitleValue, price, currencySymbol];
+  List<Object?> get props => [
+        id,
+        title,
+        subtitleLabel,
+        subtitleValue,
+        price,
+        vatAmount,
+        currencySymbol,
+      ];
 }
 
 class PlanPurchaseFairUsePolicy extends Equatable {
-  final String title;       // "fair use policy"
+  final String title; // "fair use policy"
   final String description; // text
 
   const PlanPurchaseFairUsePolicy({
