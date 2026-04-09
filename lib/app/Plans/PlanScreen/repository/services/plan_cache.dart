@@ -1,4 +1,4 @@
-import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_cache.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/services/base_plan_cache.dart';
 import '../../models/daily_plan_model.dart';
 import '../../models/weekly_plan_model.dart';
 import '../../models/monthly_plan_model.dart';

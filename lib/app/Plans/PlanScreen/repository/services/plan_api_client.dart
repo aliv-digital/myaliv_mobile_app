@@ -1,5 +1,5 @@
 import 'package:core/core.dart';
-import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_api_client.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/services/base_plan_api_client.dart';
 import '../../../../../../core/networkService/api_paths.dart';
 
 /// Handles API calls for prepaid plan data.
