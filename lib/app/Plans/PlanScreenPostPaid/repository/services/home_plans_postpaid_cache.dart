@@ -1,29 +1,25 @@
+import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_cache.dart';
 import '../../models/home_plans_postpaid_plan_model.dart';
 
-class HomePlansPostPaidCache {
-  List<Map<String, dynamic>> _rawPlans = <Map<String, dynamic>>[];
-  DateTime? _rawPlansTimestamp;
+/// Manages in-memory cache for postpaid plan data.
+///
+/// Extends BasePlanCache to inherit raw plans caching.
+/// Adds caching for typed postpaid plan models.
+class HomePlansPostPaidCache extends BasePlanCache {
+  final CacheEntry<List<HomePlansPostPaidPlanModel>> _apiPlansCache =
+      CacheEntry();
 
-  List<HomePlansPostPaidPlanModel> _apiPlans = <HomePlansPostPaidPlanModel>[];
-  DateTime? _apiPlansTimestamp;
+  void setApiPlans(List<HomePlansPostPaidPlanModel> plans) =>
+      _apiPlansCache.set(plans);
 
-  void setRawPlans(List<Map<String, dynamic>> plans) {
-    _rawPlans = plans;
-    _rawPlansTimestamp = DateTime.now();
+  List<HomePlansPostPaidPlanModel> getApiPlans() =>
+      _apiPlansCache.get() ?? [];
+
+  DateTime? getApiPlansTimestamp() => _apiPlansCache.getTimestamp();
+
+  @override
+  void clearAll() {
+    super.clearAll(); // Clear raw plans cache from base class
+    _apiPlansCache.clear();
   }
-
-  List<Map<String, dynamic>> getRawPlans() => _rawPlans;
-
-  DateTime? getRawPlansTimestamp() => _rawPlansTimestamp;
-
-  bool hasRawPlans() => _rawPlans.isNotEmpty;
-
-  void setApiPlans(List<HomePlansPostPaidPlanModel> plans) {
-    _apiPlans = plans;
-    _apiPlansTimestamp = DateTime.now();
-  }
-
-  List<HomePlansPostPaidPlanModel> getApiPlans() => _apiPlans;
-
-  DateTime? getApiPlansTimestamp() => _apiPlansTimestamp;
 }

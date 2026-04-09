@@ -1,62 +1,19 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_json_parser.dart';
 
-/// Top-level function for background JSON parsing
+/// Prepaid plans JSON parser.
 ///
-/// Required for use with compute() isolate.
-List<Map<String, dynamic>> parsePlansJsonInBackground(String rawJson) {
-  final dynamic decoded = jsonDecode(rawJson);
+/// Extends BasePlanJsonParser to inherit background parsing capabilities.
+/// Provides backwards-compatible method names for existing code.
+class PlanJsonParser extends BasePlanJsonParser {
+  PlanJsonParser() : super(debugName: 'prepaid');
 
-  if (decoded is! List) {
-    throw const FormatException('Expected JSON array for plans response');
-  }
-
-  return decoded
-      .whereType<Map>()
-      .map((item) => Map<String, dynamic>.from(item))
-      .toList(growable: false);
-}
-
-Map<String, dynamic> parseBundlesJsonInBackground(String rawJson) {
-  final dynamic decoded = jsonDecode(rawJson);
-
-  if (decoded is! Map) {
-    throw const FormatException('Expected JSON object for bundles response');
-  }
-
-  return decoded.map(
-    (dynamic key, dynamic value) =>
-        MapEntry<String, dynamic>(key.toString(), value),
-  );
-}
-
-/// Parses plan JSON data
-///
-/// Uses background isolate for large JSON to avoid UI jank.
-class PlanJsonParser {
   /// Parse raw JSON string into normalized plan list
   ///
-  /// Performs parsing in background isolate using compute().
-  Future<List<Map<String, dynamic>>> parse(String rawJson) async {
-    try {
-      return await compute(parsePlansJsonInBackground, rawJson);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('PlanJsonParser: Failed to parse - $e');
-      }
-      rethrow;
-    }
-  }
+  /// Alias for parseList() - for backwards compatibility.
+  Future<List<Map<String, dynamic>>> parse(String rawJson) => parseList(rawJson);
 
-  /// Parse raw bundles JSON string into normalized root map.
-  Future<Map<String, dynamic>> parseBundles(String rawJson) async {
-    try {
-      return await compute(parseBundlesJsonInBackground, rawJson);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('PlanJsonParser: Failed to parse bundles - $e');
-      }
-      rethrow;
-    }
-  }
+  /// Parse raw bundles JSON string into normalized root map
+  ///
+  /// Alias for parseMap() - for backwards compatibility.
+  Future<Map<String, dynamic>> parseBundles(String rawJson) => parseMap(rawJson);
 }
