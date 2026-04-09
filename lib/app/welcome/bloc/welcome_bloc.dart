@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
-import '../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import '../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../../Home/home/data/home_ui_config.dart';
 import 'welcome_event.dart';
 import 'welcome_state.dart';
@@ -40,8 +41,16 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
   }
 
   Future<void> _setLoggedInUserUiConfig() async {
-    final map = await LocalStorage.getAccountInfoMap();
-    final account = AccountInfoModel.fromJson(map);
+    // Get account info from AccountInfoCubit (HydratedBloc)
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final account = accountInfoCubit.state.accountInfo;
+
+    if (account == null) {
+      if (kDebugMode) {
+        debugPrint('⚠️ No account info available for UI config');
+      }
+      return;
+    }
 
     final accountType = account.accountType;
     final paymentOption = account.paymentOption;

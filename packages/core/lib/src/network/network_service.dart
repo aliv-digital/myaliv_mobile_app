@@ -73,14 +73,14 @@ class NetworkService {
 
     _config = NetworkConfig(
       baseUrl: baseUrl,
-      headers: authToken != null
-          ? {'Authorization': 'Basic $authToken'}
-          : {},
+      headers: authToken != null ? {'Authorization': 'Basic $authToken'} : {},
     );
 
     if (kDebugMode) {
-      debugPrint('NetworkService: Auth headers ${authToken != null ? "SET ✅" : "NOT SET ⚠️"}');
-      debugPrint('NetworkService: Config - baseUrl=${_config.baseUrl}, enableLogging=${_config.enableLogging}');
+      debugPrint(
+          'NetworkService: Auth headers ${authToken != null ? "SET ✅" : "NOT SET ⚠️"}');
+      debugPrint(
+          'NetworkService: Config - baseUrl=${_config.baseUrl}, enableLogging=${_config.enableLogging}');
     }
 
     _interceptorHandlers = NetworkInterceptorHandlers();
@@ -127,7 +127,8 @@ class NetworkService {
     } else {
       _dio.options.headers.remove('Authorization');
       if (kDebugMode) {
-        debugPrint('⚠️ NetworkService: Auth headers removed (no auth in GlobalState)');
+        debugPrint(
+            '⚠️ NetworkService: Auth headers removed (no auth in GlobalState)');
       }
     }
   }
@@ -171,7 +172,8 @@ class NetworkService {
       _dio.interceptors.add(NetworkLoggingInterceptor());
       debugPrint('✅ NetworkService: Logging interceptor added');
     } else {
-      debugPrint('⚠️ NetworkService: Logging DISABLED (enableLogging=${_config.enableLogging}, debugMode=$kDebugMode)');
+      debugPrint(
+          '⚠️ NetworkService: Logging DISABLED (enableLogging=${_config.enableLogging}, debugMode=$kDebugMode)');
     }
   }
 

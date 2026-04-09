@@ -1,201 +1,104 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import '../../../../core/networkService/api_paths.dart';
-import '../../../../core/networkService/app_http_client.dart';
-import '../model/account_info_model.dart';
 import '../model/login_otp_resend_response_model.dart';
 import '../model/login_otp_verify_response_model.dart';
+import 'base_login_otp_repository.dart';
+import 'services/login_otp_api_client.dart';
+import 'services/phone_normalizer.dart';
+import 'services/otp_response_validator.dart';
+import 'services/otp_json_parser.dart';
 
-class LoginOtpRepository {
-  LoginOtpRepository({ApiService? apiService}) : _api = apiService ?? ApiService();
+/// Login OTP repository - refactored version using service composition.
+///
+/// This repository orchestrates:
+/// - LoginOtpApiClient: Handles API calls
+/// - PhoneNormalizer: Normalizes phone numbers
+/// - OtpResponseValidator: Validates response data
+/// - OtpJsonParser: Parses JSON responses
+class LoginOtpRepository implements BaseLoginOtpRepository {
+  LoginOtpRepository({
+    LoginOtpApiClient? apiClient,
+    PhoneNormalizer? phoneNormalizer,
+    OtpResponseValidator? responseValidator,
+    OtpJsonParser? jsonParser,
+  })  : _apiClient = apiClient ?? LoginOtpApiClient(),
+        _phoneNormalizer = phoneNormalizer ?? PhoneNormalizer(),
+        _responseValidator = responseValidator ?? OtpResponseValidator(),
+        _jsonParser = jsonParser ?? OtpJsonParser();
 
-  final ApiService _api;
+  final LoginOtpApiClient _apiClient;
+  final PhoneNormalizer _phoneNormalizer;
+  final OtpResponseValidator _responseValidator;
+  final OtpJsonParser _jsonParser;
 
+  @override
   Future<LoginOtpVerifyResponse> verifyCode({
     required String phoneNumber,
     required String twoFactorKey,
     required String pinCode,
   }) async {
-    // API expects a digits-only phone number (e.g. 2428997105).
-    final normalizedPhone = _digitsOnly(phoneNumber);
-    final payload = <String, dynamic>{
-      'PhoneNumber': normalizedPhone,
-      'Key': twoFactorKey,
-      'PinCode': pinCode,
-    };
+    // 1. Normalize phone number
+    final normalizedPhone = _phoneNormalizer.normalize(phoneNumber);
 
     if (kDebugMode) {
       debugPrint(
-        'OTP verify payload: {PhoneNumber: $normalizedPhone, Key: ****, PinCode: ****}',
+        'LoginOtpRepository: Verifying OTP for phone=$normalizedPhone',
       );
     }
 
-    final response = await _api.postJson(Api.verifyOtpUrl, body: payload);
-
-    if (kDebugMode) {
-      debugPrint(
-        'OTP verify status: ${response.statusCode}, body: ${response.responseJson}',
-      );
-    }
-
-    final parsedJson = _tryDecodeMap(response.responseJson);
-    final verifyResponse = LoginOtpVerifyResponse.fromJson(parsedJson);
-
-    if (ApiService.isSuccessStatusCode(response.statusCode)) {
-      final ticket = verifyResponse.ticket?.trim() ?? '';
-      if (ticket.isEmpty) {
-        throw Exception(
-          _resolveMessage(
-            verifyResponse.reason,
-            fallback: 'Ticket missing in OTP verify response',
-          ),
-        );
-      }
-      return verifyResponse;
-    }
-
-    throw Exception(
-      ApiService.friendlyErrorFromResponse(
-        response,
-        backendMessage: verifyResponse.reason,
-      ) ?? 'OTP verification failed. Please try again.',
-    );
-  }
-
-  Future<LoginOtpResendResponse> resendCode({required String phoneNumber, required String twoFactorKey}) async {
-    final normalizedPhone = _digitsOnly(phoneNumber);
-    final payload = <String, dynamic>{
-      'PhoneNumber': normalizedPhone,
-      'Key': twoFactorKey,
-    };
-
-    if (kDebugMode) {
-      debugPrint(
-        'OTP resend payload: {PhoneNumber: $normalizedPhone, Key: ****}',
-      );
-    }
-
-    final response = await _api.postJson(Api.resendOtpUrl, body: payload);
-
-    if (kDebugMode) {
-      debugPrint(
-        'OTP resend status: ${response.statusCode}, body: ${response.responseJson}',
-      );
-    }
-
-    final parsedJson = _tryDecodeMap(response.responseJson);
-    final resendResponse = LoginOtpResendResponse.fromJson(parsedJson);
-
-    if (ApiService.isSuccessStatusCode(response.statusCode)) {
-      final key = resendResponse.key?.trim() ?? '';
-      if (key.isEmpty) {
-        throw Exception(
-          _resolveMessage(
-            resendResponse.reason,
-            fallback: 'Key missing in OTP resend response',
-          ),
-        );
-      }
-      return resendResponse;
-    }
-
-    throw Exception(
-      ApiService.friendlyErrorFromResponse(
-        response,
-        backendMessage: resendResponse.reason,
-      ) ?? 'Could not resend OTP. Please try again.',
-    );
-  }
-
-  /// Fetches account details using Basic Auth against [Api.accountUrl].
-  ///
-  /// Returns typed account info when status is 2xx.
-  Future<AccountInfoModel> getAccountInfo({required String username, required String password}) async {
-    final credentials = '$username:$password';
-    final basicAuthToken = base64Encode(utf8.encode(credentials));
-
-    if (kDebugMode) {
-      debugPrint('Account info request initiated for user: $username');
-    }
-
-    final response = await _api.get(
-      Api.accountUrl,
-      headers: <String, String>{
-        'Authorization': 'Basic $basicAuthToken',
-      },
+    // 2. Make API call
+    final rawJson = await _apiClient.verifyOtp(
+      phoneNumber: normalizedPhone,
+      twoFactorKey: twoFactorKey,
+      pinCode: pinCode,
     );
 
+    // 3. Parse response
+    final response = _jsonParser.parseVerifyResponse(rawJson);
+
     if (kDebugMode) {
       debugPrint(
-        'Account info status: ${response.statusCode}, body: ${response.responseJson}',
+        'LoginOtpRepository: Verify response parsed successfully',
       );
     }
 
-    final parsedJson = _tryDecodeMap(response.responseJson);
-    final accountInfo = AccountInfoModel.fromJson(parsedJson);
+    // 4. Validate response
+    _responseValidator.validateVerifyResponse(response);
 
-    if (ApiService.isSuccessStatusCode(response.statusCode)) {
-      if (parsedJson == null) {
-        throw Exception('Unexpected account response format');
-      }
-      return accountInfo;
+    return response;
+  }
+
+  @override
+  Future<LoginOtpResendResponse> resendCode({
+    required String phoneNumber,
+    required String twoFactorKey,
+  }) async {
+    // 1. Normalize phone number
+    final normalizedPhone = _phoneNormalizer.normalize(phoneNumber);
+
+    if (kDebugMode) {
+      debugPrint(
+        'LoginOtpRepository: Resending OTP for phone=$normalizedPhone',
+      );
     }
 
-    throw Exception(
-      ApiService.friendlyErrorFromResponse(
-        response,
-        backendMessage: accountInfo.reason.isNotEmpty ? accountInfo.reason : _extractBackendMessage(parsedJson),
-      ) ?? 'Could not fetch account information. Please try again.',
+    // 2. Make API call
+    final rawJson = await _apiClient.resendOtp(
+      phoneNumber: normalizedPhone,
+      twoFactorKey: twoFactorKey,
     );
-  }
 
-  Map<String, dynamic>? _tryDecodeMap(String raw) {
-    if (raw.trim().isEmpty) return null;
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is Map<String, dynamic>) return decoded;
-      return null;
-    } catch (_) {
-      return null;
-    }
-  }
+    // 3. Parse response
+    final response = _jsonParser.parseResendResponse(rawJson);
 
-  String _resolveMessage(String? message, {required String fallback}) {
-    final trimmed = message?.trim() ?? '';
-    if (trimmed.isNotEmpty) return trimmed;
-    return fallback;
-  }
-
-  String? _extractBackendMessage(Map<String, dynamic>? json) {
-    if (json == null) return null;
-    final message = json['message'] ??
-        json['Message'] ??
-        json['error'] ??
-        json['Error'] ??
-        json['detail'] ??
-        json['Detail'] ??
-        json['reason'] ??
-        json['Reason'];
-    return message?.toString();
-  }
-
-  String _digitsOnly(String value) {
-    final StringBuffer digitsOnlyBuffer = StringBuffer();
-
-    for (int index = 0; index < value.length; index++) {
-      final String character = value[index];
-      final int codeUnit = character.codeUnitAt(0);
-      final bool isDigit = codeUnit >= 48 && codeUnit <= 57;
-
-      if (isDigit) {
-        digitsOnlyBuffer.write(character);
-      }
+    if (kDebugMode) {
+      debugPrint(
+        'LoginOtpRepository: Resend response parsed successfully',
+      );
     }
 
-    return digitsOnlyBuffer.toString();
+    // 4. Validate response
+    _responseValidator.validateResendResponse(response);
+
+    return response;
   }
 }
-/*
-I/flutter (24566): OTP verify status: 200,
- body: {"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366szcN/FyIvrgsd1fVpZ/+L8tdriQQn05FV7DB2Lhv8+kCr2KzoIgCB40J3rULAkhigqyNZj4Cpgl6+IBlztX58Q==","AccountId":235724603}
- */

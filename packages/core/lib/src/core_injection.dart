@@ -19,15 +19,16 @@ class CoreInjection {
   /// - NetworkService will be initialized without auth headers
   /// - Auth can be set up later via AuthManager.saveAuth()
   ///
+  /// Note: Account info is managed by AccountInfoCubit (HydratedBloc).
+  /// This method only loads authentication credentials (ticket and accountID).
+  ///
   /// Parameters:
   /// - [getTicket]: Function to retrieve stored ticket from SharedPreferences
-  /// - [getAccountInfoMap]: Function to retrieve stored account info
-  /// - [parseAccountInfo]: Function to parse account info map to model
+  /// - [getAccountID]: Function to retrieve stored account ID
   /// - [username]: Username constant (from core/constants)
   Future<void> initInjection({
     Future<String?> Function()? getTicket,
-    Future<Map<String, dynamic>> Function()? getAccountInfoMap,
-    dynamic Function(Map<String, dynamic>)? parseAccountInfo,
+    Future<String?> Function()? getAccountID,
     String? username,
   }) async {
     if (kDebugMode) {
@@ -39,15 +40,11 @@ class CoreInjection {
     instance.registerSingleton<AuthManager>(authManager);
 
     // ========== 2. Load Auth from Storage (if functions provided) ==========
-    if (getTicket != null &&
-        getAccountInfoMap != null &&
-        parseAccountInfo != null &&
-        username != null) {
+    if (getTicket != null && getAccountID != null && username != null) {
       try {
         await authManager.loadAuthFromStorage(
           getTicket: getTicket,
-          getAccountInfoMap: getAccountInfoMap,
-          parseAccountInfo: parseAccountInfo,
+          getAccountID: getAccountID,
           username: username,
         );
       } catch (e) {
@@ -57,7 +54,8 @@ class CoreInjection {
       }
     } else {
       if (kDebugMode) {
-        debugPrint('⚠️ CoreInjection: No auth loading functions provided, skipping auth load');
+        debugPrint(
+            '⚠️ CoreInjection: No auth loading functions provided, skipping auth load');
       }
     }
 

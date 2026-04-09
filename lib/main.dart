@@ -1,13 +1,25 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'main_injection_container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize HydratedBloc storage for account info persistence
+  final storageDir = await getApplicationDocumentsDirectory();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(storageDir.path),
+  );
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.white,
@@ -29,8 +41,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AppUiConfigCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => AppUiConfigCubit()),
+        BlocProvider.value(value: instance<AccountInfoCubit>()),
+      ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'My Aliv',

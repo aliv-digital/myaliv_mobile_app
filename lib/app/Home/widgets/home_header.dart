@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/phone_dropdown.dart';
-
-import '../home/data/home_ui_config.dart';
 
 class HomeHeader extends StatelessWidget {
   final HomeUiConfig config;
@@ -44,15 +47,20 @@ class HomeHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 25),
-          Text(
-            'welcome back, Alicia',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: const Color(0xFFF1F1F8),
-              fontSize: 16,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-            ),
+          BlocBuilder<AccountInfoCubit, AccountInfoState>(
+            builder: (context, state) {
+              final username = state.accountInfo?.username ?? 'User';
+              return Text(
+                'welcome back, $username',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: const Color(0xFFF1F1F8),
+                  fontSize: 16,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 6),
           const PhoneDropdown(),

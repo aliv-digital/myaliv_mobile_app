@@ -5,7 +5,8 @@ import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:core/core.dart';
 import '../../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../Home/home/data/home_ui_config.dart';
-import '../model/account_info_model.dart';
+import '../../account-information/cubit/account_info_cubit.dart';
+import '../../account-information/cubit/account_info_state.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
@@ -126,13 +127,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
             final ticket = response.ticket.toString();
             final accountId = response.accountId.toString();
 
-            // Fetch full account info
-            final accountInfo = await repository.getAccountInfo(
-              username: userName, // from core/constants
-              password: ticket,
-            );
-
-            // ========== Use AuthManager to save everything ==========
+            // ========== Use AuthManager to save auth first ==========
+            // This stores the ticket, which is required for fetchAccountInfo
             final authManager = instance<AuthManager>();
             await authManager.saveAuth(
               username: userName,
@@ -141,14 +137,29 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
               storeTicket: (t) => LocalStorage.storeTicket(ticket: t),
               storeAccountID: (id) =>
                   LocalStorage.storeAccountID(accountID: id),
-              storeAccountInfoMap: (info) =>
-                  LocalStorage.storeAccountInfoMap(accountInfo: info),
-              accountInfoMap: accountInfo.toJson(),
             );
 
-            // ========== Update NetworkService headers ==========
+            // ========== Update NetworkService with new auth headers ==========
             final networkService = instance<NetworkService>();
             networkService.updateAuthHeaders();
+
+            // ========== Fetch account info using AccountInfoCubit ==========
+            // Credentials are read automatically from AuthManager
+            final accountInfoCubit = instance<AccountInfoCubit>();
+            await accountInfoCubit.fetchAccountInfo();
+
+            // Verify account info was fetched successfully
+            if (accountInfoCubit.state.status != AccountInfoStatus.success) {
+              final errorMsg =
+                  accountInfoCubit.state.errorMessage ??
+                  'Failed to fetch account information';
+              throw Exception(errorMsg);
+            }
+
+            final accountInfo = accountInfoCubit.state.accountInfo;
+            if (accountInfo == null) {
+              throw Exception('Account information is missing');
+            }
 
             // Set UI config for logged-in user
             await _setLoggedInUserUiConfig();
@@ -205,18 +216,21 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   //   _setLoggedInUserUiConfig();
   // }
 
-  /// Temporary central config setup after successful OTP verification.
+  /// Central config setup after successful OTP verification.
   ///
-  /// Later this method should map the real API response into `HomeUiConfig`
-  /// instead of using the hard-coded prepaid demo values.
+  /// Gets account info from AccountInfoCubit (HydratedBloc) and sets UI config.
   Future<void> _setLoggedInUserUiConfig() async {
-    final map = await LocalStorage.getAccountInfoMap();
-    final account = AccountInfoModel.fromJson(map);
-    //final ticket = await LocalStorage.getTicket();
+    // Get account info from AccountInfoCubit
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final account = accountInfoCubit.state.accountInfo;
 
-    //final email = account.email;
-    //final deviceAccountID = account.idAcc; // device account id
-    // final accountStatus = account.accountStatus;
+    if (account == null) {
+      if (kDebugMode) {
+        debugPrint('⚠️ No account info available for UI config');
+      }
+      return;
+    }
+
     final accountType = account.accountType;
     final paymentOption = account.paymentOption;
 
@@ -241,9 +255,15 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     PrintStorage event,
     Emitter<LoginOtpState> emit,
   ) async {
-    final map = await LocalStorage.getAccountInfoMap();
-    final account = AccountInfoModel.fromJson(map);
+    // Get account info from AccountInfoCubit (HydratedBloc)
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final account = accountInfoCubit.state.accountInfo;
     final ticket = await LocalStorage.getTicket();
+
+    if (account == null) {
+      debugPrint("⚠️ No account info available");
+      return;
+    }
 
     final email = account.email;
     final deviceAccountID = account.idAcc; // device account id

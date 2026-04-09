@@ -116,17 +116,21 @@ class LogoutBottomSheet extends StatelessWidget {
                 /// YES BUTTON
                 Expanded(
                   child: GestureDetector(
-                    onTap: () async{
+                    onTap: () async {
                       bool res = await LogoutRepository().logout();
 
-                      if(res == true){
+                      if (!context.mounted) return;
+
+                      if (res == true) {
                         context.pop();
                         context.go(AppRoutes.welcome);
-                      }else{
-                        AppToast.show(message: 'Logout failed. Please try again.', type: ToastType.error);
+                      } else {
+                        AppToast.show(
+                          message: 'Logout failed. Please try again.',
+                          type: ToastType.error,
+                        );
                       }
-               
-                      },
+                    },
                     child: Container(
                       height: 50,
                       decoration: ShapeDecoration(
