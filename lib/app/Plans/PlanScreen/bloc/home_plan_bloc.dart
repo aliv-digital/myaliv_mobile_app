@@ -5,6 +5,7 @@ import '../../../../core/localStorage/localStorage.dart';
 import '../../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
 import '../models/mifi_plan_model.dart';
@@ -42,6 +43,9 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Prevents duplicate Liberty Global API sync calls when user taps the tab repeatedly.
   bool _isLibertyGlobalApiSyncInProgress = false;
 
+  /// Prevents duplicate Add-ons bundles API sync calls when user taps repeatedly.
+  bool _isAddOnsApiSyncInProgress = false;
+
   HomePlanBloc(this.repository) : super(HomePlanState.initial()) {
     on<HomePlanStarted>(_onStarted);
     on<HomePlanTabChanged>(_onTabChanged);
@@ -53,6 +57,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
 
     // AddOns toggle
     on<HomePlanToggleAddon>(_onToggleAddOns);
+    on<HomePlanAddOnsApiSyncRequested>(_onAddOnsApiSyncRequested);
 
     // Daily API sync (state-only in current phase)
     on<HomePlanDailyApiSyncRequested>(_onDailyApiSyncRequested);
@@ -143,14 +148,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
       _emitTabStatus(emit, tab: tab, status: HomePlanStatus.loading);
 
       if (tab == HomePlanTab.addOns) {
-        // AddOns tab loads AddOns list.
-        final List<HomePlanAddOnModel> addOns = await repository.fetchAddOns();
-        final HomePlanState nextState = _withTabStatus(
-          currentState: state,
-          tab: tab,
-          status: HomePlanStatus.loaded,
-        ).copyWith(addOns: addOns, plans: const [], expandedPlanIds: const {});
-        emit(nextState);
+        emit(
+          state.copyWith(
+            plans: const [],
+            addOns: const [],
+            selectedAddOnIds: const {},
+            addOnsApiPrimaryPlans: const [],
+          ),
+        );
+        _scheduleAddOnsApiSyncIfIdle();
         return;
       }
 
@@ -210,6 +216,92 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     }
   }
 
+  /// Sync Add-ons bundles API data and store sorted `PrimaryPlans` in state.
+  Future<void> _onAddOnsApiSyncRequested(
+    HomePlanAddOnsApiSyncRequested event,
+    Emitter<HomePlanState> emit,
+  ) async {
+    if (_isAddOnsApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('add-ons-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    _isAddOnsApiSyncInProgress = true;
+
+    try {
+      if (!globalState.isAuthenticated) {
+        if (kDebugMode) {
+          debugPrint('add-ons-api-sync: skipped, user not authenticated');
+        }
+        _emitTabFailureWithToast(
+          emit,
+          tab: HomePlanTab.addOns,
+          errorMessage: 'Please login to view add-ons',
+        );
+        return;
+      }
+
+      final List<AddOnsPrimaryPlanModel> primaryPlans =
+          await repository.fetchAddOnsPrimaryPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredPrimaryPlans: false,
+      );
+
+      final AddOnsPrimaryPlanModel? selectedPrimaryPlan =
+          repository.selectEarliestAddOnsPrimaryPlan(primaryPlans);
+      final List<HomePlanAddOnModel> addOns = selectedPrimaryPlan == null
+          ? const <HomePlanAddOnModel>[]
+          : repository.mapAvailableBoltOnsToUiAddOns(
+              primaryPlan: selectedPrimaryPlan,
+            );
+
+      final DateTime syncedAt = DateTime.now();
+      final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
+          Map<HomePlanTab, HomePlanTabApiMeta>.from(state.apiTabMeta);
+
+      nextApiTabMeta[HomePlanTab.addOns] = HomePlanTabApiMeta(
+        isLoaded: true,
+        itemCount: primaryPlans.length,
+        lastSyncedAt: syncedAt,
+      );
+
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.addOns,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        addOnsApiPrimaryPlans: primaryPlans,
+        addOns: addOns,
+        selectedAddOnIds: const {},
+        apiTabMeta: nextApiTabMeta,
+        addOnsApiLastSyncedAt: syncedAt,
+      );
+      emit(nextState);
+    } on PlanRepositoryException catch (error) {
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.addOns,
+        errorMessage: _buildFriendlyMessageForTab(
+          tab: HomePlanTab.addOns,
+          error: error,
+        ),
+      );
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint('add-ons-api-sync: failed with error: $error');
+      }
+      _emitTabFailureWithToast(
+        emit,
+        tab: HomePlanTab.addOns,
+        errorMessage: 'Failed to sync add-ons bundles',
+      );
+    } finally {
+      _isAddOnsApiSyncInProgress = false;
+    }
+  }
+
   /// Sync strict Daily API data and store in state.
   ///
   /// Why separate event:
@@ -245,11 +337,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<DailyPlanModel> dailyPlans = await repository
-          .fetchDailyPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredDailyPlans: false,
-          );
+      final List<DailyPlanModel> dailyPlans =
+          await repository.fetchDailyPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredDailyPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -276,16 +368,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("dailyPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.daily,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            dailyApiPlans: dailyPlans,
-            apiTabMeta: nextApiTabMeta,
-            dailyApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.daily,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        dailyApiPlans: dailyPlans,
+        apiTabMeta: nextApiTabMeta,
+        dailyApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -344,11 +435,10 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<WeeklyPlanModel> weeklyPlans = await repository
-          .fetchWeeklyPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredWeeklyPlans: false,
-          );
+      final List<WeeklyPlanModel> weeklyPlans = await repository.fetchWeeklyPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredWeeklyPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -370,16 +460,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("weeklyPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.weekly,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            weeklyApiPlans: weeklyPlans,
-            apiTabMeta: nextApiTabMeta,
-            weeklyApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.weekly,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        weeklyApiPlans: weeklyPlans,
+        apiTabMeta: nextApiTabMeta,
+        weeklyApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -438,11 +527,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<MonthlyPlanModel> monthlyPlans = await repository
-          .fetchMonthlyPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredMonthlyPlans: false,
-          );
+      final List<MonthlyPlanModel> monthlyPlans =
+          await repository.fetchMonthlyPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredMonthlyPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -464,16 +553,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("monthlyPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.monthly,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            monthlyApiPlans: monthlyPlans,
-            apiTabMeta: nextApiTabMeta,
-            monthlyApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.monthly,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        monthlyApiPlans: monthlyPlans,
+        apiTabMeta: nextApiTabMeta,
+        monthlyApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -525,11 +613,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<RoamingPlanModel> roamingPlans = await repository
-          .fetchRoamingPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredRoamingPlans: false,
-          );
+      final List<RoamingPlanModel> roamingPlans =
+          await repository.fetchRoamingPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredRoamingPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -550,16 +638,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("roamingPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.roaming,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            roamingApiPlans: roamingPlans,
-            apiTabMeta: nextApiTabMeta,
-            roamingApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.roaming,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        roamingApiPlans: roamingPlans,
+        apiTabMeta: nextApiTabMeta,
+        roamingApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -611,11 +698,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<RoamEasyPlanModel> roamEasyPlans = await repository
-          .fetchRoamEasyPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredRoamEasyPlans: false,
-          );
+      final List<RoamEasyPlanModel> roamEasyPlans =
+          await repository.fetchRoamEasyPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredRoamEasyPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -636,16 +723,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("roamEasyPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.roameasy,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            roamEasyApiPlans: roamEasyPlans,
-            apiTabMeta: nextApiTabMeta,
-            roamEasyApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.roameasy,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        roamEasyApiPlans: roamEasyPlans,
+        apiTabMeta: nextApiTabMeta,
+        roamEasyApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -697,11 +783,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<MifiPlanModel> mifiPlans = await repository
-          .fetchMifiPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredMifiPlans: false,
-          );
+      final List<MifiPlanModel> mifiPlans =
+          await repository.fetchMifiPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredMifiPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -722,16 +808,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("mifiPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.mifi,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            mifiApiPlans: mifiPlans,
-            apiTabMeta: nextApiTabMeta,
-            mifiApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.mifi,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        mifiApiPlans: mifiPlans,
+        apiTabMeta: nextApiTabMeta,
+        mifiApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -787,11 +872,11 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         return;
       }
 
-      final List<LibertyGlobalPlanModel> libertyGlobalPlans = await repository
-          .fetchLibertyGlobalPlansFromApi(
-            printRawResponse: event.printRawResponse,
-            printFilteredLibertyGlobalPlans: false,
-          );
+      final List<LibertyGlobalPlanModel> libertyGlobalPlans =
+          await repository.fetchLibertyGlobalPlansFromApi(
+        printRawResponse: event.printRawResponse,
+        printFilteredLibertyGlobalPlans: false,
+      );
 
       final DateTime syncedAt = DateTime.now();
       final Map<HomePlanTab, HomePlanTabApiMeta> nextApiTabMeta =
@@ -812,16 +897,15 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         debugPrint("libertyGlobalPlans.isEmpty");
       }
 
-      final HomePlanState nextState =
-          _withTabStatus(
-            currentState: state,
-            tab: HomePlanTab.libertyGlobal,
-            status: HomePlanStatus.loaded,
-          ).copyWith(
-            libertyGlobalApiPlans: libertyGlobalPlans,
-            apiTabMeta: nextApiTabMeta,
-            libertyGlobalApiLastSyncedAt: syncedAt,
-          );
+      final HomePlanState nextState = _withTabStatus(
+        currentState: state,
+        tab: HomePlanTab.libertyGlobal,
+        status: HomePlanStatus.loaded,
+      ).copyWith(
+        libertyGlobalApiPlans: libertyGlobalPlans,
+        apiTabMeta: nextApiTabMeta,
+        libertyGlobalApiLastSyncedAt: syncedAt,
+      );
       emit(nextState);
     } on PlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -852,6 +936,18 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
     Emitter<HomePlanState> emit,
   ) {
     emit(state.copyWith(clearPendingToast: true));
+  }
+
+  /// Schedules Add-ons API sync only when no sync is running.
+  void _scheduleAddOnsApiSyncIfIdle() {
+    if (_isAddOnsApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('add-ons-api-sync: skipped, sync already in progress');
+      }
+      return;
+    }
+
+    add(HomePlanAddOnsApiSyncRequested());
   }
 
   /// Schedules Daily API sync only when no sync is running.

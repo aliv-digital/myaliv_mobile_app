@@ -1,5 +1,6 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../models/monthly_plan_model.dart';
@@ -106,6 +107,22 @@ abstract class BasePlanRepository {
   /// Returns UI-ready HomePlanAddOnModel list for display.
   Future<List<HomePlanAddOnModel>> fetchAddOns();
 
+  /// Fetch and parse bundles `PrimaryPlans` for Add-ons tab.
+  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+    bool printRawResponse = false,
+    bool printFilteredPrimaryPlans = false,
+  });
+
+  /// Returns the earliest primary plan after repository sorting.
+  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<AddOnsPrimaryPlanModel> primaryPlans,
+  );
+
+  /// Maps the selected primary plan's `AvailableBoltOns` to UI add-on models.
+  List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
+    required AddOnsPrimaryPlanModel primaryPlan,
+  });
+
   // ========== Read-Only Getters ==========
 
   /// Read-only view of latest raw payload cache.
@@ -155,4 +172,10 @@ abstract class BasePlanRepository {
 
   /// Read-only latest strict Liberty Global filter timestamp.
   DateTime? get lastFetchedLibertyGlobalAt;
+
+  /// Read-only latest Add-ons primary plan cache.
+  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans;
+
+  /// Read-only latest Add-ons primary plan fetch timestamp.
+  DateTime? get lastFetchedAddOnsPrimaryPlansAt;
 }

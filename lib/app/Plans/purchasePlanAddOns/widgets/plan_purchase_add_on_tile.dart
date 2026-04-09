@@ -20,6 +20,37 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
     required this.onChanged,
   });
 
+  // The add-ons API can return compact values like "100minutes".
+  // Keep the original number/text intact, and only normalize the unit
+  // to the shorter UI label used across the plans cards: "min".
+  String _formatSubtitleValue(String value) {
+    final trimmedValue = value.trim();
+    if (trimmedValue.isEmpty) {
+      return trimmedValue;
+    }
+
+    final lowerCasedValue = trimmedValue.toLowerCase();
+    const minutesText = 'minutes';
+    final minutesIndex = lowerCasedValue.indexOf(minutesText);
+
+    if (minutesIndex == -1) {
+      return trimmedValue;
+    }
+
+    // Split around the "minutes" token so values like "100minutes"
+    // become "100 min" without hardcoding the numeric portion.
+    final prefix = trimmedValue.substring(0, minutesIndex).trimRight();
+    final suffix = trimmedValue.substring(minutesIndex + minutesText.length).trimLeft();
+
+    final parts = <String>[
+      if (prefix.isNotEmpty) prefix,
+      'min',
+      if (suffix.isNotEmpty) suffix,
+    ];
+
+    return parts.join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     final borderColor = PlanPurchasePlanAddOnsTheme.outlinePurple;
@@ -67,8 +98,8 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                 ),
 
                 const SizedBox(
-                    height: PlanPurchasePlanAddOnsTheme
-                        .addOnCardTitleToDetailsGap),
+                    height:
+                        PlanPurchasePlanAddOnsTheme.addOnCardTitleToDetailsGap),
 
                 Row(
                   children: [
@@ -84,10 +115,13 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                             style: PlanPurchasePlanAddOnsTheme.addOnLabel,
                           ),
                           const SizedBox(
-                              width: PlanPurchasePlanAddOnsTheme
-                                  .addOnCardLabelToValueGap),
+                            width: PlanPurchasePlanAddOnsTheme
+                                .addOnCardLabelToValueGap,
+                          ),
+                          // Display the API value as-is unless it contains
+                          // "minutes", in which case we shorten it to "min".
                           Text(
-                            item.subtitleValue,
+                            _formatSubtitleValue(item.subtitleValue),
                             style: PlanPurchasePlanAddOnsTheme.addOnValue,
                           ),
                         ],
@@ -95,20 +129,10 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                     ),
 
                     // price chip
-                    Container(
-                      padding:
-                          PlanPurchasePlanAddOnsTheme.addOnAmountChipPadding,
-                      decoration: BoxDecoration(
-                        color:
-                            PlanPurchasePlanAddOnsTheme.addOnAmountChipColor,
-                        borderRadius: BorderRadius.circular(
-                          PlanPurchasePlanAddOnsTheme.addOnAmountChipRadius,
-                        ),
-                      ),
-                      child: Text(
-                        '${item.currencySymbol} ${item.price.toStringAsFixed(2)}',
-                        style: PlanPurchasePlanAddOnsTheme.addOnPrice,
-                      ),
+                    _PricePill(
+                      price: item.price,
+                      vatAmount: item.vatAmount,
+                      currencySymbol: item.currencySymbol,
                     ),
                   ],
                 ),
@@ -116,6 +140,37 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PricePill extends StatelessWidget {
+  const _PricePill({
+    required this.price,
+    required this.vatAmount,
+    required this.currencySymbol,
+  });
+
+  final double price;
+  final double vatAmount;
+  final String currencySymbol;
+
+  @override
+  Widget build(BuildContext context) {
+    final totalPrice = price + vatAmount;
+
+    return Container(
+      padding: PlanPurchasePlanAddOnsTheme.addOnAmountChipPadding,
+      decoration: BoxDecoration(
+        color: PlanPurchasePlanAddOnsTheme.addOnAmountChipColor,
+        borderRadius: BorderRadius.circular(
+          PlanPurchasePlanAddOnsTheme.addOnAmountChipRadius,
+        ),
+      ),
+      child: Text(
+        '$currencySymbol ${totalPrice.toStringAsFixed(2)}',
+        style: PlanPurchasePlanAddOnsTheme.addOnPrice,
       ),
     );
   }

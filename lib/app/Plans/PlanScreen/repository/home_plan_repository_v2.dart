@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../models/daily_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../models/monthly_plan_model.dart';
@@ -31,10 +32,11 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     PlanFilterService? filterService,
     PlanJsonParser? jsonParser,
   })  : _cache = cache ?? PlanCache(),
-        _apiClient = apiClient ?? PlanApiClient(
-          networkService: networkService,
-          authManager: authManager,
-        ),
+        _apiClient = apiClient ??
+            PlanApiClient(
+              networkService: networkService,
+              authManager: authManager,
+            ),
         _filterService = filterService ?? PlanFilterService(),
         _jsonParser = jsonParser ?? PlanJsonParser();
 
@@ -111,7 +113,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     );
 
     final models = filtered
-        .map((map) => MonthlyPlanModel.fromApiMap(map, includeRawPayload: false))
+        .map(
+            (map) => MonthlyPlanModel.fromApiMap(map, includeRawPayload: false))
         .toList(growable: false);
 
     _cache.setMonthlyPlans(models);
@@ -131,7 +134,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     );
 
     final models = filtered
-        .map((map) => RoamingPlanModel.fromApiMap(map, includeRawPayload: false))
+        .map(
+            (map) => RoamingPlanModel.fromApiMap(map, includeRawPayload: false))
         .toList(growable: false);
 
     _cache.setRoamingPlans(models);
@@ -151,7 +155,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     );
 
     final models = filtered
-        .map((map) => RoamEasyPlanModel.fromApiMap(map, includeRawPayload: false))
+        .map((map) =>
+            RoamEasyPlanModel.fromApiMap(map, includeRawPayload: false))
         .toList(growable: false);
 
     _cache.setRoamEasyPlans(models);
@@ -191,7 +196,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     );
 
     final models = filtered
-        .map((map) => LibertyGlobalPlanModel.fromApiMap(map, includeRawPayload: false))
+        .map((map) =>
+            LibertyGlobalPlanModel.fromApiMap(map, includeRawPayload: false))
         .toList(growable: false);
 
     _cache.setLibertyGlobalPlans(models);
@@ -209,9 +215,69 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
 
   @override
   Future<List<HomePlanAddOnModel>> fetchAddOns() async {
-    // TODO: Implement add-ons API endpoint when available
-    // For now, return empty list until API endpoint is ready
-    return const [];
+    final primaryPlans = await fetchAddOnsPrimaryPlansFromApi();
+    final selectedPrimaryPlan = selectEarliestAddOnsPrimaryPlan(primaryPlans);
+
+    if (selectedPrimaryPlan == null) {
+      return const <HomePlanAddOnModel>[];
+    }
+
+    return mapAvailableBoltOnsToUiAddOns(primaryPlan: selectedPrimaryPlan);
+  }
+
+  @override
+  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+    bool printRawResponse = false,
+    bool printFilteredPrimaryPlans = false,
+  }) async {
+    if (_cache.hasAddOnsPrimaryPlans()) {
+      return _cache.getAddOnsPrimaryPlans();
+    }
+
+    final bundlesResponse = await _ensureBundlesCacheLoaded();
+    final rawPrimaryPlans = _asMapList(bundlesResponse['PrimaryPlans']);
+
+    final primaryPlans = rawPrimaryPlans
+        .map(
+          (map) =>
+              AddOnsPrimaryPlanModel.fromApiMap(map, includeRawPayload: false),
+        )
+        .toList(growable: false);
+
+    final sortedPrimaryPlans =
+        _sortPrimaryPlansByEarliestStartDate(primaryPlans);
+
+    _cache.setAddOnsPrimaryPlans(sortedPrimaryPlans);
+    return sortedPrimaryPlans;
+  }
+
+  @override
+  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<AddOnsPrimaryPlanModel> primaryPlans,
+  ) {
+    if (primaryPlans.isEmpty) {
+      return null;
+    }
+
+    return primaryPlans.first;
+  }
+
+  @override
+  List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
+    required AddOnsPrimaryPlanModel primaryPlan,
+  }) {
+    return primaryPlan.availableBoltOns
+        .map(
+          (addOnPlan) => HomePlanAddOnModel(
+            id: addOnPlan.planId,
+            title: addOnPlan.planName,
+            label: _buildAddOnLabel(addOnPlan),
+            value: _buildAddOnValue(addOnPlan),
+            price: addOnPlan.planAmount,
+            vatAmount: addOnPlan.vatAmount,
+          ),
+        )
+        .toList(growable: false);
   }
 
   // ========== Read-Only Getters ==========
@@ -273,6 +339,14 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   DateTime? get lastFetchedLibertyGlobalAt =>
       _cache.getLibertyGlobalPlansTimestamp();
 
+  @override
+  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
+      List.unmodifiable(_cache.getAddOnsPrimaryPlans());
+
+  @override
+  DateTime? get lastFetchedAddOnsPrimaryPlansAt =>
+      _cache.getAddOnsPrimaryPlansTimestamp();
+
   // ========== Private Helpers ==========
 
   /// Ensure cache is loaded, or fetch from API
@@ -282,4 +356,128 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     }
     return getPlans();
   }
+
+  Future<Map<String, dynamic>> _ensureBundlesCacheLoaded() async {
+    if (_cache.hasBundlesResponse()) {
+      return _cache.getBundlesResponse();
+    }
+
+    final rawJson = await _apiClient.fetchRawBundlesJson();
+    final bundles = await _jsonParser.parseBundles(rawJson);
+    _cache.setBundlesResponse(bundles);
+    return bundles;
+  }
+
+  List<AddOnsPrimaryPlanModel> _sortPrimaryPlansByEarliestStartDate(
+    List<AddOnsPrimaryPlanModel> primaryPlans,
+  ) {
+    final sortablePrimaryPlans = primaryPlans
+        .asMap()
+        .entries
+        .map(
+          (entry) => _SortablePrimaryPlan(
+            originalIndex: entry.key,
+            plan: entry.value,
+          ),
+        )
+        .toList(growable: false);
+
+    sortablePrimaryPlans.sort((left, right) {
+      final leftStartDate = left.plan.startDateTime;
+      final rightStartDate = right.plan.startDateTime;
+
+      if (leftStartDate == null && rightStartDate == null) {
+        return left.originalIndex.compareTo(right.originalIndex);
+      }
+
+      if (leftStartDate == null) return 1;
+      if (rightStartDate == null) return -1;
+
+      final dateCompare = leftStartDate.compareTo(rightStartDate);
+      if (dateCompare != 0) return dateCompare;
+
+      return left.originalIndex.compareTo(right.originalIndex);
+    });
+
+    return sortablePrimaryPlans
+        .map((sortablePlan) => sortablePlan.plan)
+        .toList(growable: false);
+  }
+
+  String _buildAddOnLabel(AddOnsPrimaryPlanModel addOnPlan) {
+    final firstBucket =
+        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return 'balance';
+    }
+
+    final normalizedBucketName = firstBucket.name.trim().toLowerCase();
+    if (normalizedBucketName.isEmpty) {
+      return 'balance';
+    }
+
+    switch (normalizedBucketName) {
+      case 'data':
+        return 'data balance';
+      case 'minutes':
+        return 'minutes balance';
+      case 'texts':
+        return 'text balance';
+      default:
+        return '$normalizedBucketName balance';
+    }
+  }
+
+  String _buildAddOnValue(AddOnsPrimaryPlanModel addOnPlan) {
+    final firstBucket =
+        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return '';
+    }
+
+    final amountText = _formatWholeOrDecimal(firstBucket.amount);
+    final unitText = firstBucket.unit.trim().toLowerCase();
+
+    if (unitText.isEmpty) {
+      return amountText;
+    }
+
+    return '$amountText$unitText';
+  }
+
+  String _formatWholeOrDecimal(double value) {
+    if (value == value.truncateToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value.toString();
+  }
+
+  List<Map<String, dynamic>> _asMapList(dynamic value) {
+    if (value is! List) {
+      return const <Map<String, dynamic>>[];
+    }
+
+    return value
+        .whereType<Map>()
+        .map(
+          (map) => map.map(
+            (dynamic key, dynamic value) =>
+                MapEntry<String, dynamic>(key.toString(), value),
+          ),
+        )
+        .toList(growable: false);
+  }
+}
+
+class _SortablePrimaryPlan {
+  const _SortablePrimaryPlan({
+    required this.originalIndex,
+    required this.plan,
+  });
+
+  final int originalIndex;
+  final AddOnsPrimaryPlanModel plan;
 }

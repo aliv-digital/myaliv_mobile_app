@@ -5,6 +5,7 @@ import '../../models/roaming_plan_model.dart';
 import '../../models/roameasy_plan_model.dart';
 import '../../models/mifi_plan_model.dart';
 import '../../models/liberty_global_plan_model.dart';
+import '../../models/add_ons_primary_plan_model.dart';
 
 /// Manages in-memory cache for plan data.
 ///
@@ -38,6 +39,12 @@ class PlanCache {
 
   List<LibertyGlobalPlanModel> _libertyGlobalPlans = <LibertyGlobalPlanModel>[];
   DateTime? _libertyGlobalPlansTimestamp;
+
+  Map<String, dynamic> _bundlesResponse = <String, dynamic>{};
+  DateTime? _bundlesResponseTimestamp;
+
+  List<AddOnsPrimaryPlanModel> _addOnsPrimaryPlans = <AddOnsPrimaryPlanModel>[];
+  DateTime? _addOnsPrimaryPlansTimestamp;
 
   // ========== Raw Plans ==========
 
@@ -129,6 +136,32 @@ class PlanCache {
 
   DateTime? getLibertyGlobalPlansTimestamp() => _libertyGlobalPlansTimestamp;
 
+  // ========== Bundles Response ==========
+
+  void setBundlesResponse(Map<String, dynamic> response) {
+    _bundlesResponse = response;
+    _bundlesResponseTimestamp = DateTime.now();
+  }
+
+  Map<String, dynamic> getBundlesResponse() => _bundlesResponse;
+
+  DateTime? getBundlesResponseTimestamp() => _bundlesResponseTimestamp;
+
+  bool hasBundlesResponse() => _bundlesResponseTimestamp != null;
+
+  // ========== Add-ons Primary Plans ==========
+
+  void setAddOnsPrimaryPlans(List<AddOnsPrimaryPlanModel> plans) {
+    _addOnsPrimaryPlans = plans;
+    _addOnsPrimaryPlansTimestamp = DateTime.now();
+  }
+
+  List<AddOnsPrimaryPlanModel> getAddOnsPrimaryPlans() => _addOnsPrimaryPlans;
+
+  DateTime? getAddOnsPrimaryPlansTimestamp() => _addOnsPrimaryPlansTimestamp;
+
+  bool hasAddOnsPrimaryPlans() => _addOnsPrimaryPlansTimestamp != null;
+
   // ========== Cache Management ==========
 
   /// Clear all cached data
@@ -156,5 +189,11 @@ class PlanCache {
 
     _libertyGlobalPlans = <LibertyGlobalPlanModel>[];
     _libertyGlobalPlansTimestamp = null;
+
+    _bundlesResponse = <String, dynamic>{};
+    _bundlesResponseTimestamp = null;
+
+    _addOnsPrimaryPlans = <AddOnsPrimaryPlanModel>[];
+    _addOnsPrimaryPlansTimestamp = null;
   }
 }

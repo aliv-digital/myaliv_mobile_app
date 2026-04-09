@@ -111,7 +111,8 @@ class _HomePlanView extends StatelessWidget {
     );
   }
 
-  void _onRoamingPurchaseNowPressed(BuildContext context,RoamingPlanModel plan) {
+  void _onRoamingPurchaseNowPressed(
+      BuildContext context, RoamingPlanModel plan) {
     _onPurchaseNowPressed(context, _toRoamingPurchaseSheetPlan(plan));
   }
 
@@ -228,6 +229,7 @@ class _HomePlanView extends StatelessWidget {
 
                     if (state.selectedTab == HomePlanTab.addOns) {
                       return HomePlanAddOnsTabContent(
+                        activePrimaryPlan: state.earliestAddOnsPrimaryPlan,
                         addOns: state.addOns,
                         selectedAddOnIds: state.selectedAddOnIds,
                         onToggleAddOn: (addOn) {
@@ -242,7 +244,9 @@ class _HomePlanView extends StatelessWidget {
                       state: state,
                       onToggleExpanded: (planId) {
                         debugPrint('planId: $planId');
-                        context.read<HomePlanBloc>().add(HomePlanToggleExpanded(planId));
+                        context
+                            .read<HomePlanBloc>()
+                            .add(HomePlanToggleExpanded(planId));
                       },
                       onWeeklyPurchaseNow: (plan) {
                         debugPrint('plan: ${plan.planName}');
@@ -288,3 +292,5 @@ class _HomePlanView extends StatelessWidget {
     );
   }
 }
+// Ticket : db09c1ce-9969-43d3-a346-a5cb18f1d366Dm0yh09YbxVXXY6z3cbVH2fv6B1pf/u+XgmpJYSVKvuvocXHDfpcifKZIrHhvTvjO9unV9I/feTF3VERNUC5Cg==
+// Account id : 1874274068

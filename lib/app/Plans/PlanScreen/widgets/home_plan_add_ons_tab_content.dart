@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_add_on_models.dart'
     as plan_add_ons_models;
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_add_on_tile.dart';
@@ -8,11 +9,13 @@ import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
 import '../bloc/home_plan_state.dart';
 import '../models/add_on_model.dart';
+import '../models/add_ons_primary_plan_model.dart';
 import '../repository/plan_types.dart';
 
 class HomePlanAddOnsTabContent extends StatelessWidget {
   const HomePlanAddOnsTabContent({
     super.key,
+    required this.activePrimaryPlan,
     required this.addOns,
     required this.selectedAddOnIds,
     required this.onToggleAddOn,
@@ -20,19 +23,22 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
 
   static const double _addOnsTabHorizontalPadding = 25;
 
+  final AddOnsPrimaryPlanModel? activePrimaryPlan;
   final List<HomePlanAddOnModel> addOns;
   final Set<String> selectedAddOnIds;
   final ValueChanged<HomePlanAddOnModel> onToggleAddOn;
 
-  plan_add_ons_models.PlanPurchaseActivePlanSummary _activePlanSummary() {
-    return const plan_add_ons_models.PlanPurchaseActivePlanSummary(
+  plan_add_ons_models.PlanPurchaseActivePlanSummary _buildActivePlanSummary() {
+    return plan_add_ons_models.PlanPurchaseActivePlanSummary(
       label: 'active plan',
-      name: 'liberty70',
-      autoRenew: true,
+      name: activePrimaryPlan?.planName.trim().isNotEmpty == true
+          ? activePrimaryPlan!.planName
+          : '--',
+      autoRenew: activePrimaryPlan?.autoRenew ?? false,
       activeDateLabel: 'active',
-      activeDate: '20/08/24',
+      activeDate: _formatCardDate(activePrimaryPlan?.startDateTime),
       expireDateLabel: 'expire',
-      expireDate: '19/09/24',
+      expireDate: _formatCardDate(activePrimaryPlan?.endDateTime),
     );
   }
 
@@ -53,12 +59,21 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
       subtitleLabel: addOn.label,
       subtitleValue: addOn.value,
       price: addOn.price,
+      vatAmount: addOn.vatAmount,
     );
+  }
+
+  String _formatCardDate(DateTime? date) {
+    if (date == null) {
+      return '--/--/--';
+    }
+
+    return DateFormat('dd/MM/yy').format(date);
   }
 
   @override
   Widget build(BuildContext context) {
-    final activePlan = _activePlanSummary();
+    final activePlan = _buildActivePlanSummary();
     final fairUsePolicy = _fairUsePolicy();
 
     return ListView(
@@ -111,7 +126,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
   double _selectedAddOnsTotal(HomePlanState state) {
     return state.addOns
         .where((addOn) => state.selectedAddOnIds.contains(addOn.id))
-        .fold<double>(0, (sum, addOn) => sum + addOn.price);
+        .fold<double>(0, (sum, addOn) => sum + addOn.totalPrice);
   }
 
   @override
@@ -124,7 +139,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
     final total = _selectedAddOnsTotal(state);
 
     return DefaultBottomPayBar(
-      isVatExclusive: true,
+      isVatExclusive: false,
       buttonText: 'proceed',
       amountText: '\$ ${total.toStringAsFixed(2)}',
       onPayNow: onPayNow,

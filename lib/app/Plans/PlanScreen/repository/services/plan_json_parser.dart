@@ -17,6 +17,19 @@ List<Map<String, dynamic>> parsePlansJsonInBackground(String rawJson) {
       .toList(growable: false);
 }
 
+Map<String, dynamic> parseBundlesJsonInBackground(String rawJson) {
+  final dynamic decoded = jsonDecode(rawJson);
+
+  if (decoded is! Map) {
+    throw const FormatException('Expected JSON object for bundles response');
+  }
+
+  return decoded.map(
+    (dynamic key, dynamic value) =>
+        MapEntry<String, dynamic>(key.toString(), value),
+  );
+}
+
 /// Parses plan JSON data
 ///
 /// Uses background isolate for large JSON to avoid UI jank.
@@ -30,6 +43,18 @@ class PlanJsonParser {
     } catch (e) {
       if (kDebugMode) {
         debugPrint('PlanJsonParser: Failed to parse - $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Parse raw bundles JSON string into normalized root map.
+  Future<Map<String, dynamic>> parseBundles(String rawJson) async {
+    try {
+      return await compute(parseBundlesJsonInBackground, rawJson);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('PlanJsonParser: Failed to parse bundles - $e');
       }
       rethrow;
     }
