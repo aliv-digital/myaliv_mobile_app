@@ -1,26 +1,23 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/localStorage/localStorage.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import '../../loginOtp/model/account_info_model.dart';
 import '../repository/account_info_repository.dart';
 import 'account_info_state.dart';
 
-/// Cubit for managing account information with persistence
+/// Cubit for managing account information with automatic persistence
 ///
-/// This cubit:
+/// This cubit uses HydratedBloc for automatic state persistence:
 /// - Fetches account information from the repository
-/// - Persists state using LocalStorage
+/// - Automatically persists state on every emit
+/// - Automatically restores state on app start
 /// - Provides global access to account info throughout the app
 /// - Manages cache with TTL (time-to-live)
 /// - Handles refresh logic
 ///
 /// Usage:
 /// ```dart
-/// // Fetch account info
-/// await context.read<AccountInfoCubit>().fetchAccountInfo(
-///   username: 'user',
-///   password: 'ticket',
-/// );
+/// // Fetch account info (credentials from AuthManager)
+/// await context.read<AccountInfoCubit>().fetchAccountInfo();
 ///
 /// // Access in UI
 /// BlocBuilder<AccountInfoCubit, AccountInfoState>(
@@ -32,40 +29,12 @@ import 'account_info_state.dart';
 ///   },
 /// )
 /// ```
-class AccountInfoCubit extends Cubit<AccountInfoState> {
+class AccountInfoCubit extends HydratedCubit<AccountInfoState> {
   AccountInfoCubit({required AccountInfoRepository repository})
     : _repository = repository,
-      super(const AccountInfoState()) {
-    _loadFromStorage();
-  }
+      super(const AccountInfoState());
 
   final AccountInfoRepository _repository;
-
-  /// Load persisted account info from local storage
-  Future<void> _loadFromStorage() async {
-    try {
-      final accountInfoMap = await LocalStorage.getAccountInfoMap();
-      if (accountInfoMap.isNotEmpty) {
-        final accountInfo = AccountInfoModel.fromJson(accountInfoMap);
-        emit(
-          state.copyWith(
-            status: AccountInfoStatus.success,
-            accountInfo: accountInfo,
-            lastFetchedAt: DateTime.now(),
-            errorMessage: null,
-          ),
-        );
-
-        if (kDebugMode) {
-          debugPrint('AccountInfoCubit: Loaded account info from storage');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('AccountInfoCubit: Error loading from storage - $e');
-      }
-    }
-  }
 
   /// Fetch account information from the server
   ///
@@ -75,15 +44,11 @@ class AccountInfoCubit extends Cubit<AccountInfoState> {
   Future<void> fetchAccountInfo({bool forceRefresh = false}) async {
     // Check if we need to fetch
     if (!forceRefresh && state.hasAccount && !state.isCacheStale()) {
-      if (kDebugMode) {
-        debugPrint('AccountInfoCubit: Using cached account info');
-      }
+      debugPrint('AccountInfoCubit: Using cached account info');
       return;
     }
 
-    if (kDebugMode) {
-      debugPrint('AccountInfoCubit: Fetching account info from server');
-    }
+    debugPrint('AccountInfoCubit: Fetching account info from server');
 
     // Emit loading state
     emit(state.copyWith(status: AccountInfoStatus.loading, errorMessage: null));
@@ -92,10 +57,8 @@ class AccountInfoCubit extends Cubit<AccountInfoState> {
       // Fetch from repository (credentials handled internally)
       final accountInfo = await _repository.fetchAccountInfo();
 
-      // Persist to local storage
-      await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
-
       // Emit success state with data
+      // HydratedCubit automatically persists state on emit
       emit(
         state.copyWith(
           status: AccountInfoStatus.success,
@@ -105,17 +68,13 @@ class AccountInfoCubit extends Cubit<AccountInfoState> {
         ),
       );
 
-      if (kDebugMode) {
-        debugPrint('AccountInfoCubit: Account info fetched successfully');
-      }
+      debugPrint('AccountInfoCubit: Account info fetched successfully');
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
 
-      if (kDebugMode) {
-        debugPrint(
-          'AccountInfoCubit: Error fetching account info - $errorMessage',
-        );
-      }
+      debugPrint(
+        'AccountInfoCubit: Error fetching account info - $errorMessage',
+      );
 
       // Emit failure state (keep existing account info if any)
       emit(
@@ -146,10 +105,8 @@ class AccountInfoCubit extends Cubit<AccountInfoState> {
       // Fetch from repository (credentials handled internally)
       final accountInfo = await _repository.fetchAccountInfo();
 
-      // Persist to local storage
-      await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
-
       // Emit success state with updated data
+      // HydratedCubit automatically persists state on emit
       emit(
         state.copyWith(
           status: AccountInfoStatus.success,
@@ -192,13 +149,7 @@ class AccountInfoCubit extends Cubit<AccountInfoState> {
   ///
   /// Call this on logout to clear persisted data.
   Future<void> clearAccountInfo() async {
-    if (kDebugMode) {
-      debugPrint('AccountInfoCubit: Clearing account info');
-    }
-
-    // Clear from local storage by storing empty map
-    await LocalStorage.storeAccountInfoMap(accountInfo: {});
-
+    debugPrint('AccountInfoCubit: Clearing account info');
     emit(state.cleared());
   }
 
@@ -221,5 +172,27 @@ class AccountInfoCubit extends Cubit<AccountInfoState> {
     return trimmed.isEmpty
         ? 'Failed to fetch account information. Please try again.'
         : trimmed;
+  }
+
+  // ========== HydratedCubit Implementation ==========
+
+  @override
+  AccountInfoState? fromJson(Map<String, dynamic> json) {
+    try {
+      return AccountInfoState.fromJson(json);
+    } catch (e) {
+      debugPrint('AccountInfoCubit: Error deserializing state - $e');
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(AccountInfoState state) {
+    try {
+      return state.toJson();
+    } catch (e) {
+      debugPrint('AccountInfoCubit: Error serializing state - $e');
+      return null;
+    }
   }
 }

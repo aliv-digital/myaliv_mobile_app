@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/account_info_injection.dart';
 
 /// Main app dependency injection
@@ -22,8 +21,7 @@ class AppMainInjection {
     // Initialize core with auth loading functions
     await _coreInjection.initInjection(
       getTicket: LocalStorage.getTicket,
-      getAccountInfoMap: LocalStorage.getAccountInfoMap,
-      parseAccountInfo: (map) => AccountInfoModel.fromJson(map),
+      getAccountID: LocalStorage.getAccountID,
       username: userName,
     );
 

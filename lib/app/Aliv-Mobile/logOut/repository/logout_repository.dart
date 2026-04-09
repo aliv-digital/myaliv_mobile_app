@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 import '../../../../core/localStorage/localStorage.dart';
 import '../../../../core/networkService/api_paths.dart';
 import '../../../../core/networkService/app_http_client.dart';
+import '../../account-information/cubit/account_info_cubit.dart';
 
 class LogoutRepository {
   LogoutRepository({ApiService? apiService})
@@ -19,6 +20,7 @@ class LogoutRepository {
   /// 2. Calls logout API endpoint
   /// 3. Uses AuthManager to clear both SharedPreferences and GlobalState
   /// 4. Clears NetworkService auth headers and cookies
+  /// 5. Clears AccountInfoCubit (HydratedBloc persisted account data)
   ///
   /// Backend success response can be `{}` (or empty body), so this returns
   /// true for successful 2xx responses when no fields are present.
@@ -97,8 +99,12 @@ class LogoutRepository {
     networkService.clearAuthHeaders();
     await networkService.clearCookies();
 
+    // 3. Clear AccountInfoCubit (HydratedBloc persisted data)
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    await accountInfoCubit.clearAccountInfo();
+
     if (kDebugMode) {
-      debugPrint('✅ All auth data cleared (SharedPreferences + GlobalState + NetworkService)');
+      debugPrint('✅ All auth data cleared (SharedPreferences + GlobalState + NetworkService + HydratedBloc)');
     }
   }
 

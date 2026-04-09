@@ -21,7 +21,6 @@ Future<void> setupAccountInfoInjection() async {
   // Register repository
   instance.registerLazySingleton<AccountInfoRepository>(
     () => AccountInfoRepository(
-      authManager: instance<AuthManager>(),
       apiClient: instance<AccountInfoApiClient>(),
     ),
   );

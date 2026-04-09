@@ -12,7 +12,7 @@ import '../account_info_exception.dart';
 /// - Uses NetworkService which automatically handles Basic Auth from GlobalState
 class AccountInfoApiClient {
   AccountInfoApiClient({NetworkService? networkService})
-    : _networkService = networkService ?? instance<NetworkService>();
+      : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 

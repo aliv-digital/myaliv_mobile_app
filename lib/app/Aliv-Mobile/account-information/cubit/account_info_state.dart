@@ -109,11 +109,34 @@ class AccountInfoState extends Equatable {
     );
   }
 
+  // ========== Serialization for HydratedBloc ==========
+
+  /// Serialize state to JSON for hydration
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status.index, // Store enum as int
+      'accountInfo': accountInfo?.toJson(),
+      'lastFetchedAt': lastFetchedAt?.toIso8601String(),
+      'errorMessage': errorMessage,
+    };
+  }
+
+  /// Deserialize state from JSON
+  static AccountInfoState fromJson(Map<String, dynamic> json) {
+    return AccountInfoState(
+      status: AccountInfoStatus.values[json['status'] as int? ?? 0],
+      accountInfo: json['accountInfo'] != null
+          ? AccountInfoModel.fromJson(
+              json['accountInfo'] as Map<String, dynamic>,
+            )
+          : null,
+      lastFetchedAt: json['lastFetchedAt'] != null
+          ? DateTime.parse(json['lastFetchedAt'] as String)
+          : null,
+      errorMessage: json['errorMessage'] as String?,
+    );
+  }
+
   @override
-  List<Object?> get props => [
-        status,
-        accountInfo,
-        lastFetchedAt,
-        errorMessage,
-      ];
+  List<Object?> get props => [status, accountInfo, lastFetchedAt, errorMessage];
 }

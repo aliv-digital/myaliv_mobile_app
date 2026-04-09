@@ -27,19 +27,17 @@ class AuthManager {
   /// - AuthContext if valid credentials exist
   /// - null if no credentials or invalid data
   ///
-  /// Note: This method requires LocalStorage which is in the main app package,
-  /// so it must be provided via dependency injection or called from the main app.
+  /// Note: Account info is managed by AccountInfoCubit (HydratedBloc).
+  /// This method only loads authentication credentials (ticket and accountID).
   Future<AuthContext?> loadAuthFromStorage({
     required Future<String?> Function() getTicket,
-    required Future<Map<String, dynamic>> Function() getAccountInfoMap,
+    required Future<String?> Function() getAccountID,
     required String username,
-    required dynamic Function(Map<String, dynamic>) parseAccountInfo,
   }) async {
     try {
       // Read from SharedPreferences
       final ticket = await getTicket();
-      final accountMap = await getAccountInfoMap();
-      final accountInfo = parseAccountInfo(accountMap);
+      final accountIdStr = await getAccountID();
 
       // Validate data
       if (ticket == null || ticket.trim().isEmpty) {
@@ -47,21 +45,23 @@ class AuthManager {
         return null;
       }
 
-      // Extract account ID (handle different model types)
-      int? accountId;
-      if (accountInfo is Map) {
-        accountId = accountInfo['idAcc'] as int?;
-      } else {
-        // Assuming it has an idAcc property
-        try {
-          accountId = (accountInfo as dynamic).idAcc as int?;
-        } catch (e) {
-          if (kDebugMode)
-            debugPrint('⚠️ AuthManager: Could not extract idAcc: $e');
-        }
+      if (accountIdStr == null || accountIdStr.trim().isEmpty) {
+        if (kDebugMode) debugPrint('⚠️ AuthManager: No account ID found');
+        return null;
       }
 
-      if (accountId == null || accountId <= 0) {
+      // Parse account ID
+      int? accountId;
+      try {
+        accountId = int.parse(accountIdStr);
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('⚠️ AuthManager: Could not parse account ID: $e');
+        }
+        return null;
+      }
+
+      if (accountId <= 0) {
         if (kDebugMode) debugPrint('⚠️ AuthManager: Invalid account ID');
         return null;
       }
@@ -97,6 +97,9 @@ class AuthManager {
   /// This method should be called after successful login.
   /// It persists credentials to disk and updates the in-memory cache.
   ///
+  /// Note: Account info is managed by AccountInfoCubit (HydratedBloc).
+  /// This method only saves authentication credentials (ticket and accountID).
+  ///
   /// The actual SharedPreferences write operations are delegated to the caller
   /// via the provided functions to avoid coupling with the main app package.
   Future<void> saveAuth({
@@ -105,17 +108,11 @@ class AuthManager {
     required String deviceAccountID,
     required Future<void> Function(String ticket) storeTicket,
     required Future<void> Function(String accountID) storeAccountID,
-    required Future<void> Function(Map<String, dynamic> accountInfo)?
-        storeAccountInfoMap,
-    Map<String, dynamic>? accountInfoMap,
   }) async {
     try {
       // 1. Save to SharedPreferences (persistence)
       await storeTicket(ticket);
       await storeAccountID(deviceAccountID);
-      if (storeAccountInfoMap != null && accountInfoMap != null) {
-        await storeAccountInfoMap(accountInfoMap);
-      }
 
       // 2. Build auth context
       final authContext = AuthContext.fromCredentials(
@@ -160,34 +157,6 @@ class AuthManager {
     } catch (e) {
       if (kDebugMode) {
         debugPrint('❌ AuthManager: Failed to clear auth - $e');
-      }
-      rethrow;
-    }
-  }
-
-  // ========== Update Account Info ==========
-
-  /// Update account information in SharedPreferences
-  ///
-  /// This method should be called after fetching updated account information.
-  /// It persists the account info to disk.
-  ///
-  /// Note: Account info state management is handled by AccountInfoCubit.
-  /// This method only handles persistence.
-  Future<void> updateAccountInfo({
-    required Map<String, dynamic> accountInfoMap,
-    required Future<void> Function(Map<String, dynamic>) storeAccountInfoMap,
-  }) async {
-    try {
-      // Save to SharedPreferences (persistence)
-      await storeAccountInfoMap(accountInfoMap);
-
-      if (kDebugMode) {
-        debugPrint('✅ AuthManager: Account info updated');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ AuthManager: Failed to update account info - $e');
       }
       rethrow;
     }

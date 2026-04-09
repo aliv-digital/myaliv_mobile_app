@@ -43,28 +43,6 @@ class LocalStorage {
     await prefs.setString(_accountInfoKey, jsonEncode(accountInfo));
   }
 
-  /// Returns the raw JSON string if account info was cached.
-  static Future<String?> getAccountInfoJson() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accountInfoKey);
-  }
-
-  /// Returns decoded account map. Always safe: returns empty map on bad/missing data.
-  static Future<Map<String, dynamic>> getAccountInfoMap() async {
-    final raw = await getAccountInfoJson();
-    return _decodeJsonMap(raw);
-  }
-
-  /// Reads a single value from cached account info.
-  ///
-  /// Supports dotted paths for nested objects, e.g.:
-  /// - PhoneNumber
-  /// - IdentificationInfo.NINumber
-  static Future<dynamic> getAccountInfoValue({required String path}) async {
-    final data = await getAccountInfoMap();
-    return _readValueByPath(data, path);
-  }
-
   // Get an integer value
   static Future<int?> getSelectedActiveEventId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
