@@ -165,6 +165,69 @@ class AuthManager {
     }
   }
 
+  // ========== Update Account Info ==========
+
+  /// Update account information in SharedPreferences
+  ///
+  /// This method should be called after fetching updated account information.
+  /// It persists the account info to disk.
+  ///
+  /// Note: Account info state management is handled by AccountInfoCubit.
+  /// This method only handles persistence.
+  Future<void> updateAccountInfo({
+    required Map<String, dynamic> accountInfoMap,
+    required Future<void> Function(Map<String, dynamic>) storeAccountInfoMap,
+  }) async {
+    try {
+      // Save to SharedPreferences (persistence)
+      await storeAccountInfoMap(accountInfoMap);
+
+      if (kDebugMode) {
+        debugPrint('✅ AuthManager: Account info updated');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('❌ AuthManager: Failed to update account info - $e');
+      }
+      rethrow;
+    }
+  }
+
+  // ========== Get Stored Credentials ==========
+
+  /// Get stored credentials (username and ticket) from storage
+  ///
+  /// Returns null if:
+  /// - No auth exists in memory
+  /// - User is not authenticated
+  /// - Ticket is not found in storage
+  ///
+  /// This method is useful for API calls that require Basic Auth.
+  Future<AuthCredentials?> getStoredCredentials({
+    required Future<String?> Function() getTicket,
+  }) async {
+    final auth = getCurrentAuth();
+    if (auth == null || !auth.isAuthenticated) {
+      if (kDebugMode) {
+        debugPrint('⚠️ AuthManager: No valid auth context');
+      }
+      return null;
+    }
+
+    final ticket = await getTicket();
+    if (ticket == null || ticket.trim().isEmpty) {
+      if (kDebugMode) {
+        debugPrint('⚠️ AuthManager: No ticket found in storage');
+      }
+      return null;
+    }
+
+    return AuthCredentials(
+      username: auth.username,
+      ticket: ticket,
+    );
+  }
+
   // ========== Utility Methods ==========
 
   /// Check if valid auth exists in memory
@@ -191,4 +254,17 @@ class AuthManager {
     }
     return auth;
   }
+}
+
+/// Credentials holder for Basic Auth
+///
+/// Contains username and ticket (password) for API authentication.
+class AuthCredentials {
+  final String username;
+  final String ticket;
+
+  const AuthCredentials({
+    required this.username,
+    required this.ticket,
+  });
 }

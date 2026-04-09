@@ -5,6 +5,8 @@ import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:core/core.dart';
 import '../../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../Home/home/data/home_ui_config.dart';
+import '../../account-information/cubit/account_info_cubit.dart';
+import '../../account-information/cubit/account_info_state.dart';
 import '../model/account_info_model.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
@@ -126,13 +128,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
             final ticket = response.ticket.toString();
             final accountId = response.accountId.toString();
 
-            // Fetch full account info
-            final accountInfo = await repository.getAccountInfo(
-              username: userName, // from core/constants
-              password: ticket,
-            );
-
-            // ========== Use AuthManager to save everything ==========
+            // ========== Use AuthManager to save auth first ==========
+            // This stores the ticket, which is required for fetchAccountInfo
             final authManager = instance<AuthManager>();
             await authManager.saveAuth(
               username: userName,
@@ -141,14 +138,31 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
               storeTicket: (t) => LocalStorage.storeTicket(ticket: t),
               storeAccountID: (id) =>
                   LocalStorage.storeAccountID(accountID: id),
-              storeAccountInfoMap: (info) =>
-                  LocalStorage.storeAccountInfoMap(accountInfo: info),
-              accountInfoMap: accountInfo.toJson(),
+              storeAccountInfoMap: null,
+              accountInfoMap: null,
             );
 
-            // ========== Update NetworkService headers ==========
+            // ========== Update NetworkService with new auth headers ==========
             final networkService = instance<NetworkService>();
             networkService.updateAuthHeaders();
+
+            // ========== Fetch account info using AccountInfoCubit ==========
+            // Credentials are read automatically from AuthManager
+            final accountInfoCubit = instance<AccountInfoCubit>();
+            await accountInfoCubit.fetchAccountInfo();
+
+            // Verify account info was fetched successfully
+            if (accountInfoCubit.state.status != AccountInfoStatus.success) {
+              final errorMsg =
+                  accountInfoCubit.state.errorMessage ??
+                  'Failed to fetch account information';
+              throw Exception(errorMsg);
+            }
+
+            final accountInfo = accountInfoCubit.state.accountInfo;
+            if (accountInfo == null) {
+              throw Exception('Account information is missing');
+            }
 
             // Set UI config for logged-in user
             await _setLoggedInUserUiConfig();
