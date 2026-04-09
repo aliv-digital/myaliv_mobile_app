@@ -29,6 +29,8 @@ class HomePlanSectionHeader extends StatelessWidget {
         return 'choose a prepaid mifi primary plan';
       case HomePlanTab.libertyGlobal:
         return 'choose an international calling plan';
+      case HomePlanTab.postpaidRoaming:
+        return 'choose a roaming data add-on. these add-ons will only work in the usa, canada and or digicel caribbean countries.';
     }
   }
 

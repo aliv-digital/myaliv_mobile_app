@@ -6,8 +6,10 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/widgets/home_plans_postpaid_plan_card.dart';
 
-import '../bloc/home_plan_state.dart';
+import '../cubit/home_plan_state.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
 import 'daily_plan_card.dart';
@@ -31,6 +33,7 @@ class HomePlanPlansList extends StatelessWidget {
     this.onRoamingPurchaseNow,
     this.onRoamEasyPurchaseNow,
     this.onWeeklyPurchaseNow,
+    this.onPostpaidRoamingPurchaseNow,
   });
 
   final HomePlanState state;
@@ -43,6 +46,7 @@ class HomePlanPlansList extends StatelessWidget {
   final ValueChanged<RoamingPlanModel>? onRoamingPurchaseNow;
   final ValueChanged<RoamEasyPlanModel>? onRoamEasyPurchaseNow;
   final ValueChanged<WeeklyPlanModel>? onWeeklyPurchaseNow;
+  final ValueChanged<HomePlansPostPaidPlanModel>? onPostpaidRoamingPurchaseNow;
 
   @override
   Widget build(BuildContext context) {
@@ -183,6 +187,34 @@ class HomePlanPlansList extends StatelessWidget {
             child: _buildCardForLibertyGlobalTab(
               plan: plan,
               expanded: expanded,
+            ),
+          );
+        },
+      );
+    }
+
+    if (state.selectedTab == HomePlanTab.postpaidRoaming) {
+      return ListView.builder(
+        padding: const EdgeInsets.only(top: 6, bottom: 14),
+        itemCount: state.postpaidRoamingApiPlans.length,
+        itemBuilder: (context, index) {
+          final plan = state.postpaidRoamingApiPlans[index];
+          final expanded = state.expandedPlanIds.contains(plan.planId);
+          if (plan.planName.toLowerCase().contains('test')) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(left: 15, right: 15, bottom: 16),
+            child: HomePlansPostPaidPlanCard(
+              plan: plan,
+              expanded: expanded,
+              onToggle: () => onToggleExpanded(plan.planId),
+              onPurchaseNow: () {
+                if (onPostpaidRoamingPurchaseNow != null) {
+                  onPostpaidRoamingPurchaseNow!(plan);
+                }
+              },
             ),
           );
         },
@@ -365,6 +397,8 @@ class HomePlanPlansList extends StatelessWidget {
       case HomePlanTab.libertyGlobal:
         return const SizedBox.shrink();
       case HomePlanTab.addOns:
+        return const SizedBox.shrink();
+      case HomePlanTab.postpaidRoaming:
         return const SizedBox.shrink();
     }
   }

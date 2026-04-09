@@ -1,14 +1,15 @@
-import '../models/plan_model.dart';
-import '../models/add_on_model.dart';
-import '../models/add_ons_primary_plan_model.dart';
-import '../models/daily_plan_model.dart';
-import '../models/liberty_global_plan_model.dart';
-import '../models/monthly_plan_model.dart';
-import '../models/mifi_plan_model.dart';
-import '../models/roaming_plan_model.dart';
-import '../models/roameasy_plan_model.dart';
-import '../models/weekly_plan_model.dart';
-import '../repository/plan_types.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_ons_primary_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/liberty_global_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/mifi_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 
 enum HomePlanStatus { initial, loading, loaded, failure }
 
@@ -71,6 +72,7 @@ class HomePlanState {
   final HomePlanTabUiState addOnsTabUiState;
   final HomePlanTabUiState mifiTabUiState;
   final HomePlanTabUiState libertyGlobalTabUiState;
+  final HomePlanTabUiState postpaidRoamingTabUiState; // NEW for postpaid
 
   final List<HomePlanModel> plans;
   final Set<String> expandedPlanIds;
@@ -106,6 +108,9 @@ class HomePlanState {
   /// Dedicated API data for Liberty Global tab (not bound to UI yet).
   final List<LibertyGlobalPlanModel> libertyGlobalApiPlans;
 
+  /// Dedicated API data for Postpaid Roaming tab (NEW).
+  final List<HomePlansPostPaidPlanModel> postpaidRoamingApiPlans;
+
   /// Lightweight API metadata per tab.
   ///
   /// Important:
@@ -138,6 +143,9 @@ class HomePlanState {
   /// Time when Add-ons bundles API data was last synced successfully.
   final DateTime? addOnsApiLastSyncedAt;
 
+  /// Time when Postpaid Roaming API data was last synced successfully (NEW).
+  final DateTime? postpaidRoamingApiLastSyncedAt;
+
   /// One-time toast effect to be handled by UI listener.
   final HomePlanToastMessage? pendingToast;
 
@@ -154,6 +162,7 @@ class HomePlanState {
     required this.addOnsTabUiState,
     required this.mifiTabUiState,
     required this.libertyGlobalTabUiState,
+    required this.postpaidRoamingTabUiState, // NEW
     required this.plans,
     required this.expandedPlanIds,
     required this.addOns,
@@ -166,6 +175,7 @@ class HomePlanState {
     required this.roamEasyApiPlans,
     required this.mifiApiPlans,
     required this.libertyGlobalApiPlans,
+    required this.postpaidRoamingApiPlans, // NEW
     required this.apiTabMeta,
     required this.toastSequence,
     this.dailyApiLastSyncedAt,
@@ -176,6 +186,7 @@ class HomePlanState {
     this.mifiApiLastSyncedAt,
     this.libertyGlobalApiLastSyncedAt,
     this.addOnsApiLastSyncedAt,
+    this.postpaidRoamingApiLastSyncedAt, // NEW
     this.pendingToast,
   });
 
@@ -214,6 +225,10 @@ class HomePlanState {
         status: HomePlanStatus.initial,
         errorMessage: null,
       ),
+      postpaidRoamingTabUiState: HomePlanTabUiState( // NEW
+        status: HomePlanStatus.initial,
+        errorMessage: null,
+      ),
       plans: [],
       expandedPlanIds: {},
       addOns: [],
@@ -226,6 +241,7 @@ class HomePlanState {
       roamEasyApiPlans: [],
       mifiApiPlans: [],
       libertyGlobalApiPlans: [],
+      postpaidRoamingApiPlans: [], // NEW
       apiTabMeta: {},
       pendingToast: null,
       toastSequence: 0,
@@ -242,6 +258,7 @@ class HomePlanState {
     HomePlanTabUiState? addOnsTabUiState,
     HomePlanTabUiState? mifiTabUiState,
     HomePlanTabUiState? libertyGlobalTabUiState,
+    HomePlanTabUiState? postpaidRoamingTabUiState, // NEW
     List<HomePlanModel>? plans,
     Set<String>? expandedPlanIds,
 
@@ -256,6 +273,7 @@ class HomePlanState {
     List<RoamEasyPlanModel>? roamEasyApiPlans,
     List<MifiPlanModel>? mifiApiPlans,
     List<LibertyGlobalPlanModel>? libertyGlobalApiPlans,
+    List<HomePlansPostPaidPlanModel>? postpaidRoamingApiPlans, // NEW
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
     DateTime? weeklyApiLastSyncedAt,
@@ -265,6 +283,7 @@ class HomePlanState {
     DateTime? mifiApiLastSyncedAt,
     DateTime? libertyGlobalApiLastSyncedAt,
     DateTime? addOnsApiLastSyncedAt,
+    DateTime? postpaidRoamingApiLastSyncedAt, // NEW
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
     bool clearPendingToast = false,
@@ -280,6 +299,8 @@ class HomePlanState {
       mifiTabUiState: mifiTabUiState ?? this.mifiTabUiState,
       libertyGlobalTabUiState:
           libertyGlobalTabUiState ?? this.libertyGlobalTabUiState,
+      postpaidRoamingTabUiState: // NEW
+          postpaidRoamingTabUiState ?? this.postpaidRoamingTabUiState,
       plans: plans ?? this.plans,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
       addOns: addOns ?? this.addOns,
@@ -294,6 +315,8 @@ class HomePlanState {
       mifiApiPlans: mifiApiPlans ?? this.mifiApiPlans,
       libertyGlobalApiPlans:
           libertyGlobalApiPlans ?? this.libertyGlobalApiPlans,
+      postpaidRoamingApiPlans: // NEW
+          postpaidRoamingApiPlans ?? this.postpaidRoamingApiPlans,
       apiTabMeta: apiTabMeta ?? this.apiTabMeta,
       dailyApiLastSyncedAt: dailyApiLastSyncedAt ?? this.dailyApiLastSyncedAt,
       weeklyApiLastSyncedAt:
@@ -309,6 +332,8 @@ class HomePlanState {
           libertyGlobalApiLastSyncedAt ?? this.libertyGlobalApiLastSyncedAt,
       addOnsApiLastSyncedAt:
           addOnsApiLastSyncedAt ?? this.addOnsApiLastSyncedAt,
+      postpaidRoamingApiLastSyncedAt: // NEW
+          postpaidRoamingApiLastSyncedAt ?? this.postpaidRoamingApiLastSyncedAt,
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,
@@ -334,6 +359,8 @@ class HomePlanState {
         return mifiTabUiState;
       case HomePlanTab.libertyGlobal:
         return libertyGlobalTabUiState;
+      case HomePlanTab.postpaidRoaming: // NEW
+        return postpaidRoamingTabUiState;
     }
   }
 

@@ -3,21 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../core/appConfig/app_ui_config_cubit.dart';
-import '../../../core/utils/app_session.dart';
-import '../../../router/app_routes.dart';
-import '../model/demo_plans.dart';
-import '../widgets/action_tile.dart';
-import '../widgets/active_plan.dart';
-import '../widgets/active_plan_card_postpaid.dart';
-import '../widgets/active_plan_usage_section.dart';
-import '../widgets/home_header.dart';
-import '../widgets/plan_card.dart';
-import '../widgets/postpaid_billing_card.dart';
-import '../widgets/prepaid_balance_card.dart';
-import '../widgets/timer.dart';
-import 'data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/model/demo_plans.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_postpaid.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_usage_section.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/home_header.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/plan_card.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/postpaid_billing_card.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/prepaid_balance_card.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/timer.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,8 +39,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    AppSession.resetAppRoute();
     super.initState();
+    AppSession.resetAppRoute();
+
+    final userType = context.read<AppUiConfigCubit>().state.userType;
+    context.read<HomePlanCubit>().loadInitialPlans(userType: userType);
   }
 
   @override

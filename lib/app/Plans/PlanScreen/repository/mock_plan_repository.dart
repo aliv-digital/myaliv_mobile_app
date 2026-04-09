@@ -8,6 +8,7 @@ import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
 import '../models/mifi_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
+import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'base_plan_repository.dart';
 import 'plan_types.dart';
 
@@ -43,6 +44,9 @@ class MockPlanRepository implements BasePlanRepository {
   final List<LibertyGlobalPlanModel> _lastFetchedLibertyGlobalPlans =
       <LibertyGlobalPlanModel>[];
   DateTime? _lastFetchedLibertyGlobalAt;
+  final List<HomePlansPostPaidPlanModel> _lastFetchedPostpaidRoamingPlans =
+      <HomePlansPostPaidPlanModel>[];
+  DateTime? _lastFetchedPostpaidRoamingAt;
 
   List<AddOnsPrimaryPlanModel> _lastFetchedAddOnsPrimaryPlans =
       <AddOnsPrimaryPlanModel>[];
@@ -279,6 +283,15 @@ class MockPlanRepository implements BasePlanRepository {
         voice: 50.0,
       )),
     ];
+  }
+
+  @override
+  Future<List<HomePlansPostPaidPlanModel>> fetchPostpaidRoamingPlansFromApi({
+    bool printRawResponse = false,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 450));
+    _lastFetchedPostpaidRoamingAt = DateTime.now();
+    return _lastFetchedPostpaidRoamingPlans;
   }
 
   /// Helper method to create a mock plan map with common fields
@@ -885,6 +898,8 @@ class MockPlanRepository implements BasePlanRepository {
 
       case HomePlanTab.addOns:
         return const [];
+      case HomePlanTab.postpaidRoaming:
+        return const [];
     }
   }
 
@@ -1060,6 +1075,15 @@ class MockPlanRepository implements BasePlanRepository {
 
   @override
   DateTime? get lastFetchedLibertyGlobalAt => _lastFetchedLibertyGlobalAt;
+
+  @override
+  List<HomePlansPostPaidPlanModel> get lastFetchedPostpaidRoamingPlans =>
+      List<HomePlansPostPaidPlanModel>.unmodifiable(
+        _lastFetchedPostpaidRoamingPlans,
+      );
+
+  @override
+  DateTime? get lastFetchedPostpaidRoamingAt => _lastFetchedPostpaidRoamingAt;
 
   @override
   List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
