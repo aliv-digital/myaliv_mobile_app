@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../models/home_plans_postpaid_plan_model.dart';
 import '../repository/base_home_plans_postpaid_repository.dart';
-import '../repository/home_plans_postpaid_repository_exception.dart';
+import 'package:myaliv_mobile_app/app/Plans/shared/repository/base_plan_repository_exception.dart';
 import 'home_plans_postpaid_event.dart';
 import 'home_plans_postpaid_state.dart';
 
 class HomePlansPostPaidBloc
     extends Bloc<HomePlansPostPaidEvent, HomePlansPostPaidState> {
   HomePlansPostPaidBloc({required this.repository})
-      : super(HomePlansPostPaidState.initial()) {
+    : super(HomePlansPostPaidState.initial()) {
     on<HomePlansPostPaidStarted>(_onStarted);
     on<HomePlansPostPaidToggleExpanded>(_onToggleExpanded);
     on<HomePlansPostPaidApiSyncRequested>(_onApiSyncRequested);
@@ -79,26 +79,22 @@ class HomePlansPostPaidBloc
           clearError: true,
         ),
       );
-    } on HomePlansPostPaidRepositoryException catch (error) {
-      _emitFailureWithToast(
-        emit,
-        _buildFriendlyMessage(error),
-      );
+    } on BasePlanRepositoryException catch (error) {
+      _emitFailureWithToast(emit, _buildFriendlyMessage(error));
     } catch (error) {
       if (kDebugMode) {
         debugPrint('home-plans-postpaid-api-sync: failed with error: $error');
       }
-      _emitFailureWithToast(
-        emit,
-        'Failed to load roaming data add-ons',
-      );
+      _emitFailureWithToast(emit, 'Failed to load roaming data add-ons');
     } finally {
       _isApiSyncInProgress = false;
     }
   }
 
-  void _onToastConsumed(HomePlansPostPaidToastConsumed event,
-      Emitter<HomePlansPostPaidState> emit) {
+  void _onToastConsumed(
+    HomePlansPostPaidToastConsumed event,
+    Emitter<HomePlansPostPaidState> emit,
+  ) {
     emit(state.copyWith(clearPendingToast: true));
   }
 
@@ -135,24 +131,24 @@ class HomePlansPostPaidBloc
     );
   }
 
-  String _buildFriendlyMessage(HomePlansPostPaidRepositoryException error) {
+  String _buildFriendlyMessage(BasePlanRepositoryException error) {
     switch (error.type) {
-      case HomePlansPostPaidRepositoryErrorType.noInternet:
+      case BasePlanRepositoryErrorType.noInternet:
         return 'No internet connection. Please check and try again.';
-      case HomePlansPostPaidRepositoryErrorType.timeout:
+      case BasePlanRepositoryErrorType.timeout:
         return 'Roaming data add-ons are taking too long. Please try again.';
-      case HomePlansPostPaidRepositoryErrorType.unauthorized:
+      case BasePlanRepositoryErrorType.unauthorized:
         return 'Your session expired. Please login again.';
-      case HomePlansPostPaidRepositoryErrorType.forbidden:
+      case BasePlanRepositoryErrorType.forbidden:
         return 'You do not have access to roaming data add-ons right now.';
-      case HomePlansPostPaidRepositoryErrorType.notFound:
+      case BasePlanRepositoryErrorType.notFound:
         return 'Roaming data add-ons are not available right now.';
-      case HomePlansPostPaidRepositoryErrorType.server:
+      case BasePlanRepositoryErrorType.server:
         return 'Roaming data add-ons are temporarily unavailable. Please try again shortly.';
-      case HomePlansPostPaidRepositoryErrorType.badResponse:
-      case HomePlansPostPaidRepositoryErrorType.parsing:
+      case BasePlanRepositoryErrorType.badResponse:
+      case BasePlanRepositoryErrorType.parsing:
         return 'We could not read the roaming data add-ons response. Please try again.';
-      case HomePlansPostPaidRepositoryErrorType.unknown:
+      case BasePlanRepositoryErrorType.unknown:
         return 'Something went wrong while loading roaming data add-ons.';
     }
   }

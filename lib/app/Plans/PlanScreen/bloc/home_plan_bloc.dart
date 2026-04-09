@@ -15,7 +15,7 @@ import '../models/roameasy_plan_model.dart';
 import '../models/weekly_plan_model.dart';
 import '../repository/base_plan_repository.dart';
 import '../repository/plan_types.dart';
-import '../repository/plan_repository_exception.dart';
+import 'package:myaliv_mobile_app/app/Plans/shared/repository/base_plan_repository_exception.dart';
 import 'home_plan_event.dart';
 import 'home_plan_state.dart';
 
@@ -201,7 +201,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         status: HomePlanStatus.loaded,
       ).copyWith(plans: plans, addOns: const []);
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: tab,
@@ -279,7 +279,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         addOnsApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.addOns,
@@ -378,7 +378,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         dailyApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.daily,
@@ -470,7 +470,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         weeklyApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.weekly,
@@ -563,7 +563,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         monthlyApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.monthly,
@@ -648,7 +648,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         roamingApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.roaming,
@@ -733,7 +733,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         roamEasyApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.roameasy,
@@ -818,7 +818,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         mifiApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.mifi,
@@ -907,7 +907,7 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
         libertyGlobalApiLastSyncedAt: syncedAt,
       );
       emit(nextState);
-    } on PlanRepositoryException catch (error) {
+    } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         emit,
         tab: HomePlanTab.libertyGlobal,
@@ -1138,27 +1138,27 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   /// Maps typed repository errors to friendly tab-specific text.
   String _buildFriendlyMessageForTab({
     required HomePlanTab tab,
-    required PlanRepositoryException error,
+    required BasePlanRepositoryException error,
   }) {
     final String tabLabel = _tabFriendlyName(tab);
 
     switch (error.type) {
-      case PlanRepositoryErrorType.noInternet:
+      case BasePlanRepositoryErrorType.noInternet:
         return 'No internet connection. Please check and try again.';
-      case PlanRepositoryErrorType.timeout:
+      case BasePlanRepositoryErrorType.timeout:
         return '$tabLabel are taking too long. Please try again.';
-      case PlanRepositoryErrorType.unauthorized:
+      case BasePlanRepositoryErrorType.unauthorized:
         return 'Your session expired for $tabLabel. Please login again.';
-      case PlanRepositoryErrorType.forbidden:
+      case BasePlanRepositoryErrorType.forbidden:
         return 'You do not have access to $tabLabel right now.';
-      case PlanRepositoryErrorType.notFound:
+      case BasePlanRepositoryErrorType.notFound:
         return '$tabLabel are not available right now.';
-      case PlanRepositoryErrorType.server:
+      case BasePlanRepositoryErrorType.server:
         return '$tabLabel are temporarily unavailable. Please try again shortly.';
-      case PlanRepositoryErrorType.badResponse:
-      case PlanRepositoryErrorType.parsing:
+      case BasePlanRepositoryErrorType.badResponse:
+      case BasePlanRepositoryErrorType.parsing:
         return 'We could not read $tabLabel response. Please try again.';
-      case PlanRepositoryErrorType.unknown:
+      case BasePlanRepositoryErrorType.unknown:
         return 'Something went wrong while loading $tabLabel.';
     }
   }

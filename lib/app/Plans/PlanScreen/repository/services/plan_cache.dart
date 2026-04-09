@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_cache.dart';
 import '../../models/daily_plan_model.dart';
 import '../../models/weekly_plan_model.dart';
 import '../../models/monthly_plan_model.dart';
@@ -7,193 +8,123 @@ import '../../models/mifi_plan_model.dart';
 import '../../models/liberty_global_plan_model.dart';
 import '../../models/add_ons_primary_plan_model.dart';
 
-/// Manages in-memory cache for plan data.
+/// Manages in-memory cache for prepaid plan data.
 ///
-/// This class stores:
-/// - Raw plan data from API
-/// - Typed plan models (Daily, Weekly, Monthly, etc.)
-/// - Timestamps for cache invalidation
-class PlanCache {
-  // Raw plans cache
-  List<Map<String, dynamic>> _rawPlans = <Map<String, dynamic>>[];
-  DateTime? _rawPlansTimestamp;
+/// Extends BasePlanCache to inherit raw plans caching.
+/// Adds caching for typed plan models (Daily, Weekly, Monthly, etc.)
+class PlanCache extends BasePlanCache {
 
-  // Typed plans cache
-  List<DailyPlanModel> _dailyPlans = <DailyPlanModel>[];
-  DateTime? _dailyPlansTimestamp;
-
-  List<WeeklyPlanModel> _weeklyPlans = <WeeklyPlanModel>[];
-  DateTime? _weeklyPlansTimestamp;
-
-  List<MonthlyPlanModel> _monthlyPlans = <MonthlyPlanModel>[];
-  DateTime? _monthlyPlansTimestamp;
-
-  List<RoamingPlanModel> _roamingPlans = <RoamingPlanModel>[];
-  DateTime? _roamingPlansTimestamp;
-
-  List<RoamEasyPlanModel> _roamEasyPlans = <RoamEasyPlanModel>[];
-  DateTime? _roamEasyPlansTimestamp;
-
-  List<MifiPlanModel> _mifiPlans = <MifiPlanModel>[];
-  DateTime? _mifiPlansTimestamp;
-
-  List<LibertyGlobalPlanModel> _libertyGlobalPlans = <LibertyGlobalPlanModel>[];
-  DateTime? _libertyGlobalPlansTimestamp;
-
-  Map<String, dynamic> _bundlesResponse = <String, dynamic>{};
-  DateTime? _bundlesResponseTimestamp;
-
-  List<AddOnsPrimaryPlanModel> _addOnsPrimaryPlans = <AddOnsPrimaryPlanModel>[];
-  DateTime? _addOnsPrimaryPlansTimestamp;
-
-  // ========== Raw Plans ==========
-
-  void setRawPlans(List<Map<String, dynamic>> plans) {
-    _rawPlans = plans;
-    _rawPlansTimestamp = DateTime.now();
-  }
-
-  List<Map<String, dynamic>> getRawPlans() => _rawPlans;
-
-  DateTime? getRawPlansTimestamp() => _rawPlansTimestamp;
-
-  bool hasRawPlans() => _rawPlans.isNotEmpty;
+  // Typed plans cache using CacheEntry
+  final CacheEntry<List<DailyPlanModel>> _dailyPlansCache = CacheEntry();
+  final CacheEntry<List<WeeklyPlanModel>> _weeklyPlansCache = CacheEntry();
+  final CacheEntry<List<MonthlyPlanModel>> _monthlyPlansCache = CacheEntry();
+  final CacheEntry<List<RoamingPlanModel>> _roamingPlansCache = CacheEntry();
+  final CacheEntry<List<RoamEasyPlanModel>> _roamEasyPlansCache = CacheEntry();
+  final CacheEntry<List<MifiPlanModel>> _mifiPlansCache = CacheEntry();
+  final CacheEntry<List<LibertyGlobalPlanModel>> _libertyGlobalPlansCache = CacheEntry();
+  final CacheEntry<Map<String, dynamic>> _bundlesResponseCache = CacheEntry();
+  final CacheEntry<List<AddOnsPrimaryPlanModel>> _addOnsPrimaryPlansCache = CacheEntry();
 
   // ========== Daily Plans ==========
 
-  void setDailyPlans(List<DailyPlanModel> plans) {
-    _dailyPlans = plans;
-    _dailyPlansTimestamp = DateTime.now();
-  }
+  void setDailyPlans(List<DailyPlanModel> plans) => _dailyPlansCache.set(plans);
 
-  List<DailyPlanModel> getDailyPlans() => _dailyPlans;
+  List<DailyPlanModel> getDailyPlans() => _dailyPlansCache.get() ?? [];
 
-  DateTime? getDailyPlansTimestamp() => _dailyPlansTimestamp;
+  DateTime? getDailyPlansTimestamp() => _dailyPlansCache.getTimestamp();
 
   // ========== Weekly Plans ==========
 
-  void setWeeklyPlans(List<WeeklyPlanModel> plans) {
-    _weeklyPlans = plans;
-    _weeklyPlansTimestamp = DateTime.now();
-  }
+  void setWeeklyPlans(List<WeeklyPlanModel> plans) => _weeklyPlansCache.set(plans);
 
-  List<WeeklyPlanModel> getWeeklyPlans() => _weeklyPlans;
+  List<WeeklyPlanModel> getWeeklyPlans() => _weeklyPlansCache.get() ?? [];
 
-  DateTime? getWeeklyPlansTimestamp() => _weeklyPlansTimestamp;
+  DateTime? getWeeklyPlansTimestamp() => _weeklyPlansCache.getTimestamp();
 
   // ========== Monthly Plans ==========
 
-  void setMonthlyPlans(List<MonthlyPlanModel> plans) {
-    _monthlyPlans = plans;
-    _monthlyPlansTimestamp = DateTime.now();
-  }
+  void setMonthlyPlans(List<MonthlyPlanModel> plans) => _monthlyPlansCache.set(plans);
 
-  List<MonthlyPlanModel> getMonthlyPlans() => _monthlyPlans;
+  List<MonthlyPlanModel> getMonthlyPlans() => _monthlyPlansCache.get() ?? [];
 
-  DateTime? getMonthlyPlansTimestamp() => _monthlyPlansTimestamp;
+  DateTime? getMonthlyPlansTimestamp() => _monthlyPlansCache.getTimestamp();
 
   // ========== Roaming Plans ==========
 
-  void setRoamingPlans(List<RoamingPlanModel> plans) {
-    _roamingPlans = plans;
-    _roamingPlansTimestamp = DateTime.now();
-  }
+  void setRoamingPlans(List<RoamingPlanModel> plans) => _roamingPlansCache.set(plans);
 
-  List<RoamingPlanModel> getRoamingPlans() => _roamingPlans;
+  List<RoamingPlanModel> getRoamingPlans() => _roamingPlansCache.get() ?? [];
 
-  DateTime? getRoamingPlansTimestamp() => _roamingPlansTimestamp;
+  DateTime? getRoamingPlansTimestamp() => _roamingPlansCache.getTimestamp();
 
   // ========== RoamEasy Plans ==========
 
-  void setRoamEasyPlans(List<RoamEasyPlanModel> plans) {
-    _roamEasyPlans = plans;
-    _roamEasyPlansTimestamp = DateTime.now();
-  }
+  void setRoamEasyPlans(List<RoamEasyPlanModel> plans) => _roamEasyPlansCache.set(plans);
 
-  List<RoamEasyPlanModel> getRoamEasyPlans() => _roamEasyPlans;
+  List<RoamEasyPlanModel> getRoamEasyPlans() => _roamEasyPlansCache.get() ?? [];
 
-  DateTime? getRoamEasyPlansTimestamp() => _roamEasyPlansTimestamp;
+  DateTime? getRoamEasyPlansTimestamp() => _roamEasyPlansCache.getTimestamp();
 
   // ========== MiFi Plans ==========
 
-  void setMifiPlans(List<MifiPlanModel> plans) {
-    _mifiPlans = plans;
-    _mifiPlansTimestamp = DateTime.now();
-  }
+  void setMifiPlans(List<MifiPlanModel> plans) => _mifiPlansCache.set(plans);
 
-  List<MifiPlanModel> getMifiPlans() => _mifiPlans;
+  List<MifiPlanModel> getMifiPlans() => _mifiPlansCache.get() ?? [];
 
-  DateTime? getMifiPlansTimestamp() => _mifiPlansTimestamp;
+  DateTime? getMifiPlansTimestamp() => _mifiPlansCache.getTimestamp();
 
   // ========== Liberty Global Plans ==========
 
-  void setLibertyGlobalPlans(List<LibertyGlobalPlanModel> plans) {
-    _libertyGlobalPlans = plans;
-    _libertyGlobalPlansTimestamp = DateTime.now();
-  }
+  void setLibertyGlobalPlans(List<LibertyGlobalPlanModel> plans) =>
+      _libertyGlobalPlansCache.set(plans);
 
-  List<LibertyGlobalPlanModel> getLibertyGlobalPlans() => _libertyGlobalPlans;
+  List<LibertyGlobalPlanModel> getLibertyGlobalPlans() =>
+      _libertyGlobalPlansCache.get() ?? [];
 
-  DateTime? getLibertyGlobalPlansTimestamp() => _libertyGlobalPlansTimestamp;
+  DateTime? getLibertyGlobalPlansTimestamp() =>
+      _libertyGlobalPlansCache.getTimestamp();
 
   // ========== Bundles Response ==========
 
-  void setBundlesResponse(Map<String, dynamic> response) {
-    _bundlesResponse = response;
-    _bundlesResponseTimestamp = DateTime.now();
-  }
+  void setBundlesResponse(Map<String, dynamic> response) =>
+      _bundlesResponseCache.set(response);
 
-  Map<String, dynamic> getBundlesResponse() => _bundlesResponse;
+  Map<String, dynamic> getBundlesResponse() =>
+      _bundlesResponseCache.get() ?? {};
 
-  DateTime? getBundlesResponseTimestamp() => _bundlesResponseTimestamp;
+  DateTime? getBundlesResponseTimestamp() =>
+      _bundlesResponseCache.getTimestamp();
 
-  bool hasBundlesResponse() => _bundlesResponseTimestamp != null;
+  bool hasBundlesResponse() => _bundlesResponseCache.hasData();
 
   // ========== Add-ons Primary Plans ==========
 
-  void setAddOnsPrimaryPlans(List<AddOnsPrimaryPlanModel> plans) {
-    _addOnsPrimaryPlans = plans;
-    _addOnsPrimaryPlansTimestamp = DateTime.now();
-  }
+  void setAddOnsPrimaryPlans(List<AddOnsPrimaryPlanModel> plans) =>
+      _addOnsPrimaryPlansCache.set(plans);
 
-  List<AddOnsPrimaryPlanModel> getAddOnsPrimaryPlans() => _addOnsPrimaryPlans;
+  List<AddOnsPrimaryPlanModel> getAddOnsPrimaryPlans() =>
+      _addOnsPrimaryPlansCache.get() ?? [];
 
-  DateTime? getAddOnsPrimaryPlansTimestamp() => _addOnsPrimaryPlansTimestamp;
+  DateTime? getAddOnsPrimaryPlansTimestamp() =>
+      _addOnsPrimaryPlansCache.getTimestamp();
 
-  bool hasAddOnsPrimaryPlans() => _addOnsPrimaryPlansTimestamp != null;
+  bool hasAddOnsPrimaryPlans() => _addOnsPrimaryPlansCache.hasData();
 
   // ========== Cache Management ==========
 
   /// Clear all cached data
+  @override
   void clearAll() {
-    _rawPlans = <Map<String, dynamic>>[];
-    _rawPlansTimestamp = null;
+    super.clearAll(); // Clear raw plans cache from base class
 
-    _dailyPlans = <DailyPlanModel>[];
-    _dailyPlansTimestamp = null;
-
-    _weeklyPlans = <WeeklyPlanModel>[];
-    _weeklyPlansTimestamp = null;
-
-    _monthlyPlans = <MonthlyPlanModel>[];
-    _monthlyPlansTimestamp = null;
-
-    _roamingPlans = <RoamingPlanModel>[];
-    _roamingPlansTimestamp = null;
-
-    _roamEasyPlans = <RoamEasyPlanModel>[];
-    _roamEasyPlansTimestamp = null;
-
-    _mifiPlans = <MifiPlanModel>[];
-    _mifiPlansTimestamp = null;
-
-    _libertyGlobalPlans = <LibertyGlobalPlanModel>[];
-    _libertyGlobalPlansTimestamp = null;
-
-    _bundlesResponse = <String, dynamic>{};
-    _bundlesResponseTimestamp = null;
-
-    _addOnsPrimaryPlans = <AddOnsPrimaryPlanModel>[];
-    _addOnsPrimaryPlansTimestamp = null;
+    _dailyPlansCache.clear();
+    _weeklyPlansCache.clear();
+    _monthlyPlansCache.clear();
+    _roamingPlansCache.clear();
+    _roamEasyPlansCache.clear();
+    _mifiPlansCache.clear();
+    _libertyGlobalPlansCache.clear();
+    _bundlesResponseCache.clear();
+    _addOnsPrimaryPlansCache.clear();
   }
 }

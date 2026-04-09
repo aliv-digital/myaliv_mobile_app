@@ -1,31 +1,14 @@
-import 'dart:convert';
+import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_json_parser.dart';
 
-import 'package:flutter/foundation.dart';
+/// Postpaid plans JSON parser.
+///
+/// Extends BasePlanJsonParser to inherit background parsing capabilities.
+/// Provides backwards-compatible method names for existing code.
+class HomePlansPostPaidJsonParser extends BasePlanJsonParser {
+  HomePlansPostPaidJsonParser() : super(debugName: 'postpaid');
 
-List<Map<String, dynamic>> parseHomePlansPostPaidJsonInBackground(
-  String rawJson,
-) {
-  final dynamic decoded = jsonDecode(rawJson);
-
-  if (decoded is! List) {
-    throw const FormatException('Expected JSON array for plans response');
-  }
-
-  return decoded
-      .whereType<Map>()
-      .map((item) => Map<String, dynamic>.from(item))
-      .toList(growable: false);
-}
-
-class HomePlansPostPaidJsonParser {
-  Future<List<Map<String, dynamic>>> parse(String rawJson) async {
-    try {
-      return await compute(parseHomePlansPostPaidJsonInBackground, rawJson);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('HomePlansPostPaidJsonParser: Failed to parse - $e');
-      }
-      rethrow;
-    }
-  }
+  /// Parse raw JSON string into normalized plan list
+  ///
+  /// Alias for parseList() - for backwards compatibility.
+  Future<List<Map<String, dynamic>>> parse(String rawJson) => parseList(rawJson);
 }
