@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.9
   flutter_bloc: ^9.1.1
+  hydrated_bloc: ^11.0.0
+  path_provider: ^2.1.4
   go_router: ^17.2.0
   shared_preferences: ^2.5.5
   http: ^1.6.0

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:core/core.dart';
 import '../../../../core/localStorage/localStorage.dart';
-import '../../../Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
 import '../models/add_ons_primary_plan_model.dart';
@@ -1186,10 +1186,16 @@ class HomePlanBloc extends Bloc<HomePlanEvent, HomePlanState> {
   }
 
   Future<void> localData() async {
-    final map = await LocalStorage.getAccountInfoMap();
-    final account = AccountInfoModel.fromJson(map);
+    // Get account info from AccountInfoCubit (HydratedBloc)
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final account = accountInfoCubit.state.accountInfo;
     final password = await LocalStorage.getTicket();
     final username = userName; // from core/constants
+
+    if (account == null) {
+      debugPrint("⚠️ No account info available");
+      return;
+    }
 
     final email = account.email;
     final deviceAccountID = account.idAcc; // device account id

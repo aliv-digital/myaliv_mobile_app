@@ -6,12 +6,13 @@ class LocalStorage {
   static const String _accountInfoKey = 'account_info_json';
 
   // Store an integer value
-  static Future<void> storeIntValue({required String key, required int value}) async {
+  static Future<void> storeIntValue({
+    required String key,
+    required int value,
+  }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt(key, value);
   }
-
-
 
   // ticket works as password
   static Future<void> storeTicket({required String ticket}) async {
@@ -26,9 +27,8 @@ class LocalStorage {
 
   static Future<void> storeAccountID({required String accountID}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('accountID',accountID);
+    await prefs.setString('accountID', accountID);
   }
-
 
   static Future<String?> getAccountID() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -43,36 +43,11 @@ class LocalStorage {
     await prefs.setString(_accountInfoKey, jsonEncode(accountInfo));
   }
 
-  /// Returns the raw JSON string if account info was cached.
-  static Future<String?> getAccountInfoJson() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_accountInfoKey);
-  }
-
-  /// Returns decoded account map. Always safe: returns empty map on bad/missing data.
-  static Future<Map<String, dynamic>> getAccountInfoMap() async {
-    final raw = await getAccountInfoJson();
-    return _decodeJsonMap(raw);
-  }
-
-  /// Reads a single value from cached account info.
-  ///
-  /// Supports dotted paths for nested objects, e.g.:
-  /// - PhoneNumber
-  /// - IdentificationInfo.NINumber
-  static Future<dynamic> getAccountInfoValue({required String path}) async {
-    final data = await getAccountInfoMap();
-    return _readValueByPath(data, path);
-  }
-
-
   // Get an integer value
   static Future<int?> getSelectedActiveEventId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt('activeEventID');
   }
-
-
 
   // Get an integer value
   static Future<int?> getIntValue({required String key}) async {
@@ -81,7 +56,10 @@ class LocalStorage {
   }
 
   // Store a String value
-  static Future<void> storeStringValue({required String key, required String value}) async {
+  static Future<void> storeStringValue({
+    required String key,
+    required String value,
+  }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, value);
   }
@@ -90,16 +68,17 @@ class LocalStorage {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('password', password);
   }
+
   static Future<String?> getPassword() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('password');
   }
 
-
   static Future<void> storeAccessToken({required String accessToken}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
   }
+
   static Future<String?> getAccessToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('accessToken');
@@ -118,7 +97,10 @@ class LocalStorage {
   }
 
   // Store a boolean value
-  static Future<void> storeBoolValue({required String key, required bool value}) async {
+  static Future<void> storeBoolValue({
+    required String key,
+    required bool value,
+  }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool(key, value);
   }
@@ -130,7 +112,10 @@ class LocalStorage {
   }
 
   // Store a double value
-  static Future<void> storeDoubleValue({required String key, required double value}) async {
+  static Future<void> storeDoubleValue({
+    required String key,
+    required double value,
+  }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(key, value);
   }
@@ -142,7 +127,10 @@ class LocalStorage {
   }
 
   // Store a list of strings
-  static Future<void> storeStringListValue({required String key, required List<String> value}) async {
+  static Future<void> storeStringListValue({
+    required String key,
+    required List<String> value,
+  }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(key, value);
   }
