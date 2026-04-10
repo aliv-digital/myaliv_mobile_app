@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/model/demo_plans.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_postpaid.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_usage_section.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/home_header.dart';
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   config.hasActivePlan
                       ? config.userType == UserType.prepaid
-                          ? PrepaidActivePlanCard()
+                          ? const PrepaidActivePlanCardWithData()
                           : PostpaidActivePlanCard(config: config)
                       : _noActivePlan(context),
 
