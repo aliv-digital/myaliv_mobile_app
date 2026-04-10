@@ -4,8 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_state.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/theme/plan_purchase_plan_add_ons_theme.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 
 /// Active plan card connected to HomePlanCubit for real-time data.
@@ -122,87 +120,122 @@ class _TopRow extends StatelessWidget {
   }
 }
 
-/// Auto-renew toggle (read-only display)
-class _AutoRenewToggle extends StatelessWidget {
+/// Auto-renew toggle (interactive)
+class _AutoRenewToggle extends StatefulWidget {
   const _AutoRenewToggle({required this.value});
 
   final bool value;
 
   @override
+  State<_AutoRenewToggle> createState() => _AutoRenewToggleState();
+}
+
+class _AutoRenewToggleState extends State<_AutoRenewToggle> {
+  late bool isOn;
+
+  @override
+  void initState() {
+    super.initState();
+    isOn = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(covariant _AutoRenewToggle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value) {
+      isOn = widget.value;
+    }
+  }
+
+  void _handleTap() {
+    setState(() => isOn = !isOn);
+
+    if (isOn) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black.withValues(alpha: 0.5),
+        builder: (_) => const AutoRenewBottomSheet(),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: 24,
-          padding: const EdgeInsets.symmetric(horizontal: 5.666),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: const Color(0xFFDCDCDC),
-              width: 1,
+    return GestureDetector(
+      onTap: _handleTap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 5.666),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: const Color(0xFFDCDCDC), width: 1),
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.5),
-                child: Text(
-                  value ? 'on' : 'off',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    height: 1.0,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.5),
+                  child: Text(
+                    isOn ? 'on' : 'off',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.0,
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                width: 16.67,
-                height: 16.67,
-                decoration: BoxDecoration(
-                  color: value
-                      ? const Color(0xFF645D9C)
-                      : const Color(0xFFEDECF6),
-                  shape: BoxShape.circle,
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOut,
+                  width: 16.67,
+                  height: 16.67,
+                  decoration: BoxDecoration(
+                    color: isOn
+                        ? const Color(0xFF645D9C)
+                        : const Color(0xFFEDECF6),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isOn ? Icons.check : Icons.close,
+                    size: 12,
+                    color: isOn ? Colors.white : const Color(0xFF645D9C),
+                  ),
                 ),
-                child: Icon(
-                  value ? Icons.check : Icons.close,
-                  size: 12,
-                  color: value ? Colors.white : const Color(0xFF645D9C),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        const Text(
-          'auto renew',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w400,
-            fontVariations: <FontVariation>[
-              FontVariation('wght', 450),
-            ],
+          const SizedBox(width: 8),
+          const Text(
+            'auto renew',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w400,
+              fontVariations: <FontVariation>[FontVariation('wght', 450)],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
 /// Dates row showing active and expire dates
 class _DatesRow extends StatelessWidget {
-  const _DatesRow({
-    required this.activeDate,
-    required this.expireDate,
-  });
+  const _DatesRow({required this.activeDate, required this.expireDate});
 
   final String activeDate;
   final String expireDate;
@@ -234,8 +267,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           title,
