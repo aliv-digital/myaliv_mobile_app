@@ -9,14 +9,6 @@ class PlansEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
-
-    switch (config.userType) {
-      case UserType.postpaid:
-        return const HomePlanScreen();
-
-      case UserType.prepaid:
-        return const HomePlanScreen();
-    }
+    return const HomePlanScreen();
   }
 }

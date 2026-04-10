@@ -50,7 +50,6 @@ class HomePlanCubit extends Cubit<HomePlanState> {
       state.copyWith(
         selectedTab: tab,
         expandedPlanIds: {},
-        addOns: tab == HomePlanTab.addOns ? state.addOns : const [],
       ),
     );
 
