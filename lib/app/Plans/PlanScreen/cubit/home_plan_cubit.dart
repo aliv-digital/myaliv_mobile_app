@@ -420,7 +420,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
           tab == HomePlanTab.mifi ||
           tab == HomePlanTab.libertyGlobal ||
           tab == HomePlanTab.postpaidRoaming) {
-        emit(state.copyWith(plans: const [], addOns: const []));
+        emit(state.copyWith(plans: const []));
 
         switch (tab) {
           case HomePlanTab.daily:
@@ -459,7 +459,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
           currentState: state,
           tab: tab,
           status: HomePlanStatus.loaded,
-        ).copyWith(plans: plans, addOns: const []),
+        ).copyWith(plans: plans),
       );
     } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
