@@ -23,6 +23,8 @@ import '../widgets/home_plan_plans_list.dart';
 import '../widgets/home_plan_purchase_sheet_launcher.dart';
 import '../widgets/home_plan_section_header.dart';
 import '../widgets/plan_tabs.dart';
+import '../widgets/plan_card_shimmer.dart';
+import '../widgets/plan_empty_state.dart';
 import 'start_plan_bottom_sheet.dart';
 
 class HomePlanScreen extends StatelessWidget {
@@ -140,6 +142,128 @@ class _HomePlanViewState extends State<_HomePlanView> {
     ];
   }
 
+  Widget _buildTabContent(
+    BuildContext context,
+    HomePlanState currentState,
+    HomePlanStatus currentTabStatus,
+    String? currentTabError,
+  ) {
+    // Loading state - show shimmer
+    if (currentTabStatus == HomePlanStatus.loading ||
+        currentTabStatus == HomePlanStatus.initial) {
+      if (currentState.selectedTab == HomePlanTab.addOns) {
+        return const AddOnShimmerList();
+      }
+      return const PlanCardShimmerList();
+    }
+
+    // Error state - show error with retry button
+    if (currentTabStatus == HomePlanStatus.failure) {
+      return PlanErrorState(
+        errorMessage: currentTabError ?? 'Something went wrong',
+        onRetry: () {
+          context.read<HomePlanCubit>().refreshCurrentTab();
+        },
+      );
+    }
+
+    // Success state - check if data exists
+    if (currentState.selectedTab == HomePlanTab.addOns) {
+      // Check if add-ons list is empty
+      if (currentState.addOns.isEmpty) {
+        return PlanEmptyState(
+          message: 'No add-ons available at the moment',
+          onRefresh: () {
+            context.read<HomePlanCubit>().refreshCurrentTab();
+          },
+        );
+      }
+
+      return HomePlanAddOnsTabContent(
+        activePrimaryPlan: currentState.earliestAddOnsPrimaryPlan,
+        addOns: currentState.addOns,
+        selectedAddOnIds: currentState.selectedAddOnIds,
+        onToggleAddOn: (addOn) {
+          context.read<HomePlanCubit>().toggleAddon(addOn);
+        },
+      );
+    }
+
+    // Check if plans list is empty for the current tab
+    final bool isEmpty = _isCurrentTabEmpty(currentState);
+    if (isEmpty) {
+      return PlanEmptyState(
+        message: 'No plans available for this category',
+        onRefresh: () {
+          context.read<HomePlanCubit>().refreshCurrentTab();
+        },
+      );
+    }
+
+    return HomePlanPlansList(
+      state: currentState,
+      onToggleExpanded: (planId) {
+        context.read<HomePlanCubit>().toggleExpanded(planId);
+      },
+      onWeeklyPurchaseNow: (_) {},
+      onDailyPurchaseNow: (_) {},
+      onMonthlyPurchaseNow: (_) {},
+      onMifiPurchaseNow: (plan) {
+        _onPurchaseNowPressed(
+          context,
+          _toMifiPurchaseSheetPlan(plan),
+        );
+      },
+      onLibertyGlobalPurchaseNow: (plan) {
+        _onPurchaseNowPressed(
+          context,
+          _toLibertyGlobalPurchaseSheetPlan(plan),
+        );
+      },
+      onRoamingPurchaseNow: (plan) {
+        _onPurchaseNowPressed(
+          context,
+          _toRoamingPurchaseSheetPlan(plan),
+        );
+      },
+      onRoamEasyPurchaseNow: (plan) {
+        _onPurchaseNowPressed(
+          context,
+          _toRoamEasyPurchaseSheetPlan(plan),
+        );
+      },
+      onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel _) {
+        _showPostpaidStartBottomSheet(context);
+      },
+      onPurchaseNow: (plan) {
+        _onPurchaseNowPressed(context, plan);
+      },
+    );
+  }
+
+  bool _isCurrentTabEmpty(HomePlanState state) {
+    switch (state.selectedTab) {
+      case HomePlanTab.daily:
+        return state.dailyApiPlans.isEmpty;
+      case HomePlanTab.weekly:
+        return state.weeklyApiPlans.isEmpty;
+      case HomePlanTab.monthly:
+        return state.monthlyApiPlans.isEmpty;
+      case HomePlanTab.roaming:
+        return state.roamingApiPlans.isEmpty;
+      case HomePlanTab.roameasy:
+        return state.roamEasyApiPlans.isEmpty;
+      case HomePlanTab.mifi:
+        return state.mifiApiPlans.isEmpty;
+      case HomePlanTab.libertyGlobal:
+        return state.libertyGlobalApiPlans.isEmpty;
+      case HomePlanTab.postpaidRoaming:
+        return state.postpaidRoamingApiPlans.isEmpty;
+      case HomePlanTab.addOns:
+        return state.addOns.isEmpty;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final config = context.watch<AppUiConfigCubit>().state;
@@ -220,76 +344,18 @@ class _HomePlanViewState extends State<_HomePlanView> {
                         final currentTabError =
                             currentState.selectedTabErrorMessage;
 
-                        if (currentTabStatus == HomePlanStatus.loading ||
-                            currentTabStatus == HomePlanStatus.initial) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (currentTabStatus == HomePlanStatus.failure) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 25),
-                              child: Text(
-                                currentTabError ?? 'Something went wrong',
-                                style: HomePlanTheme.bodyErrorText,
-                              ),
-                            ),
-                          );
-                        }
-
-                        if (currentState.selectedTab == HomePlanTab.addOns) {
-                          return HomePlanAddOnsTabContent(
-                            activePrimaryPlan:
-                                currentState.earliestAddOnsPrimaryPlan,
-                            addOns: currentState.addOns,
-                            selectedAddOnIds: currentState.selectedAddOnIds,
-                            onToggleAddOn: (addOn) {
-                              context.read<HomePlanCubit>().toggleAddon(addOn);
-                            },
-                          );
-                        }
-
-                        return HomePlanPlansList(
-                          state: currentState,
-                          onToggleExpanded: (planId) {
-                            context.read<HomePlanCubit>().toggleExpanded(planId);
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            await context
+                                .read<HomePlanCubit>()
+                                .refreshCurrentTab();
                           },
-                          onWeeklyPurchaseNow: (_) {},
-                          onDailyPurchaseNow: (_) {},
-                          onMonthlyPurchaseNow: (_) {},
-                          onMifiPurchaseNow: (plan) {
-                            _onPurchaseNowPressed(
-                              context,
-                              _toMifiPurchaseSheetPlan(plan),
-                            );
-                          },
-                          onLibertyGlobalPurchaseNow: (plan) {
-                            _onPurchaseNowPressed(
-                              context,
-                              _toLibertyGlobalPurchaseSheetPlan(plan),
-                            );
-                          },
-                          onRoamingPurchaseNow: (plan) {
-                            _onPurchaseNowPressed(
-                              context,
-                              _toRoamingPurchaseSheetPlan(plan),
-                            );
-                          },
-                          onRoamEasyPurchaseNow: (plan) {
-                            _onPurchaseNowPressed(
-                              context,
-                              _toRoamEasyPurchaseSheetPlan(plan),
-                            );
-                          },
-                          onPostpaidRoamingPurchaseNow:
-                              (HomePlansPostPaidPlanModel _) {
-                            _showPostpaidStartBottomSheet(context);
-                          },
-                          onPurchaseNow: (plan) {
-                            _onPurchaseNowPressed(context, plan);
-                          },
+                          child: _buildTabContent(
+                            context,
+                            currentState,
+                            currentTabStatus,
+                            currentTabError,
+                          ),
                         );
                       },
                     ),

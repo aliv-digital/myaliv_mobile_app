@@ -57,6 +57,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
       ),
     );
 
+    // _loadByTab already checks if tab is loading, so safe to call
     await _loadByTab(tab: tab);
   }
 
@@ -84,6 +85,16 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     emit(state.copyWith(selectedAddOnIds: next));
   }
 
+  /// Refresh current tab - forces API call even if data exists
+  Future<void> refreshCurrentTab() async {
+    await _loadByTab(tab: state.selectedTab, forceRefresh: true);
+  }
+
+  /// Refresh a specific tab - forces API call even if data exists
+  Future<void> refreshTab(HomePlanTab tab) async {
+    await _loadByTab(tab: tab, forceRefresh: true);
+  }
+
   Future<void> loadInitialPlans({
     bool forceRefresh = false,
     required UserType userType,
@@ -92,22 +103,43 @@ class HomePlanCubit extends Cubit<HomePlanState> {
       return;
     }
 
+    // Check if plans are currently loading - prevent duplicate API calls
+    if (_isInitialPlansLoading(userType: userType)) {
+      return;
+    }
+
+    // Check if plans are already loaded - skip unless forceRefresh
     if (!forceRefresh && _hasInitialPlansLoaded(userType: userType)) {
       return;
     }
 
-    if (userType == UserType.postpaid) {
-      _schedulePostpaidRoamingApiSyncIfIdle();
-    } else {
-      _scheduleDailyApiSyncIfIdle();
+    // Note: Don't emit loading state here - this is background preloading
+    // UI loading states are managed by _loadByTab() via started() and changeTab()
+
+    // Only preload the DEFAULT tab that will be shown first
+    // This prevents: 1) duplicate API calls, 2) unnecessary network usage
+    // Other tabs will load on-demand when user switches to them
+    final defaultTab = _defaultTabForUserType(userType);
+
+    switch (defaultTab) {
+      case HomePlanTab.monthly:
+        _scheduleMonthlyApiSyncIfIdle();
+        break;
+      case HomePlanTab.postpaidRoaming:
+        _schedulePostpaidRoamingApiSyncIfIdle();
+        break;
+      default:
+        // Fallback for any other default tab
+        break;
     }
   }
 
   Future<void> syncAddOns({bool printRawResponse = false}) async {
-    if (_isAddOnsApiSyncInProgress) {
-      return;
+    // Flag may already be set by schedule method to prevent race condition
+    // Don't exit early, just ensure it's set
+    if (!_isAddOnsApiSyncInProgress) {
+      _isAddOnsApiSyncInProgress = true;
     }
-    _isAddOnsApiSyncInProgress = true;
 
     try {
       if (!globalState.isAuthenticated) {
@@ -336,8 +368,26 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     emit(state.copyWith(clearPendingToast: true));
   }
 
-  Future<void> _loadByTab({required HomePlanTab tab}) async {
+  Future<void> _loadByTab({
+    required HomePlanTab tab,
+    bool forceRefresh = false,
+  }) async {
     try {
+      // Check if tab is currently loading - prevent duplicate API calls
+      final currentStatus = state.statusFor(tab);
+      if (currentStatus == HomePlanStatus.loading) {
+        return;
+      }
+
+      // Check if tab data is already loaded (skip API call unless forceRefresh)
+      final isAlreadyLoaded = state.apiTabMeta[tab]?.isLoaded ?? false;
+
+      if (!forceRefresh && isAlreadyLoaded) {
+        // Data already exists, just mark as loaded without API call
+        _emitTabStatus(tab: tab, status: HomePlanStatus.loaded);
+        return;
+      }
+
       _emitTabStatus(tab: tab, status: HomePlanStatus.loading);
 
       if (tab == HomePlanTab.addOns) {
@@ -428,10 +478,11 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     required String unauthenticatedMessage,
     required String fallbackErrorMessage,
   }) async {
-    if (isInProgress()) {
-      return;
+    // Flag may already be set by schedule methods to prevent race condition
+    // Don't check it here, just ensure it's set
+    if (!isInProgress()) {
+      setInProgress(true);
     }
-    setInProgress(true);
 
     try {
       if (!globalState.isAuthenticated) {
@@ -472,83 +523,126 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   bool _hasInitialPlansLoaded({required UserType userType}) {
-    final dailyLoaded = state.apiTabMeta[HomePlanTab.daily]?.isLoaded ?? false;
-    final weeklyLoaded =
-        state.apiTabMeta[HomePlanTab.weekly]?.isLoaded ?? false;
-    final monthlyLoaded =
-        state.apiTabMeta[HomePlanTab.monthly]?.isLoaded ?? false;
-    final addOnsLoaded =
-        state.apiTabMeta[HomePlanTab.addOns]?.isLoaded ?? false;
-    final postpaidLoaded =
-        state.apiTabMeta[HomePlanTab.postpaidRoaming]?.isLoaded ?? false;
+    // Check if the DEFAULT tab (shown first) is loaded
+    // We only preload the default tab to prevent duplicate API calls
+    final defaultTab = _defaultTabForUserType(userType);
+    return state.apiTabMeta[defaultTab]?.isLoaded ?? false;
+  }
 
-    if (userType == UserType.postpaid) {
-      return postpaidLoaded;
-    }
-    return dailyLoaded && weeklyLoaded && monthlyLoaded && addOnsLoaded;
+  /// Check if initial plans are currently loading (in progress)
+  /// Checks both state status AND in-progress flags to catch race conditions
+  bool _isInitialPlansLoading({required UserType userType}) {
+    // Check if the DEFAULT tab (shown first) is loading
+    // We only preload the default tab
+    final defaultTab = _defaultTabForUserType(userType);
+    final isStatusLoading = state.statusFor(defaultTab) == HomePlanStatus.loading;
+
+    // Also check the in-progress flag for race condition protection
+    final isFlagSet = defaultTab == HomePlanTab.postpaidRoaming
+        ? _isPostpaidRoamingApiSyncInProgress
+        : _isMonthlyApiSyncInProgress; // Monthly is default for prepaid
+
+    return isStatusLoading || isFlagSet;
   }
 
   void _scheduleAddOnsApiSyncIfIdle() {
     if (_isAddOnsApiSyncInProgress) {
       return;
     }
-    unawaited(syncAddOns());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isAddOnsApiSyncInProgress = true;
+    syncAddOns().catchError((_) {
+      // Error handling is done inside syncAddOns
+      // This catchError prevents unhandled promise rejection
+    });
   }
 
   void _scheduleDailyApiSyncIfIdle() {
     if (_isDailyApiSyncInProgress) {
       return;
     }
-    unawaited(syncDaily());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isDailyApiSyncInProgress = true;
+    syncDaily().catchError((_) {
+      // Error handling is done inside syncDaily
+    });
   }
 
   void _scheduleWeeklyApiSyncIfIdle() {
     if (_isWeeklyApiSyncInProgress) {
       return;
     }
-    unawaited(syncWeekly());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isWeeklyApiSyncInProgress = true;
+    syncWeekly().catchError((_) {
+      // Error handling is done inside syncWeekly
+    });
   }
 
   void _scheduleMonthlyApiSyncIfIdle() {
     if (_isMonthlyApiSyncInProgress) {
       return;
     }
-    unawaited(syncMonthly());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isMonthlyApiSyncInProgress = true;
+    syncMonthly().catchError((_) {
+      // Error handling is done inside syncMonthly
+    });
   }
 
   void _scheduleRoamingApiSyncIfIdle() {
     if (_isRoamingApiSyncInProgress) {
       return;
     }
-    unawaited(syncRoaming());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isRoamingApiSyncInProgress = true;
+    syncRoaming().catchError((_) {
+      // Error handling is done inside syncRoaming
+    });
   }
 
   void _scheduleRoamEasyApiSyncIfIdle() {
     if (_isRoamEasyApiSyncInProgress) {
       return;
     }
-    unawaited(syncRoamEasy());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isRoamEasyApiSyncInProgress = true;
+    syncRoamEasy().catchError((_) {
+      // Error handling is done inside syncRoamEasy
+    });
   }
 
   void _scheduleMifiApiSyncIfIdle() {
     if (_isMifiApiSyncInProgress) {
       return;
     }
-    unawaited(syncMifi());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isMifiApiSyncInProgress = true;
+    syncMifi().catchError((_) {
+      // Error handling is done inside syncMifi
+    });
   }
 
   void _scheduleLibertyGlobalApiSyncIfIdle() {
     if (_isLibertyGlobalApiSyncInProgress) {
       return;
     }
-    unawaited(syncLibertyGlobal());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isLibertyGlobalApiSyncInProgress = true;
+    syncLibertyGlobal().catchError((_) {
+      // Error handling is done inside syncLibertyGlobal
+    });
   }
 
   void _schedulePostpaidRoamingApiSyncIfIdle() {
     if (_isPostpaidRoamingApiSyncInProgress) {
       return;
     }
-    unawaited(syncPostpaidRoaming());
+    // Set flag IMMEDIATELY before async work to prevent race condition
+    _isPostpaidRoamingApiSyncInProgress = true;
+    syncPostpaidRoaming().catchError((_) {
+      // Error handling is done inside syncPostpaidRoaming
+    });
   }
 
   HomePlanTab _defaultTabForUserType(UserType userType) {
@@ -687,25 +781,5 @@ class HomePlanCubit extends Cubit<HomePlanState> {
       case HomePlanTab.postpaidRoaming:
         return 'Roaming data add-ons';
     }
-  }
-
-  Future<void> localData() async {
-    final accountInfoCubit = instance<AccountInfoCubit>();
-    final account = accountInfoCubit.state.accountInfo;
-    final password = await LocalStorage.getTicket();
-    final username = userName;
-
-    if (account == null) {
-      debugPrint("No account info available");
-      return;
-    }
-
-    debugPrint("Email : ${account.email}");
-    debugPrint("Account Status : ${account.accountStatus}");
-    debugPrint("Account Type : ${account.accountType}");
-    debugPrint("Payment Option : ${account.paymentOption}");
-    debugPrint("Device Account ID : ${account.idAcc}");
-    debugPrint("password : $password");
-    debugPrint("username : $username");
   }
 }

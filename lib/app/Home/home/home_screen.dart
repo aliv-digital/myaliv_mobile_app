@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     AppSession.resetAppRoute();
 
+    // Preload plans in background while user is on home screen
     final userType = context.read<AppUiConfigCubit>().state.userType;
     context.read<HomePlanCubit>().loadInitialPlans(userType: userType);
   }
