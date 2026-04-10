@@ -9,6 +9,7 @@ import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
 import '../models/mifi_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
+import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'base_plan_repository.dart';
 import 'plan_types.dart';
 import 'services/plan_cache.dart';
@@ -51,7 +52,6 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   Future<List<Map<String, dynamic>>> getPlans({
     bool printRawResponse = false,
   }) async {
-    // Fetch and parse
     final rawJson = await _apiClient.fetchRawPlansJson();
     final plans = await _jsonParser.parse(rawJson);
 
@@ -205,6 +205,31 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
+  Future<List<HomePlansPostPaidPlanModel>> fetchPostpaidRoamingPlansFromApi({
+    bool printRawResponse = false,
+  }) async {
+    final plans = await _ensureCacheLoaded();
+    final filtered = _filterService.filterByTypeGroupAndPaymentOption(
+      plans: plans,
+      planType: 'A',
+      planGroup: 'roaming',
+      paymentOption: 'postpay',
+    );
+
+    final models = filtered
+        .map(
+          (map) => HomePlansPostPaidPlanModel.fromApiMap(
+            map,
+            includeRawPayload: false,
+          ),
+        )
+        .toList(growable: false);
+
+    _cache.setPostpaidRoamingPlans(models);
+    return models;
+  }
+
+  @override
   Future<List<HomePlanModel>> fetchPlans({required HomePlanTab tab}) async {
     // This method is not used for API-based tabs (daily, weekly, monthly, etc.)
     // Those tabs use dedicated fetchXxxPlansFromApi() methods.
@@ -340,6 +365,14 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
       _cache.getLibertyGlobalPlansTimestamp();
 
   @override
+  List<HomePlansPostPaidPlanModel> get lastFetchedPostpaidRoamingPlans =>
+      List.unmodifiable(_cache.getPostpaidRoamingPlans());
+
+  @override
+  DateTime? get lastFetchedPostpaidRoamingAt =>
+      _cache.getPostpaidRoamingPlansTimestamp();
+
+  @override
   List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
       List.unmodifiable(_cache.getAddOnsPrimaryPlans());
 
@@ -354,7 +387,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     if (_cache.hasRawPlans()) {
       return _cache.getRawPlans();
     }
-    return getPlans();
+
+    return await getPlans();
   }
 
   Future<Map<String, dynamic>> _ensureBundlesCacheLoaded() async {

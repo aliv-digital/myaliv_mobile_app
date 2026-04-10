@@ -8,6 +8,7 @@ import '../models/roaming_plan_model.dart';
 import '../models/roameasy_plan_model.dart';
 import '../models/mifi_plan_model.dart';
 import '../models/liberty_global_plan_model.dart';
+import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'plan_types.dart';
 
 /// Abstract base class for plan repositories.
@@ -95,6 +96,16 @@ abstract class BasePlanRepository {
     bool printFilteredLibertyGlobalPlans = false,
   });
 
+  /// Fetch and parse Postpaid Roaming plans.
+  ///
+  /// Filtering rule (strict):
+  /// - PlanType = A
+  /// - PlanGroup = roaming
+  /// - PaymentOption = postpay
+  Future<List<HomePlansPostPaidPlanModel>> fetchPostpaidRoamingPlansFromApi({
+    bool printRawResponse = false,
+  });
+
   /// Fetch plans for a specific tab.
   ///
   /// Returns UI-ready HomePlanModel list for display.
@@ -172,6 +183,12 @@ abstract class BasePlanRepository {
 
   /// Read-only latest strict Liberty Global filter timestamp.
   DateTime? get lastFetchedLibertyGlobalAt;
+
+  /// Read-only latest strict Postpaid Roaming plans cache.
+  List<HomePlansPostPaidPlanModel> get lastFetchedPostpaidRoamingPlans;
+
+  /// Read-only latest strict Postpaid Roaming filter timestamp.
+  DateTime? get lastFetchedPostpaidRoamingAt;
 
   /// Read-only latest Add-ons primary plan cache.
   List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans;

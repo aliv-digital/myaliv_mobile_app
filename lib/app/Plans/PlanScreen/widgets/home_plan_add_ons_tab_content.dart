@@ -7,7 +7,7 @@ import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purc
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_plan_red_image_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
-import '../bloc/home_plan_state.dart';
+import '../cubit/home_plan_state.dart';
 import '../models/add_on_model.dart';
 import '../models/add_ons_primary_plan_model.dart';
 import '../repository/plan_types.dart';

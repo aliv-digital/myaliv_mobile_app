@@ -5,11 +5,13 @@ import '../theme/theme.dart';
 class HomePlanTabs extends StatelessWidget {
   final HomePlanTab selected;
   final ValueChanged<HomePlanTab> onChanged;
+  final List<HomePlanTab>? tabs;
 
   const HomePlanTabs({
     super.key,
     required this.selected,
     required this.onChanged,
+    this.tabs,
   });
 
   static const _tabs = <HomePlanTab, String>{
@@ -20,7 +22,8 @@ class HomePlanTabs extends StatelessWidget {
     HomePlanTab.roameasy: 'roameasy',
     HomePlanTab.addOns: 'add ons',
     HomePlanTab.mifi: 'mifi',
-    HomePlanTab.libertyGlobal: 'liberty global'
+    HomePlanTab.libertyGlobal: 'liberty global',
+    HomePlanTab.postpaidRoaming: 'roaming data',
   };
 
   double _indicatorWidth(String label) {
@@ -34,6 +37,7 @@ class HomePlanTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final visibleTabs = tabs ?? _tabs.keys.toList(growable: false);
     return Container(
       color: HomePlanTheme.tabBarBackground,
       padding: const EdgeInsets.only(
@@ -47,10 +51,10 @@ class HomePlanTabs extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.only(left: 16, right: 16),
               scrollDirection: Axis.horizontal,
-              itemCount: _tabs.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 26),
+              itemCount: visibleTabs.length,
+              separatorBuilder: (_, index) => const SizedBox(width: 26),
               itemBuilder: (context, i) {
-                final tab = _tabs.keys.elementAt(i);
+                final tab = visibleTabs[i];
                 final label = _tabs[tab]!;
                 final isActive = tab == selected;
 

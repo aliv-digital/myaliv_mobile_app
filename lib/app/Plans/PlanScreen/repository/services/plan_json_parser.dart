@@ -1,4 +1,4 @@
-import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_json_parser.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/services/base_plan_json_parser.dart';
 
 /// Prepaid plans JSON parser.
 ///

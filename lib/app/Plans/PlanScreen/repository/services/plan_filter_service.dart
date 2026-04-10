@@ -45,4 +45,26 @@ class PlanFilterService {
       return currentType == normalizedType && currentGroup == normalizedGroup;
     }).toList(growable: false);
   }
+
+  /// Filter plans by PlanType, PlanGroup and PaymentOption.
+  List<Map<String, dynamic>> filterByTypeGroupAndPaymentOption({
+    required List<Map<String, dynamic>> plans,
+    required String planType,
+    required String planGroup,
+    required String paymentOption,
+  }) {
+    final normalizedType = planType.trim().toUpperCase();
+    final normalizedGroup = planGroup.trim().toUpperCase();
+    final normalizedPaymentOption = paymentOption.trim().toUpperCase();
+
+    return plans.where((plan) {
+      final currentType = _normalize(plan['PlanType']);
+      final currentGroup = _normalize(plan['PlanGroup']);
+      final currentPaymentOption = _normalize(plan['PaymentOption']);
+
+      return currentType == normalizedType &&
+          currentGroup == normalizedGroup &&
+          currentPaymentOption == normalizedPaymentOption;
+    }).toList(growable: false);
+  }
 }

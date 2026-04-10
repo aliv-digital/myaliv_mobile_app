@@ -1,4 +1,4 @@
-import 'package:myaliv_mobile_app/app/Plans/shared/repository/services/base_plan_cache.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/services/base_plan_cache.dart';
 import '../../models/daily_plan_model.dart';
 import '../../models/weekly_plan_model.dart';
 import '../../models/monthly_plan_model.dart';
@@ -7,6 +7,7 @@ import '../../models/roameasy_plan_model.dart';
 import '../../models/mifi_plan_model.dart';
 import '../../models/liberty_global_plan_model.dart';
 import '../../models/add_ons_primary_plan_model.dart';
+import '../../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
 /// Manages in-memory cache for prepaid plan data.
 ///
@@ -22,6 +23,7 @@ class PlanCache extends BasePlanCache {
   final CacheEntry<List<RoamEasyPlanModel>> _roamEasyPlansCache = CacheEntry();
   final CacheEntry<List<MifiPlanModel>> _mifiPlansCache = CacheEntry();
   final CacheEntry<List<LibertyGlobalPlanModel>> _libertyGlobalPlansCache = CacheEntry();
+  final CacheEntry<List<HomePlansPostPaidPlanModel>> _postpaidRoamingPlansCache = CacheEntry();
   final CacheEntry<Map<String, dynamic>> _bundlesResponseCache = CacheEntry();
   final CacheEntry<List<AddOnsPrimaryPlanModel>> _addOnsPrimaryPlansCache = CacheEntry();
 
@@ -84,6 +86,17 @@ class PlanCache extends BasePlanCache {
   DateTime? getLibertyGlobalPlansTimestamp() =>
       _libertyGlobalPlansCache.getTimestamp();
 
+  // ========== Postpaid Roaming Plans ==========
+
+  void setPostpaidRoamingPlans(List<HomePlansPostPaidPlanModel> plans) =>
+      _postpaidRoamingPlansCache.set(plans);
+
+  List<HomePlansPostPaidPlanModel> getPostpaidRoamingPlans() =>
+      _postpaidRoamingPlansCache.get() ?? [];
+
+  DateTime? getPostpaidRoamingPlansTimestamp() =>
+      _postpaidRoamingPlansCache.getTimestamp();
+
   // ========== Bundles Response ==========
 
   void setBundlesResponse(Map<String, dynamic> response) =>
@@ -124,6 +137,7 @@ class PlanCache extends BasePlanCache {
     _roamEasyPlansCache.clear();
     _mifiPlansCache.clear();
     _libertyGlobalPlansCache.clear();
+    _postpaidRoamingPlansCache.clear();
     _bundlesResponseCache.clear();
     _addOnsPrimaryPlansCache.clear();
   }
