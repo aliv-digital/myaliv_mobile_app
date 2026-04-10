@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
@@ -19,7 +17,6 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/base_plan_repo
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/base_plan_repository_exception.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
-import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 
 class HomePlanCubit extends Cubit<HomePlanState> {
   HomePlanCubit(this.repository) : super(HomePlanState.initial());
@@ -73,7 +70,16 @@ class HomePlanCubit extends Cubit<HomePlanState> {
 
   void viewDetailsPressed(HomePlanModel plan) {}
 
-  void purchaseNowPressed(HomePlanModel plan) {}
+  void purchaseNowPressed(HomePlanModel plan) {
+    // Prevent opening multiple purchase modals simultaneously
+    if (!state.isPurchaseModalOpen) {
+      emit(state.copyWith(isPurchaseModalOpen: true));
+    }
+  }
+
+  void purchaseModalClosed() {
+    emit(state.copyWith(isPurchaseModalOpen: false));
+  }
 
   void toggleAddon(HomePlanAddOnModel addOn) {
     final next = Set<String>.from(state.selectedAddOnIds);
@@ -116,9 +122,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     // Note: Don't emit loading state here - this is background preloading
     // UI loading states are managed by _loadByTab() via started() and changeTab()
 
-    // Only preload the DEFAULT tab that will be shown first
-    // This prevents: 1) duplicate API calls, 2) unnecessary network usage
-    // Other tabs will load on-demand when user switches to them
+    // Preload the DEFAULT tab that will be shown first
     final defaultTab = _defaultTabForUserType(userType);
 
     switch (defaultTab) {
@@ -131,6 +135,12 @@ class HomePlanCubit extends Cubit<HomePlanState> {
       default:
         // Fallback for any other default tab
         break;
+    }
+
+    // For prepaid: Also preload add-ons for Dashboard active card
+    // Safe to run in parallel - different endpoint (bundles vs available-plans)
+    if (userType == UserType.prepaid) {
+      _scheduleAddOnsApiSyncIfIdle();
     }
   }
 
@@ -494,6 +504,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
       }
 
       final plans = await load();
+
       final syncedAt = DateTime.now();
       final nextApiTabMeta = Map<HomePlanTab, HomePlanTabApiMeta>.from(
         state.apiTabMeta,
@@ -509,6 +520,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
         tab: tab,
         status: HomePlanStatus.loaded,
       );
+
       emit(apply(loadedState, plans, syncedAt, nextApiTabMeta));
     } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
@@ -524,25 +536,48 @@ class HomePlanCubit extends Cubit<HomePlanState> {
 
   bool _hasInitialPlansLoaded({required UserType userType}) {
     // Check if the DEFAULT tab (shown first) is loaded
-    // We only preload the default tab to prevent duplicate API calls
     final defaultTab = _defaultTabForUserType(userType);
-    return state.apiTabMeta[defaultTab]?.isLoaded ?? false;
+    final defaultTabLoaded = state.apiTabMeta[defaultTab]?.isLoaded ?? false;
+
+    if (userType == UserType.postpaid) {
+      // Postpaid only needs default tab
+      return defaultTabLoaded;
+    }
+
+    // Prepaid needs BOTH default tab AND add-ons for Dashboard active card
+    final addOnsLoaded = state.apiTabMeta[HomePlanTab.addOns]?.isLoaded ?? false;
+    return defaultTabLoaded && addOnsLoaded;
   }
 
   /// Check if initial plans are currently loading (in progress)
   /// Checks both state status AND in-progress flags to catch race conditions
   bool _isInitialPlansLoading({required UserType userType}) {
     // Check if the DEFAULT tab (shown first) is loading
-    // We only preload the default tab
     final defaultTab = _defaultTabForUserType(userType);
-    final isStatusLoading = state.statusFor(defaultTab) == HomePlanStatus.loading;
+    final isDefaultTabStatusLoading =
+        state.statusFor(defaultTab) == HomePlanStatus.loading;
 
-    // Also check the in-progress flag for race condition protection
-    final isFlagSet = defaultTab == HomePlanTab.postpaidRoaming
+    // Check in-progress flag for race condition protection
+    final isDefaultTabFlagSet = defaultTab == HomePlanTab.postpaidRoaming
         ? _isPostpaidRoamingApiSyncInProgress
         : _isMonthlyApiSyncInProgress; // Monthly is default for prepaid
 
-    return isStatusLoading || isFlagSet;
+    final isDefaultTabLoading = isDefaultTabStatusLoading || isDefaultTabFlagSet;
+
+    if (userType == UserType.postpaid) {
+      // Postpaid only preloads default tab
+      return isDefaultTabLoading;
+    }
+
+    // Prepaid also preloads add-ons for Dashboard active card
+    // Check if add-ons are loading (both state status and in-progress flag)
+    final isAddOnsStatusLoading =
+        state.statusFor(HomePlanTab.addOns) == HomePlanStatus.loading;
+    final isAddOnsFlagSet = _isAddOnsApiSyncInProgress;
+    final isAddOnsLoading = isAddOnsStatusLoading || isAddOnsFlagSet;
+
+    // Return true if EITHER default tab OR add-ons are loading
+    return isDefaultTabLoading || isAddOnsLoading;
   }
 
   void _scheduleAddOnsApiSyncIfIdle() {

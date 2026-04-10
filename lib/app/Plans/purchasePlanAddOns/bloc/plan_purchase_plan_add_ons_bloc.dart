@@ -21,6 +21,11 @@ class PlanPurchasePlanAddOnsBloc
       PlanPurchasePlanAddOnsStarted event,
       Emitter<PlanPurchasePlanAddOnsState> emit,
       ) async {
+    // Prevent duplicate API calls if already loading
+    if (state.status == PlanPurchasePlanAddOnsStatus.loading) {
+      return;
+    }
+
     emit(state.copyWith(status: PlanPurchasePlanAddOnsStatus.loading, errorMessage: null));
 
     try {

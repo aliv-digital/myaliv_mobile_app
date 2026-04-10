@@ -152,6 +152,10 @@ class HomePlanState {
   /// Monotonic id generator base for toast events.
   final int toastSequence;
 
+  /// Tracks if a purchase modal is currently open to prevent spam-clicking.
+  /// Set to true when opening purchase bottom sheet, cleared when it closes.
+  final bool isPurchaseModalOpen;
+
   const HomePlanState({
     required this.selectedTab,
     required this.dailyTabUiState,
@@ -178,6 +182,7 @@ class HomePlanState {
     required this.postpaidRoamingApiPlans, // NEW
     required this.apiTabMeta,
     required this.toastSequence,
+    required this.isPurchaseModalOpen,
     this.dailyApiLastSyncedAt,
     this.weeklyApiLastSyncedAt,
     this.monthlyApiLastSyncedAt,
@@ -245,6 +250,7 @@ class HomePlanState {
       apiTabMeta: {},
       pendingToast: null,
       toastSequence: 0,
+      isPurchaseModalOpen: false,
     );
   }
 
@@ -286,6 +292,7 @@ class HomePlanState {
     DateTime? postpaidRoamingApiLastSyncedAt, // NEW
     HomePlanToastMessage? pendingToast,
     int? toastSequence,
+    bool? isPurchaseModalOpen,
     bool clearPendingToast = false,
   }) {
     return HomePlanState(
@@ -337,6 +344,7 @@ class HomePlanState {
       pendingToast:
           clearPendingToast ? null : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,
+      isPurchaseModalOpen: isPurchaseModalOpen ?? this.isPurchaseModalOpen,
     );
   }
 

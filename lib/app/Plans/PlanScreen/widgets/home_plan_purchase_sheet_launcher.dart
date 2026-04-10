@@ -9,14 +9,14 @@ import 'roam_bottom_sheet.dart';
 import 'wallet_payment_activate_bottom_sheet.dart';
 import 'wallet_payment_activate_or_future_bottom_sheet.dart';
 
-void showHomePlanPurchaseBottomSheet({
+Future<void> showHomePlanPurchaseBottomSheet({
   required BuildContext context,
   required HomePlanModel plan,
   required HomePlanTab selectedTab,
 }) {
   final hasActivePlan = _hasActivePlan(plan);
 
-  showModalBottomSheet<void>(
+  return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
     barrierColor: Colors.black.withValues(alpha: 0.45),

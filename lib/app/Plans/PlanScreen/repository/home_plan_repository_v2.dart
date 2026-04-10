@@ -52,7 +52,6 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   Future<List<Map<String, dynamic>>> getPlans({
     bool printRawResponse = false,
   }) async {
-    // Fetch and parse
     final rawJson = await _apiClient.fetchRawPlansJson();
     final plans = await _jsonParser.parse(rawJson);
 
@@ -388,7 +387,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     if (_cache.hasRawPlans()) {
       return _cache.getRawPlans();
     }
-    return getPlans();
+
+    return await getPlans();
   }
 
   Future<Map<String, dynamic>> _ensureBundlesCacheLoaded() async {

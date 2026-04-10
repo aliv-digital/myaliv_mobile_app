@@ -106,15 +106,41 @@ class _HomePlanViewState extends State<_HomePlanView> {
   }
 
   void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
-    context.read<HomePlanCubit>().purchaseNowPressed(plan);
+    final cubit = context.read<HomePlanCubit>();
+
+    // Prevent opening multiple purchase modals simultaneously
+    if (cubit.state.isPurchaseModalOpen) {
+      return;
+    }
+
+    cubit.purchaseNowPressed(plan);
     showHomePlanPurchaseBottomSheet(
       context: context,
       plan: plan,
-      selectedTab: context.read<HomePlanCubit>().state.selectedTab,
-    );
+      selectedTab: cubit.state.selectedTab,
+    ).then((_) {
+      // Clear the modal open flag when bottom sheet is dismissed
+      cubit.purchaseModalClosed();
+    });
   }
 
   void _showPostpaidStartBottomSheet(BuildContext context) {
+    final cubit = context.read<HomePlanCubit>();
+
+    // Prevent opening multiple purchase modals simultaneously
+    if (cubit.state.isPurchaseModalOpen) {
+      return;
+    }
+
+    cubit.purchaseNowPressed(HomePlanModel(
+      id: 'postpaid',
+      title: 'Postpaid Plan',
+      subtitle: '',
+      price: 0.0,
+      description: '',
+      benefits: const [],
+    ));
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -122,7 +148,10 @@ class _HomePlanViewState extends State<_HomePlanView> {
       backgroundColor: Colors.transparent,
       useSafeArea: true,
       builder: (_) => const StartPlanBottomSheet(),
-    );
+    ).then((_) {
+      // Clear the modal open flag when bottom sheet is dismissed
+      cubit.purchaseModalClosed();
+    });
   }
 
   List<HomePlanTab> _tabsForUserType(UserType userType) {
@@ -305,8 +334,13 @@ class _HomePlanViewState extends State<_HomePlanView> {
         ),
         body: SafeArea(
           child: BlocBuilder<HomePlanCubit, HomePlanState>(
-            buildWhen: (previous, current) =>
-                previous.selectedTab != current.selectedTab,
+            buildWhen: (previous, current) {
+              // Rebuild when tab changes OR when tab status changes
+              final tabChanged = previous.selectedTab != current.selectedTab;
+              final statusChanged = previous.selectedTabStatus != current.selectedTabStatus;
+
+              return tabChanged || statusChanged;
+            },
             builder: (context, state) {
               if (!tabs.contains(state.selectedTab)) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
