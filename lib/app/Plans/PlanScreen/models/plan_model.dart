@@ -1,17 +1,10 @@
-enum HomePlanBenefitType {
-  data,
-  talkMins,
-  sms,
-  bonusData,
-  intlTalkText,
-  mms,
-}
+enum HomePlanBenefitType { data, talkMins, sms, bonusData, intlTalkText, mms }
 
 class HomePlanBenefit {
   final HomePlanBenefitType type;
   final String label; // data / talk mins / sms ...
   final String value; // 1 / 30 / 300
-  final String sub;   // GB / local talk mins / local text ...
+  final String sub; // GB / local talk mins / local text ...
 
   const HomePlanBenefit({
     required this.type,

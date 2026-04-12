@@ -30,15 +30,16 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     PlanFilterService? filterService,
     PlanJsonParser? jsonParser,
     PlansRepository? plansRepository,
-  })  : _cache = cache ?? PlanCache(),
-        _apiClient = apiClient ??
-            PlanApiClient(
-              networkService: networkService,
-              authManager: authManager,
-            ),
-        _filterService = filterService ?? PlanFilterService(),
-        _jsonParser = jsonParser ?? PlanJsonParser(),
-        _plansRepository = plansRepository ?? instance<PlansRepository>();
+  }) : _cache = cache ?? PlanCache(),
+       _apiClient =
+           apiClient ??
+           PlanApiClient(
+             networkService: networkService,
+             authManager: authManager,
+           ),
+       _filterService = filterService ?? PlanFilterService(),
+       _jsonParser = jsonParser ?? PlanJsonParser(),
+       _plansRepository = plansRepository ?? instance<PlansRepository>();
 
   final PlanCache _cache;
   final PlanApiClient _apiClient;
@@ -224,14 +225,12 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     final rawPrimaryPlans = _asMapList(bundlesResponse['PrimaryPlans']);
 
     final primaryPlans = rawPrimaryPlans
-        .map(
-          (map) =>
-              BasePlanModel.fromApiMap(map, includeRawPayload: false),
-        )
+        .map((map) => BasePlanModel.fromApiMap(map, includeRawPayload: false))
         .toList(growable: false);
 
-    final sortedPrimaryPlans =
-        _sortPrimaryPlansByEarliestStartDate(primaryPlans);
+    final sortedPrimaryPlans = _sortPrimaryPlansByEarliestStartDate(
+      primaryPlans,
+    );
 
     _cache.setAddOnsPrimaryPlans(sortedPrimaryPlans);
     return sortedPrimaryPlans;
@@ -359,10 +358,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
         .asMap()
         .entries
         .map(
-          (entry) => _SortablePrimaryPlan(
-            originalIndex: entry.key,
-            plan: entry.value,
-          ),
+          (entry) =>
+              _SortablePrimaryPlan(originalIndex: entry.key, plan: entry.value),
         )
         .toList(growable: false);
 
@@ -389,8 +386,9 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   String _buildAddOnLabel(BasePlanModel addOnPlan) {
-    final firstBucket =
-        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return 'balance';
@@ -414,8 +412,9 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   String _buildAddOnValue(BasePlanModel addOnPlan) {
-    final firstBucket =
-        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return '';
@@ -457,10 +456,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
 }
 
 class _SortablePrimaryPlan {
-  const _SortablePrimaryPlan({
-    required this.originalIndex,
-    required this.plan,
-  });
+  const _SortablePrimaryPlan({required this.originalIndex, required this.plan});
 
   final int originalIndex;
   final BasePlanModel plan;
