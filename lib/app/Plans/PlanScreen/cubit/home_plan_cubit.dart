@@ -4,15 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_ons_primary_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/liberty_global_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/mifi_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/base_plan_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/base_plan_repository_exception.dart';
@@ -159,13 +152,13 @@ class HomePlanCubit extends Cubit<HomePlanState> {
         return;
       }
 
-      final List<AddOnsPrimaryPlanModel> primaryPlans = await repository
+      final List<BasePlanModel> primaryPlans = await repository
           .fetchAddOnsPrimaryPlansFromApi(
             printRawResponse: printRawResponse,
             printFilteredPrimaryPlans: false,
           );
 
-      final AddOnsPrimaryPlanModel? selectedPrimaryPlan = repository
+      final BasePlanModel? selectedPrimaryPlan = repository
           .selectEarliestAddOnsPrimaryPlan(primaryPlans);
       final List<HomePlanAddOnModel> addOns = selectedPrimaryPlan == null
           ? const <HomePlanAddOnModel>[]
@@ -215,7 +208,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncDaily({bool printRawResponse = false}) async {
-    await _syncTypedTab<DailyPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.daily,
       isInProgress: () => _isDailyApiSyncInProgress,
       setInProgress: (value) => _isDailyApiSyncInProgress = value,
@@ -235,7 +228,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncWeekly({bool printRawResponse = false}) async {
-    await _syncTypedTab<WeeklyPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.weekly,
       isInProgress: () => _isWeeklyApiSyncInProgress,
       setInProgress: (value) => _isWeeklyApiSyncInProgress = value,
@@ -255,7 +248,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncMonthly({bool printRawResponse = false}) async {
-    await _syncTypedTab<MonthlyPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.monthly,
       isInProgress: () => _isMonthlyApiSyncInProgress,
       setInProgress: (value) => _isMonthlyApiSyncInProgress = value,
@@ -275,7 +268,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncRoaming({bool printRawResponse = false}) async {
-    await _syncTypedTab<RoamingPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.roaming,
       isInProgress: () => _isRoamingApiSyncInProgress,
       setInProgress: (value) => _isRoamingApiSyncInProgress = value,
@@ -295,7 +288,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncRoamEasy({bool printRawResponse = false}) async {
-    await _syncTypedTab<RoamEasyPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.roameasy,
       isInProgress: () => _isRoamEasyApiSyncInProgress,
       setInProgress: (value) => _isRoamEasyApiSyncInProgress = value,
@@ -315,7 +308,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncMifi({bool printRawResponse = false}) async {
-    await _syncTypedTab<MifiPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.mifi,
       isInProgress: () => _isMifiApiSyncInProgress,
       setInProgress: (value) => _isMifiApiSyncInProgress = value,
@@ -335,7 +328,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   Future<void> syncLibertyGlobal({bool printRawResponse = false}) async {
-    await _syncTypedTab<LibertyGlobalPlanModel>(
+    await _syncTypedTab<BasePlanModel>(
       tab: HomePlanTab.libertyGlobal,
       isInProgress: () => _isLibertyGlobalApiSyncInProgress,
       setInProgress: (value) => _isLibertyGlobalApiSyncInProgress = value,

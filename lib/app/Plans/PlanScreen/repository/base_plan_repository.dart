@@ -1,13 +1,6 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
-import '../models/add_ons_primary_plan_model.dart';
-import '../models/daily_plan_model.dart';
-import '../models/weekly_plan_model.dart';
-import '../models/monthly_plan_model.dart';
-import '../models/roaming_plan_model.dart';
-import '../models/roameasy_plan_model.dart';
-import '../models/mifi_plan_model.dart';
-import '../models/liberty_global_plan_model.dart';
+import '../models/base_plan_model.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'plan_types.dart';
 
@@ -18,6 +11,9 @@ import 'plan_types.dart';
 /// - Production repository (API-based)
 /// - Mock repository (hardcoded data for testing/development)
 /// - Test repository (for unit tests)
+///
+/// Now uses unified BasePlanModel for all prepaid plan types
+/// (Daily, Weekly, Monthly, Roaming, RoamEasy, MiFi, Liberty Global)
 abstract class BasePlanRepository {
   /// Fetches full available-plans payload and normalizes it.
   ///
@@ -31,7 +27,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = P
   /// - Frequency = D
-  Future<List<DailyPlanModel>> fetchDailyPlansFromApi({
+  Future<List<BasePlanModel>> fetchDailyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredDailyPlans = false,
   });
@@ -41,7 +37,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = P
   /// - Frequency = W
-  Future<List<WeeklyPlanModel>> fetchWeeklyPlansFromApi({
+  Future<List<BasePlanModel>> fetchWeeklyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredWeeklyPlans = false,
   });
@@ -51,7 +47,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = P
   /// - Frequency = M
-  Future<List<MonthlyPlanModel>> fetchMonthlyPlansFromApi({
+  Future<List<BasePlanModel>> fetchMonthlyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredMonthlyPlans = false,
   });
@@ -61,7 +57,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = A
   /// - PlanGroup = roaming
-  Future<List<RoamingPlanModel>> fetchRoamingPlansFromApi({
+  Future<List<BasePlanModel>> fetchRoamingPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredRoamingPlans = false,
   });
@@ -71,7 +67,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = A
   /// - PlanGroup = roameasy
-  Future<List<RoamEasyPlanModel>> fetchRoamEasyPlansFromApi({
+  Future<List<BasePlanModel>> fetchRoamEasyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredRoamEasyPlans = false,
   });
@@ -81,7 +77,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = P
   /// - PlanGroup = mifi (30 day)
-  Future<List<MifiPlanModel>> fetchMifiPlansFromApi({
+  Future<List<BasePlanModel>> fetchMifiPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredMifiPlans = false,
   });
@@ -91,7 +87,7 @@ abstract class BasePlanRepository {
   /// Filtering rule (strict):
   /// - PlanType = A
   /// - PlanGroup = liberty global
-  Future<List<LibertyGlobalPlanModel>> fetchLibertyGlobalPlansFromApi({
+  Future<List<BasePlanModel>> fetchLibertyGlobalPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredLibertyGlobalPlans = false,
   });
@@ -119,19 +115,19 @@ abstract class BasePlanRepository {
   Future<List<HomePlanAddOnModel>> fetchAddOns();
 
   /// Fetch and parse bundles `PrimaryPlans` for Add-ons tab.
-  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+  Future<List<BasePlanModel>> fetchAddOnsPrimaryPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredPrimaryPlans = false,
   });
 
   /// Returns the earliest primary plan after repository sorting.
-  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
-    List<AddOnsPrimaryPlanModel> primaryPlans,
+  BasePlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<BasePlanModel> primaryPlans,
   );
 
   /// Maps the selected primary plan's `AvailableBoltOns` to UI add-on models.
   List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
-    required AddOnsPrimaryPlanModel primaryPlan,
+    required BasePlanModel primaryPlan,
   });
 
   // ========== Read-Only Getters ==========
@@ -143,43 +139,43 @@ abstract class BasePlanRepository {
   DateTime? get lastFetchedAt;
 
   /// Read-only latest strict daily plans cache.
-  List<DailyPlanModel> get lastFetchedDailyPlans;
+  List<BasePlanModel> get lastFetchedDailyPlans;
 
   /// Read-only latest strict daily filter timestamp.
   DateTime? get lastFetchedDailyAt;
 
   /// Read-only latest strict weekly plans cache.
-  List<WeeklyPlanModel> get lastFetchedWeeklyPlans;
+  List<BasePlanModel> get lastFetchedWeeklyPlans;
 
   /// Read-only latest strict weekly filter timestamp.
   DateTime? get lastFetchedWeeklyAt;
 
   /// Read-only latest strict monthly plans cache.
-  List<MonthlyPlanModel> get lastFetchedMonthlyPlans;
+  List<BasePlanModel> get lastFetchedMonthlyPlans;
 
   /// Read-only latest strict monthly filter timestamp.
   DateTime? get lastFetchedMonthlyAt;
 
   /// Read-only latest strict roaming plans cache.
-  List<RoamingPlanModel> get lastFetchedRoamingPlans;
+  List<BasePlanModel> get lastFetchedRoamingPlans;
 
   /// Read-only latest strict roaming filter timestamp.
   DateTime? get lastFetchedRoamingAt;
 
   /// Read-only latest strict RoamEasy plans cache.
-  List<RoamEasyPlanModel> get lastFetchedRoamEasyPlans;
+  List<BasePlanModel> get lastFetchedRoamEasyPlans;
 
   /// Read-only latest strict RoamEasy filter timestamp.
   DateTime? get lastFetchedRoamEasyAt;
 
   /// Read-only latest strict MiFi plans cache.
-  List<MifiPlanModel> get lastFetchedMifiPlans;
+  List<BasePlanModel> get lastFetchedMifiPlans;
 
   /// Read-only latest strict MiFi filter timestamp.
   DateTime? get lastFetchedMifiAt;
 
   /// Read-only latest strict Liberty Global plans cache.
-  List<LibertyGlobalPlanModel> get lastFetchedLibertyGlobalPlans;
+  List<BasePlanModel> get lastFetchedLibertyGlobalPlans;
 
   /// Read-only latest strict Liberty Global filter timestamp.
   DateTime? get lastFetchedLibertyGlobalAt;
@@ -191,7 +187,7 @@ abstract class BasePlanRepository {
   DateTime? get lastFetchedPostpaidRoamingAt;
 
   /// Read-only latest Add-ons primary plan cache.
-  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans;
+  List<BasePlanModel> get lastFetchedAddOnsPrimaryPlans;
 
   /// Read-only latest Add-ons primary plan fetch timestamp.
   DateTime? get lastFetchedAddOnsPrimaryPlansAt;

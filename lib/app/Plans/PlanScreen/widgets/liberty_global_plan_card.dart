@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_bucket_icons.dart';
-import '../models/liberty_global_plan_model.dart';
 import '../theme/theme.dart';
 
 class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
-  final LibertyGlobalPlanModel plan;
+  final BasePlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -181,7 +181,7 @@ class HomePlanLibertyGlobalPlanCard extends StatelessWidget {
     );
   }
 
-  String _durationText(LibertyGlobalPlanModel plan) {
+  String _durationText(BasePlanModel plan) {
     if(plan.frequency == 'W'){
       return '7 days';
     }
@@ -249,7 +249,7 @@ class _PricePill extends StatelessWidget {
 }
 
 class _PlanBuckets extends StatefulWidget {
-  final List<LibertyGlobalPlanBucketModel> benefits;
+  final List<BasePlanBucketModel> benefits;
   const _PlanBuckets({required this.benefits});
 
   @override
@@ -269,7 +269,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
   Widget build(BuildContext context) {
     const double rowH = 50;
     const double sidePad = 2;
-    final List<LibertyGlobalPlanBucketModel> visibleBenefits = widget.benefits.take(1).toList();
+    final List<BasePlanBucketModel> visibleBenefits = widget.benefits.take(1).toList();
 
     if (visibleBenefits.isEmpty) {
       return const SizedBox.shrink();
@@ -295,7 +295,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(visibleBenefits.length, (i) {
-                          final LibertyGlobalPlanBucketModel item =
+                          final BasePlanBucketModel item =
                               visibleBenefits[i];
                           return Row(
                             children: [
@@ -455,7 +455,7 @@ class _AssetIcon extends StatelessWidget {
 
 class _BucketItem extends StatelessWidget {
   final BucketItemType itemType;
-  final LibertyGlobalPlanBucketModel benefit;
+  final BasePlanBucketModel benefit;
   final Color labelColor;
 
   const _BucketItem({

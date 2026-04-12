@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/theme.dart';
 
 // Monthly plan card — mirrors the Daily/Weekly API binding pattern.
 class HomePlanMonthlyPlanCard extends StatelessWidget {
-  final MonthlyPlanModel plan;
+  final BasePlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -168,7 +168,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
     );
   }
 }
-String _durationText(MonthlyPlanModel plan) {
+String _durationText(BasePlanModel plan) {
   if(plan.frequency == 'W'){
     return '7 days';
   }
@@ -281,7 +281,7 @@ class _PricePill extends StatelessWidget {
 }
 
 class _PlanBuckets extends StatefulWidget {
-  final List<MonthlyPlanBucketModel> benefits;
+  final List<BasePlanBucketModel> benefits;
   const _PlanBuckets({required this.benefits});
 
   @override
@@ -324,7 +324,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(widget.benefits.length, (i) {
-                          final MonthlyPlanBucketModel item =
+                          final BasePlanBucketModel item =
                               widget.benefits[i];
                           Color labelColor;
                           BucketItemType itemType = BucketItemType.whatsApp;
@@ -569,7 +569,7 @@ class _AssetIcon extends StatelessWidget {
 
 class _BucketItem extends StatelessWidget {
   final BucketItemType itemType;
-  final MonthlyPlanBucketModel benefit;
+  final BasePlanBucketModel benefit;
   final Color labelColor;
 
   const _BucketItem({

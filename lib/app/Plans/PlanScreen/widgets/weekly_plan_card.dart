@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/theme.dart';
 
 // Weekly plan card — mirrors the Daily API binding pattern.
 class HomePlanWeeklyPlanCard extends StatelessWidget {
-  final WeeklyPlanModel plan;
+  final BasePlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -204,7 +204,7 @@ class _PricePill extends StatelessWidget {
 }
 
 class _PlanBuckets extends StatefulWidget {
-  final List<WeeklyPlanBucketModel> benefits;
+  final List<BasePlanBucketModel> benefits;
   const _PlanBuckets({required this.benefits});
 
   @override
@@ -245,7 +245,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(widget.benefits.length, (i) {
-                          final WeeklyPlanBucketModel item = widget.benefits[i];
+                          final BasePlanBucketModel item = widget.benefits[i];
                           Color labelColor;
                           BucketItemType itemType = BucketItemType.whatsApp;
 
@@ -463,7 +463,7 @@ class _AssetIcon extends StatelessWidget {
 
 class _BucketItem extends StatelessWidget {
   final BucketItemType itemType;
-  final WeeklyPlanBucketModel benefit;
+  final BasePlanBucketModel benefit;
   final Color labelColor;
 
   const _BucketItem({

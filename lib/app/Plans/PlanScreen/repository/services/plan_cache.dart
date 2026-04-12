@@ -1,86 +1,81 @@
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/services/base_plan_cache.dart';
-import '../../models/daily_plan_model.dart';
-import '../../models/weekly_plan_model.dart';
-import '../../models/monthly_plan_model.dart';
-import '../../models/roaming_plan_model.dart';
-import '../../models/roameasy_plan_model.dart';
-import '../../models/mifi_plan_model.dart';
-import '../../models/liberty_global_plan_model.dart';
-import '../../models/add_ons_primary_plan_model.dart';
+import '../../models/base_plan_model.dart';
 import '../../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
 /// Manages in-memory cache for prepaid plan data.
 ///
 /// Extends BasePlanCache to inherit raw plans caching.
-/// Adds caching for typed plan models (Daily, Weekly, Monthly, etc.)
+/// Adds caching for typed plan models using unified BasePlanModel
+/// (Daily, Weekly, Monthly, Roaming, RoamEasy, MiFi, Liberty Global)
 class PlanCache extends BasePlanCache {
 
   // Typed plans cache using CacheEntry
-  final CacheEntry<List<DailyPlanModel>> _dailyPlansCache = CacheEntry();
-  final CacheEntry<List<WeeklyPlanModel>> _weeklyPlansCache = CacheEntry();
-  final CacheEntry<List<MonthlyPlanModel>> _monthlyPlansCache = CacheEntry();
-  final CacheEntry<List<RoamingPlanModel>> _roamingPlansCache = CacheEntry();
-  final CacheEntry<List<RoamEasyPlanModel>> _roamEasyPlansCache = CacheEntry();
-  final CacheEntry<List<MifiPlanModel>> _mifiPlansCache = CacheEntry();
-  final CacheEntry<List<LibertyGlobalPlanModel>> _libertyGlobalPlansCache = CacheEntry();
+  // All prepaid plan types now use BasePlanModel
+  final CacheEntry<List<BasePlanModel>> _dailyPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _weeklyPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _monthlyPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _roamingPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _roamEasyPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _mifiPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _libertyGlobalPlansCache = CacheEntry();
   final CacheEntry<List<HomePlansPostPaidPlanModel>> _postpaidRoamingPlansCache = CacheEntry();
   final CacheEntry<Map<String, dynamic>> _bundlesResponseCache = CacheEntry();
-  final CacheEntry<List<AddOnsPrimaryPlanModel>> _addOnsPrimaryPlansCache = CacheEntry();
+  final CacheEntry<List<BasePlanModel>> _addOnsPrimaryPlansCache = CacheEntry();
 
   // ========== Daily Plans ==========
 
-  void setDailyPlans(List<DailyPlanModel> plans) => _dailyPlansCache.set(plans);
+  void setDailyPlans(List<BasePlanModel> plans) => _dailyPlansCache.set(plans);
 
-  List<DailyPlanModel> getDailyPlans() => _dailyPlansCache.get() ?? [];
+  List<BasePlanModel> getDailyPlans() => _dailyPlansCache.get() ?? [];
 
   DateTime? getDailyPlansTimestamp() => _dailyPlansCache.getTimestamp();
 
   // ========== Weekly Plans ==========
 
-  void setWeeklyPlans(List<WeeklyPlanModel> plans) => _weeklyPlansCache.set(plans);
+  void setWeeklyPlans(List<BasePlanModel> plans) => _weeklyPlansCache.set(plans);
 
-  List<WeeklyPlanModel> getWeeklyPlans() => _weeklyPlansCache.get() ?? [];
+  List<BasePlanModel> getWeeklyPlans() => _weeklyPlansCache.get() ?? [];
 
   DateTime? getWeeklyPlansTimestamp() => _weeklyPlansCache.getTimestamp();
 
   // ========== Monthly Plans ==========
 
-  void setMonthlyPlans(List<MonthlyPlanModel> plans) => _monthlyPlansCache.set(plans);
+  void setMonthlyPlans(List<BasePlanModel> plans) => _monthlyPlansCache.set(plans);
 
-  List<MonthlyPlanModel> getMonthlyPlans() => _monthlyPlansCache.get() ?? [];
+  List<BasePlanModel> getMonthlyPlans() => _monthlyPlansCache.get() ?? [];
 
   DateTime? getMonthlyPlansTimestamp() => _monthlyPlansCache.getTimestamp();
 
   // ========== Roaming Plans ==========
 
-  void setRoamingPlans(List<RoamingPlanModel> plans) => _roamingPlansCache.set(plans);
+  void setRoamingPlans(List<BasePlanModel> plans) => _roamingPlansCache.set(plans);
 
-  List<RoamingPlanModel> getRoamingPlans() => _roamingPlansCache.get() ?? [];
+  List<BasePlanModel> getRoamingPlans() => _roamingPlansCache.get() ?? [];
 
   DateTime? getRoamingPlansTimestamp() => _roamingPlansCache.getTimestamp();
 
   // ========== RoamEasy Plans ==========
 
-  void setRoamEasyPlans(List<RoamEasyPlanModel> plans) => _roamEasyPlansCache.set(plans);
+  void setRoamEasyPlans(List<BasePlanModel> plans) => _roamEasyPlansCache.set(plans);
 
-  List<RoamEasyPlanModel> getRoamEasyPlans() => _roamEasyPlansCache.get() ?? [];
+  List<BasePlanModel> getRoamEasyPlans() => _roamEasyPlansCache.get() ?? [];
 
   DateTime? getRoamEasyPlansTimestamp() => _roamEasyPlansCache.getTimestamp();
 
   // ========== MiFi Plans ==========
 
-  void setMifiPlans(List<MifiPlanModel> plans) => _mifiPlansCache.set(plans);
+  void setMifiPlans(List<BasePlanModel> plans) => _mifiPlansCache.set(plans);
 
-  List<MifiPlanModel> getMifiPlans() => _mifiPlansCache.get() ?? [];
+  List<BasePlanModel> getMifiPlans() => _mifiPlansCache.get() ?? [];
 
   DateTime? getMifiPlansTimestamp() => _mifiPlansCache.getTimestamp();
 
   // ========== Liberty Global Plans ==========
 
-  void setLibertyGlobalPlans(List<LibertyGlobalPlanModel> plans) =>
+  void setLibertyGlobalPlans(List<BasePlanModel> plans) =>
       _libertyGlobalPlansCache.set(plans);
 
-  List<LibertyGlobalPlanModel> getLibertyGlobalPlans() =>
+  List<BasePlanModel> getLibertyGlobalPlans() =>
       _libertyGlobalPlansCache.get() ?? [];
 
   DateTime? getLibertyGlobalPlansTimestamp() =>
@@ -112,10 +107,10 @@ class PlanCache extends BasePlanCache {
 
   // ========== Add-ons Primary Plans ==========
 
-  void setAddOnsPrimaryPlans(List<AddOnsPrimaryPlanModel> plans) =>
+  void setAddOnsPrimaryPlans(List<BasePlanModel> plans) =>
       _addOnsPrimaryPlansCache.set(plans);
 
-  List<AddOnsPrimaryPlanModel> getAddOnsPrimaryPlans() =>
+  List<BasePlanModel> getAddOnsPrimaryPlans() =>
       _addOnsPrimaryPlansCache.get() ?? [];
 
   DateTime? getAddOnsPrimaryPlansTimestamp() =>

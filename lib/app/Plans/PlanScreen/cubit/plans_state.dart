@@ -1,11 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/mifi_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/liberty_global_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
 /// Status of plan fetching
@@ -40,13 +34,13 @@ class PlansState extends Equatable {
   });
 
   final PlansStatus status;
-  final List<DailyPlanModel> dailyPlans;
-  final List<WeeklyPlanModel> weeklyPlans;
-  final List<MonthlyPlanModel> monthlyPlans;
-  final List<RoamingPlanModel> roamingPlans;
-  final List<RoamEasyPlanModel> roamEasyPlans;
-  final List<MifiPlanModel> mifiPlans;
-  final List<LibertyGlobalPlanModel> libertyGlobalPlans;
+  final List<BasePlanModel> dailyPlans;
+  final List<BasePlanModel> weeklyPlans;
+  final List<BasePlanModel> monthlyPlans;
+  final List<BasePlanModel> roamingPlans;
+  final List<BasePlanModel> roamEasyPlans;
+  final List<BasePlanModel> mifiPlans;
+  final List<BasePlanModel> libertyGlobalPlans;
   final List<HomePlansPostPaidPlanModel> postpaidRoamingPlans;
   final String? errorMessage;
   final DateTime? lastFetchedAt;
@@ -65,13 +59,13 @@ class PlansState extends Equatable {
 
   PlansState copyWith({
     PlansStatus? status,
-    List<DailyPlanModel>? dailyPlans,
-    List<WeeklyPlanModel>? weeklyPlans,
-    List<MonthlyPlanModel>? monthlyPlans,
-    List<RoamingPlanModel>? roamingPlans,
-    List<RoamEasyPlanModel>? roamEasyPlans,
-    List<MifiPlanModel>? mifiPlans,
-    List<LibertyGlobalPlanModel>? libertyGlobalPlans,
+    List<BasePlanModel>? dailyPlans,
+    List<BasePlanModel>? weeklyPlans,
+    List<BasePlanModel>? monthlyPlans,
+    List<BasePlanModel>? roamingPlans,
+    List<BasePlanModel>? roamEasyPlans,
+    List<BasePlanModel>? mifiPlans,
+    List<BasePlanModel>? libertyGlobalPlans,
     List<HomePlansPostPaidPlanModel>? postpaidRoamingPlans,
     String? errorMessage,
     DateTime? lastFetchedAt,

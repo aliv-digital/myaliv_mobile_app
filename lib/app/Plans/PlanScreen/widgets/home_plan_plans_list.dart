@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/liberty_global_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/mifi_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/widgets/home_plans_postpaid_plan_card.dart';
 
@@ -39,13 +33,13 @@ class HomePlanPlansList extends StatelessWidget {
   final HomePlanState state;
   final ValueChanged<String> onToggleExpanded;
   final ValueChanged<HomePlanModel> onPurchaseNow;
-  final ValueChanged<DailyPlanModel>? onDailyPurchaseNow;
-  final ValueChanged<LibertyGlobalPlanModel>? onLibertyGlobalPurchaseNow;
-  final ValueChanged<MifiPlanModel>? onMifiPurchaseNow;
-  final ValueChanged<MonthlyPlanModel>? onMonthlyPurchaseNow;
-  final ValueChanged<RoamingPlanModel>? onRoamingPurchaseNow;
-  final ValueChanged<RoamEasyPlanModel>? onRoamEasyPurchaseNow;
-  final ValueChanged<WeeklyPlanModel>? onWeeklyPurchaseNow;
+  final ValueChanged<BasePlanModel>? onDailyPurchaseNow;
+  final ValueChanged<BasePlanModel>? onLibertyGlobalPurchaseNow;
+  final ValueChanged<BasePlanModel>? onMifiPurchaseNow;
+  final ValueChanged<BasePlanModel>? onMonthlyPurchaseNow;
+  final ValueChanged<BasePlanModel>? onRoamingPurchaseNow;
+  final ValueChanged<BasePlanModel>? onRoamEasyPurchaseNow;
+  final ValueChanged<BasePlanModel>? onWeeklyPurchaseNow;
   final ValueChanged<HomePlansPostPaidPlanModel>? onPostpaidRoamingPurchaseNow;
 
   @override
@@ -58,7 +52,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.dailyApiPlans.length,
         itemBuilder: (context, index) {
-          final DailyPlanModel plan = state.dailyApiPlans[index];
+          final BasePlanModel plan = state.dailyApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -80,7 +74,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.weeklyApiPlans.length,
         itemBuilder: (context, index) {
-          final WeeklyPlanModel plan = state.weeklyApiPlans[index];
+          final BasePlanModel plan = state.weeklyApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -102,7 +96,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.monthlyApiPlans.length,
         itemBuilder: (context, index) {
-          final MonthlyPlanModel plan = state.monthlyApiPlans[index];
+          final BasePlanModel plan = state.monthlyApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -121,7 +115,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.roamingApiPlans.length,
         itemBuilder: (context, index) {
-          final RoamingPlanModel plan = state.roamingApiPlans[index];
+          final BasePlanModel plan = state.roamingApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -140,7 +134,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.roamEasyApiPlans.length,
         itemBuilder: (context, index) {
-          final RoamEasyPlanModel plan = state.roamEasyApiPlans[index];
+          final BasePlanModel plan = state.roamEasyApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -159,7 +153,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.mifiApiPlans.length,
         itemBuilder: (context, index) {
-          final MifiPlanModel plan = state.mifiApiPlans[index];
+          final BasePlanModel plan = state.mifiApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -178,7 +172,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.libertyGlobalApiPlans.length,
         itemBuilder: (context, index) {
-          final LibertyGlobalPlanModel plan =
+          final BasePlanModel plan =
               state.libertyGlobalApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
@@ -244,7 +238,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForDailyTab({
-    required DailyPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -263,7 +257,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForWeeklyTab({
-    required WeeklyPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -282,7 +276,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForMonthlyTab({
-    required MonthlyPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -301,7 +295,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForRoamingTab({
-    required RoamingPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -320,7 +314,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForRoamEasyTab({
-    required RoamEasyPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -339,7 +333,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForMifiTab({
-    required MifiPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -358,7 +352,7 @@ class HomePlanPlansList extends StatelessWidget {
   }
 
   Widget _buildCardForLibertyGlobalTab({
-    required LibertyGlobalPlanModel plan,
+    required BasePlanModel plan,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);

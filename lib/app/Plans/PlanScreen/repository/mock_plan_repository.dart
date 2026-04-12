@@ -1,13 +1,6 @@
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
-import '../models/add_ons_primary_plan_model.dart';
-import '../models/daily_plan_model.dart';
-import '../models/weekly_plan_model.dart';
-import '../models/monthly_plan_model.dart';
-import '../models/roaming_plan_model.dart';
-import '../models/roameasy_plan_model.dart';
-import '../models/mifi_plan_model.dart';
-import '../models/liberty_global_plan_model.dart';
+import '../models/base_plan_model.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'base_plan_repository.dart';
 import 'plan_types.dart';
@@ -22,34 +15,33 @@ class MockPlanRepository implements BasePlanRepository {
   final List<Map<String, dynamic>> _lastFetchedPlans = <Map<String, dynamic>>[];
   DateTime? _lastFetchedAt;
 
-  final List<DailyPlanModel> _lastFetchedDailyPlans = <DailyPlanModel>[];
+  final List<BasePlanModel> _lastFetchedDailyPlans = <BasePlanModel>[];
   DateTime? _lastFetchedDailyAt;
 
-  final List<WeeklyPlanModel> _lastFetchedWeeklyPlans = <WeeklyPlanModel>[];
+  final List<BasePlanModel> _lastFetchedWeeklyPlans = <BasePlanModel>[];
   DateTime? _lastFetchedWeeklyAt;
 
-  final List<MonthlyPlanModel> _lastFetchedMonthlyPlans = <MonthlyPlanModel>[];
+  final List<BasePlanModel> _lastFetchedMonthlyPlans = <BasePlanModel>[];
   DateTime? _lastFetchedMonthlyAt;
 
-  final List<RoamingPlanModel> _lastFetchedRoamingPlans = <RoamingPlanModel>[];
+  final List<BasePlanModel> _lastFetchedRoamingPlans = <BasePlanModel>[];
   DateTime? _lastFetchedRoamingAt;
 
-  final List<RoamEasyPlanModel> _lastFetchedRoamEasyPlans =
-      <RoamEasyPlanModel>[];
+  final List<BasePlanModel> _lastFetchedRoamEasyPlans = <BasePlanModel>[];
   DateTime? _lastFetchedRoamEasyAt;
 
-  final List<MifiPlanModel> _lastFetchedMifiPlans = <MifiPlanModel>[];
+  final List<BasePlanModel> _lastFetchedMifiPlans = <BasePlanModel>[];
   DateTime? _lastFetchedMifiAt;
 
-  final List<LibertyGlobalPlanModel> _lastFetchedLibertyGlobalPlans =
-      <LibertyGlobalPlanModel>[];
+  final List<BasePlanModel> _lastFetchedLibertyGlobalPlans =
+      <BasePlanModel>[];
   DateTime? _lastFetchedLibertyGlobalAt;
   final List<HomePlansPostPaidPlanModel> _lastFetchedPostpaidRoamingPlans =
       <HomePlansPostPaidPlanModel>[];
   DateTime? _lastFetchedPostpaidRoamingAt;
 
-  List<AddOnsPrimaryPlanModel> _lastFetchedAddOnsPrimaryPlans =
-      <AddOnsPrimaryPlanModel>[];
+  List<BasePlanModel> _lastFetchedAddOnsPrimaryPlans =
+      <BasePlanModel>[];
   DateTime? _lastFetchedAddOnsPrimaryPlansAt;
 
   @override
@@ -62,7 +54,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<DailyPlanModel>> fetchDailyPlansFromApi({
+  Future<List<BasePlanModel>> fetchDailyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredDailyPlans = false,
   }) async {
@@ -71,7 +63,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock daily plans
     return [
-      DailyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'd1',
         planName: 'freedom5',
         planDescription: 'A simple daily plan for quick usage.',
@@ -85,7 +77,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<WeeklyPlanModel>> fetchWeeklyPlansFromApi({
+  Future<List<BasePlanModel>> fetchWeeklyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredWeeklyPlans = false,
   }) async {
@@ -94,7 +86,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock weekly plans
     return [
-      WeeklyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'w1',
         planName: 'freedom8',
         planDescription: 'Weekly plan with unlimited local talk and text.',
@@ -104,7 +96,7 @@ class MockPlanRepository implements BasePlanRepository {
         voiceUnlimited: true,
         smsUnlimited: true,
       )),
-      WeeklyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'w2',
         planName: 'freedom15',
         planDescription: 'Weekly plan with unlimited local talk and text.',
@@ -118,7 +110,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<MonthlyPlanModel>> fetchMonthlyPlansFromApi({
+  Future<List<BasePlanModel>> fetchMonthlyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredMonthlyPlans = false,
   }) async {
@@ -127,7 +119,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock monthly plans
     return [
-      MonthlyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'm1',
         planName: 'liberty40',
         planDescription:
@@ -138,7 +130,7 @@ class MockPlanRepository implements BasePlanRepository {
         voiceUnlimited: true,
         smsUnlimited: true,
       )),
-      MonthlyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'm2',
         planName: 'liberty70',
         planDescription: 'Monthly plan with extended value.',
@@ -148,7 +140,7 @@ class MockPlanRepository implements BasePlanRepository {
         voiceUnlimited: true,
         smsUnlimited: true,
       )),
-      MonthlyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'm3',
         planName: 'liberty120',
         planDescription: 'Premium monthly option for heavy usage.',
@@ -162,7 +154,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<RoamingPlanModel>> fetchRoamingPlansFromApi({
+  Future<List<BasePlanModel>> fetchRoamingPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredRoamingPlans = false,
   }) async {
@@ -171,7 +163,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock roaming plans
     return [
-      RoamingPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'r1',
         planName: 'roam20',
         planDescription: 'Roaming plan for travel usage.',
@@ -180,7 +172,7 @@ class MockPlanRepository implements BasePlanRepository {
         planGroup: 'roaming',
         data: 0.25,
       )),
-      RoamingPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'r2',
         planName: 'roam30',
         planDescription: 'Roaming plan for travel usage.',
@@ -193,7 +185,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<RoamEasyPlanModel>> fetchRoamEasyPlansFromApi({
+  Future<List<BasePlanModel>> fetchRoamEasyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredRoamEasyPlans = false,
   }) async {
@@ -202,7 +194,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock RoamEasy plans
     return [
-      RoamEasyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 're1',
         planName: 'roameasy carib',
         planDescription: 'Easy roaming pack for short trips.',
@@ -211,7 +203,7 @@ class MockPlanRepository implements BasePlanRepository {
         planGroup: 'roameasy',
         data: 1.5,
       )),
-      RoamEasyPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 're2',
         planName: 'roameasy usa & can',
         planDescription: 'Easy roaming pack for short trips.',
@@ -224,7 +216,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<MifiPlanModel>> fetchMifiPlansFromApi({
+  Future<List<BasePlanModel>> fetchMifiPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredMifiPlans = false,
   }) async {
@@ -233,7 +225,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock MiFi plans
     return [
-      MifiPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'mi1',
         planName: 'mifi75',
         planDescription: 'MiFi data plan for hotspot usage.',
@@ -242,7 +234,7 @@ class MockPlanRepository implements BasePlanRepository {
         planGroup: 'mifi',
         data: 50.0,
       )),
-      MifiPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'mi2',
         planName: 'mifi125',
         planDescription: 'MiFi data plan for hotspot usage.',
@@ -255,7 +247,7 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<LibertyGlobalPlanModel>> fetchLibertyGlobalPlansFromApi({
+  Future<List<BasePlanModel>> fetchLibertyGlobalPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredLibertyGlobalPlans = false,
   }) async {
@@ -264,7 +256,7 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock Liberty Global plans
     return [
-      LibertyGlobalPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'lg1',
         planName: 'liberty global haiti',
         planDescription: 'International talk plan for Liberty Global.',
@@ -273,7 +265,7 @@ class MockPlanRepository implements BasePlanRepository {
         planGroup: 'liberty global',
         voice: 30.0,
       )),
-      LibertyGlobalPlanModel.fromApiMap(_createMockPlanMap(
+      BasePlanModel.fromApiMap(_createMockPlanMap(
         planId: 'lg2',
         planName: 'liberty global caribbean',
         planDescription: 'International talk plan for Liberty Global.',
@@ -916,27 +908,27 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+  Future<List<BasePlanModel>> fetchAddOnsPrimaryPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredPrimaryPlans = false,
   }) async {
     await Future.delayed(const Duration(milliseconds: 350));
 
-    _lastFetchedAddOnsPrimaryPlans = <AddOnsPrimaryPlanModel>[
+    _lastFetchedAddOnsPrimaryPlans = <BasePlanModel>[
       _createMockAddOnsPrimaryPlan(
         planId: 'm2',
         planName: 'liberty70',
         planType: 'P',
         planAmount: 70.00,
         autoRenew: true,
-        availableBoltOns: <AddOnsPrimaryPlanModel>[
+        availableBoltOns: <BasePlanModel>[
           _createMockAddOnsPrimaryPlan(
             planId: 'a1',
             planName: 'liberty data 1',
             planType: 'S',
             planAmount: 5.00,
-            planBuckets: const <AddOnsPrimaryPlanBucketModel>[
-              AddOnsPrimaryPlanBucketModel(
+            planBuckets: const <BasePlanBucketModel>[
+              BasePlanBucketModel(
                 name: 'Data',
                 amount: 1,
                 unit: 'gb',
@@ -952,8 +944,8 @@ class MockPlanRepository implements BasePlanRepository {
             planName: 'liberty data 2',
             planType: 'S',
             planAmount: 10.00,
-            planBuckets: const <AddOnsPrimaryPlanBucketModel>[
-              AddOnsPrimaryPlanBucketModel(
+            planBuckets: const <BasePlanBucketModel>[
+              BasePlanBucketModel(
                 name: 'Data',
                 amount: 2,
                 unit: 'gb',
@@ -969,8 +961,8 @@ class MockPlanRepository implements BasePlanRepository {
             planName: 'liberty data 3',
             planType: 'S',
             planAmount: 16.00,
-            planBuckets: const <AddOnsPrimaryPlanBucketModel>[
-              AddOnsPrimaryPlanBucketModel(
+            planBuckets: const <BasePlanBucketModel>[
+              BasePlanBucketModel(
                 name: 'Data',
                 amount: 3,
                 unit: 'gb',
@@ -990,8 +982,8 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   @override
-  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
-    List<AddOnsPrimaryPlanModel> primaryPlans,
+  BasePlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<BasePlanModel> primaryPlans,
   ) {
     if (primaryPlans.isEmpty) {
       return null;
@@ -1002,7 +994,7 @@ class MockPlanRepository implements BasePlanRepository {
 
   @override
   List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
-    required AddOnsPrimaryPlanModel primaryPlan,
+    required BasePlanModel primaryPlan,
   }) {
     return primaryPlan.availableBoltOns
         .map(
@@ -1028,50 +1020,50 @@ class MockPlanRepository implements BasePlanRepository {
   DateTime? get lastFetchedAt => _lastFetchedAt;
 
   @override
-  List<DailyPlanModel> get lastFetchedDailyPlans =>
-      List<DailyPlanModel>.unmodifiable(_lastFetchedDailyPlans);
+  List<BasePlanModel> get lastFetchedDailyPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedDailyPlans);
 
   @override
   DateTime? get lastFetchedDailyAt => _lastFetchedDailyAt;
 
   @override
-  List<WeeklyPlanModel> get lastFetchedWeeklyPlans =>
-      List<WeeklyPlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
+  List<BasePlanModel> get lastFetchedWeeklyPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedWeeklyPlans);
 
   @override
   DateTime? get lastFetchedWeeklyAt => _lastFetchedWeeklyAt;
 
   @override
-  List<MonthlyPlanModel> get lastFetchedMonthlyPlans =>
-      List<MonthlyPlanModel>.unmodifiable(_lastFetchedMonthlyPlans);
+  List<BasePlanModel> get lastFetchedMonthlyPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedMonthlyPlans);
 
   @override
   DateTime? get lastFetchedMonthlyAt => _lastFetchedMonthlyAt;
 
   @override
-  List<RoamingPlanModel> get lastFetchedRoamingPlans =>
-      List<RoamingPlanModel>.unmodifiable(_lastFetchedRoamingPlans);
+  List<BasePlanModel> get lastFetchedRoamingPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedRoamingPlans);
 
   @override
   DateTime? get lastFetchedRoamingAt => _lastFetchedRoamingAt;
 
   @override
-  List<RoamEasyPlanModel> get lastFetchedRoamEasyPlans =>
-      List<RoamEasyPlanModel>.unmodifiable(_lastFetchedRoamEasyPlans);
+  List<BasePlanModel> get lastFetchedRoamEasyPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedRoamEasyPlans);
 
   @override
   DateTime? get lastFetchedRoamEasyAt => _lastFetchedRoamEasyAt;
 
   @override
-  List<MifiPlanModel> get lastFetchedMifiPlans =>
-      List<MifiPlanModel>.unmodifiable(_lastFetchedMifiPlans);
+  List<BasePlanModel> get lastFetchedMifiPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedMifiPlans);
 
   @override
   DateTime? get lastFetchedMifiAt => _lastFetchedMifiAt;
 
   @override
-  List<LibertyGlobalPlanModel> get lastFetchedLibertyGlobalPlans =>
-      List<LibertyGlobalPlanModel>.unmodifiable(_lastFetchedLibertyGlobalPlans);
+  List<BasePlanModel> get lastFetchedLibertyGlobalPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedLibertyGlobalPlans);
 
   @override
   DateTime? get lastFetchedLibertyGlobalAt => _lastFetchedLibertyGlobalAt;
@@ -1086,14 +1078,14 @@ class MockPlanRepository implements BasePlanRepository {
   DateTime? get lastFetchedPostpaidRoamingAt => _lastFetchedPostpaidRoamingAt;
 
   @override
-  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
-      List<AddOnsPrimaryPlanModel>.unmodifiable(_lastFetchedAddOnsPrimaryPlans);
+  List<BasePlanModel> get lastFetchedAddOnsPrimaryPlans =>
+      List<BasePlanModel>.unmodifiable(_lastFetchedAddOnsPrimaryPlans);
 
   @override
   DateTime? get lastFetchedAddOnsPrimaryPlansAt =>
       _lastFetchedAddOnsPrimaryPlansAt;
 
-  AddOnsPrimaryPlanModel _createMockAddOnsPrimaryPlan({
+  BasePlanModel _createMockAddOnsPrimaryPlan({
     required String planId,
     required String planName,
     required String planType,
@@ -1101,12 +1093,11 @@ class MockPlanRepository implements BasePlanRepository {
     String startDate = '2024-08-20 00:00:00',
     String endDate = '2024-09-19 23:59:59',
     bool autoRenew = false,
-    List<AddOnsPrimaryPlanModel> availableBoltOns =
-        const <AddOnsPrimaryPlanModel>[],
-    List<AddOnsPrimaryPlanBucketModel> planBuckets =
-        const <AddOnsPrimaryPlanBucketModel>[],
+    List<BasePlanModel> availableBoltOns =
+        const <BasePlanModel>[],
+    List<BasePlanBucketModel> planBuckets = const <BasePlanBucketModel>[],
   }) {
-    return AddOnsPrimaryPlanModel(
+    return BasePlanModel(
       planId: planId,
       planName: planName,
       planDescription: '',
@@ -1140,7 +1131,7 @@ class MockPlanRepository implements BasePlanRepository {
       planGroupSortOrder: '',
       prorateOnActivate: '',
       prorateOnDeactivate: '',
-      planCapabilities: const <AddOnsPrimaryPlanCapabilityModel>[],
+      planCapabilities: const <BasePlanCapabilityModel>[],
       planBuckets: planBuckets,
       channelTypes: '',
       vipTypes: '',
@@ -1165,7 +1156,7 @@ class MockPlanRepository implements BasePlanRepository {
     );
   }
 
-  String _buildAddOnLabel(AddOnsPrimaryPlanModel addOnPlan) {
+  String _buildAddOnLabel(BasePlanModel addOnPlan) {
     final firstBucket =
         addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
 
@@ -1185,7 +1176,7 @@ class MockPlanRepository implements BasePlanRepository {
     }
   }
 
-  String _buildAddOnValue(AddOnsPrimaryPlanModel addOnPlan) {
+  String _buildAddOnValue(BasePlanModel addOnPlan) {
     final firstBucket =
         addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
 

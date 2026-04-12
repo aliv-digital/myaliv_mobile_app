@@ -1,13 +1,6 @@
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_ons_primary_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/liberty_global_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/monthly_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/mifi_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roaming_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/roameasy_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/weekly_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 
@@ -85,28 +78,28 @@ class HomePlanState {
   ///
   /// Repository keeps this list sorted by earliest `StartDate`, so
   /// `addOnsApiPrimaryPlans.first` is the primary plan we want to show first.
-  final List<AddOnsPrimaryPlanModel> addOnsApiPrimaryPlans;
+  final List<BasePlanModel> addOnsApiPrimaryPlans;
 
   /// Dedicated API data for Daily tab (not bound to UI yet).
-  final List<DailyPlanModel> dailyApiPlans;
+  final List<BasePlanModel> dailyApiPlans;
 
   /// Dedicated API data for Weekly tab (not bound to UI yet).
-  final List<WeeklyPlanModel> weeklyApiPlans;
+  final List<BasePlanModel> weeklyApiPlans;
 
   /// Dedicated API data for Monthly tab (not bound to UI yet).
-  final List<MonthlyPlanModel> monthlyApiPlans;
+  final List<BasePlanModel> monthlyApiPlans;
 
   /// Dedicated API data for Roaming tab (not bound to UI yet).
-  final List<RoamingPlanModel> roamingApiPlans;
+  final List<BasePlanModel> roamingApiPlans;
 
   /// Dedicated API data for RoamEasy tab (not bound to UI yet).
-  final List<RoamEasyPlanModel> roamEasyApiPlans;
+  final List<BasePlanModel> roamEasyApiPlans;
 
   /// Dedicated API data for MiFi tab (not bound to UI yet).
-  final List<MifiPlanModel> mifiApiPlans;
+  final List<BasePlanModel> mifiApiPlans;
 
   /// Dedicated API data for Liberty Global tab (not bound to UI yet).
-  final List<LibertyGlobalPlanModel> libertyGlobalApiPlans;
+  final List<BasePlanModel> libertyGlobalApiPlans;
 
   /// Dedicated API data for Postpaid Roaming tab (NEW).
   final List<HomePlansPostPaidPlanModel> postpaidRoamingApiPlans;
@@ -271,14 +264,14 @@ class HomePlanState {
     // ✅ AddOns
     List<HomePlanAddOnModel>? addOns,
     Set<String>? selectedAddOnIds,
-    List<AddOnsPrimaryPlanModel>? addOnsApiPrimaryPlans,
-    List<DailyPlanModel>? dailyApiPlans,
-    List<WeeklyPlanModel>? weeklyApiPlans,
-    List<MonthlyPlanModel>? monthlyApiPlans,
-    List<RoamingPlanModel>? roamingApiPlans,
-    List<RoamEasyPlanModel>? roamEasyApiPlans,
-    List<MifiPlanModel>? mifiApiPlans,
-    List<LibertyGlobalPlanModel>? libertyGlobalApiPlans,
+    List<BasePlanModel>? addOnsApiPrimaryPlans,
+    List<BasePlanModel>? dailyApiPlans,
+    List<BasePlanModel>? weeklyApiPlans,
+    List<BasePlanModel>? monthlyApiPlans,
+    List<BasePlanModel>? roamingApiPlans,
+    List<BasePlanModel>? roamEasyApiPlans,
+    List<BasePlanModel>? mifiApiPlans,
+    List<BasePlanModel>? libertyGlobalApiPlans,
     List<HomePlansPostPaidPlanModel>? postpaidRoamingApiPlans, // NEW
     Map<HomePlanTab, HomePlanTabApiMeta>? apiTabMeta,
     DateTime? dailyApiLastSyncedAt,
@@ -389,7 +382,7 @@ class HomePlanState {
   String? get selectedTabErrorMessage => errorFor(selectedTab);
 
   /// Earliest primary plan prepared for Add-ons tab UI.
-  AddOnsPrimaryPlanModel? get earliestAddOnsPrimaryPlan {
+  BasePlanModel? get earliestAddOnsPrimaryPlan {
     if (addOnsApiPrimaryPlans.isEmpty) return null;
     return addOnsApiPrimaryPlans.first;
   }

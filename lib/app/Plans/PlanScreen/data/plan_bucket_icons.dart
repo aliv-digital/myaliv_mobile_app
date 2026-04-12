@@ -1,7 +1,5 @@
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
-import '../models/plan_model.dart';
-
 class PlanBucketIcons {
 
   static const String dataIcon = AssetConstant.wifiIconSVG;

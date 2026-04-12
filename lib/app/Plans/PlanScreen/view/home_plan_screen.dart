@@ -11,11 +11,8 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import '../cubit/home_plan_cubit.dart';
 import '../cubit/home_plan_state.dart';
-import '../models/liberty_global_plan_model.dart';
-import '../models/mifi_plan_model.dart';
+import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
-import '../models/roameasy_plan_model.dart';
-import '../models/roaming_plan_model.dart';
 import '../repository/plan_types.dart';
 import '../theme/theme.dart';
 import '../widgets/home_plan_add_ons_tab_content.dart';
@@ -59,7 +56,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     context.read<HomePlanCubit>().started(userType: userType);
   }
 
-  HomePlanModel _toRoamingPurchaseSheetPlan(RoamingPlanModel plan) {
+  HomePlanModel _toRoamingPurchaseSheetPlan(BasePlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
       title: plan.planName,
@@ -70,7 +67,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  HomePlanModel _toRoamEasyPurchaseSheetPlan(RoamEasyPlanModel plan) {
+  HomePlanModel _toRoamEasyPurchaseSheetPlan(BasePlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
       title: plan.planName,
@@ -81,7 +78,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  HomePlanModel _toMifiPurchaseSheetPlan(MifiPlanModel plan) {
+  HomePlanModel _toMifiPurchaseSheetPlan(BasePlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
       title: plan.planName,
@@ -93,7 +90,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
   }
 
   HomePlanModel _toLibertyGlobalPurchaseSheetPlan(
-    LibertyGlobalPlanModel plan,
+    BasePlanModel plan,
   ) {
     return HomePlanModel(
       id: plan.planId,

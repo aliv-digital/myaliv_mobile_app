@@ -1,14 +1,7 @@
 import 'package:core/core.dart';
 import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
-import '../models/add_ons_primary_plan_model.dart';
-import '../models/daily_plan_model.dart';
-import '../models/weekly_plan_model.dart';
-import '../models/monthly_plan_model.dart';
-import '../models/roaming_plan_model.dart';
-import '../models/roameasy_plan_model.dart';
-import '../models/mifi_plan_model.dart';
-import '../models/liberty_global_plan_model.dart';
+import '../models/base_plan_model.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'base_plan_repository.dart';
 import 'plan_types.dart';
@@ -70,7 +63,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<DailyPlanModel>> fetchDailyPlansFromApi({
+  Future<List<BasePlanModel>> fetchDailyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredDailyPlans = false,
   }) async {
@@ -87,7 +80,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<WeeklyPlanModel>> fetchWeeklyPlansFromApi({
+  Future<List<BasePlanModel>> fetchWeeklyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredWeeklyPlans = false,
   }) async {
@@ -103,7 +96,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<MonthlyPlanModel>> fetchMonthlyPlansFromApi({
+  Future<List<BasePlanModel>> fetchMonthlyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredMonthlyPlans = false,
   }) async {
@@ -119,7 +112,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<RoamingPlanModel>> fetchRoamingPlansFromApi({
+  Future<List<BasePlanModel>> fetchRoamingPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredRoamingPlans = false,
   }) async {
@@ -135,7 +128,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<RoamEasyPlanModel>> fetchRoamEasyPlansFromApi({
+  Future<List<BasePlanModel>> fetchRoamEasyPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredRoamEasyPlans = false,
   }) async {
@@ -151,7 +144,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<MifiPlanModel>> fetchMifiPlansFromApi({
+  Future<List<BasePlanModel>> fetchMifiPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredMifiPlans = false,
   }) async {
@@ -167,7 +160,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<LibertyGlobalPlanModel>> fetchLibertyGlobalPlansFromApi({
+  Future<List<BasePlanModel>> fetchLibertyGlobalPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredLibertyGlobalPlans = false,
   }) async {
@@ -219,7 +212,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  Future<List<AddOnsPrimaryPlanModel>> fetchAddOnsPrimaryPlansFromApi({
+  Future<List<BasePlanModel>> fetchAddOnsPrimaryPlansFromApi({
     bool printRawResponse = false,
     bool printFilteredPrimaryPlans = false,
   }) async {
@@ -233,7 +226,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     final primaryPlans = rawPrimaryPlans
         .map(
           (map) =>
-              AddOnsPrimaryPlanModel.fromApiMap(map, includeRawPayload: false),
+              BasePlanModel.fromApiMap(map, includeRawPayload: false),
         )
         .toList(growable: false);
 
@@ -245,8 +238,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   }
 
   @override
-  AddOnsPrimaryPlanModel? selectEarliestAddOnsPrimaryPlan(
-    List<AddOnsPrimaryPlanModel> primaryPlans,
+  BasePlanModel? selectEarliestAddOnsPrimaryPlan(
+    List<BasePlanModel> primaryPlans,
   ) {
     if (primaryPlans.isEmpty) {
       return null;
@@ -257,7 +250,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
 
   @override
   List<HomePlanAddOnModel> mapAvailableBoltOnsToUiAddOns({
-    required AddOnsPrimaryPlanModel primaryPlan,
+    required BasePlanModel primaryPlan,
   }) {
     return primaryPlan.availableBoltOns
         .map(
@@ -283,49 +276,49 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
   DateTime? get lastFetchedAt => _cache.getRawPlansTimestamp();
 
   @override
-  List<DailyPlanModel> get lastFetchedDailyPlans =>
+  List<BasePlanModel> get lastFetchedDailyPlans =>
       List.unmodifiable(_cache.getDailyPlans());
 
   @override
   DateTime? get lastFetchedDailyAt => _cache.getDailyPlansTimestamp();
 
   @override
-  List<WeeklyPlanModel> get lastFetchedWeeklyPlans =>
+  List<BasePlanModel> get lastFetchedWeeklyPlans =>
       List.unmodifiable(_cache.getWeeklyPlans());
 
   @override
   DateTime? get lastFetchedWeeklyAt => _cache.getWeeklyPlansTimestamp();
 
   @override
-  List<MonthlyPlanModel> get lastFetchedMonthlyPlans =>
+  List<BasePlanModel> get lastFetchedMonthlyPlans =>
       List.unmodifiable(_cache.getMonthlyPlans());
 
   @override
   DateTime? get lastFetchedMonthlyAt => _cache.getMonthlyPlansTimestamp();
 
   @override
-  List<RoamingPlanModel> get lastFetchedRoamingPlans =>
+  List<BasePlanModel> get lastFetchedRoamingPlans =>
       List.unmodifiable(_cache.getRoamingPlans());
 
   @override
   DateTime? get lastFetchedRoamingAt => _cache.getRoamingPlansTimestamp();
 
   @override
-  List<RoamEasyPlanModel> get lastFetchedRoamEasyPlans =>
+  List<BasePlanModel> get lastFetchedRoamEasyPlans =>
       List.unmodifiable(_cache.getRoamEasyPlans());
 
   @override
   DateTime? get lastFetchedRoamEasyAt => _cache.getRoamEasyPlansTimestamp();
 
   @override
-  List<MifiPlanModel> get lastFetchedMifiPlans =>
+  List<BasePlanModel> get lastFetchedMifiPlans =>
       List.unmodifiable(_cache.getMifiPlans());
 
   @override
   DateTime? get lastFetchedMifiAt => _cache.getMifiPlansTimestamp();
 
   @override
-  List<LibertyGlobalPlanModel> get lastFetchedLibertyGlobalPlans =>
+  List<BasePlanModel> get lastFetchedLibertyGlobalPlans =>
       List.unmodifiable(_cache.getLibertyGlobalPlans());
 
   @override
@@ -341,7 +334,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
       _cache.getPostpaidRoamingPlansTimestamp();
 
   @override
-  List<AddOnsPrimaryPlanModel> get lastFetchedAddOnsPrimaryPlans =>
+  List<BasePlanModel> get lastFetchedAddOnsPrimaryPlans =>
       List.unmodifiable(_cache.getAddOnsPrimaryPlans());
 
   @override
@@ -359,8 +352,8 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     return bundles;
   }
 
-  List<AddOnsPrimaryPlanModel> _sortPrimaryPlansByEarliestStartDate(
-    List<AddOnsPrimaryPlanModel> primaryPlans,
+  List<BasePlanModel> _sortPrimaryPlansByEarliestStartDate(
+    List<BasePlanModel> primaryPlans,
   ) {
     final sortablePrimaryPlans = primaryPlans
         .asMap()
@@ -395,7 +388,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
         .toList(growable: false);
   }
 
-  String _buildAddOnLabel(AddOnsPrimaryPlanModel addOnPlan) {
+  String _buildAddOnLabel(BasePlanModel addOnPlan) {
     final firstBucket =
         addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
 
@@ -420,7 +413,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
     }
   }
 
-  String _buildAddOnValue(AddOnsPrimaryPlanModel addOnPlan) {
+  String _buildAddOnValue(BasePlanModel addOnPlan) {
     final firstBucket =
         addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
 
@@ -470,5 +463,5 @@ class _SortablePrimaryPlan {
   });
 
   final int originalIndex;
-  final AddOnsPrimaryPlanModel plan;
+  final BasePlanModel plan;
 }

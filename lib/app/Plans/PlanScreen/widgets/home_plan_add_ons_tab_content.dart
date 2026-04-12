@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
 import '../cubit/home_plan_state.dart';
 import '../models/add_on_model.dart';
-import '../models/add_ons_primary_plan_model.dart';
+import '../models/base_plan_model.dart';
 import '../repository/plan_types.dart';
 
 class HomePlanAddOnsTabContent extends StatelessWidget {
@@ -23,7 +23,7 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
 
   static const double _addOnsTabHorizontalPadding = 25;
 
-  final AddOnsPrimaryPlanModel? activePrimaryPlan;
+  final BasePlanModel? activePrimaryPlan;
   final List<HomePlanAddOnModel> addOns;
   final Set<String> selectedAddOnIds;
   final ValueChanged<HomePlanAddOnModel> onToggleAddOn;

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/daily_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
-import '../data/plan_icon_assets.dart';
-import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
 // Daily plan card — aligned to HomePlanMonthlyPlanCard layout
 class HomePlanDailyPlanCard extends StatelessWidget {
-  final DailyPlanModel plan;
+  final BasePlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -203,7 +201,7 @@ class _PricePill extends StatelessWidget {
 }
 
 class _PlanBuckets extends StatefulWidget {
-  final List<DailyPlanBucketModel> benefits;
+  final List<BasePlanBucketModel> benefits;
   const _PlanBuckets({required this.benefits});
 
   @override
@@ -502,7 +500,7 @@ class _AssetIcon extends StatelessWidget {
 
 class _BucketItem extends StatelessWidget {
   final BucketItemType itemType;
-  final DailyPlanBucketModel benefit;
+  final BasePlanBucketModel benefit;
   final Color labelColor;
   const _BucketItem({required this.benefit, required this.labelColor,required this.itemType});
 
