@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_state.dart';
@@ -31,6 +32,8 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     if (state.selectedTab != initialTab) {
       emit(state.copyWith(selectedTab: initialTab, expandedPlanIds: {}));
     }
+    // Don't use forceRefresh here - let _loadByTab decide based on existing data
+    // This prevents clearing data that's currently being loaded by loadInitialPlans()
     await _loadByTab(tab: initialTab);
   }
 
@@ -93,30 +96,60 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     await _loadByTab(tab: tab, forceRefresh: true);
   }
 
+  /// Reset cubit to initial state (call on logout)
+  void reset() {
+    if (kDebugMode) {
+      debugPrint('🔄 HomePlanCubit.reset(): Resetting all state and flags');
+    }
+
+    // Reset all in-progress flags
+    _isDailyApiSyncInProgress = false;
+    _isWeeklyApiSyncInProgress = false;
+    _isMonthlyApiSyncInProgress = false;
+    _isRoamingApiSyncInProgress = false;
+    _isRoamEasyApiSyncInProgress = false;
+    _isMifiApiSyncInProgress = false;
+    _isLibertyGlobalApiSyncInProgress = false;
+    _isAddOnsApiSyncInProgress = false;
+    _isPostpaidRoamingApiSyncInProgress = false;
+
+    // Reset state to initial
+    emit(HomePlanState.initial());
+
+    if (kDebugMode) {
+      debugPrint('✅ HomePlanCubit.reset(): State reset to initial');
+    }
+  }
+
   Future<void> loadInitialPlans({
     bool forceRefresh = false,
     required UserType userType,
   }) async {
     if (!globalState.isAuthenticated) {
+      debugPrint('⚠️ loadInitialPlans: Not authenticated, skipping');
       return;
     }
 
     // Check if plans are currently loading - prevent duplicate API calls
     if (_isInitialPlansLoading(userType: userType)) {
+      debugPrint('⚠️ loadInitialPlans: Already loading for $userType, skipping');
       return;
     }
 
     // Check if plans are already loaded - skip unless forceRefresh
     if (!forceRefresh && _hasInitialPlansLoaded(userType: userType)) {
+      debugPrint('⚠️ loadInitialPlans: Already loaded for $userType, skipping (use forceRefresh to reload)');
       return;
     }
 
-    // Note: Don't emit loading state here - this is background preloading
-    // UI loading states are managed by _loadByTab() via started() and changeTab()
+    debugPrint('✅ loadInitialPlans: Starting for $userType (forceRefresh: $forceRefresh)');
+
+    // Emit loading state for background preloading
+    // This prevents race condition with started() method
+    final defaultTab = _defaultTabForUserType(userType);
+    _emitTabStatus(tab: defaultTab, status: HomePlanStatus.loading);
 
     // Preload the DEFAULT tab that will be shown first
-    final defaultTab = _defaultTabForUserType(userType);
-
     switch (defaultTab) {
       case HomePlanTab.monthly:
         _scheduleMonthlyApiSyncIfIdle();
@@ -132,6 +165,7 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     // For prepaid: Also preload add-ons for Dashboard active card
     // Safe to run in parallel - different endpoint (bundles vs available-plans)
     if (userType == UserType.prepaid) {
+      _emitTabStatus(tab: HomePlanTab.addOns, status: HomePlanStatus.loading);
       _scheduleAddOnsApiSyncIfIdle();
     }
   }
@@ -374,22 +408,39 @@ class HomePlanCubit extends Cubit<HomePlanState> {
     required HomePlanTab tab,
     bool forceRefresh = false,
   }) async {
+    if (kDebugMode) {
+      debugPrint('🔄 _loadByTab called for tab: $tab (forceRefresh: $forceRefresh)');
+    }
+
     try {
       // Check if tab is currently loading - prevent duplicate API calls
       final currentStatus = state.statusFor(tab);
       if (currentStatus == HomePlanStatus.loading) {
+        if (kDebugMode) {
+          debugPrint('  ⚠️ Tab $tab already loading, skipping');
+        }
         return;
       }
 
-      // Check if tab data is already loaded (skip API call unless forceRefresh)
-      final isAlreadyLoaded = state.apiTabMeta[tab]?.isLoaded ?? false;
+      // Check if tab data is already loaded WITH items (skip API call unless forceRefresh)
+      // IMPORTANT: A tab is only considered loaded if it has items
+      // isLoaded=true with itemCount=0 is likely a stale state or error
+      final tabMeta = state.apiTabMeta[tab];
+      final isAlreadyLoaded = (tabMeta?.isLoaded ?? false) &&
+                              (tabMeta?.itemCount ?? 0) > 0;
 
       if (!forceRefresh && isAlreadyLoaded) {
         // Data already exists, just mark as loaded without API call
+        if (kDebugMode) {
+          debugPrint('  ✅ Tab $tab already loaded (${state.apiTabMeta[tab]?.itemCount} items), skipping API call');
+        }
         _emitTabStatus(tab: tab, status: HomePlanStatus.loaded);
         return;
       }
 
+      if (kDebugMode) {
+        debugPrint('  📡 Tab $tab: Emitting loading status and scheduling API');
+      }
       _emitTabStatus(tab: tab, status: HomePlanStatus.loading);
 
       if (tab == HomePlanTab.addOns) {
@@ -405,55 +456,56 @@ class HomePlanCubit extends Cubit<HomePlanState> {
         return;
       }
 
-      if (tab == HomePlanTab.daily ||
-          tab == HomePlanTab.weekly ||
-          tab == HomePlanTab.monthly ||
-          tab == HomePlanTab.roaming ||
-          tab == HomePlanTab.roameasy ||
-          tab == HomePlanTab.mifi ||
-          tab == HomePlanTab.libertyGlobal ||
-          tab == HomePlanTab.postpaidRoaming) {
-        emit(state.copyWith(plans: const []));
+      // Handle tabs with typed API data - clear both generic plans and typed fields
+      // This prevents showing stale data while loading
+      switch (tab) {
+        case HomePlanTab.daily:
+          emit(state.copyWith(plans: const [], dailyApiPlans: const []));
+          _scheduleDailyApiSyncIfIdle();
+          return;
 
-        switch (tab) {
-          case HomePlanTab.daily:
-            _scheduleDailyApiSyncIfIdle();
-            break;
-          case HomePlanTab.weekly:
-            _scheduleWeeklyApiSyncIfIdle();
-            break;
-          case HomePlanTab.monthly:
-            _scheduleMonthlyApiSyncIfIdle();
-            break;
-          case HomePlanTab.roaming:
-            _scheduleRoamingApiSyncIfIdle();
-            break;
-          case HomePlanTab.roameasy:
-            _scheduleRoamEasyApiSyncIfIdle();
-            break;
-          case HomePlanTab.mifi:
-            _scheduleMifiApiSyncIfIdle();
-            break;
-          case HomePlanTab.libertyGlobal:
-            _scheduleLibertyGlobalApiSyncIfIdle();
-            break;
-          case HomePlanTab.postpaidRoaming:
-            _schedulePostpaidRoamingApiSyncIfIdle();
-            break;
-          case HomePlanTab.addOns:
-            break;
-        }
-        return;
+        case HomePlanTab.weekly:
+          emit(state.copyWith(plans: const [], weeklyApiPlans: const []));
+          _scheduleWeeklyApiSyncIfIdle();
+          return;
+
+        case HomePlanTab.monthly:
+          emit(state.copyWith(plans: const [], monthlyApiPlans: const []));
+          _scheduleMonthlyApiSyncIfIdle();
+          return;
+
+        case HomePlanTab.roaming:
+          emit(state.copyWith(plans: const [], roamingApiPlans: const []));
+          _scheduleRoamingApiSyncIfIdle();
+          return;
+
+        case HomePlanTab.roameasy:
+          emit(state.copyWith(plans: const [], roamEasyApiPlans: const []));
+          _scheduleRoamEasyApiSyncIfIdle();
+          return;
+
+        case HomePlanTab.mifi:
+          emit(state.copyWith(plans: const [], mifiApiPlans: const []));
+          _scheduleMifiApiSyncIfIdle();
+          return;
+
+        case HomePlanTab.libertyGlobal:
+          emit(state.copyWith(plans: const [], libertyGlobalApiPlans: const []));
+          _scheduleLibertyGlobalApiSyncIfIdle();
+          return;
+
+        case HomePlanTab.postpaidRoaming:
+          emit(state.copyWith(plans: const [], postpaidRoamingApiPlans: const []));
+          _schedulePostpaidRoamingApiSyncIfIdle();
+          return;
+
+        default:
+          // This should never happen - all tabs should be handled above
+          throw UnimplementedError(
+            'Tab $tab is not handled in _loadByTab. '
+            'Add a case for this tab or update the implementation.',
+          );
       }
-
-      final plans = await repository.fetchPlans(tab: tab);
-      emit(
-        _withTabStatus(
-          currentState: state,
-          tab: tab,
-          status: HomePlanStatus.loaded,
-        ).copyWith(plans: plans),
-      );
     } on BasePlanRepositoryException catch (error) {
       _emitTabFailureWithToast(
         tab: tab,
@@ -527,18 +579,38 @@ class HomePlanCubit extends Cubit<HomePlanState> {
   }
 
   bool _hasInitialPlansLoaded({required UserType userType}) {
-    // Check if the DEFAULT tab (shown first) is loaded
+    // Check if the DEFAULT tab (shown first) has completed a successful sync.
+    // Treat empty lists as loaded to avoid endless background reload loops.
     final defaultTab = _defaultTabForUserType(userType);
-    final defaultTabLoaded = state.apiTabMeta[defaultTab]?.isLoaded ?? false;
+    final defaultTabMeta = state.apiTabMeta[defaultTab];
+    final defaultTabLoaded = defaultTabMeta?.isLoaded ?? false;
+
+    if (kDebugMode) {
+      debugPrint('  📊 _hasInitialPlansLoaded check for $userType:');
+      debugPrint('     defaultTab: $defaultTab');
+      debugPrint('     defaultTabLoaded: $defaultTabLoaded (isLoaded: ${defaultTabMeta?.isLoaded}, itemCount: ${defaultTabMeta?.itemCount})');
+    }
 
     if (userType == UserType.postpaid) {
       // Postpaid only needs default tab
+      if (kDebugMode && defaultTabLoaded) {
+        debugPrint('     ⚠️ Postpaid tab already loaded, will skip API call');
+      }
       return defaultTabLoaded;
     }
 
-    // Prepaid needs BOTH default tab AND add-ons for Dashboard active card
-    final addOnsLoaded = state.apiTabMeta[HomePlanTab.addOns]?.isLoaded ?? false;
-    return defaultTabLoaded && addOnsLoaded;
+    // Prepaid needs BOTH default tab AND add-ons for Dashboard active card.
+    // Empty add-ons are still a valid loaded state.
+    final addOnsMeta = state.apiTabMeta[HomePlanTab.addOns];
+    final addOnsLoaded = addOnsMeta?.isLoaded ?? false;
+    final result = defaultTabLoaded && addOnsLoaded;
+    if (kDebugMode) {
+      debugPrint('     addOnsLoaded: $addOnsLoaded (isLoaded: ${addOnsMeta?.isLoaded}, itemCount: ${addOnsMeta?.itemCount})');
+      if (result) {
+        debugPrint('     ⚠️ Prepaid tabs already loaded, will skip API call');
+      }
+    }
+    return result;
   }
 
   /// Check if initial plans are currently loading (in progress)
@@ -663,7 +735,13 @@ class HomePlanCubit extends Cubit<HomePlanState> {
 
   void _schedulePostpaidRoamingApiSyncIfIdle() {
     if (_isPostpaidRoamingApiSyncInProgress) {
+      if (kDebugMode) {
+        debugPrint('⚠️ _schedulePostpaidRoamingApiSyncIfIdle: Already in progress, skipping');
+      }
       return;
+    }
+    if (kDebugMode) {
+      debugPrint('🚀 _schedulePostpaidRoamingApiSyncIfIdle: Scheduling postpaid roaming API call');
     }
     // Set flag IMMEDIATELY before async work to prevent race condition
     _isPostpaidRoamingApiSyncInProgress = true;
