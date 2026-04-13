@@ -120,11 +120,12 @@ class _LoginOtpView extends StatelessWidget {
                                 SizedBox(height: LoginOtpSizes.contentTopGap),
                                 OtpCodeFields(),
                                 SizedBox(
-                                    height:
-                                        LoginOtpSizes.otpToBottomActionsGap),
+                                  height: LoginOtpSizes.otpToBottomActionsGap,
+                                ),
                                 OtpBottomActions(),
                                 SizedBox(
-                                    height: LoginOtpSizes.contentBottomGap),
+                                  height: LoginOtpSizes.contentBottomGap,
+                                ),
                                 _ChangePhoneNumberAction(),
                                 // ElevatedButton(
                                 //     onPressed: (){

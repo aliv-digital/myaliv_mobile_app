@@ -18,6 +18,8 @@ import 'package:myaliv_mobile_app/app/Home/widgets/postpaid_billing_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/prepaid_balance_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/timer.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/view/limited_offer_view.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,6 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
     // Preload plans in background while user is on home screen
     final userType = context.read<AppUiConfigCubit>().state.userType;
     context.read<HomePlanCubit>().loadInitialPlans(userType: userType);
+
+    // Load limited time offers
+    final userTypeString =
+        userType == UserType.prepaid ? 'prepaid' : 'postpaid';
+    context.read<LimitedOfferCubit>().loadOffers(userType: userTypeString);
   }
 
   @override
@@ -98,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: _quickActions(context, config),
                   ),
                   const SizedBox(height: 24),
-                  _limitedOffer(context),
+                  const LimitedOfferView(),
                 ],
               ),
             ),
@@ -287,90 +294,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ================= LIMITED OFFER =================
-  Widget _limitedOffer(BuildContext context) {
-    const timers = [
-      ('00', 'Days'),
-      ('03', 'Hours'),
-      ('55', 'Min'),
-      ('29', 'Sec'),
-    ];
-
-    return Container(
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 11, 24, 0),
-        child: Container(
-          width: double.infinity,
-          height: 112,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            color: HomeScreen.yellow,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final timerGap = constraints.maxWidth < 320 ? 4.0 : 6.0;
-
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Expanded(
-                    flex: 4,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Limited \nTime Offer',
-                          style: TextStyle(
-                            color: Color(0xFF101828),
-                            fontSize: 40 / 2,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                            height: 1.05,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'See the best product now',
-                          style: TextStyle(
-                            color: Color(0xFF101828),
-                            fontSize: 10,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.05,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 7,
-                    child: Row(
-                      children: [
-                        for (int i = 0; i < timers.length; i++) ...[
-                          if (i > 0) SizedBox(width: timerGap),
-                          Expanded(
-                            child: TimerBox(
-                              timers[i].$1,
-                              timers[i].$2,
-                              compact: true,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _section({
     required String title,

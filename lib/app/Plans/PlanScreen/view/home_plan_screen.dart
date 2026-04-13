@@ -89,9 +89,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  HomePlanModel _toLibertyGlobalPurchaseSheetPlan(
-    BasePlanModel plan,
-  ) {
+  HomePlanModel _toLibertyGlobalPurchaseSheetPlan(BasePlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
       title: plan.planName,
@@ -129,14 +127,16 @@ class _HomePlanViewState extends State<_HomePlanView> {
       return;
     }
 
-    cubit.purchaseNowPressed(HomePlanModel(
-      id: 'postpaid',
-      title: 'Postpaid Plan',
-      subtitle: '',
-      price: 0.0,
-      description: '',
-      benefits: const [],
-    ));
+    cubit.purchaseNowPressed(
+      HomePlanModel(
+        id: 'postpaid',
+        title: 'Postpaid Plan',
+        subtitle: '',
+        price: 0.0,
+        description: '',
+        benefits: const [],
+      ),
+    );
 
     showModalBottomSheet<void>(
       context: context,
@@ -235,28 +235,16 @@ class _HomePlanViewState extends State<_HomePlanView> {
       onDailyPurchaseNow: (_) {},
       onMonthlyPurchaseNow: (_) {},
       onMifiPurchaseNow: (plan) {
-        _onPurchaseNowPressed(
-          context,
-          _toMifiPurchaseSheetPlan(plan),
-        );
+        _onPurchaseNowPressed(context, _toMifiPurchaseSheetPlan(plan));
       },
       onLibertyGlobalPurchaseNow: (plan) {
-        _onPurchaseNowPressed(
-          context,
-          _toLibertyGlobalPurchaseSheetPlan(plan),
-        );
+        _onPurchaseNowPressed(context, _toLibertyGlobalPurchaseSheetPlan(plan));
       },
       onRoamingPurchaseNow: (plan) {
-        _onPurchaseNowPressed(
-          context,
-          _toRoamingPurchaseSheetPlan(plan),
-        );
+        _onPurchaseNowPressed(context, _toRoamingPurchaseSheetPlan(plan));
       },
       onRoamEasyPurchaseNow: (plan) {
-        _onPurchaseNowPressed(
-          context,
-          _toRoamEasyPurchaseSheetPlan(plan),
-        );
+        _onPurchaseNowPressed(context, _toRoamEasyPurchaseSheetPlan(plan));
       },
       onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel _) {
         _showPostpaidStartBottomSheet(context);
@@ -307,10 +295,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           return;
         }
 
-        AppToast.show(
-          message: toast.message,
-          type: ToastType.error,
-        );
+        AppToast.show(message: toast.message, type: ToastType.error);
         context.read<HomePlanCubit>().toastConsumed();
       },
       child: Scaffold(
@@ -325,7 +310,8 @@ class _HomePlanViewState extends State<_HomePlanView> {
           builder: (context, state) {
             return HomePlanAddOnsBottomPayBar(
               state: state,
-              onPayNow: () => context.push(AppRoutes.homePlanConfirmationScreen),
+              onPayNow: () =>
+                  context.push(AppRoutes.homePlanConfirmationScreen),
             );
           },
         ),
@@ -334,7 +320,8 @@ class _HomePlanViewState extends State<_HomePlanView> {
             buildWhen: (previous, current) {
               // Rebuild when tab changes OR when tab status changes
               final tabChanged = previous.selectedTab != current.selectedTab;
-              final statusChanged = previous.selectedTabStatus != current.selectedTabStatus;
+              final statusChanged =
+                  previous.selectedTabStatus != current.selectedTabStatus;
 
               return tabChanged || statusChanged;
             },
@@ -362,9 +349,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
                       selected: state.selectedTab,
                       tabs: tabs,
                       onChanged: (tab) =>
-                          context.read<HomePlanCubit>().changeTab(
-                                tab,
-                              ),
+                          context.read<HomePlanCubit>().changeTab(tab),
                     ),
                   if (!isPostpaid) const SizedBox(height: 6),
                   HomePlanSectionHeader(selectedTab: state.selectedTab),

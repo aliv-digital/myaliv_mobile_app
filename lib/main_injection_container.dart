@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/account_info_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/plan_injection.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/limited_offer_injection.dart';
 
 /// Main app dependency injection
 ///
@@ -31,5 +32,8 @@ class AppMainInjection {
 
     // Initialize plan feature
     await setupPlanInjection();
+
+    // Initialize limited time offer feature
+    await setupLimitedOfferInjection();
   }
 }

@@ -15,6 +15,13 @@ enum PaymentOption {
   static PaymentOption? parse(String? value) {
     if (value == null) return null;
     final normalized = value.trim().toLowerCase();
+    if (normalized.isEmpty) return null;
+
+    // Accept common API variants: "PostPay", "PostPaid", "post-pay", etc.
+    final alphaOnly = normalized.replaceAll(RegExp(r'[^a-z]'), '');
+    if (alphaOnly.startsWith('post')) return PaymentOption.postpay;
+    if (alphaOnly.startsWith('pre')) return PaymentOption.prepay;
+
     for (final option in PaymentOption.values) {
       if (option.value == normalized) return option;
     }
