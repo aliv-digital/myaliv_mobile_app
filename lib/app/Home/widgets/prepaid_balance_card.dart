@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
-
-import '../../../router/app_routes.dart';
-import '../home/home_screen.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Home/home/home_screen.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
 
 class PrepaidBalanceCard extends StatelessWidget {
   const PrepaidBalanceCard({super.key});
@@ -14,7 +13,7 @@ class PrepaidBalanceCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16,26,16,18),
+        padding: const EdgeInsets.fromLTRB(16, 26, 16, 18),
         decoration: ShapeDecoration(
           color: Colors.white,
           shape: RoundedRectangleBorder(
@@ -24,41 +23,50 @@ class PrepaidBalanceCard extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(8),
           ),
-          // borderRadius: BorderRadius.circular(8),
-          // boxShadow: const [
-          //   BoxShadow(color: Colors.black12, blurRadius: 10)
-          // ],
         ),
         child: Column(
           children: [
-            _row('assets/icons/wallet.svg', 'top-up balance', '\$129.00'),
+            _row(
+              'assets/icons/wallet.svg',
+              'top-up balance',
+              const BalanceAmountText(type: BalanceType.wallet),
+            ),
             const SizedBox(height: 12),
-            _row('assets/icons/reward.svg', 'reward balance', '\$308.40'),
+            _row(
+              'assets/icons/reward.svg',
+              'reward balance',
+              const BalanceAmountText(type: BalanceType.bonus),
+            ),
             const SizedBox(height: 12),
 
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 context.push(AppRoutes.topUpPrepaidScreen);
               },
               child: Container(
                 width: double.infinity,
                 height: 50,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: HomeScreen.purple
+                  borderRadius: BorderRadius.circular(100),
+                  color: HomeScreen.purple,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/icons/card-add-pre.svg', width: 21, height: 21,),
-                    SizedBox(width: 10,),
-                    SizedBox(
+                    SvgPicture.asset(
+                      'assets/icons/card-add-pre.svg',
+                      width: 21,
+                      height: 21,
+                    ),
+                    const SizedBox(width: 10),
+                    const SizedBox(
                       height: 21,
                       child: Text(
-                        'add top-up',textAlign: TextAlign.start,
+                        'add top-up',
+                        textAlign: TextAlign.start,
                         style: TextStyle(
-                          color: const Color(0xFFF1F1F8),
+                          color: Color(0xFFF1F1F8),
                           fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w700,
@@ -69,37 +77,13 @@ class PrepaidBalanceCard extends StatelessWidget {
                 ),
               ),
             ),
-            // SizedBox(
-            //   width: double.infinity,
-            //   height: 50,
-            //   child: ElevatedButton.icon(
-            //     onPressed: () {},
-            //     icon: SvgPicture.asset('assets/icons/card-add-pre.svg', width: 21, height: 21,),
-            //
-            //     label: Text(
-            //       'add topup',textAlign: TextAlign.start,
-            //       style: TextStyle(
-            //         color: const Color(0xFFF1F1F8),
-            //         fontSize: 13,
-            //         fontFamily: 'Circular Pro',
-            //         fontWeight: FontWeight.w500,
-            //       ),
-            //     ),
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: HomeScreen.purple,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(100),
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
     );
   }
 
-  Widget _row(String icon, String label, String value) {
+  Widget _row(String icon, String label, Widget valueWidget) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,16 +101,9 @@ class PrepaidBalanceCard extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            color: const Color(0xFF5045A7),
-            fontSize: 24,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        valueWidget,
       ],
     );
   }
 }
+

@@ -20,6 +20,10 @@ import 'package:myaliv_mobile_app/app/Home/widgets/timer.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/view/limited_offer_view.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/view/best_plans_view.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,6 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final userTypeString =
         userType == UserType.prepaid ? 'prepaid' : 'postpaid';
     context.read<LimitedOfferCubit>().loadOffers(userType: userTypeString);
+
+    // Load best plans
+    context.read<BestPlanCubit>().loadPlans(userType: userTypeString);
+
+    // Load balances
+    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
+    if (accountInfo != null && accountInfo.idAcc > 0) {
+      context.read<BalanceCubit>().loadBalances(
+            deviceAccountId: accountInfo.idAcc,
+          );
+    }
   }
 
   @override
@@ -175,36 +190,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ================= ACTIVE PLAN =================
+  // ================= BEST PLANS =================
   Widget _bestPlans(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = screenWidth * 0.75; // 🔥 3/4 width
-
     return _section(
       title: 'our best plans',
       onViewMore: () {
         context.push(AppRoutes.allBestPlans);
       },
-      child: Container(
-        decoration: BoxDecoration(color: Colors.white),
-        height: 170,
-        child: ListView.separated(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 11),
-          scrollDirection: Axis.horizontal,
-          itemCount: homePlans.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 16),
-          itemBuilder: (context, index) {
-            return SizedBox(
-              width: cardWidth,
-              child: PlanCard(
-                plan: homePlans[index],
-                height: 170,
-                imageWidth: cardWidth * 0.4, // 🔥 image scales too
-              ),
-            );
-          },
-        ),
-      ),
+      child: const BestPlansView(),
       color: Colors.white,
     );
   }

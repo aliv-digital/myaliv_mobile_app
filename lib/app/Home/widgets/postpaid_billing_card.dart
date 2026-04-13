@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../resources/widgets/common_switch_button.dart';
-import '../../../router/app_routes.dart';
-import 'amount_text.dart';
-import 'auto_renew_toggle.dart';
-import 'enable_auto_payment_sheet.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/enable_auto_payment_sheet.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
 
 class PostpaidBillingCard extends StatefulWidget {
   const PostpaidBillingCard({super.key});
@@ -16,7 +13,7 @@ class PostpaidBillingCard extends StatefulWidget {
 }
 
 class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
-  bool autoPayEnabled = true; // UI-only state
+  bool autoPayEnabled = true;
 
   static const Color purple = Color(0xFF645D9C);
   static const Color lightPurple = Color(0xFFF1F0FA);
@@ -52,9 +49,6 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   ),
                 ),
                 const Spacer(),
-
-                /// TEXT + REAL SWITCH (as in design)
-                // CommonSwitchButton(initialValue: true),
                 _FigmaToggle(value: autoPayEnabled, onChanged: onChanged),
               ],
             ),
@@ -65,20 +59,6 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Icon
-                // Container(
-                //   width: 44,
-                //   height: 44,
-                //   decoration: BoxDecoration(
-                //     color: lightPurple,
-                //     borderRadius: BorderRadius.circular(14),
-                //   ),
-                //   child: const Icon(
-                //     Icons.account_balance_wallet_outlined,
-                //     color: purple,
-                //     size: 24,
-                //   ),
-                // ),
                 SvgPicture.asset('assets/icons/wallet.svg'),
                 const SizedBox(width: 14),
 
@@ -98,7 +78,6 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                           letterSpacing: 0.06,
                         ),
                       ),
-                      // SizedBox(height: 6),
                       Text(
                         'payment is due the 15th of each\nmonth',
                         style: TextStyle(
@@ -114,17 +93,8 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   ),
                 ),
 
-                // Amount
-                const OutlinedAmountText(),
-                // const Text(
-                //   '\$129.00',
-                //   style: TextStyle(
-                //     fontFamily: 'CircularPro',
-                //     fontSize: 24,
-                //     fontWeight: FontWeight.w700,
-                //     color: purple,
-                //   ),
-                // ),
+                // Amount (wallet balance shown as "balance due" for postpaid)
+                const BalanceAmountText(type: BalanceType.wallet),
               ],
             ),
 
@@ -136,7 +106,6 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
               height: 50,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // UI only
                   context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);
                 },
                 icon: SvgPicture.asset(
@@ -147,10 +116,10 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                 label: const Text(
                   'pay now',
                   style: TextStyle(
-                    color: const Color(0xFFF1F1F8),
+                    color: Color(0xFFF1F1F8),
                     fontSize: 15,
                     fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700, // 🔥 NOT WHITE
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(

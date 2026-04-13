@@ -33,6 +33,7 @@ dependencies:
   internet_connection_checker_plus: ^2.9.1+2
   phone_numbers_parser: ^9.0.21
   shimmer: ^3.0.0
+  cached_network_image: ^3.4.1
   core:
     path: packages/core
 
