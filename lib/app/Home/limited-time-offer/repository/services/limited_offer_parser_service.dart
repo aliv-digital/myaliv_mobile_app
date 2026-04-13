@@ -109,7 +109,9 @@ class LimitedOfferParserService {
           }
 
           if (kDebugMode) {
-            debugPrint('✓ Parsed offer: id=${offer.id}, title="${offer.title}"');
+            debugPrint(
+              '✓ Parsed offer: id=${offer.id}, title="${offer.title}"',
+            );
             debugPrint('  - Type: ${offer.type}');
             debugPrint('  - Status: ${offer.status}');
             debugPrint('  - Expires: ${offer.expireOn}');
@@ -123,7 +125,9 @@ class LimitedOfferParserService {
             offers.add(offer);
             if (kDebugMode) {
               if (offer.isExpired) {
-                debugPrint('  ⚠️ Added to offers list (debug extension failed)');
+                debugPrint(
+                  '  ⚠️ Added to offers list (debug extension failed)',
+                );
               } else {
                 debugPrint('  ✅ Added to offers list');
               }

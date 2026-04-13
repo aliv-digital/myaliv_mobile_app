@@ -29,23 +29,14 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
   }) async {
     // Prevent duplicate loading
     if (state.isLoading) {
-      if (kDebugMode) {
-        debugPrint('⚠️ LimitedOfferCubit: Already loading, skipping');
-      }
       return;
     }
 
     // Use cache if valid and not forcing refresh
     if (!forceRefresh && state.isCacheValid && state.hasOffer) {
-      if (kDebugMode) {
-        debugPrint('✅ LimitedOfferCubit: Using cached offer');
-      }
       return;
     }
 
-    if (kDebugMode) {
-      debugPrint('🔄 LimitedOfferCubit: Loading offers (userType: $userType)');
-    }
 
     emit(state.copyWith(status: LimitedOfferStatus.loading, clearError: true));
 
@@ -55,9 +46,6 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
 
       // Handle empty result
       if (offers.isEmpty) {
-        if (kDebugMode) {
-          debugPrint('ℹ️ LimitedOfferCubit: No active offers found');
-        }
         emit(
           state.copyWith(
             status: LimitedOfferStatus.empty,
@@ -72,12 +60,6 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
       // Take first offer (UI shows one at a time)
       final firstOffer = offers.first;
 
-      if (kDebugMode) {
-        debugPrint('✅ LimitedOfferCubit: Loaded offer: ${firstOffer.title}');
-        debugPrint('   Expires: ${firstOffer.expireOn}');
-        debugPrint('   Time remaining: ${firstOffer.timeRemaining}');
-      }
-
       final newState = state.copyWith(
         status: LimitedOfferStatus.loaded,
         currentOffer: firstOffer,
@@ -87,19 +69,10 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
 
       emit(newState);
 
-      if (kDebugMode) {
-        debugPrint('   📤 EMITTED STATE: status=${newState.status}, hasOffer=${newState.hasOffer}');
-        debugPrint('   📤 currentOffer: ${newState.currentOffer}');
-        debugPrint('');
-      }
 
       // Start countdown timer for live updates
       _startCountdownTimer(userType: userType);
     } on LimitedOfferRepositoryException catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ LimitedOfferCubit: Error loading offers: ${e.message}');
-      }
-
       final friendlyMessage = _getFriendlyErrorMessage(e);
       emit(
         state.copyWith(
@@ -110,10 +83,6 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
       );
       _stopCountdownTimer();
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ LimitedOfferCubit: Unexpected error: $e');
-      }
-
       emit(
         state.copyWith(
           status: LimitedOfferStatus.failure,
@@ -153,13 +122,6 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
       // The lastTickAt timestamp changes every second, forcing BlocBuilder to rebuild
       final now = DateTime.now();
       emit(state.copyWith(lastTickAt: now));
-
-      if (kDebugMode) {
-        final timeRemaining = offer.timeRemaining;
-        debugPrint(
-          '⏱️ Timer tick: ${timeRemaining.inDays}d ${timeRemaining.inHours % 24}h ${timeRemaining.inMinutes % 60}m ${timeRemaining.inSeconds % 60}s',
-        );
-      }
     });
   }
 
