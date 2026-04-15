@@ -291,3 +291,28 @@ When adding to the core package:
 ## License
 
 Proprietary - Internal use for HRMS and related projects
+
+## MyALiv Accounts:
+
+2428998519 - Postpaid
+2428997091 - Prepaid
+2428999324 - Postpaid
+2428997094 - Postpaid
+2428997551 - Postpaid
+2428999357 - Postpaid
+2428999325 - Postpaid
+
+2428998866 - Postpaid
+2428997442 - Postpaid
+2428999620 - Postpaid
+2428997955 - Prepaid
+2428997206 - Prepaid
+2428999875 - Prepaid
+2428999249 - Prepaid
+
+2428999208 - Prepaid
+2428999958 - Prepaid
+2428999430 - Postpaid
+2428997105 - Prepaid
+2428999343 - Postpaid
+2428999880 - Postpaid

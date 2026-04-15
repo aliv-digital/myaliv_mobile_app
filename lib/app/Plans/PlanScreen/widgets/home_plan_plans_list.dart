@@ -3,7 +3,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/widgets/home_plans_postpaid_plan_card.dart';
 
-import '../cubit/home_plan_state.dart';
+import '../cubit/plans_state.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
 import 'daily_plan_card.dart';
@@ -30,7 +30,7 @@ class HomePlanPlansList extends StatelessWidget {
     this.onPostpaidRoamingPurchaseNow,
   });
 
-  final HomePlanState state;
+  final PlansState state;
   final ValueChanged<String> onToggleExpanded;
   final ValueChanged<HomePlanModel> onPurchaseNow;
   final ValueChanged<BasePlanModel>? onDailyPurchaseNow;
@@ -215,26 +215,8 @@ class HomePlanPlansList extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      // Title-to-first-card gap target: 16px.
-      // First card already contributes 10px top margin from theme,
-      // so list adds 6px top padding.
-      padding: const EdgeInsets.only(top: 6, bottom: 14),
-      itemCount: state.plans.length,
-      itemBuilder: (context, index) {
-        final HomePlanModel plan = state.plans[index];
-        final bool expanded = state.expandedPlanIds.contains(plan.id);
-
-        return Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
-          child: _buildCardForTab(
-            tab: state.selectedTab,
-            plan: plan,
-            expanded: expanded,
-          ),
-        );
-      },
-    );
+    // Fallback case - should never be reached as all tabs are handled above
+    return const SizedBox.shrink();
   }
 
   Widget _buildCardForDailyTab({
@@ -368,32 +350,5 @@ class HomePlanPlansList extends StatelessWidget {
         }
       },
     );
-  }
-
-  Widget _buildCardForTab({
-    required HomePlanTab tab,
-    required HomePlanModel plan,
-    required bool expanded,
-  }) {
-    switch (tab) {
-      case HomePlanTab.monthly:
-        return const SizedBox.shrink();
-      case HomePlanTab.daily:
-        return const SizedBox.shrink();
-      case HomePlanTab.weekly:
-        return const SizedBox.shrink();
-      case HomePlanTab.roaming:
-        return const SizedBox.shrink();
-      case HomePlanTab.roameasy:
-        return const SizedBox.shrink();
-      case HomePlanTab.mifi:
-        return const SizedBox.shrink();
-      case HomePlanTab.libertyGlobal:
-        return const SizedBox.shrink();
-      case HomePlanTab.addOns:
-        return const SizedBox.shrink();
-      case HomePlanTab.postpaidRoaming:
-        return const SizedBox.shrink();
-    }
   }
 }

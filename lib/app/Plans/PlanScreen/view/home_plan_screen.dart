@@ -9,8 +9,8 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
-import '../cubit/home_plan_cubit.dart';
-import '../cubit/home_plan_state.dart';
+import '../cubit/plans_cubit.dart';
+import '../cubit/plans_state.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
@@ -53,7 +53,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
   void initState() {
     super.initState();
     final userType = context.read<AppUiConfigCubit>().state.userType;
-    context.read<HomePlanCubit>().started(userType: userType);
+    context.read<PlansCubit>().started(userType: userType);
   }
 
   HomePlanModel _toRoamingPurchaseSheetPlan(BasePlanModel plan) {
@@ -101,7 +101,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
   }
 
   void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
-    final cubit = context.read<HomePlanCubit>();
+    final cubit = context.read<PlansCubit>();
 
     // Prevent opening multiple purchase modals simultaneously
     if (cubit.state.isPurchaseModalOpen) {
@@ -120,7 +120,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
   }
 
   void _showPostpaidStartBottomSheet(BuildContext context) {
-    final cubit = context.read<HomePlanCubit>();
+    final cubit = context.read<PlansCubit>();
 
     // Prevent opening multiple purchase modals simultaneously
     if (cubit.state.isPurchaseModalOpen) {
@@ -170,13 +170,13 @@ class _HomePlanViewState extends State<_HomePlanView> {
 
   Widget _buildTabContent(
     BuildContext context,
-    HomePlanState currentState,
-    HomePlanStatus currentTabStatus,
+    PlansState currentState,
+    PlansStatus currentTabStatus,
     String? currentTabError,
   ) {
     // Loading state - show shimmer
-    if (currentTabStatus == HomePlanStatus.loading ||
-        currentTabStatus == HomePlanStatus.initial) {
+    if (currentTabStatus == PlansStatus.loading ||
+        currentTabStatus == PlansStatus.initial) {
       if (currentState.selectedTab == HomePlanTab.addOns) {
         return const AddOnShimmerList();
       }
@@ -184,11 +184,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
 
     // Error state - show error with retry button
-    if (currentTabStatus == HomePlanStatus.failure) {
+    if (currentTabStatus == PlansStatus.failure) {
       return PlanErrorState(
         errorMessage: currentTabError ?? 'Something went wrong',
         onRetry: () {
-          context.read<HomePlanCubit>().refreshCurrentTab();
+          context.read<PlansCubit>().refreshCurrentTab();
         },
       );
     }
@@ -200,7 +200,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
         return PlanEmptyState(
           message: 'No add-ons available at the moment',
           onRefresh: () {
-            context.read<HomePlanCubit>().refreshCurrentTab();
+            context.read<PlansCubit>().refreshCurrentTab();
           },
         );
       }
@@ -210,7 +210,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
         addOns: currentState.addOns,
         selectedAddOnIds: currentState.selectedAddOnIds,
         onToggleAddOn: (addOn) {
-          context.read<HomePlanCubit>().toggleAddon(addOn);
+          context.read<PlansCubit>().toggleAddon(addOn);
         },
       );
     }
@@ -221,7 +221,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
       return PlanEmptyState(
         message: 'No plans available for this category',
         onRefresh: () {
-          context.read<HomePlanCubit>().refreshCurrentTab();
+          context.read<PlansCubit>().refreshCurrentTab();
         },
       );
     }
@@ -229,7 +229,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     return HomePlanPlansList(
       state: currentState,
       onToggleExpanded: (planId) {
-        context.read<HomePlanCubit>().toggleExpanded(planId);
+        context.read<PlansCubit>().toggleExpanded(planId);
       },
       onWeeklyPurchaseNow: (_) {},
       onDailyPurchaseNow: (_) {},
@@ -255,7 +255,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  bool _isCurrentTabEmpty(HomePlanState state) {
+  bool _isCurrentTabEmpty(PlansState state) {
     switch (state.selectedTab) {
       case HomePlanTab.daily:
         return state.dailyApiPlans.isEmpty;
@@ -285,7 +285,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     final isPostpaid = config.userType == UserType.postpaid;
     final appBarTitle = isPostpaid ? 'roaming data add-ons' : 'plans';
 
-    return BlocListener<HomePlanCubit, HomePlanState>(
+    return BlocListener<PlansCubit, PlansState>(
       listenWhen: (previous, current) {
         return previous.pendingToast?.id != current.pendingToast?.id;
       },
@@ -296,11 +296,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
         }
 
         AppToast.show(message: toast.message, type: ToastType.error);
-        context.read<HomePlanCubit>().toastConsumed();
+        context.read<PlansCubit>().toastConsumed();
       },
       child: Scaffold(
         backgroundColor: HomePlanTheme.screenBackground,
-        bottomNavigationBar: BlocBuilder<HomePlanCubit, HomePlanState>(
+        bottomNavigationBar: BlocBuilder<PlansCubit, PlansState>(
           buildWhen: (previous, current) {
             return previous.selectedTab != current.selectedTab ||
                 previous.selectedTabStatus != current.selectedTabStatus ||
@@ -316,7 +316,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           },
         ),
         body: SafeArea(
-          child: BlocBuilder<HomePlanCubit, HomePlanState>(
+          child: BlocBuilder<PlansCubit, PlansState>(
             buildWhen: (previous, current) {
               // Rebuild when tab changes OR when tab status changes
               final tabChanged = previous.selectedTab != current.selectedTab;
@@ -328,7 +328,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
             builder: (context, state) {
               if (!tabs.contains(state.selectedTab)) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  context.read<HomePlanCubit>().changeTab(tabs.first);
+                  context.read<PlansCubit>().changeTab(tabs.first);
                 });
                 return const SizedBox.shrink();
               }
@@ -349,12 +349,12 @@ class _HomePlanViewState extends State<_HomePlanView> {
                       selected: state.selectedTab,
                       tabs: tabs,
                       onChanged: (tab) =>
-                          context.read<HomePlanCubit>().changeTab(tab),
+                          context.read<PlansCubit>().changeTab(tab),
                     ),
                   if (!isPostpaid) const SizedBox(height: 6),
                   HomePlanSectionHeader(selectedTab: state.selectedTab),
                   Expanded(
-                    child: BlocBuilder<HomePlanCubit, HomePlanState>(
+                    child: BlocBuilder<PlansCubit, PlansState>(
                       builder: (context, currentState) {
                         final currentTabStatus = currentState.selectedTabStatus;
                         final currentTabError =
@@ -363,7 +363,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
                         return RefreshIndicator(
                           onRefresh: () async {
                             await context
-                                .read<HomePlanCubit>()
+                                .read<PlansCubit>()
                                 .refreshCurrentTab();
                           },
                           child: _buildTabContent(

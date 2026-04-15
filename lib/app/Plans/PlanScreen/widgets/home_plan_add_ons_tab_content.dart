@@ -7,7 +7,7 @@ import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purc
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_plan_red_image_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
-import '../cubit/home_plan_state.dart';
+import '../cubit/plans_state.dart';
 import '../models/add_on_model.dart';
 import '../models/base_plan_model.dart';
 import '../repository/plan_types.dart';
@@ -120,10 +120,10 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
     required this.onPayNow,
   });
 
-  final HomePlanState state;
+  final PlansState state;
   final VoidCallback onPayNow;
 
-  double _selectedAddOnsTotal(HomePlanState state) {
+  double _selectedAddOnsTotal(PlansState state) {
     return state.addOns
         .where((addOn) => state.selectedAddOnIds.contains(addOn.id))
         .fold<double>(0, (sum, addOn) => sum + addOn.totalPrice);
@@ -132,7 +132,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (state.selectedTab != HomePlanTab.addOns ||
-        state.statusFor(HomePlanTab.addOns) != HomePlanStatus.loaded) {
+        state.status != PlansStatus.success) {
       return const SizedBox.shrink();
     }
 

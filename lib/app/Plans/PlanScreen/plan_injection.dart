@@ -1,14 +1,11 @@
 import 'package:core/core.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/base_plan_repository.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/home_plan_repository_v2.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_api_service.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_cache_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_categorizer_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_model_factory.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_parser_service.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_cache_service.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 
 /// Setup dependency injection for plan feature
 ///
@@ -59,22 +56,10 @@ Future<void> setupPlanInjection() async {
     ),
   );
 
-  // Register new PlansCubit (factory - not singleton)
-  instance.registerFactory<PlansCubit>(
+  // Register PlansCubit as singleton (state persists, reset on logout)
+  instance.registerLazySingleton<PlansCubit>(
     () => PlansCubit(
       repository: instance<PlansRepository>(),
     ),
-  );
-
-  // ========== Existing Architecture (Backward Compatibility) ==========
-
-  // Register old repository (still used by HomePlanCubit)
-  instance.registerLazySingleton<BasePlanRepository>(
-    () => HomePlanRepositoryV2(),
-  );
-
-  // Register existing HomePlanCubit
-  instance.registerLazySingleton<HomePlanCubit>(
-    () => HomePlanCubit(instance<BasePlanRepository>()),
   );
 }

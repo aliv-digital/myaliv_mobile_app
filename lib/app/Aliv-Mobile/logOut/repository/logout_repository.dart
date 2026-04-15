@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:core/core.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import '../../../../core/localStorage/localStorage.dart';
 import '../../../../core/networkService/api_paths.dart';
 import '../../../../core/networkService/app_http_client.dart';
@@ -104,11 +104,11 @@ class LogoutRepository {
     final accountInfoCubit = instance<AccountInfoCubit>();
     await accountInfoCubit.clearAccountInfo();
 
-    // 4. Reset HomePlanCubit state to clear cached plans
+    // 4. Reset PlansCubit state to clear cached plans
     // This fixes the issue where switching from prepaid to postpaid (or vice versa)
     // would skip API calls because old plan data was still marked as loaded
-    final homePlanCubit = instance<HomePlanCubit>();
-    homePlanCubit.reset();
+    final plansCubit = instance<PlansCubit>();
+    plansCubit.reset();
 
     // Note: AppUiConfigCubit is NOT reset here because:
     // - It's not registered in DI (created in main.dart with BlocProvider)

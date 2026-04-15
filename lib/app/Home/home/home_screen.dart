@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/model/demo_plans.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Preload plans in background while user is on home screen
     final userType = context.read<AppUiConfigCubit>().state.userType;
-    context.read<HomePlanCubit>().loadInitialPlans(userType: userType);
+    context.read<PlansCubit>().loadInitialPlans(userType: userType);
 
     // Load limited time offers
     final userTypeString =

@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => AppUiConfigCubit()),
         BlocProvider.value(value: instance<AccountInfoCubit>()),
-        BlocProvider.value(value: instance<HomePlanCubit>()),
+        BlocProvider.value(value: instance<PlansCubit>()),
         BlocProvider.value(value: instance<LimitedOfferCubit>()),
         BlocProvider.value(value: instance<BestPlanCubit>()),
         BlocProvider.value(value: instance<BalanceCubit>()),

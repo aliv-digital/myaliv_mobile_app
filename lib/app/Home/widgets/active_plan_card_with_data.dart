@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_cubit.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/home_plan_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 
-/// Active plan card connected to HomePlanCubit for real-time data.
+/// Active plan card connected to PlansCubit for real-time data.
 ///
 /// This widget displays the active plan with renew button inside the card,
 /// matching the original design from PrepaidActivePlanCard.
@@ -22,7 +22,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomePlanCubit, HomePlanState>(
+    return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
         // Rebuild when active plan data changes
         return previous.earliestAddOnsPrimaryPlan !=
