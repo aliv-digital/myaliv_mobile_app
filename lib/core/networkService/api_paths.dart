@@ -12,6 +12,7 @@ class Api {
   static const adsTimer = 'https://myalivappuat-api.bealiv.com/api/ads-timer/active';
   static const bestPlans = 'https://myalivappuat-api.bealiv.com/api/plans/active';
   static const balances = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/balances
-// body: {"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366MexB4vZwJ30PyNaWKbfAK+8+7DLAMFyFUPIZmmueGWj+8J5i+JYxU5beqX7pZxPS1NCtV/Jc570QMV3IiQucnw==","AccountId":1320845927}
-  //{{baseUrl}}/v1/MyAliv/device/{{deviceAccountId}}/bundles
+  static const consumptionLimits = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/query-consumption-limi
+  static const devices = '$baseUrl/v1/MyAliv/Account/devices'; // Get device limits for credit limit update
+  static const deviceLimits = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/limits - PUT to update limits
 }

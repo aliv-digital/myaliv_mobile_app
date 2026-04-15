@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/roaming_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
-
-import '../../../core/appConfig/app_ui_config_cubit.dart';
-import '../../../router/app_routes.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class ActivePlanUsageSection extends StatelessWidget {
   const ActivePlanUsageSection({super.key});
@@ -43,7 +43,7 @@ class ActivePlanUsageSection extends StatelessWidget {
         const SizedBox(height: 20),
         if (config.userType == UserType.postpaid) _myLimitsHeader(context),
         if (config.userType == UserType.postpaid) const SizedBox(height: 10),
-        if (config.userType == UserType.postpaid) _postpaidUsageCards(),
+        if (config.userType == UserType.postpaid) const MyLimitsCards(),
       ],
     );
   }

@@ -83,7 +83,7 @@ import '../app/Security/secuirity_common_password_screen.dart';
 import '../app/Security/secuirity_common_verification_code_page.dart';
 import '../app/Support/chatbot_screen.dart';
 import '../app/Support/quick_help_screen.dart';
-import '../app/Usage/upgrade_credit_limit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/upgrade_credit_limit_screen.dart';
 import '../app/Usage/usage_screen.dart';
 import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/profile/postpaid/view/profile_postpaid_screen.dart';

@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
-import 'current_plan_tab.dart';
-import 'future_plan_tab.dart';
-import 'my_limits_tab.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_view.dart';
+import 'package:myaliv_mobile_app/app/Usage/current_plan_tab.dart';
+import 'package:myaliv_mobile_app/app/Usage/future_plan_tab.dart';
 
 class UsageScreen extends StatefulWidget {
   const UsageScreen({super.key});

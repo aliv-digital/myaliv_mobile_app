@@ -16,10 +16,7 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
   bool autoPayEnabled = true;
 
   static const Color purple = Color(0xFF645D9C);
-  static const Color lightPurple = Color(0xFFF1F0FA);
   static const Color border = Color(0xFFE6E6EE);
-  static const Color textDark = Color(0xFF1E1E2D);
-  static const Color textMuted = Color(0xFF8A8A9D);
 
   @override
   Widget build(BuildContext context) {

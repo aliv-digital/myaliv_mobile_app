@@ -23,7 +23,10 @@ import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offe
 import 'package:myaliv_mobile_app/app/Home/best-plans/view/best_plans_view.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:core/core.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,12 +63,22 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load best plans
     context.read<BestPlanCubit>().loadPlans(userType: userTypeString);
 
-    // Load balances
+    // Load balances and consumption limits
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     if (accountInfo != null && accountInfo.idAcc > 0) {
       context.read<BalanceCubit>().loadBalances(
             deviceAccountId: accountInfo.idAcc,
           );
+
+      // Load consumption limits and device limits for postpaid users
+      if (userType == UserType.postpaid) {
+        instance<ConsumptionLimitCubit>().loadLimits(
+          deviceAccountId: accountInfo.idAcc,
+        );
+
+        // Load device limits early for upgrade credit limit screen
+        instance<DeviceLimitsCubit>().loadDeviceLimits();
+      }
     }
   }
 
