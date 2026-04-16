@@ -5,6 +5,7 @@ class FuturePlanCard extends StatelessWidget {
   final String startDate;
   final String endDate;
   final String image;
+  final bool isActivePlan;
 
   const FuturePlanCard({
     super.key,
@@ -12,6 +13,7 @@ class FuturePlanCard extends StatelessWidget {
     required this.startDate,
     required this.endDate,
     required this.image,
+    this.isActivePlan = false,
   });
 
   @override
@@ -19,18 +21,13 @@ class FuturePlanCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 151,
-      padding: const EdgeInsets.fromLTRB(16,13,16,16),
+      padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
       decoration: BoxDecoration(
         image: DecorationImage(
-          image:  AssetImage(image),
+          image: AssetImage(image),
           fit: BoxFit.fill,
         ),
         borderRadius: BorderRadius.circular(12),
-        // gradient: LinearGradient(
-        //   begin: Alignment.topLeft,
-        //   end: Alignment.bottomRight,
-        //   colors: gradient,
-        // ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black12,
@@ -42,10 +39,10 @@ class FuturePlanCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text( title == 'liberty45'?
-            'active plan':'future plan',
+          Text(
+            isActivePlan ? 'active plan' : 'future plan',
             style: const TextStyle(
-              color: Colors.white /* White-100% */,
+              color: Colors.white,
               fontSize: 12,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,
@@ -53,9 +50,11 @@ class FuturePlanCard extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            title,
+            title.trim().isNotEmpty ? title : 'no plan',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: Colors.white /* White-100% */,
+              color: Colors.white,
               fontSize: 24,
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w700,

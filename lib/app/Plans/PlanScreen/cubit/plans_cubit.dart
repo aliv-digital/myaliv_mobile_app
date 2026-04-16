@@ -197,22 +197,6 @@ class PlansCubit extends Cubit<PlansState> {
         // Clear error
         errorMessage: null,
       ));
-
-      if (kDebugMode) {
-        debugPrint('✅ PlansCubit: All plans loaded successfully');
-        debugPrint('   Daily: ${plansResult.dailyPlans.length}');
-        debugPrint('   Weekly: ${plansResult.weeklyPlans.length}');
-        debugPrint('   Monthly: ${plansResult.monthlyPlans.length}');
-        debugPrint('   Roaming: ${plansResult.roamingPlans.length}');
-        debugPrint('   RoamEasy: ${plansResult.roamEasyPlans.length}');
-        debugPrint('   MiFi: ${plansResult.mifiPlans.length}');
-        debugPrint('   LibertyGlobal: ${plansResult.libertyGlobalPlans.length}');
-        debugPrint(
-          '   PostpaidRoaming: ${plansResult.postpaidRoamingPlans.length}',
-        );
-        debugPrint('   AddOns: ${addOnsResult.addOns.length}');
-        debugPrint('   PrimaryPlans: ${addOnsResult.primaryPlans.length}');
-      }
     } catch (e) {
       final errorMsg = _friendlyErrorMessage(e);
 
