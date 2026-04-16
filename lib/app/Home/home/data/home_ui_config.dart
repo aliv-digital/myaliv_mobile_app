@@ -1,5 +1,11 @@
 enum UserType { prepaid, postpaid }
 
+extension UserTypeExtension on UserType {
+  bool get isPrepaid => this == UserType.prepaid;
+  bool get isPostpaid => this == UserType.postpaid;
+  String get label => isPrepaid ? 'prepaid' : 'postpaid';
+}
+
 class HomeUiConfig {
   final UserType userType;
   final bool hasActivePlan;

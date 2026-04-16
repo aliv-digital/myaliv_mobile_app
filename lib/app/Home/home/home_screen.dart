@@ -56,12 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<PlansCubit>().loadInitialPlans(userType: userType);
 
     // Load limited time offers
-    final userTypeString =
-        userType == UserType.prepaid ? 'prepaid' : 'postpaid';
-    context.read<LimitedOfferCubit>().loadOffers(userType: userTypeString);
+    context.read<LimitedOfferCubit>().loadOffers(userType: userType.label);
 
     // Load best plans
-    context.read<BestPlanCubit>().loadPlans(userType: userTypeString);
+    context.read<BestPlanCubit>().loadPlans(userType: userType.label);
 
     // Load balances and consumption limits
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
@@ -71,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
 
       // Load consumption limits and device limits for postpaid users
-      if (userType == UserType.postpaid) {
+      if (userType.isPostpaid) {
         instance<ConsumptionLimitCubit>().loadLimits(
           deviceAccountId: accountInfo.idAcc,
         );
