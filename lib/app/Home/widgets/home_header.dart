@@ -3,10 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/phone_dropdown.dart';
+
+/// Extract name from email (substring before @)
+String _nameFromEmail(String email) {
+  if (email.isEmpty || !email.contains('@')) return 'User';
+  return email.split('@').first;
+}
 
 class HomeHeader extends StatelessWidget {
   final HomeUiConfig config;
@@ -50,7 +57,8 @@ class HomeHeader extends StatelessWidget {
           BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
             bloc: instance<DeviceLimitsCubit>(),
             builder: (context, state) {
-              final name = state.fullName ?? 'User';
+              final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
+              final name = state.fullName ?? _nameFromEmail(email);
               return Text(
                 'welcome back, $name',
                 textAlign: TextAlign.center,

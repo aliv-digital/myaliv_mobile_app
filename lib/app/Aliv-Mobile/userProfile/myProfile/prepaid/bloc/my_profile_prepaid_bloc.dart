@@ -1,4 +1,6 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
 import '../repository/my_profile_prepaid_repository.dart';
 import 'my_profile_prepaid_event.dart';
@@ -22,6 +24,12 @@ class MyProfilePrepaidBloc extends Bloc<MyProfilePrepaidEvent, MyProfilePrepaidS
       ) async {
     try {
       emit(state.copyWith(status: MyProfilePrepaidStatus.loading, errorMessage: null));
+
+      // Ensure device limits are loaded
+      final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+      if (!deviceLimitsCubit.state.hasDeviceLimits) {
+        await deviceLimitsCubit.loadDeviceLimits();
+      }
 
       final data = await repository.fetchProfile();
       emit(state.copyWith(status: MyProfilePrepaidStatus.success, data: data));

@@ -62,32 +62,36 @@ class ChangePasswordPrepaidBloc
     if (a.length < 4 || b.length < 4) {
       emit(state.copyWith(
         status: ChangePasswordPrepaidStatus.failure,
-        errorMessage: 'Password must be at least 4 characters',
+        errorMessage: 'password must be at least 4 characters',
       ));
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready, errorMessage: null));
       return;
     }
 
     if (a != b) {
       emit(state.copyWith(
         status: ChangePasswordPrepaidStatus.failure,
-        errorMessage: 'Passwords do not match',
+        errorMessage: 'passwords do not match',
       ));
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready, errorMessage: null));
       return;
     }
 
     try {
       emit(state.copyWith(status: ChangePasswordPrepaidStatus.submitting, errorMessage: null));
-      await repository.changePassword(newPassword: a);
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.success));
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
+      final success = await repository.changePassword(newPassword: a);
+
+      if (success) {
+        emit(state.copyWith(status: ChangePasswordPrepaidStatus.success));
+      } else {
+        emit(state.copyWith(
+          status: ChangePasswordPrepaidStatus.failure,
+          errorMessage: 'failed to update password. please try again.',
+        ));
+      }
     } catch (_) {
       emit(state.copyWith(
         status: ChangePasswordPrepaidStatus.failure,
-        errorMessage: 'Something went wrong',
+        errorMessage: 'failed to update password. please try again.',
       ));
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready, errorMessage: null));
     }
   }
 }

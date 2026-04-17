@@ -1,12 +1,36 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../router/app_routes.dart';
 import '../model/logout_bottom_sheet.dart';
+
+/// Extract name from email (substring before @)
+String _nameFromEmail(String email) {
+  if (email.isEmpty || !email.contains('@')) return 'User';
+  return email.split('@').first;
+}
+
+/// Format phone number as XXX-XXX-XXXX
+String _formatPhone(String phone) {
+  if (phone.isEmpty) return '';
+  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 10) {
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+  }
+  if (digits.length == 11 && digits.startsWith('1')) {
+    return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
+  }
+  return phone;
+}
 
 class AppMenuDrawer extends StatelessWidget {
   const AppMenuDrawer({super.key});
@@ -25,49 +49,51 @@ class AppMenuDrawer extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Jade Turnquest',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            color: const Color(0xFF1C1C1C) /* Black-100% */,
-                            fontSize: 24,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          '242-820-2246  ',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF1C1C1C) /* Black-100% */,
-                            fontSize: 14,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
+                  Expanded(
+                    child: BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+                      bloc: instance<DeviceLimitsCubit>(),
+                      builder: (context, state) {
+                        final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
+                        final fullName = state.fullName ?? _nameFromEmail(email);
+                        final phone = _formatPhone(state.deviceLimits?.tn ?? '');
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              fullName,
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                color: Color(0xFF1C1C1C),
+                                fontSize: 24,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              phone,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Color(0xFF1C1C1C),
+                                fontSize: 14,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
-                  // IconButton(
-                  //   icon: const Icon(Icons.close),
-                  //   onPressed: () => Navigator.pop(context),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () => Navigator.pop(context),
                       child: SvgPicture.asset(
                         'assets/icons/ic_back_bold.svg',
-                        // Icons.close,
-                        // color: Color(0xFF1F1F1F),
                       ),
                     ),
                   ),

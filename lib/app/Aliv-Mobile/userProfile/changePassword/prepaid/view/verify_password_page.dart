@@ -6,16 +6,14 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../login/widgets/login_bottom_stripes.dart';
 
-class VerifyEmailPage extends StatefulWidget {
-  final String email;
-
-  const VerifyEmailPage({super.key, required this.email});
+class VerifyPasswordPage extends StatefulWidget {
+  const VerifyPasswordPage({super.key});
 
   @override
-  State<VerifyEmailPage> createState() => _VerifyEmailPageState();
+  State<VerifyPasswordPage> createState() => _VerifyPasswordPageState();
 }
 
-class _VerifyEmailPageState extends State<VerifyEmailPage> {
+class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
   @override
   void initState() {
     super.initState();
@@ -24,7 +22,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       if (!mounted) return;
 
       AppToast.show(
-        message: 'email address updated successfully',
+        message: 'password updated successfully',
         type: ToastType.success,
       );
     });
@@ -52,7 +50,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
                 /// Title
                 const Text(
-                  'email updated successfully',
+                  'password updated successfully',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFF010101),
@@ -64,33 +62,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
                 const SizedBox(height: 16),
 
-                /// Description with email
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: 'your email has been updated to ',
-                        style: TextStyle(
-                          color: Color(0xFF58677D),
-                          fontSize: 15,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w500,
-                          height: 1.47,
-                        ),
-                      ),
-                      TextSpan(
-                        text: widget.email,
-                        style: const TextStyle(
-                          color: Color(0xFF58677D),
-                          fontSize: 15,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                          height: 1.47,
-                        ),
-                      ),
-                    ],
-                  ),
+                /// Description
+                const Text(
+                  'your password has been changed successfully',
                   textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF58677D),
+                    fontSize: 15,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w500,
+                    height: 1.47,
+                  ),
                 ),
 
                 const SizedBox(height: 32),

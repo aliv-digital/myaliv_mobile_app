@@ -65,6 +65,7 @@ import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_scre
 import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/update_email.dart';
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/verify_email_page.dart';
+import '../app/Aliv-Mobile/userProfile/changePassword/prepaid/view/verify_password_page.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
@@ -637,6 +638,15 @@ class AppRouter {
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
             child: VerifyEmailPage(email: email),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.verifyPassword,
+        pageBuilder: (context, state) {
+          return MaterialPage(
+            key: ValueKey(state.uri.toString()),
+            child: const VerifyPasswordPage(),
           );
         },
       ),

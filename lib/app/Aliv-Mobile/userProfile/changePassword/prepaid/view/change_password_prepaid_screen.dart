@@ -59,12 +59,15 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
               p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == ChangePasswordPrepaidStatus.success) {
-              // TODO: success navigation/snackbar (তুমি বসাবে)
+              context.pushReplacement(AppRoutes.verifyPassword);
             }
 
             if (state.status == ChangePasswordPrepaidStatus.failure &&
                 (state.errorMessage ?? '').isNotEmpty) {
-              // TODO: failure snackbar/toast (তুমি বসাবে)
+              AppToast.show(
+                message: state.errorMessage ?? 'failed to update password',
+                type: ToastType.error,
+              );
             }
           },
           child: Column(
@@ -152,15 +155,13 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
 
                                     return ChangePasswordPrepaidSubmitButton(
                                       label: 'change password',
-                                      enabled: !isLoading,
+                                      enabled: !isLoading && state.isValid,
                                       isLoading: isLoading,
                                       onTap: () {
-                                        context.pop();
-                                        AppToast.show(message: 'your password has been successfully updated ');
-                                        // context
-                                        //   .read<ChangePasswordPrepaidBloc>()
-                                        //   .add(
-                                        //       const ChangePasswordPrepaidSubmitPressed());
+                                        context
+                                            .read<ChangePasswordPrepaidBloc>()
+                                            .add(
+                                                const ChangePasswordPrepaidSubmitPressed());
                                       },
                                     );
                                   },
