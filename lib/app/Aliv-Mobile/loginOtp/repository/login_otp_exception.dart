@@ -45,10 +45,8 @@ class LoginOtpException implements Exception {
 
   @override
   String toString() {
-    // Return user-friendly message for backwards compatibility with BLoC
-    // BLoC's _extractErrorMessage() expects clean error messages
-    final message = serverMessage ?? _getDefaultMessage();
-    return 'Exception: $message';
+    // Return only the message for clean toast display
+    return serverMessage ?? _getDefaultMessage();
   }
 
   /// Get default error message based on type

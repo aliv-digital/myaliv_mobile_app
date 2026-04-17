@@ -1,6 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+/// Format phone number as XXX-XXX-XXXX
+String _formatPhone(String phone) {
+  // Remove all non-digits
+  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 10) {
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+  }
+  if (digits.length == 11 && digits.startsWith('1')) {
+    // Handle 1-XXX-XXX-XXXX format
+    return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
+  }
+  // Return original if can't format
+  return phone;
+}
+
 /// Phone item widget for dropdown menu items
 class PhoneDropdownItem extends StatelessWidget {
   final String number;
@@ -16,7 +31,8 @@ class PhoneDropdownItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayNumber = number.isNotEmpty ? number : 'No phone number';
+    final displayNumber =
+        number.isNotEmpty ? _formatPhone(number) : 'No phone number';
 
     return Row(
       children: [
@@ -58,7 +74,8 @@ class PhoneDropdownSelectedItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayNumber = number.isNotEmpty ? number : 'No phone number';
+    final displayNumber =
+        number.isNotEmpty ? _formatPhone(number) : 'No phone number';
 
     return Row(
       children: [

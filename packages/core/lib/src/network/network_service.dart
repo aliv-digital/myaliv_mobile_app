@@ -4,6 +4,8 @@
 /// Responsible for: HTTP requests, service orchestration, and lifecycle management.
 library;
 
+import 'dart:convert';
+
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -460,19 +462,38 @@ class NetworkService {
   String _extractErrorMessage(dynamic data) {
     if (data == null) return 'An error occurred';
 
-    if (data is String) return data;
+    // If data is a JSON string, parse it first
+    if (data is String) {
+      try {
+        final parsed = jsonDecode(data);
+        if (parsed is Map) {
+          return _extractMessageFromMap(parsed);
+        }
+        return data;
+      } catch (_) {
+        // Not valid JSON, return as-is
+        return data;
+      }
+    }
 
     if (data is Map) {
-      // Try common error message keys
-      final message = data['message'] ??
-          data['error'] ??
-          data['msg'] ??
-          data['detail'] ??
-          'An error occurred';
-      return message.toString();
+      return _extractMessageFromMap(data);
     }
 
     return 'An error occurred';
+  }
+
+  /// Extract message from a Map
+  String _extractMessageFromMap(Map<dynamic, dynamic> data) {
+    // Try common error message keys (both uppercase and lowercase)
+    final message = data['Message'] ??
+        data['message'] ??
+        data['Error'] ??
+        data['error'] ??
+        data['msg'] ??
+        data['Detail'] ??
+        data['detail'];
+    return message?.toString() ?? 'An error occurred';
   }
 
   /// Check if there's a valid session

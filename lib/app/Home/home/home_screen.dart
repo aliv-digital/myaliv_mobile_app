@@ -68,14 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
             deviceAccountId: accountInfo.idAcc,
           );
 
-      // Load consumption limits and device limits for postpaid users
+      // Load device limits for all users (used for name display and credit limits)
+      instance<DeviceLimitsCubit>().loadDeviceLimits();
+
+      // Load consumption limits for postpaid users
       if (userType.isPostpaid) {
         instance<ConsumptionLimitCubit>().loadLimits(
           deviceAccountId: accountInfo.idAcc,
         );
-
-        // Load device limits early for upgrade credit limit screen
-        instance<DeviceLimitsCubit>().loadDeviceLimits();
       }
     }
   }

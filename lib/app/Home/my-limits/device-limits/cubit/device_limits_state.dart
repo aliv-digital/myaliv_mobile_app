@@ -15,13 +15,15 @@ enum DeviceLimitsStatus {
 /// Contains device limits data for credit limit update screen.
 class DeviceLimitsState {
   final DeviceLimitsStatus status;
-  final DeviceLimitsModel? deviceLimits;
+
+  /// Full list of all device limits from API
+  final List<DeviceLimitsModel> allDeviceLimits;
   final String? errorMessage;
   final DateTime? lastFetchedAt;
 
   const DeviceLimitsState({
     required this.status,
-    this.deviceLimits,
+    this.allDeviceLimits = const [],
     this.errorMessage,
     this.lastFetchedAt,
   });
@@ -30,7 +32,7 @@ class DeviceLimitsState {
   factory DeviceLimitsState.initial() {
     return const DeviceLimitsState(
       status: DeviceLimitsStatus.initial,
-      deviceLimits: null,
+      allDeviceLimits: [],
       errorMessage: null,
       lastFetchedAt: null,
     );
@@ -39,21 +41,27 @@ class DeviceLimitsState {
   /// Copy state with updated fields
   DeviceLimitsState copyWith({
     DeviceLimitsStatus? status,
-    DeviceLimitsModel? deviceLimits,
+    List<DeviceLimitsModel>? allDeviceLimits,
     String? errorMessage,
     DateTime? lastFetchedAt,
     bool clearError = false,
   }) {
     return DeviceLimitsState(
       status: status ?? this.status,
-      deviceLimits: deviceLimits ?? this.deviceLimits,
+      allDeviceLimits: allDeviceLimits ?? this.allDeviceLimits,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
     );
   }
 
+  /// Get first device limits (for backward compatibility)
+  ///
+  /// Returns null if list is empty.
+  DeviceLimitsModel? get deviceLimits =>
+      allDeviceLimits.isNotEmpty ? allDeviceLimits.first : null;
+
   /// Check if we have device limits data
-  bool get hasDeviceLimits => deviceLimits != null;
+  bool get hasDeviceLimits => allDeviceLimits.isNotEmpty;
 
   /// Check if currently loading
   bool get isLoading => status == DeviceLimitsStatus.loading;
@@ -77,9 +85,51 @@ class DeviceLimitsState {
     return age.inMinutes < 5;
   }
 
+  /// Total number of devices
+  int get deviceCount => allDeviceLimits.length;
+
+  /// First name from device with non-null fName
+  String? get fName {
+    for (final device in allDeviceLimits) {
+      if (device.fName != null && device.fName!.isNotEmpty) {
+        return device.fName;
+      }
+    }
+    return null;
+  }
+
+  /// Last name from device with non-null lName
+  String? get lName {
+    for (final device in allDeviceLimits) {
+      if (device.lName != null && device.lName!.isNotEmpty) {
+        return device.lName;
+      }
+    }
+    return null;
+  }
+
+  /// Full name (fName + lName) from first device with valid name
+  String? get fullName {
+    final f = fName;
+    final l = lName;
+    if (f == null && l == null) return null;
+    return '${f ?? ''} ${l ?? ''}'.trim();
+  }
+
+  /// First subscriber contract that is not null
+  SubscriberContract? get subscriberContract {
+    for (final device in allDeviceLimits) {
+      if (device.subscriberContract != null) {
+        return device.subscriberContract;
+      }
+    }
+    return null;
+  }
+
   @override
   String toString() {
     return 'DeviceLimitsState(status: $status, '
+        'deviceCount: $deviceCount, '
         'hasDeviceLimits: $hasDeviceLimits, '
         'errorMessage: $errorMessage)';
   }
@@ -87,15 +137,19 @@ class DeviceLimitsState {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is DeviceLimitsState &&
-        other.status == status &&
-        other.deviceLimits == deviceLimits &&
-        other.errorMessage == errorMessage &&
-        other.lastFetchedAt == lastFetchedAt;
+    if (other is! DeviceLimitsState) return false;
+    if (other.status != status) return false;
+    if (other.errorMessage != errorMessage) return false;
+    if (other.lastFetchedAt != lastFetchedAt) return false;
+    if (other.allDeviceLimits.length != allDeviceLimits.length) return false;
+    for (int i = 0; i < allDeviceLimits.length; i++) {
+      if (other.allDeviceLimits[i] != allDeviceLimits[i]) return false;
+    }
+    return true;
   }
 
   @override
   int get hashCode {
-    return Object.hash(status, deviceLimits, errorMessage, lastFetchedAt);
+    return Object.hash(status, Object.hashAll(allDeviceLimits), errorMessage, lastFetchedAt);
   }
 }

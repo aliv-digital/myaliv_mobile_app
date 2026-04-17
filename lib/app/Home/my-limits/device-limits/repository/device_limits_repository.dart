@@ -12,39 +12,37 @@ class DeviceLimitsRepository {
   DeviceLimitsRepository({required DeviceLimitsApiService apiService})
       : _apiService = apiService;
 
-  /// Fetch and parse device limits
+  /// Fetch and parse all device limits
   ///
-  /// Returns [DeviceLimitsModel] from the first device in the response.
+  /// Returns list of [DeviceLimitsModel] from the response.
   /// Throws [DeviceLimitsException] on errors.
-  Future<DeviceLimitsModel> getDeviceLimits() async {
+  Future<List<DeviceLimitsModel>> getDeviceLimits() async {
     final jsonString = await _apiService.fetchDeviceLimits();
     return _parseDeviceLimits(jsonString);
   }
 
-  /// Parse JSON response to DeviceLimitsModel
+  /// Parse JSON response to list of DeviceLimitsModel
   ///
   /// Expects either a single device object or an array of devices.
-  /// Uses the first device if array is provided.
-  DeviceLimitsModel _parseDeviceLimits(String jsonString) {
+  List<DeviceLimitsModel> _parseDeviceLimits(String jsonString) {
     try {
       final dynamic jsonData = jsonDecode(jsonString);
 
-      Map<String, dynamic> deviceJson;
-
       if (jsonData is List && jsonData.isNotEmpty) {
-        // Array response - use first device
-        deviceJson = jsonData.first as Map<String, dynamic>;
+        // Array response - parse all devices
+        return jsonData
+            .map((item) =>
+                DeviceLimitsModel.fromJson(item as Map<String, dynamic>))
+            .toList();
       } else if (jsonData is Map<String, dynamic>) {
-        // Single object response
-        deviceJson = jsonData;
+        // Single object response - wrap in list
+        return [DeviceLimitsModel.fromJson(jsonData)];
       } else {
         throw DeviceLimitsException(
           'Invalid response format',
           type: DeviceLimitsErrorType.unknown,
         );
       }
-
-      return DeviceLimitsModel.fromJson(deviceJson);
     } on FormatException catch (e) {
       throw DeviceLimitsException(
         'Failed to parse device limits: ${e.message}',

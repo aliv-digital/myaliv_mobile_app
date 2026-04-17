@@ -18,7 +18,7 @@ class NetworkException implements Exception {
   NetworkException(this.message, {this.statusCode, this.data});
 
   @override
-  String toString() => 'NetworkException: $message (Status: $statusCode)';
+  String toString() => message;
 }
 
 /// Exception thrown when session has expired (401 Unauthorized)

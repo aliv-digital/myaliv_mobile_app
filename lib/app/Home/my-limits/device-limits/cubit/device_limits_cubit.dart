@@ -34,7 +34,7 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
       emit(
         state.copyWith(
           status: DeviceLimitsStatus.loaded,
-          deviceLimits: deviceLimits,
+          allDeviceLimits: deviceLimits,
           lastFetchedAt: DateTime.now(),
           clearError: true,
         ),

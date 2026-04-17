@@ -152,17 +152,52 @@ class NetworkLoggingInterceptor extends Interceptor {
     debugPrint(
       '❌ ERROR [${error.response?.statusCode}] ${error.requestOptions.uri}',
     );
-    debugPrint('🧨 Message: ${error.message}');
     if (error.response?.data != null) {
-      // Skip logging binary error data
-      if (_isBinaryData(error.response?.data)) {
-        debugPrint(
-            '📛 Data: [Binary data - ${_getDataSize(error.response?.data)} bytes]');
-      } else {
-        debugPrint('📛 Data: ${_formatJson(error.response?.data)}');
-      }
+      // Only show the error message, not the full response
+      final errorMessage = _extractErrorMessage(error.response?.data);
+      debugPrint('📛 Error: $errorMessage');
+    } else {
+      debugPrint('🧨 Message: ${error.message}');
     }
     return handler.next(error);
+  }
+
+  /// Extract error message from response data
+  String _extractErrorMessage(dynamic data) {
+    if (data == null) return 'An error occurred';
+
+    // If data is a JSON string, parse it first
+    if (data is String) {
+      try {
+        final parsed = jsonDecode(data);
+        if (parsed is Map) {
+          return _extractMessageFromMap(parsed);
+        }
+        return data;
+      } catch (_) {
+        // Not valid JSON, return as-is
+        return data;
+      }
+    }
+
+    if (data is Map) {
+      return _extractMessageFromMap(data);
+    }
+
+    return 'An error occurred';
+  }
+
+  /// Extract message from a Map
+  String _extractMessageFromMap(Map data) {
+    // Try common error message keys (both uppercase and lowercase)
+    final message = data['Message'] ??
+        data['message'] ??
+        data['Error'] ??
+        data['error'] ??
+        data['msg'] ??
+        data['Detail'] ??
+        data['detail'];
+    return message?.toString() ?? 'An error occurred';
   }
 
   /// Format JSON for logging
