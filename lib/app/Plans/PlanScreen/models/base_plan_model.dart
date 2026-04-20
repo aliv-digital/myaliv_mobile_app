@@ -167,7 +167,7 @@ class BasePlanModel {
     return BasePlanModel(
       planId: _asString(safeMap['PlanID']),
       planName: _asString(safeMap['PlanName']),
-      planDescription: _asString(safeMap['PlanDescription']),
+      planDescription: _asStringWithoutNewlines(safeMap['PlanDescription']),
       planAmount: _asDouble(safeMap['PlanAmount']),
       planType: _asString(safeMap['PlanType']),
       frequency: _asString(safeMap['Frequency']),
@@ -328,6 +328,13 @@ class BasePlanModel {
   // ===== Parsing Utilities =====
 
   static String _asString(dynamic value) => value?.toString().trim() ?? '';
+
+  /// Same as _asString but also replaces newlines with spaces.
+  /// Used for fields like planDescription that may contain embedded \n.
+  static String _asStringWithoutNewlines(dynamic value) {
+    final String str = value?.toString().trim() ?? '';
+    return str.replaceAll(RegExp(r'[\r\n]+'), ' ').trim();
+  }
 
   static int _asInt(dynamic value) {
     if (value is int) return value;
