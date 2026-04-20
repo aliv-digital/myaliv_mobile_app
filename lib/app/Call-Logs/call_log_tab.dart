@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_state.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/widgets/call_log_tile.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/widgets/call_logs_empty_state.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class CallLogsTab extends StatelessWidget {
   const CallLogsTab({super.key});
@@ -10,190 +13,64 @@ class CallLogsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF1F2FA),
+      backgroundColor: const Color(0xFFF1F2FA),
+      bottomNavigationBar: const _BackToHomeButton(),
+      body: BlocBuilder<CallLogsCubit, CallLogsState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-      bottomNavigationBar: SafeArea(
-        child: GestureDetector(
-          onTap: (){
-            context.go(AppRoutes.home);
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 68.0,vertical: 20),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 200),
-              child: Container(
-                width: 200, // ✅ fixed width
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'back to home page',
-                  style: TextStyle(
-                    color: Color(0xFF645D9C),
-                    fontSize: 15,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+          if (state.status == CallLogsStatus.failure) {
+            return CallLogsErrorState(
+              message: state.errorMessage ?? 'Failed to load call logs',
+              onRetry: () => context.read<CallLogsCubit>().fetchUsages(),
+            );
+          }
 
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-        children: const [
-          _CallLogItem(
-            number: '242-444-5555',
-            subtitle: 'outgoing call, 1 min 21 secs',
-            time: '12:00 PM',
-            date: 'July 02, 2024',
-            isVoicemail: false,
-          ),
-          _CallLogItem(
-            number: '242-800-5555',
-            subtitle: 'voicemail',
-            time: 'Friday',
-            date: 'July 02, 2024',
-            isVoicemail: true,
-          ),
-          _CallLogItem(
-            number: '242-444-5555',
-            subtitle: 'outgoing call, 1 min 21 secs',
-            time: '11:00 AM',
-            date: 'July 02, 2024',
-            isVoicemail: false,
-          ),
-          _CallLogItem(
-            number: '242-444-5555',
-            subtitle: 'outgoing call, 1 min 21 secs',
-            time: '12:00 PM',
-            date: 'July 02, 2024',
-            isVoicemail: false,
-          ),
-          _CallLogItem(
-            number: '242-800-5555',
-            subtitle: 'voicemail',
-            time: 'Friday',
-            date: 'July 02, 2024',
-            isVoicemail: true,
-          ),
-          SizedBox(height: 24),
-          // _BackHomeButton(),
-        ],
+          if (!state.hasData) {
+            return const CallLogsEmptyState();
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            itemCount: state.usages.length,
+            itemBuilder: (_, index) => CallLogTile(usage: state.usages[index]),
+          );
+        },
       ),
     );
   }
 }
 
-class _CallLogItem extends StatelessWidget {
-  final String number;
-  final String subtitle;
-  final String time;
-  final String date;
-  final bool isVoicemail;
-
-  const _CallLogItem({
-    required this.number,
-    required this.subtitle,
-    required this.time,
-    required this.date,
-    required this.isVoicemail,
-  });
-
-  static const Color green = Color(0xFF27AE60);
-  static const Color red = Color(0xFFEB5757);
+class _BackToHomeButton extends StatelessWidget {
+  const _BackToHomeButton();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            // Icon(
-            //   isVoicemail ? Icons.call_missed : Icons.call_made,
-            //   color: isVoicemail ? red : green,
-            // ),
-            isVoicemail
-                ? SvgPicture.asset(
-                    height: 14,
-                    width: 14,
-                    'assets/icons/phone-hang-up.svg',
-                  )
-                : SvgPicture.asset(
-                    height: 14,
-                    width: 14,
-                    'assets/icons/phone-outgoing-01.svg',
-                  ),
-            const SizedBox(width: 12),
-
-            // LEFT TEXT
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    number,
-                    style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF1C1C1C),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontFamily: 'CircularPro',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF858692),
-                    ),
-                  ),
-                ],
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => context.go(AppRoutes.home),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 68.0, vertical: 20),
+          child: Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            alignment: Alignment.center,
+            child: const Text(
+              'back to home page',
+              style: TextStyle(
+                color: Color(0xFF645D9C),
+                fontSize: 15,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
               ),
             ),
-
-            // RIGHT DATE
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  time,
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-
-                    fontSize: 13,
-                    color: const Color(0xFF1C1C1C) /* Black-100% */,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  date,
-                  style: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-
-                    color: const Color(0xFF1C1C1C) /* Black-100% */,
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

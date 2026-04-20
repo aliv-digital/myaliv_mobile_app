@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/pre
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
@@ -289,7 +290,10 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.rewardDetailsPrepaidScreen,
-        builder: (context, state) => const RewardDetailsPrepaidScreen(),
+        builder: (context, state) {
+          final reward = state.extra as RewardModel?;
+          return RewardDetailsPrepaidScreen(reward: reward);
+        },
       ),
       GoRoute(
         path: AppRoutes.rewardPrepaidScreen,

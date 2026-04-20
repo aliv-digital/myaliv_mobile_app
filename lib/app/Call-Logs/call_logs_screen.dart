@@ -1,70 +1,66 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
-
-import 'call_log_tab.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
 
 enum CallLogsTabType { transactions, callLogs }
 
-class CallLogsScreen extends StatefulWidget {
+class CallLogsScreen extends StatelessWidget {
   final CallLogsTabType initialTab;
 
-  const CallLogsScreen({
-    super.key,
-    this.initialTab = CallLogsTabType.transactions,
-  });
+  const CallLogsScreen({super.key, this.initialTab = CallLogsTabType.transactions});
 
   @override
-  State<CallLogsScreen> createState() => _CallLogsScreenState();
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => instance<CallLogsCubit>()..fetchUsages()),
+        BlocProvider(create: (_) => instance<TransactionsCubit>()..fetchTransactions()),
+      ],
+      child: _CallLogsView(initialTab: initialTab),
+    );
+  }
 }
 
-class _CallLogsScreenState extends State<CallLogsScreen>
+class _CallLogsView extends StatefulWidget {
+  final CallLogsTabType initialTab;
+
+  const _CallLogsView({required this.initialTab});
+
+  @override
+  State<_CallLogsView> createState() => _CallLogsViewState();
+}
+
+class _CallLogsViewState extends State<_CallLogsView>
     with SingleTickerProviderStateMixin {
-  static const Color purple = Color(0xFF645D9C); //Color(0xFF6C63A6);
-  static const Color bg = Color(0xFFF4F6FB);
+  static const Color _purple = Color(0xFF645D9C);
+  static const Color _bg = Color(0xFFF4F6FB);
 
   late final TabController _tabController;
-  late final ValueNotifier<String> _titleNotifier;
 
   @override
   void initState() {
     super.initState();
-
-    final initialIndex = widget.initialTab == CallLogsTabType.transactions
-        ? 0
-        : 1;
-
-    _titleNotifier = ValueNotifier(_titleForIndex(initialIndex));
-
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: initialIndex,
-    );
-
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) return;
-      _titleNotifier.value = _titleForIndex(_tabController.index);
-    });
-  }
-
-  String _titleForIndex(int index) {
-    return index == 0 ? 'history' : 'history';
+    final initialIndex = widget.initialTab == CallLogsTabType.transactions ? 0 : 1;
+    _tabController = TabController(length: 2, vsync: this, initialIndex: initialIndex);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _titleNotifier.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: purple,
+        backgroundColor: _purple,
         centerTitle: false,
         elevation: 0,
         toolbarHeight: 64,
@@ -75,22 +71,17 @@ class _CallLogsScreenState extends State<CallLogsScreen>
             onPressed: () => Navigator.pop(context),
           ),
         ),
-        title: ValueListenableBuilder<String>(
-          valueListenable: _titleNotifier,
-          builder: (_, title, __) {
-            return Text(
-              title,
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 17,
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
-            );
-          },
+        title: const Text(
+          'history',
+          style: TextStyle(
+            fontFamily: 'CircularPro',
+            fontSize: 17,
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         actions: const [
-          Padding(padding: EdgeInsets.only(right: 24), child: _MonthSelector()),
+          Padding(padding: EdgeInsets.only(right: 24), child: MonthSelector()),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(52),
@@ -110,10 +101,10 @@ class _CallLogsTabBar extends StatelessWidget {
 
   const _CallLogsTabBar({required this.controller});
 
-  static const Color purple = Color(0xFF645D9C);
-  static const Color grey = Color(0xFF9E9E9E);
-  static const Color blue = Color(0xFF0143EC);
-  static const Color black = Color(0xFF21232A);
+  static const Color _purple = Color(0xFF645D9C);
+  static const Color _grey = Color(0xFF9E9E9E);
+  static const Color _black = Color(0xFF21232A);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -122,11 +113,11 @@ class _CallLogsTabBar extends StatelessWidget {
         controller: controller,
         indicatorSize: TabBarIndicatorSize.tab,
         indicator: const UnderlineTabIndicator(
-          borderSide: BorderSide(color: purple, width: 2),
+          borderSide: BorderSide(color: _purple, width: 2),
           insets: EdgeInsets.symmetric(horizontal: 32),
         ),
-        labelColor: black,
-        unselectedLabelColor: grey,
+        labelColor: _black,
+        unselectedLabelColor: _grey,
         labelStyle: const TextStyle(
           fontFamily: 'CircularPro',
           fontSize: 14,
@@ -137,75 +128,7 @@ class _CallLogsTabBar extends StatelessWidget {
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
-        tabs: const [
-          Tab(text: 'transactions'),
-          Tab(text: 'call logs'),
-        ],
-      ),
-    );
-    // return Container(
-    //   color: Colors.white,
-    //   child: TabBar(
-    //     indicatorSize: TabBarIndicatorSize.tab,
-    //     indicator: const UnderlineTabIndicator(
-    //       borderSide: BorderSide(color: purple, width: 3),
-    //       insets: EdgeInsets.symmetric(horizontal: 32),
-    //     ),
-    //     labelColor: purple,
-    //     unselectedLabelColor: grey,
-    //     labelStyle: const TextStyle(
-    //       fontFamily: 'CircularPro',
-    //       fontSize: 14,
-    //       fontWeight: FontWeight.w600,
-    //     ),
-    //     unselectedLabelStyle: const TextStyle(
-    //       fontFamily: 'CircularPro',
-    //       fontSize: 14,
-    //       fontWeight: FontWeight.w400,
-    //     ),
-    //     tabs: const [
-    //       Tab(text: 'transactions'),
-    //       Tab(text: 'call logs'),
-    //     ],
-    //   ),
-    // );
-  }
-}
-
-class _MonthSelector extends StatelessWidget {
-  const _MonthSelector();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      height: 36,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(width: 8),
-          const Icon(Icons.calendar_today, size: 14),
-          const SizedBox(width: 8),
-          Text(
-            'July 2024',
-            style: TextStyle(
-              color: const Color(0xFF222222),
-              fontSize: 14,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-              height: 1.43,
-            ),
-          ),
-          SizedBox(width: 8),
-          // Icon(Icons.chevron_down, size: 18),
-          SvgPicture.asset('assets/icons/CHEVRON-DOWN.svg'),
-          const SizedBox(width: 16),
-        ],
+        tabs: const [Tab(text: 'transactions'), Tab(text: 'call logs')],
       ),
     );
   }

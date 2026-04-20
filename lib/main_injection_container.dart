@@ -7,6 +7,8 @@ import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/balance_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/consumption_limit_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/device_limits_injection.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_injection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/rewards_injection.dart';
 
 /// Main app dependency injection
 ///
@@ -51,5 +53,11 @@ class AppMainInjection {
 
     // Initialize device limits feature (for upgrade credit limit screen)
     await setupDeviceLimitsInjection();
+
+    // Initialize call logs feature
+    await setupCallLogsInjection();
+
+    // Initialize rewards feature
+    await setupRewardsInjection();
   }
 }

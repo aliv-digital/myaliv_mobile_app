@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../model/reward_model.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 
 enum RewardPrepaidStatus { initial, loading, success, failure }
 
@@ -14,7 +14,7 @@ class NavigateToDeals extends RewardPrepaidAction {
 }
 
 class OpenRewardDetails extends RewardPrepaidAction {
-  final RewardPrepaid reward;
+  final RewardModel reward;
   const OpenRewardDetails(this.reward);
 
   @override
@@ -22,7 +22,7 @@ class OpenRewardDetails extends RewardPrepaidAction {
 }
 
 class StartGetThisFlow extends RewardPrepaidAction {
-  final RewardPrepaid reward;
+  final RewardModel reward;
   const StartGetThisFlow(this.reward);
 
   @override
@@ -31,10 +31,8 @@ class StartGetThisFlow extends RewardPrepaidAction {
 
 class RewardPrepaidState extends Equatable {
   final RewardPrepaidStatus status;
-  final List<RewardPrepaid> rewards;
+  final List<RewardModel> rewards;
   final String? errorMessage;
-
-  /// one-time UI action (navigation / dialog / flow start)
   final RewardPrepaidAction? action;
 
   const RewardPrepaidState({
@@ -45,18 +43,18 @@ class RewardPrepaidState extends Equatable {
   });
 
   factory RewardPrepaidState.initial() => const RewardPrepaidState(
-    status: RewardPrepaidStatus.initial,
-    rewards: [],
-    errorMessage: null,
-    action: null,
-  );
+        status: RewardPrepaidStatus.initial,
+        rewards: [],
+        errorMessage: null,
+        action: null,
+      );
 
   @override
   List<Object?> get props => [status, rewards, errorMessage, action];
 
   RewardPrepaidState copyWith({
     RewardPrepaidStatus? status,
-    List<RewardPrepaid>? rewards,
+    List<RewardModel>? rewards,
     String? errorMessage,
     RewardPrepaidAction? action,
     bool clearAction = false,

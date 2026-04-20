@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/reward_details_theme.dart';
 
 class RewardDetailsSection extends StatelessWidget {
   final String label;
