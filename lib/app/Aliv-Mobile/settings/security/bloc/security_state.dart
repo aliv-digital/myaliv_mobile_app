@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../repository/security_repository.dart';
 
 enum SecurityStatus { initial, loading, ready, failure }
@@ -40,5 +41,10 @@ class SecurityState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, content, errorMessage, navTarget];
+  List<Object?> get props => [
+    status,
+    content,
+    errorMessage,
+    navTarget,
+  ];
 }

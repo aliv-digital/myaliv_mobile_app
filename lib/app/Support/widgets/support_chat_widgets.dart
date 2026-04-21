@@ -1,68 +1,31 @@
 import 'package:flutter/material.dart';
 
-class ChatBotScreen extends StatelessWidget {
-  const ChatBotScreen({super.key});
+import '../model/support_models.dart';
 
-  static const Color purple = Color(0xFF645D9C);
-  static const Color bg = Colors.white;
+class SupportMessageList extends StatelessWidget {
+  final List<SupportChatMessage> messages;
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: bg,
-      appBar: AppBar(
-        backgroundColor: purple,
-        centerTitle: false,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 24.0),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        title: const Text(
-          'chat',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: const [
-            Expanded(child: _MessageList()),
-            _MessageInputBar(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MessageList extends StatelessWidget {
-  const _MessageList();
+  const SupportMessageList({super.key, required this.messages});
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(40, 24, 40, 32),
-      children: const [
-        _TimeSeparator(time: '09:41 AM'),
-
-        UserBubble(text: 'Hi, Mandy'),
-        UserBubble(text: 'I’ve tried the app'),
-
-        BotBubble(text: 'Really?'),
-
-        UserBubble(text: 'Yeah, It’s really good!'),
-
-        TypingIndicator(),
-      ],
+      children: messages.map(_buildMessage).toList(growable: false),
     );
+  }
+
+  Widget _buildMessage(SupportChatMessage message) {
+    switch (message.type) {
+      case SupportChatMessageType.time:
+        return _TimeSeparator(time: message.text);
+      case SupportChatMessageType.user:
+        return UserBubble(text: message.text, avatarUrl: message.avatarUrl);
+      case SupportChatMessageType.bot:
+        return BotBubble(text: message.text);
+      case SupportChatMessageType.typing:
+        return TypingIndicator(text: message.text);
+    }
   }
 }
 
@@ -91,13 +54,16 @@ class _TimeSeparator extends StatelessWidget {
 
 class UserBubble extends StatelessWidget {
   final String text;
+  final String? avatarUrl;
 
-  const UserBubble({super.key, required this.text});
+  const UserBubble({super.key, required this.text, this.avatarUrl});
 
   static const Color purple = Color(0xFF645D9C);
 
   @override
   Widget build(BuildContext context) {
+    final avatar = avatarUrl;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -123,9 +89,9 @@ class UserBubble extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const CircleAvatar(
+          CircleAvatar(
             radius: 12,
-            backgroundImage: NetworkImage('https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg'),
+            backgroundImage: avatar == null ? null : NetworkImage(avatar),
           ),
         ],
       ),
@@ -145,19 +111,7 @@ class BotBubble extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
-            radius: 20,
-            backgroundColor: Color(0xFFF2F4F5),
-            child: Text(
-              'T',
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF463C6E),
-              ),
-            ),
-          ),
+          const _BotAvatar(),
           const SizedBox(width: 8),
           Flexible(
             child: Container(
@@ -184,29 +138,19 @@ class BotBubble extends StatelessWidget {
 }
 
 class TypingIndicator extends StatelessWidget {
-  const TypingIndicator({super.key});
+  final String text;
+
+  const TypingIndicator({super.key, this.text = 'Typing...'});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const [
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: Color(0xFFF2F4F5),
-          child: Text(
-            'T',
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF463C6E),
-            ),
-          ),
-        ),
-        SizedBox(width: 8),
+      children: [
+        const _BotAvatar(),
+        const SizedBox(width: 8),
         Text(
-          'Typing...',
-          style: TextStyle(
+          text,
+          style: const TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 16,
             color: Color(0xFF979C9E),
@@ -217,8 +161,8 @@ class TypingIndicator extends StatelessWidget {
   }
 }
 
-class _MessageInputBar extends StatelessWidget {
-  const _MessageInputBar();
+class SupportMessageInputBar extends StatelessWidget {
+  const SupportMessageInputBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -243,6 +187,27 @@ class _MessageInputBar extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: Color(0xFF121212),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BotAvatar extends StatelessWidget {
+  const _BotAvatar();
+
+  @override
+  Widget build(BuildContext context) {
+    return const CircleAvatar(
+      radius: 20,
+      backgroundColor: Color(0xFFF2F4F5),
+      child: Text(
+        'T',
+        style: TextStyle(
+          fontFamily: 'CircularPro',
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF463C6E),
         ),
       ),
     );

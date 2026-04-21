@@ -31,18 +31,17 @@ class _SecurityView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SecurityBloc, SecurityState>(
-      listenWhen: (p, c) => p.navTarget != c.navTarget,
+      listenWhen: (previous, current) => previous.navTarget != current.navTarget,
       listener: (context, state) {
         if (state.navTarget != SecurityNavTarget.none) {
-          // navigation hook (wire later)
           context.read<SecurityBloc>().add(const SecurityNavConsumed());
         }
       },
       builder: (context, state) {
-        final content = state.content;
-
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.noScaling,
+          ),
           child: Scaffold(
             backgroundColor: SecurityTheme.bg,
             body: Column(
@@ -52,35 +51,15 @@ class _SecurityView extends StatelessWidget {
                   child: SecurityAppBar(
                     title: 'security',
                     onHomeTap: () {
-                      context.read<SecurityBloc>().add(const SecurityHomePressed());
+                      context.read<SecurityBloc>().add(
+                        const SecurityHomePressed(),
+                      );
                       context.go(AppRoutes.home);
                     },
                   ),
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: SecurityTheme.pagePadding,
-                    child: content == null
-                        ? const SizedBox.shrink()
-                        : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SecuritySection(
-                          title: content.title1,
-                          paragraphs: [
-                            content.paragraph1,
-                            content.paragraph2,
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        Text('how we can help', style: SecurityTheme.sectionHeader),
-                        const SizedBox(height: 10),
-                        Text(content.paragraph3, style: SecurityTheme.body),
-                        const SizedBox(height: 14),
-                        Text(content.paragraph4, style: SecurityTheme.body),
-                      ],
-                    ),
-                  ),
+                  child: _buildBody(state),
                 ),
               ],
             ),
@@ -88,5 +67,50 @@ class _SecurityView extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget _buildBody(SecurityState state) {
+    switch (state.status) {
+      case SecurityStatus.initial:
+      case SecurityStatus.loading:
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+
+      case SecurityStatus.failure:
+        return Center(
+          child: Padding(
+            padding: SecurityTheme.pagePadding,
+            child: Text(
+              state.errorMessage ?? 'Something went wrong',
+              style: SecurityTheme.body,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+
+      case SecurityStatus.ready:
+        final content = state.content;
+
+        if (content == null || content.htmlContent.trim().isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: SecurityTheme.pagePadding,
+              child: Text(
+                'No content found',
+                style: SecurityTheme.body,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: SecurityTheme.pagePadding,
+          child: SecuritySection(
+            htmlContent: content.htmlContent,
+          ),
+        );
+    }
   }
 }

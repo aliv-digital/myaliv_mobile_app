@@ -192,15 +192,15 @@ class _ReferFriendPrepaidReferTabState extends State<ReferFriendPrepaidReferTab>
                     label: 'share',
                     enabled: true,//state.canShare && !loading,
                     isLoading: loading,
-                    // onTap: () => context
-                    //     .read<ReferFriendPrepaidBloc>()
-                    //     .add(const ReferFriendPrepaidSharePressed()),
-                    onTap: (){
-                      context.push(
-                        '${AppRoutes.invitingSuccess}?code=REF026BFDFEA12',
-                      );
+                    onTap: () => context
+                        .read<ReferFriendPrepaidBloc>()
+                        .add(const ReferFriendPrepaidSharePressed()),
+                    // onTap: (){
+                    //   context.push(
+                    //     '${AppRoutes.invitingSuccess}?code=REF026BFDFEA12',
+                    //   );
 
-                    },
+                    //},
                   ),
                 ],
               );

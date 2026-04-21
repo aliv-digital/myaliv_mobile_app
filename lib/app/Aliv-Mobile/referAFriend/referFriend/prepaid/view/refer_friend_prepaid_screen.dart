@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-import '../../../../login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/refer_friend_prepaid_bloc.dart';
 import '../bloc/refer_friend_prepaid_event.dart';
@@ -14,7 +14,6 @@ import '../theme/refer_friend_prepaid_theme.dart';
 import '../widgets/refer_friend_prepaid_tabs.dart';
 import '../widgets/refer_friend_prepaid_refer_tab.dart';
 import '../widgets/refer_friend_prepaid_redeem_tab.dart';
-import '../widgets/refer_friend_prepaid_history_card.dart';
 
 class ReferFriendPrepaidScreen extends StatelessWidget {
   const ReferFriendPrepaidScreen({super.key});
@@ -53,6 +52,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
   static const bool _enableTabSwipe = true;
 
   late final PageController _controller;
+  int _handledShareSuccessRequestId = 0;
 
   @override
   void initState() {
@@ -87,7 +87,8 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
           listenWhen: (p, c) =>
               p.toastMessage != c.toastMessage ||
               p.errorMessage != c.errorMessage ||
-              p.selectedTab != c.selectedTab,
+              p.selectedTab != c.selectedTab ||
+              p.shareSuccessRequestId != c.shareSuccessRequestId,
           listener: (context, state) {
             // sync page when tab changes
             _syncPageToTab(state.selectedTab);
@@ -110,6 +111,13 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
               context.read<ReferFriendPrepaidBloc>().add(
                     const ReferFriendPrepaidErrorConsumed(),
                   );
+            }
+
+            if (state.shareSuccessRequestId > _handledShareSuccessRequestId &&
+                state.referralCode.trim().isNotEmpty) {
+              _handledShareSuccessRequestId = state.shareSuccessRequestId;
+              final encodedCode = Uri.encodeComponent(state.referralCode);
+              context.push('${AppRoutes.invitingSuccess}?code=$encodedCode');
             }
           },
           child: Column(
@@ -153,7 +161,6 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                   builder: (context, state) {
                     return PageView(
                       controller: _controller,
-
                       physics: _enableTabSwipe
                           ? const BouncingScrollPhysics()
                           : const NeverScrollableScrollPhysics(),
@@ -165,7 +172,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                       },
                       children: [
                         // Refer
-                         SingleChildScrollView(
+                        SingleChildScrollView(
                           physics: BouncingScrollPhysics(),
                           child: ReferFriendPrepaidReferTab(),
                         ),
@@ -183,52 +190,9 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
                   },
                 ),
               ),
-
-              // const BottomStripes(),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _HistoryTab extends StatelessWidget {
-  final List<dynamic> history; // actual type in state is ReferralHistoryItem
-
-  const _HistoryTab({required this.history});
-
-  @override
-  Widget build(BuildContext context) {
-    if (history.isEmpty) {
-      return const Center(
-        child: Text(
-          'No history found',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: ReferFriendPrepaidTheme.muted,
-          ),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-      child: ListView.separated(
-        physics: const BouncingScrollPhysics(),
-        itemCount: history.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (_, index) {
-          final item = history[index];
-          return ReferFriendPrepaidHistoryCard(
-            item: item,
-            onCopy: () => context.read<ReferFriendPrepaidBloc>().add(
-                  ReferFriendPrepaidCopyPressed(item.code),
-                ),
-          );
-        },
       ),
     );
   }

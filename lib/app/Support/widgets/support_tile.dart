@@ -4,11 +4,7 @@ class SupportTile extends StatelessWidget {
   final String title;
   final VoidCallback? onTap;
 
-  const SupportTile({
-    super.key,
-    required this.title,
-    this.onTap,
-  });
+  const SupportTile({super.key, required this.title, this.onTap});
 
   static const Color divider = Color(0xFFE1E1E1);
 
@@ -19,9 +15,7 @@ class SupportTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: divider, width: 1),
-          ),
+          border: Border(bottom: BorderSide(color: divider, width: 1)),
         ),
         child: Row(
           children: [
@@ -37,11 +31,7 @@ class SupportTile extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(
-              Icons.chevron_right,
-              size: 20,
-              color: Color(0xFF1C1C1C),
-            ),
+            const Icon(Icons.chevron_right, size: 20, color: Color(0xFF1C1C1C)),
           ],
         ),
       ),
