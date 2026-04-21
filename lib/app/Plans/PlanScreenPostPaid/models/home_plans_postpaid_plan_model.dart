@@ -246,7 +246,7 @@ class HomePlansPostPaidPlanModel {
     }
 
     for (final bucket in planBuckets) {
-      if (bucket.name.trim().toLowerCase().contains('data')) {
+      if (bucket.name.trim().toLowerCase().contains('roaming')) {
         return bucket;
       }
     }
