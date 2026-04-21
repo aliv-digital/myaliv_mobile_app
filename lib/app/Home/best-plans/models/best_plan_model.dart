@@ -78,13 +78,29 @@ class BestPlanModel {
   // ========== Computed Properties ==========
 
   /// Check if plan is expired (expireOn date has passed)
-  bool get isExpired => DateTime.now().isAfter(expireOn);
+  ///
+  /// Compares dates only (ignoring time), so a plan expiring on April 21st
+  /// is valid for the entire day of April 21st.
+  bool get isExpired {
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final expireDate = DateTime(expireOn.year, expireOn.month, expireOn.day);
+    return todayDate.isAfter(expireDate);
+  }
 
   /// Check if plan is active (status is 'active' and not expired)
   bool get isActive => status.toLowerCase() == 'active' && !isExpired;
 
-  /// Check if plan has started (startFrom date has passed)
-  bool get isStarted => DateTime.now().isAfter(startFrom);
+  /// Check if plan has started (startFrom date has passed or is today)
+  ///
+  /// Compares dates only (ignoring time), so a plan starting on April 21st
+  /// is considered "started" for the entire day of April 21st.
+  bool get isStarted {
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final startDate = DateTime(startFrom.year, startFrom.month, startFrom.day);
+    return !todayDate.isBefore(startDate); // today >= startDate
+  }
 
   /// Check if plan is valid (active, started, and not expired)
   bool get isValid => isActive && isStarted;

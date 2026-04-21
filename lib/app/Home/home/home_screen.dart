@@ -22,6 +22,7 @@ import 'package:myaliv_mobile_app/app/Home/limited-time-offer/view/limited_offer
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/view/best_plans_view.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -203,13 +204,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ================= BEST PLANS =================
   Widget _bestPlans(BuildContext context) {
-    return _section(
-      title: 'our best plans',
-      onViewMore: () {
-        context.push(AppRoutes.allBestPlans);
+    return BlocBuilder<BestPlanCubit, BestPlanState>(
+      builder: (context, state) {
+        // Hide entire section (including title) when no plans available
+        if (!state.hasPlans || state.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return _section(
+          title: 'our best plans',
+          onViewMore: () {
+            context.push(AppRoutes.allBestPlans);
+          },
+          child: const BestPlansView(),
+          color: Colors.white,
+        );
       },
-      child: const BestPlansView(),
-      color: Colors.white,
     );
   }
 

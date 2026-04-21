@@ -39,18 +39,9 @@ class BestPlanParserService {
   /// Returns list of active plans only
   /// Throws [BestPlanParseException] on parsing errors
   List<BestPlanModel> parsePlans(String jsonString) {
-    if (kDebugMode) {
-      debugPrint('');
-      debugPrint('🔍 BEST PLANS PARSER: Starting to parse JSON');
-    }
-
     try {
       // Decode JSON
       final json = jsonDecode(jsonString);
-
-      if (kDebugMode) {
-        debugPrint('✓ JSON decoded successfully');
-      }
 
       // Validate root structure
       if (json is! Map<String, dynamic>) {
@@ -67,17 +58,12 @@ class BestPlanParserService {
 
       if (!success) {
         final message = json['message'] as String? ?? 'Unknown error';
-        throw BestPlanParseException(
-          'API returned success=false: $message',
-        );
+        throw BestPlanParseException('API returned success=false: $message');
       }
 
       // Extract data array
       final data = json['data'];
       if (data == null) {
-        if (kDebugMode) {
-          debugPrint('⚠️ No "data" field in response - returning empty list');
-        }
         return [];
       }
 
@@ -87,19 +73,12 @@ class BestPlanParserService {
         );
       }
 
-      if (kDebugMode) {
-        debugPrint('✓ Data array found with ${data.length} items');
-      }
-
       // Parse each plan
       final plans = <BestPlanModel>[];
       for (int i = 0; i < data.length; i++) {
         final item = data[i];
 
         if (item is! Map<String, dynamic>) {
-          if (kDebugMode) {
-            debugPrint('⚠️ Skipping item $i - not a valid object');
-          }
           continue;
         }
 
@@ -110,48 +89,27 @@ class BestPlanParserService {
             plan = _extendExpiredPlanForDebug(plan);
           }
 
-          if (kDebugMode) {
-            debugPrint(
-              '✓ Parsed plan: id=${plan.id}, planName="${plan.planName}"',
-            );
-            debugPrint('  - Price: ${plan.price}');
-            debugPrint('  - Type: ${plan.type}');
-            debugPrint('  - Status: ${plan.status}');
-            debugPrint('  - Expires: ${plan.expireOn}');
-            debugPrint('  - isActive: ${plan.isActive}');
-            debugPrint('  - isExpired: ${plan.isExpired}');
-          }
-
-          final shouldInclude = plan.isValid;
+          // For best plans, include plans that:
+          // 1. Have active status
+          // 2. Are not yet expired
+          // Note: We include future plans (not yet started) to show upcoming promotions
+          final isActiveStatus = plan.status.toLowerCase() == 'active';
+          final shouldInclude = isActiveStatus && !plan.isExpired;
 
           if (shouldInclude) {
             plans.add(plan);
-            if (kDebugMode) {
-              if (plan.isExpired) {
-                debugPrint(
-                  '  ⚠️ Added to plans list (debug extension failed)',
-                );
-              } else {
-                debugPrint('  ✅ Added to plans list');
-              }
-            }
           } else {
             if (kDebugMode) {
-              debugPrint('  ❌ Skipped (not valid/active or expired)');
+              if (plan.isExpired) {
+                debugPrint('  ❌ Skipped (expired)');
+              } else {
+                debugPrint('  ❌ Skipped (inactive status)');
+              }
             }
           }
         } catch (e) {
-          if (kDebugMode) {
-            debugPrint('⚠️ Failed to parse item $i: $e');
-          }
           continue;
         }
-      }
-
-      if (kDebugMode) {
-        debugPrint('');
-        debugPrint('📊 PARSER RESULT: ${plans.length} valid plans found');
-        debugPrint('');
       }
 
       return plans;
