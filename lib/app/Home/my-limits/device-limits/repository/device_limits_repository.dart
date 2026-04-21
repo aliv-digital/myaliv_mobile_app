@@ -66,4 +66,29 @@ class DeviceLimitsRepository {
       body: request.toJson(),
     );
   }
+
+  // ============ Auto-Renew Methods ============
+
+  /// Enable auto-renew from wallet balance
+  ///
+  /// [deviceAccountId] - The device account ID
+  /// Returns true if auto-renew was enabled successfully
+  Future<bool> enableAutoRenewWallet(int deviceAccountId) async {
+    return _apiService.enableAutoRenewWallet(deviceAccountId);
+  }
+
+  /// Disable auto-renew
+  ///
+  /// [deviceAccountId] - The device account ID
+  /// Returns true if auto-renew was disabled successfully
+  Future<bool> disableAutoRenew(int deviceAccountId) async {
+    return _apiService.disableAutoRenew(deviceAccountId);
+  }
+
+  /// Enable auto-renew from credit card
+  ///
+  /// Returns true if auto-renew was enabled successfully
+  Future<bool> enableAutoRenewCard() async {
+    return _apiService.enableAutoRenewCard();
+  }
 }

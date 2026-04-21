@@ -168,12 +168,10 @@ class WalletPaymentBottomSheet extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           Navigator.of(context).pop(true);
-          if(AppSession.appRoute == 'prepaidPlanPurchase'){
+          // Navigation handled by state listener for auto-renew flow
+          // Only navigate directly for plan purchase flow
+          if (AppSession.appRoute == 'prepaidPlanPurchase') {
             context.push(AppRoutes.homePlanPurchaseReceiptScreen);
-
-          }else{
-            context.push(AppRoutes.autoRenewAuthPrepaidScreen);
-
           }
         },
         style: AutoRenewPrepaidTheme.primaryPillButtonStyle(

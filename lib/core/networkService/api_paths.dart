@@ -18,4 +18,12 @@ class Api {
   static const usages = '$baseUrl/v1/MyAliv/Account/usages'; // GET with ?startDate=&endDate= (ISO 8601)
   static const transactions = '$baseUrl/v1/MyAliv/Account/transactions'; // GET with ?startDate=&endDate= (ISO 8601)
   static const rewards = '$baseUrl/v1/MyAliv/Info/rewards'; // GET - fetch all rewards
+
+  // Auto-renew endpoints
+  /// Auto-renew from wallet: PUT /device/{deviceAccountId}/auto-renew?autoRenew={true|false}
+  static String deviceAutoRenew(int deviceAccountId) =>
+      '$baseUrl/v1/MyAliv/device/$deviceAccountId/auto-renew';
+
+  /// Auto-renew from credit card: PUT /CreditCard/auto-renew (empty body)
+  static const creditCardAutoRenew = '$baseUrl/v1/MyAliv/CreditCard/auto-renew';
 }

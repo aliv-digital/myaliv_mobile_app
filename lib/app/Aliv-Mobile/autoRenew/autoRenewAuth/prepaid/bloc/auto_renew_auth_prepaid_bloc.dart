@@ -21,7 +21,11 @@ class AutoRenewAuthPrepaidBloc
       AutoRenewAuthPrepaidStarted event,
       Emitter<AutoRenewAuthPrepaidState> emit,
       ) async {
-    emit(state.copyWith(loadStatus: AutoRenewAuthLoadStatus.loading, clearError: true));
+    emit(state.copyWith(
+      loadStatus: AutoRenewAuthLoadStatus.loading,
+      paymentMethod: event.paymentMethod,
+      clearError: true,
+    ));
 
     try {
       final content = await repository.fetchContent();
@@ -58,16 +62,37 @@ class AutoRenewAuthPrepaidBloc
       return;
     }
 
+    // Validate name matches expected name (case-insensitive)
+    if (!state.isNameValid) {
+      emit(state.copyWith(
+        errorMessage: 'Name does not match. Please enter your name exactly as displayed.',
+      ));
+      return;
+    }
+
     emit(state.copyWith(submitStatus: AutoRenewAuthSubmitStatus.submitting, clearError: true));
 
     try {
-      await repository.submitAuthorization(name: name);
-      emit(
-        state.copyWith(
-          submitStatus: AutoRenewAuthSubmitStatus.success,
-          navTarget: AutoRenewAuthNavTarget.success,
-        ),
+      final success = await repository.submitAuthorization(
+        name: name,
+        paymentMethod: state.paymentMethod,
       );
+
+      if (success) {
+        emit(
+          state.copyWith(
+            submitStatus: AutoRenewAuthSubmitStatus.success,
+            navTarget: AutoRenewAuthNavTarget.success,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            submitStatus: AutoRenewAuthSubmitStatus.failure,
+            errorMessage: 'Failed to enable auto-renew. Please try again.',
+          ),
+        );
+      }
     } catch (_) {
       emit(
         state.copyWith(

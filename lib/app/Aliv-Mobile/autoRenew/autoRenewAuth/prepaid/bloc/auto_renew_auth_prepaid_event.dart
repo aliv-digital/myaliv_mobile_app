@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../repository/auto_renew_auth_prepaid_repository.dart';
+
 abstract class AutoRenewAuthPrepaidEvent extends Equatable {
   const AutoRenewAuthPrepaidEvent();
 
@@ -8,7 +10,14 @@ abstract class AutoRenewAuthPrepaidEvent extends Equatable {
 }
 
 class AutoRenewAuthPrepaidStarted extends AutoRenewAuthPrepaidEvent {
-  const AutoRenewAuthPrepaidStarted();
+  final AutoRenewPaymentMethodType paymentMethod;
+
+  const AutoRenewAuthPrepaidStarted({
+    this.paymentMethod = AutoRenewPaymentMethodType.wallet,
+  });
+
+  @override
+  List<Object?> get props => [paymentMethod];
 }
 
 class AutoRenewAuthNameChanged extends AutoRenewAuthPrepaidEvent {

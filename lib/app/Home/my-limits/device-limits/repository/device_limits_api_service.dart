@@ -96,6 +96,93 @@ class DeviceLimitsApiService {
     }
   }
 
+  // ============ Auto-Renew API Methods ============
+
+  /// Enable auto-renew from wallet
+  ///
+  /// PUT /device/{deviceAccountId}/auto-renew?autoRenew=true
+  /// Returns true if API response { "Success": true }
+  Future<bool> enableAutoRenewWallet(int deviceAccountId) async {
+    final url = '${Api.deviceAutoRenew(deviceAccountId)}?autoRenew=true';
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.put,
+      );
+
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['Success'] == true;
+      }
+      return false;
+    } on NetworkException catch (e) {
+      throw _mapNetworkException(e);
+    } catch (e) {
+      throw DeviceLimitsException(
+        'Failed to enable auto-renew: ${e.toString()}',
+        type: DeviceLimitsErrorType.unknown,
+        originalError: e,
+      );
+    }
+  }
+
+  /// Disable auto-renew
+  ///
+  /// PUT /device/{deviceAccountId}/auto-renew?autoRenew=false
+  /// Returns true if API response { "Success": true }
+  Future<bool> disableAutoRenew(int deviceAccountId) async {
+    final url = '${Api.deviceAutoRenew(deviceAccountId)}?autoRenew=false';
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.put,
+      );
+
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['Success'] == true;
+      }
+      return false;
+    } on NetworkException catch (e) {
+      throw _mapNetworkException(e);
+    } catch (e) {
+      throw DeviceLimitsException(
+        'Failed to disable auto-renew: ${e.toString()}',
+        type: DeviceLimitsErrorType.unknown,
+        originalError: e,
+      );
+    }
+  }
+
+  /// Enable auto-renew from credit card
+  ///
+  /// PUT /CreditCard/auto-renew (empty body)
+  /// Returns true if API response { "Success": true }
+  Future<bool> enableAutoRenewCard() async {
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.creditCardAutoRenew,
+        method: HttpMethod.put,
+      );
+
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['Success'] == true;
+      }
+      return false;
+    } on NetworkException catch (e) {
+      throw _mapNetworkException(e);
+    } catch (e) {
+      throw DeviceLimitsException(
+        'Failed to enable auto-renew with card: ${e.toString()}',
+        type: DeviceLimitsErrorType.unknown,
+        originalError: e,
+      );
+    }
+  }
+
   DeviceLimitsException _mapNetworkException(NetworkException e) {
     if (e is TimeoutException) {
       return DeviceLimitsException(
