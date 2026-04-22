@@ -19,30 +19,94 @@ class SupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (_) => SupportRepository(dio: Dio()),
-      child: BlocProvider(
-        create: (context) =>
-        SupportBloc(repository: context.read<SupportRepository>())
-          ..add(const SupportStarted()),
-        child: const _SupportView(),
-      ),
+      create: _createRepository,
+      child: BlocProvider(create: _createBloc, child: const _SupportView()),
     );
+  }
+
+  SupportRepository _createRepository(BuildContext _) {
+    return SupportRepository(dio: Dio());
+  }
+
+  SupportBloc _createBloc(BuildContext context) {
+    return SupportBloc(repository: context.read<SupportRepository>())
+      ..add(const SupportStarted());
   }
 }
 
 class _SupportView extends StatelessWidget {
   const _SupportView();
 
-  static const Color _purple = Color(0xFF645D9C);
-
-  Future<void> _handleLaunch(
-      BuildContext context,
-      SupportLaunchRequest request,
-      ) async {
-    final launched = await launchUrl(
-      request.uri,
-      mode: LaunchMode.externalApplication,
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [_navigationListener(), _externalLaunchListener()],
+      child: const _SupportScaffold(),
     );
+  }
+
+  BlocListener<SupportBloc, SupportState> _navigationListener() {
+    return BlocListener<SupportBloc, SupportState>(
+      listenWhen: _hasNewNavigationRequest,
+      listener: _onNavigationRequested,
+    );
+  }
+
+  BlocListener<SupportBloc, SupportState> _externalLaunchListener() {
+    return BlocListener<SupportBloc, SupportState>(
+      listenWhen: _hasNewLaunchRequest,
+      listener: _onExternalLaunchRequested,
+    );
+  }
+
+  // Each request has a unique id, so listeners react once and do not replay
+  // older navigation work during normal widget rebuilds.
+  bool _hasNewNavigationRequest(SupportState previous, SupportState current) {
+    return previous.navigationRequest?.id != current.navigationRequest?.id;
+  }
+
+  bool _hasNewLaunchRequest(SupportState previous, SupportState current) {
+    return previous.launchRequest?.id != current.launchRequest?.id;
+  }
+
+  void _onNavigationRequested(BuildContext context, SupportState state) {
+    final request = state.navigationRequest;
+    if (request == null) return;
+
+    _openInternalScreen(context, request);
+  }
+
+  Future<void> _onExternalLaunchRequested(
+    BuildContext context,
+    SupportState state,
+  ) async {
+    final request = state.launchRequest;
+    if (request == null) return;
+
+    await _openExternalBrowser(context, request);
+
+    // Keep FAQ loading until url_launcher returns, then unlock the menu.
+    if (context.mounted) {
+      context.read<SupportBloc>().add(const SupportLaunchHandled());
+    }
+  }
+
+  Future<void> _openExternalBrowser(
+    BuildContext context,
+    SupportLaunchRequest request,
+  ) async {
+    bool launched = false;
+
+    // url_launcher may return false or throw depending on the platform.
+    // Both cases use the same user-facing error message.
+    try {
+      launched = await launchUrl(
+        request.uri,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      launched = false;
+    }
 
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(
@@ -51,10 +115,10 @@ class _SupportView extends StatelessWidget {
     }
   }
 
-  void _handleNavigation(
-      BuildContext context,
-      SupportNavigationRequest request,
-      ) {
+  void _openInternalScreen(
+    BuildContext context,
+    SupportNavigationRequest request,
+  ) {
     switch (request.target) {
       case SupportNavigationTarget.chatBot:
         context.push(AppRoutes.chatScreen);
@@ -64,83 +128,115 @@ class _SupportView extends StatelessWidget {
         break;
     }
   }
+}
+
+class _SupportScaffold extends StatelessWidget {
+  const _SupportScaffold();
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<SupportBloc, SupportState>(
-          listenWhen: (previous, current) =>
-          previous.navigationRequest?.id != current.navigationRequest?.id,
-          listener: (context, state) {
-            final request = state.navigationRequest;
-            if (request != null) {
-              _handleNavigation(context, request);
-            }
-          },
+    return const Scaffold(
+      backgroundColor: Colors.white,
+      appBar: _SupportAppBar(),
+      body: _SupportBody(),
+    );
+  }
+}
+
+class _SupportAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _SupportAppBar();
+
+  static const Color _purple = Color(0xFF645D9C);
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: _purple,
+      centerTitle: false,
+      elevation: 0,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 20),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
         ),
-        BlocListener<SupportBloc, SupportState>(
-          listenWhen: (previous, current) =>
-          previous.launchRequest?.id != current.launchRequest?.id,
-          listener: (context, state) {
-            final request = state.launchRequest;
-            if (request != null) {
-              _handleLaunch(context, request);
-            }
-          },
-        ),
-      ],
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: _purple,
-          centerTitle: false,
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          title: const Text(
-            'support',
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontFamily: 'CircularPro',
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocBuilder<SupportBloc, SupportState>(
-                  builder: (context, state) {
-                    return ListView(
-                      padding: const EdgeInsets.only(left: 24, right: 20),
-                      children: state.menuItems
-                          .map(
-                            (item) => SupportTile(
-                          title: item.title,
-                          onTap: () => context.read<SupportBloc>().add(
-                            SupportMenuItemPressed(item),
-                          ),
-                        ),
-                      )
-                          .toList(growable: false),
-                    );
-                  },
-                ),
-              ),
-              const BottomStripes(),
-            ],
-          ),
+      ),
+      title: const Text(
+        'support',
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          fontFamily: 'CircularPro',
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
         ),
       ),
     );
+  }
+}
+
+class _SupportBody extends StatelessWidget {
+  const _SupportBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Column(
+        children: const [
+          Expanded(child: _SupportMenuList()),
+          BottomStripes(),
+        ],
+      ),
+    );
+  }
+}
+
+class _SupportMenuList extends StatelessWidget {
+  const _SupportMenuList();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SupportBloc, SupportState>(
+      builder: (context, state) {
+        return ListView(
+          padding: const EdgeInsets.only(left: 24, right: 20),
+          children: [
+            for (final item in state.menuItems)
+              _SupportMenuTile(item: item, isFaqOpening: state.isFaqOpening),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _SupportMenuTile extends StatelessWidget {
+  final SupportMenuItem item;
+  final bool isFaqOpening;
+
+  const _SupportMenuTile({required this.item, required this.isFaqOpening});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool shouldShowFaqLoading = item.action == SupportMenuAction.faq && isFaqOpening;
+
+    return SupportTile(
+      title: item.title,
+      isLoading: shouldShowFaqLoading,
+      onTap: _buildTapHandler(context),
+    );
+  }
+
+  VoidCallback? _buildTapHandler(BuildContext context) {
+    // While FAQ is opening, block the whole menu so another external action
+    // cannot start before the browser handoff completes.
+    if (isFaqOpening) return null;
+
+    return () {
+      context.read<SupportBloc>().add(SupportMenuItemPressed(item));
+    };
   }
 }

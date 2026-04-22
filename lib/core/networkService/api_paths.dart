@@ -23,5 +23,7 @@ class Api {
   static const privacyPolicy = 'https://myalivappuat-api.bealiv.com/api/app-settings/privacy-policy';
   static const security = 'https://myalivappuat-api.bealiv.com/api/app-settings/security';
   static const isReferralValid = '$baseUrl/v1/MyAliv/Referral';
- static const referAFriend = '$baseUrl/v1/MyAliv/Referral/refer';
+  static const referAFriend = '$baseUrl/v1/MyAliv/Referral/refer';
+
+  static const redeemReferral = '$baseUrl/v1/MyAliv/Referral/redeem';
 }

@@ -7,7 +7,7 @@ import '../models/refer_friend_prepaid_models.dart';
 
 class ReferFriendPrepaidRepository {
   ReferFriendPrepaidRepository({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -19,26 +19,52 @@ class ReferFriendPrepaidRepository {
     await Future.delayed(const Duration(milliseconds: 600));
   }
 
-  Future<void> redeemReferral({required String code}) async {
-    // TODO: API integration later
-    await Future.delayed(const Duration(milliseconds: 600));
+  Future<void> redeemReferral({
+    required String code,
+    required String referredNumber,
+  }) async {
+    final trimmedCode = code.trim();
+    final trimmedReferredNumber = referredNumber.trim();
 
-    // demo validation
-    if (code.trim().length < 5) {
-      throw Exception('invalid');
+    if (trimmedCode.isEmpty || trimmedReferredNumber.isEmpty) {
+      throw const ReferFriendPrepaidException(
+        'Referral code or phone number is missing.',
+      );
+    }
+
+    final requestBody = <String, dynamic>{
+      'ReferralCode': trimmedCode,
+      'ReferredTN': trimmedReferredNumber,
+    };
+
+    try {
+      await _networkService.request<dynamic>(
+        Api.redeemReferral,
+        method: HttpMethod.post,
+        data: requestBody,
+      );
+    } on NetworkException catch (error) {
+      throw ReferFriendPrepaidException(_redeemReferralErrorMessage(error));
+    } on ReferFriendPrepaidException {
+      rethrow;
+    } catch (_) {
+      throw const ReferFriendPrepaidException(
+        'Could not redeem referral. Try again.',
+      );
     }
   }
 
   Future<String> postReferAFriend({
     required String deviceAccountID,
-    required String userPhone,
+    required String referredNumber,
     required String email,
   }) async {
     final parsedDeviceAccountId = int.tryParse(deviceAccountID.trim());
     final requestBody = <String, dynamic>{
-      'ReferringDeviceAccountId': parsedDeviceAccountId ?? deviceAccountID.trim(),
+      'ReferringDeviceAccountId':
+          parsedDeviceAccountId ?? deviceAccountID.trim(),
       'ReferredEmail': email.trim(),
-      'ReferredTN': userPhone.trim(),
+      'ReferredTN': referredNumber.trim(),
     };
 
     final response = await _networkService.request<dynamic>(
@@ -113,9 +139,7 @@ class ReferFriendPrepaidRepository {
     }
 
     if (responseData is Map) {
-      return responseData.map(
-        (key, value) => MapEntry(key.toString(), value),
-      );
+      return responseData.map((key, value) => MapEntry(key.toString(), value));
     }
 
     if (responseData is String && responseData.trim().isNotEmpty) {
@@ -125,9 +149,7 @@ class ReferFriendPrepaidRepository {
       }
 
       if (decoded is Map) {
-        return decoded.map(
-          (key, value) => MapEntry(key.toString(), value),
-        );
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
       }
     }
 
@@ -146,4 +168,36 @@ class ReferFriendPrepaidRepository {
 
     return value[0].toLowerCase() + value.substring(1);
   }
+
+  String _redeemReferralErrorMessage(NetworkException error) {
+    final statusCode = error.statusCode;
+
+    if (statusCode == 400 || statusCode == 404) {
+      return 'Invalid referral code.';
+    }
+
+    if (statusCode == 401) {
+      return 'Session expired. Please log in again.';
+    }
+
+    if (statusCode != null && statusCode >= 500) {
+      return 'Could not redeem referral. Try again.';
+    }
+
+    final message = error.message.trim();
+    if (message.isNotEmpty && message != 'An error occurred') {
+      return message;
+    }
+
+    return 'Could not redeem referral. Try again.';
+  }
+}
+
+class ReferFriendPrepaidException implements Exception {
+  final String message;
+
+  const ReferFriendPrepaidException(this.message);
+
+  @override
+  String toString() => message;
 }

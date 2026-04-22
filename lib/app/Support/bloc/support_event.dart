@@ -25,3 +25,7 @@ final class SupportMenuItemPressed extends SupportEvent {
 final class SupportCallPressed extends SupportEvent {
   const SupportCallPressed();
 }
+
+final class SupportLaunchHandled extends SupportEvent {
+  const SupportLaunchHandled();
+}

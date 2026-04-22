@@ -12,6 +12,7 @@ class SupportState extends Equatable {
   final SupportNavigationRequest? navigationRequest;
   final SupportLaunchRequest? launchRequest;
   final int actionSequence;
+  final bool isFaqOpening;
 
   const SupportState({
     required this.status,
@@ -21,6 +22,7 @@ class SupportState extends Equatable {
     required this.navigationRequest,
     required this.launchRequest,
     required this.actionSequence,
+    required this.isFaqOpening,
   });
 
   factory SupportState.initial() {
@@ -38,6 +40,7 @@ class SupportState extends Equatable {
       navigationRequest: null,
       launchRequest: null,
       actionSequence: 0,
+      isFaqOpening: false,
     );
   }
 
@@ -49,6 +52,7 @@ class SupportState extends Equatable {
     SupportNavigationRequest? navigationRequest,
     SupportLaunchRequest? launchRequest,
     int? actionSequence,
+    bool? isFaqOpening,
   }) {
     return SupportState(
       status: status ?? this.status,
@@ -58,6 +62,7 @@ class SupportState extends Equatable {
       navigationRequest: navigationRequest,
       launchRequest: launchRequest,
       actionSequence: actionSequence ?? this.actionSequence,
+      isFaqOpening: isFaqOpening ?? this.isFaqOpening,
     );
   }
 
@@ -70,5 +75,6 @@ class SupportState extends Equatable {
     navigationRequest,
     launchRequest,
     actionSequence,
+    isFaqOpening,
   ];
 }

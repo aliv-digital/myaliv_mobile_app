@@ -7,11 +7,13 @@ import 'support_state.dart';
 
 class SupportBloc extends Bloc<SupportEvent, SupportState> {
   final SupportRepository repository;
+  bool _isFaqOpening = false;
 
   SupportBloc({required this.repository}) : super(SupportState.initial()) {
     on<SupportStarted>(_onStarted);
     on<SupportMenuItemPressed>(_onMenuItemPressed);
     on<SupportCallPressed>(_onCallPressed);
+    on<SupportLaunchHandled>(_onLaunchHandled);
   }
 
   void _onStarted(SupportStarted event, Emitter<SupportState> emit) {
@@ -26,9 +28,9 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
   }
 
   Future<void> _onMenuItemPressed(
-      SupportMenuItemPressed event,
-      Emitter<SupportState> emit,
-      ) async {
+    SupportMenuItemPressed event,
+    Emitter<SupportState> emit,
+  ) async {
     switch (event.item.action) {
       case SupportMenuAction.chatBot:
         _emitNavigation(emit, SupportNavigationTarget.chatBot);
@@ -55,18 +57,18 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
         break;
 
       case SupportMenuAction.faq:
+        if (_isFaqOpening) {
+          return;
+        }
+
+        _isFaqOpening = true;
+        emit(state.copyWith(isFaqOpening: true));
+
         try {
           final Uri faqUri = await repository.fetchFaqUri();
-          _emitLaunch(
-            emit,
-            uri: faqUri,
-            failureMessage: 'Could not open FAQ',
-          );
+          _emitLaunch(emit, uri: faqUri, failureMessage: 'Could not open FAQ');
         } catch (_) {
-          _emitFailureLaunch(
-            emit,
-            failureMessage: 'Could not open FAQ',
-          );
+          _emitFailureLaunch(emit, failureMessage: 'Could not open FAQ');
         }
         break;
     }
@@ -80,27 +82,32 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
     );
   }
 
+  void _onLaunchHandled(
+    SupportLaunchHandled event,
+    Emitter<SupportState> emit,
+  ) {
+    _isFaqOpening = false;
+    emit(state.copyWith(isFaqOpening: false));
+  }
+
   void _emitNavigation(
-      Emitter<SupportState> emit,
-      SupportNavigationTarget target,
-      ) {
+    Emitter<SupportState> emit,
+    SupportNavigationTarget target,
+  ) {
     final int nextId = state.actionSequence + 1;
     emit(
       state.copyWith(
         actionSequence: nextId,
-        navigationRequest: SupportNavigationRequest(
-          id: nextId,
-          target: target,
-        ),
+        navigationRequest: SupportNavigationRequest(id: nextId, target: target),
       ),
     );
   }
 
   void _emitLaunch(
-      Emitter<SupportState> emit, {
-        required Uri uri,
-        required String failureMessage,
-      }) {
+    Emitter<SupportState> emit, {
+    required Uri uri,
+    required String failureMessage,
+  }) {
     final int nextId = state.actionSequence + 1;
     emit(
       state.copyWith(
@@ -115,9 +122,9 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
   }
 
   void _emitFailureLaunch(
-      Emitter<SupportState> emit, {
-        required String failureMessage,
-      }) {
+    Emitter<SupportState> emit, {
+    required String failureMessage,
+  }) {
     final int nextId = state.actionSequence + 1;
     emit(
       state.copyWith(

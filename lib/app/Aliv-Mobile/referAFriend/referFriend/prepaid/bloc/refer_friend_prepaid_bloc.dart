@@ -12,7 +12,7 @@ class ReferFriendPrepaidBloc
   final ReferFriendPrepaidRepository repository;
 
   ReferFriendPrepaidBloc({required this.repository})
-      : super(const ReferFriendPrepaidState()) {
+    : super(const ReferFriendPrepaidState()) {
     on<ReferFriendPrepaidStarted>(_onStarted);
     on<ReferFriendPrepaidTabChanged>(_onTabChanged);
 
@@ -26,19 +26,25 @@ class ReferFriendPrepaidBloc
     on<ReferFriendPrepaidCopyPressed>(_onCopyPressed);
 
     on<ReferFriendPrepaidToastConsumed>(
-        (e, emit) => emit(state.copyWith(toastMessage: null)));
+      (e, emit) => emit(state.copyWith(toastMessage: null)),
+    );
     on<ReferFriendPrepaidErrorConsumed>(
-        (e, emit) => emit(state.copyWith(errorMessage: null)));
+      (e, emit) => emit(state.copyWith(errorMessage: null)),
+    );
   }
 
-  Future<void> _onStarted(ReferFriendPrepaidStarted event,
-      Emitter<ReferFriendPrepaidState> emit) async {
+  Future<void> _onStarted(
+    ReferFriendPrepaidStarted event,
+    Emitter<ReferFriendPrepaidState> emit,
+  ) async {
     final history = await repository.fetchHistory();
     emit(state.copyWith(history: history));
   }
 
-  Future<void> _onTabChanged(ReferFriendPrepaidTabChanged event,
-      Emitter<ReferFriendPrepaidState> emit) async {
+  Future<void> _onTabChanged(
+    ReferFriendPrepaidTabChanged event,
+    Emitter<ReferFriendPrepaidState> emit,
+  ) async {
     emit(state.copyWith(selectedTab: event.index));
 
     // load history on demand too (safe)
@@ -48,13 +54,17 @@ class ReferFriendPrepaidBloc
     }
   }
 
-  void _onPhoneChanged(ReferFriendPrepaidFriendPhoneChanged event,
-      Emitter<ReferFriendPrepaidState> emit) {
+  void _onPhoneChanged(
+    ReferFriendPrepaidFriendPhoneChanged event,
+    Emitter<ReferFriendPrepaidState> emit,
+  ) {
     emit(state.copyWith(friendPhone: event.value, errorMessage: null));
   }
 
-  void _onEmailChanged(ReferFriendPrepaidFriendEmailChanged event,
-      Emitter<ReferFriendPrepaidState> emit) {
+  void _onEmailChanged(
+    ReferFriendPrepaidFriendEmailChanged event,
+    Emitter<ReferFriendPrepaidState> emit,
+  ) {
     emit(state.copyWith(friendEmail: event.value, errorMessage: null));
   }
 
@@ -62,6 +72,10 @@ class ReferFriendPrepaidBloc
     ReferFriendPrepaidSharePressed event,
     Emitter<ReferFriendPrepaidState> emit,
   ) async {
+    if (state.shareStatus == ReferFriendPrepaidSubmitStatus.submitting) {
+      return;
+    }
+
     if (!state.canShare) {
       emit(state.copyWith(errorMessage: 'Please enter phone & a valid email.'));
       return;
@@ -95,7 +109,7 @@ class ReferFriendPrepaidBloc
 
       final referralCode = await repository.postReferAFriend(
         deviceAccountID: accountInfo.deviceAccountId,
-        userPhone: state.friendPhone.trim(),
+        referredNumber: state.friendPhone.trim(),
         email: state.friendEmail.trim(),
       );
 
@@ -128,35 +142,57 @@ class ReferFriendPrepaidBloc
     emit(state.copyWith(redeemCode: event.value, errorMessage: null));
   }
 
-  Future<void> _onRedeemPressed(
-    ReferFriendPrepaidRedeemPressed event,
-    Emitter<ReferFriendPrepaidState> emit,
-  ) async {
-    if (!state.canRedeem) {
-      emit(
-          state.copyWith(errorMessage: 'Please enter the full referral code.'));
+  Future<void> _onRedeemPressed(ReferFriendPrepaidRedeemPressed event,Emitter<ReferFriendPrepaidState> emit) async {
+    if (state.redeemStatus == ReferFriendPrepaidSubmitStatus.submitting) {
       return;
     }
 
-    emit(state.copyWith(
-        redeemStatus: ReferFriendPrepaidSubmitStatus.submitting));
+    if (!state.canRedeem) {
+      emit(
+        state.copyWith(errorMessage: 'Please enter the full referral code.'),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        redeemStatus: ReferFriendPrepaidSubmitStatus.submitting,
+        errorMessage: null,
+        toastMessage: null,
+      ),
+    );
 
     try {
-      await repository.redeemReferral(code: state.redeemCode.trim());
+      final accountInfo = _readReferralAccountInfo();
 
-      // emit(
-      //   state.copyWith(
-      //     redeemStatus: ReferFriendPrepaidSubmitStatus.success,
-      //     toastMessage: 'Referral redeemed!',
-      //   ),
-      // );
+      await repository.redeemReferral(
+        code: state.redeemCode.trim(),
+        referredNumber: accountInfo.phoneNumber,
+      );
 
+      emit(
+        state.copyWith(
+          redeemCode: '',
+          redeemStatus: ReferFriendPrepaidSubmitStatus.success,
+          toastMessage:
+              'success! you will receive bonus wallet credit via the myALIV app within 24 hours',
+        ),
+      );
+
+      emit(state.copyWith(redeemStatus: ReferFriendPrepaidSubmitStatus.idle));
+    } on ReferFriendPrepaidException catch (error) {
+      emit(
+        state.copyWith(
+          redeemStatus: ReferFriendPrepaidSubmitStatus.failure,
+          errorMessage: error.message,
+        ),
+      );
       emit(state.copyWith(redeemStatus: ReferFriendPrepaidSubmitStatus.idle));
     } catch (_) {
       emit(
         state.copyWith(
           redeemStatus: ReferFriendPrepaidSubmitStatus.failure,
-          errorMessage: 'Invalid referral code.',
+          errorMessage: 'Could not redeem referral. Try again.',
         ),
       );
       emit(state.copyWith(redeemStatus: ReferFriendPrepaidSubmitStatus.idle));
