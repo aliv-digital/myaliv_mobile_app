@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import '../models/invoice_item.dart';
-import '../theme/review_invoice_postpaid_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/models/invoice_item.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/theme/review_invoice_postpaid_theme.dart';
 
 class InvoiceTile extends StatelessWidget {
   final InvoiceItem invoice;
   final VoidCallback onTap;
+  final bool isDownloading;
 
-  const InvoiceTile({super.key, required this.invoice, required this.onTap});
+  const InvoiceTile({
+    super.key,
+    required this.invoice,
+    required this.onTap,
+    this.isDownloading = false,
+  });
 
   String _formatDate(DateTime date) => DateFormat('dd MMM yyyy').format(date);
 
@@ -18,7 +24,7 @@ class InvoiceTile extends StatelessWidget {
       color: ReviewInvoicePostpaidTheme.cardBg,
       borderRadius: BorderRadius.circular(ReviewInvoicePostpaidTheme.radius),
       child: InkWell(
-        onTap: onTap,
+        onTap: isDownloading ? null : onTap,
         borderRadius: BorderRadius.circular(ReviewInvoicePostpaidTheme.radius),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -55,21 +61,21 @@ class InvoiceTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SvgPicture.asset(
-                    ReviewInvoicePostpaidAssets.pdfSvg,
-                    width: 32,
-                    height: 32,
-                  ),
-                  // const SizedBox(height: 2),
-                  // const Text(
-                  //   'PDF',
-                  //   style: TextStyle(
-                  //     fontFamily: ReviewInvoicePostpaidTheme.fontFamily,
-                  //     fontSize: 10,
-                  //     fontWeight: FontWeight.w700,
-                  //     color: Colors.red,
-                  //   ),
-                  // ),
+                  if (isDownloading)
+                    const SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Padding(
+                        padding: EdgeInsets.all(4),
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  else
+                    SvgPicture.asset(
+                      ReviewInvoicePostpaidAssets.pdfSvg,
+                      width: 32,
+                      height: 32,
+                    ),
                   const SizedBox(height: 14),
                   Text(
                     '${invoice.currencySymbol}${invoice.amount.toStringAsFixed(2)}',
