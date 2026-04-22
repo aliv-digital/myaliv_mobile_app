@@ -68,8 +68,8 @@ class ReviewInvoicePostpaidRepositoryImpl
       filename: filename,
     );
 
-    // Decode and save to file
-    final filePath = await _pdfService.decodeAndSavePdf(base64Pdf, invoiceNo);
+    // Decode and save to cache (uses invoiceId for unique filename)
+    final filePath = await _pdfService.decodeAndSavePdf(base64Pdf, invoiceId);
 
     if (kDebugMode) {
       debugPrint('ReviewInvoicePostpaidRepository: PDF saved to $filePath');

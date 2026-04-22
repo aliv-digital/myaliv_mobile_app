@@ -40,68 +40,58 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
   }
 
   /// Downloads and opens the PDF for the given invoice.
+  /// Uses cache if available - no loading spinner for cached files.
   Future<void> downloadAndOpenPdf(InvoiceItem invoice) async {
-    if (state.downloadingInvoiceId != null) {
-      // Already downloading another invoice
+    // Check cache first - open instantly if exists
+    if (await _pdfService.isCached(invoice.invoiceId)) {
+      final cachedPath = await _pdfService.getCachePath(invoice.invoiceId);
+      if (kDebugMode) {
+        debugPrint('Opening cached PDF for invoice ${invoice.invoiceId}');
+      }
+      await _pdfService.openPdf(cachedPath);
       return;
     }
 
-    emit(
-      state.copyWith(
-        downloadingInvoiceId: invoice.invoiceId,
-        downloadError: null,
-      ),
-    );
+    // Not cached - download with loading state
+    if (state.downloadingInvoiceId != null) return;
+
+    emit(state.copyWith(downloadingInvoiceId: invoice.invoiceId));
 
     try {
-      // Get the file path to use for download
       final filePath = invoice.primaryFilePath ?? invoice.invoicePath;
-
-      if (kDebugMode) {
-        debugPrint(
-          'ReviewInvoicePostpaidCubit: Downloading PDF for invoice ${invoice.invoiceId}',
-        );
-      }
-
-      // Download and save PDF
       final savedFilePath = await _repository.downloadInvoicePdf(
         invoiceId: invoice.invoiceId,
         filename: filePath,
         invoiceNo: invoice.invoiceNo,
       );
 
-      // Clear downloading state
       emit(state.copyWith(clearDownloadingId: true));
-
-      // Open the PDF
       await _pdfService.openPdf(savedFilePath);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('ReviewInvoicePostpaidCubit: Error downloading PDF: $e');
+        debugPrint('Error downloading PDF: $e');
       }
-      emit(
-        state.copyWith(
-          clearDownloadingId: true,
-          downloadError: 'Failed to download invoice',
-        ),
-      );
+      emit(state.copyWith(
+        clearDownloadingId: true,
+        downloadError: 'Failed to download invoice',
+      ));
     }
   }
 
-  /// Shares the PDF for the given invoice.
+  /// Shares the PDF for the given invoice. Uses cache if available.
   Future<void> sharePdf(InvoiceItem invoice) async {
-    if (state.downloadingInvoiceId != null) return;
+    // Check cache first
+    if (await _pdfService.isCached(invoice.invoiceId)) {
+      final cachedPath = await _pdfService.getCachePath(invoice.invoiceId);
+      await _pdfService.sharePdf(cachedPath, invoice.invoiceNo);
+      return;
+    }
 
-    emit(
-      state.copyWith(
-        downloadingInvoiceId: invoice.invoiceId,
-        downloadError: null,
-      ),
-    );
+    if (state.downloadingInvoiceId != null) return;
+    emit(state.copyWith(downloadingInvoiceId: invoice.invoiceId));
 
     try {
       final filePath = invoice.primaryFilePath ?? invoice.invoicePath;
-
       final savedFilePath = await _repository.downloadInvoicePdf(
         invoiceId: invoice.invoiceId,
         filename: filePath,
@@ -109,35 +99,38 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
       );
 
       emit(state.copyWith(clearDownloadingId: true));
-
       await _pdfService.sharePdf(savedFilePath, invoice.invoiceNo);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('ReviewInvoicePostpaidCubit: Error sharing PDF: $e');
+        debugPrint('Error sharing PDF: $e');
       }
-      emit(
-        state.copyWith(
-          clearDownloadingId: true,
-          downloadError: 'Failed to share invoice',
-        ),
-      );
+      emit(state.copyWith(
+        clearDownloadingId: true,
+        downloadError: 'Failed to share invoice',
+      ));
     }
   }
 
-  /// Saves the PDF to the downloads folder.
+  /// Saves the PDF to the downloads folder. Uses cache if available.
   Future<void> savePdfToDownloads(InvoiceItem invoice) async {
-    if (state.downloadingInvoiceId != null) return;
+    // Check cache first
+    if (await _pdfService.isCached(invoice.invoiceId)) {
+      final cachedPath = await _pdfService.getCachePath(invoice.invoiceId);
+      final success = await _pdfService.savePdfToDownloads(
+        cachedPath,
+        invoice.invoiceNo,
+      );
+      if (!success) {
+        emit(state.copyWith(downloadError: 'Failed to save to downloads'));
+      }
+      return;
+    }
 
-    emit(
-      state.copyWith(
-        downloadingInvoiceId: invoice.invoiceId,
-        downloadError: null,
-      ),
-    );
+    if (state.downloadingInvoiceId != null) return;
+    emit(state.copyWith(downloadingInvoiceId: invoice.invoiceId));
 
     try {
       final filePath = invoice.primaryFilePath ?? invoice.invoicePath;
-
       final savedFilePath = await _repository.downloadInvoicePdf(
         invoiceId: invoice.invoiceId,
         filename: filePath,
@@ -145,25 +138,21 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
       );
 
       emit(state.copyWith(clearDownloadingId: true));
-
       final success = await _pdfService.savePdfToDownloads(
         savedFilePath,
         invoice.invoiceNo,
       );
-
       if (!success) {
         emit(state.copyWith(downloadError: 'Failed to save to downloads'));
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('ReviewInvoicePostpaidCubit: Error saving PDF: $e');
+        debugPrint('Error saving PDF: $e');
       }
-      emit(
-        state.copyWith(
-          clearDownloadingId: true,
-          downloadError: 'Failed to save invoice',
-        ),
-      );
+      emit(state.copyWith(
+        clearDownloadingId: true,
+        downloadError: 'Failed to save invoice',
+      ));
     }
   }
 
