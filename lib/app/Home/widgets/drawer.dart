@@ -219,7 +219,7 @@ class AppMenuDrawer extends StatelessWidget {
         } else if (label == 'purchases') {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));
-          context.push(AppRoutes.purchasesPrepaidScreen);
+          context.push(AppRoutes.purchasesPrepaidScreen); // going to purchase
         } else if (label == 'refer a friend') {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));

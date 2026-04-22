@@ -30,4 +30,12 @@ class Api {
   /// Auto-pay invoice for postpaid: PUT /Account/invoice-autopayment?autoPayInvoice={true|false}
   static String invoiceAutoPayment(bool enable) =>
       '$baseUrl/v1/MyAliv/Account/invoice-autopayment?autoPayInvoice=$enable';
+
+  static const faq = 'https://myalivappuat-api.bealiv.com/api/app-settings/faqs';
+  static const privacyPolicy = 'https://myalivappuat-api.bealiv.com/api/app-settings/privacy-policy';
+  static const security = 'https://myalivappuat-api.bealiv.com/api/app-settings/security';
+  static const isReferralValid = '$baseUrl/v1/MyAliv/Referral';
+  static const referAFriend = '$baseUrl/v1/MyAliv/Referral/refer';
+
+  static const redeemReferral = '$baseUrl/v1/MyAliv/Referral/redeem';
 }

@@ -13,14 +13,14 @@ class PrivacyTheme {
   static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(16, 24, 16, 24);
 
   static const TextStyle title = TextStyle(
-      color: Colors.black,
-      fontSize: 18,
-      fontFamily: 'CircularPro',
-      fontWeight: FontWeight.w700
+    color: Colors.black,
+    fontSize: 18,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
   );
 
   static const TextStyle body = TextStyle(
-    color: const Color(0xFF707070),
+    color: Color(0xFF707070),
     fontSize: 14,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w500,
@@ -28,9 +28,9 @@ class PrivacyTheme {
   );
 
   static const TextStyle sectionHeader = TextStyle(
-      color: Colors.black,
-      fontSize: 18,
-      fontFamily: 'CircularPro',
-      fontWeight: FontWeight.w700
+    color: Colors.black,
+    fontSize: 18,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
   );
 }
