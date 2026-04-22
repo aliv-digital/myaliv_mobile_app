@@ -1,7 +1,12 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
@@ -47,7 +52,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _TopRow(autoRenew: activePlan?.autoRenew ?? false),
+                const _TopRow(),
                 Text(
                   activePlan?.planName.trim().isNotEmpty == true
                       ? activePlan!.planName
@@ -67,7 +72,18 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                   expireDate: _formatCardDate(activePlan?.endDateTime),
                 ),
                 const SizedBox(height: 14),
-                const _RenewPlanButton(),
+                // Hide renew button when auto-renew is ON
+                BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+                  bloc: instance<DeviceLimitsCubit>(),
+                  buildWhen: (previous, current) =>
+                      previous.autoRenew != current.autoRenew,
+                  builder: (context, limitsState) {
+                    if (limitsState.autoRenew) {
+                      return const SizedBox.shrink();
+                    }
+                    return const _RenewPlanButton();
+                  },
+                ),
               ],
             ),
           ),
@@ -79,9 +95,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
 
 /// Top row with "active plan" label and auto-renew toggle
 class _TopRow extends StatelessWidget {
-  const _TopRow({required this.autoRenew});
-
-  final bool autoRenew;
+  const _TopRow();
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +128,19 @@ class _TopRow extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        _AutoRenewToggle(value: autoRenew),
+        // Auto-renew toggle using DeviceLimitsCubit
+        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+          bloc: instance<DeviceLimitsCubit>(),
+          buildWhen: (previous, current) =>
+              previous.autoRenew != current.autoRenew ||
+              previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
+          builder: (context, state) {
+            return _AutoRenewToggle(
+              value: state.autoRenew,
+              isLoading: state.isTogglingAutoRenew,
+            );
+          },
+        ),
       ],
     );
   }
@@ -122,9 +148,13 @@ class _TopRow extends StatelessWidget {
 
 /// Auto-renew toggle (interactive)
 class _AutoRenewToggle extends StatefulWidget {
-  const _AutoRenewToggle({required this.value});
+  const _AutoRenewToggle({
+    required this.value,
+    this.isLoading = false,
+  });
 
   final bool value;
+  final bool isLoading;
 
   @override
   State<_AutoRenewToggle> createState() => _AutoRenewToggleState();
@@ -147,10 +177,15 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
     }
   }
 
-  void _handleTap() {
-    setState(() => isOn = !isOn);
+  Future<void> _handleTap() async {
+    // Don't allow tap while loading
+    if (widget.isLoading) return;
 
-    if (isOn) {
+    final newValue = !isOn;
+
+    if (newValue) {
+      // Toggle OFF → ON: Show bottom sheet to select payment method
+      setState(() => isOn = true);
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -158,76 +193,119 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black.withValues(alpha: 0.5),
         builder: (_) => const AutoRenewBottomSheet(),
-      );
+      ).then((_) {
+        // Revert if bottom sheet dismissed without enabling
+        // The actual state will be updated by DeviceLimitsCubit after API success
+        if (mounted) {
+          setState(() => isOn = widget.value);
+        }
+      });
+    } else {
+      // Toggle ON → OFF: Call disable API directly
+      setState(() => isOn = false);
+
+      final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+      if (accountInfo == null || accountInfo.idAcc <= 0) {
+        Fluttertoast.showToast(msg: 'Account info not available');
+        setState(() => isOn = true); // Revert
+        return;
+      }
+
+      final success = await instance<DeviceLimitsCubit>()
+          .disableAutoRenew(accountInfo.idAcc);
+
+      if (!success && mounted) {
+        // Revert on failure
+        setState(() => isOn = true);
+        Fluttertoast.showToast(msg: 'Failed to disable auto-renew');
+      } else if (success) {
+        Fluttertoast.showToast(msg: 'Auto-renew disabled');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _handleTap,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            height: 24,
-            padding: const EdgeInsets.symmetric(horizontal: 5.666),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFFDCDCDC), width: 1),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.5),
-                  child: Text(
-                    isOn ? 'on' : 'off',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                      height: 1.0,
+      onTap: widget.isLoading ? null : _handleTap,
+      child: Opacity(
+        opacity: widget.isLoading ? 0.6 : 1.0,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              height: 24,
+              padding: const EdgeInsets.symmetric(horizontal: 5.666),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: const Color(0xFFDCDCDC), width: 1),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (widget.isLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5.5),
+                      child: SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFF645D9C),
+                        ),
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.5),
+                      child: Text(
+                        isOn ? 'on' : 'off',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w500,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    width: 16.67,
+                    height: 16.67,
+                    decoration: BoxDecoration(
+                      color: isOn
+                          ? const Color(0xFF645D9C)
+                          : const Color(0xFFEDECF6),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isOn ? Icons.check : Icons.close,
+                      size: 12,
+                      color: isOn ? Colors.white : const Color(0xFF645D9C),
                     ),
                   ),
-                ),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  curve: Curves.easeOut,
-                  width: 16.67,
-                  height: 16.67,
-                  decoration: BoxDecoration(
-                    color: isOn
-                        ? const Color(0xFF645D9C)
-                        : const Color(0xFFEDECF6),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isOn ? Icons.check : Icons.close,
-                    size: 12,
-                    color: isOn ? Colors.white : const Color(0xFF645D9C),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          const Text(
-            'auto renew',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w400,
-              fontVariations: <FontVariation>[FontVariation('wght', 450)],
+            const SizedBox(width: 8),
+            const Text(
+              'auto renew',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w400,
+                fontVariations: <FontVariation>[FontVariation('wght', 450)],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

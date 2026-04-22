@@ -16,6 +16,9 @@ class AutoRenewAuthPrepaidState extends Equatable {
   final String? errorMessage;
   final AutoRenewAuthNavTarget navTarget;
 
+  /// Payment method selected (wallet or card)
+  final AutoRenewPaymentMethodType paymentMethod;
+
   const AutoRenewAuthPrepaidState({
     required this.loadStatus,
     required this.content,
@@ -23,6 +26,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
     required this.submitStatus,
     required this.errorMessage,
     required this.navTarget,
+    required this.paymentMethod,
   });
 
   factory AutoRenewAuthPrepaidState.initial() {
@@ -33,13 +37,21 @@ class AutoRenewAuthPrepaidState extends Equatable {
       submitStatus: AutoRenewAuthSubmitStatus.idle,
       errorMessage: null,
       navTarget: AutoRenewAuthNavTarget.none,
+      paymentMethod: AutoRenewPaymentMethodType.wallet,
     );
   }
 
+  /// Expected name from content for validation
+  String get expectedName => content?.expectedName ?? '';
+
+  /// Check if entered name matches expected name (case-insensitive)
+  bool get isNameValid =>
+      name.trim().toLowerCase() == expectedName.trim().toLowerCase();
+
   bool get canSubmit =>
       loadStatus == AutoRenewAuthLoadStatus.ready &&
-          name.trim().isNotEmpty &&
-          submitStatus != AutoRenewAuthSubmitStatus.submitting;
+      name.trim().isNotEmpty &&
+      submitStatus != AutoRenewAuthSubmitStatus.submitting;
 
   AutoRenewAuthPrepaidState copyWith({
     AutoRenewAuthLoadStatus? loadStatus,
@@ -48,6 +60,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
     AutoRenewAuthSubmitStatus? submitStatus,
     String? errorMessage,
     AutoRenewAuthNavTarget? navTarget,
+    AutoRenewPaymentMethodType? paymentMethod,
     bool clearError = false,
   }) {
     return AutoRenewAuthPrepaidState(
@@ -57,10 +70,18 @@ class AutoRenewAuthPrepaidState extends Equatable {
       submitStatus: submitStatus ?? this.submitStatus,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       navTarget: navTarget ?? this.navTarget,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [loadStatus, content, name, submitStatus, errorMessage, navTarget];
+  List<Object?> get props => [
+        loadStatus,
+        content,
+        name,
+        submitStatus,
+        errorMessage,
+        navTarget,
+        paymentMethod,
+      ];
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -63,7 +66,7 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     }
 
     if (state.navTarget == AutoRenewNavTarget.proceed) {
-      _consumeProceedNavigation(autoRenewPrepaidBloc);
+      _consumeProceedNavigation(context, autoRenewPrepaidBloc);
       return;
     }
   }
@@ -109,13 +112,13 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
   }
 
   // ==================== Wallet Payment Flow ====================
-  // Open wallet payment bottom sheet and clean nav target after close.
+  // Show wallet payment confirmation and navigate to auth screen.
   Future<void> _handleWalletPaymentFlow(
     BuildContext context,
     AutoRenewPrepaidBloc autoRenewPrepaidBloc,
     AutoRenewPrepaidState state,
   ) async {
-    await WalletPaymentBottomSheet.show(
+    final confirmed = await WalletPaymentBottomSheet.show(
       context,
       walletBalanceText: state.walletBalanceText,
       amountText: state.walletPaymentAmountText,
@@ -126,6 +129,14 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     }
 
     autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());
+
+    // Navigate to auth screen with wallet payment method if confirmed
+    if (confirmed == true) {
+      context.push(
+        AppRoutes.autoRenewAuthPrepaidScreen,
+        extra: AutoRenewPaymentMethodType.wallet,
+      );
+    }
   }
 
   // ==================== Home Navigation ====================
@@ -136,9 +147,17 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
   }
 
   // ==================== Proceed Navigation ====================
-  // Keep nav-target lifecycle clean until final route is wired.
-  void _consumeProceedNavigation(AutoRenewPrepaidBloc autoRenewPrepaidBloc) {
-    // TODO: navigate to next screen.
+  // Navigate to auth screen with card payment method.
+  void _consumeProceedNavigation(
+    BuildContext context,
+    AutoRenewPrepaidBloc autoRenewPrepaidBloc,
+  ) {
     autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());
+
+    // Navigate to auth screen with card payment method
+    context.push(
+      AppRoutes.autoRenewAuthPrepaidScreen,
+      extra: AutoRenewPaymentMethodType.card,
+    );
   }
 }

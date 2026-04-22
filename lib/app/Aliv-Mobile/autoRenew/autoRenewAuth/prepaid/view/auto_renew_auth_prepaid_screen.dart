@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import '../../../../../../resources/widgets/top_toast.dart';
+
 import '../bloc/auto_renew_auth_prepaid_bloc.dart';
 import '../bloc/auto_renew_auth_prepaid_event.dart';
 import '../bloc/auto_renew_auth_prepaid_state.dart';
@@ -14,14 +14,19 @@ import '../theme/auto_renew_auth_prepaid_theme.dart';
 import '../widgets/auth_name_input.dart';
 
 class AutoRenewAuthPrepaidScreen extends StatelessWidget {
-  const AutoRenewAuthPrepaidScreen({super.key});
+  final AutoRenewPaymentMethodType paymentMethod;
+
+  const AutoRenewAuthPrepaidScreen({
+    super.key,
+    this.paymentMethod = AutoRenewPaymentMethodType.wallet,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AutoRenewAuthPrepaidBloc(
         repository: AutoRenewAuthPrepaidRepositoryImpl(),
-      )..add(const AutoRenewAuthPrepaidStarted()),
+      )..add(AutoRenewAuthPrepaidStarted(paymentMethod: paymentMethod)),
       child: const _AutoRenewAuthPrepaidView(),
     );
   }
@@ -39,9 +44,9 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
         final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
 
         if (state.navTarget == AutoRenewAuthNavTarget.home) {
@@ -51,8 +56,19 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
         }
 
         if (state.navTarget == AutoRenewAuthNavTarget.success) {
-          // TODO: navigate next screen / show success
+          AppToast.show(
+            message:
+                "We're working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+            type: ToastType.success,
+          );
           bloc.add(const AutoRenewAuthNavigationConsumed());
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Future.delayed(const Duration(seconds: 1), () {
+              if (context.mounted) {
+                context.go(AppRoutes.home);
+              }
+            });
+          });
           return;
         }
       },
@@ -61,72 +77,59 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
         body: SafeArea(
           child:
               BlocBuilder<AutoRenewAuthPrepaidBloc, AutoRenewAuthPrepaidState>(
-            builder: (context, state) {
-              final bloc = context.read<AutoRenewAuthPrepaidBloc>();
+                builder: (context, state) {
+                  final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
-              return CustomScrollView(
-                slivers: [
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _PinnedHeaderDelegate(
-                      height: AutoRenewAuthPrepaidTheme.appBarHeight,
-                      child: DefaultAppBar(
-                        showHome: false,
-                        title: 'auto renew authorization form',
-                        onBack: () => Navigator.of(context).maybePop(),
-                        onHomeTap: () =>
-                            bloc.add(const AutoRenewAuthHomePressed()),
-                      ),
-                    ),
-                  ),
-                  if (state.loadStatus == AutoRenewAuthLoadStatus.loading)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  else if (state.loadStatus == AutoRenewAuthLoadStatus.failure)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Text(
-                          state.errorMessage ?? 'Something went wrong.',
-                          style: AutoRenewAuthPrepaidTheme.paragraphTextStyle(),
-                          textAlign: TextAlign.center,
+                  return CustomScrollView(
+                    slivers: [
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _PinnedHeaderDelegate(
+                          height: AutoRenewAuthPrepaidTheme.appBarHeight,
+                          child: DefaultAppBar(
+                            showHome: false,
+                            title: 'auto renew authorization form',
+                            onBack: () => Navigator.of(context).maybePop(),
+                            onHomeTap: () =>
+                                bloc.add(const AutoRenewAuthHomePressed()),
+                          ),
                         ),
                       ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: AutoRenewAuthPrepaidTheme.bodyPadding,
-                      sliver: SliverToBoxAdapter(
-                        child: _Body(
-                          state: state,
-                          onNameChanged: (v) =>
-                              bloc.add(AutoRenewAuthNameChanged(v)),
-                          onSubmit: () {
-                            //bloc.add(const AutoRenewAuthSubmitPressed());
-                            // context.push(
-                            //     AppRoutes.enterPasswordAutoRenewPrepaidScreen);
-                            AppToast.show(
-                              message:
-                              "We’re working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
-                              type: ToastType.success,
-                            );
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              Future.delayed(const Duration(seconds: 1), () {
-                                if (context.mounted) {
-                                  context.go(AppRoutes.home);
-                                }
-                              });
-                            });
-                          },
+                      if (state.loadStatus == AutoRenewAuthLoadStatus.loading)
+                        const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else if (state.loadStatus ==
+                          AutoRenewAuthLoadStatus.failure)
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(
+                            child: Text(
+                              state.errorMessage ?? 'Something went wrong.',
+                              style:
+                                  AutoRenewAuthPrepaidTheme.paragraphTextStyle(),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      else
+                        SliverPadding(
+                          padding: AutoRenewAuthPrepaidTheme.bodyPadding,
+                          sliver: SliverToBoxAdapter(
+                            child: _Body(
+                              state: state,
+                              onNameChanged: (v) =>
+                                  bloc.add(AutoRenewAuthNameChanged(v)),
+                              onSubmit: () =>
+                                  bloc.add(const AutoRenewAuthSubmitPressed()),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
+                    ],
+                  );
+                },
+              ),
         ),
       ),
     );
@@ -150,28 +153,38 @@ class _Body extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(content.paragraph1,
-            style: AutoRenewAuthPrepaidTheme.paragraphTextStyle()),
+        Text(
+          content.paragraph1,
+          style: AutoRenewAuthPrepaidTheme.paragraphTextStyle(),
+        ),
         const SizedBox(
           height: AutoRenewAuthPrepaidTheme.paragraphToConsentHeaderGap,
         ),
-        Text(content.consentTitle,
-            style: AutoRenewAuthPrepaidTheme.sectionHeaderTextStyle()),
+        Text(
+          content.consentTitle,
+          style: AutoRenewAuthPrepaidTheme.sectionHeaderTextStyle(),
+        ),
         const SizedBox(
           height: AutoRenewAuthPrepaidTheme.consentHeaderToParagraphGap,
         ),
-        Text(content.paragraph2,
-            style: AutoRenewAuthPrepaidTheme.paragraphTextStyle()),
+        Text(
+          content.paragraph2,
+          style: AutoRenewAuthPrepaidTheme.paragraphTextStyle(),
+        ),
         const SizedBox(
           height: AutoRenewAuthPrepaidTheme.paragraphToSignatureGap,
         ),
-        Text(content.signatureName,
-            style: AutoRenewAuthPrepaidTheme.signatureTextStyle()),
+        Text(
+          content.signatureName,
+          style: AutoRenewAuthPrepaidTheme.signatureTextStyle(),
+        ),
         const SizedBox(
           height: AutoRenewAuthPrepaidTheme.signatureToNameLabelGap,
         ),
-        Text(content.nameLabel,
-            style: AutoRenewAuthPrepaidTheme.fieldLabelTextStyle()),
+        Text(
+          content.nameLabel,
+          style: AutoRenewAuthPrepaidTheme.fieldLabelTextStyle(),
+        ),
         const SizedBox(height: AutoRenewAuthPrepaidTheme.nameLabelToInputGap),
         AuthNameInput(
           value: state.name,
@@ -229,10 +242,7 @@ class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double height;
   final Widget child;
 
-  _PinnedHeaderDelegate({
-    required this.height,
-    required this.child,
-  });
+  _PinnedHeaderDelegate({required this.height, required this.child});
 
   @override
   double get minExtent => height;
@@ -242,7 +252,10 @@ class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox(height: height, child: child);
   }
 

@@ -14,4 +14,10 @@ abstract class BaseAccountInfoRepository {
   /// Returns [AccountInfoModel] containing user account information.
   /// Throws [AccountInfoException] on errors.
   Future<AccountInfoModel> fetchAccountInfo();
+
+  /// Sets auto-pay invoice status for postpaid accounts.
+  ///
+  /// Returns true if the operation was successful.
+  /// Throws [AccountInfoException] on errors.
+  Future<bool> setAutoPayInvoice(bool enable);
 }

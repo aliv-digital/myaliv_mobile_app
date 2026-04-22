@@ -21,11 +21,15 @@ class DeviceLimitsState {
   final String? errorMessage;
   final DateTime? lastFetchedAt;
 
+  /// Whether auto-renew toggle operation is in progress
+  final bool isTogglingAutoRenew;
+
   const DeviceLimitsState({
     required this.status,
     this.allDeviceLimits = const [],
     this.errorMessage,
     this.lastFetchedAt,
+    this.isTogglingAutoRenew = false,
   });
 
   /// Initial state factory
@@ -35,6 +39,7 @@ class DeviceLimitsState {
       allDeviceLimits: [],
       errorMessage: null,
       lastFetchedAt: null,
+      isTogglingAutoRenew: false,
     );
   }
 
@@ -44,6 +49,7 @@ class DeviceLimitsState {
     List<DeviceLimitsModel>? allDeviceLimits,
     String? errorMessage,
     DateTime? lastFetchedAt,
+    bool? isTogglingAutoRenew,
     bool clearError = false,
   }) {
     return DeviceLimitsState(
@@ -51,6 +57,7 @@ class DeviceLimitsState {
       allDeviceLimits: allDeviceLimits ?? this.allDeviceLimits,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
+      isTogglingAutoRenew: isTogglingAutoRenew ?? this.isTogglingAutoRenew,
     );
   }
 
@@ -126,6 +133,9 @@ class DeviceLimitsState {
     return null;
   }
 
+  /// Auto-renew status from first device
+  bool get autoRenew => deviceLimits?.autoRenew ?? false;
+
   @override
   String toString() {
     return 'DeviceLimitsState(status: $status, '
@@ -141,6 +151,7 @@ class DeviceLimitsState {
     if (other.status != status) return false;
     if (other.errorMessage != errorMessage) return false;
     if (other.lastFetchedAt != lastFetchedAt) return false;
+    if (other.isTogglingAutoRenew != isTogglingAutoRenew) return false;
     if (other.allDeviceLimits.length != allDeviceLimits.length) return false;
     for (int i = 0; i < allDeviceLimits.length; i++) {
       if (other.allDeviceLimits[i] != allDeviceLimits[i]) return false;
@@ -150,6 +161,12 @@ class DeviceLimitsState {
 
   @override
   int get hashCode {
-    return Object.hash(status, Object.hashAll(allDeviceLimits), errorMessage, lastFetchedAt);
+    return Object.hash(
+      status,
+      Object.hashAll(allDeviceLimits),
+      errorMessage,
+      lastFetchedAt,
+      isTogglingAutoRenew,
+    );
   }
 }

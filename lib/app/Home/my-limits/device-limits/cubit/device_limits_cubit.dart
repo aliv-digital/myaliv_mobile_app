@@ -145,6 +145,186 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
     }
   }
 
+  // ============ Auto-Renew Methods ============
+
+  /// Enable auto-renew from wallet balance
+  ///
+  /// [deviceAccountId] - The device account ID
+  /// Returns true if auto-renew was enabled successfully
+  Future<bool> enableAutoRenewWallet(int deviceAccountId) async {
+    if (state.isTogglingAutoRenew) return false;
+
+    emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
+
+    try {
+      final success = await _repository.enableAutoRenewWallet(deviceAccountId);
+
+      if (success) {
+        // Refresh device limits to get updated autoRenew status
+        await loadDeviceLimits(forceRefresh: true);
+        emit(state.copyWith(isTogglingAutoRenew: false));
+        return true;
+      } else {
+        emit(
+          state.copyWith(
+            isTogglingAutoRenew: false,
+            errorMessage: 'Failed to enable auto-renew',
+          ),
+        );
+        return false;
+      }
+    } on DeviceLimitsException catch (e) {
+      final friendlyMessage = _getFriendlyErrorMessage(e);
+      emit(
+        state.copyWith(
+          isTogglingAutoRenew: false,
+          errorMessage: friendlyMessage,
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Failed to enable auto-renew (wallet)');
+        debugPrint('   Error: $friendlyMessage');
+      }
+
+      return false;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isTogglingAutoRenew: false,
+          errorMessage: 'Failed to enable auto-renew',
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Unexpected error: $e');
+      }
+
+      return false;
+    }
+  }
+
+  /// Disable auto-renew
+  ///
+  /// [deviceAccountId] - The device account ID
+  /// Returns true if auto-renew was disabled successfully
+  Future<bool> disableAutoRenew(int deviceAccountId) async {
+    if (state.isTogglingAutoRenew) return false;
+
+    emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
+
+    try {
+      final success = await _repository.disableAutoRenew(deviceAccountId);
+
+      if (success) {
+        if (kDebugMode) {
+          debugPrint('✅ DeviceLimitsCubit: Auto-renew disabled');
+        }
+
+        // Refresh device limits to get updated autoRenew status
+        await loadDeviceLimits(forceRefresh: true);
+        emit(state.copyWith(isTogglingAutoRenew: false));
+        return true;
+      } else {
+        emit(
+          state.copyWith(
+            isTogglingAutoRenew: false,
+            errorMessage: 'Failed to disable auto-renew',
+          ),
+        );
+        return false;
+      }
+    } on DeviceLimitsException catch (e) {
+      final friendlyMessage = _getFriendlyErrorMessage(e);
+      emit(
+        state.copyWith(
+          isTogglingAutoRenew: false,
+          errorMessage: friendlyMessage,
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Failed to disable auto-renew');
+        debugPrint('   Error: $friendlyMessage');
+      }
+
+      return false;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isTogglingAutoRenew: false,
+          errorMessage: 'Failed to disable auto-renew',
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Unexpected error: $e');
+      }
+
+      return false;
+    }
+  }
+
+  /// Enable auto-renew from credit card
+  ///
+  /// Returns true if auto-renew was enabled successfully
+  Future<bool> enableAutoRenewCard() async {
+    if (state.isTogglingAutoRenew) return false;
+
+    emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
+
+    try {
+      final success = await _repository.enableAutoRenewCard();
+
+      if (success) {
+        if (kDebugMode) {
+          debugPrint('✅ DeviceLimitsCubit: Auto-renew enabled (card)');
+        }
+
+        // Refresh device limits to get updated autoRenew status
+        await loadDeviceLimits(forceRefresh: true);
+        emit(state.copyWith(isTogglingAutoRenew: false));
+        return true;
+      } else {
+        emit(
+          state.copyWith(
+            isTogglingAutoRenew: false,
+            errorMessage: 'Failed to enable auto-renew',
+          ),
+        );
+        return false;
+      }
+    } on DeviceLimitsException catch (e) {
+      final friendlyMessage = _getFriendlyErrorMessage(e);
+      emit(
+        state.copyWith(
+          isTogglingAutoRenew: false,
+          errorMessage: friendlyMessage,
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Failed to enable auto-renew (card)');
+        debugPrint('   Error: $friendlyMessage');
+      }
+
+      return false;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isTogglingAutoRenew: false,
+          errorMessage: 'Failed to enable auto-renew',
+        ),
+      );
+
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Unexpected error: $e');
+      }
+
+      return false;
+    }
+  }
+
   /// Reset to initial state
   void reset() {
     if (kDebugMode) {

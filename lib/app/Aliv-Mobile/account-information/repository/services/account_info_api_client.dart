@@ -12,7 +12,7 @@ import '../account_info_exception.dart';
 /// - Uses NetworkService which automatically handles Basic Auth from GlobalState
 class AccountInfoApiClient {
   AccountInfoApiClient({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -47,6 +47,45 @@ class AccountInfoApiClient {
       } else {
         return jsonEncode(response.data);
       }
+    } on NetworkException catch (e) {
+      throw _mapNetworkExceptionToAccountInfoException(e);
+    } catch (e) {
+      throw AccountInfoException(
+        type: AccountInfoErrorType.unknown,
+        statusCode: 0,
+        serverMessage: e.toString(),
+      );
+    }
+  }
+
+  /// Sets auto-pay invoice status for postpaid accounts.
+  ///
+  /// Returns true if the operation was successful.
+  /// Throws [AccountInfoException] on errors.
+  Future<bool> setAutoPayInvoice(bool enable) async {
+    if (kDebugMode) {
+      debugPrint('AccountInfoApiClient: Setting autoPayInvoice to $enable');
+    }
+
+    try {
+      final response = await _networkService.request<Map<String, dynamic>>(
+        Api.invoiceAutoPayment(enable),
+        method: HttpMethod.put,
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'AccountInfoApiClient: setAutoPayInvoice status=${response.statusCode}',
+        );
+      }
+
+      // Check for Success field in response
+      final data = response.data;
+      if (data != null && data['Success'] == true) {
+        return true;
+      }
+
+      return false;
     } on NetworkException catch (e) {
       throw _mapNetworkExceptionToAccountInfoException(e);
     } catch (e) {

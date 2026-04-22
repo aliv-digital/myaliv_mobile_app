@@ -36,4 +36,10 @@ class AccountInfoRepository implements BaseAccountInfoRepository {
 
     return accountInfo;
   }
+
+  @override
+  Future<bool> setAutoPayInvoice(bool enable) async {
+    debugPrint('AccountInfoRepository: Setting autoPayInvoice to $enable');
+    return _apiClient.setAutoPayInvoice(enable);
+  }
 }
