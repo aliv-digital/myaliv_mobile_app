@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../models/refer_friend_prepaid_models.dart';
 
-
 enum ReferFriendPrepaidSubmitStatus { idle, submitting, success, failure }
 
 class ReferFriendPrepaidState extends Equatable {
@@ -15,6 +14,8 @@ class ReferFriendPrepaidState extends Equatable {
 
   final ReferFriendPrepaidSubmitStatus shareStatus;
   final ReferFriendPrepaidSubmitStatus redeemStatus;
+  final String referralCode;
+  final int shareSuccessRequestId;
 
   final String? toastMessage;
   final String? errorMessage;
@@ -28,6 +29,8 @@ class ReferFriendPrepaidState extends Equatable {
     this.redeemCode = '',
     this.shareStatus = ReferFriendPrepaidSubmitStatus.idle,
     this.redeemStatus = ReferFriendPrepaidSubmitStatus.idle,
+    this.referralCode = '',
+    this.shareSuccessRequestId = 0,
     this.toastMessage,
     this.errorMessage,
     this.history = const [],
@@ -35,8 +38,8 @@ class ReferFriendPrepaidState extends Equatable {
 
   bool get canShare =>
       friendPhone.trim().isNotEmpty &&
-          friendEmail.trim().contains('@') &&
-          friendEmail.trim().contains('.');
+      friendEmail.trim().contains('@') &&
+      friendEmail.trim().contains('.');
 
   bool get canRedeem => redeemCode.trim().length >= 5;
 
@@ -47,6 +50,8 @@ class ReferFriendPrepaidState extends Equatable {
     String? redeemCode,
     ReferFriendPrepaidSubmitStatus? shareStatus,
     ReferFriendPrepaidSubmitStatus? redeemStatus,
+    String? referralCode,
+    int? shareSuccessRequestId,
     String? toastMessage,
     String? errorMessage,
     List<ReferralHistoryItem>? history,
@@ -58,6 +63,9 @@ class ReferFriendPrepaidState extends Equatable {
       redeemCode: redeemCode ?? this.redeemCode,
       shareStatus: shareStatus ?? this.shareStatus,
       redeemStatus: redeemStatus ?? this.redeemStatus,
+      referralCode: referralCode ?? this.referralCode,
+      shareSuccessRequestId:
+          shareSuccessRequestId ?? this.shareSuccessRequestId,
       toastMessage: toastMessage,
       errorMessage: errorMessage,
       history: history ?? this.history,
@@ -66,14 +74,16 @@ class ReferFriendPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-    selectedTab,
-    friendPhone,
-    friendEmail,
-    redeemCode,
-    shareStatus,
-    redeemStatus,
-    toastMessage,
-    errorMessage,
-    history,
-  ];
+        selectedTab,
+        friendPhone,
+        friendEmail,
+        redeemCode,
+        shareStatus,
+        redeemStatus,
+        referralCode,
+        shareSuccessRequestId,
+        toastMessage,
+        errorMessage,
+        history,
+      ];
 }

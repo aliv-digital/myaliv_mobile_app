@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../repository/privacy_repository.dart';
 import 'privacy_event.dart';
 import 'privacy_state.dart';
@@ -19,20 +20,43 @@ class PrivacyBloc extends Bloc<PrivacyEvent, PrivacyState> {
       PrivacyStarted event,
       Emitter<PrivacyState> emit,
       ) async {
-    emit(state.copyWith(status: PrivacyStatus.loading, errorMessage: null));
+    emit(
+      state.copyWith(
+        status: PrivacyStatus.loading,
+        errorMessage: null,
+      ),
+    );
+
     try {
-      final content = await _repository.fetchContent();
-      emit(state.copyWith(status: PrivacyStatus.ready, content: content));
+      final PrivacyContent content = await _repository.fetchContent();
+      emit(
+        state.copyWith(
+          status: PrivacyStatus.ready,
+          content: content,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(status: PrivacyStatus.failure, errorMessage: e.toString()));
+      emit(
+        state.copyWith(
+          status: PrivacyStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
-  void _onHomePressed(PrivacyHomePressed event, Emitter<PrivacyState> emit) {
+  void _onHomePressed(
+      PrivacyHomePressed event,
+      Emitter<PrivacyState> emit,
+      ) {
     emit(state.copyWith(navTarget: PrivacyNavTarget.home));
   }
 
-  void _onNavConsumed(PrivacyNavConsumed event, Emitter<PrivacyState> emit) {
+  void _onNavConsumed(
+      PrivacyNavConsumed event,
+      Emitter<PrivacyState> emit,
+      ) {
     emit(state.copyWith(navTarget: PrivacyNavTarget.none));
   }
 }

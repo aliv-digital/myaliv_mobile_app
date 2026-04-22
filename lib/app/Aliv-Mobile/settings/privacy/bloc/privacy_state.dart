@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import '../repository/privacy_repository.dart';
 
 enum PrivacyStatus { initial, loading, ready, failure }
@@ -40,5 +41,10 @@ class PrivacyState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, content, errorMessage, navTarget];
+  List<Object?> get props => [
+    status,
+    content,
+    errorMessage,
+    navTarget,
+  ];
 }

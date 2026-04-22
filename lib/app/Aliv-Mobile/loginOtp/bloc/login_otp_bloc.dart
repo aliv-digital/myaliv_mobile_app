@@ -265,6 +265,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       return;
     }
 
+    final userPhoneNumber = account.tNs;
     final email = account.email;
     final deviceAccountID = account.idAcc; // device account id
     final accountStatus = account.accountStatus;

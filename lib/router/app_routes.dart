@@ -27,7 +27,9 @@ class AppRoutes {
 
   static const guestPurchasePlanAddOns = '/guest-purchase-plan-add-ons';
   static const homePurchasePlanAddOns = '/purchase-plan-add-ons';
-  static const guestPurchasePlanConfirmation = '/guest-purchase-plan-confirmation';
+  static const purchaseAddOns = '/purchase-add-ons';
+  static const guestPurchasePlanConfirmation =
+      '/guest-purchase-plan-confirmation';
   static const guestPurchasePlanReceipt = '/guest-purchase-plan-receipt';
   static const homePlanPurchaseReceiptScreen =
       '/home-plan-purchase-receipt-screen';

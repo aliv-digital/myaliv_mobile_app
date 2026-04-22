@@ -22,7 +22,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_pl
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
-import 'package:myaliv_mobile_app/app/Support/support_screen.dart';
+import 'package:myaliv_mobile_app/app/Support/view/support_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/payment/postpaid/view/make_payment_postpaid_screen.dart';
@@ -67,6 +67,7 @@ import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/update_email.dart';
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/verify_email_page.dart';
 import '../app/Aliv-Mobile/userProfile/changePassword/prepaid/view/verify_password_page.dart';
+import '../app/Aliv-Mobile/userProfile/purchaseAddOns/view/purchase_add_ons_screen.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
@@ -83,8 +84,8 @@ import '../app/Notifications/notification_screen.dart';
 import '../app/Security/menu_screen.dart';
 import '../app/Security/secuirity_common_password_screen.dart';
 import '../app/Security/secuirity_common_verification_code_page.dart';
-import '../app/Support/chatbot_screen.dart';
-import '../app/Support/quick_help_screen.dart';
+import '../app/Support/view/chatbot_screen.dart';
+import '../app/Support/view/quick_help_screen.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/upgrade_credit_limit_screen.dart';
 import '../app/Usage/usage_screen.dart';
 import '../app/Aliv-Mobile/userProfile/myProfile/prepaid/view/my_profile_prepaid_screen.dart';
@@ -409,6 +410,10 @@ class AppRouter {
         builder: (context, state) => const PlanPurchasePlanAddOnsScreen(),
       ),
       GoRoute(
+        path: AppRoutes.purchaseAddOns,
+        builder: (context, state) => const PurchaseAddOnsScreen(),
+      ),
+      GoRoute(
         //
         path: AppRoutes.guestPayBillReceipt,
         builder: (context, state) {
@@ -617,9 +622,7 @@ class AppRouter {
 
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
-            child: VerificationCodePage(
-              nextRoute: nextRoute,
-            ),
+            child: VerificationCodePage(nextRoute: nextRoute),
           );
         },
       ),
@@ -703,9 +706,7 @@ class AppRouter {
 
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
-            child: InvitingSuccessScreen(
-              referralCode: referralCode,
-            ),
+            child: InvitingSuccessScreen(referralCode: referralCode),
           );
         },
       ),

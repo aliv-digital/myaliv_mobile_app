@@ -183,8 +183,9 @@ class _PurchasePrepaidView extends StatelessWidget {
       case PurchasePrepaidAction.addOns:
         // TODO: Handle this case.
         AppSession.appRoute = 'addOnsPrepaid';
-
-        context.push(AppRoutes.guestPurchasePlanAddOns);
+        // new route will be here,, purchase prepaid add ons
+        context.push(AppRoutes.purchaseAddOns);
+        //context.push(AppRoutes.guestPurchasePlanAddOns);
         break;
     }
     //   case PurchasePrepaidAction.topUpPrepaidNumber:
@@ -214,3 +215,7 @@ class _PurchasePrepaidView extends StatelessWidget {
     debugPrint('Navigate to: $action');
   }
 }
+
+// security => out browser opening
+// faq => in app html view
+// privacy => in app html view
