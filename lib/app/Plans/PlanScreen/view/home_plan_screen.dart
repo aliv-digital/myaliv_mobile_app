@@ -56,6 +56,19 @@ class _HomePlanViewState extends State<_HomePlanView> {
     context.read<PlansCubit>().started(userType: userType);
   }
 
+  // Primary tabs use API models, while the shared purchase sheet still expects
+  // the older UI model.
+  HomePlanModel _toPrimaryPurchaseSheetPlan(BasePlanModel plan) {
+    return HomePlanModel(
+      id: plan.planId,
+      title: plan.planName,
+      subtitle: _planDurationText(plan),
+      price: plan.planAmount + plan.vatAmount,
+      description: plan.planDescription,
+      benefits: const <HomePlanBenefit>[],
+    );
+  }
+
   HomePlanModel _toRoamingPurchaseSheetPlan(BasePlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
@@ -98,6 +111,36 @@ class _HomePlanViewState extends State<_HomePlanView> {
       description: plan.planDescription,
       benefits: const <HomePlanBenefit>[],
     );
+  }
+
+  String _planDurationText(BasePlanModel plan) {
+    final frequency = plan.frequency.trim().toUpperCase();
+
+    switch (frequency) {
+      case 'D':
+        return '1 day';
+      case '3':
+        return '3 days';
+      case '5':
+        return '5 days';
+      case 'W':
+        return '7 days';
+      case 'T':
+        return '10 days';
+      case 'B':
+      case 'H':
+        return '15 days';
+      case 'M':
+        return '30 days';
+      case 'S':
+        return '60 days';
+      case 'N':
+        return '90 days';
+      case 'A':
+        return '1 year';
+      default:
+        return '';
+    }
   }
 
   void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
@@ -231,9 +274,15 @@ class _HomePlanViewState extends State<_HomePlanView> {
       onToggleExpanded: (planId) {
         context.read<PlansCubit>().toggleExpanded(planId);
       },
-      onWeeklyPurchaseNow: (_) {},
-      onDailyPurchaseNow: (_) {},
-      onMonthlyPurchaseNow: (_) {},
+      onWeeklyPurchaseNow: (plan) {
+        _onPurchaseNowPressed(context, _toPrimaryPurchaseSheetPlan(plan));
+      },
+      onDailyPurchaseNow: (plan) {
+        _onPurchaseNowPressed(context, _toPrimaryPurchaseSheetPlan(plan));
+      },
+      onMonthlyPurchaseNow: (plan) {
+        _onPurchaseNowPressed(context, _toPrimaryPurchaseSheetPlan(plan));
+      },
       onMifiPurchaseNow: (plan) {
         _onPurchaseNowPressed(context, _toMifiPurchaseSheetPlan(plan));
       },
