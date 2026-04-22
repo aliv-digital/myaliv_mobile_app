@@ -161,6 +161,74 @@ class AccountInfoCubit extends HydratedCubit<AccountInfoState> {
     return state.isCacheStale(ttl: ttl);
   }
 
+  // ========== Auto-Pay Invoice (Postpaid) ==========
+
+  /// Enable auto-pay invoice for postpaid accounts.
+  ///
+  /// Returns true if successful, false otherwise.
+  /// Refreshes account info on success to update local state.
+  Future<bool> enableAutoPayInvoice() async {
+    if (kDebugMode) {
+      debugPrint('AccountInfoCubit: Enabling autoPayInvoice');
+    }
+
+    emit(state.copyWith(isTogglingAutoPayInvoice: true));
+
+    try {
+      final success = await _repository.setAutoPayInvoice(true);
+
+      if (success) {
+        // Refresh account info to get updated autoPayInvoice value
+        await fetchAccountInfo(forceRefresh: true);
+        if (kDebugMode) {
+          debugPrint('AccountInfoCubit: autoPayInvoice enabled successfully');
+        }
+      }
+
+      emit(state.copyWith(isTogglingAutoPayInvoice: false));
+      return success;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('AccountInfoCubit: Failed to enable autoPayInvoice - $e');
+      }
+      emit(state.copyWith(isTogglingAutoPayInvoice: false));
+      return false;
+    }
+  }
+
+  /// Disable auto-pay invoice for postpaid accounts.
+  ///
+  /// Returns true if successful, false otherwise.
+  /// Refreshes account info on success to update local state.
+  Future<bool> disableAutoPayInvoice() async {
+    if (kDebugMode) {
+      debugPrint('AccountInfoCubit: Disabling autoPayInvoice');
+    }
+
+    emit(state.copyWith(isTogglingAutoPayInvoice: true));
+
+    try {
+      final success = await _repository.setAutoPayInvoice(false);
+
+      if (success) {
+        // Refresh account info to get updated autoPayInvoice value
+        await fetchAccountInfo(forceRefresh: true);
+        if (kDebugMode) {
+          debugPrint('AccountInfoCubit: autoPayInvoice disabled successfully');
+        }
+      }
+
+      emit(state.copyWith(isTogglingAutoPayInvoice: false));
+      return success;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('AccountInfoCubit: Failed to disable autoPayInvoice - $e');
+      }
+      emit(state.copyWith(isTogglingAutoPayInvoice: false));
+      return false;
+    }
+  }
+
   /// Extract user-friendly error message from exception
   String _extractErrorMessage(Object error) {
     final raw = error.toString();

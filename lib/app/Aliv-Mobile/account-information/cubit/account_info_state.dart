@@ -28,12 +28,16 @@ class AccountInfoState extends Equatable {
     this.accountInfo,
     this.lastFetchedAt,
     this.errorMessage,
+    this.isTogglingAutoPayInvoice = false,
   });
 
   final AccountInfoStatus status;
   final AccountInfoModel? accountInfo;
   final DateTime? lastFetchedAt;
   final String? errorMessage;
+
+  /// Whether auto-pay invoice toggle operation is in progress
+  final bool isTogglingAutoPayInvoice;
 
   // ========== Computed Properties ==========
 
@@ -75,6 +79,9 @@ class AccountInfoState extends Equatable {
     return combined.isEmpty ? null : combined;
   }
 
+  /// Get auto-pay invoice status (for postpaid)
+  bool get autoPayInvoice => accountInfo?.autoPayInvoice ?? false;
+
   /// Check if cache is stale based on TTL (time-to-live)
   bool isCacheStale({Duration ttl = const Duration(hours: 24)}) {
     if (lastFetchedAt == null) return true;
@@ -90,12 +97,15 @@ class AccountInfoState extends Equatable {
     AccountInfoModel? accountInfo,
     DateTime? lastFetchedAt,
     String? errorMessage,
+    bool? isTogglingAutoPayInvoice,
   }) {
     return AccountInfoState(
       status: status ?? this.status,
       accountInfo: accountInfo ?? this.accountInfo,
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
       errorMessage: errorMessage,
+      isTogglingAutoPayInvoice:
+          isTogglingAutoPayInvoice ?? this.isTogglingAutoPayInvoice,
     );
   }
 
@@ -106,6 +116,7 @@ class AccountInfoState extends Equatable {
       accountInfo: null,
       lastFetchedAt: null,
       errorMessage: null,
+      isTogglingAutoPayInvoice: false,
     );
   }
 
@@ -118,6 +129,7 @@ class AccountInfoState extends Equatable {
       'accountInfo': accountInfo?.toJson(),
       'lastFetchedAt': lastFetchedAt?.toIso8601String(),
       'errorMessage': errorMessage,
+      // isTogglingAutoPayInvoice is transient, not persisted
     };
   }
 
@@ -138,5 +150,11 @@ class AccountInfoState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, accountInfo, lastFetchedAt, errorMessage];
+  List<Object?> get props => [
+        status,
+        accountInfo,
+        lastFetchedAt,
+        errorMessage,
+        isTogglingAutoPayInvoice,
+      ];
 }

@@ -2,8 +2,17 @@ import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
-/// Payment method for auto-renew
-enum AutoRenewPaymentMethodType { wallet, card }
+/// Payment method for auto-renew/auto-pay
+enum AutoRenewPaymentMethodType {
+  /// Prepaid: Auto-renew from wallet
+  wallet,
+
+  /// Prepaid: Auto-renew from credit card
+  card,
+
+  /// Postpaid: Auto-pay invoice
+  postpaidInvoice,
+}
 
 /// Extract name from email (substring before @)
 /// Same logic as used in drawer.dart
@@ -78,7 +87,8 @@ class AutoRenewAuthPrepaidRepositoryImpl
     required AutoRenewPaymentMethodType paymentMethod,
   }) async {
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final accountInfo = accountInfoCubit.state.accountInfo;
 
     if (accountInfo == null || accountInfo.idAcc <= 0) {
       return false;
@@ -90,6 +100,8 @@ class AutoRenewAuthPrepaidRepositoryImpl
         return deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
       case AutoRenewPaymentMethodType.card:
         return deviceLimitsCubit.enableAutoRenewCard();
+      case AutoRenewPaymentMethodType.postpaidInvoice:
+        return accountInfoCubit.enableAutoPayInvoice();
     }
   }
 }

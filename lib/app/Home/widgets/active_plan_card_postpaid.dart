@@ -6,9 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
@@ -215,16 +214,17 @@ class _TopRow extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        // Auto-renew toggle using DeviceLimitsCubit
-        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-          bloc: instance<DeviceLimitsCubit>(),
+        // Auto-pay invoice toggle using AccountInfoCubit (postpaid)
+        BlocBuilder<AccountInfoCubit, AccountInfoState>(
+          bloc: instance<AccountInfoCubit>(),
           buildWhen: (previous, current) =>
-              previous.autoRenew != current.autoRenew ||
-              previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
+              previous.autoPayInvoice != current.autoPayInvoice ||
+              previous.isTogglingAutoPayInvoice !=
+                  current.isTogglingAutoPayInvoice,
           builder: (context, state) {
-            return _AutoRenewToggle(
-              value: state.autoRenew,
-              isLoading: state.isTogglingAutoRenew,
+            return _AutoPayToggle(
+              value: state.autoPayInvoice,
+              isLoading: state.isTogglingAutoPayInvoice,
             );
           },
         ),
@@ -233,9 +233,9 @@ class _TopRow extends StatelessWidget {
   }
 }
 
-/// Auto-renew toggle (interactive) for postpaid
-class _AutoRenewToggle extends StatefulWidget {
-  const _AutoRenewToggle({
+/// Auto-pay invoice toggle (interactive) for postpaid
+class _AutoPayToggle extends StatefulWidget {
+  const _AutoPayToggle({
     required this.value,
     this.isLoading = false,
   });
@@ -244,10 +244,10 @@ class _AutoRenewToggle extends StatefulWidget {
   final bool isLoading;
 
   @override
-  State<_AutoRenewToggle> createState() => _AutoRenewToggleState();
+  State<_AutoPayToggle> createState() => _AutoPayToggleState();
 }
 
-class _AutoRenewToggleState extends State<_AutoRenewToggle> {
+class _AutoPayToggleState extends State<_AutoPayToggle> {
   late bool isOn;
 
   @override
@@ -257,7 +257,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
   }
 
   @override
-  void didUpdateWidget(covariant _AutoRenewToggle oldWidget) {
+  void didUpdateWidget(covariant _AutoPayToggle oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value != oldWidget.value) {
       isOn = widget.value;
@@ -271,7 +271,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
     final newValue = !isOn;
 
     if (newValue) {
-      // Toggle OFF → ON: Show bottom sheet to select payment method
+      // Toggle OFF → ON: Show bottom sheet to go to auth screen
       setState(() => isOn = true);
       showModalBottomSheet(
         context: context,
@@ -279,7 +279,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
         isDismissible: true,
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black.withValues(alpha: 0.5),
-        builder: (_) => const AutoRenewBottomSheet(),
+        builder: (_) => const AutoPayBottomSheet(),
       ).then((_) {
         // Revert if bottom sheet dismissed without enabling
         if (mounted) {
@@ -290,22 +290,15 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
       // Toggle ON → OFF: Call disable API directly
       setState(() => isOn = false);
 
-      final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-      if (accountInfo == null || accountInfo.idAcc <= 0) {
-        Fluttertoast.showToast(msg: 'Account info not available');
-        setState(() => isOn = true); // Revert
-        return;
-      }
-
-      final success = await instance<DeviceLimitsCubit>()
-          .disableAutoRenew(accountInfo.idAcc);
+      final success =
+          await instance<AccountInfoCubit>().disableAutoPayInvoice();
 
       if (!success && mounted) {
         // Revert on failure
         setState(() => isOn = true);
-        Fluttertoast.showToast(msg: 'Failed to disable auto-renew');
+        Fluttertoast.showToast(msg: 'Failed to disable auto-pay');
       } else if (success) {
-        Fluttertoast.showToast(msg: 'Auto-renew disabled');
+        Fluttertoast.showToast(msg: 'Auto-pay disabled');
       }
     }
   }
@@ -381,7 +374,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
             ),
             const SizedBox(width: 8),
             const Text(
-              'auto renew',
+              'auto pay',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12,

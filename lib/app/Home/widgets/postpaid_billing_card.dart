@@ -1,22 +1,72 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/enable_auto_payment_sheet.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
 
-class PostpaidBillingCard extends StatefulWidget {
+class PostpaidBillingCard extends StatelessWidget {
   const PostpaidBillingCard({super.key});
-
-  @override
-  State<PostpaidBillingCard> createState() => _PostpaidBillingCardState();
-}
-
-class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
-  bool autoPayEnabled = true;
 
   static const Color purple = Color(0xFF645D9C);
   static const Color border = Color(0xFFE6E6EE);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AccountInfoCubit, AccountInfoState>(
+      bloc: instance<AccountInfoCubit>(),
+      buildWhen: (previous, current) =>
+          previous.autoPayInvoice != current.autoPayInvoice ||
+          previous.isTogglingAutoPayInvoice != current.isTogglingAutoPayInvoice,
+      builder: (context, state) {
+        return _PostpaidBillingCardContent(
+          autoPayEnabled: state.autoPayInvoice,
+          isLoading: state.isTogglingAutoPayInvoice,
+        );
+      },
+    );
+  }
+}
+
+class _PostpaidBillingCardContent extends StatefulWidget {
+  const _PostpaidBillingCardContent({
+    required this.autoPayEnabled,
+    required this.isLoading,
+  });
+
+  final bool autoPayEnabled;
+  final bool isLoading;
+
+  @override
+  State<_PostpaidBillingCardContent> createState() =>
+      _PostpaidBillingCardContentState();
+}
+
+class _PostpaidBillingCardContentState
+    extends State<_PostpaidBillingCardContent> {
+  late bool _localValue;
+
+  static const Color purple = Color(0xFF645D9C);
+  static const Color border = Color(0xFFE6E6EE);
+
+  @override
+  void initState() {
+    super.initState();
+    _localValue = widget.autoPayEnabled;
+  }
+
+  @override
+  void didUpdateWidget(covariant _PostpaidBillingCardContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.autoPayEnabled != oldWidget.autoPayEnabled) {
+      _localValue = widget.autoPayEnabled;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +96,13 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
                   ),
                 ),
                 const Spacer(),
-                _FigmaToggle(value: autoPayEnabled, onChanged: onChanged),
+                Opacity(
+                  opacity: widget.isLoading ? 0.6 : 1.0,
+                  child: _FigmaToggle(
+                    value: _localValue,
+                    onChanged: widget.isLoading ? null : _onChanged,
+                  ),
+                ),
               ],
             ),
 
@@ -95,66 +151,87 @@ class _PostpaidBillingCardState extends State<PostpaidBillingCard> {
               ],
             ),
 
-            const SizedBox(height: 12),
-
-            // ================= PAY NOW BUTTON =================
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  context.push(AppRoutes.makePaymentConfirmationPostpaidScreen);
-                },
-                icon: SvgPicture.asset(
-                  'assets/icons/card-add.svg',
-                  height: 18,
-                  width: 18,
-                ),
-                label: const Text(
-                  'pay now',
-                  style: TextStyle(
-                    color: Color(0xFFF1F1F8),
-                    fontSize: 15,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
+            // ================= PAY NOW BUTTON (hidden when auto-pay is ON) =================
+            if (!_localValue) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push(
+                      AppRoutes.makePaymentConfirmationPostpaidScreen,
+                    );
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/icons/card-add.svg',
+                    height: 18,
+                    width: 18,
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: purple,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
+                  label: const Text(
+                    'pay now',
+                    style: TextStyle(
+                      color: Color(0xFFF1F1F8),
+                      fontSize: 15,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: purple,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  void onChanged(bool value) {
-    if (value == true) {
+  Future<void> _onChanged(bool value) async {
+    if (value) {
+      // Toggle OFF → ON: Show bottom sheet to navigate to auth screen
+      setState(() => _localValue = true);
       showModalBottomSheet(
         context: context,
         useRootNavigator: true,
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
         builder: (_) => const EnableAutoPaymentSheet(),
-      ).then((late) {
-        setState(() => autoPayEnabled = value);
+      ).then((_) {
+        // Revert if bottom sheet dismissed without enabling
+        if (mounted) {
+          setState(() => _localValue = widget.autoPayEnabled);
+        }
       });
+    } else {
+      // Toggle ON → OFF: Call disable API directly
+      setState(() => _localValue = false);
+
+      final success = await instance<AccountInfoCubit>()
+          .disableAutoPayInvoice();
+
+      if (!success && mounted) {
+        // Revert on failure
+        setState(() => _localValue = true);
+        Fluttertoast.showToast(msg: 'Failed to disable auto-pay');
+      } else if (success) {
+        Fluttertoast.showToast(msg: 'Auto-pay disabled');
+      }
     }
-    setState(() => autoPayEnabled = value);
   }
 }
 
 class _FigmaToggle extends StatelessWidget {
   final bool value;
-  final ValueChanged<bool> onChanged;
+  final void Function(bool)? onChanged;
 
-  const _FigmaToggle({super.key, required this.value, required this.onChanged});
+  const _FigmaToggle({required this.value, required this.onChanged});
 
   static const double _width = 55;
   static const double _height = 28;
@@ -163,7 +240,7 @@ class _FigmaToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => onChanged(!value),
+      onTap: onChanged != null ? () => onChanged!(!value) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: _width,

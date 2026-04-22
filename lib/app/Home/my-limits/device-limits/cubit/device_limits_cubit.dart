@@ -160,7 +160,6 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
       final success = await _repository.enableAutoRenewWallet(deviceAccountId);
 
       if (success) {
-
         // Refresh device limits to get updated autoRenew status
         await loadDeviceLimits(forceRefresh: true);
         emit(state.copyWith(isTogglingAutoRenew: false));

@@ -1,10 +1,13 @@
 # Core Package
 
-A reusable Flutter package containing shared networking, utilities, and services for the HRMS application and beyond.
+A reusable Flutter package containing shared networking, utilities, and services for the HRMS
+application and beyond.
 
 ## Overview
 
-The `core` package provides a generic, production-ready networking layer and utilities that can be used across multiple Flutter projects. It's designed to be framework-agnostic with app-specific integration through callbacks.
+The `core` package provides a generic, production-ready networking layer and utilities that can be
+used across multiple Flutter projects. It's designed to be framework-agnostic with app-specific
+integration through callbacks.
 
 ## Features
 
@@ -13,7 +16,8 @@ The `core` package provides a generic, production-ready networking layer and uti
 A comprehensive HTTP client wrapper built on Dio with:
 
 - ✅ **Uses `debugPrint()` throughout** - No `print()` statements
-- ✅ **Custom exception types** - `SessionExpiredException`, `NoInternetException`, `TimeoutException`, `ServerException`
+- ✅ **Custom exception types** - `SessionExpiredException`, `NoInternetException`,
+  `TimeoutException`, `ServerException`
 - ✅ **Request cancellation** - Cancel individual or all requests
 - ✅ **Progress tracking** - Upload/download progress callbacks
 - ✅ **Type-safe requests** - Generic response types
@@ -41,7 +45,8 @@ flutter pub get
 
 ### 1. Initialize NetworkService
 
-Create an app-specific initialization file that bridges the core package with your app's dependencies:
+Create an app-specific initialization file that bridges the core package with your app's
+dependencies:
 
 ```dart
 // lib/core/network/network_init.dart
@@ -97,22 +102,23 @@ Future<void> fetchUsers() async {
 }
 
 // Upload file with progress
-await uploadFile(
-  '/upload',
-  data: {'title': 'My File'},
-  files: [MapEntry('file', multipartFile)],
-  onProgress: (sent, total) {
-    print('Progress: ${(sent/total*100).toFixed(0)}%');
-  },
+await uploadFile
+('/upload
+'
+,data: {'title': 'My File'},
+files: [MapEntry('file', multipartFile)],
+onProgress: (sent, total) {
+print('Progress: ${(sent/total*100).toFixed(0)}%');
+},
 );
 
 // Download file with progress
 await downloadFile(
-  '/files/document.pdf',
-  savePath,
-  onProgress: (received, total) {
-    print('Download: ${(received/total*100).toFixed(0)}%');
-  },
+'/files/document.pdf',
+savePath,
+onProgress: (received, total) {
+print('Download: ${(received/total*100).toFixed(0)}%');
+},
 );
 ```
 
@@ -131,10 +137,14 @@ The core package is designed to be generic and reusable:
 Your app provides the specific implementation through callbacks:
 
 ```dart
-NetworkCallbacks(
-  getAuthToken: () => YourAuthService.getToken(),
-  onSessionExpired: () => YourAuthService.logout(),
-  onSessionCookie: (id) => YourStorage.saveSession(id),
+NetworkCallbacks
+(
+getAuthToken: () => YourAuthService.getToken(),
+onSessionExpired: () => YourAuthService.logout(),
+onSessionCookie: (id) => YourStorage.saveSession(
+id
+)
+,
 )
 ```
 
@@ -144,15 +154,17 @@ NetworkCallbacks(
 
 ```dart
 // Initialize
-await NetworkService.instance.init(
-  config: NetworkConfig(...),
-  callbacks: NetworkCallbacks(...),
+await
+NetworkService.instance.init
+(
+config: NetworkConfig(...),
+callbacks: NetworkCallbacks(...),
 );
 
 // Make requests
 final response = await NetworkService.instance.request(
-  '/path',
-  method: HttpMethod.get,
+'/path',
+method: HttpMethod.get,
 );
 
 // Cancel requests
@@ -163,14 +175,23 @@ NetworkService.instance.cancelAllRequests();
 final hasSession = await NetworkService.instance.hasValidSession(url);
 
 // Clear cookies
-await NetworkService.instance.clearCookies();
+await NetworkService
+.
+instance
+.
+clearCookies
+(
+);
 ```
 
 ### Helper Functions
 
 ```dart
 // GET request
-await get('/users', queryParameters: {'page': 1});
+await get
+('/users
+'
+, queryParameters: {'page': 1});
 
 // POST request
 await post('/login', data: {'email': 'test@example.com'});
@@ -188,28 +209,32 @@ await patch('/users/123', data: {'status': 'active'});
 await uploadFile('/upload', data: {...}, files: [...]);
 
 // Download file
-await downloadFile(url, savePath);
+await downloadFile(
+url
+,
+savePath
+);
 ```
 
 ### Exception Types
 
 ```dart
 try {
-  await get('/data');
+await get('/data');
 } on SessionExpiredException {
-  // Session expired - auto-logout triggered
+// Session expired - auto-logout triggered
 } on NoInternetException {
-  // No internet connection
+// No internet connection
 } on TimeoutException {
-  // Request timeout
+// Request timeout
 } on ServerException catch (e) {
-  // Server error (500+)
-  print('Status: ${e.statusCode}');
+// Server error (500+)
+print('Status: ${e.statusCode}');
 } on NetworkException catch (e) {
-  // Generic network error
-  print('Message: ${e.message}');
-  print('Status: ${e.statusCode}');
-  print('Data: ${e.data}');
+// Generic network error
+print('Message: ${e.message}');
+print('Status: ${e.statusCode}');
+print('Data: ${e.data}');
 }
 ```
 
@@ -218,41 +243,45 @@ try {
 ### NetworkConfig
 
 ```dart
-NetworkConfig(
-  baseUrl: 'https://api.example.com',
-  connectTimeout: Duration(seconds: 30),
-  receiveTimeout: Duration(seconds: 30),
-  headers: {'Custom-Header': 'value'},
-  enableLogging: kDebugMode,
-  maxRetries: 3,
-  ignoreCookieExpires: false,
+NetworkConfig
+(
+baseUrl: 'https://api.example.com',
+connectTimeout: Duration(seconds: 30),
+receiveTimeout: Duration(seconds: 30),
+headers: {'Custom-Header': 'value'},
+enableLogging: kDebugMode,
+maxRetries: 3,
+ignoreCookieExpires:
+false
+,
 )
 ```
 
 ### NetworkCallbacks
 
 ```dart
-NetworkCallbacks(
-  getAuthToken: () async {
-    // Return token from storage
-    return await storage.getToken();
-  },
+NetworkCallbacks
+(
+getAuthToken: () async {
+// Return token from storage
+return await storage.getToken();
+},
 
-  onSessionExpired: () async {
-    // Handle logout, navigation, etc.
-    await storage.clear();
-    navigator.pushToLogin();
-  },
+onSessionExpired: () async {
+// Handle logout, navigation, etc.
+await storage.clear();
+navigator.pushToLogin();
+},
 
-  onSessionCookie: (sessionId) async {
-    // Save session ID
-    await storage.saveSession(sessionId);
-  },
+onSessionCookie: (sessionId) async {
+// Save session ID
+await storage.saveSession(sessionId);
+},
 
-  isSessionExpired: (errorData) {
-    // Custom session expiration check
-    return errorData['code'] == 'SESSION_EXPIRED';
-  },
+isSessionExpired: (errorData) {
+// Custom session expiration check
+return errorData['code'] == 'SESSION_EXPIRED';
+},
 )
 ```
 
