@@ -14,6 +14,8 @@ import 'roameasy_plan_card.dart';
 import 'roaming_plan_card.dart';
 import 'weekly_plan_card.dart';
 
+typedef IndexedBasePlanCallback = void Function(BasePlanModel plan, int index);
+
 class HomePlanPlansList extends StatelessWidget {
   const HomePlanPlansList({
     super.key,
@@ -33,13 +35,13 @@ class HomePlanPlansList extends StatelessWidget {
   final PlansState state;
   final ValueChanged<String> onToggleExpanded;
   final ValueChanged<HomePlanModel> onPurchaseNow;
-  final ValueChanged<BasePlanModel>? onDailyPurchaseNow;
+  final IndexedBasePlanCallback? onDailyPurchaseNow;
   final ValueChanged<BasePlanModel>? onLibertyGlobalPurchaseNow;
   final ValueChanged<BasePlanModel>? onMifiPurchaseNow;
-  final ValueChanged<BasePlanModel>? onMonthlyPurchaseNow;
+  final IndexedBasePlanCallback? onMonthlyPurchaseNow;
   final ValueChanged<BasePlanModel>? onRoamingPurchaseNow;
   final ValueChanged<BasePlanModel>? onRoamEasyPurchaseNow;
-  final ValueChanged<BasePlanModel>? onWeeklyPurchaseNow;
+  final IndexedBasePlanCallback? onWeeklyPurchaseNow;
   final ValueChanged<HomePlansPostPaidPlanModel>? onPostpaidRoamingPurchaseNow;
 
   @override
@@ -59,6 +61,7 @@ class HomePlanPlansList extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _buildCardForDailyTab(
               plan: plan,
+              index: index,
               expanded: expanded,
             ),
           );
@@ -81,6 +84,7 @@ class HomePlanPlansList extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _buildCardForWeeklyTab(
               plan: plan,
+              index: index,
               expanded: expanded,
             ),
           );
@@ -103,6 +107,7 @@ class HomePlanPlansList extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15, right: 15),
             child: _buildCardForMonthlyTab(
               plan: plan,
+              index: index,
               expanded: expanded,
             ),
           );
@@ -120,10 +125,7 @@ class HomePlanPlansList extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
-            child: _buildCardForRoamingTab(
-              plan: plan,
-              expanded: expanded,
-            ),
+            child: _buildCardForRoamingTab(plan: plan, expanded: expanded),
           );
         },
       );
@@ -139,10 +141,7 @@ class HomePlanPlansList extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
-            child: _buildCardForRoamEasyTab(
-              plan: plan,
-              expanded: expanded,
-            ),
+            child: _buildCardForRoamEasyTab(plan: plan, expanded: expanded),
           );
         },
       );
@@ -158,10 +157,7 @@ class HomePlanPlansList extends StatelessWidget {
 
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15),
-            child: _buildCardForMifiTab(
-              plan: plan,
-              expanded: expanded,
-            ),
+            child: _buildCardForMifiTab(plan: plan, expanded: expanded),
           );
         },
       );
@@ -172,8 +168,7 @@ class HomePlanPlansList extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6, bottom: 14),
         itemCount: state.libertyGlobalApiPlans.length,
         itemBuilder: (context, index) {
-          final BasePlanModel plan =
-              state.libertyGlobalApiPlans[index];
+          final BasePlanModel plan = state.libertyGlobalApiPlans[index];
           final bool expanded = state.expandedPlanIds.contains(plan.planId);
 
           return Padding(
@@ -221,6 +216,7 @@ class HomePlanPlansList extends StatelessWidget {
 
   Widget _buildCardForDailyTab({
     required BasePlanModel plan,
+    required int index,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -232,7 +228,7 @@ class HomePlanPlansList extends StatelessWidget {
       onViewDetails: toggle,
       onPurchaseNow: () {
         if (onDailyPurchaseNow != null) {
-          onDailyPurchaseNow!(plan);
+          onDailyPurchaseNow!(plan, index);
         }
       },
     );
@@ -240,6 +236,7 @@ class HomePlanPlansList extends StatelessWidget {
 
   Widget _buildCardForWeeklyTab({
     required BasePlanModel plan,
+    required int index,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -251,7 +248,7 @@ class HomePlanPlansList extends StatelessWidget {
       onViewDetails: toggle,
       onPurchaseNow: () {
         if (onWeeklyPurchaseNow != null) {
-          onWeeklyPurchaseNow!(plan);
+          onWeeklyPurchaseNow!(plan, index);
         }
       },
     );
@@ -259,6 +256,7 @@ class HomePlanPlansList extends StatelessWidget {
 
   Widget _buildCardForMonthlyTab({
     required BasePlanModel plan,
+    required int index,
     required bool expanded,
   }) {
     void toggle() => onToggleExpanded(plan.planId);
@@ -270,7 +268,7 @@ class HomePlanPlansList extends StatelessWidget {
       onViewDetails: toggle,
       onPurchaseNow: () {
         if (onMonthlyPurchaseNow != null) {
-          onMonthlyPurchaseNow!(plan);
+          onMonthlyPurchaseNow!(plan, index);
         }
       },
     );

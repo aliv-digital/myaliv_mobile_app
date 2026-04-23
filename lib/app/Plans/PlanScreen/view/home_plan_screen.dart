@@ -143,7 +143,12 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
   }
 
-  void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
+  void _onPurchaseNowPressed(
+    BuildContext context,
+    HomePlanModel plan, {
+    BasePlanModel? selectedApiPlan,
+    int? selectedIndex,
+  }) {
     final cubit = context.read<PlansCubit>();
 
     // Prevent opening multiple purchase modals simultaneously
@@ -151,15 +156,46 @@ class _HomePlanViewState extends State<_HomePlanView> {
       return;
     }
 
+    _logSelectedApiPlan(
+      selectedTab: cubit.state.selectedTab,
+      selectedApiPlan: selectedApiPlan,
+      selectedIndex: selectedIndex,
+    );
+
     cubit.purchaseNowPressed(plan);
     showHomePlanPurchaseBottomSheet(
       context: context,
       plan: plan,
       selectedTab: cubit.state.selectedTab,
+      selectedApiPlan: selectedApiPlan,
+      selectedIndex: selectedIndex,
     ).then((_) {
       // Clear the modal open flag when bottom sheet is dismissed
       cubit.purchaseModalClosed();
     });
+  }
+
+  void _logSelectedApiPlan({
+    required HomePlanTab selectedTab,
+    required BasePlanModel? selectedApiPlan,
+    required int? selectedIndex,
+  }) {
+    if (selectedApiPlan == null || selectedIndex == null) {
+      return;
+    }
+
+    debugPrint('Selected ${selectedTab.name} plan index: $selectedIndex');
+    debugPrint(
+      'Selected ${selectedTab.name} plan object: '
+      '${selectedApiPlan.toDebugMap()}',
+    );
+
+    if (selectedApiPlan.availableBoltOns.isNotEmpty) {
+      debugPrint(
+        'First available bolt-on: '
+        '${selectedApiPlan.availableBoltOns.first.planName}',
+      );
+    }
   }
 
   void _showPostpaidStartBottomSheet(BuildContext context) {
@@ -274,14 +310,29 @@ class _HomePlanViewState extends State<_HomePlanView> {
       onToggleExpanded: (planId) {
         context.read<PlansCubit>().toggleExpanded(planId);
       },
-      onWeeklyPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toPrimaryPurchaseSheetPlan(plan));
+      onWeeklyPurchaseNow: (plan, index) {
+        _onPurchaseNowPressed(
+          context,
+          _toPrimaryPurchaseSheetPlan(plan),
+          selectedApiPlan: plan,
+          selectedIndex: index,
+        );
       },
-      onDailyPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toPrimaryPurchaseSheetPlan(plan));
+      onDailyPurchaseNow: (plan, index) {
+        _onPurchaseNowPressed(
+          context,
+          _toPrimaryPurchaseSheetPlan(plan),
+          selectedApiPlan: plan,
+          selectedIndex: index,
+        );
       },
-      onMonthlyPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toPrimaryPurchaseSheetPlan(plan));
+      onMonthlyPurchaseNow: (plan, index) {
+        _onPurchaseNowPressed(
+          context,
+          _toPrimaryPurchaseSheetPlan(plan),
+          selectedApiPlan: plan,
+          selectedIndex: index,
+        );
       },
       onMifiPurchaseNow: (plan) {
         _onPurchaseNowPressed(context, _toMifiPurchaseSheetPlan(plan));
@@ -299,7 +350,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _showPostpaidStartBottomSheet(context);
       },
       onPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, plan);
+        //_onPurchaseNowPressed(context, plan);
       },
     );
   }
