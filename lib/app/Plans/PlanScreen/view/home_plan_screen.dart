@@ -146,6 +146,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
   void _onPurchaseNowPressed(
     BuildContext context,
     HomePlanModel plan, {
+    required HomeUiConfig homeUiConfig,
     BasePlanModel? selectedApiPlan,
     int? selectedIndex,
   }) {
@@ -167,6 +168,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
       context: context,
       plan: plan,
       selectedTab: cubit.state.selectedTab,
+      homeUiConfig: homeUiConfig,
       selectedApiPlan: selectedApiPlan,
       selectedIndex: selectedIndex,
     ).then((_) {
@@ -252,6 +254,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     PlansState currentState,
     PlansStatus currentTabStatus,
     String? currentTabError,
+    HomeUiConfig homeUiConfig,
   ) {
     // Loading state - show shimmer
     if (currentTabStatus == PlansStatus.loading ||
@@ -314,6 +317,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toPrimaryPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
           selectedIndex: index,
         );
@@ -322,6 +326,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toPrimaryPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
           selectedIndex: index,
         );
@@ -330,21 +335,38 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toPrimaryPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
           selectedIndex: index,
         );
       },
       onMifiPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toMifiPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toMifiPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onLibertyGlobalPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toLibertyGlobalPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toLibertyGlobalPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onRoamingPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toRoamingPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toRoamingPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onRoamEasyPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toRoamEasyPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toRoamEasyPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel _) {
         _showPostpaidStartBottomSheet(context);
@@ -380,9 +402,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
 
   @override
   Widget build(BuildContext context) {
-    final config = context.watch<AppUiConfigCubit>().state;
-    final tabs = _tabsForUserType(config.userType);
-    final isPostpaid = config.userType == UserType.postpaid;
+    final HomeUiConfig homeUiConfig = context.watch<AppUiConfigCubit>().state;
+    debugPrint("active plan : ${homeUiConfig.hasActivePlan}");
+
+    final tabs = _tabsForUserType(homeUiConfig.userType);
+    final isPostpaid = homeUiConfig.userType == UserType.postpaid;
     final appBarTitle = isPostpaid ? 'roaming data add-ons' : 'plans';
 
     return BlocListener<PlansCubit, PlansState>(
@@ -471,6 +495,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
                             currentState,
                             currentTabStatus,
                             currentTabError,
+                            homeUiConfig,
                           ),
                         );
                       },
