@@ -37,6 +37,9 @@ dependencies:
   core:
     path: packages/core
   flutter_html: ^3.0.0
+  open_filex: ^4.5.0
+  share_plus: ^10.0.0
+  permission_handler: ^11.3.1
 
 
 dev_dependencies:

@@ -1,13 +1,12 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../../../resources/widgets/default_app_bar.dart';
-import '../bloc/review_invoice_postpaid_bloc.dart';
-import '../bloc/review_invoice_postpaid_event.dart';
-import '../bloc/review_invoice_postpaid_state.dart';
-import '../repository/review_invoice_postpaid_repository.dart';
-import '../theme/review_invoice_postpaid_theme.dart';
-import '../widgets/invoice_tile.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/cubit/review_invoice_postpaid_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/cubit/review_invoice_postpaid_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/theme/review_invoice_postpaid_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/widgets/invoice_tile.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/widgets/invoice_tile_skeleton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 
 class ReviewInvoicePostpaidScreen extends StatelessWidget {
   const ReviewInvoicePostpaidScreen({super.key});
@@ -15,9 +14,7 @@ class ReviewInvoicePostpaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ReviewInvoicePostpaidBloc(
-        repository: ReviewInvoicePostpaidRepositoryImpl(),
-      )..add(const ReviewInvoicePostpaidStarted()),
+      create: (_) => instance<ReviewInvoicePostpaidCubit>()..loadInvoices(),
       child: const _ReviewInvoicePostpaidView(),
     );
   }
@@ -26,73 +23,122 @@ class ReviewInvoicePostpaidScreen extends StatelessWidget {
 class _ReviewInvoicePostpaidView extends StatelessWidget {
   const _ReviewInvoicePostpaidView();
 
+  Widget _buildContent(BuildContext context, ReviewInvoicePostpaidState state) {
+    // Loading state - show skeleton
+    if (state.status == ReviewInvoiceStatus.loading) {
+      return const SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: InvoiceTileSkeletonList(),
+      );
+    }
+
+    // Error state
+    if (state.status == ReviewInvoiceStatus.failure) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                state.errorMessage ?? 'Something went wrong',
+                style: ReviewInvoicePostpaidTheme.metaValue(context),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () =>
+                    context.read<ReviewInvoicePostpaidCubit>().loadInvoices(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Empty state
+    if (state.invoices.isEmpty) {
+      return Center(
+        child: Text(
+          'No invoices found',
+          style: ReviewInvoicePostpaidTheme.metaValue(context),
+        ),
+      );
+    }
+
+    // Success state - show invoice list
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 20, 20),
+          sliver: SliverList.separated(
+            itemCount: state.invoices.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final invoice = state.invoices[index];
+              final isDownloading =
+                  state.isDownloadingInvoice(invoice.invoiceId);
+
+              return InvoiceTile(
+                invoice: invoice,
+                isDownloading: isDownloading,
+                onTap: () => context
+                    .read<ReviewInvoicePostpaidCubit>()
+                    .downloadAndOpenPdf(invoice),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ReviewInvoicePostpaidTheme.pageBg,
       body: SafeArea(
         bottom: false,
-        child:
-            BlocConsumer<ReviewInvoicePostpaidBloc, ReviewInvoicePostpaidState>(
-              listenWhen: (prev, curr) =>
-                  prev.lastPressed != curr.lastPressed &&
-                  curr.lastPressed != null,
-              listener: (context, state) {
-                // Future hook: tapped invoice -> state.lastPressed
-              },
-              builder: (context, state) {
-                if (state.status == ReviewInvoicePostpaidStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state.status == ReviewInvoicePostpaidStatus.failure) {
-                  return Center(
-                    child: Text(
-                      state.errorMessage ?? 'Something went wrong',
-                      style: ReviewInvoicePostpaidTheme.metaValue(context),
-                    ),
-                  );
-                }
-
-                return Column(
-                  children: [
-                    // ✅ Fixed / sticky top appbar
-                    DefaultAppBar(
-                      title: 'review invoices',
-                      backgroundColor: ReviewInvoicePostpaidTheme.appBarColor,
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ✅ Only this part scrolls
-                    Expanded(
-                      child: CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: [
-                          SliverPadding(
-                            padding: const EdgeInsets.fromLTRB(24, 0, 20, 20),
-                            sliver: SliverList.separated(
-                              itemCount: state.invoices.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final invoice = state.invoices[index];
-                                return InvoiceTile(
-                                  invoice: invoice,
-                                  onTap: () => context
-                                      .read<ReviewInvoicePostpaidBloc>()
-                                      .add(PostpaidInvoicePressed(invoice)),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+        child: BlocConsumer<ReviewInvoicePostpaidCubit,
+            ReviewInvoicePostpaidState>(
+          listenWhen: (prev, curr) =>
+              prev.downloadError != curr.downloadError &&
+              curr.downloadError != null,
+          listener: (context, state) {
+            // Show error snackbar when download fails
+            if (state.downloadError != null) {
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(state.downloadError!),
+                    behavior: SnackBarBehavior.floating,
+                  ),
                 );
-              },
-            ),
+              context.read<ReviewInvoicePostpaidCubit>().clearDownloadError();
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                // Fixed / sticky top appbar
+                DefaultAppBar(
+                  title: 'review invoices',
+                  backgroundColor: ReviewInvoicePostpaidTheme.appBarColor,
+                ),
+
+                const SizedBox(height: 14),
+
+                // Content area
+                Expanded(
+                  child: _buildContent(context, state),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

@@ -38,4 +38,12 @@ class Api {
   static const referAFriend = '$baseUrl/v1/MyAliv/Referral/refer';
 
   static const redeemReferral = '$baseUrl/v1/MyAliv/Referral/redeem';
+
+  // Invoice endpoints
+  static const invoices = '$baseUrl/v1/MyAliv/Account/invoices';
+
+  /// Invoice PDF download: GET /Account/invoice/{invoiceId}?filename={encodedFilePath}
+  /// Returns base64 encoded PDF string
+  static String invoicePdf(int invoiceId, String filename) =>
+      '$baseUrl/v1/MyAliv/Account/invoice/$invoiceId?filename=${Uri.encodeComponent(filename)}';
 }
