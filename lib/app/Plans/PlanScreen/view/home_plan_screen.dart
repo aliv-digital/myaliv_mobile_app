@@ -56,6 +56,19 @@ class _HomePlanViewState extends State<_HomePlanView> {
     context.read<PlansCubit>().started(userType: userType);
   }
 
+  // Primary tabs use API models, while the shared purchase sheet still expects
+  // the older UI model.
+  HomePlanModel _toPrimaryPurchaseSheetPlan(BasePlanModel plan) {
+    return HomePlanModel(
+      id: plan.planId,
+      title: plan.planName,
+      subtitle: _planDurationText(plan),
+      price: plan.planAmount + plan.vatAmount,
+      description: plan.planDescription,
+      benefits: const <HomePlanBenefit>[],
+    );
+  }
+
   HomePlanModel _toRoamingPurchaseSheetPlan(BasePlanModel plan) {
     return HomePlanModel(
       id: plan.planId,
@@ -100,7 +113,43 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  void _onPurchaseNowPressed(BuildContext context, HomePlanModel plan) {
+  String _planDurationText(BasePlanModel plan) {
+    final frequency = plan.frequency.trim().toUpperCase();
+
+    switch (frequency) {
+      case 'D':
+        return '1 day';
+      case '3':
+        return '3 days';
+      case '5':
+        return '5 days';
+      case 'W':
+        return '7 days';
+      case 'T':
+        return '10 days';
+      case 'B':
+      case 'H':
+        return '15 days';
+      case 'M':
+        return '30 days';
+      case 'S':
+        return '60 days';
+      case 'N':
+        return '90 days';
+      case 'A':
+        return '1 year';
+      default:
+        return '';
+    }
+  }
+
+  void _onPurchaseNowPressed(
+    BuildContext context,
+    HomePlanModel plan, {
+    required HomeUiConfig homeUiConfig,
+    BasePlanModel? selectedApiPlan,
+    int? selectedIndex,
+  }) {
     final cubit = context.read<PlansCubit>();
 
     // Prevent opening multiple purchase modals simultaneously
@@ -108,15 +157,47 @@ class _HomePlanViewState extends State<_HomePlanView> {
       return;
     }
 
+    _logSelectedApiPlan(
+      selectedTab: cubit.state.selectedTab,
+      selectedApiPlan: selectedApiPlan,
+      selectedIndex: selectedIndex,
+    );
+
     cubit.purchaseNowPressed(plan);
     showHomePlanPurchaseBottomSheet(
       context: context,
       plan: plan,
       selectedTab: cubit.state.selectedTab,
+      homeUiConfig: homeUiConfig,
+      selectedApiPlan: selectedApiPlan,
+      selectedIndex: selectedIndex,
     ).then((_) {
       // Clear the modal open flag when bottom sheet is dismissed
       cubit.purchaseModalClosed();
     });
+  }
+
+  void _logSelectedApiPlan({
+    required HomePlanTab selectedTab,
+    required BasePlanModel? selectedApiPlan,
+    required int? selectedIndex,
+  }) {
+    if (selectedApiPlan == null || selectedIndex == null) {
+      return;
+    }
+
+    debugPrint('Selected ${selectedTab.name} plan index: $selectedIndex');
+    debugPrint(
+      'Selected ${selectedTab.name} plan object: '
+      '${selectedApiPlan.toDebugMap()}',
+    );
+
+    if (selectedApiPlan.availableBoltOns.isNotEmpty) {
+      debugPrint(
+        'First available bolt-on: '
+        '${selectedApiPlan.availableBoltOns.first.planName}',
+      );
+    }
   }
 
   void _showPostpaidStartBottomSheet(BuildContext context) {
@@ -173,6 +254,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     PlansState currentState,
     PlansStatus currentTabStatus,
     String? currentTabError,
+    HomeUiConfig homeUiConfig,
   ) {
     // Loading state - show shimmer
     if (currentTabStatus == PlansStatus.loading ||
@@ -231,26 +313,66 @@ class _HomePlanViewState extends State<_HomePlanView> {
       onToggleExpanded: (planId) {
         context.read<PlansCubit>().toggleExpanded(planId);
       },
-      onWeeklyPurchaseNow: (_) {},
-      onDailyPurchaseNow: (_) {},
-      onMonthlyPurchaseNow: (_) {},
+      onWeeklyPurchaseNow: (plan, index) {
+        _onPurchaseNowPressed(
+          context,
+          _toPrimaryPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
+          selectedIndex: index,
+        );
+      },
+      onDailyPurchaseNow: (plan, index) {
+        _onPurchaseNowPressed(
+          context,
+          _toPrimaryPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
+          selectedIndex: index,
+        );
+      },
+      onMonthlyPurchaseNow: (plan, index) {
+        _onPurchaseNowPressed(
+          context,
+          _toPrimaryPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
+          selectedIndex: index,
+        );
+      },
       onMifiPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toMifiPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toMifiPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onLibertyGlobalPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toLibertyGlobalPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toLibertyGlobalPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onRoamingPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toRoamingPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toRoamingPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onRoamEasyPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, _toRoamEasyPurchaseSheetPlan(plan));
+        _onPurchaseNowPressed(
+          context,
+          _toRoamEasyPurchaseSheetPlan(plan),
+          homeUiConfig: homeUiConfig,
+        );
       },
       onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel _) {
         _showPostpaidStartBottomSheet(context);
       },
       onPurchaseNow: (plan) {
-        _onPurchaseNowPressed(context, plan);
+        //_onPurchaseNowPressed(context, plan);
       },
     );
   }
@@ -280,9 +402,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
 
   @override
   Widget build(BuildContext context) {
-    final config = context.watch<AppUiConfigCubit>().state;
-    final tabs = _tabsForUserType(config.userType);
-    final isPostpaid = config.userType == UserType.postpaid;
+    final HomeUiConfig homeUiConfig = context.watch<AppUiConfigCubit>().state;
+    debugPrint("active plan : ${homeUiConfig.hasActivePlan}");
+
+    final tabs = _tabsForUserType(homeUiConfig.userType);
+    final isPostpaid = homeUiConfig.userType == UserType.postpaid;
     final appBarTitle = isPostpaid ? 'roaming data add-ons' : 'plans';
 
     return BlocListener<PlansCubit, PlansState>(
@@ -371,6 +495,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
                             currentState,
                             currentTabStatus,
                             currentTabError,
+                            homeUiConfig,
                           ),
                         );
                       },

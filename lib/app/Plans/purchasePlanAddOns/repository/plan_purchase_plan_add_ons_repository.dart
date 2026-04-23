@@ -1,5 +1,4 @@
-
-
+import '../../PlanScreen/models/base_plan_model.dart';
 import '../model/plan_purchase_add_on_models.dart';
 
 class PlanPurchasePlanAddOnsRepository {
@@ -22,7 +21,7 @@ class PlanPurchasePlanAddOnsRepository {
     return const PlanPurchaseFairUsePolicy(
       title: 'fair use policy',
       description:
-      "add-ons can only be added to your active primary plan and expires when it ends. "
+          "add-ons can only be added to your active primary plan and expires when it ends. "
           "if you don't want an add-on select skip.",
     );
   }
@@ -52,5 +51,76 @@ class PlanPurchasePlanAddOnsRepository {
       //   price: 5.00,
       // ),
     ];
+  }
+
+  List<PlanPurchaseAddOnItem> mapAvailableBoltOnsToAddOnItems(
+    BasePlanModel? primaryPlan,
+  ) {
+    if (primaryPlan == null) {
+      return const <PlanPurchaseAddOnItem>[];
+    }
+
+    return primaryPlan.availableBoltOns.map(
+          (addOnPlan) => PlanPurchaseAddOnItem(
+            id: addOnPlan.planId,
+            title: addOnPlan.planName,
+            subtitleLabel: _buildAddOnLabel(addOnPlan),
+            subtitleValue: _buildAddOnValue(addOnPlan),
+            price: addOnPlan.planAmount,
+            vatAmount: addOnPlan.vatAmount,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  String _buildAddOnLabel(BasePlanModel addOnPlan) {
+    final firstBucket = addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return 'balance';
+    }
+
+    final normalizedBucketName = firstBucket.name.trim().toLowerCase();
+    if (normalizedBucketName.isEmpty) {
+      return 'balance';
+    }
+
+    switch (normalizedBucketName) {
+      case 'data':
+        return 'data balance';
+      case 'minutes':
+        return 'minutes balance';
+      case 'texts':
+        return 'text balance';
+      default:
+        return '$normalizedBucketName balance';
+    }
+  }
+
+  String _buildAddOnValue(BasePlanModel addOnPlan) {
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
+
+    if (firstBucket == null) {
+      return '';
+    }
+
+    final amountText = _formatWholeOrDecimal(firstBucket.amount);
+    final unitText = firstBucket.unit.trim().toLowerCase();
+
+    if (unitText.isEmpty) {
+      return amountText;
+    }
+
+    return '$amountText$unitText';
+  }
+
+  String _formatWholeOrDecimal(double value) {
+    if (value == value.truncateToDouble()) {
+      return value.toInt().toString();
+    }
+
+    return value.toStringAsFixed(2);
   }
 }

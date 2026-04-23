@@ -22,6 +22,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_pl
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import 'package:myaliv_mobile_app/app/Support/view/support_screen.dart';
 import 'package:myaliv_mobile_app/app/welcome/view/welcome_view.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/make_payment_confirmation_postpaid_screen.dart';
@@ -416,7 +417,14 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.homePurchasePlanAddOns,
-        builder: (context, state) => const PlanPurchasePlanAddOnsScreen(),
+        builder: (context, state) {
+          final extra = state.extra;
+          final routeArgs = extra is PlanPurchasePlanAddOnsRouteArgs
+              ? extra
+              : null;
+
+          return PlanPurchasePlanAddOnsScreen(routeArgs: routeArgs);
+        },
       ),
       GoRoute(
         path: AppRoutes.purchaseAddOns,

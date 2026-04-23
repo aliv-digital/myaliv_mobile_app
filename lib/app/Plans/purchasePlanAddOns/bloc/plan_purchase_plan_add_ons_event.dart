@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../model/plan_purchase_plan_add_ons_route_args.dart';
+
 sealed class PlanPurchasePlanAddOnsEvent extends Equatable {
   const PlanPurchasePlanAddOnsEvent();
 
@@ -8,10 +10,16 @@ sealed class PlanPurchasePlanAddOnsEvent extends Equatable {
 }
 
 final class PlanPurchasePlanAddOnsStarted extends PlanPurchasePlanAddOnsEvent {
-  const PlanPurchasePlanAddOnsStarted();
+  const PlanPurchasePlanAddOnsStarted({this.routeArgs});
+
+  final PlanPurchasePlanAddOnsRouteArgs? routeArgs;
+
+  @override
+  List<Object?> get props => [routeArgs];
 }
 
-final class PlanPurchasePlanAddOnsAutoRenewToggled extends PlanPurchasePlanAddOnsEvent {
+final class PlanPurchasePlanAddOnsAutoRenewToggled
+    extends PlanPurchasePlanAddOnsEvent {
   final bool value;
   const PlanPurchasePlanAddOnsAutoRenewToggled(this.value);
 
@@ -19,7 +27,8 @@ final class PlanPurchasePlanAddOnsAutoRenewToggled extends PlanPurchasePlanAddOn
   List<Object?> get props => [value];
 }
 
-final class PlanPurchasePlanAddOnsSelectionToggled extends PlanPurchasePlanAddOnsEvent {
+final class PlanPurchasePlanAddOnsSelectionToggled
+    extends PlanPurchasePlanAddOnsEvent {
   final String addOnId;
   final bool selected;
   const PlanPurchasePlanAddOnsSelectionToggled({
@@ -31,10 +40,12 @@ final class PlanPurchasePlanAddOnsSelectionToggled extends PlanPurchasePlanAddOn
   List<Object?> get props => [addOnId, selected];
 }
 
-final class PlanPurchasePlanAddOnsSkipPressed extends PlanPurchasePlanAddOnsEvent {
+final class PlanPurchasePlanAddOnsSkipPressed
+    extends PlanPurchasePlanAddOnsEvent {
   const PlanPurchasePlanAddOnsSkipPressed();
 }
 
-final class PlanPurchasePlanAddOnsProceedPressed extends PlanPurchasePlanAddOnsEvent {
+final class PlanPurchasePlanAddOnsProceedPressed
+    extends PlanPurchasePlanAddOnsEvent {
   const PlanPurchasePlanAddOnsProceedPressed();
 }

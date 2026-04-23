@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
+import '../../../Home/home/data/home_ui_config.dart';
+import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
+import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
 import 'roam_bottom_sheet.dart';
@@ -13,8 +16,15 @@ Future<void> showHomePlanPurchaseBottomSheet({
   required BuildContext context,
   required HomePlanModel plan,
   required HomePlanTab selectedTab,
+  required HomeUiConfig homeUiConfig,
+  BasePlanModel? selectedApiPlan,
+  int? selectedIndex,
 }) {
-  final hasActivePlan = _hasActivePlan(plan);
+  final hasActivePlan = homeUiConfig.hasActivePlan;
+  final selectedPlanExtra = _selectedPlanRouteExtra(
+    selectedApiPlan: selectedApiPlan,
+    selectedIndex: selectedIndex,
+  );
 
   return showModalBottomSheet<void>(
     context: context,
@@ -43,7 +53,8 @@ Future<void> showHomePlanPurchaseBottomSheet({
         );
       }
 
-      if (hasActivePlan && selectedTab == HomePlanTab.addOns) {
+      if (hasActivePlan) {
+        //&& selectedTab == HomePlanTab.addOns
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
           warningText:
               'activating now replaces the account owner current plan, '
@@ -55,18 +66,24 @@ Future<void> showHomePlanPurchaseBottomSheet({
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
-            context.push(AppRoutes.homePurchasePlanAddOns);
+            context.push(
+              AppRoutes.homePurchasePlanAddOns,
+              extra: selectedPlanExtra,
+            );
           },
           onFuturePlanPressed: () {
             Navigator.of(sheetContext).pop();
-            context.push(AppRoutes.homePurchasePlanAddOns);
+            context.push(
+              AppRoutes.homePurchasePlanAddOns,
+              extra: selectedPlanExtra,
+            );
           },
         );
       }
 
+      // we will go to next screen to show  "AvailableBoltOns"
       return HomePlanWalletPaymentActivateBottomSheet(
-        warningText:
-            'the account owner has no current plan, so their new plan will start immediately.',
+        warningText: 'the account owner has no current plan, so their new plan will start immediately.',
         planName: plan.title,
         planDurationText: plan.subtitle,
         planPriceText: _priceText(plan.price),
@@ -74,17 +91,28 @@ Future<void> showHomePlanPurchaseBottomSheet({
         onActivateNowPressed: () {
           AppSession.appRoute = 'prepaidPlan';
           Navigator.of(sheetContext).pop();
-          context.push(AppRoutes.homePurchasePlanAddOns);
+          context.push(
+            AppRoutes.homePurchasePlanAddOns,
+            extra: selectedPlanExtra,
+          );
         },
       );
     },
   );
 }
 
-bool _hasActivePlan(HomePlanModel plan) {
-  final subtitle = plan.subtitle.toLowerCase();
-  return !subtitle.contains('begins immediately') &&
-      !subtitle.contains('start immediately');
+PlanPurchasePlanAddOnsRouteArgs? _selectedPlanRouteExtra({
+  required BasePlanModel? selectedApiPlan,
+  required int? selectedIndex,
+}) {
+  if (selectedApiPlan == null) {
+    return null;
+  }
+
+  return PlanPurchasePlanAddOnsRouteArgs(
+    selectedApiPlan: selectedApiPlan,
+    selectedIndex: selectedIndex,
+  );
 }
 
 String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';

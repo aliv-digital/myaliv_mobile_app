@@ -89,7 +89,9 @@
 // }
 // ...same imports
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/base_plan_model.dart';
 import '../model/plan_purchase_add_on_models.dart';
+import '../model/plan_purchase_plan_add_ons_route_args.dart';
 
 enum PlanPurchasePlanAddOnsStatus { initial, loading, ready, error }
 
@@ -100,6 +102,7 @@ class PlanPurchasePlanAddOnsState extends Equatable {
   final PlanPurchaseFairUsePolicy? fairUsePolicy;
   final List<PlanPurchaseAddOnItem> addOns;
 
+  final PlanPurchasePlanAddOnsRouteArgs? routeArgs;
   final Set<String> selectedAddOnIds;
 
   /// IMPORTANT:
@@ -117,6 +120,7 @@ class PlanPurchasePlanAddOnsState extends Equatable {
     required this.activePlan,
     required this.fairUsePolicy,
     required this.addOns,
+    required this.routeArgs,
     required this.selectedAddOnIds,
     required this.autoRenew,
     required this.skipRequestId,
@@ -130,6 +134,7 @@ class PlanPurchasePlanAddOnsState extends Equatable {
       activePlan: null,
       fairUsePolicy: null,
       addOns: [],
+      routeArgs: null,
       selectedAddOnIds: {},
       autoRenew: false,
       skipRequestId: 0,
@@ -143,6 +148,7 @@ class PlanPurchasePlanAddOnsState extends Equatable {
     PlanPurchaseActivePlanSummary? activePlan,
     PlanPurchaseFairUsePolicy? fairUsePolicy,
     List<PlanPurchaseAddOnItem>? addOns,
+    PlanPurchasePlanAddOnsRouteArgs? routeArgs,
     Set<String>? selectedAddOnIds,
     bool? autoRenew,
     int? skipRequestId,
@@ -154,6 +160,7 @@ class PlanPurchasePlanAddOnsState extends Equatable {
       activePlan: activePlan ?? this.activePlan,
       fairUsePolicy: fairUsePolicy ?? this.fairUsePolicy,
       addOns: addOns ?? this.addOns,
+      routeArgs: routeArgs ?? this.routeArgs,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
       autoRenew: autoRenew ?? this.autoRenew,
       skipRequestId: skipRequestId ?? this.skipRequestId,
@@ -162,10 +169,14 @@ class PlanPurchasePlanAddOnsState extends Equatable {
     );
   }
 
+  BasePlanModel? get selectedApiPlan => routeArgs?.selectedApiPlan;
+
+  int? get selectedIndex => routeArgs?.selectedIndex;
+
   double get totalPrice {
     double sum = 0;
     for (final item in addOns) {
-      if (selectedAddOnIds.contains(item.id)) sum += item.price;
+      if (selectedAddOnIds.contains(item.id)) sum += item.totalPrice;
     }
     return sum;
   }
@@ -176,6 +187,7 @@ class PlanPurchasePlanAddOnsState extends Equatable {
     activePlan,
     fairUsePolicy,
     addOns,
+    routeArgs,
     selectedAddOnIds,
     autoRenew,
     skipRequestId,
