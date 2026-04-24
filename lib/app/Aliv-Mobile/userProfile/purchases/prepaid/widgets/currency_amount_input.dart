@@ -8,12 +8,14 @@ class TopUpFormInputField extends StatefulWidget {
   final String hint;
   final TextEditingController? controller;
   final bool? isAmountType;
+  final ValueChanged<String>? onChanged;
 
   const TopUpFormInputField({
     super.key,
     required this.hint,
     this.controller,
     this.isAmountType,
+    this.onChanged,
   });
 
   @override
@@ -64,6 +66,7 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
             alignment: Alignment.centerLeft,
             child: TextField(
               controller: widget.controller,
+              onChanged: widget.onChanged,
               keyboardType: widget.isAmountType == true
                   ? TextInputType.number
                   : TextInputType.name,

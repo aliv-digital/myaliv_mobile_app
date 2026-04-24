@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
 import 'package:path_provider/path_provider.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         BlocProvider.value(value: instance<LimitedOfferCubit>()),
         BlocProvider.value(value: instance<BestPlanCubit>()),
         BlocProvider.value(value: instance<BalanceCubit>()),
+        BlocProvider.value(value: instance<SavedCardsCubit>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

@@ -27,6 +27,9 @@ class Api {
   /// Auto-renew from credit card: PUT /CreditCard/auto-renew (empty body)
   static const creditCardAutoRenew = '$baseUrl/v1/MyAliv/CreditCard/auto-renew';
 
+  /// Saved credit cards: GET /CreditCard/saved
+  static const savedCardsUrl = '$baseUrl/v1/MyAliv/CreditCard/saved';
+
   /// Auto-pay invoice for postpaid: PUT /Account/invoice-autopayment?autoPayInvoice={true|false}
   static String invoiceAutoPayment(bool enable) =>
       '$baseUrl/v1/MyAliv/Account/invoice-autopayment?autoPayInvoice=$enable';

@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/device_limits
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/rewards_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/review_invoice_injection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/saved_cards_injection.dart';
 
 /// Main app dependency injection
 ///
@@ -63,5 +64,8 @@ class AppMainInjection {
 
     // Initialize review invoice feature
     await setupReviewInvoiceInjection();
+
+    // Initialize saved cards feature
+    await setupSavedCardsInjection();
   }
 }
