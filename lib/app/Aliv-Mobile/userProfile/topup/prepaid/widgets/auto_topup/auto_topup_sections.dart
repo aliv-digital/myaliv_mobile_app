@@ -52,7 +52,7 @@ class AutoTopupThresholdSection extends StatelessWidget {
         AutoTopupInputField(value: _formattedValue),
         const SizedBox(height: 8),
         Text(
-          'amount must be above \$ 10.00 and below \$ 10.000',
+          'amount must be above \$ ${value.toStringAsFixed(2)}',
           style: const TextStyle(
             color: Color(0xFF707070),
             fontSize: 14,
