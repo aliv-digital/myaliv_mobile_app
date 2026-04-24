@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/balance_threshold_settings_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update_limits_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_repository.dart';
@@ -321,6 +322,75 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
         debugPrint('❌ DeviceLimitsCubit: Unexpected error: $e');
       }
 
+      return false;
+    }
+  }
+
+  // ============ Balance Threshold Settings ============
+
+  /// Update balance threshold settings for auto top-up
+  ///
+  /// [autoTopUpAmount] - Amount from grid selection or custom input
+  /// [cardToken] - Token from selected saved card
+  /// Returns true if update was successful
+  Future<bool> updateBalanceThresholdSettings({
+    required double autoTopUpAmount,
+    required String cardToken,
+  }) async {
+    final deviceLimits = state.deviceLimits;
+    if (deviceLimits == null) {
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: No device limits available');
+      }
+      return false;
+    }
+
+    emit(state.copyWith(status: DeviceLimitsStatus.updating, clearError: true));
+
+    try {
+      final request = BalanceThresholdSettingsRequest.fromDeviceLimits(
+        deviceLimits: deviceLimits,
+        autoTopUpAmount: autoTopUpAmount,
+        cardToken: cardToken,
+      );
+
+      final success = await _repository.updateBalanceThresholdSettings(
+        deviceAccountId: deviceLimits.deviceId,
+        request: request,
+      );
+
+      if (success) {
+        if (kDebugMode) {
+          debugPrint('✅ DeviceLimitsCubit: Balance threshold settings updated');
+        }
+        emit(state.copyWith(status: DeviceLimitsStatus.updated));
+        await loadDeviceLimits(forceRefresh: true);
+        return true;
+      } else {
+        emit(state.copyWith(
+          status: DeviceLimitsStatus.failure,
+          errorMessage: 'Failed to update settings',
+        ));
+        return false;
+      }
+    } on DeviceLimitsException catch (e) {
+      final friendlyMessage = _getFriendlyErrorMessage(e);
+      emit(state.copyWith(
+        status: DeviceLimitsStatus.failure,
+        errorMessage: friendlyMessage,
+      ));
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: $friendlyMessage');
+      }
+      return false;
+    } catch (e) {
+      emit(state.copyWith(
+        status: DeviceLimitsStatus.failure,
+        errorMessage: 'Failed to update settings',
+      ));
+      if (kDebugMode) {
+        debugPrint('❌ DeviceLimitsCubit: Unexpected error: $e');
+      }
       return false;
     }
   }

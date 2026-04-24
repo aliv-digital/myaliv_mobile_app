@@ -136,6 +136,21 @@ class DeviceLimitsState {
   /// Auto-renew status from first device
   bool get autoRenew => deviceLimits?.autoRenew ?? false;
 
+  // ============ Auto Top-up Getters ============
+
+  /// Balance threshold for auto top-up ("when balance falls below")
+  double get balanceThreshold => deviceLimits?.balanceThreshold ?? 0;
+
+  /// Auto top-up amount (matches grid or custom amount)
+  double get autoTopUpAmount => deviceLimits?.autoTopUpAmount ?? 0;
+
+  /// Auto top-up card token
+  String get autoTopUpCardToken => deviceLimits?.autoTopUp ?? '';
+
+  /// Check if auto top-up is configured
+  bool get hasAutoTopUp =>
+      autoTopUpAmount != 0 && autoTopUpCardToken.isNotEmpty;
+
   @override
   String toString() {
     return 'DeviceLimitsState(status: $status, '

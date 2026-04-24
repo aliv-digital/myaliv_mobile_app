@@ -34,6 +34,10 @@ class Api {
   static String invoiceAutoPayment(bool enable) =>
       '$baseUrl/v1/MyAliv/Account/invoice-autopayment?autoPayInvoice=$enable';
 
+  /// Balance threshold settings: PUT /device/{deviceAccountId}/balance-threshold-settings
+  static String balanceThresholdSettings(int deviceAccountId) =>
+      '$baseUrl/v1/MyAliv/device/$deviceAccountId/balance-threshold-settings';
+
   static const faq = 'https://myalivappuat-api.bealiv.com/api/app-settings/faqs';
   static const privacyPolicy = 'https://myalivappuat-api.bealiv.com/api/app-settings/privacy-policy';
   static const security = 'https://myalivappuat-api.bealiv.com/api/app-settings/security';

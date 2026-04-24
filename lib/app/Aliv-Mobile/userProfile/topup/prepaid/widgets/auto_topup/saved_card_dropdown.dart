@@ -29,7 +29,8 @@ class _SavedCardDropdownState extends State<SavedCardDropdown> {
 
   @override
   void dispose() {
-    _removeOverlay();
+    _overlayEntry?.remove();
+    _overlayEntry = null;
     super.dispose();
   }
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/balance_threshold_settings_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update_limits_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart';
@@ -90,5 +91,20 @@ class DeviceLimitsRepository {
   /// Returns true if auto-renew was enabled successfully
   Future<bool> enableAutoRenewCard() async {
     return _apiService.enableAutoRenewCard();
+  }
+
+  /// Update balance threshold settings for auto top-up
+  ///
+  /// [deviceAccountId] - The device account ID
+  /// [request] - The balance threshold settings request
+  /// Returns true if update was successful
+  Future<bool> updateBalanceThresholdSettings({
+    required int deviceAccountId,
+    required BalanceThresholdSettingsRequest request,
+  }) async {
+    return _apiService.updateBalanceThresholdSettings(
+      deviceAccountId: deviceAccountId,
+      body: request.toJson(),
+    );
   }
 }

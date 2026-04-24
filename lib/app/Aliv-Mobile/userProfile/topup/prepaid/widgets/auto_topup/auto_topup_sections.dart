@@ -33,7 +33,15 @@ class AutoTopupCardSection extends StatelessWidget {
 
 /// Balance threshold section for auto top-up.
 class AutoTopupThresholdSection extends StatelessWidget {
-  const AutoTopupThresholdSection({super.key});
+  /// The threshold value to display (e.g., 20.0 → "$ 20.00")
+  final double value;
+
+  const AutoTopupThresholdSection({
+    super.key,
+    this.value = 10.0,
+  });
+
+  String get _formattedValue => '\$ ${value.abs().toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +49,7 @@ class AutoTopupThresholdSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AutoTopupSectionLabel('when balance falls below'),
-        const AutoTopupInputField(value: '\$ 10.00'),
+        AutoTopupInputField(value: _formattedValue),
         const SizedBox(height: 8),
         Text(
           'amount must be above \$ 10.00 and below \$ 10.000',

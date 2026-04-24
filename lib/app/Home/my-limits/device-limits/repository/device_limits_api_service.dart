@@ -156,6 +156,39 @@ class DeviceLimitsApiService {
     }
   }
 
+  /// Update balance threshold settings for auto top-up
+  ///
+  /// PUT /device/{deviceAccountId}/balance-threshold-settings
+  /// Returns true if API response { "Success": true }
+  Future<bool> updateBalanceThresholdSettings({
+    required int deviceAccountId,
+    required Map<String, dynamic> body,
+  }) async {
+    final url = Api.balanceThresholdSettings(deviceAccountId);
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.put,
+        data: body,
+      );
+
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['Success'] == true;
+      }
+      return false;
+    } on NetworkException catch (e) {
+      throw _mapNetworkException(e);
+    } catch (e) {
+      throw DeviceLimitsException(
+        'Failed to update balance threshold settings: ${e.toString()}',
+        type: DeviceLimitsErrorType.unknown,
+        originalError: e,
+      );
+    }
+  }
+
   /// Enable auto-renew from credit card
   ///
   /// PUT /CreditCard/auto-renew (empty body)
