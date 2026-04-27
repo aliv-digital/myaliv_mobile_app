@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
 
 sealed class ReferFriendPrepaidEvent extends Equatable {
   const ReferFriendPrepaidEvent();
@@ -25,6 +26,15 @@ class ReferFriendPrepaidFriendPhoneChanged extends ReferFriendPrepaidEvent {
 
   @override
   List<Object?> get props => [value];
+}
+
+class ReferFriendPrepaidCountryChanged extends ReferFriendPrepaidEvent {
+  final LoginCountrySelection selectedCountry;
+
+  const ReferFriendPrepaidCountryChanged(this.selectedCountry);
+
+  @override
+  List<Object?> get props => [selectedCountry];
 }
 
 class ReferFriendPrepaidFriendEmailChanged extends ReferFriendPrepaidEvent {

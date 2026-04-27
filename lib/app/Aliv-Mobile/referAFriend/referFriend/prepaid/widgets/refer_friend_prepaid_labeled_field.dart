@@ -7,6 +7,10 @@ class ReferFriendPrepaidLabeledField extends StatefulWidget {
   final TextInputType keyboardType;
   final String value;
   final ValueChanged<String> onChanged;
+  final bool showError;
+  final bool highlightInputAsError;
+  final String? errorText;
+  final bool showUnfocusedBorder;
 
   const ReferFriendPrepaidLabeledField({
     super.key,
@@ -15,6 +19,10 @@ class ReferFriendPrepaidLabeledField extends StatefulWidget {
     required this.keyboardType,
     required this.value,
     required this.onChanged,
+    this.showError = false,
+    this.highlightInputAsError = false,
+    this.errorText,
+    this.showUnfocusedBorder = false,
   });
 
   @override
@@ -40,7 +48,8 @@ class _ReferFriendPrepaidLabeledFieldState
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
-      _controller.selection = TextSelection.collapsed(offset: widget.value.length);
+      _controller.selection =
+          TextSelection.collapsed(offset: widget.value.length);
     }
   }
 
@@ -65,6 +74,16 @@ class _ReferFriendPrepaidLabeledFieldState
     final innerRadius = (ReferFriendPrepaidTheme.fieldRadius -
             ReferFriendPrepaidTheme.fieldBorderWidth)
         .clamp(0.0, ReferFriendPrepaidTheme.fieldRadius);
+    final bool showNeutralBorder =
+        widget.showUnfocusedBorder || widget.showError;
+    final Color unfocusedBorderColor = widget.showError
+        ? ReferFriendPrepaidTheme.error
+        : ReferFriendPrepaidTheme.border;
+    final TextStyle inputStyle = widget.highlightInputAsError
+        ? ReferFriendPrepaidTheme.fieldInput.copyWith(
+            color: ReferFriendPrepaidTheme.error,
+          )
+        : ReferFriendPrepaidTheme.fieldInput;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,10 +95,17 @@ class _ReferFriendPrepaidLabeledFieldState
             gradient: _hasFocus
                 ? ReferFriendPrepaidTheme.focusedInputBorderGradient
                 : null,
-            border: null,
-            borderRadius: BorderRadius.circular(ReferFriendPrepaidTheme.fieldRadius),
+            border: _hasFocus || !showNeutralBorder
+                ? null
+                : Border.all(
+                    color: unfocusedBorderColor,
+                    width: ReferFriendPrepaidTheme.fieldBorderWidth,
+                  ),
+            borderRadius:
+                BorderRadius.circular(ReferFriendPrepaidTheme.fieldRadius),
           ),
-          padding: const EdgeInsets.all(ReferFriendPrepaidTheme.fieldBorderWidth),
+          padding:
+              const EdgeInsets.all(ReferFriendPrepaidTheme.fieldBorderWidth),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(innerRadius),
             child: Container(
@@ -97,11 +123,18 @@ class _ReferFriendPrepaidLabeledFieldState
                   hintText: widget.hint,
                   hintStyle: ReferFriendPrepaidTheme.fieldHint,
                 ),
-                style: ReferFriendPrepaidTheme.fieldInput,
+                style: inputStyle,
               ),
             ),
           ),
         ),
+        if (widget.showError && (widget.errorText ?? '').isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            widget.errorText!,
+            style: ReferFriendPrepaidTheme.fieldError,
+          ),
+        ],
       ],
     );
   }
