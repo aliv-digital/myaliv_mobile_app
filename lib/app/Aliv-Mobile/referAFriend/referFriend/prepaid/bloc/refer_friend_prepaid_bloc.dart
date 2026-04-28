@@ -1,22 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 
 import '../../../../../Home/balance/balance_injection.dart';
 import '../../../../account-information/cubit/account_info_cubit.dart';
 import '../repository/refer_friend_prepaid_repository.dart';
+import '../utils/refer_friend_prepaid_email_helper.dart';
 import 'refer_friend_prepaid_event.dart';
 import 'refer_friend_prepaid_state.dart';
 
 class ReferFriendPrepaidBloc
     extends Bloc<ReferFriendPrepaidEvent, ReferFriendPrepaidState> {
   final ReferFriendPrepaidRepository repository;
+  final LoginPhoneNumberHelper phoneNumberHelper;
+  final ReferFriendPrepaidEmailHelper emailHelper;
 
-  ReferFriendPrepaidBloc({required this.repository})
-    : super(const ReferFriendPrepaidState()) {
+  ReferFriendPrepaidBloc({
+    required this.repository,
+    LoginPhoneNumberHelper? phoneNumberHelper,
+    ReferFriendPrepaidEmailHelper? emailHelper,
+  })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+        emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
+        super(const ReferFriendPrepaidState()) {
     on<ReferFriendPrepaidStarted>(_onStarted);
     on<ReferFriendPrepaidTabChanged>(_onTabChanged);
 
     on<ReferFriendPrepaidFriendPhoneChanged>(_onPhoneChanged);
+    on<ReferFriendPrepaidCountryChanged>(_onCountryChanged);
     on<ReferFriendPrepaidFriendEmailChanged>(_onEmailChanged);
     on<ReferFriendPrepaidSharePressed>(_onSharePressed);
 
@@ -58,14 +68,39 @@ class ReferFriendPrepaidBloc
     ReferFriendPrepaidFriendPhoneChanged event,
     Emitter<ReferFriendPrepaidState> emit,
   ) {
-    emit(state.copyWith(friendPhone: event.value, errorMessage: null));
+    emit(
+      state.copyWith(
+        friendPhone: event.value,
+        friendPhoneFieldError: false,
+        errorMessage: null,
+      ),
+    );
+  }
+
+  void _onCountryChanged(
+    ReferFriendPrepaidCountryChanged event,
+    Emitter<ReferFriendPrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        selectedCountry: event.selectedCountry,
+        friendPhoneFieldError: false,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onEmailChanged(
     ReferFriendPrepaidFriendEmailChanged event,
     Emitter<ReferFriendPrepaidState> emit,
   ) {
-    emit(state.copyWith(friendEmail: event.value, errorMessage: null));
+    emit(
+      state.copyWith(
+        friendEmail: event.value,
+        friendEmailFieldError: false,
+        errorMessage: null,
+      ),
+    );
   }
 
   Future<void> _onSharePressed(
@@ -76,8 +111,38 @@ class ReferFriendPrepaidBloc
       return;
     }
 
-    if (!state.canShare) {
-      emit(state.copyWith(errorMessage: 'Please enter phone & a valid email.'));
+    final bool isPhoneMissing = state.friendPhone.trim().isEmpty;
+    final bool isEmailMissing = state.friendEmail.trim().isEmpty;
+
+    if (isPhoneMissing || isEmailMissing) {
+      emit(
+        state.copyWith(
+          friendPhoneFieldError: isPhoneMissing,
+          friendEmailFieldError: isEmailMissing,
+          errorMessage: null,
+        ),
+      );
+      return;
+    }
+
+    final LoginPhoneValidationResult phoneValidationResult =
+        phoneNumberHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: state.friendPhone,
+      selectedCountry: state.selectedCountry,
+    );
+
+    final bool hasInvalidPhone = !phoneValidationResult.isValid ||
+        phoneValidationResult.phoneNumberForApi == null;
+    final bool hasInvalidEmail = !emailHelper.isValid(state.friendEmail);
+
+    if (hasInvalidPhone || hasInvalidEmail) {
+      emit(
+        state.copyWith(
+          friendPhoneFieldError: hasInvalidPhone,
+          friendEmailFieldError: hasInvalidEmail,
+          errorMessage: null,
+        ),
+      );
       return;
     }
 
@@ -86,6 +151,8 @@ class ReferFriendPrepaidBloc
         shareStatus: ReferFriendPrepaidSubmitStatus.submitting,
         errorMessage: null,
         toastMessage: null,
+        friendPhoneFieldError: false,
+        friendEmailFieldError: false,
       ),
     );
 
@@ -109,7 +176,7 @@ class ReferFriendPrepaidBloc
 
       final referralCode = await repository.postReferAFriend(
         deviceAccountID: accountInfo.deviceAccountId,
-        referredNumber: state.friendPhone.trim(),
+        referredNumber: phoneValidationResult.phoneNumberForApi!,
         email: state.friendEmail.trim(),
       );
 
@@ -124,11 +191,11 @@ class ReferFriendPrepaidBloc
 
       // back to idle for UI
       emit(state.copyWith(shareStatus: ReferFriendPrepaidSubmitStatus.idle));
-    } catch (_) {
+    } catch (error) {
       emit(
         state.copyWith(
           shareStatus: ReferFriendPrepaidSubmitStatus.failure,
-          errorMessage: 'Failed to send referral. Try again.',
+          errorMessage: _extractErrorMessage(error),
         ),
       );
       emit(state.copyWith(shareStatus: ReferFriendPrepaidSubmitStatus.idle));
@@ -142,7 +209,8 @@ class ReferFriendPrepaidBloc
     emit(state.copyWith(redeemCode: event.value, errorMessage: null));
   }
 
-  Future<void> _onRedeemPressed(ReferFriendPrepaidRedeemPressed event,Emitter<ReferFriendPrepaidState> emit) async {
+  Future<void> _onRedeemPressed(ReferFriendPrepaidRedeemPressed event,
+      Emitter<ReferFriendPrepaidState> emit) async {
     if (state.redeemStatus == ReferFriendPrepaidSubmitStatus.submitting) {
       return;
     }
@@ -247,6 +315,28 @@ class ReferFriendPrepaidBloc
   ) async {
     // UI handles Clipboard; here only toast
     emit(state.copyWith(toastMessage: 'Copied ${event.code}'));
+  }
+
+  String _extractErrorMessage(Object error) {
+    if (error is ReferFriendPrepaidException) {
+      return error.message;
+    }
+
+    final rawMessage = error.toString().trim();
+    const String exceptionPrefix = 'Exception:';
+
+    if (rawMessage.startsWith(exceptionPrefix)) {
+      final String cleanedMessage =
+          rawMessage.substring(exceptionPrefix.length).trim();
+
+      if (cleanedMessage.isNotEmpty) {
+        return cleanedMessage;
+      }
+    }
+
+    return rawMessage.isEmpty
+        ? 'Failed to send referral. Try again.'
+        : rawMessage;
   }
 }
 
