@@ -36,7 +36,7 @@ class InvoiceTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      invoice.invoiceNo,
+                      '${invoice.invoiceId}',
                       style: ReviewInvoicePostpaidTheme.invoiceNo(context),
                     ),
                     const SizedBox(height: 12),

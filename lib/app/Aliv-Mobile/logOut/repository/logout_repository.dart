@@ -2,6 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
 import '../../../../core/localStorage/localStorage.dart';
@@ -115,13 +120,23 @@ class LogoutRepository {
     final plansRepository = instance<PlansRepository>();
     plansRepository.clearCache();
 
+    // 6. Reset home-screen cubits that hold per-user data
+    // These are GetIt singletons, so without reset() the previous user's
+    // device limits, balance, offers, plans, and limits would persist
+    // across account switches.
+    instance<DeviceLimitsCubit>().reset();
+    instance<BalanceCubit>().reset();
+    instance<LimitedOfferCubit>().reset();
+    instance<BestPlanCubit>().reset();
+    instance<ConsumptionLimitCubit>().reset();
+
     // Note: AppUiConfigCubit is NOT reset here because:
     // - It's not registered in DI (created in main.dart with BlocProvider)
     // - It gets reset anyway during login via _setLoggedInUserUiConfig()
 
     if (kDebugMode) {
       debugPrint(
-        '✅ All auth data cleared (SharedPreferences + GlobalState + NetworkService + HydratedBloc + Plans + PlansCache)',
+        '✅ All auth data cleared (SharedPreferences + GlobalState + NetworkService + HydratedBloc + Plans + PlansCache + HomeCubits)',
       );
     }
   }
