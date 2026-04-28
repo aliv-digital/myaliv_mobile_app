@@ -143,8 +143,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
     BuildContext context,
     ReferFriendPrepaidState state,
   ) {
-    final hasNewSuccessRequest =
-        state.shareSuccessRequestId > _lastHandledShareSuccessRequestId;
+    final hasNewSuccessRequest = state.shareSuccessRequestId > _lastHandledShareSuccessRequestId;
     final referralCode = state.referralCode.trim();
 
     // The share API owns navigation. The refer tab only submits the form;

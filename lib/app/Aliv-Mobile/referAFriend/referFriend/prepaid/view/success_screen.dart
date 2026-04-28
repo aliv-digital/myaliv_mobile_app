@@ -17,7 +17,8 @@ class InvitingSuccessScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF645D9C),
         elevation: 0,
-        toolbarHeight: 64,automaticallyImplyLeading: false,
+        toolbarHeight: 64,
+        automaticallyImplyLeading: false,
         centerTitle: false,
         leading: null,
         title: Padding(
@@ -185,62 +186,69 @@ class _ReferralCodeBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 48,
-      width: 200,
-      padding: const EdgeInsets.only(left: 16, right: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFF1F1F8)),
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: Text(
-              code,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF707070),
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          InkWell(
-            borderRadius: BorderRadius.circular(100),
-            onTap: () {
-              Clipboard.setData(ClipboardData(text: code));
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Copied')));
-            },
-            child: Container(
-              height: 32,
+    final maxWidth = MediaQuery.sizeOf(context).width - 96;
 
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF2F1F9),
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Row(
-                children: [
-                  SvgPicture.asset('assets/icons/copy2.svg'),
-                  SizedBox(width: 4),
-                  Text(
-                    'copy',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF645D9C),
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+    return ConstrainedBox(
+      constraints: BoxConstraints(minWidth: 160, maxWidth: maxWidth),
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.only(left: 16, right: 4),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFF1F1F8)),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                code,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF707070),
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            InkWell(
+              borderRadius: BorderRadius.circular(100),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: code));
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Copied')));
+              },
+              child: Container(
+                height: 32,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF2F1F9),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset('assets/icons/copy2.svg'),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'copy',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF645D9C),
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
