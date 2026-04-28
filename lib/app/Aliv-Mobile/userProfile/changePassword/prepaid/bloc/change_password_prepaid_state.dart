@@ -12,6 +12,8 @@ class ChangePasswordPrepaidState extends Equatable {
   final bool obscureConfirm;
 
   final String? errorMessage;
+  final String? newPasswordError;
+  final String? confirmPasswordError;
 
   const ChangePasswordPrepaidState({
     required this.status,
@@ -20,6 +22,8 @@ class ChangePasswordPrepaidState extends Equatable {
     required this.obscureNew,
     required this.obscureConfirm,
     required this.errorMessage,
+    required this.newPasswordError,
+    required this.confirmPasswordError,
   });
 
   factory ChangePasswordPrepaidState.initial() {
@@ -30,6 +34,8 @@ class ChangePasswordPrepaidState extends Equatable {
       obscureNew: true,
       obscureConfirm: true,
       errorMessage: null,
+      newPasswordError: null,
+      confirmPasswordError: null,
     );
   }
 
@@ -41,6 +47,8 @@ class ChangePasswordPrepaidState extends Equatable {
     return a == b;
   }
 
+  static const Object _kSame = Object();
+
   ChangePasswordPrepaidState copyWith({
     ChangePasswordPrepaidStatus? status,
     String? newPassword,
@@ -48,6 +56,8 @@ class ChangePasswordPrepaidState extends Equatable {
     bool? obscureNew,
     bool? obscureConfirm,
     String? errorMessage,
+    Object? newPasswordError = _kSame,
+    Object? confirmPasswordError = _kSame,
   }) {
     return ChangePasswordPrepaidState(
       status: status ?? this.status,
@@ -56,6 +66,12 @@ class ChangePasswordPrepaidState extends Equatable {
       obscureNew: obscureNew ?? this.obscureNew,
       obscureConfirm: obscureConfirm ?? this.obscureConfirm,
       errorMessage: errorMessage,
+      newPasswordError: identical(newPasswordError, _kSame)
+          ? this.newPasswordError
+          : newPasswordError as String?,
+      confirmPasswordError: identical(confirmPasswordError, _kSame)
+          ? this.confirmPasswordError
+          : confirmPasswordError as String?,
     );
   }
 
@@ -67,5 +83,7 @@ class ChangePasswordPrepaidState extends Equatable {
     obscureNew,
     obscureConfirm,
     errorMessage,
+    newPasswordError,
+    confirmPasswordError,
   ];
 }

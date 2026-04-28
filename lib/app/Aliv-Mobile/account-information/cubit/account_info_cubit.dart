@@ -145,6 +145,20 @@ class AccountInfoCubit extends HydratedCubit<AccountInfoState> {
     return state.accountInfo;
   }
 
+  /// Optimistically update only the email field on the cached account info.
+  ///
+  /// Use after a successful UpdateEmailAddress API call so dependent UI
+  /// reflects the new value immediately, without waiting for a refetch.
+  void updateEmailLocally(String email) {
+    final current = state.accountInfo;
+    if (current == null) return;
+    final updated = AccountInfoModel.fromJson(<String, dynamic>{
+      ...current.toJson(),
+      'Email': email,
+    });
+    emit(state.copyWith(accountInfo: updated));
+  }
+
   /// Clear all account information
   ///
   /// Call this on logout to clear persisted data.

@@ -7,6 +7,10 @@ class ChangePasswordPrepaidBloc
     extends Bloc<ChangePasswordPrepaidEvent, ChangePasswordPrepaidState> {
   final ChangePasswordPrepaidRepository repository;
 
+  static const _minLength = 4;
+  static const _lengthError = 'password does not meet the requirement';
+  static const _matchError = 'password does not match';
+
   ChangePasswordPrepaidBloc(this.repository)
       : super(ChangePasswordPrepaidState.initial()) {
     on<ChangePasswordPrepaidStarted>(_onStarted);
@@ -21,21 +25,47 @@ class ChangePasswordPrepaidBloc
       ChangePasswordPrepaidStarted event,
       Emitter<ChangePasswordPrepaidState> emit,
       ) {
-    emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready, errorMessage: null));
+    emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
   }
 
   void _onNewChanged(
       ChangePasswordPrepaidNewChanged event,
       Emitter<ChangePasswordPrepaidState> emit,
       ) {
-    emit(state.copyWith(newPassword: event.value, errorMessage: null));
+    final value = event.value;
+    final trimmed = value.trim();
+
+    final newError = (trimmed.isNotEmpty && trimmed.length < _minLength)
+        ? _lengthError
+        : null;
+
+    final confirmTrimmed = state.confirmPassword.trim();
+    final confirmError = confirmTrimmed.isEmpty
+        ? null
+        : (confirmTrimmed != trimmed ? _matchError : null);
+
+    emit(state.copyWith(
+      newPassword: value,
+      newPasswordError: newError,
+      confirmPasswordError: confirmError,
+    ));
   }
 
   void _onConfirmChanged(
       ChangePasswordPrepaidConfirmChanged event,
       Emitter<ChangePasswordPrepaidState> emit,
       ) {
-    emit(state.copyWith(confirmPassword: event.value, errorMessage: null));
+    final value = event.value;
+    final trimmed = value.trim();
+
+    final confirmError = trimmed.isEmpty
+        ? null
+        : (trimmed != state.newPassword.trim() ? _matchError : null);
+
+    emit(state.copyWith(
+      confirmPassword: value,
+      confirmPasswordError: confirmError,
+    ));
   }
 
   void _onToggleNew(
@@ -59,24 +89,22 @@ class ChangePasswordPrepaidBloc
     final a = state.newPassword.trim();
     final b = state.confirmPassword.trim();
 
-    if (a.length < 4 || b.length < 4) {
-      emit(state.copyWith(
-        status: ChangePasswordPrepaidStatus.failure,
-        errorMessage: 'password must be at least 4 characters',
-      ));
-      return;
-    }
+    final newErr = a.length < _minLength ? _lengthError : null;
+    final confirmErr = b.length < _minLength
+        ? _lengthError
+        : (a != b ? _matchError : null);
 
-    if (a != b) {
+    if (newErr != null || confirmErr != null) {
       emit(state.copyWith(
-        status: ChangePasswordPrepaidStatus.failure,
-        errorMessage: 'passwords do not match',
+        status: ChangePasswordPrepaidStatus.ready,
+        newPasswordError: newErr,
+        confirmPasswordError: confirmErr,
       ));
       return;
     }
 
     try {
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.submitting, errorMessage: null));
+      emit(state.copyWith(status: ChangePasswordPrepaidStatus.submitting));
       final success = await repository.changePassword(newPassword: a);
 
       if (success) {

@@ -7,7 +7,6 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
-import '../../../editEmail/prepaid/widgets/change_email_bottom_sheet.dart';
 import '../bloc/my_profile_prepaid_bloc.dart';
 import '../bloc/my_profile_prepaid_event.dart';
 import '../bloc/my_profile_prepaid_state.dart';
@@ -61,14 +60,10 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 Navigator.of(context).popUntil((r) => r.isFirst);
                 break;
               case MyProfilePrepaidNavAction.editEmail:
-                debugPrint("edit email");
-                // context.push(AppRoutes.editEmailPrepaidScreen);
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  builder: (_) => const ChangeEmailBottomSheet(),
-                );
+                final bloc = context.read<MyProfilePrepaidBloc>();
+                context.push(AppRoutes.editEmailPrepaidScreen).then((_) {
+                  bloc.add(const MyProfilePrepaidStarted());
+                });
                 break;
               case MyProfilePrepaidNavAction.changePassword:
                 debugPrint("change password");

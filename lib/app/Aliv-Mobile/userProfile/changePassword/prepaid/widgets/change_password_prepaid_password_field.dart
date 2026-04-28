@@ -8,6 +8,7 @@ class ChangePasswordPrepaidPasswordField extends StatefulWidget {
   final String hint;
   final String value;
   final bool obscure;
+  final String? errorText;
   final ValueChanged<String> onChanged;
   final VoidCallback onToggle;
 
@@ -18,6 +19,7 @@ class ChangePasswordPrepaidPasswordField extends StatefulWidget {
     required this.obscure,
     required this.onChanged,
     required this.onToggle,
+    this.errorText,
   });
 
   @override
@@ -53,72 +55,102 @@ class _ChangePasswordPrepaidPasswordFieldState
 
   @override
   Widget build(BuildContext context) {
-    return FocusedInputBorderWrapper(
-      isFocused: _isFocused,
-      unfocusedBorderColor: ChangePasswordPrepaidTheme.inputBorder,
-      radius: 10,
-      borderWidth: 1,
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-          color: ChangePasswordPrepaidTheme.inputBg,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Row(
-          children: [
-            SvgPicture.asset(AssetConstant.lockPassSVG2),
-            // const Icon(
-            //   Icons.lock_outline,
-            //   size: 18,
-            //   color: ChangePasswordPrepaidTheme.brand,
-            // ),
-            const SizedBox(width: 5),
-            Expanded(
-              child: TextField(
-                focusNode: _focusNode,
-                obscureText: widget.obscure,
-                onChanged: widget.onChanged,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  hintText: widget.hint,
-                  hintStyle: const TextStyle(
-                    fontFamily: 'CircularPro',
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w400,
-                    color: ChangePasswordPrepaidTheme.hint,
+    final hasError = widget.errorText != null;
+    final iconColor = hasError
+        ? ChangePasswordPrepaidTheme.error
+        : ChangePasswordPrepaidTheme.brand;
+    final textColor = hasError ? ChangePasswordPrepaidTheme.error : Colors.black;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FocusedInputBorderWrapper(
+          isFocused: !hasError && _isFocused,
+          unfocusedBorderColor: hasError
+              ? ChangePasswordPrepaidTheme.error
+              : ChangePasswordPrepaidTheme.inputBorder,
+          radius: 10,
+          borderWidth: 1,
+          child: Container(
+            height: 50,
+            decoration: BoxDecoration(
+              color: ChangePasswordPrepaidTheme.inputBg,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              children: [
+                SvgPicture.asset(
+                  AssetConstant.lockPassSVG2,
+                  colorFilter: hasError
+                      ? ColorFilter.mode(iconColor, BlendMode.srcIn)
+                      : null,
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: TextField(
+                    focusNode: _focusNode,
+                    obscureText: widget.obscure,
+                    onChanged: widget.onChanged,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isCollapsed: true,
+                      hintText: widget.hint,
+                      hintStyle: TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w400,
+                        color: hasError
+                            ? ChangePasswordPrepaidTheme.error
+                            : ChangePasswordPrepaidTheme.hint,
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                    ),
                   ),
                 ),
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: widget.onToggle,
-              borderRadius: BorderRadius.circular(999),
-              child: Padding(
-                padding: const EdgeInsets.all(6),
-                child: SvgPicture.asset(
-                  widget.obscure
-                      ? AssetConstant.hideIconSVG
-                      : AssetConstant.viewIconSVG,
-                  width: 18,
-                  height: 18,
-                  colorFilter: const ColorFilter.mode(
-                    ChangePasswordPrepaidTheme.brand,
-                    BlendMode.srcIn,
+                InkWell(
+                  onTap: widget.onToggle,
+                  borderRadius: BorderRadius.circular(999),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: SvgPicture.asset(
+                      widget.obscure
+                          ? AssetConstant.hideIconSVG
+                          : AssetConstant.viewIconSVG,
+                      width: 18,
+                      height: 18,
+                      colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 150),
+          alignment: Alignment.topLeft,
+          child: hasError
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 4),
+                  child: Text(
+                    widget.errorText!,
+                    style: const TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: ChangePasswordPrepaidTheme.error,
+                    ),
+                  ),
+                )
+              : const SizedBox(width: double.infinity),
+        ),
+      ],
     );
   }
 }

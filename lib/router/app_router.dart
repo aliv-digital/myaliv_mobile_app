@@ -66,9 +66,7 @@ import '../app/Aliv-Mobile/settings/security/view/security_screen.dart';
 import '../app/Aliv-Mobile/settings/settingScreen/view/settings_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_prepaid_screen.dart';
-import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/update_email.dart';
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/verify_email_page.dart';
-import '../app/Aliv-Mobile/userProfile/changePassword/prepaid/view/verify_password_page.dart';
 import '../app/Aliv-Mobile/userProfile/purchaseAddOns/view/purchase_add_ons_screen.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_screen.dart';
@@ -645,16 +643,6 @@ class AppRouter {
       ),
 
       GoRoute(
-        path: AppRoutes.updateEmail,
-        parentNavigatorKey: rootNavigatorKey, // 🔥 ADD THIS
-        pageBuilder: (context, state) {
-          return MaterialPage(
-            key: ValueKey(state.uri.toString()),
-            child: UpdateEmailPage(),
-          );
-        },
-      ),
-      GoRoute(
         path: AppRoutes.verifyEmail,
         pageBuilder: (context, state) {
           final email = state.uri.queryParameters['email'] ?? '';
@@ -665,16 +653,6 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: AppRoutes.verifyPassword,
-        pageBuilder: (context, state) {
-          return MaterialPage(
-            key: ValueKey(state.uri.toString()),
-            child: const VerifyPasswordPage(),
-          );
-        },
-      ),
-
       GoRoute(
         path: AppRoutes.guestPaymentMethodScreen,
         builder: (context, state) => const GuestPaymentMethodPrepaidScreen(),

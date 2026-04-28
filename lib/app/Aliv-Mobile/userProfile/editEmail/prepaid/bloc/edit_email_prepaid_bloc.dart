@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../repository/edit_email_prepaid_repository.dart';
 import 'edit_email_prepaid_event.dart';
 import 'edit_email_prepaid_state.dart';
@@ -61,15 +65,24 @@ class EditEmailPrepaidBloc extends Bloc<EditEmailPrepaidEvent, EditEmailPrepaidS
 
     try {
       emit(state.copyWith(status: EditEmailPrepaidStatus.submitting, errorMessage: null));
-      await repository.updateEmail(state.email.trim());
-      emit(state.copyWith(status: EditEmailPrepaidStatus.success, errorMessage: null));
-      emit(state.copyWith(status: EditEmailPrepaidStatus.ready));
+      final newEmail = state.email.trim();
+      final ok = await repository.updateEmail(newEmail);
+      if (ok) {
+        final accountInfoCubit = instance<AccountInfoCubit>();
+        accountInfoCubit.updateEmailLocally(newEmail);
+        unawaited(accountInfoCubit.fetchAccountInfo(forceRefresh: true));
+        emit(state.copyWith(status: EditEmailPrepaidStatus.success, errorMessage: null));
+      } else {
+        emit(state.copyWith(
+          status: EditEmailPrepaidStatus.failure,
+          errorMessage: 'Failed to save',
+        ));
+      }
     } catch (_) {
       emit(state.copyWith(
         status: EditEmailPrepaidStatus.failure,
         errorMessage: 'Failed to save',
       ));
-      emit(state.copyWith(status: EditEmailPrepaidStatus.ready, errorMessage: null));
     }
   }
 }

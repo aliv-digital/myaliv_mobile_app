@@ -59,7 +59,11 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
               p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == ChangePasswordPrepaidStatus.success) {
-              context.pushReplacement(AppRoutes.verifyPassword);
+              AppToast.show(
+                message: 'password updated successfully',
+                type: ToastType.success,
+              );
+              context.go(AppRoutes.home);
             }
 
             if (state.status == ChangePasswordPrepaidStatus.failure &&
@@ -103,12 +107,14 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                     ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
                                       p.newPassword != c.newPassword ||
-                                      p.obscureNew != c.obscureNew,
+                                      p.obscureNew != c.obscureNew ||
+                                      p.newPasswordError != c.newPasswordError,
                                   builder: (context, state) {
                                     return ChangePasswordPrepaidPasswordField(
                                       hint: 'new password',
                                       value: state.newPassword,
                                       obscure: state.obscureNew,
+                                      errorText: state.newPasswordError,
                                       onChanged: (v) => context
                                           .read<ChangePasswordPrepaidBloc>()
                                           .add(ChangePasswordPrepaidNewChanged(
@@ -125,12 +131,15 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                                     ChangePasswordPrepaidState>(
                                   buildWhen: (p, c) =>
                                       p.confirmPassword != c.confirmPassword ||
-                                      p.obscureConfirm != c.obscureConfirm,
+                                      p.obscureConfirm != c.obscureConfirm ||
+                                      p.confirmPasswordError !=
+                                          c.confirmPasswordError,
                                   builder: (context, state) {
                                     return ChangePasswordPrepaidPasswordField(
                                       hint: 'confirm new password',
                                       value: state.confirmPassword,
                                       obscure: state.obscureConfirm,
+                                      errorText: state.confirmPasswordError,
                                       onChanged: (v) => context
                                           .read<ChangePasswordPrepaidBloc>()
                                           .add(

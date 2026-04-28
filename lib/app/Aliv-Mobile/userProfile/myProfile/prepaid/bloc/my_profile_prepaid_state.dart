@@ -21,7 +21,7 @@ class MyProfilePrepaidState extends Equatable {
   final int navRequestId;
 
   const MyProfilePrepaidState({
-    required this.status,
+    required this. status,
     required this.data,
     required this.errorMessage,
     required this.navAction,

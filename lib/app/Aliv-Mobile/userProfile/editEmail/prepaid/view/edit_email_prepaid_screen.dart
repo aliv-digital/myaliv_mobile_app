@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../login/widgets/login_bottom_stripes.dart';
@@ -55,11 +56,19 @@ class _EditEmailPrepaidView extends StatelessWidget {
               p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == EditEmailPrepaidStatus.success) {
-              // optional: success toast/snackbar ( তুমি চাইলে বসাবে )
+              AppToast.show(
+                message: 'email address updated successfully',
+                type: ToastType.success,
+              );
+              context.pop();
+              return;
             }
             if (state.status == EditEmailPrepaidStatus.failure &&
                 (state.errorMessage ?? '').isNotEmpty) {
-              // optional: failure toast/snackbar ( তুমি চাইলে বসাবে )
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
             }
           },
           child: Column(
