@@ -5,18 +5,24 @@ class HomePlanConfirmationRepository {
   Future<HomePlanConfirmationData> load({
     required HomePlanConfirmationRouteArgs args,
   }) async {
-    final List<PurchaseLineItem> items = <PurchaseLineItem>[
-      PurchaseLineItem(
-        id: 'primary',
-        type: PurchaseLineType.primaryPlan,
-        label: 'primary plan',
-        title: args.primaryPlanName,
-        subtitle: args.flow == HomePlanConfirmationEntryFlow.skip
-            ? 'begins 01-06-23'
-            : 'begins immediately',
-        price: args.primaryPlanPrice,
-      ),
-    ];
+    final List<PurchaseLineItem> items = <PurchaseLineItem>[];
+
+    // Skip the primary plan line entirely when it's already active —
+    // the user is only being charged for the selected add-ons.
+    if (!args.isPrimaryPlanActive) {
+      items.add(
+        PurchaseLineItem(
+          id: 'primary',
+          type: PurchaseLineType.primaryPlan,
+          label: 'primary plan',
+          title: args.primaryPlanName,
+          subtitle: args.flow == HomePlanConfirmationEntryFlow.skip
+              ? 'begins 01-06-23'
+              : 'begins immediately',
+          price: args.primaryPlanPrice,
+        ),
+      );
+    }
 
     if (args.flow == HomePlanConfirmationEntryFlow.proceed) {
       items.addAll(
@@ -33,9 +39,16 @@ class HomePlanConfirmationRepository {
       );
     }
 
+    final double primaryVat =
+        args.isPrimaryPlanActive ? 0 : args.primaryPlanVatAmount;
+    final double addOnsVat = args.selectedAddOns.fold<double>(
+      0,
+      (sum, addOn) => sum + addOn.vatAmount,
+    );
+
     final totals = PurchaseTotals(
       subTotal: items.fold<double>(0, (s, x) => s + x.price),
-      vat: 0,
+      vat: primaryVat + addOnsVat,
     );
 
     return HomePlanConfirmationData(

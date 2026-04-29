@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
@@ -82,20 +83,15 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   context.read<HomePlanConfirmationBloc>().add(
                     const HomePlanConfirmationPayNowPressed(),
                   );
-                  context.push(AppRoutes.homePlansPaymentMethodScreen);
-
-                  // context.push(
-                  //   AppRoutes.guestPurchasePlanReceipt,
-                  //   // extra: GuestPayBillReceiptArgs(
-                  //   //   serviceName: 'liberty70',
-                  //   //   identifierLabel: 'mobile no.',
-                  //   //   identifierValue: '242-801-0000',
-                  //   //   amount: 200.00,
-                  //   //   dateText: 'Mar 22, 2023',
-                  //   //   timeText: '07:30 am'
-                  //   // )
-                  // );
-                  //context.push(AppRoutes.guestPaymentMethodScreen);
+                  context.push(
+                    AppRoutes.homePlansPaymentMethodScreen,
+                    extra: HomePlansPaymentMethodRouteArgs(
+                      amount: state.data!.totals.total,
+                      vatNote: state.data!.totals.vat > 0
+                          ? 'vat included'
+                          : 'no vat applied',
+                    ),
+                  );
                 },
                 amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
             );

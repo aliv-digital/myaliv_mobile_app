@@ -45,11 +45,21 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
   final HomePlansSubscriberType subscriberType;
   final double walletBalance;
 
+  /// Optional override for the amount the user is paying.
+  /// `null` keeps the screen's existing default for legacy callers.
+  final double? amount;
+
+  /// Optional override for the VAT note — `'no vat applied'` or `'vat included'`.
+  /// `null` keeps the screen's existing default.
+  final String? vatNote;
+
   const HomePlansPaymentMethodRouteArgs({
     this.subscriberType = HomePlansSubscriberType.prepaid,
     this.walletBalance = 129.00,
+    this.amount,
+    this.vatNote,
   });
 
   @override
-  List<Object?> get props => [subscriberType, walletBalance];
+  List<Object?> get props => [subscriberType, walletBalance, amount, vatNote];
 }

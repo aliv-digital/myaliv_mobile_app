@@ -7,15 +7,17 @@ class HomePlanConfirmationSelectedAddOn extends Equatable {
   final String id;
   final String title;
   final double price;
+  final double vatAmount;
 
   const HomePlanConfirmationSelectedAddOn({
     required this.id,
     required this.title,
     required this.price,
+    this.vatAmount = 0,
   });
 
   @override
-  List<Object?> get props => [id, title, price];
+  List<Object?> get props => [id, title, price, vatAmount];
 }
 
 class HomePlanConfirmationRouteArgs extends Equatable {
@@ -23,8 +25,14 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   final String accountHolderName;
   final String primaryPlanName;
   final double primaryPlanPrice;
+  final double primaryPlanVatAmount;
   final HomePlanConfirmationEntryFlow flow;
   final List<HomePlanConfirmationSelectedAddOn> selectedAddOns;
+
+  /// When `true`, the primary plan is treated as already-active context:
+  /// it is omitted from charged line items and excluded from totals.
+  /// Used by the Plans → "ad-ons" tab where only add-ons are being charged.
+  final bool isPrimaryPlanActive;
 
   const HomePlanConfirmationRouteArgs({
     required this.phoneNumber,
@@ -32,7 +40,9 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanName,
     required this.primaryPlanPrice,
     required this.flow,
+    this.primaryPlanVatAmount = 0,
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
+    this.isPrimaryPlanActive = false,
   });
 
   bool get defaultTermsChecked => flow == HomePlanConfirmationEntryFlow.skip;
@@ -43,8 +53,10 @@ class HomePlanConfirmationRouteArgs extends Equatable {
         accountHolderName,
         primaryPlanName,
         primaryPlanPrice,
+        primaryPlanVatAmount,
         flow,
         selectedAddOns,
+        isPrimaryPlanActive,
       ];
 }
 

@@ -1,8 +1,11 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -11,6 +14,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import '../cubit/plans_cubit.dart';
 import '../cubit/plans_state.dart';
+import '../models/add_on_model.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
@@ -386,6 +390,56 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
+  void _openAddOnsConfirmation(BuildContext context, PlansState state) {
+    final selected = state.addOns
+        .where((addOn) => state.selectedAddOnIds.contains(addOn.id))
+        .toList(growable: false);
+
+    if (selected.isEmpty) {
+      return;
+    }
+
+    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    if (accountInfo == null) {
+      AppToast.show(
+        message: 'account information is unavailable, please try again',
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    final fullName = <String>[
+      accountInfo.fName,
+      accountInfo.lName,
+    ].where((part) => part.trim().isNotEmpty).join(' ').trim();
+    final phoneNumber = accountInfo.phoneNumber.isNotEmpty
+        ? accountInfo.phoneNumber
+        : accountInfo.primaryPhoneNumber;
+
+    final activePlan = state.earliestAddOnsPrimaryPlan;
+
+    final args = HomePlanConfirmationRouteArgs(
+      phoneNumber: phoneNumber,
+      accountHolderName: fullName,
+      primaryPlanName: activePlan?.planName ?? '',
+      primaryPlanPrice: 0,
+      flow: HomePlanConfirmationEntryFlow.proceed,
+      isPrimaryPlanActive: true,
+      selectedAddOns: selected
+          .map(
+            (HomePlanAddOnModel addOn) => HomePlanConfirmationSelectedAddOn(
+              id: addOn.id,
+              title: addOn.title,
+              price: addOn.price,
+              vatAmount: addOn.vatAmount,
+            ),
+          )
+          .toList(growable: false),
+    );
+
+    context.push(AppRoutes.homePlanConfirmationScreen, extra: args);
+  }
+
   bool _isCurrentTabEmpty(PlansState state) {
     switch (state.selectedTab) {
       case HomePlanTab.daily:
@@ -443,8 +497,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           builder: (context, state) {
             return HomePlanAddOnsBottomPayBar(
               state: state,
-              onPayNow: () =>
-                  context.push(AppRoutes.homePlanConfirmationScreen),
+              onPayNow: () => _openAddOnsConfirmation(context, state),
             );
           },
         ),

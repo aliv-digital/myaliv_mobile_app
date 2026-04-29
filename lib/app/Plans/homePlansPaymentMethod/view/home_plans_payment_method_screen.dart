@@ -47,6 +47,8 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
           HomePlansPaymentMethodStarted(
             subscriberType: args.subscriberType,
             walletBalance: args.walletBalance,
+            amount: args.amount,
+            vatNote: args.vatNote,
           ),
         );
 

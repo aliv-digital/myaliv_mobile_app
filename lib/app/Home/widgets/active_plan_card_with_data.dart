@@ -2,15 +2,14 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// Active plan card connected to PlansCubit for real-time data.
@@ -282,46 +281,14 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
     // Don't allow tap while loading
     if (widget.isLoading) return;
 
-    final newValue = !isOn;
+    // Optimistically flip the visual; the cubit will reconcile via didUpdateWidget.
+    setState(() => isOn = !isOn);
 
-    if (newValue) {
-      // Toggle OFF → ON: Show bottom sheet to select payment method
-      setState(() => isOn = true);
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        isDismissible: true,
-        backgroundColor: Colors.transparent,
-        barrierColor: Colors.black.withValues(alpha: 0.5),
-        builder: (_) => const AutoRenewBottomSheet(),
-      ).then((_) {
-        // Revert if bottom sheet dismissed without enabling
-        // The actual state will be updated by DeviceLimitsCubit after API success
-        if (mounted) {
-          setState(() => isOn = widget.value);
-        }
-      });
-    } else {
-      // Toggle ON → OFF: Call disable API directly
-      setState(() => isOn = false);
+    await handleAutoRenewToggle(context, currentValue: widget.value);
 
-      final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-      if (accountInfo == null || accountInfo.idAcc <= 0) {
-        Fluttertoast.showToast(msg: 'Account info not available');
-        setState(() => isOn = true); // Revert
-        return;
-      }
-
-      final success = await instance<DeviceLimitsCubit>()
-          .disableAutoRenew(accountInfo.idAcc);
-
-      if (!success && mounted) {
-        // Revert on failure
-        setState(() => isOn = true);
-        Fluttertoast.showToast(msg: 'Failed to disable auto-renew');
-      } else if (success) {
-        Fluttertoast.showToast(msg: 'Auto-renew disabled');
-      }
+    // Reconcile against the latest authoritative value once the action settles.
+    if (mounted) {
+      setState(() => isOn = widget.value);
     }
   }
 

@@ -1,11 +1,18 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_add_on_models.dart'
     as plan_add_ons_models;
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_add_on_tile.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_fair_use_policy_card.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_plan_red_image_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../cubit/plans_state.dart';
 import '../models/add_on_model.dart';
@@ -22,6 +29,25 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
   });
 
   static const double _addOnsTabHorizontalPadding = 25;
+  static final Uri _fairUsePolicyUri =
+      Uri.parse('https://www.bealiv.com/fair-use-policy/');
+
+  Future<void> _openFairUsePolicy() async {
+    try {
+      final launched = await launchUrl(
+        _fairUsePolicyUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launched) return;
+    } catch (_) {
+      // Fall through to the toast — `launchUrl` can throw a PlatformException
+      // when no handler is installed for the URI scheme.
+    }
+    AppToast.show(
+      message: 'could not open fair use policy',
+      type: ToastType.error,
+    );
+  }
 
   final BasePlanModel? activePrimaryPlan;
   final List<HomePlanAddOnModel> addOns;
@@ -84,17 +110,38 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
         16,
       ),
       children: <Widget>[
-        PlanPurchasePlanRedImageCard(
-          planLabel: activePlan.label,
-          planName: activePlan.name,
-          activeLabel: activePlan.activeDateLabel,
-          activeDate: activePlan.activeDate,
-          expireLabel: activePlan.expireDateLabel,
-          expireDate: activePlan.expireDate,
-          autoRenew: activePlan.autoRenew,
+        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+          bloc: instance<DeviceLimitsCubit>(),
+          buildWhen: (previous, current) =>
+              previous.autoRenew != current.autoRenew ||
+              previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
+          builder: (context, deviceLimitsState) {
+            return PlanPurchasePlanRedImageCard(
+              planLabel: activePlan.label,
+              planName: activePlan.name,
+              activeLabel: activePlan.activeDateLabel,
+              activeDate: activePlan.activeDate,
+              expireLabel: activePlan.expireDateLabel,
+              expireDate: activePlan.expireDate,
+              autoRenew: deviceLimitsState.autoRenew,
+              // Always pass a callback so the toggle stays in controlled mode
+              // (i.e. doesn't fall back to flipping local state on tap). During
+              // an in-flight toggle, swallow the tap.
+              onAutoRenewChanged: (_) {
+                if (deviceLimitsState.isTogglingAutoRenew) return;
+                handleAutoRenewToggle(
+                  context,
+                  currentValue: deviceLimitsState.autoRenew,
+                );
+              },
+            );
+          },
         ),
         const SizedBox(height: 16),
-        PlanPurchaseFairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
+        PlanPurchaseFairUsePolicyCard(
+          policy: fairUsePolicy,
+          onTap: _openFairUsePolicy,
+        ),
         const SizedBox(height: 16),
         ...addOns.map((addOn) {
           final selected = selectedAddOnIds.contains(addOn.id);
@@ -142,6 +189,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
       isVatExclusive: false,
       buttonText: 'proceed',
       amountText: '\$ ${total.toStringAsFixed(2)}',
+      isButtonEnabled: state.selectedAddOnIds.isNotEmpty,
       onPayNow: onPayNow,
     );
   }

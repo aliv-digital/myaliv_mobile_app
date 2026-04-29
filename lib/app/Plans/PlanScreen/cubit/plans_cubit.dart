@@ -48,9 +48,22 @@ class PlansCubit extends Cubit<PlansState> {
   Future<void> changeTab(HomePlanTab tab) async {
     if (tab == state.selectedTab) return;
 
-    emit(state.copyWith(selectedTab: tab, expandedPlanIds: const {}));
+    emit(state.copyWith(
+      selectedTab: tab,
+      expandedPlanIds: const {},
+      // Drop any in-progress add-on selection when leaving the add-ons tab
+      // so totals/proceed state don't carry across tabs.
+      selectedAddOnIds: const <String>{},
+    ));
 
     // Data already loaded in single fetch, no need to fetch per tab
+  }
+
+  /// Clears any selected add-ons. Call after a successful purchase flow so
+  /// returning to the tab starts from a clean slate.
+  void clearSelectedAddOns() {
+    if (state.selectedAddOnIds.isEmpty) return;
+    emit(state.copyWith(selectedAddOnIds: const <String>{}));
   }
 
   /// Called by UI on pull-to-refresh - SAME signature as HomePlanCubit

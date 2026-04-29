@@ -29,6 +29,8 @@ class HomePlansPaymentMethodBloc
         errorMessage: null,
         subscriberType: event.subscriberType,
         walletBalance: event.walletBalance,
+        amount: event.amount,
+        vatNote: event.vatNote,
       ),
     );
 
