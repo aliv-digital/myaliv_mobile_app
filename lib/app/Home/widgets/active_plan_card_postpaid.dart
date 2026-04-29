@@ -9,8 +9,10 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 
 import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../router/app_routes.dart';
@@ -36,13 +38,12 @@ class PostpaidActivePlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
-        return previous.earliestAddOnsPrimaryPlan !=
+        return previous.status != current.status ||
+            previous.earliestAddOnsPrimaryPlan !=
                 current.earliestAddOnsPrimaryPlan ||
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
-        final activePlan = state.earliestAddOnsPrimaryPlan;
-
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
@@ -55,84 +56,90 @@ class PostpaidActivePlanCard extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top row with title and auto-renew toggle
-                const _TopRow(),
-                Text(
-                  activePlan?.planName.trim().isNotEmpty == true
-                      ? activePlan!.planName
-                      : 'no active plan',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Dates
-                Row(
-                  children: [
-                    _DateBlock(
-                      label: 'active',
-                      value: _formatCardDate(activePlan?.startDateTime),
-                      alignRight: false,
-                    ),
-                    const Spacer(),
-                    _DateBlock(
-                      label: 'expire',
-                      value: _formatCardDate(activePlan?.endDateTime),
-                      alignRight: true,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-
-                // ================= CTA =================
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      context.read<AppUiConfigCubit>().showMyLimitsView();
-                      context.go(AppRoutes.usage);
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/icons/card-add.svg',
-                      colorFilter: const ColorFilter.mode(
-                        Color(0xFFEF3A4B),
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    label: const Text(
-                      'upgrade credit limit',
-                      style: TextStyle(
-                        color: Color(0xFFEF3A4B),
-                        fontSize: 15,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: lightBg,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: (state.isLoading || state.isInitial)
+                ? const ActivePlanCardSkeleton()
+                : _buildContent(context, state.earliestAddOnsPrimaryPlan),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildContent(BuildContext context, BasePlanModel? activePlan) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Top row with title and auto-renew toggle
+        const _TopRow(),
+        Text(
+          activePlan?.planName.trim().isNotEmpty == true
+              ? activePlan!.planName
+              : 'no active plan',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Dates
+        Row(
+          children: [
+            _DateBlock(
+              label: 'active',
+              value: _formatCardDate(activePlan?.startDateTime),
+              alignRight: false,
+            ),
+            const Spacer(),
+            _DateBlock(
+              label: 'expire',
+              value: _formatCardDate(activePlan?.endDateTime),
+              alignRight: true,
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+
+        // ================= CTA =================
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              context.read<AppUiConfigCubit>().showMyLimitsView();
+              context.go(AppRoutes.usage);
+            },
+            icon: SvgPicture.asset(
+              'assets/icons/card-add.svg',
+              colorFilter: const ColorFilter.mode(
+                Color(0xFFEF3A4B),
+                BlendMode.srcIn,
+              ),
+            ),
+            label: const Text(
+              'upgrade credit limit',
+              style: TextStyle(
+                color: Color(0xFFEF3A4B),
+                fontSize: 15,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: lightBg,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(32),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
