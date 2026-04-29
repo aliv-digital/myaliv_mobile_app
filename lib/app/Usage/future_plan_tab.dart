@@ -21,17 +21,16 @@ class FuturePlansTab extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
         children: [
-          // For postpaid: show future plans from API (PrimaryPlans[1...n])
-          // For prepaid: keep existing static behavior
+          // Both prepaid and postpaid show StandAlonePlans (travel20/30/50)
+          // from the bundles API as future plans.
           if (config.isPostpaid)
-            const _PostpaidFuturePlans()
+            const _StandAloneFuturePlans()
           else ...[
-            // Prepaid: Static first plan
             const _PrepaidStaticFuturePlan(),
             const SizedBox(height: 16),
             const _StartPlanButton(),
             const SizedBox(height: 16),
-            const _PrepaidDynamicFuturePlans(),
+            const _StandAloneFuturePlans(),
           ],
         ],
       ),
@@ -39,9 +38,11 @@ class FuturePlansTab extends StatelessWidget {
   }
 }
 
-/// Future plans for postpaid users - uses PrimaryPlans[1...n] from API
-class _PostpaidFuturePlans extends StatelessWidget {
-  const _PostpaidFuturePlans();
+/// Future plans = PrimaryPlans + StandAlonePlans whose StartDate is strictly
+/// after today (date-only comparison, ignoring time-of-day).
+/// Used for both prepaid and postpaid users.
+class _StandAloneFuturePlans extends StatelessWidget {
+  const _StandAloneFuturePlans();
 
   static const List<String> _planImages = [
     'assets/images/Future Plan 1.png',
@@ -56,19 +57,29 @@ class _PostpaidFuturePlans extends StatelessWidget {
     return DateFormat('dd/MM/yy').format(date);
   }
 
+  // A plan starting today is "present", not "future". Compare date-only.
+  bool _startsInFuture(BasePlanModel plan) {
+    final start = plan.startDateTime;
+    if (start == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final startDate = DateTime(start.year, start.month, start.day);
+    return startDate.isAfter(today);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
-        return previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
+        return previous.standAlonePlans != current.standAlonePlans ||
+            previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
-        final allPrimaryPlans = state.addOnsApiPrimaryPlans;
-
-        // Skip first plan (active plan), show rest as future plans
-        final futurePlans =
-            allPrimaryPlans.length > 1 ? allPrimaryPlans.sublist(1) : <BasePlanModel>[];
+        final futurePlans = <BasePlanModel>[
+          ...state.addOnsApiPrimaryPlans.where(_startsInFuture),
+          ...state.standAlonePlans.where(_startsInFuture),
+        ];
 
         if (futurePlans.isEmpty) {
           return const _EmptyFuturePlansMessage();
@@ -189,42 +200,3 @@ class _StartPlanButton extends StatelessWidget {
   }
 }
 
-/// Dynamic future plans for prepaid users (existing behavior)
-class _PrepaidDynamicFuturePlans extends StatelessWidget {
-  const _PrepaidDynamicFuturePlans();
-
-  @override
-  Widget build(BuildContext context) {
-    final plans = [
-      {
-        'title': 'freedom8',
-        'start': '20/02/25',
-        'end': '19/03/25',
-        'image': 'assets/images/Future Plan 2.png',
-      },
-      {
-        'title': 'travel50',
-        'start': '20/01/25',
-        'end': '19/02/25',
-        'image': 'assets/images/Future Plan 3.png',
-      },
-    ];
-
-    return Column(
-      children: plans
-          .map(
-            (plan) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: FuturePlanCard(
-                title: plan['title'] as String,
-                startDate: plan['start'] as String,
-                endDate: plan['end'] as String,
-                image: plan['image'] as String,
-                isActivePlan: false,
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-}

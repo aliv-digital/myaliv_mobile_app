@@ -12,10 +12,12 @@ class AddOnsResult {
   const AddOnsResult({
     this.addOns = const [],
     this.primaryPlans = const [],
+    this.standAlonePlans = const [],
   });
 
   final List<HomePlanAddOnModel> addOns;
   final List<BasePlanModel> primaryPlans;
+  final List<BasePlanModel> standAlonePlans;
 
   BasePlanModel? get primaryPlan =>
       primaryPlans.isNotEmpty ? primaryPlans.first : null;
@@ -138,13 +140,6 @@ class PlansRepository {
       // Extract primary plans
       final rawPrimaryPlans = _asMapList(bundles['PrimaryPlans']);
 
-      if (rawPrimaryPlans.isEmpty) {
-        if (kDebugMode) {
-          debugPrint('⚠️ PlansRepository: No primary plans found in bundles');
-        }
-        return const AddOnsResult();
-      }
-
       // Parse to BasePlanModel
       final primaryPlans = rawPrimaryPlans
           .map((map) => BasePlanModel.fromApiMap(map, includeRawPayload: false))
@@ -160,9 +155,20 @@ class PlansRepository {
           ? _mapAvailableBoltOnsToUiAddOns(sortedPrimaryPlans.first)
           : <HomePlanAddOnModel>[];
 
+      // Extract and parse stand-alone plans (travel20/30/50 etc.)
+      // SecondaryPlans is intentionally ignored.
+      final standAlonePlans = _sortPrimaryPlansByEarliestStartDate(
+        _asMapList(bundles['StandAlonePlans'])
+            .map(
+              (map) => BasePlanModel.fromApiMap(map, includeRawPayload: false),
+            )
+            .toList(growable: false),
+      );
+
       if (kDebugMode) {
         debugPrint(
           '✅ PlansRepository: Fetched ${sortedPrimaryPlans.length} primary plans, '
+          '${standAlonePlans.length} stand-alone plans, '
           '${addOns.length} add-ons',
         );
       }
@@ -170,6 +176,7 @@ class PlansRepository {
       return AddOnsResult(
         addOns: addOns,
         primaryPlans: sortedPrimaryPlans,
+        standAlonePlans: standAlonePlans,
       );
     } catch (e) {
       if (kDebugMode) {

@@ -49,6 +49,7 @@ class PlansState extends Equatable {
     // Add-ons - SAME NAMES
     this.addOns = const [],
     this.addOnsApiPrimaryPlans = const [],
+    this.standAlonePlans = const [],
     this.selectedAddOnIds = const {},
     // UI state - SAME NAMES
     this.expandedPlanIds = const {},
@@ -78,6 +79,11 @@ class PlansState extends Equatable {
   // Add-ons (SAME field names)
   final List<HomePlanAddOnModel> addOns;
   final List<BasePlanModel> addOnsApiPrimaryPlans;
+
+  /// Stand-alone plans from bundles API (travel20/30/50 etc.).
+  /// Used as the source for the "future plan" UI for both prepaid and postpaid.
+  final List<BasePlanModel> standAlonePlans;
+
   final Set<String> selectedAddOnIds;
 
   // UI state (SAME field names)
@@ -143,6 +149,7 @@ class PlansState extends Equatable {
     List<HomePlansPostPaidPlanModel>? postpaidRoamingApiPlans,
     List<HomePlanAddOnModel>? addOns,
     List<BasePlanModel>? addOnsApiPrimaryPlans,
+    List<BasePlanModel>? standAlonePlans,
     Set<String>? selectedAddOnIds,
     Set<String>? expandedPlanIds,
     bool? isPurchaseModalOpen,
@@ -168,6 +175,7 @@ class PlansState extends Equatable {
       addOns: addOns ?? this.addOns,
       addOnsApiPrimaryPlans:
           addOnsApiPrimaryPlans ?? this.addOnsApiPrimaryPlans,
+      standAlonePlans: standAlonePlans ?? this.standAlonePlans,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
       isPurchaseModalOpen: isPurchaseModalOpen ?? this.isPurchaseModalOpen,
@@ -195,6 +203,7 @@ class PlansState extends Equatable {
         postpaidRoamingApiPlans,
         addOns,
         addOnsApiPrimaryPlans,
+        standAlonePlans,
         selectedAddOnIds,
         expandedPlanIds,
         isPurchaseModalOpen,
