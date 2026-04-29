@@ -215,19 +215,20 @@ class _TopRow extends StatelessWidget {
         ),
         const Spacer(),
         // Auto-pay invoice toggle using AccountInfoCubit (postpaid)
-        BlocBuilder<AccountInfoCubit, AccountInfoState>(
-          bloc: instance<AccountInfoCubit>(),
-          buildWhen: (previous, current) =>
-              previous.autoPayInvoice != current.autoPayInvoice ||
-              previous.isTogglingAutoPayInvoice !=
-                  current.isTogglingAutoPayInvoice,
-          builder: (context, state) {
-            return _AutoPayToggle(
-              value: state.autoPayInvoice,
-              isLoading: state.isTogglingAutoPayInvoice,
-            );
-          },
-        ),
+        // hidden auto pay
+        // BlocBuilder<AccountInfoCubit, AccountInfoState>(
+        //   bloc: instance<AccountInfoCubit>(),
+        //   buildWhen: (previous, current) =>
+        //       previous.autoPayInvoice != current.autoPayInvoice ||
+        //       previous.isTogglingAutoPayInvoice !=
+        //           current.isTogglingAutoPayInvoice,
+        //   builder: (context, state) {
+        //     return _AutoPayToggle(
+        //       value: state.autoPayInvoice,
+        //       isLoading: state.isTogglingAutoPayInvoice,
+        //     );
+        //   },
+        // ),
       ],
     );
   }

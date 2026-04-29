@@ -123,15 +123,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                   const SizedBox(height: 20),
+                  // our best plans
                   _bestPlans(context),
 
                   // const SizedBox(height: 16),
+                  // quick actions
                   Container(
                     padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
                     decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
                     child: _quickActions(context, config),
                   ),
                   const SizedBox(height: 24),
+                  //count down , yellow limited offers
                   const LimitedOfferView(),
                 ],
               ),
