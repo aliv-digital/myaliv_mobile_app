@@ -62,6 +62,9 @@ class MyLimitsCards extends StatelessWidget {
         separatorBuilder: (context, index) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final limit = limits[index];
+          // need to fix here
+          // Title should show - local talk mins, int'I roaming.
+          // should use condition and hard code here
           return UsageCard(
             icon: _getIconForLimit(limit.name),
             title: limit.displayName,
