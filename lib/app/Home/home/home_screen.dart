@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
@@ -13,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.da
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_postpaid.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_usage_section.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/home_header.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/no_active_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/plan_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/postpaid_billing_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/prepaid_balance_card.dart';
@@ -66,8 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     if (accountInfo != null && accountInfo.idAcc > 0) {
       context.read<BalanceCubit>().loadBalances(
-            deviceAccountId: accountInfo.idAcc,
-          );
+        deviceAccountId: accountInfo.idAcc,
+      );
 
       // Load device limits for all users (used for name display and credit limits)
       instance<DeviceLimitsCubit>().loadDeviceLimits();
@@ -107,9 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   config.hasActivePlan
                       ? config.userType == UserType.prepaid
-                          ? const PrepaidActivePlanCardWithData()
-                          : PostpaidActivePlanCard(config: config)
-                      : _noActivePlan(context),
+                            ? const PrepaidActivePlanCardWithData()
+                            : PostpaidActivePlanCard(config: config)
+                      : const NoActivePlanCard(),
 
                   config.userType == UserType.prepaid
                       ? const SizedBox(height: 40)
@@ -155,52 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
         ),
-      ),
-    );
-  }
-
-  Widget _noActivePlan(BuildContext context) {
-    return Container(
-      color: HomeScreen.blueBackground,
-      width: MediaQuery.of(context).size.width,
-      height: 190,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Icon(IconsaxPlusLinear.receipt_minus, color: Colors.grey),
-          SvgPicture.asset(
-            'assets/icons/no_plan.svg',
-            width: 56,
-            height: 56,
-            fit: BoxFit.contain,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'you currently do not have an active plan',
-            style: TextStyle(fontFamily: 'CircularPro', color: Colors.grey),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              side: const BorderSide(color: HomeScreen.purple),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: Text(
-                'purchase a new plan',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  color: HomeScreen.purple,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -273,44 +227,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
             GestureDetector(
-                onTap: () {
-                  context.push(AppRoutes.myProfilePrepaidScreen);
-                },
-                child:
-                    const ActionTile('assets/icons/At.svg', 'update\nemail')),
+              onTap: () {
+                context.push(AppRoutes.myProfilePrepaidScreen);
+              },
+              child: const ActionTile('assets/icons/At.svg', 'update\nemail'),
+            ),
             GestureDetector(
-                onTap: () {
-                  context.push(AppRoutes.referFriendPrepaidScreen);
-                },
-                child: const ActionTile(
-                    'assets/icons/UsersThree.svg', 'refer a friend')),
+              onTap: () {
+                context.push(AppRoutes.referFriendPrepaidScreen);
+              },
+              child: const ActionTile(
+                'assets/icons/UsersThree.svg',
+                'refer a friend',
+              ),
+            ),
             GestureDetector(
-                onTap: () async {
-                  ///https://www.bealiv.com/deals/
-                  final uri = Uri.parse(
-                    'https://www.bealiv.com/deals/',
-                  );
+              onTap: () async {
+                ///https://www.bealiv.com/deals/
+                final uri = Uri.parse('https://www.bealiv.com/deals/');
 
-                  if (!await launchUrl(uri,
-                      mode: LaunchMode.externalApplication)) {
-                    throw 'Could not open store locator';
-                  }
-                },
-                child: const ActionTile(
-                    'assets/icons/aliv_quick.svg', 'ALIV deals')),
+                if (!await launchUrl(
+                  uri,
+                  mode: LaunchMode.externalApplication,
+                )) {
+                  throw 'Could not open store locator';
+                }
+              },
+              child: const ActionTile(
+                'assets/icons/aliv_quick.svg',
+                'ALIV deals',
+              ),
+            ),
             GestureDetector(
-                onTap: () {
-                  context.push(AppRoutes.callSupportScreen);
-                },
-                child: const ActionTile(
-                    'assets/icons/headphone.svg', 'help & support')),
+              onTap: () {
+                context.push(AppRoutes.callSupportScreen);
+              },
+              child: const ActionTile(
+                'assets/icons/headphone.svg',
+                'help & support',
+              ),
+            ),
           ],
         ),
       ),
       color: null,
     );
   }
-
 
   Widget _section({
     required String title,

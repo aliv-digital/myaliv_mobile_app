@@ -67,6 +67,65 @@ class PlanEmptyState extends StatelessWidget {
   }
 }
 
+/// Shown on the add-ons tab when the user has no active primary plan.
+/// Add-ons can't be purchased without one — CTA switches the tab strip
+/// back to a primary-plan tab.
+class AddOnsNoPrimaryPlanState extends StatelessWidget {
+  const AddOnsNoPrimaryPlanState({
+    super.key,
+    required this.onPurchasePlan,
+  });
+
+  final VoidCallback onPurchasePlan;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'you have no active primary plan, to purchase an add-on you must purchase a primary plan click purchase!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[700],
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onPurchasePlan,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF645D9C),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 14,
+                ),
+              ),
+              child: const Text(
+                'purchase plan',
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Error state widget for plan screen
 class PlanErrorState extends StatelessWidget {
   const PlanErrorState({

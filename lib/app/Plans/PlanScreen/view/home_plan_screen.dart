@@ -277,6 +277,15 @@ class _HomePlanViewState extends State<_HomePlanView> {
 
     // Success state - check if data exists
     if (currentState.selectedTab == HomePlanTab.addOns) {
+      // Block add-on purchase when no active primary plan exists.
+      if (currentState.earliestAddOnsPrimaryPlan == null) {
+        return AddOnsNoPrimaryPlanState(
+          onPurchasePlan: () {
+            context.read<PlansCubit>().changeTab(HomePlanTab.monthly);
+          },
+        );
+      }
+
       // Check if add-ons list is empty
       if (currentState.addOns.isEmpty) {
         return PlanEmptyState(

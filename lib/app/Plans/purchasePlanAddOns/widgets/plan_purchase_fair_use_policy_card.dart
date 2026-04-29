@@ -23,7 +23,6 @@ class PlanPurchaseFairUsePolicyCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          // Screenshot এর মতো light background feel (page bg এর সাথে blend)
           padding: const EdgeInsets.fromLTRB(5, 4, 0, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
