@@ -1,11 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class NoRewardsPrepaid extends StatelessWidget {
-  final String prefixText;   // "looks like ... visit "
-  final String linkText;     // "bealiv.com/\ndeals"
-  final String suffixText;   // " to discover ...!"
+  final String prefixText; // "looks like ... visit "
+  final String linkText; // "bealiv.com/\ndeals"
+  final String suffixText; // " to discover ...!"
   final VoidCallback onLinkPressed;
 
   const NoRewardsPrepaid({
@@ -31,8 +32,9 @@ class NoRewardsPrepaid extends StatelessWidget {
 
     final linkStyle = baseStyle.copyWith(
       fontWeight: FontWeight.w700,
-      color: const Color(0xFF4B4ACF), // purple-blue like figma
+      color: HexColor.fromHex('#5146A8'),
       decoration: TextDecoration.underline,
+      decorationColor: HexColor.fromHex('#5146A8'),
       decorationThickness: 2,
       height: 1.25,
     );
@@ -59,7 +61,6 @@ class NoRewardsPrepaid extends StatelessWidget {
               AssetConstant.rewardsCardBackgroundPNG,
               fit: BoxFit.cover,
             ),
-
             Center(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 22),
@@ -80,7 +81,8 @@ class NoRewardsPrepaid extends StatelessWidget {
                       TextSpan(
                         text: linkText,
                         style: linkStyle,
-                        recognizer: TapGestureRecognizer()..onTap = onLinkPressed,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = onLinkPressed,
                       ),
                       TextSpan(text: suffixText),
                     ],
