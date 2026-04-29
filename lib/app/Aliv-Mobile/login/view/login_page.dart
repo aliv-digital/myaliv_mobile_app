@@ -134,7 +134,7 @@ class _LoginView extends StatelessWidget {
                             const SizedBox(height: AuthModuleSizes.passwordToErrorRowGap),
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
-                                final hasError = state.status == LoginStatus.failure && state.errorMessage != null;
+                                final hasError = state.status == LoginStatus.failure && state.errorMessage != null && (state.phoneFieldError || state.passwordFieldError);
                                 return Row(
                                   children: [
                                     Expanded(
@@ -156,15 +156,12 @@ class _LoginView extends StatelessWidget {
                                       ),
                                     ),
                                     TextButton(
-                                      style:
-                                          AuthModuleButtonStyles.inlineTextLink,
+                                      style: AuthModuleButtonStyles.inlineTextLink,
                                       onPressed: () {
                                         context.push(AppRoutes.forgetPassword);
                                       },
-                                      child: const Text(
-                                        'forgot password?',
-                                        style:
-                                            AuthModuleTextStyles.forgotPassword,
+                                      child: const Text('forgot password?',
+                                        style: AuthModuleTextStyles.forgotPassword,
                                       ),
                                     ),
                                   ],
@@ -174,17 +171,14 @@ class _LoginView extends StatelessWidget {
                             const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
                             BlocBuilder<LoginBloc, LoginState>(
                               builder: (context, state) {
-                                final loading =
-                                    state.status == LoginStatus.loading;
+                                final loading = state.status == LoginStatus.loading;
                                 return DefaultButton(
                                   label: 'sign in',
                                   isLoading: loading,
                                   height: AuthModuleSizes.fieldHeight,
                                   textStyle: AuthModuleTextStyles.signInButton,
                                   onPressed: () {
-                                    context
-                                        .read<LoginBloc>()
-                                        .add(const LoginSubmitted());
+                                    context.read<LoginBloc>().add(const LoginSubmitted());
                                   },
                                 );
                               },
@@ -193,8 +187,7 @@ class _LoginView extends StatelessWidget {
                             const LoginSocialButtons(),
                             const SizedBox(height: AuthModuleSizes.socialToBottomGap),
                             LoginBottomTexts(),
-                            const SizedBox(
-                                height: AuthModuleSizes.bottomScrollSafeGap),
+                            const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
                           ],
                         ),
                       ),
