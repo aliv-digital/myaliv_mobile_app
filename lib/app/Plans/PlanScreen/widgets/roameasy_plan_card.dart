@@ -249,6 +249,12 @@ class _PricePill extends StatelessWidget {
   }
 }
 
+const Set<String> _kRoamEasyDataBucketNames = {
+  'roaming data',
+  'carib data',
+  'uk europe data',
+};
+
 class _PlanBuckets extends StatefulWidget {
   final List<BasePlanBucketModel> benefits;
   const _PlanBuckets({required this.benefits});
@@ -270,7 +276,15 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
   Widget build(BuildContext context) {
     const double rowH = 50;
     const double sidePad = 2;
-    final List<BasePlanBucketModel> visibleBenefits = widget.benefits.take(1).toList();
+    final BasePlanBucketModel? matched = widget.benefits
+        .cast<BasePlanBucketModel?>()
+        .firstWhere(
+          (b) =>
+              _kRoamEasyDataBucketNames.contains(b!.name.trim().toLowerCase()),
+          orElse: () => null,
+        );
+    final List<BasePlanBucketModel> visibleBenefits =
+        matched == null ? const [] : [matched];
 
     if (visibleBenefits.isEmpty) {
       return const SizedBox.shrink();
