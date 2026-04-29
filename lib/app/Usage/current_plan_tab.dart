@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Usage/postpaid_usage_item.dart';
-import 'package:myaliv_mobile_app/app/Usage/widgets/current_plan_active_card.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/postpage_usage_tile.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/purchase_addon_button.dart';
@@ -32,7 +32,7 @@ class CurrentPlanTab extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
             child: config.isPostpaid == true
                 ? PostpaidCurrentPlan()
-                : PrepaidCurrentPlanActivePlanCard(showRenewButton: false),
+                : const PrepaidActivePlanCardWithData(showRenewButton: false),
           ),
 
           // const SizedBox(height: 16),

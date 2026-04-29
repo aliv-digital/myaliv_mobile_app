@@ -21,16 +21,12 @@ class FuturePlansTab extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
         children: [
-          // Both prepaid and postpaid show StandAlonePlans (travel20/30/50)
-          // from the bundles API as future plans.
           if (config.isPostpaid)
             const _StandAloneFuturePlans()
           else ...[
-            const _PrepaidStaticFuturePlan(),
+            const _StandAloneFuturePlans(),
             const SizedBox(height: 16),
             const _StartPlanButton(),
-            const SizedBox(height: 16),
-            const _StandAloneFuturePlans(),
           ],
         ],
       ),
@@ -199,4 +195,3 @@ class _StartPlanButton extends StatelessWidget {
     );
   }
 }
-

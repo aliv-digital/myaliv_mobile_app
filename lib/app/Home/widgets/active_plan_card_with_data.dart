@@ -17,7 +17,12 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 /// This widget displays the active plan with renew button inside the card,
 /// matching the original design from PrepaidActivePlanCard.
 class PrepaidActivePlanCardWithData extends StatelessWidget {
-  const PrepaidActivePlanCardWithData({super.key});
+  final bool showRenewButton;
+
+  const PrepaidActivePlanCardWithData({
+    super.key,
+    this.showRenewButton = true,
+  });
 
   String _formatCardDate(DateTime? date) {
     if (date == null) {
@@ -36,22 +41,25 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
+        final card = Container(
+          height: showRenewButton ? 200 : 150,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+          decoration: BoxDecoration(
+            image: const DecorationImage(
+              image: AssetImage('assets/icons/Home Active Plan.png'),
+              fit: BoxFit.fill,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: (state.isLoading || state.isInitial)
+              ? const ActivePlanCardSkeleton()
+              : _buildContent(state.earliestAddOnsPrimaryPlan),
+        );
+
+        if (!showRenewButton) return card;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Container(
-            height: 200,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-            decoration: BoxDecoration(
-              image: const DecorationImage(
-                image: AssetImage('assets/icons/Home Active Plan.png'),
-                fit: BoxFit.fill,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: (state.isLoading || state.isInitial)
-                ? const ActivePlanCardSkeleton()
-                : _buildContent(state.earliestAddOnsPrimaryPlan),
-          ),
+          child: card,
         );
       },
     );
@@ -80,19 +88,21 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
           activeDate: _formatCardDate(activePlan?.startDateTime),
           expireDate: _formatCardDate(activePlan?.endDateTime),
         ),
-        const SizedBox(height: 14),
-        // Hide renew button when auto-renew is ON
-        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-          bloc: instance<DeviceLimitsCubit>(),
-          buildWhen: (previous, current) =>
-              previous.autoRenew != current.autoRenew,
-          builder: (context, limitsState) {
-            if (limitsState.autoRenew) {
-              return const SizedBox.shrink();
-            }
-            return const _RenewPlanButton();
-          },
-        ),
+        if (showRenewButton) ...[
+          const SizedBox(height: 14),
+          // Hide renew button when auto-renew is ON
+          BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+            bloc: instance<DeviceLimitsCubit>(),
+            buildWhen: (previous, current) =>
+                previous.autoRenew != current.autoRenew,
+            builder: (context, limitsState) {
+              if (limitsState.autoRenew) {
+                return const SizedBox.shrink();
+              }
+              return const _RenewPlanButton();
+            },
+          ),
+        ],
       ],
     );
   }

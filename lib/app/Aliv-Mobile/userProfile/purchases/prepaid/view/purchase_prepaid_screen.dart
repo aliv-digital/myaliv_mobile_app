@@ -116,7 +116,6 @@ class _PurchasePrepaidView extends StatelessWidget {
   }
 
   void _handleNavigation(BuildContext context, PurchasePrepaidAction action) {
-    final config = context.read<AppUiConfigCubit>().state;
     final uiConfigCubit = context.read<AppUiConfigCubit>();
 
     // TODO: integrate GoRouter routes here
@@ -129,14 +128,7 @@ class _PurchasePrepaidView extends StatelessWidget {
         context.push(AppRoutes.topUpPrepaidNumberPostpaidScreen);
         break;
       case PurchasePrepaidAction.buyPlans:
-        if (config.isPrepaid == true) {
-          context.go(AppRoutes.usage);
-        } else {
-          context.go(
-            AppRoutes.plans,
-          );
-        }
-
+        context.go(AppRoutes.plans);
         break;
       case PurchasePrepaidAction.futurePlans:
         uiConfigCubit.showFuturePlansView();

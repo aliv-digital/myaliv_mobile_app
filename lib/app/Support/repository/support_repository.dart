@@ -9,11 +9,11 @@ class SupportRepository {
 
   List<SupportMenuItem> fetchMenuItems() {
     return const <SupportMenuItem>[
-      SupportMenuItem(
-        id: 'chat_bot',
-        title: 'chat bot',
-        action: SupportMenuAction.chatBot,
-      ),
+      // SupportMenuItem(
+      //   id: 'chat_bot',
+      //   title: 'chat bot',
+      //   action: SupportMenuAction.chatBot,
+      // ),
       SupportMenuItem(
         id: 'store_locator',
         title: 'store locator',

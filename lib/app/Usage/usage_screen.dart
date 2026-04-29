@@ -16,19 +16,60 @@ class UsageScreen extends StatefulWidget {
   State<UsageScreen> createState() => _UsageScreenState();
 }
 
-class _UsageScreenState extends State<UsageScreen> {
-  late final int _initialTabIndex;
+class _UsageScreenState extends State<UsageScreen>
+    with TickerProviderStateMixin {
+  TabController? _tabController;
+  int _tabLength = 0;
 
   @override
   void initState() {
     super.initState();
 
     final HomeUiConfig config = context.read<AppUiConfigCubit>().state;
-    _initialTabIndex = _resolveInitialTabIndex(config);
+    _tabLength = _tabs(config).length;
+    _tabController = TabController(
+      length: _tabLength,
+      initialIndex: _resolveInitialTabIndex(config),
+      vsync: this,
+    );
 
-    // `openMyLimits` and `isFuturePlan` are one-time navigation intents.
-    // Clear them after the first frame so future visits open normally.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AppUiConfigCubit>().clearNavigationIntent();
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController?.dispose();
+    super.dispose();
+  }
+
+  void _syncControllerLength(HomeUiConfig config) {
+    final newLength = _tabs(config).length;
+    if (newLength == _tabLength) return;
+
+    final oldIndex = _tabController?.index ?? 0;
+    _tabController?.dispose();
+    _tabLength = newLength;
+    _tabController = TabController(
+      length: newLength,
+      initialIndex: oldIndex.clamp(0, newLength - 1),
+      vsync: this,
+    );
+  }
+
+  void _handleNavigationIntent(HomeUiConfig state) {
+    final controller = _tabController;
+    if (controller == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final targetIndex = _resolveInitialTabIndex(state);
+      if (targetIndex < controller.length &&
+          targetIndex != controller.index) {
+        controller.animateTo(targetIndex);
+      }
       context.read<AppUiConfigCubit>().clearNavigationIntent();
     });
   }
@@ -63,12 +104,16 @@ class _UsageScreenState extends State<UsageScreen> {
   @override
   Widget build(BuildContext context) {
     final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+    _syncControllerLength(config);
     final tabs = _tabs(config);
     final views = _tabViews(config);
+    final controller = _tabController!;
 
-    return DefaultTabController(
-      length: tabs.length,
-      initialIndex: _initialTabIndex,
+    return BlocListener<AppUiConfigCubit, HomeUiConfig>(
+      listenWhen: (p, c) =>
+          (!p.isFuturePlan && c.isFuturePlan) ||
+          (!p.openMyLimits && c.openMyLimits),
+      listener: (_, state) => _handleNavigationIntent(state),
       child: Scaffold(
         backgroundColor: const Color(0xFFF4F6FB),
         appBar: AppBar(
@@ -87,20 +132,12 @@ class _UsageScreenState extends State<UsageScreen> {
               ),
             ),
           ),
-          // actions: [
-          //   IconButton(
-          //     icon: SvgPicture.asset('assets/icons/bell with red.svg'),
-          //     color: Colors.white,
-          //     onPressed: () {},
-          //   ),
-          //   SizedBox(width: 13,)
-          // ],
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(82),
-            child: UsageTabBar(tabs),
+            child: UsageTabBar(tabs: tabs, controller: controller),
           ),
         ),
-        body: TabBarView(children: views),
+        body: TabBarView(controller: controller, children: views),
       ),
     );
   }
@@ -111,7 +148,8 @@ class UsageTabBar extends StatelessWidget {
   static const Color grey = Color(0xFF9E9E9E); // Color(0xFF707070)
   static const Color dividerBg = Color(0xFFF4F6FB);
   final List<Tab> tabs;
-  const UsageTabBar(this.tabs, {super.key});
+  final TabController controller;
+  const UsageTabBar({super.key, required this.tabs, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -124,29 +162,26 @@ class UsageTabBar extends StatelessWidget {
             height: 20,
           ),
           TabBar(
-              indicatorSize: TabBarIndicatorSize.tab, // 🔥 full tab width
-              indicator: const UnderlineTabIndicator(
-                borderSide: BorderSide(color: purple, width: 2),
-                insets: EdgeInsets.symmetric(horizontal: 8),
-              ),
-              labelColor: purple,
-              unselectedLabelColor: Color(0xFF707070),
-              labelStyle: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-              tabs: tabs
-              // const [
-              //   Tab(text: 'current plan'),
-              //   Tab(text: 'future plans'),
-              // ],
-              ),
+            controller: controller,
+            indicatorSize: TabBarIndicatorSize.tab, // 🔥 full tab width
+            indicator: const UnderlineTabIndicator(
+              borderSide: BorderSide(color: purple, width: 2),
+              insets: EdgeInsets.symmetric(horizontal: 8),
+            ),
+            labelColor: purple,
+            unselectedLabelColor: Color(0xFF707070),
+            labelStyle: const TextStyle(
+              fontFamily: 'CircularPro',
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontFamily: 'CircularPro',
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+            tabs: tabs,
+          ),
 
           // Divider background (important!)
           Container(height: 24, color: dividerBg),
