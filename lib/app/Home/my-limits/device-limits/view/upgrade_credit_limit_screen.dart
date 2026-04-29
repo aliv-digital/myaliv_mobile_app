@@ -87,28 +87,33 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
     }
 
     final limits = state.deviceLimits;
+    bool isValueUpdate = false;
 
     if (limits != null) {
-      if (_localTextController.text == limits.localTextFormatted ||
-          _localDataController.text == limits.localDataFormatted ||
-          _localVoiceController.text == limits.localVoiceFormatted ||
-          _intlRoamingController.text == limits.roamingFormatted ||
-          _intlTalkController.text == limits.internationalFormatted) {
-        AppToast.show(
-          message:
-              'No changes detected. Please enter or update a value before continuing.',
-          type: ToastType.error,
-        );
-        return;
+      if (_localTextController.text != limits.localTextFormatted ||
+          _localDataController.text != limits.localDataFormatted ||
+          _localVoiceController.text != limits.localVoiceFormatted ||
+          _intlRoamingController.text != limits.roamingFormatted ||
+          _intlTalkController.text != limits.internationalFormatted) {
+        isValueUpdate = true;
       }
+    }
+
+    if (!isValueUpdate) {
+      AppToast.show(
+        message:
+            'No changes detected. Please enter or update a value before continuing.',
+        type: ToastType.error,
+      );
+      return;
     }
 
     final request = UpdateLimitsRequest.fromFormValues(
       localText: _localTextController.text,
       localData: _localDataController.text,
       localVoice: _localVoiceController.text,
-      international: _intlRoamingController.text,
-      roaming: _intlTalkController.text,
+      international: _intlTalkController.text,
+      roaming: _intlRoamingController.text,
     );
 
     final success = await instance<DeviceLimitsCubit>().updateLimits(
