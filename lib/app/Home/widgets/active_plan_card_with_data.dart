@@ -9,7 +9,9 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
+import 'package:shimmer/shimmer.dart';
 
 /// Active plan card connected to PlansCubit for real-time data.
 ///
@@ -29,14 +31,12 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
-        // Rebuild when active plan data changes
-        return previous.earliestAddOnsPrimaryPlan !=
+        return previous.status != current.status ||
+            previous.earliestAddOnsPrimaryPlan !=
                 current.earliestAddOnsPrimaryPlan ||
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
-        final activePlan = state.earliestAddOnsPrimaryPlan;
-
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
@@ -49,46 +49,147 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const _TopRow(),
-                Text(
-                  activePlan?.planName.trim().isNotEmpty == true
-                      ? activePlan!.planName
-                      : 'no active plan',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const Spacer(),
-                _DatesRow(
-                  activeDate: _formatCardDate(activePlan?.startDateTime),
-                  expireDate: _formatCardDate(activePlan?.endDateTime),
-                ),
-                const SizedBox(height: 14),
-                // Hide renew button when auto-renew is ON
-                BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-                  bloc: instance<DeviceLimitsCubit>(),
-                  buildWhen: (previous, current) =>
-                      previous.autoRenew != current.autoRenew,
-                  builder: (context, limitsState) {
-                    if (limitsState.autoRenew) {
-                      return const SizedBox.shrink();
-                    }
-                    return const _RenewPlanButton();
-                  },
-                ),
-              ],
-            ),
+            child: (state.isLoading || state.isInitial)
+                ? const _ActivePlanCardSkeleton()
+                : _buildContent(state.earliestAddOnsPrimaryPlan),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildContent(BasePlanModel? activePlan) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _TopRow(),
+        Text(
+          activePlan?.planName.trim().isNotEmpty == true
+              ? activePlan!.planName
+              : 'no active plan',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const Spacer(),
+        _DatesRow(
+          activeDate: _formatCardDate(activePlan?.startDateTime),
+          expireDate: _formatCardDate(activePlan?.endDateTime),
+        ),
+        const SizedBox(height: 14),
+        // Hide renew button when auto-renew is ON
+        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+          bloc: instance<DeviceLimitsCubit>(),
+          buildWhen: (previous, current) =>
+              previous.autoRenew != current.autoRenew,
+          builder: (context, limitsState) {
+            if (limitsState.autoRenew) {
+              return const SizedBox.shrink();
+            }
+            return const _RenewPlanButton();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Skeleton placeholder shown while PlansCubit is loading.
+/// Each block mirrors a real element of the card so the layout doesn't shift.
+class _ActivePlanCardSkeleton extends StatelessWidget {
+  const _ActivePlanCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.white.withValues(alpha: 0.25),
+      highlightColor: Colors.white.withValues(alpha: 0.55),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top row: "active plan" label + plan name on the left, toggle on the right
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  _SkeletonBox(width: 60, height: 12),
+                  SizedBox(height: 6),
+                  _SkeletonBox(width: 140, height: 24),
+                ],
+              ),
+              const Spacer(),
+              Row(
+                children: const [
+                  _SkeletonBox(width: 44, height: 24, radius: 999),
+                  SizedBox(width: 8),
+                  _SkeletonBox(width: 62, height: 12),
+                ],
+              ),
+            ],
+          ),
+          const Spacer(),
+          // Dates row: active (left) / expire (right)
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  _SkeletonBox(width: 36, height: 10),
+                  SizedBox(height: 4),
+                  _SkeletonBox(width: 70, height: 15),
+                ],
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: const [
+                  _SkeletonBox(width: 36, height: 10),
+                  SizedBox(height: 4),
+                  _SkeletonBox(width: 70, height: 15),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          // Renew button placeholder
+          const _SkeletonBox(
+            width: double.infinity,
+            height: 50,
+            radius: 100,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({
+    required this.width,
+    required this.height,
+    this.radius = 6,
+  });
+
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(radius),
+      ),
     );
   }
 }
