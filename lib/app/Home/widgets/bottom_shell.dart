@@ -30,7 +30,8 @@ class BottomShell extends StatelessWidget {
           Navigator.of(context).pop();
           return false;
         }
-        return true;
+        context.go(AppRoutes.welcome);
+        return false;
       },
       child: Scaffold(
         key: bottomShellKey,
