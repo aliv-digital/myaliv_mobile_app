@@ -234,20 +234,21 @@ class ReferFriendPrepaidBloc
     );
 
     try {
-      final phoneValidationResult = phoneNumberHelper.validateAndBuildApiUsername(
-        rawPhoneNumber: state.friendPhone,
-        selectedCountry: state.selectedCountry,
-      );
-
-      if (!phoneValidationResult.isValid || phoneValidationResult.phoneNumberForApi == null) {
-        throw const ReferFriendPrepaidException(
-          'User phone number is invalid.',
-        );
-      }
-
+      // final phoneValidationResult = phoneNumberHelper.validateAndBuildApiUsername(
+      //   rawPhoneNumber: state.friendPhone,
+      //   selectedCountry: state.selectedCountry,
+      // );
+      //
+      //
+      // if (!phoneValidationResult.isValid || phoneValidationResult.phoneNumberForApi == null) {
+      //   throw const ReferFriendPrepaidException(
+      //     'User phone number is invalid.',
+      //   );
+      // }
+      final accountInfo = _readReferralAccountInfo();
       await repository.redeemReferral(
         code: state.redeemCode.trim(),
-        referredNumber: phoneValidationResult.phoneNumberForApi!,
+        referredNumber: accountInfo.phoneNumber,//phoneValidationResult.phoneNumberForApi!,
       );
 
       emit(
