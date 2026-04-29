@@ -211,6 +211,7 @@ class HomePlansPostPaidPlanModel {
 
   DateTime? get startDateTime => _tryParseApiDate(startDate);
   DateTime? get endDateTime => _tryParseApiDate(endDate);
+  double get planAmountWithVat => planAmount + vatAmount;
 
   String get durationText {
     switch (frequency.trim().toUpperCase()) {
