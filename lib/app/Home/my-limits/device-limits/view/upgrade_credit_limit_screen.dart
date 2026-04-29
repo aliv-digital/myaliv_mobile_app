@@ -70,13 +70,13 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
         _localTextController.text = limits.localTextFormatted;
         _localDataController.text = limits.localDataFormatted;
         _localVoiceController.text = limits.localVoiceFormatted;
-        _intlRoamingController.text = limits.internationalFormatted;
-        _intlTalkController.text = limits.roamingFormatted;
+        _intlRoamingController.text = limits.roamingFormatted;
+        _intlTalkController.text = limits.internationalFormatted;
       });
     }
   }
 
-  Future<void> _updateLimits() async {
+  Future<void> _updateLimits(DeviceLimitsState state) async {
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     if (accountInfo == null || accountInfo.idAcc <= 0) {
       AppToast.show(
@@ -84,6 +84,23 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
         type: ToastType.error,
       );
       return;
+    }
+
+    final limits = state.deviceLimits;
+
+    if (limits != null) {
+      if (_localTextController.text == limits.localTextFormatted ||
+          _localDataController.text == limits.localDataFormatted ||
+          _localVoiceController.text == limits.localVoiceFormatted ||
+          _intlRoamingController.text == limits.roamingFormatted ||
+          _intlTalkController.text == limits.internationalFormatted) {
+        AppToast.show(
+          message:
+              'No changes detected. Please enter or update a value before continuing.',
+          type: ToastType.error,
+        );
+        return;
+      }
     }
 
     final request = UpdateLimitsRequest.fromFormValues(
@@ -181,8 +198,10 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
             onTap: () => context.go(AppRoutes.home),
             child: SvgPicture.asset(
               'assets/icons/home.svg',
-              colorFilter:
-                  const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ),
@@ -290,11 +309,15 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
             width: double.infinity,
             height: 40,
             child: ElevatedButton(
-              onPressed: isUpdating || !_agreed ? null : _updateLimits,
+              onPressed: isUpdating || !_agreed
+                  ? null
+                  : () {
+                      _updateLimits(state);
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: UpgradeCreditLimitScreen.purple,
-                disabledBackgroundColor:
-                    UpgradeCreditLimitScreen.purple.withValues(alpha: 0.5),
+                disabledBackgroundColor: UpgradeCreditLimitScreen.purple
+                    .withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),
