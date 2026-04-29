@@ -181,6 +181,7 @@ class _PlanPurchaseBottomBar extends StatelessWidget {
           isVatExclusive: true,
           buttonText: 'proceed',
           amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
+          isButtonEnabled: state.selectedAddOnIds.isNotEmpty,
           onPayNow: () => context.read<PlanPurchasePlanAddOnsBloc>().add(
                 const PlanPurchasePlanAddOnsProceedPressed(),
               ),
