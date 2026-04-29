@@ -92,9 +92,10 @@ class BestPlanParserService {
           // For best plans, include plans that:
           // 1. Have active status
           // 2. Are not yet expired
-          // Note: We include future plans (not yet started) to show upcoming promotions
+          // 3. Have already started (exclude future-start plans)
           final isActiveStatus = plan.status.toLowerCase() == 'active';
-          final shouldInclude = isActiveStatus && !plan.isExpired;
+          final shouldInclude =
+              isActiveStatus && !plan.isExpired && plan.isStarted;
 
           if (shouldInclude) {
             plans.add(plan);
@@ -102,6 +103,8 @@ class BestPlanParserService {
             if (kDebugMode) {
               if (plan.isExpired) {
                 debugPrint('  ❌ Skipped (expired)');
+              } else if (!plan.isStarted) {
+                debugPrint('  ❌ Skipped (not yet started)');
               } else {
                 debugPrint('  ❌ Skipped (inactive status)');
               }
