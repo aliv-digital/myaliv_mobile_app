@@ -125,16 +125,7 @@ class _ProfilePrepaidView extends StatelessWidget {
                                         // );
                                       }
                                       if (item.id == 'rewards') {
-                                        final uri = Uri.parse(
-                                          'https://www.bealiv.com/deals/',
-                                        );
-
-                                        if (!await launchUrl(
-                                          uri,
-                                          mode: LaunchMode.externalApplication,
-                                        )) {
-                                          AppToast.show(message: "Could not open rewards");
-                                        }
+                                        context.push(AppRoutes.rewardPrepaidScreen);
                                       }
                                       context.read<ProfilePrepaidBloc>().add(
                                             ProfilePrepaidItemPressed(item),
