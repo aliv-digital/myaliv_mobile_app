@@ -8,7 +8,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/bl
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/widgets/NoRewardCard..dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/widgets/reward_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RewardPrepaidScreen extends StatelessWidget {
   const RewardPrepaidScreen({super.key});
@@ -33,18 +35,32 @@ class _RewardPrepaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<RewardPrepaidCubit, RewardPrepaidState>(
           listenWhen: (p, c) => p.action != c.action && c.action != null,
-          listener: (context, state) {
+          listener: (context, state) async {
             final action = state.action;
+            final rewardCubit = context.read<RewardPrepaidCubit>();
 
             if (action is NavigateToDeals) {
-              // TODO: open url / deeplink
+              final uri = Uri.parse('https://www.bealiv.com/deals/');
+
+              if (!await launchUrl(
+                uri,
+                mode: LaunchMode.externalApplication,
+              )) {
+                AppToast.show(
+                  message: 'Could not open rewards',
+                  type: ToastType.error,
+                );
+              }
             } else if (action is OpenRewardDetails) {
-              context.push(AppRoutes.rewardDetailsPrepaidScreen, extra: action.reward);
+              context.push(
+                AppRoutes.rewardDetailsPrepaidScreen,
+                extra: action.reward,
+              );
             } else if (action is StartGetThisFlow) {
               context.go(AppRoutes.plans);
             }
 
-            context.read<RewardPrepaidCubit>().clearAction();
+            rewardCubit.clearAction();
           },
           child: Column(
             children: [
@@ -110,10 +126,12 @@ class _RewardPrepaidView extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
                     child: RewardPrepaidCard(
                       reward: reward,
-                      onGetThisPressed: () =>
-                          context.read<RewardPrepaidCubit>().onGetThisTapped(reward),
-                      onReadMorePressed: () =>
-                          context.read<RewardPrepaidCubit>().onReadMoreTapped(reward),
+                      onGetThisPressed: () => context
+                          .read<RewardPrepaidCubit>()
+                          .onGetThisTapped(reward),
+                      onReadMorePressed: () => context
+                          .read<RewardPrepaidCubit>()
+                          .onReadMoreTapped(reward),
                     ),
                   );
                 },
