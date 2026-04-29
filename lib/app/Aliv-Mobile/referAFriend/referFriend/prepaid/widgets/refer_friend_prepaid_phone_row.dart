@@ -54,10 +54,10 @@ class _ReferFriendPrepaidPhoneRowState
       showPhoneCode: true,
       onSelect: (Country country) {
         context.read<ReferFriendPrepaidBloc>().add(
-              ReferFriendPrepaidCountryChanged(
-                _phoneNumberHelper.selectionFromCountry(country),
-              ),
-            );
+          ReferFriendPrepaidCountryChanged(
+            _phoneNumberHelper.selectionFromCountry(country),
+          ),
+        );
       },
     );
   }
@@ -71,11 +71,11 @@ class _ReferFriendPrepaidPhoneRowState
           previous.friendPhoneFieldError != current.friendPhoneFieldError,
       builder: (context, state) {
         final bool isBahamasSelected = state.selectedCountry.isoCode == 'BS';
-        final bool showLivePhoneValidationError =
-            _phoneNumberHelper.hasLiveValidationError(
-          rawPhoneNumber: state.friendPhone,
-          selectedCountry: state.selectedCountry,
-        );
+        final bool showLivePhoneValidationError = _phoneNumberHelper
+            .hasLiveValidationError(
+              rawPhoneNumber: state.friendPhone,
+              selectedCountry: state.selectedCountry,
+            );
         final bool showPhoneBorderError =
             state.friendPhoneFieldError || showLivePhoneValidationError;
         final Color phoneBorderColor = !_hasPhoneFocus && showPhoneBorderError
@@ -88,8 +88,8 @@ class _ReferFriendPrepaidPhoneRowState
             : ReferFriendPrepaidTheme.fieldInput;
         final double phoneErrorLeftPadding =
             ReferFriendPrepaidTheme.countryWidth +
-                ReferFriendPrepaidTheme.countryToPhoneGap +
-                ReferFriendPrepaidTheme.fieldHorizontalPadding;
+            ReferFriendPrepaidTheme.countryToPhoneGap +
+            ReferFriendPrepaidTheme.fieldHorizontalPadding;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,19 +97,17 @@ class _ReferFriendPrepaidPhoneRowState
             CustomCountryPhoneInputRow(
               labelText: "friend’s number",
               focusNode: _phoneFocusNode,
-              // Keep the field borderless in the neutral idle state.
-              // The gradient still appears on focus, and the red outline still
-              // appears when validation fails.
               hideUnfocusedInputBorder: !showPhoneBorderError,
-              hintText:
-                  isBahamasSelected ? '(242) 345-4356' : 'eg: 242-899-9999',
+              hintText: isBahamasSelected
+                  ? '(242) 345-4356'
+                  : 'eg: 242-899-9999',
               flagEmoji: state.selectedCountry.flagEmoji,
               dialCode: state.selectedCountry.dialCode,
               countryIsoCode: state.selectedCountry.isoCode,
               onTapCountryPicker: () => _openCountryPicker(context),
-              onChanged: (value) => context
-                  .read<ReferFriendPrepaidBloc>()
-                  .add(ReferFriendPrepaidFriendPhoneChanged(value)),
+              onChanged: (value) => context.read<ReferFriendPrepaidBloc>().add(
+                ReferFriendPrepaidFriendPhoneChanged(value),
+              ),
               // Bahamas keeps the same presentation-only formatter as login.
               inputFormatters: isBahamasSelected
                   ? const [BahamasPhoneInputFormatter()]
@@ -127,11 +125,8 @@ class _ReferFriendPrepaidPhoneRowState
                 horizontal:
                     ReferFriendPrepaidTheme.countryPickerHorizontalPadding,
               ),
-              // Match the borderless idle treatment for the phone row.
-              showCountryPickerBorder: _hasPhoneFocus || showPhoneBorderError,
-              countryPickerBorderColor: showPhoneBorderError
-                  ? ReferFriendPrepaidTheme.error
-                  : ReferFriendPrepaidTheme.border,
+              showCountryPickerBorder: true,
+              countryPickerBorderColor: ReferFriendPrepaidTheme.border,
               countryPickerBorderWidth:
                   ReferFriendPrepaidTheme.fieldBorderWidth,
               phoneInputPadding: const EdgeInsets.symmetric(
@@ -150,8 +145,7 @@ class _ReferFriendPrepaidPhoneRowState
               phoneHintStyle: ReferFriendPrepaidTheme.fieldHint,
               labelStyle: ReferFriendPrepaidTheme.label,
             ),
-            if (showLivePhoneValidationError ||
-                state.friendPhoneFieldError) ...[
+            if (showLivePhoneValidationError) ...[
               const SizedBox(height: 6),
               // Keep the message aligned with the phone field, not the picker.
               Padding(

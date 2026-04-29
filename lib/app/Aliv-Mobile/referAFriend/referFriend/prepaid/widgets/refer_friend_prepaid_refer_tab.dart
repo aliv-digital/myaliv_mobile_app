@@ -98,20 +98,11 @@ class _ReferFriendPrepaidReferTabState
           ),
           const SizedBox(height: 30),
           BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
-            buildWhen: (p, c) =>
-                p.friendPhone != c.friendPhone ||
-                p.friendEmail != c.friendEmail ||
-                p.friendEmailFieldError != c.friendEmailFieldError ||
-                p.shareStatus != c.shareStatus,
+            buildWhen: (p, c) => p.friendEmail != c.friendEmail || p.friendEmailFieldError != c.friendEmailFieldError,
             builder: (context, state) {
-              const ReferFriendPrepaidEmailHelper emailHelper =
-                  ReferFriendPrepaidEmailHelper();
-              final loading = state.shareStatus ==
-                  ReferFriendPrepaidSubmitStatus.submitting;
-              final bool showLiveEmailValidationError =
-                  emailHelper.hasLiveValidationError(state.friendEmail);
-              final bool showEmailError =
-                  state.friendEmailFieldError || showLiveEmailValidationError;
+              const ReferFriendPrepaidEmailHelper emailHelper = ReferFriendPrepaidEmailHelper();
+              final bool showLiveEmailValidationError = emailHelper.hasLiveValidationError(state.friendEmail);
+              final bool showEmailError = state.friendEmailFieldError || showLiveEmailValidationError;
 
               return Column(
                 children: [
@@ -124,22 +115,27 @@ class _ReferFriendPrepaidReferTabState
                     value: state.friendEmail,
                     showError: showEmailError,
                     highlightInputAsError: showLiveEmailValidationError,
-                    errorText:
-                        ReferFriendPrepaidEmailHelper.invalidEmailMessage,
+                    errorText: ReferFriendPrepaidEmailHelper.invalidEmailMessage,
                     // Email stays borderless in the neutral idle state.
                     showUnfocusedBorder: false,
-                    onChanged: (v) => context
-                        .read<ReferFriendPrepaidBloc>()
-                        .add(ReferFriendPrepaidFriendEmailChanged(v)),
+                    onChanged: (v) => context.read<ReferFriendPrepaidBloc>().add(ReferFriendPrepaidFriendEmailChanged(v)),
                   ),
                   const SizedBox(height: 40),
-                  ReferFriendPrepaidPrimaryButton(
-                    label: 'share',
-                    enabled: state.canShare && !loading,
-                    isLoading: loading,
-                    onTap: () => context.read<ReferFriendPrepaidBloc>().add(
+                  BlocSelector<ReferFriendPrepaidBloc,ReferFriendPrepaidState,({bool canShare, bool loading})>(
+                    selector: (state) => (
+                      canShare: state.canShare,
+                      loading: state.shareStatus == ReferFriendPrepaidSubmitStatus.submitting,
+                    ),
+                    builder: (context, buttonState) {
+                      return ReferFriendPrepaidPrimaryButton(
+                        label: 'share',
+                        enabled: buttonState.canShare && !buttonState.loading,
+                        isLoading: buttonState.loading,
+                        onTap: () => context.read<ReferFriendPrepaidBloc>().add(
                           const ReferFriendPrepaidSharePressed(),
                         ),
+                      );
+                    },
                   ),
                 ],
               );

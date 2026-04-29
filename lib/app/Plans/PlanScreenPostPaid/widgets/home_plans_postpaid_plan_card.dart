@@ -118,7 +118,7 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Text(
-                    '\$ ${plan.planAmount.toStringAsFixed(2)}',
+                    '\$ ${plan.planAmountWithVat.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,

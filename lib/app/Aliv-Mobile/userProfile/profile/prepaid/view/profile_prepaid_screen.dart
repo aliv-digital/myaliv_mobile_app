@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/profile_prepaid_bloc.dart';
 import '../bloc/profile_prepaid_event.dart';
@@ -64,84 +66,87 @@ class _ProfilePrepaidView extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
-                        title: 'profile',
-                        onBack: () => context.read<ProfilePrepaidBloc>().add(
-                          const ProfilePrepaidBackPressed(),
-                        ),
-                        showBackArrow: true,
-                          onHomeTap: () => context.go(AppRoutes.home)
-
-                      ),
+                          title: 'profile',
+                          onBack: () => context.read<ProfilePrepaidBloc>().add(
+                                const ProfilePrepaidBackPressed(),
+                              ),
+                          showBackArrow: true,
+                          onHomeTap: () => context.go(AppRoutes.home)),
                     ),
-
                     SliverToBoxAdapter(
                       child:
                           BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
-                            builder: (context, state) {
-                              if (state.status ==
-                                  ProfilePrepaidStatus.loading) {
-                                return const Padding(
-                                  padding: EdgeInsets.only(top: 16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                );
-                              }
+                        builder: (context, state) {
+                          if (state.status == ProfilePrepaidStatus.loading) {
+                            return const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
 
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Column(
-                                  children: [
-                                    const Divider(
-                                      height: 1,
-                                      thickness: 1,
-                                      color: ProfilePrepaidTheme.divider,
-                                    ),
-                                    ...state.items.map((item) {
-                                      return ProfileMenuItemTile(
-                                        title: item.title,
-                                        enabled: item.enabled,
-                                        onTap: () {
-                                          if (item.id == 'my_profile') {
-                                            context.push(
-                                              AppRoutes.myProfilePrepaidScreen,
-                                            );
-                                          }
-                                          if (item.id == 'my_plans') {
-                                            context.go(AppRoutes.usage);
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: Column(
+                              children: [
+                                const Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: ProfilePrepaidTheme.divider,
+                                ),
+                                ...state.items.map((item) {
+                                  return ProfileMenuItemTile(
+                                    title: item.title,
+                                    enabled: item.enabled,
+                                    onTap: () async {
+                                      if (item.id == 'my_profile') {
+                                        context.push(
+                                          AppRoutes.myProfilePrepaidScreen,
+                                        );
+                                      }
+                                      if (item.id == 'my_plans') {
+                                        context.go(AppRoutes.usage);
+                                      }
 
-                                          }
+                                      if (item.id == 'call_logs') {
+                                        context.push(
+                                          '${AppRoutes.callLogs}?tab=call_logs',
+                                        );
+                                        // context.push(AppRoutes.enterPassword);
+                                        // context.push(
+                                        //   Uri(
+                                        //     path: AppRoutes.enterPassword,
+                                        //     queryParameters: {
+                                        //       'title': 'enter password',
+                                        //       'continue': 'call_logs',
+                                        //     },
+                                        //   ).toString(),
+                                        // );
+                                      }
+                                      if (item.id == 'rewards') {
+                                        final uri = Uri.parse(
+                                          'https://www.bealiv.com/deals/',
+                                        );
 
-                                          if (item.id == 'call_logs') {
-                                            context.push('${AppRoutes.callLogs}?tab=call_logs',);
-                                            // context.push(AppRoutes.enterPassword);
-                                            // context.push(
-                                            //   Uri(
-                                            //     path: AppRoutes.enterPassword,
-                                            //     queryParameters: {
-                                            //       'title': 'enter password',
-                                            //       'continue': 'call_logs',
-                                            //     },
-                                            //   ).toString(),
-                                            // );
-
-                                          }
-                                          if (item.id == 'rewards') {
-                                            context.push(
-                                              AppRoutes.rewardPrepaidScreen,
-                                            );
-                                          }
-                                          context.read<ProfilePrepaidBloc>().add(
+                                        if (!await launchUrl(
+                                          uri,
+                                          mode: LaunchMode.externalApplication,
+                                        )) {
+                                          AppToast.show(message: "Could not open rewards");
+                                        }
+                                      }
+                                      context.read<ProfilePrepaidBloc>().add(
                                             ProfilePrepaidItemPressed(item),
                                           );
-                                        },
-                                      );
-                                    }),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                    },
+                                  );
+                                }),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),

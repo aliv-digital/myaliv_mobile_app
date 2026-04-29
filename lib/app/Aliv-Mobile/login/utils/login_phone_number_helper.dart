@@ -15,12 +15,10 @@ class LoginPhoneValidationResult {
     this.errorMessage,
   });
 
-  const LoginPhoneValidationResult.success({
-    required String phoneNumberForApi,
-  }) : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
+  const LoginPhoneValidationResult.success({required String phoneNumberForApi}) : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
 
   const LoginPhoneValidationResult.failure({required String errorMessage})
-      : this._(isValid: false, errorMessage: errorMessage);
+    : this._(isValid: false, errorMessage: errorMessage);
 }
 
 class LoginPhoneNumberHelper {
@@ -29,10 +27,10 @@ class LoginPhoneNumberHelper {
   static const String invalidPhoneNumberMessage = 'invalid phone number';
   static const Map<String, String> _territoryDialCodeOverrides =
       <String, String>{
-    // Bahamas is part of the shared NANP parent code and should display `1`
-    // in the picker, while the typed field keeps the local `242` area code.
-    'BS': '1',
-  };
+        // Bahamas is part of the shared NANP parent code and should display `1`
+        // in the picker, while the typed field keeps the local `242` area code.
+        'BS': '1',
+      };
 
   /// country_picker returns composite codes such as `1-242` for Bahamas.
   ///
@@ -43,7 +41,8 @@ class LoginPhoneNumberHelper {
 
     return LoginCountrySelection(
       isoCode: isoCode,
-      dialCode: _territoryDialCodeOverrides[isoCode] ??
+      dialCode:
+          _territoryDialCodeOverrides[isoCode] ??
           _normalizeDisplayDialCode(country.phoneCode),
       flagEmoji: country.flagEmoji,
     );
@@ -65,6 +64,10 @@ class LoginPhoneNumberHelper {
       return const LoginPhoneValidationResult.failure(
         errorMessage: invalidPhoneNumberMessage,
       );
+    }
+
+    if (selectedCountry.isoCode == 'BS') {
+      return _validateBahamasPhoneNumber(enteredDigits);
     }
 
     try {
@@ -163,6 +166,24 @@ class LoginPhoneNumberHelper {
     }
   }
 
+  LoginPhoneValidationResult _validateBahamasPhoneNumber(String enteredDigits) {
+    if (enteredDigits.length == 7) {
+      return LoginPhoneValidationResult.success(
+        phoneNumberForApi: '242$enteredDigits',
+      );
+    }
+
+    if (enteredDigits.length == 10 && enteredDigits.startsWith('242')) {
+      return LoginPhoneValidationResult.success(
+        phoneNumberForApi: enteredDigits,
+      );
+    }
+
+    return const LoginPhoneValidationResult.failure(
+      errorMessage: invalidPhoneNumberMessage,
+    );
+  }
+
   /// Validates the text field value as a local number for the selected country.
   ///
   /// The picker already displays the country code, so the text field should
@@ -179,7 +200,7 @@ class LoginPhoneNumberHelper {
   }) {
     final bool usesTerritoryDialCode =
         displayDialCode != parsedPhone.countryCode &&
-            parsedPhone.nsn.startsWith(displayDialCode);
+        parsedPhone.nsn.startsWith(displayDialCode);
 
     if (usesTerritoryDialCode) {
       final int subscriberLength =

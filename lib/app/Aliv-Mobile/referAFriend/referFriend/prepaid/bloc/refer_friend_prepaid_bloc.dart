@@ -19,9 +19,9 @@ class ReferFriendPrepaidBloc
     required this.repository,
     LoginPhoneNumberHelper? phoneNumberHelper,
     ReferFriendPrepaidEmailHelper? emailHelper,
-  })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
-        emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
-        super(const ReferFriendPrepaidState()) {
+  }) : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+       emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
+       super(const ReferFriendPrepaidState()) {
     on<ReferFriendPrepaidStarted>(_onStarted);
     on<ReferFriendPrepaidTabChanged>(_onTabChanged);
 
@@ -125,13 +125,14 @@ class ReferFriendPrepaidBloc
       return;
     }
 
-    final LoginPhoneValidationResult phoneValidationResult =
-        phoneNumberHelper.validateAndBuildApiUsername(
-      rawPhoneNumber: state.friendPhone,
-      selectedCountry: state.selectedCountry,
-    );
+    final LoginPhoneValidationResult phoneValidationResult = phoneNumberHelper
+        .validateAndBuildApiUsername(
+          rawPhoneNumber: state.friendPhone,
+          selectedCountry: state.selectedCountry,
+        );
 
-    final bool hasInvalidPhone = !phoneValidationResult.isValid ||
+    final bool hasInvalidPhone =
+        !phoneValidationResult.isValid ||
         phoneValidationResult.phoneNumberForApi == null;
     final bool hasInvalidEmail = !emailHelper.isValid(state.friendEmail);
 
@@ -160,7 +161,7 @@ class ReferFriendPrepaidBloc
       final accountInfo = _readReferralAccountInfo();
 
       final isValidToRefer = await repository.isValidReferral(
-        userPhoneNumber: accountInfo.phoneNumber,
+        userPhoneNumber: phoneValidationResult.phoneNumberForApi!,
       );
 
       if (!isValidToRefer) {
@@ -188,7 +189,7 @@ class ReferFriendPrepaidBloc
           toastMessage: 'Referral sent!',
         ),
       );
-
+      //REF0304EB30E38
       // back to idle for UI
       emit(state.copyWith(shareStatus: ReferFriendPrepaidSubmitStatus.idle));
     } catch (error) {
@@ -209,8 +210,10 @@ class ReferFriendPrepaidBloc
     emit(state.copyWith(redeemCode: event.value, errorMessage: null));
   }
 
-  Future<void> _onRedeemPressed(ReferFriendPrepaidRedeemPressed event,
-      Emitter<ReferFriendPrepaidState> emit) async {
+  Future<void> _onRedeemPressed(
+    ReferFriendPrepaidRedeemPressed event,
+    Emitter<ReferFriendPrepaidState> emit,
+  ) async {
     if (state.redeemStatus == ReferFriendPrepaidSubmitStatus.submitting) {
       return;
     }
@@ -231,11 +234,20 @@ class ReferFriendPrepaidBloc
     );
 
     try {
-      final accountInfo = _readReferralAccountInfo();
+      final phoneValidationResult = phoneNumberHelper.validateAndBuildApiUsername(
+        rawPhoneNumber: state.friendPhone,
+        selectedCountry: state.selectedCountry,
+      );
+
+      if (!phoneValidationResult.isValid || phoneValidationResult.phoneNumberForApi == null) {
+        throw const ReferFriendPrepaidException(
+          'User phone number is invalid.',
+        );
+      }
 
       await repository.redeemReferral(
         code: state.redeemCode.trim(),
-        referredNumber: accountInfo.phoneNumber,
+        referredNumber: phoneValidationResult.phoneNumberForApi!,
       );
 
       emit(
@@ -326,8 +338,9 @@ class ReferFriendPrepaidBloc
     const String exceptionPrefix = 'Exception:';
 
     if (rawMessage.startsWith(exceptionPrefix)) {
-      final String cleanedMessage =
-          rawMessage.substring(exceptionPrefix.length).trim();
+      final String cleanedMessage = rawMessage
+          .substring(exceptionPrefix.length)
+          .trim();
 
       if (cleanedMessage.isNotEmpty) {
         return cleanedMessage;

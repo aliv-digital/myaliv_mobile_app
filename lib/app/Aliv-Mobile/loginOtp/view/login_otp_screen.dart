@@ -68,10 +68,7 @@ class _LoginOtpView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
-              AppToast.show(
-                message: 'OTP verified successfully',
-                type: ToastType.success,
-              );
+              AppToast.show(message: 'Logged in successfully', type: ToastType.success);
               context.go(AppRoutes.home);
             }
 

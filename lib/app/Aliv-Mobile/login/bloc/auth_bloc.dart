@@ -105,10 +105,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       selectedCountry: state.selectedCountry,
     );
 
-    if (!phoneValidationResult.isValid || phoneValidationResult.phoneNumberForApi == null) {
+    if (!phoneValidationResult.isValid ||
+        phoneValidationResult.phoneNumberForApi == null) {
       _emitFailure(
         emit,
-        message: phoneValidationResult.errorMessage ?? LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+        message: phoneValidationResult.errorMessage ??
+            LoginPhoneNumberHelper.invalidPhoneNumberMessage,
         phoneFieldError: true,
         passwordFieldError: false,
       );
@@ -121,6 +123,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         message: 'No Internet Connection',
         phoneFieldError: false,
         passwordFieldError: false,
+        showToast: true,
       );
       return;
     }
