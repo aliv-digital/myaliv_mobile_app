@@ -29,7 +29,9 @@ import '../widgets/plan_empty_state.dart';
 import 'start_plan_bottom_sheet.dart';
 
 class HomePlanScreen extends StatelessWidget {
-  const HomePlanScreen({super.key});
+  final HomePlanTab? initialTab;
+
+  const HomePlanScreen({super.key, this.initialTab});
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +43,14 @@ class HomePlanScreen extends StatelessWidget {
       ),
     );
 
-    return const _HomePlanView();
+    return _HomePlanView(initialTab: initialTab);
   }
 }
 
 class _HomePlanView extends StatefulWidget {
-  const _HomePlanView();
+  final HomePlanTab? initialTab;
+
+  const _HomePlanView({this.initialTab});
 
   @override
   State<_HomePlanView> createState() => _HomePlanViewState();
@@ -57,7 +61,10 @@ class _HomePlanViewState extends State<_HomePlanView> {
   void initState() {
     super.initState();
     final userType = context.read<AppUiConfigCubit>().state.userType;
-    context.read<PlansCubit>().started(userType: userType);
+    context.read<PlansCubit>().started(
+          userType: userType,
+          initialTab: widget.initialTab,
+        );
   }
 
   // Primary tabs use API models, while the shared purchase sheet still expects

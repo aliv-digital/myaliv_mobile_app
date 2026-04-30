@@ -31,11 +31,14 @@ class PlansCubit extends Cubit<PlansState> {
   // ═══════════════════════════════════════════════════════════════════
 
   /// Called by UI in initState - SAME signature as HomePlanCubit
-  Future<void> started({required UserType userType}) async {
-    final defaultTab = _defaultTabForUserType(userType);
+  Future<void> started({
+    required UserType userType,
+    HomePlanTab? initialTab,
+  }) async {
+    final tab = initialTab ?? _defaultTabForUserType(userType);
 
-    if (state.selectedTab != defaultTab) {
-      emit(state.copyWith(selectedTab: defaultTab, expandedPlanIds: const {}));
+    if (state.selectedTab != tab) {
+      emit(state.copyWith(selectedTab: tab, expandedPlanIds: const {}));
     }
 
     // Fetch all data if not already loaded

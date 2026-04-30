@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
@@ -582,7 +583,10 @@ class AppRouter {
           // need to change here
           GoRoute(
             path: AppRoutes.plans,
-            builder: (context, state) => const PlansEntryScreen(),
+            builder: (context, state) {
+              final tabParam = state.uri.queryParameters['tab'];
+              return PlansEntryScreen(initialTab: _parsePlanTab(tabParam));
+            },
           ),
 
           GoRoute(
@@ -707,4 +711,12 @@ class AppRouter {
       ),
     ],
   );
+}
+
+HomePlanTab? _parsePlanTab(String? value) {
+  if (value == null || value.isEmpty) return null;
+  for (final tab in HomePlanTab.values) {
+    if (tab.name == value) return tab;
+  }
+  return null;
 }
