@@ -330,10 +330,12 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
 
   /// Update balance threshold settings for auto top-up
   ///
+  /// [balanceThreshold] - User-entered "when balance falls below" amount
   /// [autoTopUpAmount] - Amount from grid selection or custom input
   /// [cardToken] - Token from selected saved card
   /// Returns true if update was successful
   Future<bool> updateBalanceThresholdSettings({
+    required double balanceThreshold,
     required double autoTopUpAmount,
     required String cardToken,
   }) async {
@@ -350,6 +352,7 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
     try {
       final request = BalanceThresholdSettingsRequest.fromDeviceLimits(
         deviceLimits: deviceLimits,
+        balanceThreshold: balanceThreshold,
         autoTopUpAmount: autoTopUpAmount,
         cardToken: cardToken,
       );

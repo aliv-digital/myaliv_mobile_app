@@ -33,15 +33,18 @@ class AutoTopupCardSection extends StatelessWidget {
 
 /// Balance threshold section for auto top-up.
 class AutoTopupThresholdSection extends StatelessWidget {
-  /// The threshold value to display (e.g., 20.0 → "$ 20.00")
-  final double value;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+
+  /// API-provided minimum floor. Shown as helper text when > 0.
+  final double minThreshold;
 
   const AutoTopupThresholdSection({
     super.key,
-    this.value = 10.0,
+    this.controller,
+    this.onChanged,
+    this.minThreshold = 0,
   });
-
-  String get _formattedValue => '\$ ${value.abs().toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +52,25 @@ class AutoTopupThresholdSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AutoTopupSectionLabel('when balance falls below'),
-        AutoTopupInputField(value: _formattedValue),
-        const SizedBox(height: 8),
-        Text(
-          'amount must be above \$ ${value.toStringAsFixed(2)}',
-          style: const TextStyle(
-            color: Color(0xFF707070),
-            fontSize: 14,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w500,
-            height: 1.43,
-          ),
+        TopUpFormInputField(
+          hint: 'enter threshold amount',
+          isAmountType: true,
+          controller: controller,
+          onChanged: onChanged,
         ),
+        if (minThreshold > 0) ...[
+          const SizedBox(height: 8),
+          Text(
+            'amount must be above \$ ${minThreshold.toStringAsFixed(2)}',
+            style: const TextStyle(
+              color: Color(0xFF707070),
+              fontSize: 14,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+              height: 1.43,
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -23,19 +23,21 @@ class BalanceThresholdSettingsRequest {
   /// Build request from DeviceLimitsModel + user inputs.
   ///
   /// [deviceLimits] - Existing device limits data from API
+  /// [balanceThreshold] - User-entered threshold ("when balance falls below")
   /// [autoTopUpAmount] - User selected grid value or custom amount
-  /// [cardToken] - Token from selected card in dropdown
+  /// [cardToken] - Token from selected card in dropdown; also assigned to autoTopUp
   factory BalanceThresholdSettingsRequest.fromDeviceLimits({
     required DeviceLimitsModel deviceLimits,
+    required double balanceThreshold,
     required double autoTopUpAmount,
     required String cardToken,
   }) {
     return BalanceThresholdSettingsRequest(
       roamingLowBalanceThreshold: deviceLimits.roamingLowBalanceThreshold,
-      balanceThreshold: deviceLimits.balanceThreshold,
+      balanceThreshold: balanceThreshold,
       roamingTopUpAmount: deviceLimits.roamingTopUpAmount,
       autoTopUpAmount: autoTopUpAmount,
-      autoTopUp: deviceLimits.autoTopUp,
+      autoTopUp: cardToken,
       token: cardToken,
     );
   }

@@ -9,11 +9,13 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class AutoTopUpAuthorizationScreen extends StatefulWidget {
+  final double balanceThreshold;
   final double autoTopUpAmount;
   final String cardToken;
 
   const AutoTopUpAuthorizationScreen({
     super.key,
+    required this.balanceThreshold,
     required this.autoTopUpAmount,
     required this.cardToken,
   });
@@ -60,6 +62,7 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
     setState(() => _isSubmitting = true);
 
     final success = await instance<DeviceLimitsCubit>().updateBalanceThresholdSettings(
+      balanceThreshold: widget.balanceThreshold,
       autoTopUpAmount: widget.autoTopUpAmount,
       cardToken: widget.cardToken,
     );

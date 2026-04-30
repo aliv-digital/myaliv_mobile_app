@@ -23,9 +23,10 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   bool _anyTimeEnabled = true;
   int? _selectedAmount;
   SavedCardModel? _selectedCard;
-  double _balanceThreshold = 10.0;
+  final _thresholdController = TextEditingController();
   final _customAmountController = TextEditingController();
   bool _initialValuesSet = false;
+  double _minThreshold = 0;
 
   bool get _hasCustomAmount => _customAmountController.text.isNotEmpty;
 
@@ -38,6 +39,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
 
   @override
   void dispose() {
+    _thresholdController.dispose();
     _customAmountController.dispose();
     super.dispose();
   }
@@ -45,7 +47,9 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   void _initFromDeviceLimits(DeviceLimitsState state) {
     if (_initialValuesSet || !state.hasDeviceLimits) return;
     _initialValuesSet = true;
-    _balanceThreshold = state.balanceThreshold.abs();
+    _minThreshold = state.balanceThreshold.abs();
+    if (_minThreshold > 0)
+      _thresholdController.text = _minThreshold.toInt().toString();
     final amount = state.autoTopUpAmount.abs().toInt();
     if (AutoTopupAmountGrid.presetAmounts.contains(amount))
       _selectedAmount = amount;
@@ -125,7 +129,11 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AutoTopupThresholdSection(value: _balanceThreshold),
+          AutoTopupThresholdSection(
+            controller: _thresholdController,
+            onChanged: (_) => setState(() {}),
+            minThreshold: _minThreshold,
+          ),
           const SizedBox(height: 26),
           AutoTopupAmountSection(
             selectedAmount: _selectedAmount,
@@ -153,6 +161,10 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
 
   void _onApply() {
     FocusManager.instance.primaryFocus?.unfocus();
+
+    final threshold =
+        double.tryParse(_thresholdController.text) ?? _minThreshold;
+
     // Custom amount has priority
     final amount = _hasCustomAmount
         ? double.tryParse(_customAmountController.text)
@@ -167,10 +179,10 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
         _selectedCard?.token ??
         instance<DeviceLimitsCubit>().state.autoTopUpCardToken;
 
-    // Navigate to authorization screen with amount and card token
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AutoTopUpAuthorizationScreen(
+          balanceThreshold: threshold,
           autoTopUpAmount: amount,
           cardToken: cardToken,
         ),

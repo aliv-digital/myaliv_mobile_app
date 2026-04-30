@@ -55,34 +55,6 @@ class AutoTopupSectionLabel extends StatelessWidget {
   }
 }
 
-/// Read-only input field for displaying values.
-class AutoTopupInputField extends StatelessWidget {
-  final String? value;
-
-  const AutoTopupInputField({super.key, this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: TopUpPrepaidTheme.lightBg,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        value ?? '',
-        style: TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 15,
-          color: TopUpPrepaidTheme.textMuted,
-        ),
-      ),
-    );
-  }
-}
-
 /// "Or" divider with lines on both sides.
 class AutoTopupOrDivider extends StatelessWidget {
   const AutoTopupOrDivider({super.key});
