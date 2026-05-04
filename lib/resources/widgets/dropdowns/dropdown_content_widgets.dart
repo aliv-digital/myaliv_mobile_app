@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../theme/top_up_prepaid_theme.dart';
 
-/// Text style used for dropdown content.
+const _dropdownBg = Color(0xFFF1F1F8);
+const _selectedAccent = Color(0xFF645D9C);
+
 const dropdownContentTextStyle = TextStyle(
   color: Color(0xFF707070),
   fontSize: 14,
@@ -9,7 +10,6 @@ const dropdownContentTextStyle = TextStyle(
   fontWeight: FontWeight.w500,
 );
 
-/// Container widget for the dropdown button.
 class DropdownContainer extends StatelessWidget {
   final Widget child;
 
@@ -21,7 +21,7 @@ class DropdownContainer extends StatelessWidget {
       height: 52,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: TopUpPrepaidTheme.lightBg,
+        color: _dropdownBg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: child,
@@ -29,7 +29,6 @@ class DropdownContainer extends StatelessWidget {
   }
 }
 
-/// Loading state content for the dropdown.
 class DropdownLoadingContent extends StatelessWidget {
   const DropdownLoadingContent({super.key});
 
@@ -49,7 +48,6 @@ class DropdownLoadingContent extends StatelessWidget {
   }
 }
 
-/// Error state content for the dropdown.
 class DropdownErrorContent extends StatelessWidget {
   const DropdownErrorContent({super.key});
 
@@ -67,7 +65,6 @@ class DropdownErrorContent extends StatelessWidget {
   }
 }
 
-/// Empty state content for the dropdown.
 class DropdownEmptyContent extends StatelessWidget {
   const DropdownEmptyContent({super.key});
 
@@ -77,7 +74,6 @@ class DropdownEmptyContent extends StatelessWidget {
   }
 }
 
-/// Selected card content for the dropdown.
 class DropdownSelectedCardContent extends StatelessWidget {
   final String displayText;
 
@@ -88,3 +84,5 @@ class DropdownSelectedCardContent extends StatelessWidget {
     return Text(displayText, style: dropdownContentTextStyle);
   }
 }
+
+const dropdownSelectedAccent = _selectedAccent;

@@ -6,8 +6,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_m
 import 'card_list_overlay.dart';
 import 'dropdown_content_widgets.dart';
 
-/// Dropdown widget for selecting saved credit cards.
-/// Uses [SavedCardsCubit] to fetch and display cards from API.
+/// Dropdown for selecting a saved credit card.
+/// Reads cards from [SavedCardsCubit] in the surrounding BlocProvider.
 class SavedCardDropdown extends StatefulWidget {
   final SavedCardModel? selectedCard;
   final ValueChanged<SavedCardModel?> onCardSelected;

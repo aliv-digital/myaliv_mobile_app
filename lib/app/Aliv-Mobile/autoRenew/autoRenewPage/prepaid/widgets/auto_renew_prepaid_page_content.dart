@@ -117,10 +117,9 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AutoRenewPaymentMethodSection(
-          methods: autoRenewPrepaidState.methods,
-          selectedMethodId: autoRenewPrepaidState.selectedMethodId,
-          onSelect: (String selectedMethodId) {
-            autoRenewPrepaidBloc.add(AutoRenewMethodSelected(selectedMethodId));
+          selectedCard: autoRenewPrepaidState.selectedCard,
+          onCardSelected: (card) {
+            autoRenewPrepaidBloc.add(AutoRenewSavedCardSelected(card));
           },
           walletBalanceText: autoRenewPrepaidState.walletBalanceText,
           onPayFromWallet: () {

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
-import '../../theme/top_up_prepaid_theme.dart';
+import 'dropdown_content_widgets.dart';
 
-/// Overlay widget displaying the list of saved cards.
 class CardListOverlay extends StatelessWidget {
   final LayerLink layerLink;
   final List<SavedCardModel> cards;
@@ -53,7 +52,6 @@ class CardListOverlay extends StatelessWidget {
   }
 }
 
-/// Individual card item in the overlay list.
 class _CardListItem extends StatelessWidget {
   final SavedCardModel card;
   final bool isSelected;
@@ -93,7 +91,7 @@ class _CardListItem extends StatelessWidget {
             if (isSelected)
               const Icon(
                 Icons.check_circle,
-                color: TopUpPrepaidTheme.purple,
+                color: dropdownSelectedAccent,
               ),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 
 abstract class AutoRenewPrepaidEvent extends Equatable {
   const AutoRenewPrepaidEvent();
@@ -17,6 +18,14 @@ class AutoRenewMethodSelected extends AutoRenewPrepaidEvent {
 
   @override
   List<Object?> get props => [methodId];
+}
+
+class AutoRenewSavedCardSelected extends AutoRenewPrepaidEvent {
+  final SavedCardModel? card;
+  const AutoRenewSavedCardSelected(this.card);
+
+  @override
+  List<Object?> get props => [card];
 }
 
 class AutoRenewAddNewCardPressed extends AutoRenewPrepaidEvent {

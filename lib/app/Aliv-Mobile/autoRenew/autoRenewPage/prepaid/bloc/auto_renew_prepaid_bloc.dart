@@ -13,6 +13,7 @@ class AutoRenewPrepaidBloc
       : super(AutoRenewPrepaidState.initial()) {
     on<AutoRenewPrepaidStarted>(_onStarted);
     on<AutoRenewMethodSelected>(_onSelected);
+    on<AutoRenewSavedCardSelected>(_onSavedCardSelected);
     on<AutoRenewAddNewCardPressed>(_onAddNewCardPressed);
     on<AutoRenewSaveNewCardPressed>(_onSaveNewCardPressed);
     on<AutoRenewProceedPressed>(_onProceedPressed);
@@ -67,6 +68,29 @@ class AutoRenewPrepaidBloc
     emit(
       state.copyWith(
         selectedMethodId: event.methodId,
+        clearError: true,
+      ),
+    );
+  }
+
+  void _onSavedCardSelected(
+    AutoRenewSavedCardSelected event,
+    Emitter<AutoRenewPrepaidState> emit,
+  ) {
+    final card = event.card;
+    if (card == null) {
+      emit(
+        state.copyWith(
+          clearSelectedCard: true,
+          clearError: true,
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        selectedCard: card,
+        selectedMethodId: card.token,
         clearError: true,
       ),
     );
