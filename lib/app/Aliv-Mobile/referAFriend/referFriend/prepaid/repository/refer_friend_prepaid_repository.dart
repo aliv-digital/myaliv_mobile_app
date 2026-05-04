@@ -7,7 +7,7 @@ import '../models/refer_friend_prepaid_models.dart';
 
 class ReferFriendPrepaidRepository {
   ReferFriendPrepaidRepository({NetworkService? networkService})
-    : _networkService = networkService ?? instance<NetworkService>();
+      : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -17,6 +17,14 @@ class ReferFriendPrepaidRepository {
   }) async {
     // TODO: API integration later
     await Future.delayed(const Duration(milliseconds: 600));
+  }
+
+  Future<String> fetchReferAFriendText() {
+    return _fetchAppSettingText(Api.referAFriendText);
+  }
+
+  Future<String> fetchRedeemReferralText() {
+    return _fetchAppSettingText(Api.redeemReferralText);
   }
 
   Future<void> redeemReferral({
@@ -131,6 +139,17 @@ class ReferFriendPrepaidRepository {
         acceptedDate: '12/02/2024',
       ),
     ];
+  }
+
+  Future<String> _fetchAppSettingText(String url) async {
+    final response = await _networkService.request<dynamic>(
+      url,
+      method: HttpMethod.get,
+    );
+
+    final responseMap = _decodeResponseMap(response.data);
+    final dataMap = _decodeResponseMap(responseMap['data']);
+    return _readStringValue(dataMap, 'value');
   }
 
   Map<String, dynamic> _decodeResponseMap(dynamic responseData) {

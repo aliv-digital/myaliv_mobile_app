@@ -53,4 +53,7 @@ class Api {
   /// Returns base64 encoded PDF string
   static String invoicePdf(int invoiceId, String filename) =>
       '$baseUrl/v1/MyAliv/Account/invoice/$invoiceId?filename=${Uri.encodeComponent(filename)}';
+
+  static const referAFriendText = 'https://myalivappuat-api.bealiv.com/api/app-settings/refer-a-friend';
+  static const redeemReferralText = "https://myalivappuat-api.bealiv.com/api/app-settings/redeem-referral";
 }

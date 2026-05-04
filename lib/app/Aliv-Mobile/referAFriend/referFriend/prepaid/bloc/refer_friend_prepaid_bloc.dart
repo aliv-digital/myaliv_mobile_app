@@ -19,9 +19,9 @@ class ReferFriendPrepaidBloc
     required this.repository,
     LoginPhoneNumberHelper? phoneNumberHelper,
     ReferFriendPrepaidEmailHelper? emailHelper,
-  }) : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
-       emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
-       super(const ReferFriendPrepaidState()) {
+  })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+        emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
+        super(const ReferFriendPrepaidState()) {
     on<ReferFriendPrepaidStarted>(_onStarted);
     on<ReferFriendPrepaidTabChanged>(_onTabChanged);
 
@@ -48,7 +48,27 @@ class ReferFriendPrepaidBloc
     Emitter<ReferFriendPrepaidState> emit,
   ) async {
     final history = await repository.fetchHistory();
-    emit(state.copyWith(history: history));
+    var nextState = state.copyWith(history: history);
+
+    try {
+      final referInfoHtml = await repository.fetchReferAFriendText();
+      if (referInfoHtml.trim().isNotEmpty) {
+        nextState = nextState.copyWith(referInfoHtml: referInfoHtml);
+      }
+    } catch (_) {
+      // Keep the local fallback copy when CMS text is unavailable.
+    }
+
+    try {
+      final redeemInfoHtml = await repository.fetchRedeemReferralText();
+      if (redeemInfoHtml.trim().isNotEmpty) {
+        nextState = nextState.copyWith(redeemInfoHtml: redeemInfoHtml);
+      }
+    } catch (_) {
+      // Keep the local fallback copy when CMS text is unavailable.
+    }
+
+    emit(nextState);
   }
 
   Future<void> _onTabChanged(
@@ -125,14 +145,13 @@ class ReferFriendPrepaidBloc
       return;
     }
 
-    final LoginPhoneValidationResult phoneValidationResult = phoneNumberHelper
-        .validateAndBuildApiUsername(
-          rawPhoneNumber: state.friendPhone,
-          selectedCountry: state.selectedCountry,
-        );
+    final LoginPhoneValidationResult phoneValidationResult =
+        phoneNumberHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: state.friendPhone,
+      selectedCountry: state.selectedCountry,
+    );
 
-    final bool hasInvalidPhone =
-        !phoneValidationResult.isValid ||
+    final bool hasInvalidPhone = !phoneValidationResult.isValid ||
         phoneValidationResult.phoneNumberForApi == null;
     final bool hasInvalidEmail = !emailHelper.isValid(state.friendEmail);
 
@@ -248,7 +267,8 @@ class ReferFriendPrepaidBloc
       final accountInfo = _readReferralAccountInfo();
       await repository.redeemReferral(
         code: state.redeemCode.trim(),
-        referredNumber: accountInfo.phoneNumber,//phoneValidationResult.phoneNumberForApi!,
+        referredNumber:
+            accountInfo.phoneNumber, //phoneValidationResult.phoneNumberForApi!,
       );
 
       emit(
@@ -339,9 +359,8 @@ class ReferFriendPrepaidBloc
     const String exceptionPrefix = 'Exception:';
 
     if (rawMessage.startsWith(exceptionPrefix)) {
-      final String cleanedMessage = rawMessage
-          .substring(exceptionPrefix.length)
-          .trim();
+      final String cleanedMessage =
+          rawMessage.substring(exceptionPrefix.length).trim();
 
       if (cleanedMessage.isNotEmpty) {
         return cleanedMessage;
