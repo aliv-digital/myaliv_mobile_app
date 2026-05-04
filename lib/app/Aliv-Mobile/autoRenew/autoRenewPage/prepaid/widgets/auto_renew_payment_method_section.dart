@@ -8,16 +8,22 @@ import '../theme/auto_renew_prepaid_theme.dart';
 class AutoRenewPaymentMethodSection extends StatelessWidget {
   final SavedCardModel? selectedCard;
   final ValueChanged<SavedCardModel?> onCardSelected;
-  final String walletBalanceText;
-  final VoidCallback onPayFromWallet;
+  final bool showWalletRow;
+  final String? walletBalanceText;
+  final VoidCallback? onPayFromWallet;
 
   const AutoRenewPaymentMethodSection({
     super.key,
     required this.selectedCard,
     required this.onCardSelected,
-    required this.walletBalanceText,
-    required this.onPayFromWallet,
-  });
+    this.showWalletRow = true,
+    this.walletBalanceText,
+    this.onPayFromWallet,
+  }) : assert(
+          !showWalletRow ||
+              (walletBalanceText != null && onPayFromWallet != null),
+          'walletBalanceText and onPayFromWallet are required when showWalletRow is true',
+        );
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +46,10 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
             selectedCard: selectedCard,
             onCardSelected: onCardSelected,
           ),
-          const SizedBox(height: AutoRenewPrepaidTheme.payFromWalletTopGap),
-          _buildPayFromWalletRow(),
+          if (showWalletRow) ...[
+            const SizedBox(height: AutoRenewPrepaidTheme.payFromWalletTopGap),
+            _buildPayFromWalletRow(),
+          ],
         ],
       ),
     );
@@ -80,7 +88,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
                 ),
               ),
               child: Text(
-                walletBalanceText,
+                walletBalanceText!,
                 style: AutoRenewPrepaidTheme.walletAmountTextStyle,
               ),
             ),

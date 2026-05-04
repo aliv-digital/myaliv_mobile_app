@@ -121,6 +121,13 @@ class AutoRenewAuthPrepaidRepositoryImpl
         if (!cardSuccess) return false;
         return deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
       case AutoRenewPaymentMethodType.postpaidInvoice:
+        if (cardToken != null && cardToken.isNotEmpty) {
+          final cardSuccess = await deviceLimitsCubit.enableAutoRenewCard(
+            token: cardToken,
+            refreshAfter: false,
+          );
+          if (!cardSuccess) return false;
+        }
         return accountInfoCubit.enableAutoPayInvoice();
     }
   }

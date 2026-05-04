@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 
 import '../../../router/app_routes.dart';
 import 'auto_renew_toggle.dart';
@@ -406,11 +404,7 @@ class AutoPayBottomSheet extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  // Navigate to auth screen with postpaidInvoice payment method
-                  context.push(
-                    AppRoutes.autoRenewAuthPrepaidScreen,
-                    extra: AutoRenewPaymentMethodType.postpaidInvoice,
-                  );
+                  context.push(AppRoutes.autoPayPostpaidScreen);
                 },
                 child: const Text(
                   'ok',

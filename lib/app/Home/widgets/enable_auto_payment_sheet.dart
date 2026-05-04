@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class EnableAutoPaymentSheet extends StatelessWidget {
@@ -85,11 +84,7 @@ class EnableAutoPaymentSheet extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {
                   context.pop();
-                  // Navigate to auth screen with postpaidInvoice payment method
-                  context.push(
-                    AppRoutes.autoRenewAuthPrepaidScreen,
-                    extra: AutoRenewPaymentMethodType.postpaidInvoice,
-                  );
+                  context.push(AppRoutes.autoPayPostpaidScreen);
                 },
                 child: Container(
                   decoration: BoxDecoration(

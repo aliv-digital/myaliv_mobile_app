@@ -94,7 +94,10 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                           height: AutoRenewAuthPrepaidTheme.appBarHeight,
                           child: DefaultAppBar(
                             showHome: false,
-                            title: 'auto renew authorization form',
+                            title: state.paymentMethod ==
+                                    AutoRenewPaymentMethodType.postpaidInvoice
+                                ? 'auto pay authorization form'
+                                : 'auto renew authorization form',
                             onBack: () => Navigator.of(context).maybePop(),
                             onHomeTap: () =>
                                 bloc.add(const AutoRenewAuthHomePressed()),

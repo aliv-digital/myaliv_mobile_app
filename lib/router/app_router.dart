@@ -43,6 +43,7 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_pl
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewPage/postpaid/view/auto_pay_postpaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/otp/prepaid/view/otp_prepaid_screen.dart';
@@ -259,6 +260,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.autoRenewPrepaidScreen,
         builder: (context, state) => const AutoRenewPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.autoPayPostpaidScreen,
+        builder: (context, state) => const AutoPayPostpaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.otpReviewInvoicePostPaidScreen,
