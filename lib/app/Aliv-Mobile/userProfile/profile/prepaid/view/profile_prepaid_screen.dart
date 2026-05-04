@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -66,23 +67,21 @@ class _ProfilePrepaidView extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(
                       child: DefaultAppBar(
-                          title: 'profile',
-                          onBack: () => context.read<ProfilePrepaidBloc>().add(
-                                const ProfilePrepaidBackPressed(),
-                              ),
-                          showBackArrow: true,
-                          onHomeTap: () => context.go(AppRoutes.home)),
+                        title: 'profile',
+                        onBack: () => context.read<ProfilePrepaidBloc>().add(
+                          const ProfilePrepaidBackPressed(),
+                        ),
+                        showBackArrow: true,
+                        onHomeTap: () => context.go(AppRoutes.home),
+                      ),
                     ),
                     SliverToBoxAdapter(
-                      child:
-                          BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
+                      child: BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
                         builder: (context, state) {
                           if (state.status == ProfilePrepaidStatus.loading) {
                             return const Padding(
                               padding: EdgeInsets.only(top: 16),
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
+                              child: Center(child: CircularProgressIndicator()),
                             );
                           }
 
@@ -106,6 +105,9 @@ class _ProfilePrepaidView extends StatelessWidget {
                                         );
                                       }
                                       if (item.id == 'my_plans') {
+                                        context
+                                            .read<AppUiConfigCubit>()
+                                            .showCurrentPlansView();
                                         context.go(AppRoutes.usage);
                                       }
 
@@ -125,11 +127,13 @@ class _ProfilePrepaidView extends StatelessWidget {
                                         // );
                                       }
                                       if (item.id == 'rewards') {
-                                        context.push(AppRoutes.rewardPrepaidScreen);
+                                        context.push(
+                                          AppRoutes.rewardPrepaidScreen,
+                                        );
                                       }
                                       context.read<ProfilePrepaidBloc>().add(
-                                            ProfilePrepaidItemPressed(item),
-                                          );
+                                        ProfilePrepaidItemPressed(item),
+                                      );
                                     },
                                   );
                                 }),

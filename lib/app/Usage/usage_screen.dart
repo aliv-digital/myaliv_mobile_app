@@ -66,15 +66,14 @@ class _UsageScreenState extends State<UsageScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final targetIndex = _resolveInitialTabIndex(state);
-      if (targetIndex < controller.length &&
-          targetIndex != controller.index) {
+      if (targetIndex < controller.length && targetIndex != controller.index) {
         controller.animateTo(targetIndex);
       }
       context.read<AppUiConfigCubit>().clearNavigationIntent();
     });
   }
 
-// ---------------- CONFIG ----------------
+  // ---------------- CONFIG ----------------
   List<Tab> _tabs(HomeUiConfig config) {
     return [
       const Tab(text: 'current plan'),
@@ -93,10 +92,13 @@ class _UsageScreenState extends State<UsageScreen>
 
   int _resolveInitialTabIndex(HomeUiConfig config) {
     if (config.isPostpaid && config.openMyLimits) {
-      return 2; // 🔥 my limits
+      return 2;
     }
     if (config.isFuturePlan == true) {
       return 1;
+    }
+    if (config.isCurrentPlan == true) {
+      return 0;
     }
     return 0;
   }
@@ -112,7 +114,8 @@ class _UsageScreenState extends State<UsageScreen>
     return BlocListener<AppUiConfigCubit, HomeUiConfig>(
       listenWhen: (p, c) =>
           (!p.isFuturePlan && c.isFuturePlan) ||
-          (!p.openMyLimits && c.openMyLimits),
+          (!p.openMyLimits && c.openMyLimits) ||
+          (!p.isCurrentPlan && c.isCurrentPlan),
       listener: (_, state) => _handleNavigationIntent(state),
       child: Scaffold(
         backgroundColor: const Color(0xFFF4F6FB),
@@ -149,6 +152,7 @@ class UsageTabBar extends StatelessWidget {
   static const Color dividerBg = Color(0xFFF4F6FB);
   final List<Tab> tabs;
   final TabController controller;
+
   const UsageTabBar({super.key, required this.tabs, required this.controller});
 
   @override
@@ -158,12 +162,11 @@ class UsageTabBar extends StatelessWidget {
       child: Column(
         children: [
           // Tabs
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
           TabBar(
             controller: controller,
-            indicatorSize: TabBarIndicatorSize.tab, // 🔥 full tab width
+            indicatorSize: TabBarIndicatorSize.tab,
+            // 🔥 full tab width
             indicator: const UnderlineTabIndicator(
               borderSide: BorderSide(color: purple, width: 2),
               insets: EdgeInsets.symmetric(horizontal: 8),

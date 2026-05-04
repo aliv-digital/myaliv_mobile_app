@@ -10,12 +10,13 @@ import '../../app/Home/home/data/home_ui_config.dart';
 class AppUiConfigCubit extends Cubit<HomeUiConfig> {
   AppUiConfigCubit()
       : super(
-          const HomeUiConfig(
-            userType: UserType.postpaid,
-            hasActivePlan: true,
-            isFuturePlan: false,
-          ),
-        );
+    const HomeUiConfig(
+      userType: UserType.postpaid,
+      hasActivePlan: true,
+      isFuturePlan: false,
+      isCurrentPlan: false,
+    ),
+  );
 
   /// Replaces the whole config at once.
   void setConfig(HomeUiConfig config) {
@@ -38,6 +39,7 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
       state.copyWith(
         openMyLimits: true,
         isFuturePlan: false,
+        isCurrentPlan: false,
       ),
     );
   }
@@ -48,13 +50,25 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
       state.copyWith(
         openMyLimits: false,
         isFuturePlan: true,
+        isCurrentPlan: false,
+      ),
+    );
+  }
+
+  /// Opens Usage screen with the "current plans" tab selected.
+  void showCurrentPlansView() {
+    emit(
+      state.copyWith(
+        openMyLimits: false,
+        isFuturePlan: false,
+        isCurrentPlan: true,
       ),
     );
   }
 
   /// Clears one-time navigation intent after the target screen uses it.
   void clearNavigationIntent() {
-    if (!state.openMyLimits && !state.isFuturePlan) {
+    if (!state.openMyLimits && !state.isFuturePlan && !state.isCurrentPlan) {
       return;
     }
 
@@ -62,6 +76,7 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
       state.copyWith(
         openMyLimits: false,
         isFuturePlan: false,
+        isCurrentPlan: false,
       ),
     );
   }
