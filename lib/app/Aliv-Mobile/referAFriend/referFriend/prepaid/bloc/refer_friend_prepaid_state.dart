@@ -7,6 +7,15 @@ enum ReferFriendPrepaidSubmitStatus { idle, submitting, success, failure }
 
 class ReferFriendPrepaidState extends Equatable {
   static const Object _noChange = Object();
+  static const String defaultReferInfoHtml =
+      '<p>bring a friend and you&rsquo;ll both receive a cash back reward when '
+      'they join the ALIV network. <a href="https://www.bealiv.com/terms-of-use/">'
+      'Terms &amp; Conditions</a> apply</p>';
+  static const String defaultRedeemInfoHtml =
+      '<p>if you are a postpaid customer, you will receive an invoice credit.</p>'
+      '<p><strong>or</strong></p>'
+      '<p>if you are a prepaid customer, you will receive bonus wallet credit '
+      'via the myALIV app within 24 hours.</p>';
 
   final int selectedTab;
 
@@ -27,6 +36,8 @@ class ReferFriendPrepaidState extends Equatable {
   final String? errorMessage;
 
   final List<ReferralHistoryItem> history;
+  final String referInfoHtml;
+  final String redeemInfoHtml;
 
   const ReferFriendPrepaidState({
     this.selectedTab = 0,
@@ -43,6 +54,8 @@ class ReferFriendPrepaidState extends Equatable {
     this.toastMessage,
     this.errorMessage,
     this.history = const [],
+    this.referInfoHtml = defaultReferInfoHtml,
+    this.redeemInfoHtml = defaultRedeemInfoHtml,
   });
 
   bool get canShare =>
@@ -65,6 +78,8 @@ class ReferFriendPrepaidState extends Equatable {
     Object? toastMessage = _noChange,
     Object? errorMessage = _noChange,
     List<ReferralHistoryItem>? history,
+    String? referInfoHtml,
+    String? redeemInfoHtml,
   }) {
     return ReferFriendPrepaidState(
       selectedTab: selectedTab ?? this.selectedTab,
@@ -88,6 +103,8 @@ class ReferFriendPrepaidState extends Equatable {
           ? this.errorMessage
           : errorMessage as String?,
       history: history ?? this.history,
+      referInfoHtml: referInfoHtml ?? this.referInfoHtml,
+      redeemInfoHtml: redeemInfoHtml ?? this.redeemInfoHtml,
     );
   }
 
@@ -107,5 +124,7 @@ class ReferFriendPrepaidState extends Equatable {
         toastMessage,
         errorMessage,
         history,
+        referInfoHtml,
+        redeemInfoHtml,
       ];
 }
