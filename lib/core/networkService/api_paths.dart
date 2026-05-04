@@ -56,4 +56,6 @@ class Api {
 
   static const referAFriendText = 'https://myalivappuat-api.bealiv.com/api/app-settings/refer-a-friend';
   static const redeemReferralText = "https://myalivappuat-api.bealiv.com/api/app-settings/redeem-referral";
+
+  static const startFuturePlan = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/future-plan - POST to start future plan
 }

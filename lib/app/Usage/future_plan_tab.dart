@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Usage/repository/usage_repository.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/future_plan_card.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 class FuturePlansTab extends StatelessWidget {
   const FuturePlansTab({super.key});
@@ -111,7 +114,7 @@ class _EmptyFuturePlansMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate available height for centering
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height/2;
     // Approximate height: screen - appBar(~140) - tabBar(~82) - padding(~60)
     final availableHeight = screenHeight - 282;
 
@@ -161,10 +164,80 @@ class _PrepaidStaticFuturePlan extends StatelessWidget {
   }
 }
 
-class _StartPlanButton extends StatelessWidget {
+class _StartPlanButton extends StatefulWidget {
   const _StartPlanButton();
 
   static const Color purple = Color(0xFF645D9C);
+
+  @override
+  State<_StartPlanButton> createState() => _StartPlanButtonState();
+}
+
+class _StartPlanButtonState extends State<_StartPlanButton> {
+  final UsageRepository _usageRepository = UsageRepository();
+
+  bool _isStartingPlan = false;
+
+  Future<void> _startFuturePlan() async {
+    if (_isStartingPlan) return;
+
+    setState(() {
+      _isStartingPlan = true;
+    });
+
+    try {
+      final account = context.read<AccountInfoCubit>().state.accountInfo;
+      if (account == null || account.idAcc <= 0) {
+        AppToast.show(
+          message: 'Account information not available',
+          type: ToastType.error,
+        );
+        return;
+      }
+
+      final success = await _usageRepository.jumpStartFuturePlan(
+        deviceAccountId: account.idAcc,
+      );
+
+      if (!mounted) return;
+
+      if (success) {
+        AppToast.show(
+          message: 'success! your future plan has started',
+          type: ToastType.success,
+        );
+         await _refreshPlansAfterSuccess();
+      } else {
+        AppToast.show(
+          message: 'Failed to start future plan. Please try again.',
+          type: ToastType.error,
+        );
+      }
+    } on UsageRepositoryException catch (error) {
+      if (!mounted) return;
+      AppToast.show(message: error.message, type: ToastType.error);
+    } catch (_) {
+      if (!mounted) return;
+      AppToast.show(
+        message: 'Failed to start future plan. Please try again.',
+        type: ToastType.error,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isStartingPlan = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _refreshPlansAfterSuccess() async {
+    try {
+      await context.read<PlansCubit>().refreshCurrentTab();
+    } catch (error) {
+      debugPrint('Future plans refresh failed after jump start: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,17 +245,27 @@ class _StartPlanButton extends StatelessWidget {
       width: double.infinity,
       height: 40,
       child: ElevatedButton(
-        onPressed: () {
-          // TODO: Start plan logic
-        },
+        onPressed: _isStartingPlan ? null : _startFuturePlan,
         style: ElevatedButton.styleFrom(
-          backgroundColor: purple,
+          backgroundColor: _StartPlanButton.purple,
+          disabledBackgroundColor: _StartPlanButton.purple,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
         ),
-        child: const Text(
+        child: _isStartingPlan ?
+        const SizedBox(
+          width: 18,
+          height: 18,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color(0xFFF1F1F8),
+            ),
+          ),
+        ) :
+        const Text(
           'start plan',
           style: TextStyle(
             color: Color(0xFFF1F1F8),
