@@ -19,6 +19,9 @@ class AutoRenewAuthPrepaidState extends Equatable {
   /// Payment method selected (wallet or card)
   final AutoRenewPaymentMethodType paymentMethod;
 
+  /// Saved card token for the card payment flow
+  final String? cardToken;
+
   const AutoRenewAuthPrepaidState({
     required this.loadStatus,
     required this.content,
@@ -27,6 +30,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
     required this.errorMessage,
     required this.navTarget,
     required this.paymentMethod,
+    required this.cardToken,
   });
 
   factory AutoRenewAuthPrepaidState.initial() {
@@ -38,6 +42,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
       errorMessage: null,
       navTarget: AutoRenewAuthNavTarget.none,
       paymentMethod: AutoRenewPaymentMethodType.wallet,
+      cardToken: null,
     );
   }
 
@@ -61,6 +66,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
     String? errorMessage,
     AutoRenewAuthNavTarget? navTarget,
     AutoRenewPaymentMethodType? paymentMethod,
+    String? cardToken,
     bool clearError = false,
   }) {
     return AutoRenewAuthPrepaidState(
@@ -71,6 +77,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       navTarget: navTarget ?? this.navTarget,
       paymentMethod: paymentMethod ?? this.paymentMethod,
+      cardToken: cardToken ?? this.cardToken,
     );
   }
 
@@ -83,5 +90,6 @@ class AutoRenewAuthPrepaidState extends Equatable {
         errorMessage,
         navTarget,
         paymentMethod,
+        cardToken,
       ];
 }

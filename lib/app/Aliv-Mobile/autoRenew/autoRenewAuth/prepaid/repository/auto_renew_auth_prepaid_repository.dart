@@ -14,6 +14,18 @@ enum AutoRenewPaymentMethodType {
   postpaidInvoice,
 }
 
+/// Args carried as router `extra` when navigating to the auth screen.
+/// Bundles the payment method with the optional saved-card token.
+class AutoRenewAuthArgs {
+  final AutoRenewPaymentMethodType paymentMethod;
+  final String? cardToken;
+
+  const AutoRenewAuthArgs({
+    required this.paymentMethod,
+    this.cardToken,
+  });
+}
+
 /// Extract name from email (substring before @)
 /// Same logic as used in drawer.dart
 String _nameFromEmail(String email) {
@@ -50,6 +62,7 @@ abstract class AutoRenewAuthPrepaidRepository {
   Future<bool> submitAuthorization({
     required String name,
     required AutoRenewPaymentMethodType paymentMethod,
+    String? cardToken,
   });
 }
 
@@ -85,6 +98,7 @@ class AutoRenewAuthPrepaidRepositoryImpl
   Future<bool> submitAuthorization({
     required String name,
     required AutoRenewPaymentMethodType paymentMethod,
+    String? cardToken,
   }) async {
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
     final accountInfoCubit = instance<AccountInfoCubit>();
@@ -99,7 +113,13 @@ class AutoRenewAuthPrepaidRepositoryImpl
       case AutoRenewPaymentMethodType.wallet:
         return deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
       case AutoRenewPaymentMethodType.card:
-        return deviceLimitsCubit.enableAutoRenewCard();
+        if (cardToken == null || cardToken.isEmpty) return false;
+        final cardSuccess = await deviceLimitsCubit.enableAutoRenewCard(
+          token: cardToken,
+          refreshAfter: false,
+        );
+        if (!cardSuccess) return false;
+        return deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
       case AutoRenewPaymentMethodType.postpaidInvoice:
         return accountInfoCubit.enableAutoPayInvoice();
     }

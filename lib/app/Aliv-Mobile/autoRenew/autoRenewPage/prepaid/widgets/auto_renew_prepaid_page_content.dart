@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../userProfile/addOrEditCards/prepaid/widgets/bottomsheet/add_card_bottom_sheet.dart';
+import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -141,7 +142,18 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
         AutoRenewPrepaidProceedActionButton(
           isEnabled: autoRenewPrepaidState.canProceed,
           isLoading: autoRenewPrepaidState.savingSelection,
-          onPressed: () => context.push(AppRoutes.autoRenewAuthPrepaidScreen),
+          onPressed: () {
+            final selectedCard = autoRenewPrepaidState.selectedCard;
+            context.push(
+              AppRoutes.autoRenewAuthPrepaidScreen,
+              extra: selectedCard != null
+                  ? AutoRenewAuthArgs(
+                      paymentMethod: AutoRenewPaymentMethodType.card,
+                      cardToken: selectedCard.token,
+                    )
+                  : AutoRenewPaymentMethodType.wallet,
+            );
+          },
         ),
       ],
     );

@@ -268,22 +268,29 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
 
   /// Enable auto-renew from credit card
   ///
+  /// [token] - Saved card token to charge on renewal
+  /// [refreshAfter] - When chaining with another auto-renew call, set to false
+  /// to skip the device-limits refresh (the next call will refresh).
   /// Returns true if auto-renew was enabled successfully
-  Future<bool> enableAutoRenewCard() async {
+  Future<bool> enableAutoRenewCard({
+    required String token,
+    bool refreshAfter = true,
+  }) async {
     if (state.isTogglingAutoRenew) return false;
 
     emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
 
     try {
-      final success = await _repository.enableAutoRenewCard();
+      final success = await _repository.enableAutoRenewCard(token: token);
 
       if (success) {
         if (kDebugMode) {
           debugPrint('✅ DeviceLimitsCubit: Auto-renew enabled (card)');
         }
 
-        // Refresh device limits to get updated autoRenew status
-        await loadDeviceLimits(forceRefresh: true);
+        if (refreshAfter) {
+          await loadDeviceLimits(forceRefresh: true);
+        }
         emit(state.copyWith(isTogglingAutoRenew: false));
         return true;
       } else {

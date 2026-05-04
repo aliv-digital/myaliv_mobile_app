@@ -15,10 +15,12 @@ import '../widgets/auth_name_input.dart';
 
 class AutoRenewAuthPrepaidScreen extends StatelessWidget {
   final AutoRenewPaymentMethodType paymentMethod;
+  final String? cardToken;
 
   const AutoRenewAuthPrepaidScreen({
     super.key,
     this.paymentMethod = AutoRenewPaymentMethodType.wallet,
+    this.cardToken,
   });
 
   @override
@@ -26,7 +28,10 @@ class AutoRenewAuthPrepaidScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => AutoRenewAuthPrepaidBloc(
         repository: AutoRenewAuthPrepaidRepositoryImpl(),
-      )..add(AutoRenewAuthPrepaidStarted(paymentMethod: paymentMethod)),
+      )..add(AutoRenewAuthPrepaidStarted(
+          paymentMethod: paymentMethod,
+          cardToken: cardToken,
+        )),
       child: const _AutoRenewAuthPrepaidView(),
     );
   }
@@ -44,9 +49,10 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
         final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+          AppToast.show(
+            message: state.errorMessage!,
+            type: ToastType.error,
+          );
         }
 
         if (state.navTarget == AutoRenewAuthNavTarget.home) {

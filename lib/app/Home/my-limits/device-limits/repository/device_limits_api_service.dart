@@ -191,13 +191,18 @@ class DeviceLimitsApiService {
 
   /// Enable auto-renew from credit card
   ///
-  /// PUT /CreditCard/auto-renew (empty body)
+  /// PUT /CreditCard/auto-renew
+  /// Body: `{ "Token": "<token>", "AgreementText": "I agree to automatic renewal" }`
   /// Returns true if API response { "Success": true }
-  Future<bool> enableAutoRenewCard() async {
+  Future<bool> enableAutoRenewCard({required String token}) async {
     try {
       final response = await _networkService.request<dynamic>(
         Api.creditCardAutoRenew,
-        method: HttpMethod.put,
+        method: HttpMethod.post,
+        data: {
+          'Token': token,
+          'AgreementText': 'I agree to automatic renewal',
+        },
       );
 
       final data = response.data;

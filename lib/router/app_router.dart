@@ -243,10 +243,17 @@ class AppRouter {
           final extra = state.extra;
           AutoRenewPaymentMethodType paymentMethod =
               AutoRenewPaymentMethodType.wallet;
-          if (extra is AutoRenewPaymentMethodType) {
+          String? cardToken;
+          if (extra is AutoRenewAuthArgs) {
+            paymentMethod = extra.paymentMethod;
+            cardToken = extra.cardToken;
+          } else if (extra is AutoRenewPaymentMethodType) {
             paymentMethod = extra;
           }
-          return AutoRenewAuthPrepaidScreen(paymentMethod: paymentMethod);
+          return AutoRenewAuthPrepaidScreen(
+            paymentMethod: paymentMethod,
+            cardToken: cardToken,
+          );
         },
       ),
       GoRoute(

@@ -88,9 +88,10 @@ class DeviceLimitsRepository {
 
   /// Enable auto-renew from credit card
   ///
+  /// [token] - Saved card token to charge on renewal
   /// Returns true if auto-renew was enabled successfully
-  Future<bool> enableAutoRenewCard() async {
-    return _apiService.enableAutoRenewCard();
+  Future<bool> enableAutoRenewCard({required String token}) async {
+    return _apiService.enableAutoRenewCard(token: token);
   }
 
   /// Update balance threshold settings for auto top-up

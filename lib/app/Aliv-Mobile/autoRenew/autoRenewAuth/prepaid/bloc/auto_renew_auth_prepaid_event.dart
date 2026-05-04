@@ -11,13 +11,15 @@ abstract class AutoRenewAuthPrepaidEvent extends Equatable {
 
 class AutoRenewAuthPrepaidStarted extends AutoRenewAuthPrepaidEvent {
   final AutoRenewPaymentMethodType paymentMethod;
+  final String? cardToken;
 
   const AutoRenewAuthPrepaidStarted({
     this.paymentMethod = AutoRenewPaymentMethodType.wallet,
+    this.cardToken,
   });
 
   @override
-  List<Object?> get props => [paymentMethod];
+  List<Object?> get props => [paymentMethod, cardToken];
 }
 
 class AutoRenewAuthNameChanged extends AutoRenewAuthPrepaidEvent {

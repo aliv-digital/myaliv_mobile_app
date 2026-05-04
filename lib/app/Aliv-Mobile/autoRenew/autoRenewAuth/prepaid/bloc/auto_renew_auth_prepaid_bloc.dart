@@ -24,6 +24,7 @@ class AutoRenewAuthPrepaidBloc
     emit(state.copyWith(
       loadStatus: AutoRenewAuthLoadStatus.loading,
       paymentMethod: event.paymentMethod,
+      cardToken: event.cardToken,
       clearError: true,
     ));
 
@@ -76,6 +77,7 @@ class AutoRenewAuthPrepaidBloc
       final success = await repository.submitAuthorization(
         name: name,
         paymentMethod: state.paymentMethod,
+        cardToken: state.cardToken,
       );
 
       if (success) {

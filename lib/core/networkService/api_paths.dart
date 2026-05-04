@@ -24,7 +24,8 @@ class Api {
   static String deviceAutoRenew(int deviceAccountId) =>
       '$baseUrl/v1/MyAliv/device/$deviceAccountId/auto-renew';
 
-  /// Auto-renew from credit card: PUT /CreditCard/auto-renew (empty body)
+  /// Auto-renew from credit card: PUT /CreditCard/auto-renew
+  /// Body: `{ "Token": "...", "AgreementText": "I agree to automatic renewal" }`
   static const creditCardAutoRenew = '$baseUrl/v1/MyAliv/CreditCard/auto-renew';
 
   /// Saved credit cards: GET /CreditCard/saved
