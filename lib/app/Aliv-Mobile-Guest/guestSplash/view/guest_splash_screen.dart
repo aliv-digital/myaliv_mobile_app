@@ -78,12 +78,10 @@ class GuestSplashView extends StatelessWidget {
 
       body: BlocBuilder<GuestSplashBloc, GuestSplashState>(
         builder: (context, state) {
-          if (state is GuestSplashInitial) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is GuestSplashLoadedState) {
-            final imageUrl = state.mobileImageUrl;
+          final imageUrl =
+              state is GuestSplashLoadedState ? state.mobileImageUrl : null;
 
-            return LayoutBuilder(
+          return LayoutBuilder(
               builder: (context, constraints) {
                 final minPurpleHeight =
                     (constraints.maxHeight - _heroHeight).clamp(
@@ -216,11 +214,8 @@ class GuestSplashView extends StatelessWidget {
                     ),
                   ),
                 );
-              },
-            );
-          }
-
-          return const SizedBox.shrink();
+            },
+          );
         },
       ),
     );

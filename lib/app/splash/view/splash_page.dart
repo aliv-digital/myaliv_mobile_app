@@ -27,10 +27,11 @@ class SplashPage extends StatelessWidget {
       child: Scaffold(
         body: BlocListener<SplashBloc, SplashState>(
           listener: (context, state) {
-            if (state is SplashLoaded) {
+            if (state is LoggedIn) {
+              context.go(AppRoutes.home);
+            } else if (state is SplashLoaded || state is SplashError) {
               context.go(AppRoutes.welcome);
             }
-            // Navigation logic here
           },
           child: Container(
             decoration: BoxDecoration(

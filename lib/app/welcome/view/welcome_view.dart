@@ -72,14 +72,10 @@ class WelcomeView extends StatelessWidget {
       extendBody: true,
       body: BlocBuilder<WelcomeBloc, WelcomeState>(
         builder: (context, state) {
-          if (state is WelcomeInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          final imageUrl =
+              state is WelcomeLoadedState ? state.mobileImageUrl : null;
 
-          if (state is WelcomeLoadedState) {
-            final imageUrl = state.mobileImageUrl;
-
-            return LayoutBuilder(
+          return LayoutBuilder(
               builder: (context, constraints) {
                 final h = constraints.maxHeight;
                 final w = constraints.maxWidth;
@@ -189,11 +185,8 @@ class WelcomeView extends StatelessWidget {
                     ),
                   ],
                 );
-              },
-            );
-          }
-
-          return const SizedBox.shrink();
+            },
+          );
         },
       ),
     );

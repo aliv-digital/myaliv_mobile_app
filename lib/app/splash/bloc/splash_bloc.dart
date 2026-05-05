@@ -7,17 +7,18 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashInitial()) {
     on<SplashStarted>((event, emit) async {
       try {
-        await Future.delayed(const Duration(seconds: 3));  // Simulating a delay for splash
-
-        String ? token = await LocalStorage.getAccessToken();
-        if(token != null){
+        final results = await Future.wait([
+          LocalStorage.getAccessToken(),
+          Future<void>.delayed(const Duration(seconds: 1)),
+        ]);
+        final token = results[0] as String?;
+        if (token != null) {
           emit(LoggedIn());
-        }else{
+        } else {
           emit(SplashLoaded());
         }
-        // Splash screen finished, emit loaded state
       } catch (e) {
-        emit(SplashError());  // Error state if something goes wrong
+        emit(SplashError());
       }
     });
   }
