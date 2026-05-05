@@ -9,14 +9,14 @@ import '../../app/Home/home/data/home_ui_config.dart';
 /// - OTP/login flow can update this later from real API response
 class AppUiConfigCubit extends Cubit<HomeUiConfig> {
   AppUiConfigCubit()
-      : super(
-    const HomeUiConfig(
-      userType: UserType.postpaid,
-      hasActivePlan: true,
-      isFuturePlan: false,
-      isCurrentPlan: false,
-    ),
-  );
+    : super(
+        const HomeUiConfig(
+          userType: UserType.postpaid,
+          hasActivePlan: true,
+          isFuturePlan: false,
+          isCurrentPlan: false,
+        ),
+      );
 
   /// Replaces the whole config at once.
   void setConfig(HomeUiConfig config) {
