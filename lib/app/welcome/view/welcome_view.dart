@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,7 +67,6 @@ class WelcomeView extends StatelessWidget {
     );
 
     final safeBottom = MediaQuery.paddingOf(context).bottom;
-
     return Scaffold(
       backgroundColor: ColorManager.welcomeScreenBloc,
       extendBody: true,
@@ -77,6 +77,8 @@ class WelcomeView extends StatelessWidget {
           }
 
           if (state is WelcomeLoadedState) {
+            final imageUrl = state.mobileImageUrl;
+
             return LayoutBuilder(
               builder: (context, constraints) {
                 final h = constraints.maxHeight;
@@ -99,10 +101,7 @@ class WelcomeView extends StatelessWidget {
                                 scale: _imageZoom,
                                 // ✅ Slightly up for nicer crop like Figma
                                 alignment: const Alignment(0, -0.05),
-                                child: Image.asset(
-                                  AssetConstant.welcomeImagePNG,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: _WelcomeHeroImage(imageUrl: imageUrl),
                               ),
                             ),
                           ),
@@ -197,6 +196,34 @@ class WelcomeView extends StatelessWidget {
           return const SizedBox.shrink();
         },
       ),
+    );
+  }
+}
+
+class _WelcomeHeroImage extends StatelessWidget {
+  const _WelcomeHeroImage({this.imageUrl});
+
+  final String? imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedImageUrl = imageUrl?.trim() ?? '';
+    if (resolvedImageUrl.isEmpty) {
+      return _fallbackImage();
+    }
+
+    return CachedNetworkImage(
+      imageUrl: resolvedImageUrl,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => _fallbackImage(),
+      errorWidget: (context, url, error) => _fallbackImage(),
+    );
+  }
+
+  Widget _fallbackImage() {
+    return Image.asset(
+      AssetConstant.welcomeImagePNG,
+      fit: BoxFit.cover,
     );
   }
 }

@@ -59,4 +59,8 @@ class Api {
   static const redeemReferralText = "https://myalivappuat-api.bealiv.com/api/app-settings/redeem-referral";
 
   static const startFuturePlan = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/future-plan - POST to start future plan
+
+  static const guestPageMobileImage = 'https://myalivappuat-api.bealiv.com/api/app-settings/guest-page-mobile-image';
+  static const welcomePageMobileImage = 'https://myalivappuat-api.bealiv.com/api/app-settings/login-page-mobile-image';
+
 }

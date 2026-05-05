@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,7 +70,6 @@ class GuestSplashView extends StatelessWidget {
     );
 
     final safeBottom = MediaQuery.paddingOf(context).bottom;
-
     return Scaffold(
       backgroundColor: GuestSplashTheme.purple,
 
@@ -81,6 +81,8 @@ class GuestSplashView extends StatelessWidget {
           if (state is GuestSplashInitial) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is GuestSplashLoadedState) {
+            final imageUrl = state.mobileImageUrl;
+
             return LayoutBuilder(
               builder: (context, constraints) {
                 final minPurpleHeight =
@@ -101,11 +103,7 @@ class GuestSplashView extends StatelessWidget {
                           child: Stack(
                             children: [
                               Positioned.fill(
-                                child: Image.asset(
-                                  AssetConstant.guestImagePNG,
-                                  fit: BoxFit.fitWidth,
-                                  alignment: const Alignment(0, -0.9),
-                                ),
+                                child: _GuestHeroImage(imageUrl: imageUrl),
                               ),
                               Positioned(
                                 top: _backButtonTopOffset,
@@ -172,7 +170,6 @@ class GuestSplashView extends StatelessWidget {
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
-
                             children: [
                               Text(
                                 'Please Select Option',
@@ -226,6 +223,38 @@ class GuestSplashView extends StatelessWidget {
           return const SizedBox.shrink();
         },
       ),
+    );
+  }
+}
+
+class _GuestHeroImage extends StatelessWidget {
+  const _GuestHeroImage({this.imageUrl});
+
+  static const Alignment _alignment = Alignment(0, -0.9);
+
+  final String? imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedImageUrl = imageUrl?.trim() ?? '';
+    if (resolvedImageUrl.isEmpty) {
+      return _fallbackImage();
+    }
+
+    return CachedNetworkImage(
+      imageUrl: resolvedImageUrl,
+      fit: BoxFit.fitWidth,
+      alignment: _alignment,
+      placeholder: (context, url) => _fallbackImage(),
+      errorWidget: (context, url, error) => _fallbackImage(),
+    );
+  }
+
+  Widget _fallbackImage() {
+    return Image.asset(
+      AssetConstant.guestImagePNG,
+      fit: BoxFit.fitWidth,
+      alignment: _alignment,
     );
   }
 }
