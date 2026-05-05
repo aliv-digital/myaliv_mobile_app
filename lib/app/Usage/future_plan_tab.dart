@@ -74,28 +74,24 @@ class _StandAloneFuturePlans extends StatelessWidget {
           return const _EmptyFuturePlansMessage();
         }
 
-        final showStartButton =
-            !isPostpaid && futurePlans.any((p) => p.isPrimaryPlan);
-
         return Column(
           children: [
-            ...futurePlans.asMap().entries.map((entry) {
-              final index = entry.key;
-              final plan = entry.value;
-              final imageIndex = index % _planImages.length;
-
-              return Padding(
+            for (var i = 0; i < futurePlans.length; i++) ...[
+              Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: FuturePlanCard(
-                  title: plan.planName,
-                  startDate: _formatCardDate(plan.startDateTime),
-                  endDate: _formatCardDate(plan.endDateTime),
-                  image: _planImages[imageIndex],
+                  title: futurePlans[i].planName,
+                  startDate: _formatCardDate(futurePlans[i].startDateTime),
+                  endDate: _formatCardDate(futurePlans[i].endDateTime),
+                  image: _planImages[i % _planImages.length],
                   isActivePlan: false,
                 ),
-              );
-            }),
-            if (showStartButton) const _StartPlanButton(),
+              ),
+              if (!isPostpaid && futurePlans[i].isPrimaryPlan) ...[
+                const _StartPlanButton(),
+                const SizedBox(height: 16),
+              ],
+            ],
           ],
         );
       },
