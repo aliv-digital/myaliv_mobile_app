@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
@@ -87,6 +88,9 @@ class BalanceCubit extends Cubit<BalanceState> {
 
   /// Map repository exceptions to user-friendly messages
   String _getFriendlyErrorMessage(BalanceRepositoryException e) {
+    if (e.originalError is HostUnreachableException) {
+      return "Can't reach server. Try again shortly.";
+    }
     switch (e.type) {
       case BalanceErrorType.network:
         return 'No internet connection. Please check and try again.';

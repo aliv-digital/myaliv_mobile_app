@@ -230,6 +230,14 @@ class DeviceLimitsApiService {
       );
     }
 
+    if (e is HostUnreachableException) {
+      return DeviceLimitsException(
+        e.message,
+        type: DeviceLimitsErrorType.network,
+        originalError: e,
+      );
+    }
+
     if (e is NoInternetException) {
       return DeviceLimitsException(
         'No internet connection',

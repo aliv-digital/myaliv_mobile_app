@@ -102,29 +102,29 @@ class NetworkInterceptorHandlers {
   }
 }
 
-/// Logging interceptor for debugging
+/// Logging interceptor for debugging.
+///
+/// Behavior is controlled by [NetworkLogConfig]. Defaults emit compact
+/// (single-line) bodies, truncate at 20000 chars, and collapse arrays
+/// longer than 50 items. Long bodies are chunked across multiple
+/// `debugPrint` calls so Android logcat (which truncates lines around
+/// ~4 KB) still surfaces the full payload.
 class NetworkLoggingInterceptor extends Interceptor {
+  NetworkLoggingInterceptor({NetworkLogConfig? config})
+      : _config = config ?? const NetworkLogConfig();
+
+  final NetworkLogConfig _config;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     debugPrint('\n🚀 REQUEST [${options.method}] ${options.uri}');
-    debugPrint('📦 Headers: ${_formatJson(options.headers)}');
 
-    if (options.data is FormData) {
-      final formData = options.data as FormData;
-      debugPrint('📤 FormData Fields: ${formData.fields}');
-      if (formData.files.isNotEmpty) {
-        debugPrint(
-          '📎 Files: ${formData.files.map((f) => '${f.key} (${f.value.filename ?? "unknown"})').toList()}',
-        );
-      }
-    } else if (options.data != null) {
-      // Skip logging binary request data
-      if (_isBinaryData(options.data)) {
-        debugPrint(
-            '📤 Data: [Binary data - ${_getDataSize(options.data)} bytes]');
-      } else {
-        debugPrint('📤 Data: ${_formatJson(options.data)}');
-      }
+    if (_config.logRequestHeaders) {
+      _printChunked('📦 Headers', _formatBody(options.headers));
+    }
+
+    if (_config.logRequestBody) {
+      _logRequestBody(options.data);
     }
 
     return handler.next(options);
@@ -136,12 +136,12 @@ class NetworkLoggingInterceptor extends Interceptor {
       '✅ RESPONSE [${response.statusCode}] ${response.requestOptions.uri}',
     );
 
-    // Skip logging binary data (images, files, etc.)
-    if (_isBinaryData(response.data)) {
-      debugPrint(
-          '📥 Data: [Binary data - ${_getDataSize(response.data)} bytes]');
-    } else {
-      debugPrint('📥 Data: ${_formatJson(response.data)}');
+    if (_config.logResponseHeaders) {
+      _printChunked('📋 Headers', _formatBody(response.headers.map));
+    }
+
+    if (_config.logResponseBody) {
+      _logResponseBody(response.data);
     }
 
     return handler.next(response);
@@ -149,47 +149,110 @@ class NetworkLoggingInterceptor extends Interceptor {
 
   @override
   void onError(DioException error, ErrorInterceptorHandler handler) {
-    debugPrint(
-      '❌ ERROR [${error.response?.statusCode}] ${error.requestOptions.uri}',
-    );
-    if (error.response?.data != null) {
-      // Only show the error message, not the full response
-      final errorMessage = _extractErrorMessage(error.response?.data);
-      debugPrint('📛 Error: $errorMessage');
-    } else {
-      debugPrint('🧨 Message: ${error.message}');
+    final status = error.response?.statusCode;
+    final tag = status?.toString() ?? error.type.name;
+    final method = error.requestOptions.method;
+    final uri = error.requestOptions.uri;
+
+    debugPrint('\n❌ ERROR [$tag] $method $uri');
+    debugPrint('🔻 Type: ${error.type.name}');
+    debugPrint('🧨 Message: ${error.message ?? "(none)"}');
+
+    if (error.error != null) {
+      debugPrint('🪤 Cause: ${error.error}');
     }
+
+    final response = error.response;
+    if (response != null) {
+      if (_config.logResponseHeaders) {
+        _printChunked(
+            '📋 Response Headers', _formatBody(response.headers.map));
+      }
+      if (response.data != null) {
+        debugPrint('📛 Extracted: ${_extractErrorMessage(response.data)}');
+        if (_config.logResponseBody) {
+          if (_isBinaryData(response.data)) {
+            debugPrint(
+                '📥 Response Body: [Binary data - ${_getDataSize(response.data)} bytes]');
+          } else {
+            _printChunked('📥 Response Body', _formatBody(response.data));
+          }
+        }
+      }
+    }
+
+    if (_config.logErrorRequestBody) {
+      final reqData = error.requestOptions.data;
+      if (reqData != null) {
+        if (reqData is FormData) {
+          debugPrint('📤 Request FormData Fields: ${reqData.fields}');
+        } else if (_isBinaryData(reqData)) {
+          debugPrint(
+              '📤 Request Body: [Binary data - ${_getDataSize(reqData)} bytes]');
+        } else {
+          _printChunked('📤 Request Body', _formatBody(reqData));
+        }
+      }
+    }
+
+    if (_config.logErrorStack && error.stackTrace.toString().isNotEmpty) {
+      debugPrint('🧵 Stack:\n${error.stackTrace}');
+    }
+
     return handler.next(error);
+  }
+
+  // ---------------- helpers ----------------
+
+  void _logRequestBody(dynamic data) {
+    if (data == null) return;
+
+    if (data is FormData) {
+      debugPrint('📤 FormData Fields: ${data.fields}');
+      if (data.files.isNotEmpty) {
+        debugPrint(
+          '📎 Files: ${data.files.map((f) => '${f.key} (${f.value.filename ?? "unknown"})').toList()}',
+        );
+      }
+      return;
+    }
+
+    if (_isBinaryData(data)) {
+      debugPrint('📤 Data: [Binary data - ${_getDataSize(data)} bytes]');
+      return;
+    }
+
+    _printChunked('📤 Data', _formatBody(data));
+  }
+
+  void _logResponseBody(dynamic data) {
+    if (_isBinaryData(data)) {
+      debugPrint('📥 Data: [Binary data - ${_getDataSize(data)} bytes]');
+      return;
+    }
+    _printChunked('📥 Data', _formatBody(data));
   }
 
   /// Extract error message from response data
   String _extractErrorMessage(dynamic data) {
     if (data == null) return 'An error occurred';
 
-    // If data is a JSON string, parse it first
     if (data is String) {
       try {
         final parsed = jsonDecode(data);
-        if (parsed is Map) {
-          return _extractMessageFromMap(parsed);
-        }
+        if (parsed is Map) return _extractMessageFromMap(parsed);
         return data;
       } catch (_) {
-        // Not valid JSON, return as-is
         return data;
       }
     }
 
-    if (data is Map) {
-      return _extractMessageFromMap(data);
-    }
+    if (data is Map) return _extractMessageFromMap(data);
 
     return 'An error occurred';
   }
 
-  /// Extract message from a Map
   String _extractMessageFromMap(Map data) {
-    // Try common error message keys (both uppercase and lowercase)
     final message = data['Message'] ??
         data['message'] ??
         data['Error'] ??
@@ -200,55 +263,106 @@ class NetworkLoggingInterceptor extends Interceptor {
     return message?.toString() ?? 'An error occurred';
   }
 
-  /// Format JSON for logging
-  String _formatJson(dynamic data) {
+  /// Format any body for logging according to [NetworkLogConfig].
+  String _formatBody(dynamic data) {
+    if (_config.bodyMode == NetworkLogBodyMode.off) return '<hidden>';
+
+    dynamic decoded = data;
+    if (data is String) {
+      try {
+        decoded = jsonDecode(data);
+      } catch (_) {
+        return _truncate(data);
+      }
+    }
+
     try {
-      // If data is a String, try to parse it as JSON first
-      if (data is String) {
-        try {
-          final parsed = jsonDecode(data);
-          return const JsonEncoder.withIndent('  ').convert(parsed);
-        } catch (_) {
-          // Not valid JSON, return as-is (truncate if too long)
-          if (data.length > 1000) {
-            return '${data.substring(0, 1000)}... [truncated, length: ${data.length}]';
-          }
-          return data;
-        }
+      if (_config.bodyMode == NetworkLogBodyMode.summary) {
+        return _truncate(jsonEncode(_summarize(decoded)));
       }
 
-      // For non-string data, format directly
-      return const JsonEncoder.withIndent('  ').convert(data);
-    } catch (e) {
-      return data.toString();
+      final trimmed = _trimArrays(decoded, _config.maxArrayItems);
+      final encoded = _config.bodyMode == NetworkLogBodyMode.pretty
+          ? const JsonEncoder.withIndent('  ').convert(trimmed)
+          : jsonEncode(trimmed);
+      return _truncate(encoded);
+    } catch (_) {
+      return _truncate(data.toString());
     }
   }
 
-  /// Check if data is binary (byte array, image, file, etc.)
-  bool _isBinaryData(dynamic data) {
-    if (data is List<int>) return true; // Byte array
-    if (data is Stream) return true; // Stream data
+  /// Recursively trim long arrays to [max] items, appending a `... +N more`
+  /// sentinel so the original size is still visible.
+  dynamic _trimArrays(dynamic node, int max) {
+    if (node is List) {
+      final trimmed = node.length > max
+          ? [
+              ...node.take(max).map((e) => _trimArrays(e, max)),
+              '... +${node.length - max} more',
+            ]
+          : node.map((e) => _trimArrays(e, max)).toList();
+      return trimmed;
+    }
+    if (node is Map) {
+      return node.map((k, v) => MapEntry(k, _trimArrays(v, max)));
+    }
+    return node;
+  }
 
-    // Check if it's a list containing mostly integers (byte data)
+  /// Collapse the structure into a shape suitable for one-glance debugging:
+  /// arrays become `<List length=N, sample=...>`, maps keep keys but
+  /// summarize their values recursively.
+  dynamic _summarize(dynamic node) {
+    if (node is List) {
+      if (node.isEmpty) return '<List length=0>';
+      return '<List length=${node.length}, sample=${jsonEncode(_summarize(node.first))}>';
+    }
+    if (node is Map) {
+      return node.map((k, v) => MapEntry(k.toString(), _summarize(v)));
+    }
+    return node;
+  }
+
+  String _truncate(String s) {
+    final max = _config.maxBodyChars;
+    if (max <= 0 || s.length <= max) return s;
+    return '${s.substring(0, max)}... [truncated, total=${s.length}]';
+  }
+
+  /// Print [body] in ~800-char slices so Android logcat (which truncates
+  /// individual log lines around ~4 KB) doesn't drop the tail of large
+  /// payloads. The first slice carries [label] inline; continuation
+  /// slices are indented with `  …` so they read as one logical block.
+  void _printChunked(String label, String body) {
+    const chunk = 800;
+    if (body.length <= chunk) {
+      debugPrint('$label: $body');
+      return;
+    }
+    debugPrint('$label: ${body.substring(0, chunk)}');
+    var i = chunk;
+    while (i < body.length) {
+      final end = (i + chunk < body.length) ? i + chunk : body.length;
+      debugPrint('  …${body.substring(i, end)}');
+      i = end;
+    }
+  }
+
+  bool _isBinaryData(dynamic data) {
+    if (data is List<int>) return true;
+    if (data is Stream) return true;
+
     if (data is List && data.isNotEmpty && data.length > 100) {
-      // Sample first 10 items - if all are ints, likely binary data
       final sample = data.take(10);
-      if (sample.every((item) => item is int)) {
-        return true;
-      }
+      if (sample.every((item) => item is int)) return true;
     }
 
     return false;
   }
 
-  /// Get data size for logging
   String _getDataSize(dynamic data) {
-    if (data is List) {
-      return '${data.length}';
-    }
-    if (data is String) {
-      return '${data.length}';
-    }
+    if (data is List) return '${data.length}';
+    if (data is String) return '${data.length}';
     return 'unknown';
   }
 }

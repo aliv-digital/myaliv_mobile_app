@@ -209,7 +209,10 @@ class _WelcomeHeroImage extends StatelessWidget {
       imageUrl: resolvedImageUrl,
       fit: BoxFit.cover,
       placeholder: (context, url) => _fallbackImage(),
-      errorWidget: (context, url, error) => _fallbackImage(),
+      errorWidget: (context, url, error) {
+        debugPrint('WelcomeHeroImage load failed: $url -> $error');
+        return _fallbackImage();
+      },
     );
   }
 

@@ -102,6 +102,14 @@ class BalanceApiService {
       );
     }
 
+    if (e is HostUnreachableException) {
+      return BalanceRepositoryException(
+        e.message,
+        type: BalanceErrorType.network,
+        originalError: e,
+      );
+    }
+
     if (e is NoInternetException) {
       return BalanceRepositoryException(
         'No internet connection',

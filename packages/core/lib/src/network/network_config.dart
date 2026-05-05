@@ -4,6 +4,57 @@
 /// Responsible for: Service configuration and app-specific callbacks.
 library;
 
+/// Body formatting mode for request/response logging.
+///
+/// - [pretty]: indented JSON (most vertical space)
+/// - [compact]: single-line JSON (saves vertical space, recommended)
+/// - [summary]: arrays collapsed to length+sample, maps shallow
+/// - [off]: do not log body at all
+enum NetworkLogBodyMode { pretty, compact, summary, off }
+
+/// Logging configuration for [NetworkLoggingInterceptor].
+class NetworkLogConfig {
+  /// Format mode for request/response bodies.
+  final NetworkLogBodyMode bodyMode;
+
+  /// Print request headers.
+  final bool logRequestHeaders;
+
+  /// Print request body.
+  final bool logRequestBody;
+
+  /// Print response headers.
+  final bool logResponseHeaders;
+
+  /// Print response body.
+  final bool logResponseBody;
+
+  /// Maximum characters to print for any body. Excess is truncated with a marker.
+  final int maxBodyChars;
+
+  /// When a JSON array exceeds this length, only the first N items are logged.
+  /// Applies to compact and pretty modes; summary mode always collapses arrays.
+  final int maxArrayItems;
+
+  /// Include the Dart stack trace on errors.
+  final bool logErrorStack;
+
+  /// On error, also log the request body that triggered it.
+  final bool logErrorRequestBody;
+
+  const NetworkLogConfig({
+    this.bodyMode = NetworkLogBodyMode.compact,
+    this.logRequestHeaders = true,
+    this.logRequestBody = true,
+    this.logResponseHeaders = false,
+    this.logResponseBody = true,
+    this.maxBodyChars = 20000,
+    this.maxArrayItems = 50,
+    this.logErrorStack = false,
+    this.logErrorRequestBody = true,
+  });
+}
+
 /// Network service configuration
 class NetworkConfig {
   /// Base URL for all API requests
@@ -21,6 +72,9 @@ class NetworkConfig {
   /// Enable request/response logging (only works in debug mode)
   final bool enableLogging;
 
+  /// Fine-grained logging behavior (body format, truncation, etc.)
+  final NetworkLogConfig logConfig;
+
   /// Maximum number of retry attempts for failed requests
   final int maxRetries;
 
@@ -33,6 +87,7 @@ class NetworkConfig {
     this.receiveTimeout = const Duration(seconds: 30),
     this.headers,
     this.enableLogging = true,
+    this.logConfig = const NetworkLogConfig(),
     this.maxRetries = 3,
     this.ignoreCookieExpires = false,
   });

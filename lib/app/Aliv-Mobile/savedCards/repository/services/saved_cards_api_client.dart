@@ -64,6 +64,14 @@ class SavedCardsApiClient {
       );
     }
 
+    if (e is HostUnreachableException) {
+      return SavedCardsException(
+        type: SavedCardsErrorType.noInternet,
+        statusCode: 0,
+        serverMessage: e.message,
+      );
+    }
+
     if (e is NoInternetException) {
       return SavedCardsException(
         type: SavedCardsErrorType.noInternet,

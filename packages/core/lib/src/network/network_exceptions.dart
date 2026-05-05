@@ -31,6 +31,14 @@ class NoInternetException extends NetworkException {
   NoInternetException() : super('No internet connection');
 }
 
+/// Exception thrown when the device has connectivity but the host could not
+/// be reached — typically a DNS resolution failure or a dead/misconfigured
+/// API endpoint. Distinct from [NoInternetException] so the UI can guide
+/// the user toward "service unavailable" rather than "check your wifi".
+class HostUnreachableException extends NetworkException {
+  HostUnreachableException() : super("Can't reach server. Try again shortly.");
+}
+
 /// Exception thrown when request times out
 class TimeoutException extends NetworkException {
   TimeoutException() : super('Request timeout');

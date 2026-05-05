@@ -5,6 +5,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:io' show SocketException;
 
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
@@ -171,7 +172,8 @@ class NetworkService {
 
     // Logging interceptor (debug mode only)
     if (_config.enableLogging && kDebugMode) {
-      _dio.interceptors.add(NetworkLoggingInterceptor());
+      _dio.interceptors
+          .add(NetworkLoggingInterceptor(config: _config.logConfig));
       debugPrint('✅ NetworkService: Logging interceptor added');
     } else {
       debugPrint(
@@ -445,6 +447,11 @@ class NetworkService {
         return NetworkException('Request cancelled');
 
       case DioExceptionType.connectionError:
+        final cause = error.error;
+        if (cause is SocketException &&
+            cause.message.contains('Failed host lookup')) {
+          return HostUnreachableException();
+        }
         return NoInternetException();
 
       case DioExceptionType.badCertificate:

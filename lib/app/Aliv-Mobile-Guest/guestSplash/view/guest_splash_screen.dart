@@ -241,7 +241,10 @@ class _GuestHeroImage extends StatelessWidget {
       fit: BoxFit.fitWidth,
       alignment: _alignment,
       placeholder: (context, url) => _fallbackImage(),
-      errorWidget: (context, url, error) => _fallbackImage(),
+      errorWidget: (context, url, error) {
+        debugPrint('GuestHeroImage load failed: $url -> $error');
+        return _fallbackImage();
+      },
     );
   }
 

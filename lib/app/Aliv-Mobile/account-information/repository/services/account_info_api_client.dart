@@ -110,6 +110,14 @@ class AccountInfoApiClient {
       );
     }
 
+    if (e is HostUnreachableException) {
+      return AccountInfoException(
+        type: AccountInfoErrorType.noInternet,
+        statusCode: 0,
+        serverMessage: e.message,
+      );
+    }
+
     if (e is NoInternetException) {
       return AccountInfoException(
         type: AccountInfoErrorType.noInternet,

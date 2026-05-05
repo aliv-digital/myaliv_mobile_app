@@ -59,6 +59,14 @@ class ConsumptionLimitApiService {
       );
     }
 
+    if (e is HostUnreachableException) {
+      return ConsumptionLimitRepositoryException(
+        e.message,
+        type: ConsumptionLimitErrorType.network,
+        originalError: e,
+      );
+    }
+
     if (e is NoInternetException) {
       return ConsumptionLimitRepositoryException(
         'No internet connection',
