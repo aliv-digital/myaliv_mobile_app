@@ -259,6 +259,12 @@ class BasePlanModel {
   /// - lib/app/Plans/PlanScreen/widgets/home_plan_add_ons_tab_content.dart
   DateTime? get endDateTime => _tryParseApiDate(endDate);
 
+  // ===== Plan type helpers =====
+  // PlanType codes: P = Primary, S = Stand-alone, A = Add-on.
+  bool get isPrimaryPlan => planType.toUpperCase() == 'P';
+  bool get isStandAlonePlan => planType.toUpperCase() == 'S';
+  bool get isAddOnPlan => planType.toUpperCase() == 'A';
+
   // ===== Debug Method =====
 
   /// Full typed map for debugging or temporary logging.

@@ -8,8 +8,6 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Usage/repository/usage_repository.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/future_plan_card.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
-
-import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 class FuturePlansTab extends StatelessWidget {
@@ -17,21 +15,11 @@ class FuturePlansTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
-
     return Container(
       color: Colors.white,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
-        children: [
-          if (config.isPostpaid)
-            const _StandAloneFuturePlans()
-          else ...[
-            const _StandAloneFuturePlans(),
-            const SizedBox(height: 16),
-            const _StartPlanButton(),
-          ],
-        ],
+        children: const [_StandAloneFuturePlans()],
       ),
     );
   }
@@ -68,6 +56,8 @@ class _StandAloneFuturePlans extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPostpaid = context.watch<AppUiConfigCubit>().state.isPostpaid;
+
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
         return previous.standAlonePlans != current.standAlonePlans ||
@@ -84,23 +74,29 @@ class _StandAloneFuturePlans extends StatelessWidget {
           return const _EmptyFuturePlansMessage();
         }
 
-        return Column(
-          children: futurePlans.asMap().entries.map((entry) {
-            final index = entry.key;
-            final plan = entry.value;
-            final imageIndex = index % _planImages.length;
+        final showStartButton =
+            !isPostpaid && futurePlans.any((p) => p.isPrimaryPlan);
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: FuturePlanCard(
-                title: plan.planName,
-                startDate: _formatCardDate(plan.startDateTime),
-                endDate: _formatCardDate(plan.endDateTime),
-                image: _planImages[imageIndex],
-                isActivePlan: false,
-              ),
-            );
-          }).toList(),
+        return Column(
+          children: [
+            ...futurePlans.asMap().entries.map((entry) {
+              final index = entry.key;
+              final plan = entry.value;
+              final imageIndex = index % _planImages.length;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: FuturePlanCard(
+                  title: plan.planName,
+                  startDate: _formatCardDate(plan.startDateTime),
+                  endDate: _formatCardDate(plan.endDateTime),
+                  image: _planImages[imageIndex],
+                  isActivePlan: false,
+                ),
+              );
+            }),
+            if (showStartButton) const _StartPlanButton(),
+          ],
         );
       },
     );
