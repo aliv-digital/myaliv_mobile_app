@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:equatable/equatable.dart';
 
 import '../model/purchase_add_ons_models.dart';
@@ -75,3 +79,5 @@ class PurchaseAddOnsState extends Equatable {
         errorMessage,
       ];
 }
+
+*/

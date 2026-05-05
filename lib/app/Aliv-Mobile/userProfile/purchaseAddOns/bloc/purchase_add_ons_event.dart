@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 
@@ -44,3 +48,5 @@ final class PurchaseAddOnsSkipPressed extends PurchaseAddOnsEvent {
 final class PurchaseAddOnsProceedPressed extends PurchaseAddOnsEvent {
   const PurchaseAddOnsProceedPressed();
 }
+
+*/

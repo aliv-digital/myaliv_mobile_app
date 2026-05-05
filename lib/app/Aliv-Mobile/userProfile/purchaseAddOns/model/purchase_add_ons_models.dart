@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:equatable/equatable.dart';
 
 class PurchaseAddOnsDataResult extends Equatable {
@@ -137,3 +141,5 @@ class PurchaseAddOnsFairUsePolicy extends Equatable {
   @override
   List<Object?> get props => [title, description];
 }
+
+*/

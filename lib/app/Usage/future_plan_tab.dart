@@ -28,9 +28,9 @@ class FuturePlansTab extends StatelessWidget {
             const _StandAloneFuturePlans()
           else ...[
             const _StandAloneFuturePlans(),
+            const SizedBox(height: 16),
+            const _StartPlanButton(),
           ],
-          const SizedBox(height: 16),
-          const _StartPlanButton(),
         ],
       ),
     );

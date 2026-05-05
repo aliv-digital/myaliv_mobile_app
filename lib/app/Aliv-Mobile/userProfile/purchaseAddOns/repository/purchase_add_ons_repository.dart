@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
@@ -44,3 +48,5 @@ class PurchaseAddOnsRepository {
     );
   }
 }
+
+*/

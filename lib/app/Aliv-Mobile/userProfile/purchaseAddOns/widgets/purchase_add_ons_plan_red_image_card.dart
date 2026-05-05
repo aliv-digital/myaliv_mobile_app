@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -294,3 +298,5 @@ class _DateBlock extends StatelessWidget {
     );
   }
 }
+
+*/

@@ -165,10 +165,12 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
     super.key,
     required this.state,
     required this.onPayNow,
+    this.requireAddOnsTab = true,
   });
 
   final PlansState state;
   final VoidCallback onPayNow;
+  final bool requireAddOnsTab;
 
   double _selectedAddOnsTotal(PlansState state) {
     return state.addOns
@@ -178,8 +180,9 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (state.selectedTab != HomePlanTab.addOns ||
-        state.status != PlansStatus.success) {
+    final tabMismatch =
+        requireAddOnsTab && state.selectedTab != HomePlanTab.addOns;
+    if (tabMismatch || state.status != PlansStatus.success) {
       return const SizedBox.shrink();
     }
 

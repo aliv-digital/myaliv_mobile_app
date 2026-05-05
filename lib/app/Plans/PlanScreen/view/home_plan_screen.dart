@@ -1,11 +1,8 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -14,15 +11,16 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import '../cubit/plans_cubit.dart';
 import '../cubit/plans_state.dart';
-import '../models/add_on_model.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
 import '../repository/plan_types.dart';
 import '../theme/theme.dart';
+import '../widgets/home_plan_add_ons_actions.dart';
 import '../widgets/home_plan_add_ons_tab_content.dart';
 import '../widgets/home_plan_plans_list.dart';
 import '../widgets/home_plan_purchase_sheet_launcher.dart';
 import '../widgets/home_plan_section_header.dart';
+import '../widgets/plan_add_ons_body.dart';
 import '../widgets/plan_tabs.dart';
 import '../widgets/plan_card_shimmer.dart';
 import '../widgets/plan_empty_state.dart';
@@ -62,9 +60,9 @@ class _HomePlanViewState extends State<_HomePlanView> {
     super.initState();
     final userType = context.read<AppUiConfigCubit>().state.userType;
     context.read<PlansCubit>().started(
-          userType: userType,
-          initialTab: widget.initialTab,
-        );
+      userType: userType,
+      initialTab: widget.initialTab,
+    );
   }
 
   // Primary tabs use API models, while the shared purchase sheet still expects
@@ -288,33 +286,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
 
     // Success state - check if data exists
     if (currentState.selectedTab == HomePlanTab.addOns) {
-      // Block add-on purchase when no active primary plan exists.
-      if (currentState.earliestAddOnsPrimaryPlan == null) {
-        return AddOnsNoPrimaryPlanState(
-          onPurchasePlan: () {
-            context.read<PlansCubit>().changeTab(HomePlanTab.monthly);
-          },
-        );
-      }
-
-      // Check if add-ons list is empty
-      if (currentState.addOns.isEmpty) {
-        return PlanEmptyState(
-          message: 'No add-ons available at the moment',
-          onRefresh: () {
-            context.read<PlansCubit>().refreshCurrentTab();
-          },
-        );
-      }
-
-      return HomePlanAddOnsTabContent(
-        activePrimaryPlan: currentState.earliestAddOnsPrimaryPlan,
-        addOns: currentState.addOns,
-        selectedAddOnIds: currentState.selectedAddOnIds,
-        onToggleAddOn: (addOn) {
-          context.read<PlansCubit>().toggleAddon(addOn);
-        },
-      );
+      return const PlanAddOnsBody();
     }
 
     // Check if plans list is empty for the current tab
@@ -397,56 +369,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
     );
   }
 
-  void _openAddOnsConfirmation(BuildContext context, PlansState state) {
-    final selected = state.addOns
-        .where((addOn) => state.selectedAddOnIds.contains(addOn.id))
-        .toList(growable: false);
-
-    if (selected.isEmpty) {
-      return;
-    }
-
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    if (accountInfo == null) {
-      AppToast.show(
-        message: 'account information is unavailable, please try again',
-        type: ToastType.error,
-      );
-      return;
-    }
-
-    final fullName = <String>[
-      accountInfo.fName,
-      accountInfo.lName,
-    ].where((part) => part.trim().isNotEmpty).join(' ').trim();
-    final phoneNumber = accountInfo.phoneNumber.isNotEmpty
-        ? accountInfo.phoneNumber
-        : accountInfo.primaryPhoneNumber;
-
-    final activePlan = state.earliestAddOnsPrimaryPlan;
-
-    final args = HomePlanConfirmationRouteArgs(
-      phoneNumber: phoneNumber,
-      accountHolderName: fullName,
-      primaryPlanName: activePlan?.planName ?? '',
-      primaryPlanPrice: 0,
-      flow: HomePlanConfirmationEntryFlow.proceed,
-      isPrimaryPlanActive: true,
-      selectedAddOns: selected
-          .map(
-            (HomePlanAddOnModel addOn) => HomePlanConfirmationSelectedAddOn(
-              id: addOn.id,
-              title: addOn.title,
-              price: addOn.price,
-              vatAmount: addOn.vatAmount,
-            ),
-          )
-          .toList(growable: false),
-    );
-
-    context.push(AppRoutes.homePlanConfirmationScreen, extra: args);
-  }
-
   bool _isCurrentTabEmpty(PlansState state) {
     switch (state.selectedTab) {
       case HomePlanTab.daily:
@@ -504,7 +426,8 @@ class _HomePlanViewState extends State<_HomePlanView> {
           builder: (context, state) {
             return HomePlanAddOnsBottomPayBar(
               state: state,
-              onPayNow: () => _openAddOnsConfirmation(context, state),
+              onPayNow: () =>
+                  HomePlanAddOnsActions.openConfirmation(context, state),
             );
           },
         ),

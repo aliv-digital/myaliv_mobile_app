@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 
@@ -31,3 +35,5 @@ class PurchaseAddOnsBottomPayBar extends StatelessWidget {
     );
   }
 }
+
+*/

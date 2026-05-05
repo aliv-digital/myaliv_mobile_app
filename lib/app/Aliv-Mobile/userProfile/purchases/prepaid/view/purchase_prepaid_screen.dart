@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
+// import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+// import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -176,8 +176,9 @@ class _PurchasePrepaidView extends StatelessWidget {
 
       case PurchasePrepaidAction.addOns:
         AppSession.appRoute = 'addOnsPrepaid';
-        context.read<PlansCubit>().changeTab(HomePlanTab.addOns);
-        context.go('${AppRoutes.plans}?tab=addOns');
+        // context.read<PlansCubit>().changeTab(HomePlanTab.addOns);
+        context.push(AppRoutes.purchaseAddOns);
+        // context.go('${AppRoutes.plans}?tab=addOns');
         break;
     }
     //   case PurchasePrepaidAction.topUpPrepaidNumber:

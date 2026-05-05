@@ -1,3 +1,7 @@
+// __PARKED_PURCHASE_ADD_ONS__
+// Parked: superseded by PlanScreen widgets reused via PurchaseAddOnsScreen.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/purchase_add_ons_repository.dart';
@@ -92,3 +96,5 @@ class PurchaseAddOnsBloc
     );
   }
 }
+
+*/
