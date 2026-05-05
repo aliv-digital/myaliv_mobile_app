@@ -28,9 +28,9 @@ class FuturePlansTab extends StatelessWidget {
             const _StandAloneFuturePlans()
           else ...[
             const _StandAloneFuturePlans(),
-            const SizedBox(height: 16),
-            const _StartPlanButton(),
           ],
+          const SizedBox(height: 16),
+          const _StartPlanButton(),
         ],
       ),
     );
@@ -114,7 +114,7 @@ class _EmptyFuturePlansMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate available height for centering
-    final screenHeight = MediaQuery.of(context).size.height/2;
+    final screenHeight = MediaQuery.of(context).size.height / 2;
     // Approximate height: screen - appBar(~140) - tabBar(~82) - padding(~60)
     final availableHeight = screenHeight - 282;
 
@@ -206,7 +206,7 @@ class _StartPlanButtonState extends State<_StartPlanButton> {
           message: 'success! your future plan has started',
           type: ToastType.success,
         );
-         await _refreshPlansAfterSuccess();
+        await _refreshPlansAfterSuccess();
       } else {
         AppToast.show(
           message: 'Failed to start future plan. Please try again.',
@@ -254,26 +254,24 @@ class _StartPlanButtonState extends State<_StartPlanButton> {
             borderRadius: BorderRadius.circular(100),
           ),
         ),
-        child: _isStartingPlan ?
-        const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Color(0xFFF1F1F8),
-            ),
-          ),
-        ) :
-        const Text(
-          'start plan',
-          style: TextStyle(
-            color: Color(0xFFF1F1F8),
-            fontSize: 15,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        child: _isStartingPlan
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF1F1F8)),
+                ),
+              )
+            : const Text(
+                'start plan',
+                style: TextStyle(
+                  color: Color(0xFFF1F1F8),
+                  fontSize: 15,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
       ),
     );
   }

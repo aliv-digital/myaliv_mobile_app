@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Home/model/demo_plans.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
@@ -85,62 +86,77 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          _headerBackground(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: Column(
-                children: [
-                  HomeHeader(config: config),
-                  const SizedBox(height: 16),
+    return BlocListener<PlansCubit, PlansState>(
+      listenWhen: (previous, current) =>
+          previous.status != current.status ||
+          previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans,
+      listener: (context, state) {
+        if (state.status != PlansStatus.success) return;
+        final hasPlan = state.addOnsApiPrimaryPlans.isNotEmpty;
+        final cubit = context.read<AppUiConfigCubit>();
+        if (cubit.state.hasActivePlan != hasPlan) {
+          cubit.setHasActivePlan(hasPlan);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Stack(
+          children: [
+            _headerBackground(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Column(
+                  children: [
+                    HomeHeader(config: config),
+                    const SizedBox(height: 16),
 
-                  /// 🔥 DIFFERENT CARD BASED ON USER TYPE
-                  config.isPrepaid
-                      ? const PrepaidBalanceCard()
-                      : const PostpaidBillingCard(),
+                    /// 🔥 DIFFERENT CARD BASED ON USER TYPE
+                    config.isPrepaid
+                        ? const PrepaidBalanceCard()
+                        : const PostpaidBillingCard(),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  config.hasActivePlan
-                      ? config.userType == UserType.prepaid
-                            ? const PrepaidActivePlanCardWithData()
-                            : PostpaidActivePlanCard(config: config)
-                      : const NoActivePlanCard(),
+                    config.hasActivePlan
+                        ? config.userType == UserType.prepaid
+                              ? const PrepaidActivePlanCardWithData()
+                              : PostpaidActivePlanCard(config: config)
+                        : const NoActivePlanCard(),
 
-                  config.userType == UserType.prepaid
-                      ? const SizedBox(height: 40)
-                      : const SizedBox(height: 20),
+                    config.userType == UserType.prepaid
+                        ? const SizedBox(height: 40)
+                        : const SizedBox(height: 20),
 
-                  if (config.hasActivePlan)
+                    if (config.hasActivePlan)
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F7FA),
+                        ),
+                        child: const ActivePlanUsageSection(),
+                      ),
+
+                    const SizedBox(height: 20),
+                    // our best plans
+                    _bestPlans(context),
+
+                    // const SizedBox(height: 16),
+                    // quick actions
                     Container(
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
                       decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
-                      child: const ActivePlanUsageSection(),
+                      child: _quickActions(context, config),
                     ),
-
-                  const SizedBox(height: 20),
-                  // our best plans
-                  _bestPlans(context),
-
-                  // const SizedBox(height: 16),
-                  // quick actions
-                  Container(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                    decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
-                    child: _quickActions(context, config),
-                  ),
-                  const SizedBox(height: 24),
-                  //count down , yellow limited offers
-                  const LimitedOfferView(),
-                ],
+                    const SizedBox(height: 24),
+                    //count down , yellow limited offers
+                    const LimitedOfferView(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
