@@ -1,15 +1,43 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:myaliv_mobile_app/core/networkService/app_http_client.dart';
 
 class AppSettingsRepository {
   AppSettingsRepository({ApiService? apiService})
-      : _apiService = apiService ?? ApiService(requestTimeout: const Duration(seconds: 20));
+      : _apiService = apiService ??
+            ApiService(requestTimeout: const Duration(seconds: 20));
 
   final ApiService _apiService;
 
+  static const _cacheKeyPrefix = 'app_settings_url::';
+
+  /// Cache-first: returns the previously persisted URL immediately if present,
+  /// and refreshes the cache in the background so the next launch is current.
+  /// First-ever call falls through to the network and persists on success.
   Future<String?> fetchUrlValue(String endpoint) async {
+    final cacheKey = '$_cacheKeyPrefix$endpoint';
+
+    final cached = await LocalStorage.getStringValue(key: cacheKey);
+    if (cached != null && cached.isNotEmpty) {
+      unawaited(_refreshAndStore(endpoint, cacheKey));
+      return cached;
+    }
+
+    return _refreshAndStore(endpoint, cacheKey);
+  }
+
+  Future<String?> _refreshAndStore(String endpoint, String cacheKey) async {
+    final value = await _fetch(endpoint);
+    if (value != null) {
+      await LocalStorage.storeStringValue(key: cacheKey, value: value);
+    }
+    return value;
+  }
+
+  Future<String?> _fetch(String endpoint) async {
     try {
       final response = await _apiService.get(endpoint);
       if (!ApiService.isSuccessStatusCode(response.statusCode)) {
@@ -22,38 +50,20 @@ class AppSettingsRepository {
       }
 
       final decoded = jsonDecode(response.responseJson);
-      if (decoded is! Map<String, dynamic>) {
-        if (kDebugMode) {
-          debugPrint('AppSettings[$endpoint] decoded not a map: $decoded');
-        }
-        return null;
-      }
+      if (decoded is! Map<String, dynamic>) return null;
 
       final data = decoded['data'];
-      if (data is! Map<String, dynamic>) {
-        if (kDebugMode) {
-          debugPrint('AppSettings[$endpoint] data not a map: $data');
-        }
-        return null;
-      }
+      if (data is! Map<String, dynamic>) return null;
 
       final value = (data['value'] as String?)?.trim();
-      if (value == null || value.isEmpty) {
-        if (kDebugMode) debugPrint('AppSettings[$endpoint] value empty');
-        return null;
-      }
+      if (value == null || value.isEmpty) return null;
 
       final uri = Uri.tryParse(value);
       final isNetworkImage =
           uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
-      if (!isNetworkImage && kDebugMode) {
-        debugPrint('AppSettings[$endpoint] not a network URL: $value');
-      }
       return isNetworkImage ? value : null;
-    } catch (e, st) {
-      if (kDebugMode) {
-        debugPrint('AppSettings[$endpoint] exception: $e\n$st');
-      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('AppSettings[$endpoint] exception: $e');
       return null;
     }
   }
