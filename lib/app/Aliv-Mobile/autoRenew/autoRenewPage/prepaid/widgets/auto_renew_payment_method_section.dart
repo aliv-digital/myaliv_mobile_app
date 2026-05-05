@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_saved_cards_list.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/resources/widgets/dropdowns/saved_card_dropdown.dart';
 import '../theme/auto_renew_prepaid_theme.dart';
 
 class AutoRenewPaymentMethodSection extends StatelessWidget {
@@ -42,8 +42,8 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
             style: AutoRenewPrepaidTheme.sectionTitleStyle,
           ),
           const SizedBox(height: AutoRenewPrepaidTheme.sectionTitleGap),
-          SavedCardDropdown(
-            selectedCard: selectedCard,
+          AutoRenewSavedCardsList(
+            selectedToken: selectedCard?.token,
             onCardSelected: onCardSelected,
           ),
           if (showWalletRow) ...[
