@@ -26,9 +26,14 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
     Emitter<GuestSplashState> emit,
   ) async {
     try {
-      final isLoaded = await repository.loadData();
-      if (isLoaded) {
-        emit(GuestSplashLoadedState(isLoaded: true));
+      final data = await repository.loadData();
+      if (data.isLoaded) {
+        emit(
+          GuestSplashLoadedState(
+            isLoaded: true,
+            mobileImageUrl: data.mobileImageUrl,
+          ),
+        );
       } else {
         emit(GuestSplashInitial());
       }

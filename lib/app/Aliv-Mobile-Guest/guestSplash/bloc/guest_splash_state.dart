@@ -1,7 +1,6 @@
 import 'package:country_picker/country_picker.dart';
 import '../model/guest_purchase_plan_input.dart';
 
-
 abstract class GuestSplashState {}
 
 class GuestSplashInitial extends GuestSplashState {}
@@ -10,6 +9,7 @@ enum GuestSplashPurchasePlanStatus { idle, success, failure }
 
 class GuestSplashLoadedState extends GuestSplashState {
   final bool isLoaded;
+  final String? mobileImageUrl;
 
   // ✅ Bottom sheet fields inside same state
   final Country? purchaseCountry;
@@ -23,6 +23,7 @@ class GuestSplashLoadedState extends GuestSplashState {
 
   GuestSplashLoadedState({
     required this.isLoaded,
+    this.mobileImageUrl,
     this.purchaseCountry,
     this.purchasePhone = '',
     this.purchaseConfirmPhone = '',
@@ -33,6 +34,7 @@ class GuestSplashLoadedState extends GuestSplashState {
 
   GuestSplashLoadedState copyWith({
     bool? isLoaded,
+    String? mobileImageUrl,
     Country? purchaseCountry,
     String? purchasePhone,
     String? purchaseConfirmPhone,
@@ -44,12 +46,16 @@ class GuestSplashLoadedState extends GuestSplashState {
   }) {
     return GuestSplashLoadedState(
       isLoaded: isLoaded ?? this.isLoaded,
+      mobileImageUrl: mobileImageUrl ?? this.mobileImageUrl,
       purchaseCountry: purchaseCountry ?? this.purchaseCountry,
       purchasePhone: purchasePhone ?? this.purchasePhone,
       purchaseConfirmPhone: purchaseConfirmPhone ?? this.purchaseConfirmPhone,
       purchaseStatus: purchaseStatus ?? this.purchaseStatus,
-      purchaseErrorMessage: clearPurchaseErrorMessage ? null : (purchaseErrorMessage ?? this.purchaseErrorMessage),
-      purchaseResult: clearPurchaseResult ? null : (purchaseResult ?? this.purchaseResult),
+      purchaseErrorMessage: clearPurchaseErrorMessage
+          ? null
+          : (purchaseErrorMessage ?? this.purchaseErrorMessage),
+      purchaseResult:
+          clearPurchaseResult ? null : (purchaseResult ?? this.purchaseResult),
     );
   }
 }

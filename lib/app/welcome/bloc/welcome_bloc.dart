@@ -29,9 +29,14 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
       WelcomeLoaded event, Emitter<WelcomeState> emit) async {
     try {
       // Simulating data loading from the repository
-      final isLoaded = await repository.loadData();
-      if (isLoaded) {
-        emit(WelcomeLoadedState(isLoaded: true)); // Successfully loaded data
+      final data = await repository.loadData();
+      if (data.isLoaded) {
+        emit(
+          WelcomeLoadedState(
+            isLoaded: true,
+            mobileImageUrl: data.mobileImageUrl,
+          ),
+        ); // Successfully loaded data
       } else {
         emit(WelcomeInitial()); // Handle failure or no data
       }
@@ -62,7 +67,8 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
 
     appUiConfigCubit.setConfig(
       HomeUiConfig(
-        userType: paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
+        userType:
+            paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
         hasActivePlan: true,
         isFuturePlan: false,
         openMyLimits: false,
