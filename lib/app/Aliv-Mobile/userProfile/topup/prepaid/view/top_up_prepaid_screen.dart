@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/top_up_prepaid_bloc.dart';
@@ -96,9 +97,10 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
       listenWhen: (p, c) => p.errorMessage != c.errorMessage || p.submitStatus != c.submitStatus,
       listener: (context, state) {
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
+          AppToast.show(message: state.errorMessage.toString(),type: ToastType.error);
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text(state.errorMessage!)),
+          // );
         }
 
         if (state.submitStatus == TopUpPrepaidSubmitStatus.success) {
