@@ -1,4 +1,3 @@
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
@@ -45,20 +44,6 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
     });
   }
 
-  void _openCountryPicker(BuildContext context) {
-    showCountryPicker(
-      context: context,
-      showPhoneCode: true,
-      onSelect: (Country country) {
-        context.read<LoginBloc>().add(
-              LoginCountryChanged(
-                _phoneNumberHelper.selectionFromCountry(country),
-              ),
-            );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
@@ -94,7 +79,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
               flagEmoji: state.selectedCountry.flagEmoji,
               dialCode: state.selectedCountry.dialCode,
               countryIsoCode: state.selectedCountry.isoCode,
-              onTapCountryPicker: () => _openCountryPicker(context),
+              enableCountryPicker: false,
               onChanged: (value) =>
                   context.read<LoginBloc>().add(LoginPhoneChanged(value)),
               // Bahamas gets a presentation-only formatter in the field.
