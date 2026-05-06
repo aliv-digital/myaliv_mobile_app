@@ -83,8 +83,10 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
     }
   }
 
-  void _showError(String msg) => ScaffoldMessenger.of(context)
-      .showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
+  void _showError(String msg) {
+    AppToast.show(message: msg.toString(),type: ToastType.error);
+    //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +104,7 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
           ),
         ),
         title: const Text(
-          'auto renew authorization form',
+          'auto top-up authorization form',
           style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'CircularPro', fontWeight: FontWeight.w700),
         ),
       ),
