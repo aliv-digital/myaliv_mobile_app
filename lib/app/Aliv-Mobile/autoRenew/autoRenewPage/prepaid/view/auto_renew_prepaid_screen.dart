@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
@@ -19,6 +20,7 @@ class AutoRenewPrepaidScreen extends StatelessWidget {
       providers: [
         BlocProvider(create: _createAutoRenewPrepaidBloc),
         BlocProvider.value(value: instance<SavedCardsCubit>()),
+        BlocProvider.value(value: instance<DeviceLimitsCubit>()),
       ],
       child: const _AutoRenewPrepaidView(),
     );

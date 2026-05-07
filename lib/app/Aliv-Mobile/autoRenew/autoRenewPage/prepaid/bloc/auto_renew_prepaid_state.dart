@@ -42,7 +42,14 @@ class AutoRenewPrepaidState extends Equatable {
         savingSelection: false,
       );
 
-  bool get canProceed => selectedMethodId != null && !savingSelection;
+  bool get isWalletSelected =>
+      selectedMethodId == AutoRenewPaymentMethod.wallet.id;
+  bool get isNoAutoRenewSelected =>
+      selectedMethodId == AutoRenewPaymentMethod.none.id;
+  bool get canProceed =>
+      (selectedCard != null || isWalletSelected) &&
+      !isNoAutoRenewSelected &&
+      !savingSelection;
   String get walletBalanceText => '\$${walletBalance.toStringAsFixed(2)}';
   String get walletPaymentAmountText =>
       '\$ ${walletPaymentAmount.toStringAsFixed(2)}';
