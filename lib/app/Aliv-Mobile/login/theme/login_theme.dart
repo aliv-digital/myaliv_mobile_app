@@ -174,6 +174,7 @@ class AuthModuleTextStyles {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Header title style below ALIV logo.
@@ -224,6 +225,7 @@ class AuthModuleTextStyles {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Password hint uses increased bullet spacing.

@@ -210,6 +210,7 @@ class TopUpConfirmTheme {
     height: 1.43,
     color: termsLinkColor,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Bottom pay bar amount text.

@@ -137,6 +137,7 @@ class LoginOtpTheme {
     fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Fixed bottom action: "change phone number"
@@ -146,6 +147,7 @@ class LoginOtpTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // SnackBar message text for OTP errors

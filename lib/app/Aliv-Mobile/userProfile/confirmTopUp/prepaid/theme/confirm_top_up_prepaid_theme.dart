@@ -49,6 +49,7 @@ class ConfirmTopUpPrepaidTheme {
     fontWeight: FontWeight.w700,
     color: textPrimary,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   static TextStyle pillAmount(BuildContext context) => const TextStyle(

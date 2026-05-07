@@ -75,6 +75,7 @@ class _EnterPasswordAutoRenewPrepaidTermsTextState
                   fontWeight: FontWeight.w700,
 
                   decoration: TextDecoration.underline,
+                  decorationColor: Color(0xFF645D9C),
                 ),
               ),
 
@@ -96,6 +97,7 @@ class _EnterPasswordAutoRenewPrepaidTermsTextState
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
                   decoration: TextDecoration.underline,
+                  decorationColor: Color(0xFF645D9C),
                 ),
               ),
             ],
