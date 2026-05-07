@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/models/auto_renew_prepaid_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
@@ -12,6 +13,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_c
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/widgets/bottomsheet/add_card_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class AutoPayPostpaidScreen extends StatelessWidget {
@@ -36,6 +38,7 @@ class _AutoPayPostpaidView extends StatefulWidget {
 class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   SavedCardModel? _selectedCard;
   bool _noAutoRenewSelected = false;
+  bool _disabling = false;
 
   @override
   void initState() {
@@ -43,9 +46,13 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
     instance<SavedCardsCubit>().fetchSavedCards();
   }
 
-  bool get _canProceed => _selectedCard != null;
+  bool get _canProceed => _selectedCard != null || _noAutoRenewSelected;
 
-  void _onProceed() {
+  Future<void> _onProceed() async {
+    if (_noAutoRenewSelected) {
+      await _disableAutoPay();
+      return;
+    }
     final card = _selectedCard;
     if (card == null) return;
     context.push(
@@ -55,6 +62,27 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
         cardToken: card.token,
       ),
     );
+  }
+
+  Future<void> _disableAutoPay() async {
+    if (_disabling) return;
+    setState(() => _disabling = true);
+
+    final success = await instance<AccountInfoCubit>().disableAutoPayInvoice();
+
+    if (!mounted) return;
+    setState(() => _disabling = false);
+
+    AppToast.show(
+      message: success
+          ? "We're working on it! Auto-pay takes a few minutes to update. Thank you for your patience."
+          : 'Failed to disable auto-pay',
+      type: success ? ToastType.success : ToastType.error,
+    );
+
+    if (success) {
+      context.go(AppRoutes.home);
+    }
   }
 
   Future<void> _onAddCard() async {
@@ -112,7 +140,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                     ),
                     AutoRenewPrepaidProceedActionButton(
                       isEnabled: _canProceed,
-                      isLoading: false,
+                      isLoading: _disabling,
                       onPressed: _onProceed,
                     ),
                   ],
