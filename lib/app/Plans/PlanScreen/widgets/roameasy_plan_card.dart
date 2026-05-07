@@ -558,7 +558,7 @@ class _BucketItem extends StatelessWidget {
                   child: _AssetIcon(type: itemType, size: iconSize),
                 ),
                 Text(
-                  benefit.name,
+                  "data",//benefit.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: labelStyle,

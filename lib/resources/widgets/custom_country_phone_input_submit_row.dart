@@ -300,8 +300,10 @@ class _CustomCountryPhoneInputSubmitRowState
             ),
             child: FittedBox(
               fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   _buildCountryFlag(resolvedFlagStyle),
                   SizedBox(width: widget.countryFlagToDialGap),
@@ -314,7 +316,8 @@ class _CustomCountryPhoneInputSubmitRowState
                       color: widget.countryArrowColor,
                     ),
                   ],
-                  if (widget.showCountryArrow == false)SizedBox(width: widget.countryArrowIconSize,)
+                  if (widget.showCountryArrow == false)
+                    SizedBox(width: widget.countryArrowIconSize),
                 ],
               ),
             ),

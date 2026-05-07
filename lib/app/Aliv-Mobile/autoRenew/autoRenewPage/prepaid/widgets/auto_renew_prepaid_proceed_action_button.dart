@@ -21,6 +21,7 @@ class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPostpaid = context.watch<AppUiConfigCubit>().state.isPostpaid;
+    final canTap = isEnabled && !isLoading;
 
     return SizedBox(
       height: AutoRenewPrepaidTheme.primaryButtonHeight,
@@ -28,10 +29,10 @@ class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
       child: ElevatedButton(
         style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
           backgroundColor: AutoRenewPrepaidTheme.primaryActionColor(
-            enabled: isEnabled,
+            enabled: isEnabled || isLoading,
           ),
         ),
-        onPressed: isEnabled ? onPressed : null,
+        onPressed: canTap ? onPressed : null,
         child: _buildButtonChild(isPostpaid: isPostpaid),
       ),
     );
@@ -60,6 +61,6 @@ class AutoRenewPrepaidProceedActionButton extends StatelessWidget {
   // ==================== Button Label ====================
   // Keep label decision centralized to avoid duplicate conditional text logic.
   String _resolveButtonText({required bool isPostpaid}) {
-    return isPostpaid ? 'use for auto pay' : 'proceed';
+    return isPostpaid ? 'use for auto pay' : 'use for auto renew';
   }
 }
