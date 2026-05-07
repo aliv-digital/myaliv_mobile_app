@@ -18,6 +18,10 @@ const List<String> _excludedPlanNames = [
   'bmp 1-day',
   'bmp 7-day',
   'bmp 30-day',
+  'liberty bonus data2',
+  'freedom bonus data5',
+  'freedom35 bonus data5',
+  'freedom4 bonus data2',
   'junkanoo5',
   'test',
 ];
