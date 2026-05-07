@@ -133,6 +133,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
             autoRenewPrepaidBloc.add(AutoRenewSavedCardSelected(card));
           },
           walletBalanceText: autoRenewPrepaidState.walletBalanceText,
+          showNoAutoRenewRow: true,
           onPayFromWallet: () {
             autoRenewPrepaidBloc.add(
               AutoRenewMethodSelected(AutoRenewPaymentMethod.wallet.id),
@@ -201,7 +202,8 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     }
 
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final success = await deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
+    final success =
+        await deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
 
     final errorMessage = deviceLimitsCubit.state.errorMessage;
     AppToast.show(
