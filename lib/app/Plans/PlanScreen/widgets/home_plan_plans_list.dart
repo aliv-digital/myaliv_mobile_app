@@ -16,13 +16,6 @@ import 'weekly_plan_card.dart';
 
 typedef IndexedBasePlanCallback = void Function(BasePlanModel plan, int index);
 
-const List<String> _excludedPostpaidPlanNames = [
-  'test',
-  '3gb bonus roaming data us/can',
-  '1.5gb bonus roaming data us/can',
-  '750mb bonus roaming data',
-];
-
 class HomePlanPlansList extends StatelessWidget {
   const HomePlanPlansList({
     super.key,
@@ -196,10 +189,6 @@ class HomePlanPlansList extends StatelessWidget {
         itemBuilder: (context, index) {
           final plan = state.postpaidRoamingApiPlans[index];
           final expanded = state.expandedPlanIds.contains(plan.planId);
-          final lowerName = plan.planName.toLowerCase();
-          if (_excludedPostpaidPlanNames.any(lowerName.contains)) {
-            return const SizedBox.shrink();
-          }
 
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 16),

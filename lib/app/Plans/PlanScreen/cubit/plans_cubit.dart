@@ -3,11 +3,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'plans_state.dart';
+
+const List<String> _excludedPlanNames = [
+  '3gb bonus roaming data us/can',
+  '1.5gb bonus roaming data us/can',
+  '750mb bonus roaming data',
+  'bmp 1-day',
+  'bmp 7-day',
+  'bmp 30-day',
+  'junkanoo5',
+  'test',
+];
 
 /// Cubit for managing plan data
 ///
@@ -196,14 +209,15 @@ class PlansCubit extends Cubit<PlansState> {
       emit(state.copyWith(
         status: PlansStatus.success,
         // Plans data
-        dailyApiPlans: plansResult.dailyPlans,
-        weeklyApiPlans: plansResult.weeklyPlans,
-        monthlyApiPlans: plansResult.monthlyPlans,
-        roamingApiPlans: plansResult.roamingPlans,
-        roamEasyApiPlans: plansResult.roamEasyPlans,
-        mifiApiPlans: plansResult.mifiPlans,
-        libertyGlobalApiPlans: plansResult.libertyGlobalPlans,
-        postpaidRoamingApiPlans: plansResult.postpaidRoamingPlans,
+        dailyApiPlans: _filterBase(plansResult.dailyPlans),
+        weeklyApiPlans: _filterBase(plansResult.weeklyPlans),
+        monthlyApiPlans: _filterBase(plansResult.monthlyPlans),
+        roamingApiPlans: _filterBase(plansResult.roamingPlans),
+        roamEasyApiPlans: _filterBase(plansResult.roamEasyPlans),
+        mifiApiPlans: _filterBase(plansResult.mifiPlans),
+        libertyGlobalApiPlans: _filterBase(plansResult.libertyGlobalPlans),
+        postpaidRoamingApiPlans:
+            _filterPostpaid(plansResult.postpaidRoamingPlans),
         // Add-ons data
         addOns: addOnsResult.addOns,
         addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
@@ -257,6 +271,20 @@ class PlansCubit extends Cubit<PlansState> {
     final age = DateTime.now().difference(state.lastFetchedAt!);
     return age > const Duration(hours: 1);
   }
+
+  /// Substring match against the global exclusion list (case-insensitive).
+  bool _isExcludedPlanName(String name) {
+    final lower = name.toLowerCase();
+    return _excludedPlanNames.any(lower.contains);
+  }
+
+  List<BasePlanModel> _filterBase(List<BasePlanModel> plans) =>
+      plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
+
+  List<HomePlansPostPaidPlanModel> _filterPostpaid(
+    List<HomePlansPostPaidPlanModel> plans,
+  ) =>
+      plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
 
   /// Convert exception to user-friendly message
   String _friendlyErrorMessage(dynamic error) {
