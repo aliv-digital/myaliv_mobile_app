@@ -49,13 +49,15 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
 
 
 
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
   void _pickCountry() {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
-      // Keep using the previous package while rendering flat flag assets.
       customFlagBuilder: (Country country) {
-        // `country_pickers` does not include `ac.png`, so map AC -> SH asset.
         final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
             ? 'sh'
             : country.countryCode.toLowerCase();
@@ -83,6 +85,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
       },
     );
   }
+  */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +115,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 flagEmoji: _selectedCountry.flagEmoji,
                 dialCode: _selectedCountry.dialCode,
                 countryIsoCode: _selectedCountry.isoCode,
-                onTapCountryPicker: _pickCountry,
+                enableCountryPicker: false,
                 onChanged: (value) {},
               ),
 

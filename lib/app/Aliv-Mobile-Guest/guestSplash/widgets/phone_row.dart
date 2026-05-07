@@ -16,7 +16,7 @@ class PhoneRow extends StatelessWidget {
     required this.hintText,
     required this.onChanged,
     this.onTapCountryPicker,
-    this.enableCountryPicker = true,
+    this.enableCountryPicker = false,
     this.showCountryArrow = true,
   });
 

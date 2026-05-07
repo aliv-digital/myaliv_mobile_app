@@ -28,6 +28,10 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
 
   bool get _isUSA => _dialCode == '1';
 
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
   void _openCountryPicker() {
     showCountryPicker(
       context: context,
@@ -35,11 +39,12 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
       onSelect: (country) {
         setState(() {
           _selectedCountry = country;
-          _validate(_phone); // revalidate on country change
+          _validate(_phone);
         });
       },
     );
   }
+  */
 
   void _validate(String value) {
     final digits = value.replaceAll(RegExp(r'\D'), '');

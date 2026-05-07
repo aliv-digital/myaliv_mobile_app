@@ -155,7 +155,7 @@ class WelcomeView extends StatelessWidget {
                             ),
                             const SizedBox(height: 18),
                             CustomButton(
-                              label: 'ALIVfibr',
+                              label: 'ALIVFibr',
                               onPressed: () async {
                                 final bool isLaunched = await launchUrl(
                                   _alivFbrPortalUri,

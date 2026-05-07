@@ -60,6 +60,7 @@ class CurrentPlanTab extends StatelessWidget {
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
+                    decorationColor: const Color(0xFF645D9C),
                   ),
                 ),
               ),

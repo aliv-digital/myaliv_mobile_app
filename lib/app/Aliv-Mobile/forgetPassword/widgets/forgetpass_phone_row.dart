@@ -28,6 +28,10 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
         .firstWhere((part) => part.trim().isNotEmpty, orElse: () => '1');
   }
 
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
   void _openCountryPicker() {
     showCountryPicker(
       context: context,
@@ -36,12 +40,10 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
         setState(() {
           _selectedCountry = country;
         });
-
-        // চাইলে country bloc এ পাঠাতে পারো
-        // context.read<LoginBloc>().add(LoginCountryChanged(country));
       },
     );
   }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
       flagEmoji: _flagEmoji,
       dialCode: _dialCode,
       countryIsoCode: _selectedCountry?.countryCode ?? 'BS',
-      onTapCountryPicker: _openCountryPicker,
+      enableCountryPicker: false,
       onChanged: (value) => context
           .read<ForgetPasswordBloc>()
           .add(ForgetPasswordPhoneChanged(value)),

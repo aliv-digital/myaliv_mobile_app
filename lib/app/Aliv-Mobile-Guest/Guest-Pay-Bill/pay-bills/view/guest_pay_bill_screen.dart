@@ -80,6 +80,10 @@ class _GuestPayBillView extends StatelessWidget {
     }
   }
 
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
   void _pickCountry(BuildContext context) {
     showCountryPicker(
       context: context,
@@ -117,6 +121,7 @@ class _GuestPayBillView extends StatelessWidget {
       },
     );
   }
+  */
 
   void _onServiceChanged(BuildContext context, BillService? service) {
     final bloc = _bloc(context);
@@ -199,13 +204,10 @@ class _GuestPayBillView extends StatelessWidget {
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
         countryIsoCode: state.selectedCountry.isoCode,
-        onTapCountryPicker: () {
-          _pickCountry(context);
-        },
         onChanged: (value) {
           _onMobileChanged(context, value);
         },
-        enableCountryPicker: true,
+        enableCountryPicker: false,
         showCountryArrow: true,
         fieldHeight: GuestPayBillTheme.inlineVerifyFieldHeight,
         countryPickerWidth: 96,

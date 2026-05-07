@@ -48,6 +48,10 @@ class _ReferFriendPrepaidPhoneRowState
     });
   }
 
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
   void _openCountryPicker(BuildContext context) {
     showCountryPicker(
       context: context,
@@ -61,6 +65,7 @@ class _ReferFriendPrepaidPhoneRowState
       },
     );
   }
+  */
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +109,7 @@ class _ReferFriendPrepaidPhoneRowState
               flagEmoji: state.selectedCountry.flagEmoji,
               dialCode: state.selectedCountry.dialCode,
               countryIsoCode: state.selectedCountry.isoCode,
-              onTapCountryPicker: () => _openCountryPicker(context),
+              enableCountryPicker: false,
               onChanged: (value) => context.read<ReferFriendPrepaidBloc>().add(
                 ReferFriendPrepaidFriendPhoneChanged(value),
               ),

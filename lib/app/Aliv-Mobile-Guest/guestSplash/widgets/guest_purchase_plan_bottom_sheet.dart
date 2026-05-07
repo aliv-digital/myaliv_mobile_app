@@ -159,13 +159,12 @@ class _SheetBody extends StatelessWidget {
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
                 countryIsoCode: state.purchaseCountry?.countryCode,
-                onTapCountryPicker: () => _pickCountry(context),
                 onChanged: (v) {
                   context.read<GuestSplashBloc>().add(
                     GuestSplashPurchasePlanPhoneChanged(v),
                   );
                 },
-                enableCountryPicker: true,
+                enableCountryPicker: false,
                 showCountryArrow: true,
                 fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
                 countryPickerWidth:
@@ -313,12 +312,15 @@ class _SheetBody extends StatelessWidget {
     );
   }
 
+  /* PARKED: country picker disabled to match Login screen behavior.
+     Keep this opener around for an easy revert if multi-country
+     support is restored later.
+
   void _pickCountry(BuildContext context) {
     showCountryPicker(
       context: context,
       showPhoneCode: true,
       customFlagBuilder: (Country country) {
-        // `country_pickers` does not include `ac.png`, so map AC -> SH asset.
         final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
             ? 'sh'
             : country.countryCode.toLowerCase();
@@ -341,6 +343,7 @@ class _SheetBody extends StatelessWidget {
       },
     );
   }
+  */
 }
 
 class _Header extends StatelessWidget {
