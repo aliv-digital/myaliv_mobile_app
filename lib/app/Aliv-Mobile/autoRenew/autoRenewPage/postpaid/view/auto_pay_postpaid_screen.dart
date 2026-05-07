@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/models/auto_renew_prepaid_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_payment_method_section.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_prepaid_proceed_action_button.dart';
@@ -34,6 +35,7 @@ class _AutoPayPostpaidView extends StatefulWidget {
 
 class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   SavedCardModel? _selectedCard;
+  bool _noAutoRenewSelected = false;
 
   @override
   void initState() {
@@ -86,9 +88,20 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                   children: [
                     AutoRenewPaymentMethodSection(
                       selectedCard: _selectedCard,
-                      onCardSelected: (c) =>
-                          setState(() => _selectedCard = c),
+                      selectedMethodId: _noAutoRenewSelected
+                          ? AutoRenewPaymentMethod.none.id
+                          : _selectedCard?.token,
+                      onCardSelected: (c) => setState(() {
+                        _selectedCard = c;
+                        _noAutoRenewSelected = false;
+                      }),
                       showWalletRow: false,
+                      showNoAutoRenewRow: true,
+                      noAutoRenewText: "i don't want to auto pay",
+                      onNoAutoRenewSelected: () => setState(() {
+                        _selectedCard = null;
+                        _noAutoRenewSelected = true;
+                      }),
                     ),
                     const SizedBox(
                       height: AutoRenewPrepaidTheme.sectionToDashedGap,

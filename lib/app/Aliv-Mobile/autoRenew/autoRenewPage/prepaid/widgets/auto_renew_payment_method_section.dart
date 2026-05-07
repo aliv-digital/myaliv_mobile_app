@@ -12,7 +12,9 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
   final String? selectedMethodId;
   final ValueChanged<SavedCardModel?> onCardSelected;
   final bool showWalletRow;
+  final bool showNoAutoRenewRow;
   final String? walletBalanceText;
+  final String noAutoRenewText;
   final VoidCallback? onPayFromWallet;
   final VoidCallback? onNoAutoRenewSelected;
 
@@ -22,15 +24,20 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     required this.onCardSelected,
     this.selectedMethodId,
     this.showWalletRow = true,
+    this.showNoAutoRenewRow = false,
     this.walletBalanceText,
+    this.noAutoRenewText = "i don't want to auto renew",
     this.onPayFromWallet,
     this.onNoAutoRenewSelected,
-  }) : assert(
+  })  : assert(
           !showWalletRow ||
-              (walletBalanceText != null &&
-                  onPayFromWallet != null &&
-                  onNoAutoRenewSelected != null),
-          'walletBalanceText, onPayFromWallet, and onNoAutoRenewSelected are required when showWalletRow is true',
+              (walletBalanceText != null && onPayFromWallet != null),
+          'walletBalanceText and onPayFromWallet are required when showWalletRow is true',
+        ),
+        assert(
+          !(showWalletRow || showNoAutoRenewRow) ||
+              onNoAutoRenewSelected != null,
+          'onNoAutoRenewSelected is required when the no-auto-renew row is shown',
         );
 
   @override
@@ -54,11 +61,14 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
             selectedToken: selectedCard?.token,
             onCardSelected: onCardSelected,
           ),
-          // static options
+          if (showWalletRow || showNoAutoRenewRow)
+            const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
           if (showWalletRow) ...[
-            const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
             _buildPayFromWalletRow(),
-            const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
+            if (showNoAutoRenewRow)
+              const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
+          ],
+          if (showNoAutoRenewRow) ...[
             _buildNoAutoRenewRow(),
           ],
         ],
@@ -101,7 +111,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     return _StaticPaymentOptionTile(
       selected: selectedMethodId == AutoRenewPaymentMethod.none.id,
       onTap: onNoAutoRenewSelected,
-      title: "i don't want to auto renew",
+      title: noAutoRenewText,
     );
   }
 }
