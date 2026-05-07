@@ -13,6 +13,8 @@ class SavedCardsRadioList extends StatelessWidget {
   final CardBrand Function(SavedCardModel card)? brandResolver;
   final String? Function(SavedCardModel card)? expiryResolver;
   final double itemSpacing;
+  final int? maxVisibleItems;
+  final double tileHeight;
 
   const SavedCardsRadioList({
     super.key,
@@ -22,10 +24,33 @@ class SavedCardsRadioList extends StatelessWidget {
     this.brandResolver,
     this.expiryResolver,
     this.itemSpacing = 12,
+    this.maxVisibleItems,
+    this.tileHeight = 64,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cap = maxVisibleItems;
+    if (cap != null && cards.length > cap) {
+      final boundedHeight = cap * tileHeight + (cap - 1) * itemSpacing;
+      return SizedBox(
+        height: boundedHeight,
+        child: ListView.separated(
+          padding: EdgeInsets.zero,
+          physics: const ClampingScrollPhysics(),
+          itemCount: cards.length,
+          separatorBuilder: (_, _) => SizedBox(height: itemSpacing),
+          itemBuilder: (_, i) => SavedCardRadioTile(
+            card: cards[i],
+            isSelected: cards[i].token == selectedToken,
+            brand: brandResolver?.call(cards[i]) ?? CardBrand.unknown,
+            expiry: expiryResolver?.call(cards[i]),
+            onTap: () => onCardSelected(cards[i]),
+          ),
+        ),
+      );
+    }
+
     return Column(
       children: [
         for (var i = 0; i < cards.length; i++) ...[
