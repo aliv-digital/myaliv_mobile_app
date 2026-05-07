@@ -131,6 +131,7 @@ class OtpAutoRenewPrepaidTheme {
     fontFamily: fontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Used in otp_prepaid_bottom_action.dart for verify button label.

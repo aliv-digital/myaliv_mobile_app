@@ -252,6 +252,7 @@ class ForgetPasswordTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Terms link style: "Terms & Conditions"
@@ -261,6 +262,7 @@ class ForgetPasswordTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
   );
 
   // Primary action button label style: "send"

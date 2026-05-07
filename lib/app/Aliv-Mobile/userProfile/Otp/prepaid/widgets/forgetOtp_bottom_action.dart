@@ -72,6 +72,7 @@ class OtpProfilePrepaidBottomActions extends StatelessWidget {
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
                       decoration: TextDecoration.underline,
+                      decorationColor: Color(0xFF645D9C),
                     ),
                   ),
                 ),

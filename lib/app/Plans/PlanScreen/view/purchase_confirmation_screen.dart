@@ -556,6 +556,7 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
+                    decorationColor: Color(0xFF645D9C),
                     height: 1.43,
                   ),
                 ),

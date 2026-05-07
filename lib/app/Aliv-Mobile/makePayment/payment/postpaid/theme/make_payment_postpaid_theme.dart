@@ -173,6 +173,7 @@ class MakePaymentPostPaidTheme {
         fontWeight: FontWeight.w700,
         color: Color(0xFF645D9C),
         decoration: TextDecoration.underline,
+        decorationColor: Color(0xFF645D9C),
       );
 
   static TextStyle get paymentMethodSectionTitle => const TextStyle(
