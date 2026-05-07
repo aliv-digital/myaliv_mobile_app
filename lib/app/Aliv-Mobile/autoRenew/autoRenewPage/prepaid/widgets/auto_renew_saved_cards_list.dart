@@ -28,6 +28,8 @@ class AutoRenewSavedCardsList extends StatelessWidget {
           cards: state.cards,
           selectedToken: selectedToken,
           onCardSelected: onCardSelected,
+          maxVisibleItems: 4,
+          tileHeight: 64,
         );
       },
     );
