@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -13,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dar
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../../../router/app_routes.dart';
@@ -295,7 +295,21 @@ class _AutoPayToggleState extends State<_AutoPayToggle> {
         }
       });
     } else {
-      // Toggle ON → OFF: Call disable API directly
+      // Toggle ON → OFF: confirm via bottom sheet before hitting the API.
+      final confirmed = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black.withValues(alpha: 0.5),
+        builder: (_) => const DisableAutoPayBottomSheet(),
+      );
+      if (!mounted) return;
+      if (confirmed != true) {
+        setState(() => isOn = widget.value);
+        return;
+      }
+
       setState(() => isOn = false);
 
       final success =
@@ -304,9 +318,16 @@ class _AutoPayToggleState extends State<_AutoPayToggle> {
       if (!success && mounted) {
         // Revert on failure
         setState(() => isOn = true);
-        Fluttertoast.showToast(msg: 'Failed to disable auto-pay');
+        AppToast.show(
+          message: 'Failed to disable auto-pay',
+          type: ToastType.error,
+        );
       } else if (success) {
-        Fluttertoast.showToast(msg: 'Auto-pay disabled');
+        AppToast.show(
+          message:
+              "We're working on it! Auto-pay takes a few minutes to update. Thank you for your patience.",
+          type: ToastType.success,
+        );
       }
     }
   }

@@ -322,6 +322,198 @@ class AutoRenewBottomSheet extends StatelessWidget {
   }
 }
 
+/// Confirmation bottom sheet shown before disabling auto-renew (prepaid).
+///
+/// Pops with `true` when the user confirms via the "yes" CTA, and `null`
+/// when the user backs out (back arrow / barrier dismiss).
+class DisableAutoRenewBottomSheet extends StatelessWidget {
+  const DisableAutoRenewBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        decoration: const ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          shadows: [
+            BoxShadow(
+              color: Color(0x07101828),
+              blurRadius: 8,
+              offset: Offset(0, 8),
+              spreadRadius: -4,
+            ),
+            BoxShadow(
+              color: Color(0x14101828),
+              blurRadius: 24,
+              offset: Offset(0, 20),
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.arrow_back, size: 24),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'are you sure you want to turn off auto renew',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF121212),
+                fontSize: 16,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF645D9C),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  'yes',
+                  style: TextStyle(
+                    color: Color(0xFFF1F1F8),
+                    fontSize: 15,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Confirmation bottom sheet shown before disabling auto-pay (postpaid).
+///
+/// Pops with `true` when the user confirms via the "yes" CTA, and `null`
+/// when the user backs out (back arrow / barrier dismiss).
+class DisableAutoPayBottomSheet extends StatelessWidget {
+  const DisableAutoPayBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        decoration: const ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          shadows: [
+            BoxShadow(
+              color: Color(0x07101828),
+              blurRadius: 8,
+              offset: Offset(0, 8),
+              spreadRadius: -4,
+            ),
+            BoxShadow(
+              color: Color(0x14101828),
+              blurRadius: 24,
+              offset: Offset(0, 20),
+              spreadRadius: -4,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.arrow_back, size: 24),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'are you sure you want to disable auto pay?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF121212),
+                fontSize: 16,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF645D9C),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  'yes',
+                  style: TextStyle(
+                    color: Color(0xFFF1F1F8),
+                    fontSize: 15,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Bottom sheet for enabling auto-pay invoice (postpaid users)
 /// Navigates directly to auth screen with postpaidInvoice payment method
 class AutoPayBottomSheet extends StatelessWidget {
