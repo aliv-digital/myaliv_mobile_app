@@ -165,7 +165,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     if (cubit.state.isPurchaseModalOpen) {
       return;
     }
-
+    debugPrint("=========== bottom sheet opening ============== ");
     _logSelectedApiPlan(
       selectedTab: cubit.state.selectedTab,
       selectedApiPlan: selectedApiPlan,
@@ -359,6 +359,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           context,
           _toRoamingPurchaseSheetPlan(plan),
           homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
         );
       },
       onRoamEasyPurchaseNow: (plan) {
@@ -366,8 +367,10 @@ class _HomePlanViewState extends State<_HomePlanView> {
           context,
           _toRoamEasyPurchaseSheetPlan(plan),
           homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
         );
       },
+      // observe this flow
       onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel plan) {
         _showPostpaidStartBottomSheet(context, plan);
       },

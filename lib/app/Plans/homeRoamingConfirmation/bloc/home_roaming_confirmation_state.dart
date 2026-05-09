@@ -5,6 +5,7 @@ enum HomeRoamingConfirmationStatus { initial, loading, ready, error }
 
 class HomeRoamingConfirmationState extends Equatable {
   final HomeRoamingConfirmationStatus status;
+  final HomeRoamingConfirmationRouteArgs? routeArgs;
   final HomeRoamingConfirmationData? data;
   final String? errorMessage;
 
@@ -17,6 +18,7 @@ class HomeRoamingConfirmationState extends Equatable {
 
   const HomeRoamingConfirmationState({
     required this.status,
+    required this.routeArgs,
     required this.data,
     required this.errorMessage,
     required this.openTermsRequestId,
@@ -27,6 +29,7 @@ class HomeRoamingConfirmationState extends Equatable {
   factory HomeRoamingConfirmationState.initial() {
     return const HomeRoamingConfirmationState(
       status: HomeRoamingConfirmationStatus.initial,
+      routeArgs: null,
       data: null,
       errorMessage: null,
       openTermsRequestId: 0,
@@ -37,6 +40,7 @@ class HomeRoamingConfirmationState extends Equatable {
 
   HomeRoamingConfirmationState copyWith({
     HomeRoamingConfirmationStatus? status,
+    HomeRoamingConfirmationRouteArgs? routeArgs,
     HomeRoamingConfirmationData? data,
     String? errorMessage,
     int? openTermsRequestId,
@@ -45,6 +49,7 @@ class HomeRoamingConfirmationState extends Equatable {
   }) {
     return HomeRoamingConfirmationState(
       status: status ?? this.status,
+      routeArgs: routeArgs ?? this.routeArgs,
       data: data ?? this.data,
       errorMessage: errorMessage ?? this.errorMessage,
       openTermsRequestId: openTermsRequestId ?? this.openTermsRequestId,
@@ -56,6 +61,7 @@ class HomeRoamingConfirmationState extends Equatable {
   @override
   List<Object?> get props => [
         status,
+        routeArgs,
         data,
         errorMessage,
         openTermsRequestId,

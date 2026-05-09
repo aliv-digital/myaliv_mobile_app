@@ -24,7 +24,7 @@ class HomeRoamingConfirmationPurchaseItemRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                item.label,
+                item.label, // Resolved from selected plan type in repository.
                 style: HomeRoamingConfirmationTheme.purchaseItemLabelTextStyle,
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,

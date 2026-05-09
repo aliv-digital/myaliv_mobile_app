@@ -1,6 +1,43 @@
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/base_plan_model.dart';
 
 enum HomeRoamingConfirmationPurchaseLineType { primaryPlan, addOn }
+
+class HomeRoamingConfirmationRouteArgs extends Equatable {
+  final String phoneNumber;
+  final BasePlanModel? selectedPlan;
+  final DateTime? beginDate;
+  final bool showDateField;
+
+  const HomeRoamingConfirmationRouteArgs({
+    required this.phoneNumber,
+    required this.showDateField,
+    this.selectedPlan,
+    this.beginDate,
+  });
+
+  HomeRoamingConfirmationRouteArgs copyWith({
+    String? phoneNumber,
+    BasePlanModel? selectedPlan,
+    DateTime? beginDate,
+    bool? showDateField,
+  }) {
+    return HomeRoamingConfirmationRouteArgs(
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      selectedPlan: selectedPlan ?? this.selectedPlan,
+      beginDate: beginDate ?? this.beginDate,
+      showDateField: showDateField ?? this.showDateField,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        phoneNumber,
+        selectedPlan,
+        beginDate,
+        showDateField,
+      ];
+}
 
 class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   final String id;
@@ -25,6 +62,24 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
     required this.subtitle,
     required this.price,
   });
+
+  HomeRoamingConfirmationPurchaseLineItem copyWith({
+    String? id,
+    HomeRoamingConfirmationPurchaseLineType? type,
+    String? label,
+    String? title,
+    String? subtitle,
+    double? price,
+  }) {
+    return HomeRoamingConfirmationPurchaseLineItem(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      label: label ?? this.label,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      price: price ?? this.price,
+    );
+  }
 
   @override
   List<Object?> get props => [id, type, label, title, subtitle, price];
