@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
@@ -38,10 +41,7 @@ class PlanPurchasePlanAddOnsScreen extends StatelessWidget {
 
 class _PlanPurchasePlanAddOnsView extends StatelessWidget {
   const _PlanPurchasePlanAddOnsView();
-
-  static const String _defaultPhone = '242-801-1616';
-  static const String _defaultAccountHolder = 'Jade Turnquest';
-  static const double _defaultPrimaryPlanPrice = 70;
+  static const double _defaultPrimaryPlanPrice = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -122,14 +122,45 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     PlanPurchasePlanAddOnsState state, {
     required HomePlanConfirmationEntryFlow flow,
   }) {
+    final accountState = instance<AccountInfoCubit>().state;
+
     return HomePlanConfirmationRouteArgs(
-      phoneNumber: _defaultPhone,
-      accountHolderName: _defaultAccountHolder,
+      phoneNumber: _accountUsername(accountState),
+      accountHolderName: _accountDisplayName(accountState),
       primaryPlanName: _primaryPlanName(state),
-      primaryPlanPrice: _primaryPlanPrice(state),
+      // Pass the raw API type code so the confirmation repository can decide
+      // the display label in one place.
+      primaryPlanTypeCode: _primaryPlanTypeCode(state),
+      // Confirmation summary shows base prices first; VAT is shown separately
+      // in CustomPaymentBreakDownCard.
+      primaryPlanPrice: _primaryPlanPriceBeforeVat(state),
+      primaryPlanVatAmount: _primaryPlanVatAmount(state),
       flow: flow,
       selectedAddOns: _selectedAddOns(state),
     );
+  }
+
+  String _accountDisplayName(AccountInfoState accountState) {
+    final fullName = accountState.fullName?.trim();
+    if (fullName != null && fullName.isNotEmpty) {
+      return fullName;
+    }
+
+    return _nameFromEmail(accountState.email);
+  }
+
+  String _accountUsername(AccountInfoState accountState) {
+    final username = accountState.accountInfo?.username.trim() ?? '';
+    return username.isEmpty ? '--' : username;
+  }
+
+  String _nameFromEmail(String? email) {
+    final normalizedEmail = email?.trim() ?? '';
+    if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
+      return 'User';
+    }
+
+    return normalizedEmail.split('@').first;
   }
 
   String _primaryPlanName(PlanPurchasePlanAddOnsState state) {
@@ -141,13 +172,22 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     return state.activePlan?.name ?? 'liberty70';
   }
 
-  double _primaryPlanPrice(PlanPurchasePlanAddOnsState state) {
+  String _primaryPlanTypeCode(PlanPurchasePlanAddOnsState state) {
+    return state.selectedApiPlan?.planType.trim() ?? '';
+  }
+
+  double _primaryPlanPriceBeforeVat(PlanPurchasePlanAddOnsState state) {
     final selectedPlan = state.selectedApiPlan;
     if (selectedPlan != null) {
-      return selectedPlan.planAmount + selectedPlan.vatAmount;
+      return selectedPlan.planAmount;
     }
 
+    // Fallback is only used when API plan data is unavailable.
     return _extractPrimaryPlanPrice(_primaryPlanName(state));
+  }
+
+  double _primaryPlanVatAmount(PlanPurchasePlanAddOnsState state) {
+    return state.selectedApiPlan?.vatAmount ?? 0;
   }
 
   List<HomePlanConfirmationSelectedAddOn> _selectedAddOns(
@@ -160,6 +200,9 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
             id: item.id,
             title: item.title,
             price: item.price,
+            // Each add-on line also shows base price in the summary, while
+            // this VAT contributes to the total VAT row.
+            vatAmount: item.vatAmount,
           ),
         )
         .toList();
@@ -224,7 +267,7 @@ class _ReadyContent extends StatelessWidget {
     //final activePlan = state.activePlan;
     final fairUsePolicy = state.fairUsePolicy;
 
-    if ( fairUsePolicy == null) {
+    if (fairUsePolicy == null) {
       return const _ErrorState(message: 'Failed to load');
     }
 
@@ -302,9 +345,9 @@ class _ActivePlanCard extends StatelessWidget {
     );
 
     return PlanPurchasePlanRedImageCard(
-      planLabel: 'active plan',//activePlan.label,
+      planLabel: 'active plan', //activePlan.label,
       planName: planName,
-      activeLabel: 'active',//activePlan.activeDateLabel,
+      activeLabel: 'active', //activePlan.activeDateLabel,
       activeDate: activeDate,
       expireLabel: 'expire',//activePlan.expireDateLabel,
       expireDate: expireDate,
@@ -323,7 +366,7 @@ class _ActivePlanCard extends StatelessWidget {
       return name;
     }
 
-    return '---';//activePlan.name;
+    return '---'; //activePlan.name;
   }
 
   String _dateFromApiOrFallback(DateTime? apiDate, {required String fallback}) {

@@ -82,6 +82,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
       }
 
       // we will go to next screen to show  "AvailableBoltOns"
+      // will work here
       return HomePlanWalletPaymentActivateBottomSheet(
         warningText: 'the account owner has no current plan, so their new plan will start immediately.',
         planName: plan.title,

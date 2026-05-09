@@ -44,8 +44,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomePlanConfirmationBloc,
-        HomePlanConfirmationState>(
+    return BlocListener<HomePlanConfirmationBloc, HomePlanConfirmationState>(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
           p.payNowRequestId != c.payNowRequestId,
@@ -66,8 +65,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
         backgroundColor: HomePlanConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<HomePlanConfirmationBloc,
-            HomePlanConfirmationState>(
+        bottomNavigationBar:
+            BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
           builder: (context, state) {
             if (state.status != HomePlanConfirmationStatus.ready ||
                 state.data == null) {
@@ -75,32 +74,32 @@ class _HomePlanConfirmationView extends StatelessWidget {
             }
 
             return DefaultBottomPayBar(
-                buttonText: 'continue',
-                isVatExclusive: true,
-                isButtonEnabled: state.isTermsChecked,
-                buttonColor: const Color(0xFF645D9C),
-                onPayNow: () {
-                  context.read<HomePlanConfirmationBloc>().add(
-                    const HomePlanConfirmationPayNowPressed(),
-                  );
-                  context.push(
-                    AppRoutes.homePlansPaymentMethodScreen,
-                    extra: HomePlansPaymentMethodRouteArgs(
-                      amount: state.data!.totals.total,
-                      vatNote: state.data!.totals.vat > 0
-                          ? 'vat included'
-                          : 'no vat applied',
-                    ),
-                  );
-                },
-                amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+              buttonText: 'continue',
+              isVatExclusive: true,
+              isButtonEnabled: state.isTermsChecked,
+              buttonColor: const Color(0xFF645D9C),
+              onPayNow: () {
+                context.read<HomePlanConfirmationBloc>().add(
+                      const HomePlanConfirmationPayNowPressed(),
+                    );
+                context.push(
+                  AppRoutes.homePlansPaymentMethodScreen,
+                  extra: HomePlansPaymentMethodRouteArgs(
+                    amount: state.data!.totals.total,
+                    vatNote: state.data!.totals.vat > 0
+                        ? 'vat included'
+                        : 'no vat applied',
+                  ),
+                );
+              },
+              amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
             );
           },
         ),
 
         body: SafeArea(
-          child: BlocBuilder<HomePlanConfirmationBloc,
-              HomePlanConfirmationState>(
+          child:
+              BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -109,7 +108,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   /// Top app bar (fixed)
                   DefaultAppBar(
                     showHome: true,
-                    onHomeTap: (){
+                    onHomeTap: () {
                       context.go(AppRoutes.home);
                     },
                     title: 'confirmation and payment',
@@ -217,6 +216,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
+                                            // Repository combines primary-plan VAT
+                                            // and selected add-on VAT into this value.
                                             value:
                                                 '\$ ${data.totals.vat.toStringAsFixed(2)}',
                                           ),

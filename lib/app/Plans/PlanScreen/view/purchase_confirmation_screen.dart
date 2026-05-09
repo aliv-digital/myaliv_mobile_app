@@ -17,6 +17,7 @@ import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
 import '../../../Home/best-plans/best_plan_injection.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'start_plan_bottom_sheet.dart';
 
 class ConfirmationScreen extends StatefulWidget {
   final bool showBeginOn;
@@ -36,12 +37,14 @@ class ConfirmationScreen extends StatefulWidget {
 
 class _ConfirmationScreenState extends State<ConfirmationScreen> {
   HomePlansPostPaidPlanModel? _selectedPostpaidPlan;
+  DateTime? _selectedBeginDate;
   bool _termsAccepted = true;
 
   @override
   void initState() {
     super.initState();
     _selectedPostpaidPlan = widget.plan;
+    _selectedBeginDate = widget.beginDate;
   }
 
   @override
@@ -50,11 +53,20 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     if (oldWidget.plan != widget.plan) {
       _selectedPostpaidPlan = widget.plan;
     }
+    if (oldWidget.beginDate != widget.beginDate) {
+      _selectedBeginDate = widget.beginDate;
+    }
   }
 
   void _termsAcceptedChanged(bool isAccepted) {
     setState(() {
       _termsAccepted = isAccepted;
+    });
+  }
+
+  void _beginDateChanged(DateTime date) {
+    setState(() {
+      _selectedBeginDate = date;
     });
   }
 
@@ -76,9 +88,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
     final total = _selectedPostpaidPlan?.planAmountWithVat ?? 20.00;
-    final vatLabel = vat <= 0 ? 'no vat applied' : ' vat applied'; //${_formatConfirmationCurrency(vat)}
-    final continueButtonColor = _termsAccepted ? const Color(0xFF645D9C) : const Color(0xFFC8C5DA);
-    final continueTextColor = _termsAccepted ? const Color(0xFFF1F1F8) : const Color(0xFF707070);
+    final vatLabel = vat <= 0
+        ? 'no vat applied'
+        : ' vat applied'; //${_formatConfirmationCurrency(vat)}
+    final continueButtonColor =
+        _termsAccepted ? const Color(0xFF645D9C) : const Color(0xFFC8C5DA);
+    final continueTextColor =
+        _termsAccepted ? const Color(0xFFF1F1F8) : const Color(0xFF707070);
 
     return SafeArea(
       child: Scaffold(
@@ -231,13 +247,16 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _PlanCard(
-                  date: widget.beginDate,
+                  date: _selectedBeginDate,
                   showBeginOn: widget.showBeginOn,
                   plan: _selectedPostpaidPlan,
                 ),
                 const SizedBox(height: 16),
-                if (widget.showBeginOn && widget.beginDate != null)
-                  _BeginOnCard(date: widget.beginDate!),
+                if (widget.showBeginOn && _selectedBeginDate != null)
+                  _BeginOnCard(
+                    date: _selectedBeginDate!,
+                    onDateChanged: _beginDateChanged,
+                  ),
 
                 // if (showBeginOn && beginDate != null) const SizedBox(height: 16),
                 const SizedBox(height: 16),
@@ -542,8 +561,24 @@ class _PlanCard extends StatelessWidget {
 
 class _BeginOnCard extends StatelessWidget {
   final DateTime date;
+  final ValueChanged<DateTime> onDateChanged;
 
-  const _BeginOnCard({required this.date});
+  const _BeginOnCard({
+    required this.date,
+    required this.onDateChanged,
+  });
+
+  Future<void> _openCalendarPickerSheet(BuildContext context) async {
+    // Reuse the same calendar bottom sheet used by StartPlanBottomSheet so
+    // both screens keep identical date-picking behavior and styling.
+    final pickedDate = await showStartPlanCalendarPickerSheet(
+      context,
+      initialDate: date,
+    );
+
+    if (pickedDate == null) return;
+    onDateChanged(pickedDate);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -583,7 +618,10 @@ class _BeginOnCard extends StatelessWidget {
               ],
             ),
           ),
-          SvgPicture.asset('assets/icons/calender_post.svg'),
+          InkWell(
+            onTap: () => _openCalendarPickerSheet(context),
+            child: SvgPicture.asset('assets/icons/calender_post.svg'),
+          ),
         ],
       ),
     );

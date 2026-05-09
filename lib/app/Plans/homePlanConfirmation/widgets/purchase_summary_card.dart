@@ -66,8 +66,7 @@ class PurchaseSummaryCard extends StatelessWidget {
           // Item blocks: strict 16/20/16/20 spacing from Figma.
           for (int i = 0; i < data.items.length; i++) ...[
             Padding(
-              padding: HomePlanConfirmationTheme
-                  .purchaseSummaryItemSectionPadding,
+              padding: HomePlanConfirmationTheme.purchaseSummaryItemSectionPadding,
               child: PurchaseItemRow(
                 item: data.items[i],
                 onRemove: () => onRemoveItem(data.items[i].id),

@@ -7,6 +7,19 @@ import '../../../../router/app_routes.dart';
 import '../../../Aliv-Mobile-Guest/guestPurchasePlan/theme/theme.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
+Future<DateTime?> showStartPlanCalendarPickerSheet(
+  BuildContext context, {
+  required DateTime initialDate,
+}) {
+  return showModalBottomSheet<DateTime>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.45),
+    isScrollControlled: true,
+    builder: (_) => _RoamCalendarPickerSheet(initialDate: initialDate),
+  );
+}
+
 class StartPlanBottomSheet extends StatefulWidget {
   final HomePlansPostPaidPlanModel plan;
 
@@ -98,16 +111,9 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
   }
 
   Future<void> _openCalendarPickerSheet() async {
-    final DateTime? pickedDate = await showModalBottomSheet<DateTime>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.45),
-      isScrollControlled: true,
-      builder: (calendarContext) {
-        return _RoamCalendarPickerSheet(
-          initialDate: selectedDate ?? DateTime.now(),
-        );
-      },
+    final DateTime? pickedDate = await showStartPlanCalendarPickerSheet(
+      context,
+      initialDate: selectedDate ?? DateTime.now(),
     );
 
     if (pickedDate == null) return;
