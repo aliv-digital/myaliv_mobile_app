@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prep
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
@@ -690,8 +691,9 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmation,
         pageBuilder: (context, state) {
-          final showBeginOn =
-              state.uri.queryParameters['showBeginOn'] == 'true';
+          final showBeginOn = state.uri.queryParameters['showBeginOn'] == 'true';
+          final extra = state.extra;
+          final postpaidPlan = extra is HomePlansPostPaidPlanModel ? extra : null;
 
           final beginDateString = state.uri.queryParameters['beginDate'];
 
@@ -705,6 +707,7 @@ class AppRouter {
             child: ConfirmationScreen(
               showBeginOn: showBeginOn,
               beginDate: beginDate,
+              plan: postpaidPlan,
             ),
           );
         },

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../resources/widgets/defaultButton.dart';
 import '../../../../router/app_routes.dart';
 import '../../../Aliv-Mobile-Guest/guestPurchasePlan/theme/theme.dart';
-
+import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
 class StartPlanBottomSheet extends StatefulWidget {
-  const StartPlanBottomSheet({super.key});
+  final HomePlansPostPaidPlanModel plan;
+
+  const StartPlanBottomSheet({
+    super.key,
+    required this.plan,
+  });
 
   @override
   State<StartPlanBottomSheet> createState() => _StartPlanBottomSheetState();
@@ -58,7 +62,6 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
           children: [
             GestureDetector(
               onTap: () => Navigator.pop(context),
-
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Icon(Icons.arrow_back),
@@ -76,16 +79,17 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
             const SizedBox(height: 20),
             _InfoBanner(),
             const SizedBox(height: 20),
+            // there are already a calendar picker sheet
             _StartFromField(
               date: selectedDate,
               onTap: _openCalendarPickerSheet,
             ),
             const SizedBox(height: 20),
-            _DividerOr(),
+            _dividerOr(),
             const SizedBox(height: 20),
             (isDateSelected == true)
-                ? _ActivateButton(selectedDate)
-                : _ActivateButton(null),
+                ? _ActivateButton(selectedDate: selectedDate, plan: widget.plan)
+                : _ActivateButton(selectedDate: null, plan: widget.plan),
             const SizedBox(height: 44),
           ],
         ),
@@ -114,15 +118,16 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
     });
     if (mounted) {
       context.pop();
+      // pass the selected date and also plan data to next screen
       context.push(
         '${AppRoutes.confirmation}'
         '?showBeginOn=true'
         '&beginDate=${selectedDate!.toIso8601String()}',
+        extra: widget.plan,
       );
     }
   }
 }
-
 
 class _InfoBanner extends StatelessWidget {
   @override
@@ -139,7 +144,7 @@ class _InfoBanner extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'CircularPro',
           fontSize: 12,
-          color: const Color(0xFFF30F0F),
+          color: Color(0xFFF30F0F),
           height: 1.38,
         ),
       ),
@@ -203,7 +208,7 @@ class _StartFromField extends StatelessWidget {
   }
 }
 
-Widget _DividerOr() {
+Widget _dividerOr() {
   return Row(
     children: const [
       Expanded(child: Divider(thickness: 0.5)),
@@ -225,7 +230,12 @@ Widget _DividerOr() {
 
 class _ActivateButton extends StatelessWidget {
   final DateTime? selectedDate;
-  const _ActivateButton(this.selectedDate);
+  final HomePlansPostPaidPlanModel plan;
+
+  const _ActivateButton({
+    required this.selectedDate,
+    required this.plan,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -236,15 +246,15 @@ class _ActivateButton extends StatelessWidget {
         onPressed: () {
           // TODO: activation logic
           // Navigator.pop(context);
-          final date = DateTime(2025, 8, 6);
-
+          final date = DateTime.now();
+          // pass selected date
           if (selectedDate != null) {
-            final formatted = DateFormat('dd-MM-yy').format(date);
             context.pop();
             context.push(
               '${AppRoutes.confirmation}'
               '?showBeginOn=true'
-              '&beginDate=$formatted',
+              '&beginDate=${selectedDate!.toIso8601String()}',
+              extra: plan,
             );
           } else {
             context.pop();
@@ -252,6 +262,7 @@ class _ActivateButton extends StatelessWidget {
               '${AppRoutes.confirmation}'
               '?showBeginOn=false'
               '&beginDate=${date.toIso8601String()}',
+              extra: plan,
             );
           }
         },
@@ -313,14 +324,15 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: Theme.of(context).colorScheme.copyWith(
-                    primary: GuestPurchasePlanTheme
-                        .roamCalendarSelectedDayBackgroundColor,
-                    onPrimary:
-                        GuestPurchasePlanTheme.roamCalendarSelectedDayTextColor,
-                    surface:
-                        GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
-                    onSurface: GuestPurchasePlanTheme.roamCalendarDayTextColor,
-                  ),
+                        primary: GuestPurchasePlanTheme
+                            .roamCalendarSelectedDayBackgroundColor,
+                        onPrimary: GuestPurchasePlanTheme
+                            .roamCalendarSelectedDayTextColor,
+                        surface: GuestPurchasePlanTheme
+                            .roamCalendarSheetBackgroundColor,
+                        onSurface:
+                            GuestPurchasePlanTheme.roamCalendarDayTextColor,
+                      ),
                   datePickerTheme: DatePickerThemeData(
                     backgroundColor:
                         GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
@@ -374,7 +386,6 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                   ),
                 ),
               ),
-
               Container(
                 height: 1,
                 color: GuestPurchasePlanTheme.roamCalendarDividerColor,
@@ -382,7 +393,6 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               const SizedBox(
                 height: GuestPurchasePlanTheme.roamCalendarDividerToActionsGap,
               ),
-
               Row(
                 children: [
                   Expanded(

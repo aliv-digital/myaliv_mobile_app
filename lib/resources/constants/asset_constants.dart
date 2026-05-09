@@ -74,4 +74,5 @@ class AssetConstant {
   static const walletIconSVG = 'assets/icons/wallet.svg';
   static const addCardIconSVG = 'assets/icons/addcard.svg';
   static const creditCardIconSVG = 'assets/icons/credit_card.svg';
+
 }

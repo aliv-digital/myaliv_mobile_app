@@ -1,11 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/app_session.dart';
@@ -14,16 +12,22 @@ import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/custom_payment_break_down_card.dart';
 import '../../../../router/app_routes.dart';
 import '../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_purchase_plan_confirmation_theme.dart';
+import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
+import '../../../Home/best-plans/best_plan_injection.dart';
+import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
 class ConfirmationScreen extends StatefulWidget {
   final bool showBeginOn;
   final DateTime? beginDate;
+  final HomePlansPostPaidPlanModel? plan;
 
   const ConfirmationScreen({
     super.key,
     this.showBeginOn = false,
     this.beginDate,
+    this.plan,
   });
 
   @override
@@ -31,13 +35,29 @@ class ConfirmationScreen extends StatefulWidget {
 }
 
 class _ConfirmationScreenState extends State<ConfirmationScreen> {
+  HomePlansPostPaidPlanModel? _selectedPostpaidPlan;
+
   @override
   void initState() {
     super.initState();
+    _selectedPostpaidPlan = widget.plan;
+  }
+
+  @override
+  void didUpdateWidget(covariant ConfirmationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.plan != widget.plan) {
+      _selectedPostpaidPlan = widget.plan;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
+    final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
+    final total = _selectedPostpaidPlan?.planAmountWithVat ?? 20.00;
+    final vatLabel = vat <= 0 ? 'no vat applied' : '${_formatConfirmationCurrency(vat)} vat applied';
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFF1F2FA),
@@ -75,14 +95,16 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   padding: const EdgeInsets.only(right: 24),
                   child: SvgPicture.asset(
                     'assets/icons/home.svg',
-                    color: Colors.white,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ),
-
         bottomNavigationBar: Container(
           width: 390,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -103,7 +125,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -112,7 +134,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         spacing: 10,
                         children: [
                           Text(
-                            '\$ 20.00',
+                            _formatConfirmationCurrency(total),
                             style: TextStyle(
                               color: const Color(0xFF222222),
                               fontSize: 22,
@@ -123,7 +145,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         ],
                       ),
                     ),
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -132,7 +154,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         spacing: 10,
                         children: [
                           Text(
-                            'no vat applied',
+                            vatLabel,
                             style: TextStyle(
                               color: const Color(0xFF707070),
                               fontSize: 12,
@@ -200,6 +222,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 _PlanCard(
                   date: widget.beginDate,
                   showBeginOn: widget.showBeginOn,
+                  plan: _selectedPostpaidPlan,
                 ),
                 const SizedBox(height: 16),
                 if (widget.showBeginOn && widget.beginDate != null)
@@ -215,16 +238,16 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   items: <CustomPaymentBreakdownLineItem>[
                     CustomPaymentBreakdownLineItem(
                       label: 'sub total',
-                      value: '\$ 18.18',
+                      value: _formatConfirmationCurrency(subTotal),
                       // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'vat',
-                      value: '\$ 0.00',
+                      value: _formatConfirmationCurrency(vat),
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'total',
-                      value: '\$ 20.00',
+                      value: _formatConfirmationCurrency(total),
                       //    '\$ ${data.totals.total.toStringAsFixed(2)}',
                     ),
                   ],
@@ -238,15 +261,93 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 }
 
+String _formatConfirmationCurrency(double value) {
+  return '\$ ${value.toStringAsFixed(2)}';
+}
+
 class _PlanCard extends StatelessWidget {
   final DateTime? date;
   final bool? showBeginOn;
+  final HomePlansPostPaidPlanModel? plan;
 
-  const _PlanCard({this.date, this.showBeginOn});
+  const _PlanCard({this.date, this.showBeginOn, this.plan});
+
+  String _selectedPlanTitle() {
+    final selectedPlan = plan;
+    if (selectedPlan == null) {
+      return 'travel20 - 7 days';
+    }
+
+    final planName = selectedPlan.planName.trim();
+    final title = planName.isEmpty ? 'selected plan' : planName;
+
+    final duration = selectedPlan.durationText.trim();
+    if (duration.isEmpty || duration == '--') {
+      return title;
+    }
+    // for now we will skip to show duration with title,
+    // later we may add this if client asks
+
+    return '$title - $duration';
+    //return title;
+  }
+
+  String _selectedPlanPrice() {
+    final selectedPlan = plan;
+    if (selectedPlan == null) {
+      return '\$ --.--';
+    }
+
+    return _formatConfirmationCurrency(selectedPlan.planAmount);
+  }
+
+  String _selectedPlanTypeLabel() {
+    final planTypeCode = plan?.planType.trim().toUpperCase();
+
+    switch (planTypeCode) {
+      case 'A':
+        return 'standalone';
+      case 'S':
+        return 'secondary';
+      case 'P':
+        return 'primary';
+      default:
+        return 'plan';
+    }
+  }
+
+  String _accountDisplayName(AccountInfoState accountState) {
+    final fullName = accountState.fullName?.trim();
+    if (fullName != null && fullName.isNotEmpty) {
+      return fullName;
+    }
+
+    return _nameFromEmail(accountState.email);
+  }
+
+  String _accountUsername(AccountInfoState accountState) {
+    final username = accountState.accountInfo?.username.trim() ?? '';
+    return username.isEmpty ? '--' : username;
+  }
+
+  String _nameFromEmail(String? email) {
+    final normalizedEmail = email?.trim() ?? '';
+    if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
+      return 'User';
+    }
+
+    return normalizedEmail.split('@').first;
+  }
 
   @override
   Widget build(BuildContext context) {
     final formatted = DateFormat('dd-MM-yy').format(date ?? DateTime.now());
+    final selectedPlanTitle = _selectedPlanTitle();
+    final selectedPlanPrice = _selectedPlanPrice();
+    final selectedPlanType = _selectedPlanTypeLabel();
+    final accountState = instance<AccountInfoCubit>().state;
+    final userName = _accountDisplayName(accountState);
+    final userNumber = _accountUsername(accountState);
 
     return Container(
       decoration: BoxDecoration(
@@ -280,8 +381,8 @@ class _PlanCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       )
-                    : const Text(
-                        'Alicia Major',
+                    : Text(
+                        userName,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
@@ -290,11 +391,11 @@ class _PlanCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                const Text(
-                  '242-801-1616',
+                Text(
+                  userNumber,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: const Color(0xFF121212),
+                    color: Color(0xFF121212),
                     fontSize: 16,
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w500,
@@ -324,7 +425,7 @@ class _PlanCard extends StatelessWidget {
                               ),
                             )
                           : Text(
-                              "standalone",
+                              selectedPlanType,
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
@@ -343,7 +444,7 @@ class _PlanCard extends StatelessWidget {
                               ),
                             )
                           : Text(
-                              'travel20 - 7 days',
+                              selectedPlanTitle,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.black,
@@ -352,7 +453,6 @@ class _PlanCard extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-
                       (showBeginOn == true && date != null)
                           ? Text(
                               'begins $formatted',
@@ -368,7 +468,7 @@ class _PlanCard extends StatelessWidget {
                               'begins immediately',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: const Color(0xFF707070),
+                                color: Color(0xFF707070),
                                 fontSize: 10,
                                 fontFamily: 'CircularPro',
                                 fontWeight: FontWeight.w500,
@@ -398,7 +498,7 @@ class _PlanCard extends StatelessWidget {
                           ),
                         )
                       : Text(
-                          '\$ 18.18',
+                          selectedPlanPrice,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF222222),
@@ -409,9 +509,14 @@ class _PlanCard extends StatelessWidget {
                         ),
                 ),
                 const SizedBox(width: 20),
-                AppSession.appRoute == 'sendTopUp'
-                    ? SizedBox(width: 1)
-                    : SvgPicture.asset('assets/icons/trash.svg'),
+                AppSession.appRoute == 'sendTopUp' ?
+                SizedBox(width: 1) :
+                InkWell(
+                  onTap: (){
+                    context.pop();
+                  },
+                  child: SvgPicture.asset(AssetConstant.trashIconSVG),
+                ),
               ],
             ),
           ),
@@ -511,7 +616,7 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
             decoration: BoxDecoration(
               color: checked
                   ? GuestPurchasePlanConfirmationTheme
-                        .termsNoticeCheckboxCheckedFillColor
+                      .termsNoticeCheckboxCheckedFillColor
                   : Colors.transparent,
               border: Border.all(
                 width: 1,
