@@ -36,6 +36,7 @@ class ConfirmationScreen extends StatefulWidget {
 
 class _ConfirmationScreenState extends State<ConfirmationScreen> {
   HomePlansPostPaidPlanModel? _selectedPostpaidPlan;
+  bool _termsAccepted = true;
 
   @override
   void initState() {
@@ -51,12 +52,33 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     }
   }
 
+  void _termsAcceptedChanged(bool isAccepted) {
+    setState(() {
+      _termsAccepted = isAccepted;
+    });
+  }
+
+  void _continuePressed() {
+    if (AppSession.appRoute == 'sendTopUp') {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => const PayFromWalletSheet(),
+      );
+    } else {
+      context.push(AppRoutes.guestPaymentMethodScreen);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
     final total = _selectedPostpaidPlan?.planAmountWithVat ?? 20.00;
-    final vatLabel = vat <= 0 ? 'no vat applied' : '${_formatConfirmationCurrency(vat)} vat applied';
+    final vatLabel = vat <= 0 ? 'no vat applied' : ' vat applied'; //${_formatConfirmationCurrency(vat)}
+    final continueButtonColor = _termsAccepted ? const Color(0xFF645D9C) : const Color(0xFFC8C5DA);
+    final continueTextColor = _termsAccepted ? const Color(0xFFF1F1F8) : const Color(0xFF707070);
 
     return SafeArea(
       child: Scaffold(
@@ -169,24 +191,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  if (AppSession.appRoute == 'sendTopUp') {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => const PayFromWalletSheet(),
-                    );
-                  } else {
-                    context.push(AppRoutes.guestPaymentMethodScreen);
-                  }
-                },
+                onTap: _termsAccepted ? _continuePressed : null,
                 child: Container(
                   width: 170,
                   height: 40,
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   decoration: ShapeDecoration(
-                    color: const Color(0xFF645D9C),
+                    color: continueButtonColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
@@ -200,7 +211,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       Text(
                         'continue',
                         style: TextStyle(
-                          color: const Color(0xFFF1F1F8),
+                          color: continueTextColor,
                           fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w700,
@@ -230,7 +241,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
                 // if (showBeginOn && beginDate != null) const SizedBox(height: 16),
                 const SizedBox(height: 16),
-                const _TermsCheckbox(),
+                _TermsCheckbox(
+                  isChecked: _termsAccepted,
+                  onChanged: _termsAcceptedChanged,
+                ),
                 const SizedBox(height: 16),
 
                 CustomPaymentBreakDownCard(
@@ -509,14 +523,14 @@ class _PlanCard extends StatelessWidget {
                         ),
                 ),
                 const SizedBox(width: 20),
-                AppSession.appRoute == 'sendTopUp' ?
-                SizedBox(width: 1) :
-                InkWell(
-                  onTap: (){
-                    context.pop();
-                  },
-                  child: SvgPicture.asset(AssetConstant.trashIconSVG),
-                ),
+                AppSession.appRoute == 'sendTopUp'
+                    ? SizedBox(width: 1)
+                    : InkWell(
+                        onTap: () {
+                          context.pop();
+                        },
+                        child: SvgPicture.asset(AssetConstant.trashIconSVG),
+                      ),
               ],
             ),
           ),
@@ -577,14 +591,19 @@ class _BeginOnCard extends StatelessWidget {
 }
 
 class _TermsCheckbox extends StatefulWidget {
-  const _TermsCheckbox();
+  final bool isChecked;
+  final ValueChanged<bool> onChanged;
+
+  const _TermsCheckbox({
+    required this.isChecked,
+    required this.onChanged,
+  });
 
   @override
   State<_TermsCheckbox> createState() => _TermsCheckboxState();
 }
 
 class _TermsCheckboxState extends State<_TermsCheckbox> {
-  bool checked = true;
   late TapGestureRecognizer _termsRecognizer;
 
   @override
@@ -602,6 +621,12 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
   }
 
   @override
+  void dispose() {
+    _termsRecognizer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -609,32 +634,36 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 5),
-          child: Container(
-            width: 15,
-            height: 15,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: checked
-                  ? GuestPurchasePlanConfirmationTheme
-                      .termsNoticeCheckboxCheckedFillColor
-                  : Colors.transparent,
-              border: Border.all(
-                width: 1,
-                color: GuestPurchasePlanConfirmationTheme
-                    .termsNoticeCheckboxBorderColor,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => widget.onChanged(!widget.isChecked),
+            child: Container(
+              width: 15,
+              height: 15,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: widget.isChecked
+                    ? GuestPurchasePlanConfirmationTheme
+                        .termsNoticeCheckboxCheckedFillColor
+                    : Colors.transparent,
+                border: Border.all(
+                  width: 1,
+                  color: GuestPurchasePlanConfirmationTheme
+                      .termsNoticeCheckboxBorderColor,
+                ),
+                borderRadius: BorderRadius.circular(
+                  GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxRadius,
+                ),
               ),
-              borderRadius: BorderRadius.circular(
-                GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxRadius,
-              ),
+              child: widget.isChecked
+                  ? const Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: GuestPurchasePlanConfirmationTheme
+                          .termsNoticeCheckboxIconSize,
+                    )
+                  : null,
             ),
-            child: checked
-                ? const Icon(
-                    Icons.check_rounded,
-                    color: Colors.white,
-                    size: GuestPurchasePlanConfirmationTheme
-                        .termsNoticeCheckboxIconSize,
-                  )
-                : null,
           ),
         ),
         SizedBox(width: 10),
