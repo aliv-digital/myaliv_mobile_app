@@ -145,7 +145,7 @@ class _BestPlanCard extends StatelessWidget {
                         children: [
                           // Price
                           Text(
-                            plan.price,
+                            "\$${plan.price}",
                             style: const TextStyle(
                               fontFamily: 'CircularPro',
                               fontSize: 50,
