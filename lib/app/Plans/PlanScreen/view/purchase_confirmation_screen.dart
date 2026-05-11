@@ -649,7 +649,8 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
     super.initState();
     _termsRecognizer = TapGestureRecognizer()
       ..onTap = () async {
-        // ✅ Navigate to Terms
+        // TODO :
+        // set term api call
         final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
 
         if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
