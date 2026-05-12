@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/app_session.dart';
 import '../../../../resources/extentions/dateformatter.dart';
@@ -91,10 +90,12 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     final vatLabel = vat <= 0
         ? 'no vat applied'
         : ' vat applied'; //${_formatConfirmationCurrency(vat)}
-    final continueButtonColor =
-        _termsAccepted ? const Color(0xFF645D9C) : const Color(0xFFC8C5DA);
-    final continueTextColor =
-        _termsAccepted ? const Color(0xFFF1F1F8) : const Color(0xFF707070);
+    final continueButtonColor = _termsAccepted
+        ? const Color(0xFF645D9C)
+        : const Color(0xFFC8C5DA);
+    final continueTextColor = _termsAccepted
+        ? const Color(0xFFF1F1F8)
+        : const Color(0xFF707070);
 
     return SafeArea(
       child: Scaffold(
@@ -112,7 +113,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           ),
           centerTitle: false,
           title: Text(
-            'confirmation and payment',
+            'confirmation and payment09999',
             style: TextStyle(
               color: Colors.white,
               fontSize: 17,
@@ -296,6 +297,168 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
 String _formatConfirmationCurrency(double value) {
   return '\$ ${value.toStringAsFixed(2)}';
+}
+
+Future<void> _showTermsAndConditionsModal(BuildContext context) {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    barrierColor: Colors.black.withValues(alpha: 0.62),
+    builder: (dialogContext) {
+      return const Dialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: _TermsAndConditionsDialog(),
+      );
+    },
+  );
+}
+
+class _TermsAndConditionsDialog extends StatelessWidget {
+  const _TermsAndConditionsDialog();
+
+  static const TextStyle _titleStyle = TextStyle(
+    color: Color(0xFF222222),
+    fontSize: 18,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
+    height: 28 / 18,
+  );
+
+  static const TextStyle _bodyStyle = TextStyle(
+    color: Color(0xFF707070),
+    fontSize: 14,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w500,
+    height: 20 / 14,
+  );
+
+  static const String _introText =
+      'Welcome to the bealiv.com website, which is operated by Cable Bahamas '
+      'Group Ltd (“CBL”, “Bealiv”, “ALIV” “MyAliv App,” “we,” “us” or “our”). '
+      'Please read these Terms of Use carefully, as they describe the terms '
+      'and conditions applicable to bealiv.com in addition to any related '
+      'websites, domains, portals, mobile applications, or online services '
+      'which may be offered by our affiliate companies, including, but not '
+      'limited to, https://portal.newcomobile.com/myaliv/login.aspx, '
+      '(collectively, the “Site”). By accessing and using this site, you agree '
+      'to comply with and be bound by the following terms of use. Please review '
+      'the following terms carefully. If you do not agree to these terms, you '
+      'should not use this site.';
+
+  static const String _useOfSiteText =
+      'ALIV grants you a limited license to access and make personal use of '
+      'this site. You are not permitted to download (other than page caching) '
+      'or modify the site, or any portion of it, except with express written '
+      'consent of ALIV. This license does not include any resale or commercial '
+      'use of this site or its contents; any collection and use of any product '
+      'listings, descriptions, or prices; any derivative use of this site or '
+      'its contents; any downloading or copying of account information for the '
+      'benefit of another merchant; or any use of data mining, robots, or '
+      'similar data gathering and extraction tools.';
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.sizeOf(context).height;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: screenHeight - 48),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Material(
+          color: Colors.white,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(26, 26, 26, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    _TermsShieldBadge(),
+                    SizedBox(height: 20),
+                    Text('Terms & Conditions', style: _titleStyle),
+                    SizedBox(height: 20),
+                    Text(_introText, style: _bodyStyle),
+                    SizedBox(height: 20),
+                    Text('Use of Site', style: _titleStyle),
+                    SizedBox(height: 20),
+                    Text(_useOfSiteText, style: _bodyStyle),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 26,
+                right: 26,
+                child: _TermsDialogCloseButton(
+                  onTap: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TermsShieldBadge extends StatelessWidget {
+  const _TermsShieldBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 66,
+      height: 66,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFF7F3FF),
+      ),
+      child: Container(
+        width: 48,
+        height: 48,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFFEDE8FA),
+        ),
+        child: Container(
+          width: 32,
+          height: 32,
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Color(0xFFE2DDF5),
+          ),
+          child: SvgPicture.asset(
+            AssetConstant.roundedTikSVG,
+            width: 24,
+            height: 24,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TermsDialogCloseButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _TermsDialogCloseButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: SvgPicture.asset(
+        AssetConstant.blackRoundedCrossSVG,
+        width: 48,
+        height: 48,
+      ),
+    );
+  }
 }
 
 class _PlanCard extends StatelessWidget {
@@ -563,10 +726,7 @@ class _BeginOnCard extends StatelessWidget {
   final DateTime date;
   final ValueChanged<DateTime> onDateChanged;
 
-  const _BeginOnCard({
-    required this.date,
-    required this.onDateChanged,
-  });
+  const _BeginOnCard({required this.date, required this.onDateChanged});
 
   Future<void> _openCalendarPickerSheet(BuildContext context) async {
     // Reuse the same calendar bottom sheet used by StartPlanBottomSheet so
@@ -632,10 +792,7 @@ class _TermsCheckbox extends StatefulWidget {
   final bool isChecked;
   final ValueChanged<bool> onChanged;
 
-  const _TermsCheckbox({
-    required this.isChecked,
-    required this.onChanged,
-  });
+  const _TermsCheckbox({required this.isChecked, required this.onChanged});
 
   @override
   State<_TermsCheckbox> createState() => _TermsCheckboxState();
@@ -649,13 +806,7 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
     super.initState();
     _termsRecognizer = TapGestureRecognizer()
       ..onTap = () async {
-        // TODO :
-        // set term api call
-        final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
-
-        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-          throw 'Could not open store locator';
-        }
+        await _showTermsAndConditionsModal(context);
       };
   }
 
@@ -683,7 +834,7 @@ class _TermsCheckboxState extends State<_TermsCheckbox> {
               decoration: BoxDecoration(
                 color: widget.isChecked
                     ? GuestPurchasePlanConfirmationTheme
-                        .termsNoticeCheckboxCheckedFillColor
+                          .termsNoticeCheckboxCheckedFillColor
                     : Colors.transparent,
                 border: Border.all(
                   width: 1,
