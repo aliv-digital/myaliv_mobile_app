@@ -28,8 +28,7 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
       decoration: BoxDecoration(
         color: HomePlanTheme.bottomSheetBackground,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-              HomePlanTheme.bottomSheetTopCornerRadius),
+          top: Radius.circular(HomePlanTheme.bottomSheetTopCornerRadius),
         ),
       ),
       child: SafeArea(
@@ -59,8 +58,7 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                  height: HomePlanTheme.bottomSheetSectionGap),
+              const SizedBox(height: HomePlanTheme.bottomSheetSectionGap),
               // Warning box.
               Container(
                 padding: HomePlanTheme.bottomSheetWarningPadding,
@@ -79,58 +77,47 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                   style: HomePlanTheme.bottomSheetWarning,
                 ),
               ),
-              const SizedBox(
-                  height: HomePlanTheme.bottomSheetSectionGap),
+              const SizedBox(height: HomePlanTheme.bottomSheetSectionGap),
               // Selected plan summary card.
               _SelectedPlanSummaryCard(
                 planName: planName,
                 planDurationText: planDurationText,
                 planPriceText: planPriceText,
               ),
-              const SizedBox(
-                  height: HomePlanTheme.bottomSheetSectionGap),
+              const SizedBox(height: HomePlanTheme.bottomSheetSectionGap),
               // Dual CTAs: activate now + future plan.
               Row(
                 children: [
                   Expanded(
                     child: DefaultButton(
-                      label: HomePlanTheme.bottomSheetActivateNowLabel,
-                      isLoading: false,
-                      onPressed: onActivateNowPressed,
-                      height:
-                          HomePlanTheme.bottomSheetActionButtonHeight,
-                      backgroundColor: HomePlanTheme.activateNowButton,
-                      textStyle: HomePlanTheme
-                          .bottomSheetPrimaryActionDualStyle,
-                      borderRadius: BorderRadius.circular(
-                        HomePlanTheme
-                            .bottomSheetActionButtonCornerRadius,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width:
-                        HomePlanTheme.bottomSheetDualActionButtonsGap,
-                  ),
-                  Expanded(
-                    child: DefaultButton(
                       label: HomePlanTheme.bottomSheetFuturePlanLabel,
                       isLoading: false,
                       onPressed: onFuturePlanPressed,
-                      height:
-                          HomePlanTheme.bottomSheetActionButtonHeight,
+                      height: HomePlanTheme.bottomSheetActionButtonHeight,
                       backgroundColor: HomePlanTheme
                           .bottomSheetSecondaryButtonBackgroundColor,
-                      textStyle: HomePlanTheme
-                          .bottomSheetSecondaryActionDualStyle,
-                      borderSide: BorderSide(
-                        color: HomePlanTheme.planPriceBorder,
-                        width: HomePlanTheme
-                            .bottomSheetSecondaryButtonBorderWidth,
-                      ),
+                      textStyle:
+                      HomePlanTheme.bottomSheetSecondaryActionDualStyle,
                       borderRadius: BorderRadius.circular(
-                        HomePlanTheme
-                            .bottomSheetActionButtonCornerRadius,
+                        HomePlanTheme.bottomSheetActionButtonCornerRadius,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(
+                    width: HomePlanTheme.bottomSheetDualActionButtonsGap,
+                  ),
+                  Expanded(
+                    child: DefaultButton(
+                      label: HomePlanTheme.bottomSheetActivateNowLabel,
+                      isLoading: false,
+                      onPressed: onActivateNowPressed,
+                      height: HomePlanTheme.bottomSheetActionButtonHeight,
+                      backgroundColor: HomePlanTheme.activateNowButton,
+                      textStyle:
+                      HomePlanTheme.bottomSheetPrimaryActionDualStyle,
+                      borderRadius: BorderRadius.circular(
+                        HomePlanTheme.bottomSheetActionButtonCornerRadius,
                       ),
                     ),
                   ),
@@ -180,8 +167,7 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(
-                  height: HomePlanTheme
-                      .bottomSheetSummaryNameToDurationGap,
+                  height: HomePlanTheme.bottomSheetSummaryNameToDurationGap,
                 ),
                 Text(
                   planDurationText,
@@ -194,8 +180,7 @@ class _SelectedPlanSummaryCard extends StatelessWidget {
             height: HomePlanTheme.bottomSheetSummaryPricePillHeight,
             padding: HomePlanTheme.bottomSheetSummaryPricePillPadding,
             decoration: BoxDecoration(
-              color:
-                  HomePlanTheme.bottomSheetSummaryPricePillBackground,
+              color: HomePlanTheme.bottomSheetSummaryPricePillBackground,
               borderRadius: BorderRadius.circular(
                 HomePlanTheme.bottomSheetSummaryPricePillRadius,
               ),

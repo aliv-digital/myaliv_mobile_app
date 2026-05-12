@@ -1,6 +1,10 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
@@ -87,8 +91,11 @@ Future<void> showHomePlanPurchaseBottomSheet({
           onFuturePlanPressed: () {
             Navigator.of(sheetContext).pop();
             context.push(
-              AppRoutes.homePurchasePlanAddOns,
-              extra: selectedPlanExtra,
+              AppRoutes.homePlanConfirmationScreen,
+              extra: _futurePlanConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+              ),
             );
           },
         );
@@ -97,7 +104,8 @@ Future<void> showHomePlanPurchaseBottomSheet({
       // we will go to next screen to show  "AvailableBoltOns"
       // will work here
       return HomePlanWalletPaymentActivateBottomSheet(
-        warningText: 'the account owner has no current plan, so their new plan will start immediately.',
+        warningText:
+            'the account owner has no current plan, so their new plan will start immediately.',
         planName: plan.title,
         planDurationText: plan.subtitle,
         planPriceText: _priceText(plan.price),
@@ -145,3 +153,65 @@ PlanPurchasePlanAddOnsRouteArgs? _selectedPlanRouteExtra({
 }
 
 String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
+
+HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+}) {
+  final accountState = instance<AccountInfoCubit>().state;
+
+  return HomePlanConfirmationRouteArgs(
+    phoneNumber: _accountUsername(accountState),
+    accountHolderName: _accountDisplayName(accountState),
+    primaryPlanName: _primaryPlanName(
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+    ),
+    primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? '',
+    primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
+    primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
+    flow: HomePlanConfirmationEntryFlow.skip,
+  );
+}
+
+String _accountDisplayName(AccountInfoState accountState) {
+  final fullName = accountState.fullName?.trim();
+  if (fullName != null && fullName.isNotEmpty) {
+    return fullName;
+  }
+
+  return _nameFromEmail(accountState.email);
+}
+
+String _accountUsername(AccountInfoState accountState) {
+  final accountInfo = accountState.accountInfo;
+  final username = accountInfo?.username.trim() ?? '';
+  if (username.isNotEmpty) return username;
+
+  final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
+  if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
+
+  final phoneNumber = accountInfo?.phoneNumber.trim() ?? '';
+  return phoneNumber.isEmpty ? '--' : phoneNumber;
+}
+
+String _primaryPlanName({
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+}) {
+  final selectedPlanName = selectedApiPlan?.planName.trim();
+  if (selectedPlanName != null && selectedPlanName.isNotEmpty) {
+    return selectedPlanName;
+  }
+
+  return fallbackPlan.title;
+}
+
+String _nameFromEmail(String? email) {
+  final normalizedEmail = email?.trim() ?? '';
+  if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
+    return 'User';
+  }
+
+  return normalizedEmail.split('@').first;
+}
