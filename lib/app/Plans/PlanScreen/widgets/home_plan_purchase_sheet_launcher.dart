@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
 import '../../../Home/home/data/home_ui_config.dart';
+import '../../homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
 import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
@@ -34,20 +36,31 @@ Future<void> showHomePlanPurchaseBottomSheet({
     builder: (sheetContext) {
       if (selectedTab == HomePlanTab.roaming ||
           selectedTab == HomePlanTab.roameasy) {
+        if (kDebugMode) {
+          debugPrint("--------- selected tab is roaming or roameasy ---------");
+        }
         return HomePlanRoamBottomSheet(
           onBackPressed: () => Navigator.of(sheetContext).pop(),
-          onDateApplied: (_) {
+          onDateApplied: (pickedDate) {
             Navigator.of(sheetContext).pop();
             context.push(
               AppRoutes.homeRoamingConfirmation,
-              extra: {'showDateField': true},
+              extra: _roamingConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                showDateField: true,
+                beginDate: pickedDate,
+              ),
             );
           },
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
             context.push(
               AppRoutes.homeRoamingConfirmation,
-              extra: {'showDateField': false},
+              extra: _roamingConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                showDateField: false,
+                beginDate: DateTime.now(),
+              ),
             );
           },
         );
@@ -82,6 +95,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
       }
 
       // we will go to next screen to show  "AvailableBoltOns"
+      // will work here
       return HomePlanWalletPaymentActivateBottomSheet(
         warningText: 'the account owner has no current plan, so their new plan will start immediately.',
         planName: plan.title,
@@ -98,6 +112,21 @@ Future<void> showHomePlanPurchaseBottomSheet({
         },
       );
     },
+  );
+}
+
+HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
+  required BasePlanModel? selectedApiPlan,
+  required bool showDateField,
+  required DateTime beginDate,
+}) {
+  return HomeRoamingConfirmationRouteArgs(
+    // Keep the current phone fallback. The important dynamic data for this
+    // flow is the selected roaming/roameasy plan and its chosen start date.
+    phoneNumber: '242-801-1616',
+    selectedPlan: selectedApiPlan,
+    beginDate: beginDate,
+    showDateField: showDateField,
   );
 }
 

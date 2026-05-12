@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum PurchaseLineType { primaryPlan, addOn }
+
 enum HomePlanConfirmationEntryFlow { proceed, skip }
 
 class HomePlanConfirmationSelectedAddOn extends Equatable {
@@ -24,6 +25,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   final String phoneNumber;
   final String accountHolderName;
   final String primaryPlanName;
+  final String primaryPlanTypeCode;
   final double primaryPlanPrice;
   final double primaryPlanVatAmount;
   final HomePlanConfirmationEntryFlow flow;
@@ -40,6 +42,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanName,
     required this.primaryPlanPrice,
     required this.flow,
+    this.primaryPlanTypeCode = '',
     this.primaryPlanVatAmount = 0,
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
     this.isPrimaryPlanActive = false,
@@ -52,6 +55,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
         phoneNumber,
         accountHolderName,
         primaryPlanName,
+        primaryPlanTypeCode,
         primaryPlanPrice,
         primaryPlanVatAmount,
         flow,

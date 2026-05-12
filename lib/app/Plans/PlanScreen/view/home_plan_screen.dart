@@ -60,9 +60,9 @@ class _HomePlanViewState extends State<_HomePlanView> {
     super.initState();
     final userType = context.read<AppUiConfigCubit>().state.userType;
     context.read<PlansCubit>().started(
-      userType: userType,
-      initialTab: widget.initialTab,
-    );
+          userType: userType,
+          initialTab: widget.initialTab,
+        );
   }
 
   // Primary tabs use API models, while the shared purchase sheet still expects
@@ -165,7 +165,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     if (cubit.state.isPurchaseModalOpen) {
       return;
     }
-
+    debugPrint("=========== bottom sheet opening ============== ");
     _logSelectedApiPlan(
       selectedTab: cubit.state.selectedTab,
       selectedApiPlan: selectedApiPlan,
@@ -209,14 +209,22 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
   }
 
-  void _showPostpaidStartBottomSheet(BuildContext context) {
+  void _showPostpaidStartBottomSheet(
+    BuildContext context,
+    HomePlansPostPaidPlanModel plan,
+  ) {
     final cubit = context.read<PlansCubit>();
-
     // Prevent opening multiple purchase modals simultaneously
+
+    debugPrint("Plan Group : ${plan.planGroup}");
+    debugPrint("Plan Name : ${plan.planName}");
+    debugPrint("Plan Type : ${plan.planType}");
+    debugPrint("Plan Amount : ${plan.planAmount}");
+    debugPrint("Plan Vat : ${plan.vatAmount}");
     if (cubit.state.isPurchaseModalOpen) {
       return;
     }
-
+    debugPrint("bottom sheet opened");
     cubit.purchaseNowPressed(
       HomePlanModel(
         id: 'postpaid',
@@ -234,7 +242,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
       useRootNavigator: true,
       backgroundColor: Colors.transparent,
       useSafeArea: true,
-      builder: (_) => const StartPlanBottomSheet(),
+      builder: (_) => StartPlanBottomSheet(plan: plan),
     ).then((_) {
       // Clear the modal open flag when bottom sheet is dismissed
       cubit.purchaseModalClosed();
@@ -351,6 +359,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           context,
           _toRoamingPurchaseSheetPlan(plan),
           homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
         );
       },
       onRoamEasyPurchaseNow: (plan) {
@@ -358,10 +367,12 @@ class _HomePlanViewState extends State<_HomePlanView> {
           context,
           _toRoamEasyPurchaseSheetPlan(plan),
           homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
         );
       },
-      onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel _) {
-        _showPostpaidStartBottomSheet(context);
+      // observe this flow
+      onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel plan) {
+        _showPostpaidStartBottomSheet(context, plan);
       },
       onPurchaseNow: (plan) {
         //_onPurchaseNowPressed(context, plan);

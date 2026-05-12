@@ -14,7 +14,9 @@ class HomePlanConfirmationRepository {
         PurchaseLineItem(
           id: 'primary',
           type: PurchaseLineType.primaryPlan,
-          label: 'primary plan',
+          // The label comes from the API plan type, not a hardcoded
+          // "primary plan" string. This matches purchase_confirmation_screen.
+          label: _primaryPlanTypeLabel(args.primaryPlanTypeCode),
           title: args.primaryPlanName,
           subtitle: args.flow == HomePlanConfirmationEntryFlow.skip
               ? 'begins 01-06-23'
@@ -58,5 +60,18 @@ class HomePlanConfirmationRepository {
       items: items,
       totals: totals,
     );
+  }
+
+  String _primaryPlanTypeLabel(String planTypeCode) {
+    switch (planTypeCode.trim().toUpperCase()) {
+      case 'A':
+        return 'standalone';
+      case 'S':
+        return 'secondary plan';
+      case 'P':
+        return 'primary plan';
+      default:
+        return 'plan';
+    }
   }
 }

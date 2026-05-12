@@ -5,8 +5,8 @@ import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_pl
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/home_plan_confirmation_bloc.dart';
 import '../bloc/home_plan_confirmation_event.dart';
@@ -18,10 +18,7 @@ import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
 
 class HomePlanConfirmationScreen extends StatelessWidget {
-  const HomePlanConfirmationScreen({
-    super.key,
-    required this.args,
-  });
+  const HomePlanConfirmationScreen({super.key, required this.args});
 
   final HomePlanConfirmationRouteArgs args;
 
@@ -44,8 +41,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomePlanConfirmationBloc,
-        HomePlanConfirmationState>(
+    return BlocListener<HomePlanConfirmationBloc, HomePlanConfirmationState>(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
           p.payNowRequestId != c.payNowRequestId,
@@ -66,8 +62,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
         backgroundColor: HomePlanConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<HomePlanConfirmationBloc,
-            HomePlanConfirmationState>(
+        bottomNavigationBar:
+            BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
           builder: (context, state) {
             if (state.status != HomePlanConfirmationStatus.ready ||
                 state.data == null) {
@@ -75,32 +71,32 @@ class _HomePlanConfirmationView extends StatelessWidget {
             }
 
             return DefaultBottomPayBar(
-                buttonText: 'continue',
-                isVatExclusive: true,
-                isButtonEnabled: state.isTermsChecked,
-                buttonColor: const Color(0xFF645D9C),
-                onPayNow: () {
-                  context.read<HomePlanConfirmationBloc>().add(
-                    const HomePlanConfirmationPayNowPressed(),
-                  );
-                  context.push(
-                    AppRoutes.homePlansPaymentMethodScreen,
-                    extra: HomePlansPaymentMethodRouteArgs(
-                      amount: state.data!.totals.total,
-                      vatNote: state.data!.totals.vat > 0
-                          ? 'vat included'
-                          : 'no vat applied',
-                    ),
-                  );
-                },
-                amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+              buttonText: 'continue',
+              isVatExclusive: true,
+              isButtonEnabled: state.isTermsChecked,
+              buttonColor: const Color(0xFF645D9C),
+              onPayNow: () {
+                context.read<HomePlanConfirmationBloc>().add(
+                      const HomePlanConfirmationPayNowPressed(),
+                    );
+                context.push(
+                  AppRoutes.homePlansPaymentMethodScreen,
+                  extra: HomePlansPaymentMethodRouteArgs(
+                    amount: state.data!.totals.total,
+                    vatNote: state.data!.totals.vat > 0
+                        ? 'vat included'
+                        : 'no vat applied',
+                  ),
+                );
+              },
+              amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
             );
           },
         ),
 
         body: SafeArea(
-          child: BlocBuilder<HomePlanConfirmationBloc,
-              HomePlanConfirmationState>(
+          child:
+              BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -109,7 +105,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   /// Top app bar (fixed)
                   DefaultAppBar(
                     showHome: true,
-                    onHomeTap: (){
+                    onHomeTap: () {
                       context.go(AppRoutes.home);
                     },
                     title: 'confirmation and payment',
@@ -146,8 +142,10 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                         onRemoveItem: (id) => context
                                             .read<HomePlanConfirmationBloc>()
                                             .add(
-                                                HomePlanConfirmationRemoveItemPressed(
-                                                    id)),
+                                              HomePlanConfirmationRemoveItemPressed(
+                                                id,
+                                              ),
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -175,14 +173,9 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                               ),
                                             ),
                                         onTermsTap: () async {
-                                          final uri = Uri.parse(
-                                            'https://www.bealiv.com/terms-of-use/',
-                                          );
-
-                                          await launchUrl(
-                                            uri,
-                                            mode:
-                                                LaunchMode.externalApplication,
+                                          debugPrint("--");
+                                          await showTermsAndConditionsModal(
+                                            context,
                                           );
                                         },
                                       ),
@@ -217,6 +210,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
+                                            // Repository combines primary-plan VAT
+                                            // and selected add-on VAT into this value.
                                             value:
                                                 '\$ ${data.totals.vat.toStringAsFixed(2)}',
                                           ),

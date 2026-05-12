@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prep
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
@@ -22,6 +23,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/view/home_plan_
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/view/home_roaming_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import 'package:myaliv_mobile_app/app/Support/view/support_screen.dart';
@@ -158,22 +160,34 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.homeRoamingConfirmation,
         builder: (context, state) {
-          // Read optional route flag from navigation extras.
           final extra = state.extra;
-          bool showDateField = true;
+          HomeRoamingConfirmationRouteArgs args = const HomeRoamingConfirmationRouteArgs(
+            phoneNumber: '242-801-1616',
+            showDateField: true,
+          );
+
+          if (extra is HomeRoamingConfirmationRouteArgs) {
+            args = extra;
+          }
+
+          // Backward-compatible handling for older callers that still send
+          // only a showDateField map.
           if (extra is Map<String, dynamic>) {
             final value = extra['showDateField'];
             if (value is bool) {
-              showDateField = value;
+              args = HomeRoamingConfirmationRouteArgs(
+                phoneNumber: args.phoneNumber,
+                showDateField: value,
+              );
             } else if (value is String) {
-              showDateField = value.toLowerCase() == 'true';
+              args = HomeRoamingConfirmationRouteArgs(
+                phoneNumber: args.phoneNumber,
+                showDateField: value.toLowerCase() == 'true',
+              );
             }
           }
 
-          return HomeRoamingConfirmationScreen(
-            phoneNumber: '242-801-1616',
-            showDateField: showDateField,
-          );
+          return HomeRoamingConfirmationScreen(args: args);
         },
       ),
       GoRoute(
@@ -430,9 +444,8 @@ class AppRouter {
         path: AppRoutes.homePurchasePlanAddOns,
         builder: (context, state) {
           final extra = state.extra;
-          final routeArgs = extra is PlanPurchasePlanAddOnsRouteArgs
-              ? extra
-              : null;
+          final routeArgs =
+              extra is PlanPurchasePlanAddOnsRouteArgs ? extra : null;
 
           return PlanPurchasePlanAddOnsScreen(routeArgs: routeArgs);
         },
@@ -692,6 +705,9 @@ class AppRouter {
         pageBuilder: (context, state) {
           final showBeginOn =
               state.uri.queryParameters['showBeginOn'] == 'true';
+          final extra = state.extra;
+          final postpaidPlan =
+              extra is HomePlansPostPaidPlanModel ? extra : null;
 
           final beginDateString = state.uri.queryParameters['beginDate'];
 
@@ -710,6 +726,7 @@ class AppRouter {
             child: ConfirmationScreen(
               showBeginOn: showBeginOn,
               beginDate: beginDate,
+              plan: postpaidPlan,
               topUpAmount: topUpAmount,
             ),
           );

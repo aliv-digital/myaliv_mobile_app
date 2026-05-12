@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/home_plan_confirmation_models.dart';
 import '../theme/home_plan_confirmation_theme.dart';
 import 'purchase_item_row.dart';
@@ -66,19 +67,29 @@ class PurchaseSummaryCard extends StatelessWidget {
           // Item blocks: strict 16/20/16/20 spacing from Figma.
           for (int i = 0; i < data.items.length; i++) ...[
             Padding(
-              padding: HomePlanConfirmationTheme
-                  .purchaseSummaryItemSectionPadding,
+              padding:
+                  HomePlanConfirmationTheme.purchaseSummaryItemSectionPadding,
               child: PurchaseItemRow(
                 item: data.items[i],
-                onRemove: () => onRemoveItem(data.items[i].id),
+                onRemove: () {
+                  final itemId = data.items[i].id;
+                  final remainingItemCount =
+                      data.items.where((item) => item.id != itemId).length;
+
+                  onRemoveItem(itemId);
+
+                  // Leave confirmation when there is no purchase item left.
+                  if (remainingItemCount == 0 && context.canPop()) {
+                    context.pop();
+                  }
+                },
               ),
             ),
             if (i != data.items.length - 1)
               Divider(
-                height:
-                    HomePlanConfirmationTheme.purchaseSummaryDividerHeight,
-                thickness: HomePlanConfirmationTheme
-                    .purchaseSummaryDividerThickness,
+                height: HomePlanConfirmationTheme.purchaseSummaryDividerHeight,
+                thickness:
+                    HomePlanConfirmationTheme.purchaseSummaryDividerThickness,
                 color: HomePlanConfirmationTheme.purchaseSummaryDividerColor,
               ),
           ],

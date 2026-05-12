@@ -189,7 +189,7 @@ class HomePlanPlansList extends StatelessWidget {
         itemBuilder: (context, index) {
           final plan = state.postpaidRoamingApiPlans[index];
           final expanded = state.expandedPlanIds.contains(plan.planId);
-
+          // fix
           return Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 16),
             child: HomePlansPostPaidPlanCard(
@@ -197,6 +197,7 @@ class HomePlanPlansList extends StatelessWidget {
               expanded: expanded,
               onToggle: () => onToggleExpanded(plan.planId),
               onPurchaseNow: () {
+                debugPrint(plan.planGroup);
                 if (onPostpaidRoamingPurchaseNow != null) {
                   onPostpaidRoamingPurchaseNow!(plan);
                 }

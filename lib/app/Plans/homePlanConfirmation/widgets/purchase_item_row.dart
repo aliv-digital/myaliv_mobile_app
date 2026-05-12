@@ -24,7 +24,7 @@ class PurchaseItemRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                item.label,
+                item.label, // Resolved from plan type in the repository.
                 style: HomePlanConfirmationTheme.purchaseItemLabelTextStyle,
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,
@@ -32,8 +32,7 @@ class PurchaseItemRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height:
-                    HomePlanConfirmationTheme.purchaseItemLabelToTitleGap,
+                height: HomePlanConfirmationTheme.purchaseItemLabelToTitleGap,
               ),
               Text(
                 item.title,
@@ -49,8 +48,7 @@ class PurchaseItemRow extends StatelessWidget {
               ),
               Text(
                 item.subtitle,
-                style:
-                    HomePlanConfirmationTheme.purchaseItemSubtitleTextStyle,
+                style: HomePlanConfirmationTheme.purchaseItemSubtitleTextStyle,
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,
                   applyHeightToLastDescent: false,

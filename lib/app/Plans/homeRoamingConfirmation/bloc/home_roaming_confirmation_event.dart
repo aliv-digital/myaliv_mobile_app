@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../models/home_roaming_confirmation_models.dart';
 
 sealed class HomeRoamingConfirmationEvent extends Equatable {
   const HomeRoamingConfirmationEvent();
@@ -8,11 +9,11 @@ sealed class HomeRoamingConfirmationEvent extends Equatable {
 
 final class HomeRoamingConfirmationStarted
     extends HomeRoamingConfirmationEvent {
-  final String phoneNumber;
-  const HomeRoamingConfirmationStarted(this.phoneNumber);
+  final HomeRoamingConfirmationRouteArgs args;
+  const HomeRoamingConfirmationStarted(this.args);
 
   @override
-  List<Object?> get props => [phoneNumber];
+  List<Object?> get props => [args];
 }
 
 final class HomeRoamingConfirmationRemoveItemPressed
@@ -22,6 +23,15 @@ final class HomeRoamingConfirmationRemoveItemPressed
 
   @override
   List<Object?> get props => [itemId];
+}
+
+final class HomeRoamingConfirmationBeginDateChanged
+    extends HomeRoamingConfirmationEvent {
+  final DateTime beginDate;
+  const HomeRoamingConfirmationBeginDateChanged(this.beginDate);
+
+  @override
+  List<Object?> get props => [beginDate];
 }
 
 final class HomeRoamingConfirmationTermsPressed
