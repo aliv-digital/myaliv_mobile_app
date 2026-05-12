@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_ca
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../../../resources/widgets/terms_and_conditions_modal.dart';
 import '../bloc/home_roaming_confirmation_bloc.dart';
 import '../bloc/home_roaming_confirmation_event.dart';
 import '../bloc/home_roaming_confirmation_state.dart';
@@ -224,14 +225,8 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                               ),
                                             ),
                                         onTermsTap: () async {
-                                          final uri = Uri.parse(
-                                            'https://www.bealiv.com/terms-of-use/',
-                                          );
-
-                                          await launchUrl(
-                                            uri,
-                                            mode:
-                                                LaunchMode.externalApplication,
+                                          await showTermsAndConditionsModal(
+                                            context,
                                           );
                                         },
                                       ),
