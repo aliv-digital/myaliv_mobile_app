@@ -216,7 +216,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       return;
                     }
                     AppSession.appRoute = 'sendTopUp';
-                    context.push(AppRoutes.confirmation);
+                    context.push(
+                      '${AppRoutes.confirmation}?amount=${_amountValue.toStringAsFixed(2)}',
+                    );
                     // Navigator.of(context).push(
                     //   MaterialPageRoute(
                     //     builder: (_) => const SendTopUpConfirmationScreen(),
