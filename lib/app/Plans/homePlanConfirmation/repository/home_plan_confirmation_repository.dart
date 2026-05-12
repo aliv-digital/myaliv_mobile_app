@@ -18,9 +18,7 @@ class HomePlanConfirmationRepository {
           // "primary plan" string. This matches purchase_confirmation_screen.
           label: _primaryPlanTypeLabel(args.primaryPlanTypeCode),
           title: args.primaryPlanName,
-          subtitle: args.flow == HomePlanConfirmationEntryFlow.skip
-              ? 'begins 01-06-23'
-              : 'begins immediately',
+          subtitle: _primaryPlanBeginsText(args),
           price: args.primaryPlanPrice,
         ),
       );
@@ -74,4 +72,47 @@ class HomePlanConfirmationRepository {
         return 'plan';
     }
   }
+
+  String _primaryPlanBeginsText(HomePlanConfirmationRouteArgs args) {
+    if (args.flow != HomePlanConfirmationEntryFlow.skip) {
+      return 'begins immediately';
+    }
+
+    final startDate = _formatPlanDate(args.futurePlanStartDate);
+    if (startDate != null) {
+      return 'begins $startDate';
+    }
+
+    return 'begins immediately';
+  }
+
+  String? _formatPlanDate(String rawDate) {
+    final trimmed = rawDate.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+
+    final parsedDate = DateTime.tryParse(trimmed);
+    if (parsedDate != null) {
+      return _formatDayMonthYear(parsedDate);
+    }
+
+    final datePart = trimmed.split(' ').first;
+    final parts = datePart.split(RegExp(r'[-/]'));
+    if (parts.length >= 3 && parts.first.length == 4) {
+      return '${parts[2].padLeft(2, '0')}-'
+          '${parts[1].padLeft(2, '0')}-'
+          '${parts[0].substring(2)}';
+    }
+
+    return datePart;
+  }
+
+  String _formatDayMonthYear(DateTime date) {
+    return '${_twoDigits(date.day)}-'
+        '${_twoDigits(date.month)}-'
+        '${_twoDigits(date.year % 100)}';
+  }
+
+  String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }

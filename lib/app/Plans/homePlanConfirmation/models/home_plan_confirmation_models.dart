@@ -28,6 +28,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   final String primaryPlanTypeCode;
   final double primaryPlanPrice;
   final double primaryPlanVatAmount;
+  final String futurePlanStartDate;
   final HomePlanConfirmationEntryFlow flow;
   final List<HomePlanConfirmationSelectedAddOn> selectedAddOns;
 
@@ -44,6 +45,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     required this.flow,
     this.primaryPlanTypeCode = '',
     this.primaryPlanVatAmount = 0,
+    this.futurePlanStartDate = '',
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
     this.isPrimaryPlanActive = false,
   });
@@ -58,6 +60,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
         primaryPlanTypeCode,
         primaryPlanPrice,
         primaryPlanVatAmount,
+        futurePlanStartDate,
         flow,
         selectedAddOns,
         isPrimaryPlanActive,
