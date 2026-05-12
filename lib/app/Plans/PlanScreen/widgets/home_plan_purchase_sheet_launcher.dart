@@ -170,6 +170,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
     primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? '',
     primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
     primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
+    futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',
     flow: HomePlanConfirmationEntryFlow.skip,
   );
 }
