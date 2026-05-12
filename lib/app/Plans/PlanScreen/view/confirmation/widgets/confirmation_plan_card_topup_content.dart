@@ -24,7 +24,12 @@ class ConfirmationPlanCardTopupContent extends StatelessWidget {
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
     final fullName = deviceFullName ?? nameFromEmail(accountInfo?.email);
-    final phone = formatConfirmationPhone(accountInfo?.phoneNumber ?? '');
+    final phone = formatConfirmationPhone(
+      accountInfo?.primaryPhoneNumber ??
+          accountInfo?.altPhoneNumber ??
+          accountInfo?.phoneNumber ??
+          '',
+    );
     final hasBeginDate = showBeginOn == true && date != null;
     final beginText = hasBeginDate
         ? 'begins ${DateFormat('dd-MM-yy').format(date!)}'
