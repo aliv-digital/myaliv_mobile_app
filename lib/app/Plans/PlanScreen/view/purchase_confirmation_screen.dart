@@ -1,35 +1,18 @@
-import 'package:core/core.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
-import '../../../../resources/extentions/dateformatter.dart';
-import '../../../../resources/extentions/hex_color.dart';
-import '../../../../resources/widgets/custom_payment_break_down_card.dart';
-import '../../../../resources/widgets/terms_and_conditions_modal.dart';
-import '../../../../router/app_routes.dart';
-import '../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_purchase_plan_confirmation_theme.dart';
-import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
-import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
-import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
-import 'start_plan_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
-String _formatPhone(String phone) {
-  if (phone.isEmpty) return '';
-  final digits = phone.replaceAll(RegExp(r'\D'), '');
-  if (digits.length == 10) {
-    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
-  }
-  if (digits.length == 11 && digits.startsWith('1')) {
-    return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
-  }
-  return phone;
-}
+import 'confirmation/utils/confirmation_formatters.dart';
+import 'confirmation/widgets/confirmation_app_bar.dart';
+import 'confirmation/widgets/confirmation_begin_on_card.dart';
+import 'confirmation/widgets/confirmation_bottom_bar.dart';
+import 'confirmation/widgets/confirmation_plan_card.dart';
+import 'confirmation/widgets/confirmation_terms_checkbox.dart';
 
 class ConfirmationScreen extends StatefulWidget {
   final bool showBeginOn;
@@ -72,18 +55,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     }
   }
 
-  void _termsAcceptedChanged(bool isAccepted) {
-    setState(() {
-      _termsAccepted = isAccepted;
-    });
-  }
-
-  void _beginDateChanged(DateTime date) {
-    setState(() {
-      _selectedBeginDate = date;
-    });
-  }
-
   void _continuePressed() {
     if (widget.topUpAmount != null) {
       showModalBottomSheet(
@@ -100,178 +71,40 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   @override
   Widget build(BuildContext context) {
     final isSendTopUp = widget.topUpAmount != null;
-    final topUpAmount = widget.topUpAmount ?? 0.0;
-    final topUpAmountText = _formatConfirmationCurrency(topUpAmount);
-
+    final topUpAmountText = formatConfirmationCurrency(widget.topUpAmount ?? 0);
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
     final total = _selectedPostpaidPlan?.planAmountWithVat ?? 20.00;
+    final subTotalText = isSendTopUp
+        ? topUpAmountText
+        : formatConfirmationCurrency(subTotal);
+    final totalText = isSendTopUp
+        ? topUpAmountText
+        : formatConfirmationCurrency(total);
     final vatLabel = isSendTopUp || vat <= 0
         ? 'no vat applied'
-        : ' vat applied'; //${_formatConfirmationCurrency(vat)}
-
-    final subTotalText =
-        isSendTopUp ? topUpAmountText : _formatConfirmationCurrency(subTotal);
-    final totalText =
-        isSendTopUp ? topUpAmountText : _formatConfirmationCurrency(total);
-    final bottomTotalText = totalText;
-
-    final continueButtonColor =
-        _termsAccepted ? const Color(0xFF645D9C) : const Color(0xFFC8C5DA);
-    final continueTextColor =
-        _termsAccepted ? const Color(0xFFF1F1F8) : const Color(0xFF707070);
+        : ' vat applied';
 
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFF1F2FA),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF645D9C),
-          elevation: 0,
-          toolbarHeight: 64,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 24),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).maybePop(),
-            ),
-          ),
-          centerTitle: false,
-          title: Text(
-            'confirmation and payment',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          actions: [
-            InkWell(
-              onTap: () {
-                context.go(AppRoutes.home);
-              },
-              child: GestureDetector(
-                onTap: () {
-                  context.go(AppRoutes.home);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 24),
-                  child: SvgPicture.asset(
-                    'assets/icons/home.svg',
-                    colorFilter: const ColorFilter.mode(
-                      Colors.white,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        appBar: ConfirmationAppBar(
+          onBack: () => Navigator.of(context).maybePop(),
+          onHome: () => context.go(AppRoutes.home),
         ),
-        bottomNavigationBar: Container(
-          width: 390,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(width: 1, color: const Color(0xFFE1E1E1)),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 10,
-                        children: [
-                          Text(
-                            bottomTotalText,
-                            style: TextStyle(
-                              color: const Color(0xFF222222),
-                              fontSize: 22,
-                              fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 10,
-                        children: [
-                          Text(
-                            vatLabel,
-                            style: TextStyle(
-                              color: const Color(0xFF707070),
-                              fontSize: 12,
-                              fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: _termsAccepted ? _continuePressed : null,
-                child: Container(
-                  width: 170,
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: ShapeDecoration(
-                    color: continueButtonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: 10,
-                    children: [
-                      Text(
-                        'continue',
-                        style: TextStyle(
-                          color: continueTextColor,
-                          fontSize: 15,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+        bottomNavigationBar: ConfirmationBottomBar(
+          totalText: totalText,
+          vatLabel: vatLabel,
+          enabled: _termsAccepted,
+          onContinue: _continuePressed,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _PlanCard(
+                ConfirmationPlanCard(
                   date: _selectedBeginDate,
                   showBeginOn: widget.showBeginOn,
                   plan: _selectedPostpaidPlan,
@@ -279,29 +112,27 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (widget.showBeginOn && _selectedBeginDate != null)
-                  _BeginOnCard(
+                  ConfirmationBeginOnCard(
                     date: _selectedBeginDate!,
-                    onDateChanged: _beginDateChanged,
+                    onDateChanged: (date) =>
+                        setState(() => _selectedBeginDate = date),
                   ),
-
-                // if (showBeginOn && beginDate != null) const SizedBox(height: 16),
                 const SizedBox(height: 16),
-                _TermsCheckbox(
+                ConfirmationTermsCheckbox(
                   isChecked: _termsAccepted,
-                  onChanged: _termsAcceptedChanged,
+                  onChanged: (v) => setState(() => _termsAccepted = v),
                 ),
                 const SizedBox(height: 16),
-
                 CustomPaymentBreakDownCard(
                   backgroundColor: HexColor.fromHex('#645D9C'),
-                  items: <CustomPaymentBreakdownLineItem>[
+                  items: [
                     CustomPaymentBreakdownLineItem(
                       label: 'sub total',
                       value: subTotalText,
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'vat',
-                      value: _formatConfirmationCurrency(vat),
+                      value: formatConfirmationCurrency(vat),
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'total',
@@ -314,463 +145,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-String _formatConfirmationCurrency(double value) {
-  return '\$ ${value.toStringAsFixed(2)}';
-}
-
-class _PlanCard extends StatelessWidget {
-  final DateTime? date;
-  final bool? showBeginOn;
-  final HomePlansPostPaidPlanModel? plan;
-  final double? topUpAmount;
-
-  const _PlanCard({
-    this.date,
-    this.showBeginOn,
-    this.plan,
-    this.topUpAmount,
-  });
-
-  String _selectedPlanTitle() {
-    final selectedPlan = plan;
-    if (selectedPlan == null) {
-      return 'travel20 - 7 days';
-    }
-
-    final planName = selectedPlan.planName.trim();
-    final title = planName.isEmpty ? 'selected plan' : planName;
-
-    final duration = selectedPlan.durationText.trim();
-    if (duration.isEmpty || duration == '--') {
-      return title;
-    }
-    // for now we will skip to show duration with title,
-    // later we may add this if client asks
-
-    return '$title - $duration';
-    //return title;
-  }
-
-  String _selectedPlanPrice() {
-    final selectedPlan = plan;
-    if (selectedPlan == null) {
-      return '\$ --.--';
-    }
-
-    return _formatConfirmationCurrency(selectedPlan.planAmount);
-  }
-
-  String _selectedPlanTypeLabel() {
-    final planTypeCode = plan?.planType.trim().toUpperCase();
-
-    switch (planTypeCode) {
-      case 'A':
-        return 'standalone';
-      case 'S':
-        return 'secondary';
-      case 'P':
-        return 'primary';
-      default:
-        return 'plan';
-    }
-  }
-
-  String _accountDisplayName(AccountInfoState accountState) {
-    final fullName = accountState.fullName?.trim();
-    if (fullName != null && fullName.isNotEmpty) {
-      return fullName;
-    }
-
-    return _nameFromEmail(accountState.email);
-  }
-
-  String _accountUsername(AccountInfoState accountState) {
-    final username = accountState.accountInfo?.username.trim() ?? '';
-    return username.isEmpty ? '--' : username;
-  }
-
-  String _nameFromEmail(String? email) {
-    final normalizedEmail = email?.trim() ?? '';
-    if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
-      return 'User';
-    }
-
-    return normalizedEmail.split('@').first;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final formatted = DateFormat('dd-MM-yy').format(date ?? DateTime.now());
-    final selectedPlanTitle = _selectedPlanTitle();
-    final selectedPlanPrice = _selectedPlanPrice();
-    final selectedPlanType = _selectedPlanTypeLabel();
-    final accountState = instance<AccountInfoCubit>().state;
-    final userName = _accountDisplayName(accountState);
-    final userNumber = _accountUsername(accountState);
-
-    final isSendTopUp = topUpAmount != null;
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    final email = accountInfo?.email ?? '';
-    final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
-    final fullName = deviceFullName ?? _nameFromEmail(email);
-    final accountPhone = _formatPhone(accountInfo?.phoneNumber ?? '');
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0C000000),
-            blurRadius: 16,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                isSendTopUp
-                    ? Text(
-                        'top-up',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )
-                    : Text(
-                        userName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                Text(
-                  isSendTopUp ? fullName : userNumber,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF121212),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, color: Color(0xFFCDC8F9)),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      isSendTopUp
-                          ? Text(
-                              'top-up prepaid number',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 10,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w700,
-                              ),
-                            )
-                          : Text(
-                              selectedPlanType,
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                      const SizedBox(height: 6),
-                      isSendTopUp
-                          ? Text(
-                              accountPhone,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w700,
-                              ),
-                            )
-                          : Text(
-                              selectedPlanTitle,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                      (showBeginOn == true && date != null)
-                          ? Text(
-                              'begins $formatted',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: const Color(0xFF707070),
-                                fontSize: 10,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )
-                          : const Text(
-                              'begins immediately',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF707070),
-                                fontSize: 10,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3F3F6),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: isSendTopUp
-                      ? Text(
-                          '\$ ${(topUpAmount ?? 0).toStringAsFixed(2)}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF222222),
-                            fontSize: 16,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      : Text(
-                          selectedPlanPrice,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF222222),
-                            fontSize: 16,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 20),
-                isSendTopUp
-                    ? SizedBox(width: 1)
-                    : InkWell(
-                        onTap: () {
-                          context.pop();
-                        },
-                        child: SvgPicture.asset(AssetConstant.trashIconSVG),
-                      ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BeginOnCard extends StatelessWidget {
-  final DateTime date;
-  final ValueChanged<DateTime> onDateChanged;
-
-  const _BeginOnCard({required this.date, required this.onDateChanged});
-
-  Future<void> _openCalendarPickerSheet(BuildContext context) async {
-    // Reuse the same calendar bottom sheet used by StartPlanBottomSheet so
-    // both screens keep identical date-picking behavior and styling.
-    final pickedDate = await showStartPlanCalendarPickerSheet(
-      context,
-      initialDate: date,
-    );
-
-    if (pickedDate == null) return;
-    onDateChanged(pickedDate);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final formatted = formatWithOrdinal(date);
-    //DateFormat('dd-MM-yy').format(date);
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0C000000),
-            blurRadius: 16,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                const TextSpan(
-                  text: "begins on | ",
-                  style: TextStyle(fontSize: 14),
-                ),
-                TextSpan(
-                  text: formatted,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF707070),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () => _openCalendarPickerSheet(context),
-            child: SvgPicture.asset('assets/icons/calender_post.svg'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TermsCheckbox extends StatefulWidget {
-  final bool isChecked;
-  final ValueChanged<bool> onChanged;
-
-  const _TermsCheckbox({required this.isChecked, required this.onChanged});
-
-  @override
-  State<_TermsCheckbox> createState() => _TermsCheckboxState();
-}
-
-class _TermsCheckboxState extends State<_TermsCheckbox> {
-  late TapGestureRecognizer _termsRecognizer;
-
-  @override
-  void initState() {
-    super.initState();
-    _termsRecognizer = TapGestureRecognizer()
-      ..onTap = () async {
-        await showTermsAndConditionsModal(
-          context,
-          badgeSize: 66,
-          badgeInnerSize: 48,
-          badgeCoreSize: 32,
-          badgeIconWidth: 24,
-          badgeIconHeight: 24,
-          closeButtonSize: 48,
-        );
-      };
-  }
-
-  @override
-  void dispose() {
-    _termsRecognizer.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => widget.onChanged(!widget.isChecked),
-            child: Container(
-              width: 15,
-              height: 15,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: widget.isChecked
-                    ? GuestPurchasePlanConfirmationTheme
-                        .termsNoticeCheckboxCheckedFillColor
-                    : Colors.transparent,
-                border: Border.all(
-                  width: 1,
-                  color: GuestPurchasePlanConfirmationTheme
-                      .termsNoticeCheckboxBorderColor,
-                ),
-                borderRadius: BorderRadius.circular(
-                  GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxRadius,
-                ),
-              ),
-              child: widget.isChecked
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: GuestPurchasePlanConfirmationTheme
-                          .termsNoticeCheckboxIconSize,
-                    )
-                  : null,
-            ),
-          ),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-          child: Text.rich(
-            TextSpan(
-              children: [
-                const TextSpan(
-                  text: "By checking this box, I agree to the ",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
-                    height: 1.43,
-                  ),
-                ),
-                TextSpan(
-                  recognizer: _termsRecognizer,
-                  text: "Terms & Conditions.",
-                  style: TextStyle(
-                    color: const Color(0xFF645D9C),
-                    fontSize: 14,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Color(0xFF645D9C),
-                    height: 1.43,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
