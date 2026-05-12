@@ -28,6 +28,8 @@ class SendTopUpPlaceholderTab extends StatefulWidget {
 
 class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   String _amount = '15.00';
+  String _phoneNumber = '';
+  String _confirmPhoneNumber = '';
  // 🔥 default amount (matches design)
 
   double get _amountValue {
@@ -132,7 +134,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 dialCode: _selectedCountry.dialCode,
                 countryIsoCode: _selectedCountry.isoCode,
                 enableCountryPicker: false,
-                onChanged: (value) {},
+                onChanged: (value) => _phoneNumber = value,
               ),
 
               const SizedBox(height: 20),
@@ -148,7 +150,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 showCountryArrow: false,
                 dialCode: _selectedCountry.dialCode,
                 countryIsoCode: _selectedCountry.isoCode,
-                onChanged: (value) {},
+                onChanged: (value) => _confirmPhoneNumber = value,
               ),
               const SizedBox(height: 18),
 
@@ -206,6 +208,21 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
+                    if (_phoneNumber.trim().isEmpty ||
+                        _confirmPhoneNumber.trim().isEmpty) {
+                      AppToast.show(
+                        message: 'please enter phone number',
+                        type: ToastType.error,
+                      );
+                      return;
+                    }
+                    if (_phoneNumber != _confirmPhoneNumber) {
+                      AppToast.show(
+                        message: 'phone numbers do not match',
+                        type: ToastType.error,
+                      );
+                      return;
+                    }
                     final walletBalance =
                         context.read<BalanceCubit>().state.walletBalance;
                     if (_amountValue > walletBalance) {

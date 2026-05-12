@@ -182,7 +182,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (_) => const PayFromWalletSheet(),
+                      builder: (_) => PayFromWalletSheet(amount: topUpAmount),
                     );
                   } else {
                     context.push(AppRoutes.guestPaymentMethodScreen);
