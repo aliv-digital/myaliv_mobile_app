@@ -19,11 +19,13 @@ import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.d
 class ConfirmationScreen extends StatefulWidget {
   final bool showBeginOn;
   final DateTime? beginDate;
+  final double? topUpAmount;
 
   const ConfirmationScreen({
     super.key,
     this.showBeginOn = false,
     this.beginDate,
+    this.topUpAmount,
   });
 
   @override
@@ -38,6 +40,14 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSendTopUp = AppSession.appRoute == 'sendTopUp';
+    final topUpAmount = widget.topUpAmount ?? 0.0;
+    final topUpAmountText = '\$ ${topUpAmount.toStringAsFixed(2)}';
+
+    final bottomTotalText = isSendTopUp ? topUpAmountText : '\$ 20.00';
+    final subTotalText = isSendTopUp ? topUpAmountText : '\$ 18.18';
+    final totalText = isSendTopUp ? topUpAmountText : '\$ 20.00';
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFF1F2FA),
@@ -112,7 +122,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         spacing: 10,
                         children: [
                           Text(
-                            '\$ 20.00',
+                            bottomTotalText,
                             style: TextStyle(
                               color: const Color(0xFF222222),
                               fontSize: 22,
@@ -200,6 +210,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 _PlanCard(
                   date: widget.beginDate,
                   showBeginOn: widget.showBeginOn,
+                  topUpAmount: widget.topUpAmount,
                 ),
                 const SizedBox(height: 16),
                 if (widget.showBeginOn && widget.beginDate != null)
@@ -215,8 +226,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   items: <CustomPaymentBreakdownLineItem>[
                     CustomPaymentBreakdownLineItem(
                       label: 'sub total',
-                      value: '\$ 18.18',
-                      // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                      value: subTotalText,
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'vat',
@@ -224,8 +234,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'total',
-                      value: '\$ 20.00',
-                      //    '\$ ${data.totals.total.toStringAsFixed(2)}',
+                      value: totalText,
                     ),
                   ],
                 ),
@@ -241,8 +250,9 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 class _PlanCard extends StatelessWidget {
   final DateTime? date;
   final bool? showBeginOn;
+  final double? topUpAmount;
 
-  const _PlanCard({this.date, this.showBeginOn});
+  const _PlanCard({this.date, this.showBeginOn, this.topUpAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +398,7 @@ class _PlanCard extends StatelessWidget {
                   ),
                   child: AppSession.appRoute == 'sendTopUp'
                       ? Text(
-                          '\$ 15.00',
+                          '\$ ${(topUpAmount ?? 0).toStringAsFixed(2)}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF222222),
