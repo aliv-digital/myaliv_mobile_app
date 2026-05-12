@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,16 +6,34 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/utils/app_session.dart';
 import '../../../../resources/extentions/dateformatter.dart';
 import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/custom_payment_break_down_card.dart';
 import '../../../../router/app_routes.dart';
 import '../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_purchase_plan_confirmation_theme.dart';
 import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
+
+String _nameFromEmail(String email) {
+  if (email.isEmpty || !email.contains('@')) return 'User';
+  return email.split('@').first;
+}
+
+String _formatPhone(String phone) {
+  if (phone.isEmpty) return '';
+  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 10) {
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+  }
+  if (digits.length == 11 && digits.startsWith('1')) {
+    return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
+  }
+  return phone;
+}
 
 class ConfirmationScreen extends StatefulWidget {
   final bool showBeginOn;
@@ -40,7 +59,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isSendTopUp = AppSession.appRoute == 'sendTopUp';
+    final isSendTopUp = widget.topUpAmount != null;
     final topUpAmount = widget.topUpAmount ?? 0.0;
     final topUpAmountText = '\$ ${topUpAmount.toStringAsFixed(2)}';
 
@@ -158,7 +177,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               ),
               GestureDetector(
                 onTap: () {
-                  if (AppSession.appRoute == 'sendTopUp') {
+                  if (isSendTopUp) {
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -258,6 +277,13 @@ class _PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final formatted = DateFormat('dd-MM-yy').format(date ?? DateTime.now());
 
+    final isSendTopUp = topUpAmount != null;
+    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    final email = accountInfo?.email ?? '';
+    final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
+    final fullName = deviceFullName ?? _nameFromEmail(email);
+    final accountPhone = _formatPhone(accountInfo?.phoneNumber ?? '');
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -279,7 +305,7 @@ class _PlanCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppSession.appRoute == 'sendTopUp'
+                isSendTopUp
                     ? Text(
                         'top-up',
                         textAlign: TextAlign.center,
@@ -300,8 +326,10 @@ class _PlanCard extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                const Text(
-                  '242-801-1616',
+                Text(
+                  isSendTopUp
+                      ? fullName
+                      : '242-801-1616',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: const Color(0xFF121212),
@@ -322,7 +350,7 @@ class _PlanCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppSession.appRoute == 'sendTopUp'
+                      isSendTopUp
                           ? Text(
                               'top-up prepaid number',
                               textAlign: TextAlign.center,
@@ -341,9 +369,9 @@ class _PlanCard extends StatelessWidget {
                               ),
                             ),
                       const SizedBox(height: 6),
-                      AppSession.appRoute == 'sendTopUp'
+                      isSendTopUp
                           ? Text(
-                              '242-899-9999',
+                              accountPhone,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.black,
@@ -396,7 +424,7 @@ class _PlanCard extends StatelessWidget {
                     color: const Color(0xFFF3F3F6),
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: AppSession.appRoute == 'sendTopUp'
+                  child: isSendTopUp
                       ? Text(
                           '\$ ${(topUpAmount ?? 0).toStringAsFixed(2)}',
                           textAlign: TextAlign.center,
@@ -419,7 +447,7 @@ class _PlanCard extends StatelessWidget {
                         ),
                 ),
                 const SizedBox(width: 20),
-                AppSession.appRoute == 'sendTopUp'
+                isSendTopUp
                     ? SizedBox(width: 1)
                     : SvgPicture.asset('assets/icons/trash.svg'),
               ],
