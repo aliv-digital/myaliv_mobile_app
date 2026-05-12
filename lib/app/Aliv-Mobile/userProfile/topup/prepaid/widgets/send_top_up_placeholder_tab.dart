@@ -15,7 +15,6 @@ import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/phone_number_input.dart';
 import '../theme/top_up_prepaid_theme.dart';
-import '../view/send_top_up_confirmation_screen.dart';
 
 class SendTopUpPlaceholderTab extends StatefulWidget {
   final String title;
@@ -233,8 +232,12 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       return;
                     }
                     AppSession.appRoute = 'sendTopUp';
+                    final amountParam = _amountValue.toStringAsFixed(2);
+                    final recipientParam = Uri.encodeQueryComponent(
+                      _phoneNumber.trim(),
+                    );
                     context.push(
-                      '${AppRoutes.confirmation}?amount=${_amountValue.toStringAsFixed(2)}',
+                      '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
                     );
                     // Navigator.of(context).push(
                     //   MaterialPageRoute(

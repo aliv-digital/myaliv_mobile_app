@@ -245,7 +245,9 @@ class _MyNumberTab extends StatelessWidget {
                     return;
                   }
                   //bloc.add(const TopUpPrepaidTopUpPressed());
-                  context.push(AppRoutes.confirmTopUpPrepaidScreen);
+                  context.push(
+                    '${AppRoutes.confirmation}?amount=${state.amountValue.toStringAsFixed(2)}',
+                  );
                 }
               ),
 

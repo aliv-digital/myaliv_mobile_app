@@ -69,7 +69,6 @@ import '../app/Aliv-Mobile/settings/privacy/view/privacy_screen.dart';
 import '../app/Aliv-Mobile/settings/security/view/security_screen.dart';
 import '../app/Aliv-Mobile/settings/settingScreen/view/settings_screen.dart';
 import '../app/Aliv-Mobile/userProfile/Otp/prepaid/view/otp_profile_prepaid_screen.dart';
-import '../app/Aliv-Mobile/userProfile/confirmTopUp/prepaid/view/confirm_top_up_prepaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/editEmail/prepaid/view/verify_email_page.dart';
 import '../app/Aliv-Mobile/userProfile/purchaseAddOns/view/purchase_add_ons_screen.dart';
 import '../app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
@@ -294,10 +293,6 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.topUpPaymentPrepaidScreen,
         builder: (context, state) => const TopUpPaymentPrepaidScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.confirmTopUpPrepaidScreen,
-        builder: (context, state) => const ConfirmTopUpPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.topUpPrepaidNumberPostpaidScreen,
@@ -721,6 +716,8 @@ class AppRouter {
               ? null
               : double.tryParse(amountString);
 
+          final recipientPhone = state.uri.queryParameters['recipient'];
+
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
             child: ConfirmationScreen(
@@ -728,6 +725,7 @@ class AppRouter {
               beginDate: beginDate,
               plan: postpaidPlan,
               topUpAmount: topUpAmount,
+              recipientPhone: recipientPhone,
             ),
           );
         },

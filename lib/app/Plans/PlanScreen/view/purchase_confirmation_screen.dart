@@ -3,14 +3,13 @@ import 'package:go_router/go_router.dart';
 
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
-import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
-import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import 'confirmation/utils/confirmation_formatters.dart';
 import 'confirmation/widgets/confirmation_app_bar.dart';
 import 'confirmation/widgets/confirmation_begin_on_card.dart';
 import 'confirmation/widgets/confirmation_bottom_bar.dart';
+import 'confirmation/widgets/confirmation_breakdown.dart';
 import 'confirmation/widgets/confirmation_plan_card.dart';
 import 'confirmation/widgets/confirmation_terms_checkbox.dart';
 
@@ -19,6 +18,7 @@ class ConfirmationScreen extends StatefulWidget {
   final DateTime? beginDate;
   final HomePlansPostPaidPlanModel? plan;
   final double? topUpAmount;
+  final String? recipientPhone;
 
   const ConfirmationScreen({
     super.key,
@@ -26,6 +26,7 @@ class ConfirmationScreen extends StatefulWidget {
     this.beginDate,
     this.plan,
     this.topUpAmount,
+    this.recipientPhone,
   });
 
   @override
@@ -36,6 +37,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   HomePlansPostPaidPlanModel? _selectedPostpaidPlan;
   DateTime? _selectedBeginDate;
   bool _termsAccepted = true;
+  String _promoCode = '';
 
   @override
   void initState() {
@@ -56,6 +58,12 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   void _continuePressed() {
+    final isMyNumberTopUp =
+        widget.topUpAmount != null && widget.recipientPhone == null;
+    if (isMyNumberTopUp) {
+      context.push(AppRoutes.topUpPaymentPrepaidScreen);
+      return;
+    }
     if (widget.topUpAmount != null) {
       showModalBottomSheet(
         context: context,
@@ -63,14 +71,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         backgroundColor: Colors.transparent,
         builder: (_) => PayFromWalletSheet(amount: widget.topUpAmount!),
       );
-    } else {
-      context.push(AppRoutes.guestPaymentMethodScreen);
+      return;
     }
+    context.push(AppRoutes.guestPaymentMethodScreen);
   }
 
   @override
   Widget build(BuildContext context) {
     final isSendTopUp = widget.topUpAmount != null;
+    final isMyNumberTopUp = isSendTopUp && widget.recipientPhone == null;
     final topUpAmountText = formatConfirmationCurrency(widget.topUpAmount ?? 0);
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
@@ -109,6 +118,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   showBeginOn: widget.showBeginOn,
                   plan: _selectedPostpaidPlan,
                   topUpAmount: widget.topUpAmount,
+                  recipientPhone: widget.recipientPhone,
                 ),
                 const SizedBox(height: 16),
                 if (widget.showBeginOn && _selectedBeginDate != null)
@@ -123,22 +133,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   onChanged: (v) => setState(() => _termsAccepted = v),
                 ),
                 const SizedBox(height: 16),
-                CustomPaymentBreakDownCard(
-                  backgroundColor: HexColor.fromHex('#645D9C'),
-                  items: [
-                    CustomPaymentBreakdownLineItem(
-                      label: 'sub total',
-                      value: subTotalText,
-                    ),
-                    CustomPaymentBreakdownLineItem(
-                      label: 'vat',
-                      value: formatConfirmationCurrency(vat),
-                    ),
-                    CustomPaymentBreakdownLineItem(
-                      label: 'total',
-                      value: totalText,
-                    ),
-                  ],
+                ConfirmationBreakdown(
+                  subTotalText: subTotalText,
+                  vatText: formatConfirmationCurrency(vat),
+                  totalText: totalText,
+                  promoValue: isMyNumberTopUp ? _promoCode : null,
+                  onPromoChanged: (v) => setState(() => _promoCode = v),
+                  onPromoApply: () => FocusScope.of(context).unfocus(),
                 ),
               ],
             ),

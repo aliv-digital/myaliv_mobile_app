@@ -10,6 +10,7 @@ class ConfirmationPlanCard extends StatelessWidget {
   final bool? showBeginOn;
   final HomePlansPostPaidPlanModel? plan;
   final double? topUpAmount;
+  final String? recipientPhone;
 
   const ConfirmationPlanCard({
     super.key,
@@ -17,6 +18,7 @@ class ConfirmationPlanCard extends StatelessWidget {
     this.showBeginOn,
     this.plan,
     this.topUpAmount,
+    this.recipientPhone,
   });
 
   @override
@@ -40,6 +42,7 @@ class ConfirmationPlanCard extends StatelessWidget {
               date: date,
               showBeginOn: showBeginOn,
               topUpAmount: topUpAmount!,
+              recipientPhone: recipientPhone,
             )
           : ConfirmationPlanCardPostpaidContent(
               date: date,

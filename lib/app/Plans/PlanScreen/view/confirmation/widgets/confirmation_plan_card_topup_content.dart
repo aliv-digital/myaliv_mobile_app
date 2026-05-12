@@ -11,12 +11,14 @@ class ConfirmationPlanCardTopupContent extends StatelessWidget {
   final DateTime? date;
   final bool? showBeginOn;
   final double topUpAmount;
+  final String? recipientPhone;
 
   const ConfirmationPlanCardTopupContent({
     super.key,
     this.date,
     this.showBeginOn,
     required this.topUpAmount,
+    this.recipientPhone,
   });
 
   @override
@@ -24,12 +26,14 @@ class ConfirmationPlanCardTopupContent extends StatelessWidget {
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
     final fullName = deviceFullName ?? nameFromEmail(accountInfo?.email);
-    final phone = formatConfirmationPhone(
-      accountInfo?.primaryPhoneNumber ??
-          accountInfo?.altPhoneNumber ??
-          accountInfo?.phoneNumber ??
-          '',
-    );
+    final hasRecipient = recipientPhone?.trim().isNotEmpty == true;
+    final phoneSource = hasRecipient
+        ? recipientPhone!
+        : (accountInfo?.primaryPhoneNumber ??
+              accountInfo?.altPhoneNumber ??
+              accountInfo?.phoneNumber ??
+              '');
+    final phone = formatConfirmationPhone(phoneSource);
     final hasBeginDate = showBeginOn == true && date != null;
     final beginText = hasBeginDate
         ? 'begins ${DateFormat('dd-MM-yy').format(date!)}'
