@@ -1,9 +1,13 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/send_top_up_phone_field.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_amount_box.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
@@ -25,6 +29,12 @@ class SendTopUpPlaceholderTab extends StatefulWidget {
 class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   String _amount = '15.00';
  // 🔥 default amount (matches design)
+
+  double get _amountValue {
+    final cleaned = _amount.trim().replaceAll(',', '');
+    return double.tryParse(cleaned) ?? 0.0;
+  }
+
   static const CountryInfo _defaultCountry = CountryInfo(
     flagEmoji: '🇧🇸',
     dialCode: '1',
@@ -100,7 +110,13 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               const _SectionLabel('transfer from'),
               const SizedBox(height: 8),
 
-              _ReadOnlyField('wallet \$ 129.00'),
+              BlocBuilder<BalanceCubit, BalanceState>(
+                builder: (context, balanceState) {
+                  return _ReadOnlyField(
+                    'wallet \$ ${balanceState.walletBalanceFormatted}',
+                  );
+                },
+              ),
 
               const SizedBox(height: 24),
 
@@ -156,7 +172,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               GradientInputField(
                 label: GuestTopUpTheme.amountLabel,
                 hint: GuestTopUpTheme.amountHintText,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() => _amount = value);
+                },
               ),
               // Center(
               //   child:
@@ -171,7 +189,14 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               // ),
 
               const SizedBox(height: 30),
-              TopUpPrepaidBalanceRow(balance: 129),
+              BlocBuilder<BalanceCubit, BalanceState>(
+                builder: (context, balanceState) {
+                  return TopUpPrepaidBalanceRow(
+                    balance: balanceState.walletBalance,
+                    enteredAmount: _amountValue,
+                  );
+                },
+              ),
 
               const SizedBox(height: 56),
 
@@ -181,6 +206,15 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
+                    final walletBalance =
+                        context.read<BalanceCubit>().state.walletBalance;
+                    if (_amountValue > walletBalance) {
+                      AppToast.show(
+                        message: 'balance is not sufficient',
+                        type: ToastType.error,
+                      );
+                      return;
+                    }
                     AppSession.appRoute = 'sendTopUp';
                     context.push(AppRoutes.confirmation);
                     // Navigator.of(context).push(

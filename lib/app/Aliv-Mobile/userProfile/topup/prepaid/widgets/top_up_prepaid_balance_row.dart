@@ -5,11 +5,17 @@ import '../theme/top_up_prepaid_theme.dart';
 
 class TopUpPrepaidBalanceRow extends StatelessWidget {
   final double balance;
+  final double enteredAmount;
 
-  const TopUpPrepaidBalanceRow({super.key, required this.balance});
+  const TopUpPrepaidBalanceRow({
+    super.key,
+    required this.balance,
+    this.enteredAmount = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final remaining = (balance - enteredAmount).clamp(0, double.infinity);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -53,7 +59,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
 
 
                     Text(
-                      AppUtils.formatPrice(129),
+                      AppUtils.formatPrice(remaining),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: const Color(0xFF222222),

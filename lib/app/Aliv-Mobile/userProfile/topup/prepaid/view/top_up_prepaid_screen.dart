@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -217,7 +219,14 @@ class _MyNumberTab extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              TopUpPrepaidBalanceRow(balance: state.balance),
+              BlocBuilder<BalanceCubit, BalanceState>(
+                builder: (context, balanceState) {
+                  return TopUpPrepaidBalanceRow(
+                    balance: balanceState.walletBalance,
+                    enteredAmount: state.amountValue,
+                  );
+                },
+              ),
 
               const SizedBox(height: 44),
 
@@ -226,6 +235,15 @@ class _MyNumberTab extends StatelessWidget {
                 enabled: state.canSubmit,
                 loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
                 onTap: () {
+                  final walletBalance =
+                      context.read<BalanceCubit>().state.walletBalance;
+                  if (state.amountValue > walletBalance) {
+                    AppToast.show(
+                      message: 'balance is not sufficient',
+                      type: ToastType.error,
+                    );
+                    return;
+                  }
                   //bloc.add(const TopUpPrepaidTopUpPressed());
                   context.push(AppRoutes.confirmTopUpPrepaidScreen);
                 }
