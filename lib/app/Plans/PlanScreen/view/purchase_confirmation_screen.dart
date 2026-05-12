@@ -1,11 +1,12 @@
+import 'package:core/core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
-import '../../../../core/utils/app_session.dart';
 import '../../../../resources/extentions/dateformatter.dart';
 import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/custom_payment_break_down_card.dart';
@@ -15,20 +16,33 @@ import '../../../Aliv-Mobile-Guest/guestPurchasePlanComfirmation/theme/guest_pur
 import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import '../../../Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
-import '../../../Home/best-plans/best_plan_injection.dart';
 import '../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'start_plan_bottom_sheet.dart';
+
+String _formatPhone(String phone) {
+  if (phone.isEmpty) return '';
+  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 10) {
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+  }
+  if (digits.length == 11 && digits.startsWith('1')) {
+    return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
+  }
+  return phone;
+}
 
 class ConfirmationScreen extends StatefulWidget {
   final bool showBeginOn;
   final DateTime? beginDate;
   final HomePlansPostPaidPlanModel? plan;
+  final double? topUpAmount;
 
   const ConfirmationScreen({
     super.key,
     this.showBeginOn = false,
     this.beginDate,
     this.plan,
+    this.topUpAmount,
   });
 
   @override
@@ -71,12 +85,12 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   void _continuePressed() {
-    if (AppSession.appRoute == 'sendTopUp') {
+    if (widget.topUpAmount != null) {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (_) => const PayFromWalletSheet(),
+        builder: (_) => PayFromWalletSheet(amount: widget.topUpAmount!),
       );
     } else {
       context.push(AppRoutes.guestPaymentMethodScreen);
@@ -85,12 +99,23 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSendTopUp = widget.topUpAmount != null;
+    final topUpAmount = widget.topUpAmount ?? 0.0;
+    final topUpAmountText = _formatConfirmationCurrency(topUpAmount);
+
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
     final total = _selectedPostpaidPlan?.planAmountWithVat ?? 20.00;
-    final vatLabel = vat <= 0
+    final vatLabel = isSendTopUp || vat <= 0
         ? 'no vat applied'
         : ' vat applied'; //${_formatConfirmationCurrency(vat)}
+
+    final subTotalText =
+        isSendTopUp ? topUpAmountText : _formatConfirmationCurrency(subTotal);
+    final totalText =
+        isSendTopUp ? topUpAmountText : _formatConfirmationCurrency(total);
+    final bottomTotalText = totalText;
+
     final continueButtonColor =
         _termsAccepted ? const Color(0xFF645D9C) : const Color(0xFFC8C5DA);
     final continueTextColor =
@@ -112,7 +137,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
           ),
           centerTitle: false,
           title: Text(
-            'confirmation and payment09999',
+            'confirmation and payment',
             style: TextStyle(
               color: Colors.white,
               fontSize: 17,
@@ -172,7 +197,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                         spacing: 10,
                         children: [
                           Text(
-                            _formatConfirmationCurrency(total),
+                            bottomTotalText,
                             style: TextStyle(
                               color: const Color(0xFF222222),
                               fontSize: 22,
@@ -250,6 +275,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   date: _selectedBeginDate,
                   showBeginOn: widget.showBeginOn,
                   plan: _selectedPostpaidPlan,
+                  topUpAmount: widget.topUpAmount,
                 ),
                 const SizedBox(height: 16),
                 if (widget.showBeginOn && _selectedBeginDate != null)
@@ -271,8 +297,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   items: <CustomPaymentBreakdownLineItem>[
                     CustomPaymentBreakdownLineItem(
                       label: 'sub total',
-                      value: _formatConfirmationCurrency(subTotal),
-                      // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                      value: subTotalText,
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'vat',
@@ -280,8 +305,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                     ),
                     CustomPaymentBreakdownLineItem(
                       label: 'total',
-                      value: _formatConfirmationCurrency(total),
-                      //    '\$ ${data.totals.total.toStringAsFixed(2)}',
+                      value: totalText,
                     ),
                   ],
                 ),
@@ -302,8 +326,14 @@ class _PlanCard extends StatelessWidget {
   final DateTime? date;
   final bool? showBeginOn;
   final HomePlansPostPaidPlanModel? plan;
+  final double? topUpAmount;
 
-  const _PlanCard({this.date, this.showBeginOn, this.plan});
+  const _PlanCard({
+    this.date,
+    this.showBeginOn,
+    this.plan,
+    this.topUpAmount,
+  });
 
   String _selectedPlanTitle() {
     final selectedPlan = plan;
@@ -382,6 +412,13 @@ class _PlanCard extends StatelessWidget {
     final userName = _accountDisplayName(accountState);
     final userNumber = _accountUsername(accountState);
 
+    final isSendTopUp = topUpAmount != null;
+    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    final email = accountInfo?.email ?? '';
+    final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
+    final fullName = deviceFullName ?? _nameFromEmail(email);
+    final accountPhone = _formatPhone(accountInfo?.phoneNumber ?? '');
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -403,7 +440,7 @@ class _PlanCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppSession.appRoute == 'sendTopUp'
+                isSendTopUp
                     ? Text(
                         'top-up',
                         textAlign: TextAlign.center,
@@ -425,7 +462,7 @@ class _PlanCard extends StatelessWidget {
                         ),
                       ),
                 Text(
-                  userNumber,
+                  isSendTopUp ? fullName : userNumber,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFF121212),
@@ -446,7 +483,7 @@ class _PlanCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppSession.appRoute == 'sendTopUp'
+                      isSendTopUp
                           ? Text(
                               'top-up prepaid number',
                               textAlign: TextAlign.center,
@@ -465,9 +502,9 @@ class _PlanCard extends StatelessWidget {
                               ),
                             ),
                       const SizedBox(height: 6),
-                      AppSession.appRoute == 'sendTopUp'
+                      isSendTopUp
                           ? Text(
-                              '242-899-9999',
+                              accountPhone,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Colors.black,
@@ -519,9 +556,9 @@ class _PlanCard extends StatelessWidget {
                     color: const Color(0xFFF3F3F6),
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: AppSession.appRoute == 'sendTopUp'
+                  child: isSendTopUp
                       ? Text(
-                          '\$ 15.00',
+                          '\$ ${(topUpAmount ?? 0).toStringAsFixed(2)}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF222222),
@@ -542,7 +579,7 @@ class _PlanCard extends StatelessWidget {
                         ),
                 ),
                 const SizedBox(width: 20),
-                AppSession.appRoute == 'sendTopUp'
+                isSendTopUp
                     ? SizedBox(width: 1)
                     : InkWell(
                         onTap: () {

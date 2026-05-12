@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import '../../../../../../router/app_routes.dart';
 import '../theme/top_up_prepaid_theme.dart';
 import '../view/wallet_transfer_receipt_screen.dart';
 
 class PayFromWalletSheet extends StatelessWidget {
-  const PayFromWalletSheet({super.key});
+  final double amount;
+
+  const PayFromWalletSheet({super.key, this.amount = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -85,15 +90,19 @@ class PayFromWalletSheet extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         spacing: 10,
                         children: [
-                          Text(
-                            '\$129.00',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xFF222222),
-                              fontSize: 14,
-                              fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w700,
-                            ),
+                          BlocBuilder<BalanceCubit, BalanceState>(
+                            builder: (context, balanceState) {
+                              return Text(
+                                '\$${balanceState.walletBalanceFormatted}',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: const Color(0xFF222222),
+                                  fontSize: 14,
+                                  fontFamily: 'CircularPro',
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -127,14 +136,13 @@ class PayFromWalletSheet extends StatelessWidget {
                     color: TopUpPrepaidTheme.lightBg,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    '\$ 75.00',
-                    style: TextStyle(
+                  child: Text(
+                    '\$ ${amount.toStringAsFixed(2)}',
+                    style: const TextStyle(
                       fontFamily: 'CircularPro',
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFF707070),
-
+                      color: Color(0xFF707070),
                     ),
                   ),
                 ),

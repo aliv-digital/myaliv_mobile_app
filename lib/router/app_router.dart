@@ -716,12 +716,18 @@ class AppRouter {
             beginDate = DateTime.tryParse(beginDateString);
           }
 
+          final amountString = state.uri.queryParameters['amount'];
+          final topUpAmount = amountString == null
+              ? null
+              : double.tryParse(amountString);
+
           return MaterialPage(
             key: ValueKey(state.uri.toString()),
             child: ConfirmationScreen(
               showBeginOn: showBeginOn,
               beginDate: beginDate,
               plan: postpaidPlan,
+              topUpAmount: topUpAmount,
             ),
           );
         },
