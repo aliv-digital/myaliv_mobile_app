@@ -151,6 +151,7 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
+            // how wallet balance text is showing , from which source
             Text(
               'pay from wallet',
               style: HomePlansPaymentMethodTheme.addCard,

@@ -62,7 +62,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     context.read<PlansCubit>().started(
           userType: userType,
           initialTab: widget.initialTab,
-        );
+    );
   }
 
   // Primary tabs use API models, while the shared purchase sheet still expects

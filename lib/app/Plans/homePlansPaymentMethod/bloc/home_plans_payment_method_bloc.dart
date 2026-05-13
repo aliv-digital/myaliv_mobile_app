@@ -22,26 +22,26 @@ class HomePlansPaymentMethodBloc
     HomePlansPaymentMethodStarted event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) async {
-    // Step 1: Save user type and wallet data in state so UI can render correctly.
+    // Keep this bloc focused on the payment flow. Account balance lives in
+    // BalanceCubit, so the payment screen can always show the latest wallet data.
     emit(
       state.copyWith(
         status: HomePlansPaymentMethodStatus.loading,
         errorMessage: null,
         subscriberType: event.subscriberType,
-        walletBalance: event.walletBalance,
         amount: event.amount,
         vatNote: event.vatNote,
       ),
     );
 
     try {
-      // Step 2: Load payment methods based on subscriber type.
+      // Load payment methods based on subscriber type.
       final List<HomePlansSavedPaymentMethod> methods =
           await repository.fetchPaymentMethods(
         subscriberType: event.subscriberType,
       );
 
-      // Step 3: Select the first available method by default.
+      // Select the first available method by default.
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.ready,

@@ -26,6 +26,7 @@ class PrepaidBalanceCard extends StatelessWidget {
         ),
         child: Column(
           children: [
+            // showing balance from wallet
             _row(
               'assets/icons/wallet.svg',
               'top-up balance',

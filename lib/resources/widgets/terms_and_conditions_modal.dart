@@ -237,8 +237,8 @@ class TermsDialogCloseButton extends StatelessWidget {
       onTap: onTap,
       child: SvgPicture.asset(
         AssetConstant.blackRoundedCrossSVG,
-        width: size,
-        height: size,
+        width: 22,
+        height: 22,
       ),
     );
   }
