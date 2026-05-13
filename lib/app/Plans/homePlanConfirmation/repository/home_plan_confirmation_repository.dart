@@ -104,6 +104,7 @@ class HomePlanConfirmationRepository {
         debugPrint(
           'HomePlanConfirmationRepository: apply promo status=${response.statusCode}',
         );
+        debugPrint("response body : ${response.data}");
       }
 
       return HomePlanPromoResponse.fromDynamic(response.data);

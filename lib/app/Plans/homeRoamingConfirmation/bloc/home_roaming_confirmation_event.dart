@@ -34,6 +34,21 @@ final class HomeRoamingConfirmationBeginDateChanged
   List<Object?> get props => [beginDate];
 }
 
+final class HomeRoamingConfirmationPromoCodeChanged
+    extends HomeRoamingConfirmationEvent {
+  final String value;
+
+  const HomeRoamingConfirmationPromoCodeChanged(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}
+
+final class HomeRoamingConfirmationPromoApplyPressed
+    extends HomeRoamingConfirmationEvent {
+  const HomeRoamingConfirmationPromoApplyPressed();
+}
+
 final class HomeRoamingConfirmationTermsPressed
     extends HomeRoamingConfirmationEvent {
   const HomeRoamingConfirmationTermsPressed();
