@@ -2,6 +2,25 @@ import 'package:equatable/equatable.dart';
 
 enum HomePlansCardBrand { visa, mastercard, unknown }
 
+enum HomePlansPaymentPlanType {
+  primary,
+  secondary,
+  standalone;
+
+  static HomePlansPaymentPlanType fromCode(String code) {
+    switch (code.trim().toUpperCase()) {
+      case 'P':
+        return HomePlansPaymentPlanType.primary;
+      case 'S':
+        return HomePlansPaymentPlanType.secondary;
+      case 'A':
+        return HomePlansPaymentPlanType.standalone;
+      default:
+        return HomePlansPaymentPlanType.standalone;
+    }
+  }
+}
+
 /// Defines which plan type the current user belongs to.
 ///
 /// `prepaid` users can see the "pay from wallet" row.
@@ -29,13 +48,34 @@ class HomePlansSavedPaymentMethod extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        brand,
-        ending,
-        expiry,
-        logoSvgAsset,
-        isChargeToMyAccount,
-      ];
+    id,
+    brand,
+    ending,
+    expiry,
+    logoSvgAsset,
+    isChargeToMyAccount,
+  ];
+}
+
+class HomePlansPaymentSelectedItem extends Equatable {
+  final String id;
+  final String label;
+  final String title;
+  final String subtitle;
+  final double price;
+  final HomePlansPaymentPlanType planType;
+
+  const HomePlansPaymentSelectedItem({
+    required this.id,
+    required this.label,
+    required this.title,
+    required this.subtitle,
+    required this.price,
+    this.planType = HomePlansPaymentPlanType.standalone,
+  });
+
+  @override
+  List<Object?> get props => [id, label, title, subtitle, price, planType];
 }
 
 /// Route arguments for Home Plans payment method screen.
@@ -52,12 +92,16 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
   /// `null` keeps the screen's existing default.
   final String? vatNote;
 
+  /// Selected plan/add-on lines from the confirmation screen.
+  final List<HomePlansPaymentSelectedItem> selectedItems;
+
   const HomePlansPaymentMethodRouteArgs({
     this.subscriberType = HomePlansSubscriberType.prepaid,
     this.amount,
     this.vatNote,
+    this.selectedItems = const <HomePlansPaymentSelectedItem>[],
   });
 
   @override
-  List<Object?> get props => [subscriberType, amount, vatNote];
+  List<Object?> get props => [subscriberType, amount, vatNote, selectedItems];
 }

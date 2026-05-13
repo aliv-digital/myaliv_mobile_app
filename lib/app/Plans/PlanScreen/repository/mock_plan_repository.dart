@@ -33,15 +33,13 @@ class MockPlanRepository implements BasePlanRepository {
   final List<BasePlanModel> _lastFetchedMifiPlans = <BasePlanModel>[];
   DateTime? _lastFetchedMifiAt;
 
-  final List<BasePlanModel> _lastFetchedLibertyGlobalPlans =
-      <BasePlanModel>[];
+  final List<BasePlanModel> _lastFetchedLibertyGlobalPlans = <BasePlanModel>[];
   DateTime? _lastFetchedLibertyGlobalAt;
   final List<HomePlansPostPaidPlanModel> _lastFetchedPostpaidRoamingPlans =
       <HomePlansPostPaidPlanModel>[];
   DateTime? _lastFetchedPostpaidRoamingAt;
 
-  List<BasePlanModel> _lastFetchedAddOnsPrimaryPlans =
-      <BasePlanModel>[];
+  List<BasePlanModel> _lastFetchedAddOnsPrimaryPlans = <BasePlanModel>[];
   DateTime? _lastFetchedAddOnsPrimaryPlansAt;
 
   @override
@@ -63,16 +61,18 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock daily plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'd1',
-        planName: 'freedom5',
-        planDescription: 'A simple daily plan for quick usage.',
-        planAmount: 5.00,
-        planType: 'P',
-        voice: 30.0,
-        data: 2.0,
-        sms: 30,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'd1',
+          planName: 'freedom5',
+          planDescription: 'A simple daily plan for quick usage.',
+          planAmount: 5.00,
+          planType: 'P',
+          voice: 30.0,
+          data: 2.0,
+          sms: 30,
+        ),
+      ),
     ];
   }
 
@@ -86,26 +86,30 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock weekly plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'w1',
-        planName: 'freedom8',
-        planDescription: 'Weekly plan with unlimited local talk and text.',
-        planAmount: 8.00,
-        planType: 'P',
-        data: 1.0,
-        voiceUnlimited: true,
-        smsUnlimited: true,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'w2',
-        planName: 'freedom15',
-        planDescription: 'Weekly plan with unlimited local talk and text.',
-        planAmount: 15.00,
-        planType: 'P',
-        data: 3.0,
-        voiceUnlimited: true,
-        smsUnlimited: true,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'w1',
+          planName: 'freedom8',
+          planDescription: 'Weekly plan with unlimited local talk and text.',
+          planAmount: 8.00,
+          planType: 'P',
+          data: 1.0,
+          voiceUnlimited: true,
+          smsUnlimited: true,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'w2',
+          planName: 'freedom15',
+          planDescription: 'Weekly plan with unlimited local talk and text.',
+          planAmount: 15.00,
+          planType: 'P',
+          data: 3.0,
+          voiceUnlimited: true,
+          smsUnlimited: true,
+        ),
+      ),
     ];
   }
 
@@ -119,37 +123,43 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock monthly plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'm1',
-        planName: 'liberty40',
-        planDescription:
-            'The ALIV Freedom 6 Plan provides users with unlimited talk and text within the Bahamas...',
-        planAmount: 40.00,
-        planType: 'P',
-        data: 5.0,
-        voiceUnlimited: true,
-        smsUnlimited: true,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'm2',
-        planName: 'liberty70',
-        planDescription: 'Monthly plan with extended value.',
-        planAmount: 70.00,
-        planType: 'P',
-        data: 14.0,
-        voiceUnlimited: true,
-        smsUnlimited: true,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'm3',
-        planName: 'liberty120',
-        planDescription: 'Premium monthly option for heavy usage.',
-        planAmount: 120.00,
-        planType: 'P',
-        dataUnlimited: true,
-        voiceUnlimited: true,
-        smsUnlimited: true,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'm1',
+          planName: 'liberty40',
+          planDescription:
+              'The ALIV Freedom 6 Plan provides users with unlimited talk and text within the Bahamas...',
+          planAmount: 40.00,
+          planType: 'P',
+          data: 5.0,
+          voiceUnlimited: true,
+          smsUnlimited: true,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'm2',
+          planName: 'liberty70',
+          planDescription: 'Monthly plan with extended value.',
+          planAmount: 70.00,
+          planType: 'P',
+          data: 14.0,
+          voiceUnlimited: true,
+          smsUnlimited: true,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'm3',
+          planName: 'liberty120',
+          planDescription: 'Premium monthly option for heavy usage.',
+          planAmount: 120.00,
+          planType: 'P',
+          dataUnlimited: true,
+          voiceUnlimited: true,
+          smsUnlimited: true,
+        ),
+      ),
     ];
   }
 
@@ -163,24 +173,28 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock roaming plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'r1',
-        planName: 'roam20',
-        planDescription: 'Roaming plan for travel usage.',
-        planAmount: 20.00,
-        planType: 'A',
-        planGroup: 'roaming',
-        data: 0.25,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'r2',
-        planName: 'roam30',
-        planDescription: 'Roaming plan for travel usage.',
-        planAmount: 30.00,
-        planType: 'A',
-        planGroup: 'roaming',
-        data: 0.5,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'r1',
+          planName: 'roam20',
+          planDescription: 'Roaming plan for travel usage.',
+          planAmount: 20.00,
+          planType: 'A',
+          planGroup: 'roaming',
+          data: 0.25,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'r2',
+          planName: 'roam30',
+          planDescription: 'Roaming plan for travel usage.',
+          planAmount: 30.00,
+          planType: 'A',
+          planGroup: 'roaming',
+          data: 0.5,
+        ),
+      ),
     ];
   }
 
@@ -194,24 +208,28 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock RoamEasy plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 're1',
-        planName: 'roameasy carib',
-        planDescription: 'Easy roaming pack for short trips.',
-        planAmount: 25.00,
-        planType: 'A',
-        planGroup: 'roameasy',
-        data: 1.5,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 're2',
-        planName: 'roameasy usa & can',
-        planDescription: 'Easy roaming pack for short trips.',
-        planAmount: 25.00,
-        planType: 'A',
-        planGroup: 'roameasy',
-        data: 2.0,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 're1',
+          planName: 'roameasy carib',
+          planDescription: 'Easy roaming pack for short trips.',
+          planAmount: 25.00,
+          planType: 'A',
+          planGroup: 'roameasy',
+          data: 1.5,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 're2',
+          planName: 'roameasy usa & can',
+          planDescription: 'Easy roaming pack for short trips.',
+          planAmount: 25.00,
+          planType: 'A',
+          planGroup: 'roameasy',
+          data: 2.0,
+        ),
+      ),
     ];
   }
 
@@ -225,24 +243,28 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock MiFi plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'mi1',
-        planName: 'mifi75',
-        planDescription: 'MiFi data plan for hotspot usage.',
-        planAmount: 75.00,
-        planType: 'P',
-        planGroup: 'mifi',
-        data: 50.0,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'mi2',
-        planName: 'mifi125',
-        planDescription: 'MiFi data plan for hotspot usage.',
-        planAmount: 125.00,
-        planType: 'P',
-        planGroup: 'mifi',
-        data: 125.0,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'mi1',
+          planName: 'mifi75',
+          planDescription: 'MiFi data plan for hotspot usage.',
+          planAmount: 75.00,
+          planType: 'P',
+          planGroup: 'mifi',
+          data: 50.0,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'mi2',
+          planName: 'mifi125',
+          planDescription: 'MiFi data plan for hotspot usage.',
+          planAmount: 125.00,
+          planType: 'P',
+          planGroup: 'mifi',
+          data: 125.0,
+        ),
+      ),
     ];
   }
 
@@ -256,24 +278,28 @@ class MockPlanRepository implements BasePlanRepository {
 
     // Return mock Liberty Global plans
     return [
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'lg1',
-        planName: 'liberty global haiti',
-        planDescription: 'International talk plan for Liberty Global.',
-        planAmount: 10.00,
-        planType: 'A',
-        planGroup: 'liberty global',
-        voice: 30.0,
-      )),
-      BasePlanModel.fromApiMap(_createMockPlanMap(
-        planId: 'lg2',
-        planName: 'liberty global caribbean',
-        planDescription: 'International talk plan for Liberty Global.',
-        planAmount: 21.00,
-        planType: 'A',
-        planGroup: 'liberty global',
-        voice: 50.0,
-      )),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'lg1',
+          planName: 'liberty global haiti',
+          planDescription: 'International talk plan for Liberty Global.',
+          planAmount: 10.00,
+          planType: 'A',
+          planGroup: 'liberty global',
+          voice: 30.0,
+        ),
+      ),
+      BasePlanModel.fromApiMap(
+        _createMockPlanMap(
+          planId: 'lg2',
+          planName: 'liberty global caribbean',
+          planDescription: 'International talk plan for Liberty Global.',
+          planAmount: 21.00,
+          planType: 'A',
+          planGroup: 'liberty global',
+          voice: 50.0,
+        ),
+      ),
     ];
   }
 
@@ -1005,6 +1031,7 @@ class MockPlanRepository implements BasePlanRepository {
             value: _buildAddOnValue(addOnPlan),
             price: addOnPlan.planAmount,
             vatAmount: addOnPlan.vatAmount,
+            planTypeCode: addOnPlan.planType,
           ),
         )
         .toList(growable: false);
@@ -1093,8 +1120,7 @@ class MockPlanRepository implements BasePlanRepository {
     String startDate = '2024-08-20 00:00:00',
     String endDate = '2024-09-19 23:59:59',
     bool autoRenew = false,
-    List<BasePlanModel> availableBoltOns =
-        const <BasePlanModel>[],
+    List<BasePlanModel> availableBoltOns = const <BasePlanModel>[],
     List<BasePlanBucketModel> planBuckets = const <BasePlanBucketModel>[],
   }) {
     return BasePlanModel(
@@ -1157,8 +1183,9 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   String _buildAddOnLabel(BasePlanModel addOnPlan) {
-    final firstBucket =
-        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return 'balance';
@@ -1177,8 +1204,9 @@ class MockPlanRepository implements BasePlanRepository {
   }
 
   String _buildAddOnValue(BasePlanModel addOnPlan) {
-    final firstBucket =
-        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return '';
@@ -1186,8 +1214,8 @@ class MockPlanRepository implements BasePlanRepository {
 
     final amountText =
         firstBucket.amount == firstBucket.amount.truncateToDouble()
-            ? firstBucket.amount.toInt().toString()
-            : firstBucket.amount.toString();
+        ? firstBucket.amount.toInt().toString()
+        : firstBucket.amount.toString();
     return '$amountText${firstBucket.unit.trim().toLowerCase()}';
   }
 }

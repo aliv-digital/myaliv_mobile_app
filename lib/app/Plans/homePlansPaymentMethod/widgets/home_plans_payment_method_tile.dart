@@ -68,7 +68,8 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: titleStyle ??
+                    style:
+                        titleStyle ??
                         (selected
                             ? HomePlansPaymentMethodTheme.selectedMethodTitle
                             : HomePlansPaymentMethodTheme.methodTitle),
@@ -78,8 +79,7 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: selected
-                          ? HomePlansPaymentMethodTheme
-                              .selectedMethodSubtitle
+                          ? HomePlansPaymentMethodTheme.selectedMethodSubtitle
                           : HomePlansPaymentMethodTheme.methodSubtitle,
                     ),
                   ],
@@ -90,8 +90,7 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
             selected
                 ? Container(
                     width: HomePlansPaymentMethodTheme.selectedIndicatorSize,
-                    height:
-                        HomePlansPaymentMethodTheme.selectedIndicatorSize,
+                    height: HomePlansPaymentMethodTheme.selectedIndicatorSize,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: HomePlansPaymentMethodTheme
@@ -114,8 +113,8 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
                     width: indicatorSize,
                     height: indicatorSize,
                     decoration: BoxDecoration(
-                      color: HomePlansPaymentMethodTheme
-                          .unselectedIndicatorColor,
+                      color:
+                          HomePlansPaymentMethodTheme.unselectedIndicatorColor,
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: HomePlansPaymentMethodTheme

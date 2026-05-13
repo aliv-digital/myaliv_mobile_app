@@ -32,16 +32,17 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        selectedPlan,
-        beginDate,
-        showDateField,
-      ];
+    phoneNumber,
+    selectedPlan,
+    beginDate,
+    showDateField,
+  ];
 }
 
 class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   final String id;
   final HomeRoamingConfirmationPurchaseLineType type;
+  final String planTypeCode;
 
   /// e.g. "primary plan" / "add-on"
   final String label;
@@ -57,6 +58,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   const HomeRoamingConfirmationPurchaseLineItem({
     required this.id,
     required this.type,
+    required this.planTypeCode,
     required this.label,
     required this.title,
     required this.subtitle,
@@ -66,6 +68,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   HomeRoamingConfirmationPurchaseLineItem copyWith({
     String? id,
     HomeRoamingConfirmationPurchaseLineType? type,
+    String? planTypeCode,
     String? label,
     String? title,
     String? subtitle,
@@ -74,6 +77,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
     return HomeRoamingConfirmationPurchaseLineItem(
       id: id ?? this.id,
       type: type ?? this.type,
+      planTypeCode: planTypeCode ?? this.planTypeCode,
       label: label ?? this.label,
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
@@ -82,7 +86,15 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+    id,
+    type,
+    planTypeCode,
+    label,
+    title,
+    subtitle,
+    price,
+  ];
 }
 
 class HomeRoamingConfirmationPurchaseTotals extends Equatable {
@@ -117,10 +129,10 @@ class HomeRoamingConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        headerTitle,
-        beginsOnDateText,
-        items,
-        totals,
-      ];
+    phoneNumber,
+    headerTitle,
+    beginsOnDateText,
+    items,
+    totals,
+  ];
 }

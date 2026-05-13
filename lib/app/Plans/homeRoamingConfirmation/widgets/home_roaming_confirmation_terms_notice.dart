@@ -62,7 +62,7 @@ class _HomeRoamingConfirmationTermsNoticeState
               decoration: BoxDecoration(
                 color: widget.isChecked
                     ? HomeRoamingConfirmationTheme
-                        .termsNoticeCheckboxCheckedFillColor
+                          .termsNoticeCheckboxCheckedFillColor
                     : Colors.transparent,
                 border: Border.all(
                   width: 1,

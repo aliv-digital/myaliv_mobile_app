@@ -12,15 +12,17 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final HomePlansSubscriberType subscriberType;
   final double? amount;
   final String? vatNote;
+  final List<HomePlansPaymentSelectedItem> selectedItems;
 
   const HomePlansPaymentMethodStarted({
     required this.subscriberType,
     this.amount,
     this.vatNote,
+    this.selectedItems = const <HomePlansPaymentSelectedItem>[],
   });
 
   @override
-  List<Object?> get props => [subscriberType, amount, vatNote];
+  List<Object?> get props => [subscriberType, amount, vatNote, selectedItems];
 }
 
 class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {
@@ -37,6 +39,15 @@ class HomePlansPayWithCardPressed extends HomePlansPaymentMethodEvent {
 
 class HomePlansPayFromWalletPressed extends HomePlansPaymentMethodEvent {
   const HomePlansPayFromWalletPressed();
+}
+
+class HomePlansPayFromWalletConfirmed extends HomePlansPaymentMethodEvent {
+  final double walletBalance;
+
+  const HomePlansPayFromWalletConfirmed({required this.walletBalance});
+
+  @override
+  List<Object?> get props => [walletBalance];
 }
 
 class HomePlansPayNowPressed extends HomePlansPaymentMethodEvent {

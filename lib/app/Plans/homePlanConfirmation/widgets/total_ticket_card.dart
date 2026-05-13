@@ -7,10 +7,7 @@ import 'scallop_clip.dart';
 class TotalTicketCard extends StatelessWidget {
   final PurchaseTotals totals;
 
-  const TotalTicketCard({
-    super.key,
-    required this.totals,
-  });
+  const TotalTicketCard({super.key, required this.totals});
 
   @override
   Widget build(BuildContext context) {

@@ -8,9 +8,9 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../../../../../resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
 import '../../../../core/utils/app_session.dart';
-import '../../../Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import '../../../Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/bottomsheet/wallet_payment_bottom_sheet.dart';
 import '../bloc/home_plans_payment_method_bloc.dart';
 import '../bloc/home_plans_payment_method_event.dart';
@@ -30,6 +30,8 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _printRouteArgs();
+
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.white,
@@ -50,6 +52,7 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
             subscriberType: args.subscriberType,
             amount: args.amount,
             vatNote: args.vatNote,
+            selectedItems: args.selectedItems,
           ),
         );
 
@@ -57,6 +60,21 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
       },
       child: const _HomePlansPaymentMethodView(),
     );
+  }
+
+  void _printRouteArgs() {
+    debugPrint('HomePlansPaymentMethodScreen args:');
+    debugPrint('subscriberType: ${args.subscriberType}');
+    debugPrint('amount: ${args.amount}');
+    debugPrint('vatNote: ${args.vatNote}');
+    debugPrint('selectedItems count: ${args.selectedItems.length}');
+
+    for (final item in args.selectedItems) {
+      debugPrint(
+        'selectedItem: id=${item.id}, label=${item.label}, title=${item.title}, '
+        'subtitle=${item.subtitle}, price=${item.price}, planType=${item.planType}',
+      );
+    }
   }
 }
 
@@ -70,6 +88,8 @@ class _HomePlansPaymentMethodView extends StatefulWidget {
 
 class _HomePlansPaymentMethodViewState
     extends State<_HomePlansPaymentMethodView> {
+  int _lastWalletWarningRequestId = 0;
+
   @override
   void initState() {
     super.initState();
@@ -82,9 +102,9 @@ class _HomePlansPaymentMethodViewState
 
     // BalanceCubit is the app-wide owner of wallet balance. It will reuse its
     // cached API result when fresh, and only fetch again when needed.
-    context
-        .read<BalanceCubit>()
-        .loadBalances(deviceAccountId: accountInfo.idAcc);
+    context.read<BalanceCubit>().loadBalances(
+      deviceAccountId: accountInfo.idAcc,
+    );
   }
 
   Widget _buildPaymentMethodContent(
@@ -115,8 +135,8 @@ class _HomePlansPaymentMethodViewState
       selectedId: state.selectedMethodId,
       onSelect: (String id) {
         context.read<HomePlansPaymentMethodBloc>().add(
-              HomePlansPaymentMethodSelected(id),
-            );
+          HomePlansPaymentMethodSelected(id),
+        );
       },
       onPayWithCard: () {
         AppSession.appRoute = 'prepaidPlan';
@@ -129,7 +149,7 @@ class _HomePlansPaymentMethodViewState
       walletBalanceText: walletBalanceText,
       onPayFromWallet: () {
         _openWalletPaymentSheet(
-          context: context,
+          walletBalance: balanceState.walletBalance,
           walletBalanceText: walletBalanceText,
           amountText: state.amountText,
         );
@@ -140,31 +160,55 @@ class _HomePlansPaymentMethodViewState
     );
   }
 
-  void _openWalletPaymentSheet({
-    required BuildContext context,
+  Future<void> _openWalletPaymentSheet({
+    required double walletBalance,
     required String walletBalanceText,
     required String amountText,
-  }) {
-    AppSession.appRoute = 'prepaidPlanPurchase';
-    showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AutoRenewPrepaidTheme.sheetBg,
-      shape: AutoRenewPrepaidTheme.walletPaymentSheetShape(),
-      builder: (_) => WalletPaymentBottomSheet(
-        walletBalanceText: walletBalanceText,
-        amountText: amountText,
-      ),
+  }) async {
+    final paymentBloc = context.read<HomePlansPaymentMethodBloc>();
+
+    if (paymentBloc.state.status == HomePlansPaymentMethodStatus.submitting) {
+      return;
+    }
+
+    final bool? confirmed = await WalletPaymentBottomSheet.show(
+      context,
+      walletBalanceText: walletBalanceText,
+      amountText: amountText,
+      navigateToReceiptOnConfirm: false,
     );
+
+    if (!mounted || confirmed != true) return;
+
+    paymentBloc.add(
+      HomePlansPayFromWalletConfirmed(walletBalance: walletBalance),
+    );
+  }
+
+  void _showWalletWarningIfNeeded(HomePlansPaymentMethodState state) {
+    final bool hasNewWarning =
+        state.walletWarningRequestId > _lastWalletWarningRequestId;
+
+    if (!hasNewWarning || state.walletWarningMessage == null) return;
+
+    _lastWalletWarningRequestId = state.walletWarningRequestId;
+
+    AppToast.show(message: state.walletWarningMessage!, type: ToastType.error);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomePlansPaymentMethodBloc,
-        HomePlansPaymentMethodState>(
+    return BlocConsumer<
+      HomePlansPaymentMethodBloc,
+      HomePlansPaymentMethodState
+    >(
       listenWhen: (p, c) =>
-          p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
+          p.navTarget != c.navTarget ||
+          p.errorMessage != c.errorMessage ||
+          p.walletWarningRequestId != c.walletWarningRequestId,
       listener: (context, state) {
+        _showWalletWarningIfNeeded(state);
+
         // Show API/validation errors from bloc.
         if (state.errorMessage != null &&
             state.status == HomePlansPaymentMethodStatus.failure) {
@@ -181,12 +225,15 @@ class _HomePlansPaymentMethodViewState
               HomePlansPaymentMethodNavTarget.wallet) {
             // TODO: Add route when wallet payment screen is ready.
           } else if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
-            // TODO: Add route when payment success screen is ready.
+            context.push(
+              AppRoutes.homePlanPurchaseReceiptScreen,
+              extra: {'hideSaveCreditCard': true},
+            );
           }
 
           context.read<HomePlansPaymentMethodBloc>().add(
-                const HomePlansPaymentNavConsumed(),
-              );
+            const HomePlansPaymentNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
@@ -203,8 +250,8 @@ class _HomePlansPaymentMethodViewState
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
               isVatExclusive: state.vatNote.toLowerCase().contains(
-                    'no vat applied',
-                  ),
+                'no vat applied',
+              ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,

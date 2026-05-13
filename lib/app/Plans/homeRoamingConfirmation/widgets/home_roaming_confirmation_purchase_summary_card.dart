@@ -27,6 +27,7 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
     return HomeRoamingConfirmationPurchaseLineItem(
       id: item.id,
       type: item.type,
+      planTypeCode: item.planTypeCode,
       label: item.label,
       title: item.title,
       subtitle: 'begins immediately',
@@ -125,12 +126,15 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
           // Item blocks: strict 16/20/16/20 spacing from Figma.
           for (int i = 0; i < data.items.length; i++) ...[
             Padding(
-              padding: HomeRoamingConfirmationTheme.purchaseSummaryItemSectionPadding,
+              padding: HomeRoamingConfirmationTheme
+                  .purchaseSummaryItemSectionPadding,
               child: HomeRoamingConfirmationPurchaseItemRow(
                 item: _resolveDisplayItem(data.items[i]),
                 onRemove: () {
                   final itemId = data.items[i].id;
-                  final remainingItemCount = data.items.where((item) => item.id != itemId).length;
+                  final remainingItemCount = data.items
+                      .where((item) => item.id != itemId)
+                      .length;
 
                   onRemoveItem(itemId);
 
@@ -143,8 +147,10 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
             ),
             if (i != data.items.length - 1)
               Divider(
-                height: HomeRoamingConfirmationTheme.purchaseSummaryDividerHeight,
-                thickness: HomeRoamingConfirmationTheme.purchaseSummaryDividerThickness,
+                height:
+                    HomeRoamingConfirmationTheme.purchaseSummaryDividerHeight,
+                thickness: HomeRoamingConfirmationTheme
+                    .purchaseSummaryDividerThickness,
                 color: HomeRoamingConfirmationTheme.purchaseSummaryDividerColor,
               ),
           ],

@@ -24,6 +24,7 @@ class HomeRoamingConfirmationRepository {
       HomeRoamingConfirmationPurchaseLineItem(
         id: selectedPlan?.planId ?? 'roaming-plan',
         type: HomeRoamingConfirmationPurchaseLineType.primaryPlan,
+        planTypeCode: selectedPlan?.planType ?? '',
         // Label is derived from the selected API plan type.
         label: _planTypeLabel(selectedPlan?.planType),
         title: _planTitle(selectedPlan),

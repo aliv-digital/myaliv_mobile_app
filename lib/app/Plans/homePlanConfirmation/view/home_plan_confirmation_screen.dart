@@ -119,6 +119,20 @@ class _HomePlanConfirmationView extends StatelessWidget {
                         vatNote: state.data!.totals.vat > 0
                             ? 'vat included'
                             : 'no vat applied',
+                        selectedItems: state.data!.items
+                            .map(
+                              (item) => HomePlansPaymentSelectedItem(
+                                id: item.id,
+                                label: item.label,
+                                title: item.title,
+                                subtitle: item.subtitle,
+                                price: item.price,
+                                planType: HomePlansPaymentPlanType.fromCode(
+                                  item.planTypeCode,
+                                ),
+                              ),
+                            )
+                            .toList(growable: false),
                       ),
                     );
                   },
@@ -309,8 +323,10 @@ class _HomePlanConfirmationView extends StatelessWidget {
     HomePlanConfirmationState previous,
     HomePlanConfirmationState current,
   ) {
-    final termsActionChanged = previous.openTermsRequestId != current.openTermsRequestId;
-    final payNowActionChanged = previous.payNowRequestId != current.payNowRequestId;
+    final termsActionChanged =
+        previous.openTermsRequestId != current.openTermsRequestId;
+    final payNowActionChanged =
+        previous.payNowRequestId != current.payNowRequestId;
 
     return termsActionChanged || payNowActionChanged;
   }
@@ -326,7 +342,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
   }
 
   bool _isPromoFinished(HomePlanConfirmationPromoStatus status) {
-    return status == HomePlanConfirmationPromoStatus.applied || status == HomePlanConfirmationPromoStatus.failure;
+    return status == HomePlanConfirmationPromoStatus.applied ||
+        status == HomePlanConfirmationPromoStatus.failure;
   }
 
   String _promoToastMessage(
@@ -345,12 +362,14 @@ class _HomePlanConfirmationView extends StatelessWidget {
       }
     }
 
-    final responseDescription = state.promoResponse?.textAtPath('Definition.PromoCodeDesc') ?? '';
+    final responseDescription =
+        state.promoResponse?.textAtPath('Definition.PromoCodeDesc') ?? '';
     if (responseDescription.trim().isNotEmpty) {
       return responseDescription.trim();
     }
 
-    final responseName = state.promoResponse?.textAtPath('Definition.PromoCodeName') ?? '';
+    final responseName =
+        state.promoResponse?.textAtPath('Definition.PromoCodeName') ?? '';
     if (responseName.trim().isNotEmpty) {
       return responseName.trim();
     }

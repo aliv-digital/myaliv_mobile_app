@@ -142,6 +142,20 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                         vatNote: state.data!.totals.vat > 0
                             ? 'vat included'
                             : 'no vat applied',
+                        selectedItems: state.data!.items
+                            .map(
+                              (item) => HomePlansPaymentSelectedItem(
+                                id: item.id,
+                                label: item.label,
+                                title: item.title,
+                                subtitle: item.subtitle,
+                                price: item.price,
+                                planType: HomePlansPaymentPlanType.fromCode(
+                                  item.planTypeCode,
+                                ),
+                              ),
+                            )
+                            .toList(growable: false),
                       ),
                     );
                   },

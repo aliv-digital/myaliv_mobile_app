@@ -37,12 +37,7 @@ class HomePlanConfirmationTheme {
   // Each item row section padding:
   // Figma: left/right 16, top/bottom 20.
   static const EdgeInsets purchaseSummaryItemSectionPadding =
-      EdgeInsets.fromLTRB(
-    16,
-    20,
-    16,
-    20,
-  );
+      EdgeInsets.fromLTRB(16, 20, 16, 20);
 
   // Vertical text spacing inside header.
   static const double purchaseSummaryHeaderTitleToPhoneGap = 0;

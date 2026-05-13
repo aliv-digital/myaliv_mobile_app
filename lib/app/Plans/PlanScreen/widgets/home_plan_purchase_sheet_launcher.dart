@@ -163,11 +163,12 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   return HomePlanConfirmationRouteArgs(
     phoneNumber: _accountUsername(accountState),
     accountHolderName: _accountDisplayName(accountState),
+    primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
     primaryPlanName: _primaryPlanName(
       selectedApiPlan: selectedApiPlan,
       fallbackPlan: fallbackPlan,
     ),
-    primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? '',
+    primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? 'P',
     primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
     primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
     futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',

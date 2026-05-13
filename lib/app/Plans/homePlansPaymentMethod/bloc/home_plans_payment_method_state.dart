@@ -7,7 +7,7 @@ enum HomePlansPaymentMethodStatus {
   ready,
   submitting,
   success,
-  failure
+  failure,
 }
 
 enum HomePlansPaymentMethodNavTarget { none, addCard, wallet, paid }
@@ -22,8 +22,11 @@ class HomePlansPaymentMethodState extends Equatable {
 
   final double amount;
   final String vatNote;
+  final List<HomePlansPaymentSelectedItem> selectedItems;
 
   final HomePlansPaymentMethodNavTarget navTarget;
+  final String? walletWarningMessage;
+  final int walletWarningRequestId;
 
   const HomePlansPaymentMethodState({
     required this.status,
@@ -33,7 +36,10 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.selectedMethodId,
     required this.amount,
     required this.vatNote,
+    required this.selectedItems,
     required this.navTarget,
+    required this.walletWarningMessage,
+    required this.walletWarningRequestId,
   });
 
   factory HomePlansPaymentMethodState.initial() {
@@ -45,7 +51,10 @@ class HomePlansPaymentMethodState extends Equatable {
       selectedMethodId: null,
       amount: 5.00,
       vatNote: 'no vat applied',
+      selectedItems: [],
       navTarget: HomePlansPaymentMethodNavTarget.none,
+      walletWarningMessage: null,
+      walletWarningRequestId: 0,
     );
   }
 
@@ -68,7 +77,10 @@ class HomePlansPaymentMethodState extends Equatable {
     String? selectedMethodId,
     double? amount,
     String? vatNote,
+    List<HomePlansPaymentSelectedItem>? selectedItems,
     HomePlansPaymentMethodNavTarget? navTarget,
+    String? walletWarningMessage,
+    int? walletWarningRequestId,
   }) {
     return HomePlansPaymentMethodState(
       status: status ?? this.status,
@@ -78,19 +90,26 @@ class HomePlansPaymentMethodState extends Equatable {
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
       amount: amount ?? this.amount,
       vatNote: vatNote ?? this.vatNote,
+      selectedItems: selectedItems ?? this.selectedItems,
       navTarget: navTarget ?? this.navTarget,
+      walletWarningMessage: walletWarningMessage ?? this.walletWarningMessage,
+      walletWarningRequestId:
+          walletWarningRequestId ?? this.walletWarningRequestId,
     );
   }
 
   @override
   List<Object?> get props => [
-        status,
-        errorMessage,
-        subscriberType,
-        methods,
-        selectedMethodId,
-        amount,
-        vatNote,
-        navTarget,
-      ];
+    status,
+    errorMessage,
+    subscriberType,
+    methods,
+    selectedMethodId,
+    amount,
+    vatNote,
+    selectedItems,
+    navTarget,
+    walletWarningMessage,
+    walletWarningRequestId,
+  ];
 }

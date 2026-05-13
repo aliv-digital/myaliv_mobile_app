@@ -9,11 +9,12 @@ class HomePlansPaymentMethodBloc
   final HomePlansPaymentMethodRepository repository;
 
   HomePlansPaymentMethodBloc({required this.repository})
-      : super(HomePlansPaymentMethodState.initial()) {
+    : super(HomePlansPaymentMethodState.initial()) {
     on<HomePlansPaymentMethodStarted>(_onStarted);
     on<HomePlansPaymentMethodSelected>(_onSelected);
     on<HomePlansPayWithCardPressed>(_onPayWithCard);
     on<HomePlansPayFromWalletPressed>(_onPayFromWallet);
+    on<HomePlansPayFromWalletConfirmed>(_onPayFromWalletConfirmed);
     on<HomePlansPayNowPressed>(_onPayNow);
     on<HomePlansPaymentNavConsumed>(_onNavConsumed);
   }
@@ -31,15 +32,14 @@ class HomePlansPaymentMethodBloc
         subscriberType: event.subscriberType,
         amount: event.amount,
         vatNote: event.vatNote,
+        selectedItems: event.selectedItems,
       ),
     );
 
     try {
       // Load payment methods based on subscriber type.
-      final List<HomePlansSavedPaymentMethod> methods =
-          await repository.fetchPaymentMethods(
-        subscriberType: event.subscriberType,
-      );
+      final List<HomePlansSavedPaymentMethod> methods = await repository
+          .fetchPaymentMethods(subscriberType: event.subscriberType);
 
       // Select the first available method by default.
       emit(
@@ -81,14 +81,76 @@ class HomePlansPaymentMethodBloc
     emit(state.copyWith(navTarget: HomePlansPaymentMethodNavTarget.wallet));
   }
 
+  Future<void> _onPayFromWalletConfirmed(
+    HomePlansPayFromWalletConfirmed event,
+    Emitter<HomePlansPaymentMethodState> emit,
+  ) async {
+    if (state.status == HomePlansPaymentMethodStatus.submitting) return;
+
+    // Do not hit the wallet payment API unless balance can cover the order.
+    if (!_hasEnoughWalletBalance(event.walletBalance)) {
+      emit(
+        state.copyWith(
+          walletWarningMessage: 'Insufficient wallet balance',
+          walletWarningRequestId: state.walletWarningRequestId + 1,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        status: HomePlansPaymentMethodStatus.submitting,
+        errorMessage: null,
+      ),
+    );
+
+    try {
+      await repository.payFromWallet(
+        amount: state.amount,
+        selectedItems: state.selectedItems,
+      );
+
+      emit(
+        state.copyWith(
+          status: HomePlansPaymentMethodStatus.success,
+          navTarget: HomePlansPaymentMethodNavTarget.paid,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          status: HomePlansPaymentMethodStatus.failure,
+          errorMessage: _cleanErrorMessage(
+            error,
+            fallback: 'Wallet payment failed. Try again.',
+          ),
+        ),
+      );
+    }
+  }
+
+  bool _hasEnoughWalletBalance(double walletBalance) {
+    return walletBalance >= state.amount;
+  }
+
+  String _cleanErrorMessage(Object error, {required String fallback}) {
+    final message = error.toString().replaceFirst('Exception: ', '').trim();
+    return message.isEmpty ? fallback : message;
+  }
+
   Future<void> _onPayNow(
     HomePlansPayNowPressed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) async {
     if (!state.isPayNowEnabled) return;
 
-    emit(state.copyWith(
-        status: HomePlansPaymentMethodStatus.submitting, errorMessage: null));
+    emit(
+      state.copyWith(
+        status: HomePlansPaymentMethodStatus.submitting,
+        errorMessage: null,
+      ),
+    );
 
     try {
       await repository.payNow(methodId: state.selectedMethodId!);

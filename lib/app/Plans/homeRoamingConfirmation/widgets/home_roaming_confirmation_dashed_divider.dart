@@ -55,8 +55,9 @@ class _HomeRoamingConfirmationDashedPainter extends CustomPainter {
     final y = size.height / 2;
 
     while (x < size.width) {
-      final x2 =
-          (x + dashWidth).clamp(0.0, size.width).toDouble(); // ✅ no num issue
+      final x2 = (x + dashWidth)
+          .clamp(0.0, size.width)
+          .toDouble(); // ✅ no num issue
       canvas.drawLine(Offset(x, y), Offset(x2, y), paint);
       x += dashWidth + dashGap;
     }

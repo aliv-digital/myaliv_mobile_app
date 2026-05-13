@@ -22,8 +22,9 @@ class HomePlanConfirmationRepository {
     if (!args.isPrimaryPlanActive) {
       items.add(
         PurchaseLineItem(
-          id: 'primary',
+          id: args.primaryPlanId,
           type: PurchaseLineType.primaryPlan,
+          planTypeCode: args.primaryPlanTypeCode,
           // The label comes from the API plan type, not a hardcoded
           // "primary plan" string. This matches purchase_confirmation_screen.
           label: _primaryPlanTypeLabel(args.primaryPlanTypeCode),
@@ -40,6 +41,7 @@ class HomePlanConfirmationRepository {
           (addOn) => PurchaseLineItem(
             id: addOn.id,
             type: PurchaseLineType.addOn,
+            planTypeCode: addOn.planTypeCode,
             label: 'add-on',
             title: addOn.title,
             subtitle: 'begins immediately',

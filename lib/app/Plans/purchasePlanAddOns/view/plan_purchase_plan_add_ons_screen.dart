@@ -45,8 +45,10 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PlanPurchasePlanAddOnsBloc,
-        PlanPurchasePlanAddOnsState>(
+    return BlocListener<
+      PlanPurchasePlanAddOnsBloc,
+      PlanPurchasePlanAddOnsState
+    >(
       listenWhen: _shouldHandleNavigation,
       listener: _handleNavigation,
       child: Scaffold(
@@ -64,14 +66,18 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     );
   }
 
-  bool _shouldHandleNavigation(PlanPurchasePlanAddOnsState previous,
-      PlanPurchasePlanAddOnsState current) {
+  bool _shouldHandleNavigation(
+    PlanPurchasePlanAddOnsState previous,
+    PlanPurchasePlanAddOnsState current,
+  ) {
     return previous.skipRequestId != current.skipRequestId ||
         previous.proceedRequestId != current.proceedRequestId;
   }
 
   void _handleNavigation(
-      BuildContext context, PlanPurchasePlanAddOnsState state) {
+    BuildContext context,
+    PlanPurchasePlanAddOnsState state,
+  ) {
     if (state.skipRequestId > 0) {
       _openConfirmation(
         context,
@@ -106,8 +112,8 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
       showBackArrow: false,
       actionText: 'skip',
       onActionTextTap: () => context.read<PlanPurchasePlanAddOnsBloc>().add(
-            const PlanPurchasePlanAddOnsSkipPressed(),
-          ),
+        const PlanPurchasePlanAddOnsSkipPressed(),
+      ),
       onHomeTap: () => context.go(AppRoutes.home),
     );
   }
@@ -127,6 +133,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     return HomePlanConfirmationRouteArgs(
       phoneNumber: _accountUsername(accountState),
       accountHolderName: _accountDisplayName(accountState),
+      primaryPlanId: state.selectedApiPlan?.planId.trim() ?? '',
       primaryPlanName: _primaryPlanName(state),
       // Pass the raw API type code so the confirmation repository can decide
       // the display label in one place.
@@ -203,6 +210,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
             // Each add-on line also shows base price in the summary, while
             // this VAT contributes to the total VAT row.
             vatAmount: item.vatAmount,
+            planTypeCode: item.planTypeCode,
           ),
         )
         .toList();
@@ -226,8 +234,8 @@ class _PlanPurchaseBottomBar extends StatelessWidget {
           amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
           isButtonEnabled: state.selectedAddOnIds.isNotEmpty,
           onPayNow: () => context.read<PlanPurchasePlanAddOnsBloc>().add(
-                const PlanPurchasePlanAddOnsProceedPressed(),
-              ),
+            const PlanPurchasePlanAddOnsProceedPressed(),
+          ),
         );
       },
     );
@@ -294,17 +302,19 @@ class _ReadyContent extends StatelessWidget {
       return const <Widget>[_AddOnsEmptyState()];
     }
 
-    return state.addOns.map((item) {
-      final selected = state.selectedAddOnIds.contains(item.id);
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: PlanPurchaseAddOnTile(
-          item: item,
-          selected: selected,
-          onChanged: (selected) => _toggleAddOn(context, item, selected),
-        ),
-      );
-    }).toList(growable: false);
+    return state.addOns
+        .map((item) {
+          final selected = state.selectedAddOnIds.contains(item.id);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: PlanPurchaseAddOnTile(
+              item: item,
+              selected: selected,
+              onChanged: (selected) => _toggleAddOn(context, item, selected),
+            ),
+          );
+        })
+        .toList(growable: false);
   }
 
   void _toggleAddOn(
@@ -313,11 +323,11 @@ class _ReadyContent extends StatelessWidget {
     bool selected,
   ) {
     context.read<PlanPurchasePlanAddOnsBloc>().add(
-          PlanPurchasePlanAddOnsSelectionToggled(
-            addOnId: item.id,
-            selected: selected,
-          ),
-        );
+      PlanPurchasePlanAddOnsSelectionToggled(
+        addOnId: item.id,
+        selected: selected,
+      ),
+    );
   }
 }
 
@@ -337,11 +347,11 @@ class _ActivePlanCard extends StatelessWidget {
     final planName = _planNameFromApiOrFallback(selectedPlan?.planName);
     final activeDate = _dateFromApiOrFallback(
       selectedPlan?.startDateTime,
-      fallback: "--/--"//activePlan.activeDate,
+      fallback: "--/--", //activePlan.activeDate,
     );
     final expireDate = _dateFromApiOrFallback(
       selectedPlan?.endDateTime,
-      fallback: "--/--"//activePlan.expireDate,
+      fallback: "--/--", //activePlan.expireDate,
     );
 
     return PlanPurchasePlanRedImageCard(
@@ -349,13 +359,13 @@ class _ActivePlanCard extends StatelessWidget {
       planName: planName,
       activeLabel: 'active', //activePlan.activeDateLabel,
       activeDate: activeDate,
-      expireLabel: 'expire',//activePlan.expireDateLabel,
+      expireLabel: 'expire', //activePlan.expireDateLabel,
       expireDate: expireDate,
       autoRenew: state.autoRenew,
       onAutoRenewChanged: (value) {
         context.read<PlanPurchasePlanAddOnsBloc>().add(
-              PlanPurchasePlanAddOnsAutoRenewToggled(value),
-            );
+          PlanPurchasePlanAddOnsAutoRenewToggled(value),
+        );
       },
     );
   }

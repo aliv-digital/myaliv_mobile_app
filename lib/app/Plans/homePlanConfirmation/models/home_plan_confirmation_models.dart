@@ -9,21 +9,24 @@ class HomePlanConfirmationSelectedAddOn extends Equatable {
   final String title;
   final double price;
   final double vatAmount;
+  final String planTypeCode;
 
   const HomePlanConfirmationSelectedAddOn({
     required this.id,
     required this.title,
     required this.price,
     this.vatAmount = 0,
+    this.planTypeCode = 'S',
   });
 
   @override
-  List<Object?> get props => [id, title, price, vatAmount];
+  List<Object?> get props => [id, title, price, vatAmount, planTypeCode];
 }
 
 class HomePlanConfirmationRouteArgs extends Equatable {
   final String phoneNumber;
   final String accountHolderName;
+  final String primaryPlanId;
   final String primaryPlanName;
   final String primaryPlanTypeCode;
   final double primaryPlanPrice;
@@ -43,6 +46,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanName,
     required this.primaryPlanPrice,
     required this.flow,
+    this.primaryPlanId = '',
     this.primaryPlanTypeCode = '',
     this.primaryPlanVatAmount = 0,
     this.futurePlanStartDate = '',
@@ -54,22 +58,24 @@ class HomePlanConfirmationRouteArgs extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        accountHolderName,
-        primaryPlanName,
-        primaryPlanTypeCode,
-        primaryPlanPrice,
-        primaryPlanVatAmount,
-        futurePlanStartDate,
-        flow,
-        selectedAddOns,
-        isPrimaryPlanActive,
-      ];
+    phoneNumber,
+    accountHolderName,
+    primaryPlanId,
+    primaryPlanName,
+    primaryPlanTypeCode,
+    primaryPlanPrice,
+    primaryPlanVatAmount,
+    futurePlanStartDate,
+    flow,
+    selectedAddOns,
+    isPrimaryPlanActive,
+  ];
 }
 
 class PurchaseLineItem extends Equatable {
   final String id;
   final PurchaseLineType type;
+  final String planTypeCode;
 
   /// e.g. "primary plan" / "add-on"
   final String label;
@@ -85,6 +91,7 @@ class PurchaseLineItem extends Equatable {
   const PurchaseLineItem({
     required this.id,
     required this.type,
+    required this.planTypeCode,
     required this.label,
     required this.title,
     required this.subtitle,
@@ -92,17 +99,22 @@ class PurchaseLineItem extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+    id,
+    type,
+    planTypeCode,
+    label,
+    title,
+    subtitle,
+    price,
+  ];
 }
 
 class PurchaseTotals extends Equatable {
   final double subTotal;
   final double vat;
 
-  const PurchaseTotals({
-    required this.subTotal,
-    required this.vat,
-  });
+  const PurchaseTotals({required this.subTotal, required this.vat});
 
   double get total => subTotal + vat;
 
@@ -127,10 +139,10 @@ class HomePlanConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        headerTitle,
-        beginsOnDateText,
-        items,
-        totals,
-      ];
+    phoneNumber,
+    headerTitle,
+    beginsOnDateText,
+    items,
+    totals,
+  ];
 }
