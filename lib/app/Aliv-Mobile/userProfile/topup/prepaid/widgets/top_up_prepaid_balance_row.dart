@@ -15,7 +15,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final remaining = (balance - enteredAmount).clamp(0, double.infinity);
+    final remaining = (balance + enteredAmount).clamp(0, double.infinity);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),

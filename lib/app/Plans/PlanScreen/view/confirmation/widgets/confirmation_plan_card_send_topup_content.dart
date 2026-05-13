@@ -1,49 +1,39 @@
-// __PARKED_TOPUP_CONFIRMATION_CARD__
-// Parked: superseded by `confirmation_plan_card_my_number_content.dart` and
-// `confirmation_plan_card_send_topup_content.dart` to render two distinct
-// designs per top-up flow (My Number vs Send top-up).
-// Kept (commented-out) for reversibility; safe to delete after QA.
-/*
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
 import '../utils/confirmation_formatters.dart';
 
-class ConfirmationPlanCardTopupContent extends StatelessWidget {
+class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
   final DateTime? date;
   final bool? showBeginOn;
   final double topUpAmount;
-  final String? recipientPhone;
+  final String recipientPhone;
 
-  const ConfirmationPlanCardTopupContent({
+  const ConfirmationPlanCardSendTopUpContent({
     super.key,
     this.date,
     this.showBeginOn,
     required this.topUpAmount,
-    this.recipientPhone,
+    required this.recipientPhone,
   });
 
   @override
   Widget build(BuildContext context) {
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
-    final fullName = deviceFullName ?? nameFromEmail(accountInfo?.email);
-    final hasRecipient = recipientPhone?.trim().isNotEmpty == true;
-    final phoneSource = hasRecipient
-        ? recipientPhone!
-        : (accountInfo?.primaryPhoneNumber ??
-              accountInfo?.altPhoneNumber ??
-              accountInfo?.phoneNumber ??
-              '');
-    final phone = formatConfirmationPhone(phoneSource);
+    final senderPhone = formatConfirmationPhone(
+      accountInfo?.primaryPhoneNumber ??
+          accountInfo?.altPhoneNumber ??
+          accountInfo?.phoneNumber ??
+          '',
+    );
+    final recipient = formatConfirmationPhone(recipientPhone);
     final hasBeginDate = showBeginOn == true && date != null;
     final beginText = hasBeginDate
         ? 'begins ${DateFormat('dd-MM-yy').format(date!)}'
-        : 'begins immediately';
+        : 'immediately';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,13 +52,14 @@ class ConfirmationPlanCardTopupContent extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              const SizedBox(height: 4),
               Text(
-                fullName,
+                senderPhone,
                 style: const TextStyle(
-                  color: Color(0xFF121212),
-                  fontSize: 16,
+                  color: Color(0xFF707070),
+                  fontSize: 14,
                   fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
@@ -94,7 +85,7 @@ class ConfirmationPlanCardTopupContent extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      phone,
+                      recipient,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -141,4 +132,3 @@ class ConfirmationPlanCardTopupContent extends StatelessWidget {
     );
   }
 }
-*/

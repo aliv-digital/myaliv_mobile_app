@@ -235,15 +235,6 @@ class _MyNumberTab extends StatelessWidget {
                 enabled: state.canSubmit,
                 loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
                 onTap: () {
-                  final walletBalance =
-                      context.read<BalanceCubit>().state.walletBalance;
-                  if (state.amountValue > walletBalance) {
-                    AppToast.show(
-                      message: 'balance is not sufficient',
-                      type: ToastType.error,
-                    );
-                    return;
-                  }
                   //bloc.add(const TopUpPrepaidTopUpPressed());
                   context.push(
                     '${AppRoutes.confirmation}?amount=${state.amountValue.toStringAsFixed(2)}',
