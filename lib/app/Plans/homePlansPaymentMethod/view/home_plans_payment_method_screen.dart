@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
@@ -9,7 +12,6 @@ import '../../../../../../router/app_routes.dart';
 import '../../../../core/utils/app_session.dart';
 import '../../../Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import '../../../Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/bottomsheet/wallet_payment_bottom_sheet.dart';
-import '../../homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import '../bloc/home_plans_payment_method_bloc.dart';
 import '../bloc/home_plans_payment_method_event.dart';
 import '../bloc/home_plans_payment_method_state.dart';
@@ -46,7 +48,6 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
         bloc.add(
           HomePlansPaymentMethodStarted(
             subscriberType: args.subscriberType,
-            walletBalance: args.walletBalance,
             amount: args.amount,
             vatNote: args.vatNote,
           ),
@@ -59,15 +60,108 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
   }
 }
 
-class _HomePlansPaymentMethodView extends StatelessWidget {
+class _HomePlansPaymentMethodView extends StatefulWidget {
   const _HomePlansPaymentMethodView();
 
   @override
+  State<_HomePlansPaymentMethodView> createState() =>
+      _HomePlansPaymentMethodViewState();
+}
+
+class _HomePlansPaymentMethodViewState
+    extends State<_HomePlansPaymentMethodView> {
+  @override
+  void initState() {
+    super.initState();
+    _loadWalletBalanceIfPossible();
+  }
+
+  void _loadWalletBalanceIfPossible() {
+    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
+    if (accountInfo == null || accountInfo.idAcc <= 0) return;
+
+    // BalanceCubit is the app-wide owner of wallet balance. It will reuse its
+    // cached API result when fresh, and only fetch again when needed.
+    context
+        .read<BalanceCubit>()
+        .loadBalances(deviceAccountId: accountInfo.idAcc);
+  }
+
+  Widget _buildPaymentMethodContent(
+    BuildContext context,
+    HomePlansPaymentMethodState state,
+    bool isLoading,
+  ) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return BlocBuilder<BalanceCubit, BalanceState>(
+      builder: (context, balanceState) {
+        return _buildPaymentMethodSection(context, state, balanceState);
+      },
+    );
+  }
+
+  Widget _buildPaymentMethodSection(
+    BuildContext context,
+    HomePlansPaymentMethodState state,
+    BalanceState balanceState,
+  ) {
+    final walletBalanceText = '\$${balanceState.walletBalanceFormatted}';
+
+    return HomePlansPaymentMethodSection(
+      methods: state.methods,
+      selectedId: state.selectedMethodId,
+      onSelect: (String id) {
+        context.read<HomePlansPaymentMethodBloc>().add(
+              HomePlansPaymentMethodSelected(id),
+            );
+      },
+      onPayWithCard: () {
+        AppSession.appRoute = 'prepaidPlan';
+        context.push(AppRoutes.homePlanPurchaseReceiptScreen);
+        // context.read<HomePlansPaymentMethodBloc>().add(
+        //       const HomePlansPayWithCardPressed(),
+        //     );
+      },
+      showPayFromWallet: state.isPrepaidUser,
+      walletBalanceText: walletBalanceText,
+      onPayFromWallet: () {
+        _openWalletPaymentSheet(
+          context: context,
+          walletBalanceText: walletBalanceText,
+          amountText: state.amountText,
+        );
+        // context.read<HomePlansPaymentMethodBloc>().add(
+        //       const HomePlansPayFromWalletPressed(),
+        //     );
+      },
+    );
+  }
+
+  void _openWalletPaymentSheet({
+    required BuildContext context,
+    required String walletBalanceText,
+    required String amountText,
+  }) {
+    AppSession.appRoute = 'prepaidPlanPurchase';
+    showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AutoRenewPrepaidTheme.sheetBg,
+      shape: AutoRenewPrepaidTheme.walletPaymentSheetShape(),
+      builder: (_) => WalletPaymentBottomSheet(
+        walletBalanceText: walletBalanceText,
+        amountText: amountText,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocConsumer<
-      HomePlansPaymentMethodBloc,
-      HomePlansPaymentMethodState
-    >(
+    return BlocConsumer<HomePlansPaymentMethodBloc,
+        HomePlansPaymentMethodState>(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
@@ -91,8 +185,8 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
           }
 
           context.read<HomePlansPaymentMethodBloc>().add(
-            const HomePlansPaymentNavConsumed(),
-          );
+                const HomePlansPaymentNavConsumed(),
+              );
         }
       },
       builder: (context, state) {
@@ -109,8 +203,8 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
               isVatExclusive: state.vatNote.toLowerCase().contains(
-                'no vat applied',
-              ),
+                    'no vat applied',
+                  ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
@@ -149,53 +243,11 @@ class _HomePlansPaymentMethodView extends StatelessWidget {
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(29, 24, 29, 20),
                         sliver: SliverToBoxAdapter(
-                          child: isLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : HomePlansPaymentMethodSection(
-                                  methods: state.methods,
-                                  selectedId: state.selectedMethodId,
-                                  onSelect: (String id) {
-                                    context
-                                        .read<HomePlansPaymentMethodBloc>()
-                                        .add(
-                                          HomePlansPaymentMethodSelected(id),
-                                        );
-                                  },
-                                  onPayWithCard: () {
-                                    AppSession.appRoute = 'prepaidPlan';
-
-                                    context.push(
-                                      AppRoutes.homePlanPurchaseReceiptScreen,
-
-                                    );
-                                    // context.read<HomePlansPaymentMethodBloc>().add(
-                                    //       const HomePlansPayWithCardPressed(),
-                                    //     );
-                                  },
-                                  showPayFromWallet: state.isPrepaidUser,
-                                  walletBalanceText: state.walletBalanceText,
-                                  onPayFromWallet: () {
-                                    AppSession.appRoute = 'prepaidPlanPurchase';
-                                    showModalBottomSheet<bool>(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor:
-                                          AutoRenewPrepaidTheme.sheetBg,
-                                      shape:
-                                          AutoRenewPrepaidTheme.walletPaymentSheetShape(),
-                                      builder: (_) => WalletPaymentBottomSheet(
-                                        walletBalanceText:
-                                            state.walletBalanceText,
-                                        amountText: state.amountText,
-                                      ),
-                                    );
-                                    // context
-                                    //     .read<HomePlansPaymentMethodBloc>()
-                                    //     .add(
-                                    //       const HomePlansPayFromWalletPressed(),
-                                    //     );
-                                  },
-                                ),
+                          child: _buildPaymentMethodContent(
+                            context,
+                            state,
+                            isLoading,
+                          ),
                         ),
                       ),
                       const SliverToBoxAdapter(child: SizedBox(height: 90)),

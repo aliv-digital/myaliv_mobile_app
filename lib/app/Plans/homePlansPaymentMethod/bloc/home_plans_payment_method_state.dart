@@ -16,7 +16,6 @@ class HomePlansPaymentMethodState extends Equatable {
   final HomePlansPaymentMethodStatus status;
   final String? errorMessage;
   final HomePlansSubscriberType subscriberType;
-  final double walletBalance;
 
   final List<HomePlansSavedPaymentMethod> methods;
   final String? selectedMethodId;
@@ -30,7 +29,6 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.status,
     required this.errorMessage,
     required this.subscriberType,
-    required this.walletBalance,
     required this.methods,
     required this.selectedMethodId,
     required this.amount,
@@ -43,7 +41,6 @@ class HomePlansPaymentMethodState extends Equatable {
       status: HomePlansPaymentMethodStatus.initial,
       errorMessage: null,
       subscriberType: HomePlansSubscriberType.postpaid,
-      walletBalance: 0.0,
       methods: [],
       selectedMethodId: null,
       amount: 5.00,
@@ -53,7 +50,6 @@ class HomePlansPaymentMethodState extends Equatable {
   }
 
   String get amountText => r'$ ' + amount.toStringAsFixed(2);
-  String get walletBalanceText => r'$' + walletBalance.toStringAsFixed(2);
 
   bool get isPrepaidUser {
     return subscriberType == HomePlansSubscriberType.prepaid;
@@ -68,7 +64,6 @@ class HomePlansPaymentMethodState extends Equatable {
     HomePlansPaymentMethodStatus? status,
     String? errorMessage,
     HomePlansSubscriberType? subscriberType,
-    double? walletBalance,
     List<HomePlansSavedPaymentMethod>? methods,
     String? selectedMethodId,
     double? amount,
@@ -79,7 +74,6 @@ class HomePlansPaymentMethodState extends Equatable {
       status: status ?? this.status,
       errorMessage: errorMessage,
       subscriberType: subscriberType ?? this.subscriberType,
-      walletBalance: walletBalance ?? this.walletBalance,
       methods: methods ?? this.methods,
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
       amount: amount ?? this.amount,
@@ -93,7 +87,6 @@ class HomePlansPaymentMethodState extends Equatable {
         status,
         errorMessage,
         subscriberType,
-        walletBalance,
         methods,
         selectedMethodId,
         amount,

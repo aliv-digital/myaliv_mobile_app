@@ -10,19 +10,17 @@ abstract class HomePlansPaymentMethodEvent extends Equatable {
 
 class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final HomePlansSubscriberType subscriberType;
-  final double walletBalance;
   final double? amount;
   final String? vatNote;
 
   const HomePlansPaymentMethodStarted({
     required this.subscriberType,
-    required this.walletBalance,
     this.amount,
     this.vatNote,
   });
 
   @override
-  List<Object?> get props => [subscriberType, walletBalance, amount, vatNote];
+  List<Object?> get props => [subscriberType, amount, vatNote];
 }
 
 class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {
