@@ -128,7 +128,7 @@ class TermsAndConditionsDialog extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 29,
+                top: 26 + (badgeSize - closeButtonSize) / 2,
                 right: 26,
                 child: TermsDialogCloseButton(
                   size: closeButtonSize,
@@ -185,7 +185,7 @@ class TermsShieldBadge extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: HexColor.fromHex('#F9F5FF'),
+          color: HexColor.fromHex('#EDEBF7'),
         ),
         child: Container(
           width: resolvedCoreSize,
@@ -237,8 +237,8 @@ class TermsDialogCloseButton extends StatelessWidget {
       onTap: onTap,
       child: SvgPicture.asset(
         AssetConstant.blackRoundedCrossSVG,
-        width: 22,
-        height: 22,
+        width: size,
+        height: size,
       ),
     );
   }

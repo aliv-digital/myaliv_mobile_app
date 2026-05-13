@@ -30,12 +30,12 @@ class _ConfirmationTermsCheckboxState extends State<ConfirmationTermsCheckbox> {
       ..onTap = () async {
         await showTermsAndConditionsModal(
           context,
-          badgeSize: 66,
-          badgeInnerSize: 48,
-          badgeCoreSize: 32,
-          badgeIconWidth: 24,
-          badgeIconHeight: 24,
-          closeButtonSize: 48,
+          badgeSize: 48,
+          badgeInnerSize: 34,
+          badgeCoreSize: 24,
+          badgeIconWidth: 16,
+          badgeIconHeight: 16,
+          closeButtonSize: 30,
         );
       };
   }
