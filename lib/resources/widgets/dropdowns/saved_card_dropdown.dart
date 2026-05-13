@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'card_list_overlay.dart';
 import 'dropdown_content_widgets.dart';
 
@@ -125,7 +127,15 @@ class _SavedCardDropdownState extends State<SavedCardDropdown> {
           widget.onCardSelected(card);
           _removeOverlay();
         },
+        onAddNewCard: _onAddNewCard,
       ),
     );
+  }
+
+  Future<void> _onAddNewCard() async {
+    _removeOverlay();
+    await context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+    if (!mounted) return;
+    context.read<SavedCardsCubit>().refreshSavedCards();
   }
 }

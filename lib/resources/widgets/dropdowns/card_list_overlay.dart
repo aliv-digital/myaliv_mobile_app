@@ -7,6 +7,7 @@ class CardListOverlay extends StatelessWidget {
   final List<SavedCardModel> cards;
   final String? selectedToken;
   final ValueChanged<SavedCardModel> onCardSelected;
+  final VoidCallback? onAddNewCard;
 
   const CardListOverlay({
     super.key,
@@ -14,6 +15,7 @@ class CardListOverlay extends StatelessWidget {
     required this.cards,
     required this.selectedToken,
     required this.onCardSelected,
+    this.onAddNewCard,
   });
 
   @override
@@ -28,23 +30,71 @@ class CardListOverlay extends StatelessWidget {
           elevation: 6,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            constraints: const BoxConstraints(maxHeight: 250),
+            constraints: const BoxConstraints(maxHeight: 300),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: cards.length,
-              itemBuilder: (context, index) => _CardListItem(
-                card: cards[index],
-                isSelected: cards[index].token == selectedToken,
-                isFirst: index == 0,
-                isLast: index == cards.length - 1,
-                onTap: () => onCardSelected(cards[index]),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    itemCount: cards.length,
+                    itemBuilder: (context, index) => _CardListItem(
+                      card: cards[index],
+                      isSelected: cards[index].token == selectedToken,
+                      isFirst: index == 0,
+                      isLast: false,
+                      onTap: () => onCardSelected(cards[index]),
+                    ),
+                  ),
+                ),
+                if (onAddNewCard != null)
+                  _AddNewCardFooter(onTap: onAddNewCard!),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddNewCardFooter extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _AddNewCardFooter({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        alignment: Alignment.centerLeft,
+        child: const Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: '+ ',
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 18,
+                ),
+              ),
+              TextSpan(
+                text: 'add new card',
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 15,
+                ),
+              ),
+            ],
           ),
         ),
       ),

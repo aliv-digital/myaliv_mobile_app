@@ -59,7 +59,7 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
                   color: Colors.black,
                   fontSize: 14,
                   fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

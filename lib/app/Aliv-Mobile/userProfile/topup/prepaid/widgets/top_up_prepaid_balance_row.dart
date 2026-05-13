@@ -6,16 +6,21 @@ import '../theme/top_up_prepaid_theme.dart';
 class TopUpPrepaidBalanceRow extends StatelessWidget {
   final double balance;
   final double enteredAmount;
+  final bool isSendTopUp;
 
   const TopUpPrepaidBalanceRow({
     super.key,
     required this.balance,
     this.enteredAmount = 0,
+    this.isSendTopUp = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final remaining = (balance + enteredAmount).clamp(0, double.infinity);
+    final remaining = (isSendTopUp
+            ? balance - enteredAmount
+            : balance + enteredAmount)
+        .clamp(0, double.infinity);
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -31,9 +36,12 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-
-                SvgPicture.asset('assets/icons/wallet.svg',height: 18,width: 18,),
-                SizedBox(width: 10,),
+                SvgPicture.asset(
+                  'assets/icons/wallet.svg',
+                  height: 18,
+                  width: 18,
+                ),
+                SizedBox(width: 10),
 
                 Text(
                   'Current Balance will be',
@@ -45,21 +53,21 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(width: 10,),
+                SizedBox(width: 10),
                 Container(
                   // width: 63,
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 4,
+                  ),
                   decoration: ShapeDecoration(
                     color: const Color(0xFFF2F2F2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child:
-
-
-                    Text(
-                      AppUtils.formatPrice(remaining),
+                  child: Text(
+                    AppUtils.formatPrice(remaining),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: const Color(0xFF222222),
@@ -67,7 +75,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
                     ),
-                  )
+                  ),
                 ),
               ],
             ),
