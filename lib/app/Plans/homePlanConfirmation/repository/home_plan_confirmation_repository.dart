@@ -60,6 +60,11 @@ class HomePlanConfirmationRepository {
     );
   }
 
+  Future<void> applyPromo({required String code}) async {
+    // API integration will be added here once the promo endpoint is available.
+    return;
+  }
+
   String _primaryPlanTypeLabel(String planTypeCode) {
     switch (planTypeCode.trim().toUpperCase()) {
       case 'A':

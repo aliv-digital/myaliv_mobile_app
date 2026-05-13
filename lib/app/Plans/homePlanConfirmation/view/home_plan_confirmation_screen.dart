@@ -196,9 +196,28 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                       child: CustomPaymentBreakDownCard(
                                         backgroundColor:
                                             HexColor.fromHex('#645D9C'),
-                                        input:
-                                            const CustomPaymentBreakdownInputConfig(
-                                          value: '',
+                                        input: CustomPaymentBreakdownInputConfig(
+                                          value: state.promoCode,
+                                          enabled: state.promoStatus != HomePlanConfirmationPromoStatus.applying,
+                                          onChanged: (value) {
+                                            context
+                                                .read<
+                                                    HomePlanConfirmationBloc>()
+                                                .add(
+                                                  HomePlanConfirmationPromoCodeChanged(
+                                                    value,
+                                                  ),
+                                                );
+                                          },
+                                          onActionTap: () {
+                                            FocusScope.of(context).unfocus();
+                                            context
+                                                .read<
+                                                    HomePlanConfirmationBloc>()
+                                                .add(
+                                                  const HomePlanConfirmationPromoApplyPressed(),
+                                                );
+                                          },
                                           hintText: 'promo code',
                                           actionText: 'apply',
                                         ),

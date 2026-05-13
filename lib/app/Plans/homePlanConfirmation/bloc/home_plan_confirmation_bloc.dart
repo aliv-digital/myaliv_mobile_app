@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/home_plan_confirmation_models.dart';
 import '../repository/home_plan_confirmation_repository.dart';
@@ -12,6 +13,8 @@ class HomePlanConfirmationBloc
       : super(HomePlanConfirmationState.initial()) {
     on<HomePlanConfirmationStarted>(_onStarted);
     on<HomePlanConfirmationRemoveItemPressed>(_onRemoveItem);
+    on<HomePlanConfirmationPromoCodeChanged>(_onPromoCodeChanged);
+    on<HomePlanConfirmationPromoApplyPressed>(_onPromoApply);
     on<HomePlanConfirmationTermsPressed>(_onTerms);
     on<HomePlanConfirmationTermsCheckboxToggled>(
       _onTermsCheckboxToggled,
@@ -63,6 +66,54 @@ class HomePlanConfirmationBloc
         totals: totals,
       ),
     ));
+  }
+
+  void _onPromoCodeChanged(
+    HomePlanConfirmationPromoCodeChanged event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        promoCode: event.value,
+        promoStatus: HomePlanConfirmationPromoStatus.idle,
+        promoErrorMessage: '',
+      ),
+    );
+  }
+
+  Future<void> _onPromoApply(
+    HomePlanConfirmationPromoApplyPressed event,
+    Emitter<HomePlanConfirmationState> emit,
+  ) async {
+    if (!state.canApplyPromo) return;
+
+    final promoCode = state.promoCode.trim();
+
+    emit(
+      state.copyWith(
+        promoCode: promoCode,
+        promoStatus: HomePlanConfirmationPromoStatus.applying,
+        promoErrorMessage: '',
+      ),
+    );
+
+    try {
+      debugPrint("promo code : $promoCode");
+      await repository.applyPromo(code: promoCode);
+
+      emit(
+        state.copyWith(
+          promoStatus: HomePlanConfirmationPromoStatus.applied,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          promoStatus: HomePlanConfirmationPromoStatus.failure,
+          promoErrorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   void _onTerms(
