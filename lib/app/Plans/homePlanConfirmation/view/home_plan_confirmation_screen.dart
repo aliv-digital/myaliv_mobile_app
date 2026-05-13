@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/home_plan_confirmation_bloc.dart';
@@ -29,6 +31,7 @@ class HomePlanConfirmationScreen extends StatelessWidget {
       child: BlocProvider(
         create: (ctx) => HomePlanConfirmationBloc(
           repository: ctx.read<HomePlanConfirmationRepository>(),
+          accountInfoCubit: ctx.read<AccountInfoCubit>(),
         )..add(HomePlanConfirmationStarted(args)),
         child: const _HomePlanConfirmationView(),
       ),
@@ -41,62 +44,92 @@ class _HomePlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomePlanConfirmationBloc, HomePlanConfirmationState>(
-      listenWhen: (p, c) =>
-          p.openTermsRequestId != c.openTermsRequestId ||
-          p.payNowRequestId != c.payNowRequestId,
-      listener: (context, state) {
-        if (state.openTermsRequestId > 0) {
-          // Future: open terms page / bottom sheet
-          // ignore: avoid_print
-          print('Open Terms & Conditions');
-        }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<HomePlanConfirmationBloc, HomePlanConfirmationState>(
+          listenWhen: _shouldListenForNavigationActions,
+          listener: (context, state) {
+            if (state.openTermsRequestId > 0) {
+              // Future: open terms page / bottom sheet
+              // ignore: avoid_print
+              print('Open Terms & Conditions');
+            }
 
-        if (state.payNowRequestId > 0) {
-          // Future: start payment flow
-          // ignore: avoid_print
-          print('Pay Now pressed');
-        }
-      },
+            if (state.payNowRequestId > 0) {
+              // Future: start payment flow
+              // ignore: avoid_print
+              print('Pay Now pressed');
+            }
+          },
+        ),
+        BlocListener<HomePlanConfirmationBloc, HomePlanConfirmationState>(
+          listenWhen: _shouldListenForPromoResult,
+          listener: (context, state) {
+            switch (state.promoStatus) {
+              case HomePlanConfirmationPromoStatus.applied:
+                AppToast.show(
+                  message: _promoToastMessage(
+                    state,
+                    fallback: 'Promo code applied successfully.',
+                  ),
+                  type: ToastType.success,
+                );
+                break;
+              case HomePlanConfirmationPromoStatus.failure:
+                AppToast.show(
+                  message: _promoToastMessage(
+                    state,
+                    fallback: 'Invalid promo code.',
+                  ),
+                  type: ToastType.error,
+                );
+                break;
+              case HomePlanConfirmationPromoStatus.idle:
+              case HomePlanConfirmationPromoStatus.applying:
+                break;
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: HomePlanConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
         bottomNavigationBar:
             BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
-          builder: (context, state) {
-            if (state.status != HomePlanConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+              builder: (context, state) {
+                if (state.status != HomePlanConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-              buttonText: 'continue',
-              isVatExclusive: true,
-              isButtonEnabled: state.isTermsChecked,
-              buttonColor: const Color(0xFF645D9C),
-              onPayNow: () {
-                context.read<HomePlanConfirmationBloc>().add(
+                return DefaultBottomPayBar(
+                  buttonText: 'continue',
+                  isVatExclusive: true,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    context.read<HomePlanConfirmationBloc>().add(
                       const HomePlanConfirmationPayNowPressed(),
                     );
-                context.push(
-                  AppRoutes.homePlansPaymentMethodScreen,
-                  extra: HomePlansPaymentMethodRouteArgs(
-                    amount: state.data!.totals.total,
-                    vatNote: state.data!.totals.vat > 0
-                        ? 'vat included'
-                        : 'no vat applied',
-                  ),
+                    context.push(
+                      AppRoutes.homePlansPaymentMethodScreen,
+                      extra: HomePlansPaymentMethodRouteArgs(
+                        amount: state.data!.totals.total,
+                        vatNote: state.data!.totals.vat > 0
+                            ? 'vat included'
+                            : 'no vat applied',
+                      ),
+                    );
+                  },
+                  amountText:
+                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
                 );
               },
-              amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
-            );
-          },
-        ),
+            ),
 
         body: SafeArea(
-          child:
-              BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
+          child: BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -194,15 +227,24 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                         0,
                                       ),
                                       child: CustomPaymentBreakDownCard(
-                                        backgroundColor:
-                                            HexColor.fromHex('#645D9C'),
+                                        backgroundColor: HexColor.fromHex(
+                                          '#645D9C',
+                                        ),
                                         input: CustomPaymentBreakdownInputConfig(
                                           value: state.promoCode,
-                                          enabled: state.promoStatus != HomePlanConfirmationPromoStatus.applying,
+                                          enabled:
+                                              state.promoStatus !=
+                                              HomePlanConfirmationPromoStatus
+                                                  .applying,
+                                          isActionLoading:
+                                              state.promoStatus ==
+                                              HomePlanConfirmationPromoStatus
+                                                  .applying,
                                           onChanged: (value) {
                                             context
                                                 .read<
-                                                    HomePlanConfirmationBloc>()
+                                                  HomePlanConfirmationBloc
+                                                >()
                                                 .add(
                                                   HomePlanConfirmationPromoCodeChanged(
                                                     value,
@@ -213,7 +255,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                             FocusScope.of(context).unfocus();
                                             context
                                                 .read<
-                                                    HomePlanConfirmationBloc>()
+                                                  HomePlanConfirmationBloc
+                                                >()
                                                 .add(
                                                   const HomePlanConfirmationPromoApplyPressed(),
                                                 );
@@ -260,5 +303,58 @@ class _HomePlanConfirmationView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _shouldListenForNavigationActions(
+    HomePlanConfirmationState previous,
+    HomePlanConfirmationState current,
+  ) {
+    final termsActionChanged = previous.openTermsRequestId != current.openTermsRequestId;
+    final payNowActionChanged = previous.payNowRequestId != current.payNowRequestId;
+
+    return termsActionChanged || payNowActionChanged;
+  }
+
+  bool _shouldListenForPromoResult(
+    HomePlanConfirmationState previous,
+    HomePlanConfirmationState current,
+  ) {
+    final promoStatusChanged = previous.promoStatus != current.promoStatus;
+    final promoFinished = _isPromoFinished(current.promoStatus);
+
+    return promoStatusChanged && promoFinished;
+  }
+
+  bool _isPromoFinished(HomePlanConfirmationPromoStatus status) {
+    return status == HomePlanConfirmationPromoStatus.applied || status == HomePlanConfirmationPromoStatus.failure;
+  }
+
+  String _promoToastMessage(
+    HomePlanConfirmationState state, {
+    required String fallback,
+  }) {
+    final stateToastMessage = state.promoToastMessage.trim();
+    if (stateToastMessage.isNotEmpty) {
+      return stateToastMessage;
+    }
+
+    if (state.promoStatus == HomePlanConfirmationPromoStatus.failure) {
+      final errorMessage = state.promoErrorMessage.trim();
+      if (errorMessage.isNotEmpty) {
+        return errorMessage;
+      }
+    }
+
+    final responseDescription = state.promoResponse?.textAtPath('Definition.PromoCodeDesc') ?? '';
+    if (responseDescription.trim().isNotEmpty) {
+      return responseDescription.trim();
+    }
+
+    final responseName = state.promoResponse?.textAtPath('Definition.PromoCodeName') ?? '';
+    if (responseName.trim().isNotEmpty) {
+      return responseName.trim();
+    }
+
+    return fallback;
   }
 }

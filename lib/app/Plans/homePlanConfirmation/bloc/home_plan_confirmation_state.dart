@@ -1,9 +1,14 @@
 import 'package:equatable/equatable.dart';
 import '../models/home_plan_confirmation_models.dart';
+import '../models/home_plan_promo_response_model.dart';
 
 enum HomePlanConfirmationStatus { initial, loading, ready, error }
 
 enum HomePlanConfirmationPromoStatus { idle, applying, applied, failure }
+
+enum HomePlanConfirmationToastType { success, error }
+
+const Object _noChange = Object();
 
 class HomePlanConfirmationState extends Equatable {
   final HomePlanConfirmationStatus status;
@@ -20,6 +25,10 @@ class HomePlanConfirmationState extends Equatable {
   final String promoCode;
   final HomePlanConfirmationPromoStatus promoStatus;
   final String promoErrorMessage;
+  final HomePlanPromoResponse? promoResponse;
+  final int promoToastRequestId;
+  final String promoToastMessage;
+  final HomePlanConfirmationToastType promoToastType;
 
   const HomePlanConfirmationState({
     required this.status,
@@ -31,6 +40,10 @@ class HomePlanConfirmationState extends Equatable {
     required this.promoCode,
     required this.promoStatus,
     required this.promoErrorMessage,
+    required this.promoResponse,
+    required this.promoToastRequestId,
+    required this.promoToastMessage,
+    required this.promoToastType,
   });
 
   factory HomePlanConfirmationState.initial() {
@@ -44,6 +57,10 @@ class HomePlanConfirmationState extends Equatable {
       promoCode: '',
       promoStatus: HomePlanConfirmationPromoStatus.idle,
       promoErrorMessage: '',
+      promoResponse: null,
+      promoToastRequestId: 0,
+      promoToastMessage: '',
+      promoToastType: HomePlanConfirmationToastType.success,
     );
   }
 
@@ -61,6 +78,10 @@ class HomePlanConfirmationState extends Equatable {
     String? promoCode,
     HomePlanConfirmationPromoStatus? promoStatus,
     String? promoErrorMessage,
+    Object? promoResponse = _noChange,
+    int? promoToastRequestId,
+    String? promoToastMessage,
+    HomePlanConfirmationToastType? promoToastType,
   }) {
     return HomePlanConfirmationState(
       status: status ?? this.status,
@@ -72,19 +93,29 @@ class HomePlanConfirmationState extends Equatable {
       promoCode: promoCode ?? this.promoCode,
       promoStatus: promoStatus ?? this.promoStatus,
       promoErrorMessage: promoErrorMessage ?? this.promoErrorMessage,
+      promoResponse: identical(promoResponse, _noChange)
+          ? this.promoResponse
+          : promoResponse as HomePlanPromoResponse?,
+      promoToastRequestId: promoToastRequestId ?? this.promoToastRequestId,
+      promoToastMessage: promoToastMessage ?? this.promoToastMessage,
+      promoToastType: promoToastType ?? this.promoToastType,
     );
   }
 
   @override
   List<Object?> get props => [
-        status,
-        data,
-        errorMessage,
-        openTermsRequestId,
-        payNowRequestId,
-        isTermsChecked,
-        promoCode,
-        promoStatus,
-        promoErrorMessage,
-      ];
+    status,
+    data,
+    errorMessage,
+    openTermsRequestId,
+    payNowRequestId,
+    isTermsChecked,
+    promoCode,
+    promoStatus,
+    promoErrorMessage,
+    promoResponse,
+    promoToastRequestId,
+    promoToastMessage,
+    promoToastType,
+  ];
 }

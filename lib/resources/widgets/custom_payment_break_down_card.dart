@@ -59,7 +59,8 @@ class CustomPaymentBreakdownLineItem {
     this.isEmphasized = false,
     this.textStyle,
     this.labelStyle,
-    this.valueStyle, this.isInputField,
+    this.valueStyle,
+    this.isInputField,
   });
 
   final String label;
@@ -84,6 +85,7 @@ class CustomPaymentBreakdownInputConfig {
     this.hintText = 'promo code',
     this.actionText = 'apply',
     this.enabled = true,
+    this.isActionLoading = false,
     this.onChanged,
     this.onActionTap,
     this.textStyle,
@@ -102,6 +104,7 @@ class CustomPaymentBreakdownInputConfig {
   final String hintText;
   final String actionText;
   final bool enabled;
+  final bool isActionLoading;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onActionTap;
 
@@ -185,10 +188,8 @@ class CustomPaymentBreakDownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedRowText =
-        (rowTextStyle ?? AppTheme.paymentBreakdownRowText).copyWith(
-      color: textColor,
-    );
+    final resolvedRowText = (rowTextStyle ?? AppTheme.paymentBreakdownRowText)
+        .copyWith(color: textColor);
     final resolvedEmphasizedText =
         (emphasizedRowTextStyle ?? AppTheme.paymentBreakdownEmphasizedRowText)
             .copyWith(color: textColor);
@@ -282,8 +283,9 @@ class _CustomBreakdownRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseStyle = item.isEmphasized ? emphasizedTextStyle : textStyle;
-    final resolvedRowStyle =
-        item.textStyle == null ? baseStyle : baseStyle.merge(item.textStyle);
+    final resolvedRowStyle = item.textStyle == null
+        ? baseStyle
+        : baseStyle.merge(item.textStyle);
     final resolvedLabelStyle = item.labelStyle == null
         ? resolvedRowStyle
         : resolvedRowStyle.merge(item.labelStyle);
@@ -324,8 +326,9 @@ class _CustomPromoInputRowState extends State<_CustomPromoInputRow> {
     if (oldWidget.config.value != widget.config.value &&
         _controller.text != widget.config.value) {
       _controller.text = widget.config.value;
-      _controller.selection =
-          TextSelection.collapsed(offset: _controller.text.length);
+      _controller.selection = TextSelection.collapsed(
+        offset: _controller.text.length,
+      );
     }
   }
 
@@ -338,7 +341,9 @@ class _CustomPromoInputRowState extends State<_CustomPromoInputRow> {
   @override
   Widget build(BuildContext context) {
     final config = widget.config;
-    final canInteract = config.enabled;
+    final canInteract = config.enabled && !config.isActionLoading;
+    final actionStyle =
+        config.actionStyle ?? AppTheme.paymentBreakdownPromoAction;
 
     return Container(
       height: config.height,
@@ -369,16 +374,30 @@ class _CustomPromoInputRowState extends State<_CustomPromoInputRow> {
             behavior: HitTestBehavior.opaque,
             onTap: canInteract ? config.onActionTap : null,
             child: Opacity(
-              opacity: canInteract
+              opacity: config.enabled || config.isActionLoading
                   ? 1
                   : AppTheme.paymentBreakdownPromoDisabledOpacity,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-                child: Text(
-                  config.actionText,
-                  style: config.actionStyle ??
-                      AppTheme.paymentBreakdownPromoAction,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 10,
+                ),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 36),
+                  child: Center(
+                    child: config.isActionLoading
+                        ? SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                actionStyle.color ?? Colors.white,
+                              ),
+                            ),
+                          )
+                        : Text(config.actionText, style: actionStyle),
+                  ),
                 ),
               ),
             ),

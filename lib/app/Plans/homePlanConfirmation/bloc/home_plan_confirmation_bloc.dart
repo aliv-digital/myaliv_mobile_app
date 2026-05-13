@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../models/home_plan_confirmation_models.dart';
 import '../repository/home_plan_confirmation_repository.dart';
 import 'home_plan_confirmation_event.dart';
@@ -8,17 +9,18 @@ import 'home_plan_confirmation_state.dart';
 class HomePlanConfirmationBloc
     extends Bloc<HomePlanConfirmationEvent, HomePlanConfirmationState> {
   final HomePlanConfirmationRepository repository;
+  final AccountInfoCubit accountInfoCubit;
 
-  HomePlanConfirmationBloc({required this.repository})
-      : super(HomePlanConfirmationState.initial()) {
+  HomePlanConfirmationBloc({
+    required this.repository,
+    required this.accountInfoCubit,
+  }) : super(HomePlanConfirmationState.initial()) {
     on<HomePlanConfirmationStarted>(_onStarted);
     on<HomePlanConfirmationRemoveItemPressed>(_onRemoveItem);
     on<HomePlanConfirmationPromoCodeChanged>(_onPromoCodeChanged);
     on<HomePlanConfirmationPromoApplyPressed>(_onPromoApply);
     on<HomePlanConfirmationTermsPressed>(_onTerms);
-    on<HomePlanConfirmationTermsCheckboxToggled>(
-      _onTermsCheckboxToggled,
-    );
+    on<HomePlanConfirmationTermsCheckboxToggled>(_onTermsCheckboxToggled);
     on<HomePlanConfirmationPayNowPressed>(_onPayNow);
   }
 
@@ -30,16 +32,20 @@ class HomePlanConfirmationBloc
 
     try {
       final data = await repository.load(args: event.args);
-      emit(state.copyWith(
-        status: HomePlanConfirmationStatus.ready,
-        data: data,
-        isTermsChecked: event.args.defaultTermsChecked,
-      ));
+      emit(
+        state.copyWith(
+          status: HomePlanConfirmationStatus.ready,
+          data: data,
+          isTermsChecked: event.args.defaultTermsChecked,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: HomePlanConfirmationStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: HomePlanConfirmationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -57,15 +63,17 @@ class HomePlanConfirmationBloc
       vat: data.totals.vat,
     );
 
-    emit(state.copyWith(
-      data: HomePlanConfirmationData(
-        phoneNumber: data.phoneNumber,
-        headerTitle: data.headerTitle,
-        beginsOnDateText: data.beginsOnDateText,
-        items: updatedItems,
-        totals: totals,
+    emit(
+      state.copyWith(
+        data: HomePlanConfirmationData(
+          phoneNumber: data.phoneNumber,
+          headerTitle: data.headerTitle,
+          beginsOnDateText: data.beginsOnDateText,
+          items: updatedItems,
+          totals: totals,
+        ),
       ),
-    ));
+    );
   }
 
   void _onPromoCodeChanged(
@@ -77,6 +85,7 @@ class HomePlanConfirmationBloc
         promoCode: event.value,
         promoStatus: HomePlanConfirmationPromoStatus.idle,
         promoErrorMessage: '',
+        promoResponse: null,
       ),
     );
   }
@@ -94,26 +103,55 @@ class HomePlanConfirmationBloc
         promoCode: promoCode,
         promoStatus: HomePlanConfirmationPromoStatus.applying,
         promoErrorMessage: '',
+        promoResponse: null,
       ),
     );
 
     try {
-      debugPrint("promo code : $promoCode");
-      await repository.applyPromo(code: promoCode);
+      final accountInfo = accountInfoCubit.state.accountInfo;
+      final deviceAccountId = accountInfo?.idAcc ?? 0;
+
+      if (deviceAccountId <= 0) {
+        throw Exception('Device account ID not found.');
+      }
+
+      debugPrint('HomePlanConfirmationBloc: promo code=$promoCode');
+
+      final response = await repository.applyPromo(
+        code: promoCode,
+        deviceAcId: deviceAccountId,
+      );
+
+      debugPrint('HomePlanConfirmationBloc: apply promo response=$response');
+
+      debugPrint('is Applied : ${response.isApplied}');
 
       emit(
         state.copyWith(
-          promoStatus: HomePlanConfirmationPromoStatus.applied,
+          promoStatus: response.isApplied
+              ? HomePlanConfirmationPromoStatus.applied
+              : HomePlanConfirmationPromoStatus.failure,
+          promoErrorMessage: '',
+          promoResponse: response,
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
           promoStatus: HomePlanConfirmationPromoStatus.failure,
-          promoErrorMessage: e.toString(),
+          promoErrorMessage: _extractErrorMessage(e),
         ),
       );
     }
+  }
+
+  String _extractErrorMessage(Object error) {
+    final raw = error.toString();
+    const prefix = 'Exception:';
+    if (raw.startsWith(prefix)) {
+      return raw.substring(prefix.length).trim();
+    }
+    return raw.trim().isEmpty ? 'Failed to apply promo code.' : raw.trim();
   }
 
   void _onTerms(
