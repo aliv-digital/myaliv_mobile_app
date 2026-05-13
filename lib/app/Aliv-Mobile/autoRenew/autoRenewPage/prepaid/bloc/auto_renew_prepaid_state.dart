@@ -11,7 +11,6 @@ class AutoRenewPrepaidState extends Equatable {
   final List<AutoRenewPaymentMethod> methods;
   final String? selectedMethodId;
   final SavedCardModel? selectedCard;
-  final double walletBalance;
   final double walletPaymentAmount;
 
   final AutoRenewNavTarget navTarget;
@@ -23,7 +22,6 @@ class AutoRenewPrepaidState extends Equatable {
     required this.methods,
     required this.selectedMethodId,
     required this.selectedCard,
-    required this.walletBalance,
     required this.walletPaymentAmount,
     required this.navTarget,
     required this.errorMessage,
@@ -35,7 +33,6 @@ class AutoRenewPrepaidState extends Equatable {
         methods: [],
         selectedMethodId: null,
         selectedCard: null,
-        walletBalance: 129.00,
         walletPaymentAmount: 75.00,
         navTarget: AutoRenewNavTarget.none,
         errorMessage: null,
@@ -49,7 +46,6 @@ class AutoRenewPrepaidState extends Equatable {
   bool get canProceed =>
       (selectedCard != null || isWalletSelected || isNoAutoRenewSelected) &&
       !savingSelection;
-  String get walletBalanceText => '\$${walletBalance.toStringAsFixed(2)}';
   String get walletPaymentAmountText =>
       '\$ ${walletPaymentAmount.toStringAsFixed(2)}';
 
@@ -58,7 +54,6 @@ class AutoRenewPrepaidState extends Equatable {
     List<AutoRenewPaymentMethod>? methods,
     String? selectedMethodId,
     SavedCardModel? selectedCard,
-    double? walletBalance,
     double? walletPaymentAmount,
     AutoRenewNavTarget? navTarget,
     String? errorMessage,
@@ -72,7 +67,6 @@ class AutoRenewPrepaidState extends Equatable {
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
       selectedCard:
           clearSelectedCard ? null : (selectedCard ?? this.selectedCard),
-      walletBalance: walletBalance ?? this.walletBalance,
       walletPaymentAmount: walletPaymentAmount ?? this.walletPaymentAmount,
       navTarget: navTarget ?? this.navTarget,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -86,7 +80,6 @@ class AutoRenewPrepaidState extends Equatable {
         methods,
         selectedMethodId,
         selectedCard,
-        walletBalance,
         walletPaymentAmount,
         navTarget,
         errorMessage,

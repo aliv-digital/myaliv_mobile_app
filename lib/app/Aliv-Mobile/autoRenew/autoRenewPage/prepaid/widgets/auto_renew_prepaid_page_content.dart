@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -127,6 +129,10 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     final isNoRenewLoading =
         autoRenewPrepaidState.isNoAutoRenewSelected && isAutoRenewToggling;
 
+    final BalanceState balanceState = context.watch<BalanceCubit>().state;
+    final String walletBalanceText =
+        '\$${balanceState.walletBalanceFormatted}';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -136,7 +142,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
           onCardSelected: (card) {
             autoRenewPrepaidBloc.add(AutoRenewSavedCardSelected(card));
           },
-          walletBalanceText: autoRenewPrepaidState.walletBalanceText,
+          walletBalanceText: walletBalanceText,
           showNoAutoRenewRow: true,
           onPayFromWallet: () {
             autoRenewPrepaidBloc.add(

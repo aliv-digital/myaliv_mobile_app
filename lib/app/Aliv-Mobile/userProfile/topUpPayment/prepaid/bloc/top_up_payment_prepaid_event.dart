@@ -8,7 +8,11 @@ sealed class TopUpPaymentPrepaidEvent extends Equatable {
 }
 
 final class TopUpPaymentStarted extends TopUpPaymentPrepaidEvent {
-  const TopUpPaymentStarted();
+  final double? amount;
+  const TopUpPaymentStarted({this.amount});
+
+  @override
+  List<Object?> get props => [amount];
 }
 
 final class PaymentMethodSelected extends TopUpPaymentPrepaidEvent {

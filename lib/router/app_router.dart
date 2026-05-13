@@ -292,7 +292,13 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.topUpPaymentPrepaidScreen,
-        builder: (context, state) => const TopUpPaymentPrepaidScreen(),
+        builder: (context, state) {
+          final amountString = state.uri.queryParameters['amount'];
+          final amount = amountString == null
+              ? null
+              : double.tryParse(amountString);
+          return TopUpPaymentPrepaidScreen(amount: amount);
+        },
       ),
       GoRoute(
         path: AppRoutes.topUpPrepaidNumberPostpaidScreen,

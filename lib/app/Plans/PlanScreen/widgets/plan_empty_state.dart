@@ -18,50 +18,54 @@ class PlanEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon
-            Icon(
-              Icons.inbox_outlined,
-              size: 80,
-              color: Colors.grey[400],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
-            const SizedBox(height: 24),
-            // Message
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-                height: 1.4,
-              ),
-            ),
-            if (showRefreshButton) ...[
-              const SizedBox(height: 32),
-              // Refresh button
-              SizedBox(
-                width: 160,
-                child: DefaultButton(
-                  label: 'Refresh',
-                  isLoading: false,
-                  onPressed: onRefresh,
-                  backgroundColor: HomePlanTheme.planCardBackgroundColor,
-                  textColor: const Color(0xFF6D0DB8),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF6D0DB8),
-                    width: 1.5,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700],
+                    height: 1.4,
                   ),
                 ),
-              ),
-            ],
-          ],
-        ),
+                if (showRefreshButton) ...[
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: 160,
+                    child: DefaultButton(
+                      label: 'refresh',
+                      isLoading: false,
+                      onPressed: onRefresh,
+                      backgroundColor: HomePlanTheme.planCardBackgroundColor,
+                      textColor: const Color(0xFF645D9C),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF645D9C),
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -80,47 +84,59 @@ class AddOnsNoPrimaryPlanState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'you have no active primary plan, to purchase an add-on you must purchase a primary plan click purchase!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-                height: 1.4,
-              ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: onPurchasePlan,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF645D9C),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: const StadiumBorder(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 14,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'you have no active primary plan, to purchase an add-on you must purchase a primary plan click purchase!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700],
+                    height: 1.4,
+                  ),
                 ),
-              ),
-              child: const Text(
-                'purchase plan',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: onPurchasePlan,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF645D9C),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 14,
+                    ),
+                  ),
+                  child: const Text(
+                    'purchase plan',
+                    style: TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -139,44 +155,48 @@ class PlanErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Error icon
-            Icon(
-              Icons.error_outline,
-              size: 80,
-              color: Colors.red[300],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
-            const SizedBox(height: 24),
-            // Error message
-            Text(
-              errorMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-                height: 1.4,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'CircularPro',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700],
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: 160,
+                  child: DefaultButton(
+                    label: 'try again',
+                    isLoading: false,
+                    onPressed: onRetry,
+                    backgroundColor: const Color(0xFF645D9C),
+                    textColor: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 32),
-            // Retry button
-            SizedBox(
-              width: 160,
-              child: DefaultButton(
-                label: 'Try Again',
-                isLoading: false,
-                onPressed: onRetry,
-                backgroundColor: const Color(0xFF6D0DB8),
-                textColor: Colors.white,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
