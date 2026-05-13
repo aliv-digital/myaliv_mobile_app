@@ -56,10 +56,10 @@ class ConfirmationPlanCardSendTopUpContent extends StatelessWidget {
               Text(
                 senderPhone,
                 style: const TextStyle(
-                  color: Color(0xFF707070),
+                  color: Colors.black,
                   fontSize: 14,
                   fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
