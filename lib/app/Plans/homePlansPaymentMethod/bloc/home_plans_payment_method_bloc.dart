@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../model/home_plans_payment_method_models.dart';
 import '../repository/home_plans_payment_method_repository.dart';
@@ -34,6 +35,7 @@ class HomePlansPaymentMethodBloc
         amount: event.amount,
         vatNote: event.vatNote,
         selectedItems: event.selectedItems,
+        forceNow: event.forceNow,
       ),
     );
 
@@ -106,10 +108,19 @@ class HomePlansPaymentMethodBloc
       ),
     );
 
+    if(kDebugMode){
+      if(state.forceNow == true){
+        debugPrint("force now == TRUE, we came from *active now* button");
+      }else{
+        debugPrint("force now == FALSE, we came from *future plan* or something..");
+      }
+    }
+
     try {
       await repository.payFromWallet(
         amount: state.amount,
         selectedItems: state.selectedItems,
+        forceNow: state.forceNow,
       );
 
       emit(

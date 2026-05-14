@@ -120,6 +120,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                     vatNote: state.data!.totals.vat > 0
                         ? 'vat included'
                         : 'no vat applied',
+                    forceNow: state.forceNow,
                     selectedItems: state.data!.items
                         .map(
                           (item) => HomePlansPaymentSelectedItem(

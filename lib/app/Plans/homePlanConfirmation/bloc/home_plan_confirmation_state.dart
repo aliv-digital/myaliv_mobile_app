@@ -21,6 +21,7 @@ class HomePlanConfirmationState extends Equatable {
 
   /// Stores whether the user checked the terms checkbox.
   final bool isTermsChecked;
+  final bool forceNow;
 
   final String promoCode;
   final HomePlanConfirmationPromoStatus promoStatus;
@@ -37,6 +38,7 @@ class HomePlanConfirmationState extends Equatable {
     required this.openTermsRequestId,
     required this.payNowRequestId,
     required this.isTermsChecked,
+    required this.forceNow,
     required this.promoCode,
     required this.promoStatus,
     required this.promoErrorMessage,
@@ -54,6 +56,7 @@ class HomePlanConfirmationState extends Equatable {
       openTermsRequestId: 0,
       payNowRequestId: 0,
       isTermsChecked: false,
+      forceNow: false,
       promoCode: '',
       promoStatus: HomePlanConfirmationPromoStatus.idle,
       promoErrorMessage: '',
@@ -75,6 +78,7 @@ class HomePlanConfirmationState extends Equatable {
     int? openTermsRequestId,
     int? payNowRequestId,
     bool? isTermsChecked,
+    bool? forceNow,
     String? promoCode,
     HomePlanConfirmationPromoStatus? promoStatus,
     String? promoErrorMessage,
@@ -90,6 +94,7 @@ class HomePlanConfirmationState extends Equatable {
       openTermsRequestId: openTermsRequestId ?? this.openTermsRequestId,
       payNowRequestId: payNowRequestId ?? this.payNowRequestId,
       isTermsChecked: isTermsChecked ?? this.isTermsChecked,
+      forceNow: forceNow ?? this.forceNow,
       promoCode: promoCode ?? this.promoCode,
       promoStatus: promoStatus ?? this.promoStatus,
       promoErrorMessage: promoErrorMessage ?? this.promoErrorMessage,
@@ -104,18 +109,19 @@ class HomePlanConfirmationState extends Equatable {
 
   @override
   List<Object?> get props => [
-    status,
-    data,
-    errorMessage,
-    openTermsRequestId,
-    payNowRequestId,
-    isTermsChecked,
-    promoCode,
-    promoStatus,
-    promoErrorMessage,
-    promoResponse,
-    promoToastRequestId,
-    promoToastMessage,
-    promoToastType,
-  ];
+        status,
+        data,
+        errorMessage,
+        openTermsRequestId,
+        payNowRequestId,
+        isTermsChecked,
+        forceNow,
+        promoCode,
+        promoStatus,
+        promoErrorMessage,
+        promoResponse,
+        promoToastRequestId,
+        promoToastMessage,
+        promoToastType,
+      ];
 }

@@ -8,12 +8,14 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
   final BasePlanModel? selectedPlan;
   final DateTime? beginDate;
   final bool showDateField;
+  final bool forceNow;
 
   const HomeRoamingConfirmationRouteArgs({
     required this.phoneNumber,
     required this.showDateField,
     this.selectedPlan,
     this.beginDate,
+    this.forceNow = false,
   });
 
   HomeRoamingConfirmationRouteArgs copyWith({
@@ -21,22 +23,25 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
     BasePlanModel? selectedPlan,
     DateTime? beginDate,
     bool? showDateField,
+    bool? forceNow,
   }) {
     return HomeRoamingConfirmationRouteArgs(
       phoneNumber: phoneNumber ?? this.phoneNumber,
       selectedPlan: selectedPlan ?? this.selectedPlan,
       beginDate: beginDate ?? this.beginDate,
       showDateField: showDateField ?? this.showDateField,
+      forceNow: forceNow ?? this.forceNow,
     );
   }
 
   @override
   List<Object?> get props => [
-    phoneNumber,
-    selectedPlan,
-    beginDate,
-    showDateField,
-  ];
+        phoneNumber,
+        selectedPlan,
+        beginDate,
+        showDateField,
+        forceNow,
+      ];
 }
 
 class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
@@ -87,14 +92,14 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    type,
-    planTypeCode,
-    label,
-    title,
-    subtitle,
-    price,
-  ];
+        id,
+        type,
+        planTypeCode,
+        label,
+        title,
+        subtitle,
+        price,
+      ];
 }
 
 class HomeRoamingConfirmationPurchaseTotals extends Equatable {
@@ -129,10 +134,10 @@ class HomeRoamingConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-    phoneNumber,
-    headerTitle,
-    beginsOnDateText,
-    items,
-    totals,
-  ];
+        phoneNumber,
+        headerTitle,
+        beginsOnDateText,
+        items,
+        totals,
+      ];
 }

@@ -10,5 +10,6 @@ abstract class HomePlansPaymentMethodRepository {
   Future<void> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
   });
 }

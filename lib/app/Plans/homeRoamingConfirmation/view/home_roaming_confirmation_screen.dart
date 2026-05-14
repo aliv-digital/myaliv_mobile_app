@@ -140,6 +140,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                     vatNote: state.data!.totals.vat > 0
                         ? 'vat included'
                         : 'no vat applied',
+                    forceNow: state.routeArgs?.forceNow ?? false,
                     selectedItems: state.data!.items
                         .map(
                           (item) => HomePlansPaymentSelectedItem(

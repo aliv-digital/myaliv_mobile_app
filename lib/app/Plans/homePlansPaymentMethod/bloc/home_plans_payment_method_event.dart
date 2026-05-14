@@ -14,6 +14,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final double? amount;
   final String? vatNote;
   final List<HomePlansPaymentSelectedItem> selectedItems;
+  final bool forceNow;
 
   const HomePlansPaymentMethodStarted({
     required this.subscriberType,
@@ -21,6 +22,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
     this.amount,
     this.vatNote,
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
+    this.forceNow = false,
   });
 
   @override
@@ -30,6 +32,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
         amount,
         vatNote,
         selectedItems,
+        forceNow,
       ];
 }
 

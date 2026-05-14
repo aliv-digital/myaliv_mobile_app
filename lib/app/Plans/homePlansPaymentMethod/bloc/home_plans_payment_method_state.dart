@@ -24,6 +24,7 @@ class HomePlansPaymentMethodState extends Equatable {
   final double amount;
   final String vatNote;
   final List<HomePlansPaymentSelectedItem> selectedItems;
+  final bool forceNow;
 
   final HomePlansPaymentMethodNavTarget navTarget;
   final String? walletWarningMessage;
@@ -39,6 +40,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.amount,
     required this.vatNote,
     required this.selectedItems,
+    required this.forceNow,
     required this.navTarget,
     required this.walletWarningMessage,
     required this.walletWarningRequestId,
@@ -55,6 +57,7 @@ class HomePlansPaymentMethodState extends Equatable {
       amount: 5.00,
       vatNote: 'no vat applied',
       selectedItems: [],
+      forceNow: false,
       navTarget: HomePlansPaymentMethodNavTarget.none,
       walletWarningMessage: null,
       walletWarningRequestId: 0,
@@ -82,6 +85,7 @@ class HomePlansPaymentMethodState extends Equatable {
     double? amount,
     String? vatNote,
     List<HomePlansPaymentSelectedItem>? selectedItems,
+    bool? forceNow,
     HomePlansPaymentMethodNavTarget? navTarget,
     String? walletWarningMessage,
     int? walletWarningRequestId,
@@ -96,6 +100,7 @@ class HomePlansPaymentMethodState extends Equatable {
       amount: amount ?? this.amount,
       vatNote: vatNote ?? this.vatNote,
       selectedItems: selectedItems ?? this.selectedItems,
+      forceNow: forceNow ?? this.forceNow,
       navTarget: navTarget ?? this.navTarget,
       walletWarningMessage: walletWarningMessage ?? this.walletWarningMessage,
       walletWarningRequestId:
@@ -114,6 +119,7 @@ class HomePlansPaymentMethodState extends Equatable {
         amount,
         vatNote,
         selectedItems,
+        forceNow,
         navTarget,
         walletWarningMessage,
         walletWarningRequestId,

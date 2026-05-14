@@ -53,6 +53,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
                 selectedApiPlan: selectedApiPlan,
                 showDateField: true,
                 beginDate: pickedDate,
+                forceNow: false,
               ),
             );
           },
@@ -64,6 +65,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
                 selectedApiPlan: selectedApiPlan,
                 showDateField: false,
                 beginDate: DateTime.now(),
+                forceNow: true,
               ),
             );
           },
@@ -95,6 +97,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
               extra: _futurePlanConfirmationRouteArgs(
                 selectedApiPlan: selectedApiPlan,
                 fallbackPlan: plan,
+                forceNow: false,
               ),
             );
           },
@@ -127,6 +130,7 @@ HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
   required BasePlanModel? selectedApiPlan,
   required bool showDateField,
   required DateTime beginDate,
+  required bool forceNow,
 }) {
   return HomeRoamingConfirmationRouteArgs(
     // Keep the current phone fallback. The important dynamic data for this
@@ -135,20 +139,18 @@ HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
     selectedPlan: selectedApiPlan,
     beginDate: beginDate,
     showDateField: showDateField,
+    forceNow: forceNow,
   );
 }
 
-PlanPurchasePlanAddOnsRouteArgs? _selectedPlanRouteExtra({
+PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   required BasePlanModel? selectedApiPlan,
   required int? selectedIndex,
 }) {
-  if (selectedApiPlan == null) {
-    return null;
-  }
-
   return PlanPurchasePlanAddOnsRouteArgs(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
+    forceNow: true,
   );
 }
 
@@ -157,6 +159,7 @@ String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   required BasePlanModel? selectedApiPlan,
   required HomePlanModel fallbackPlan,
+  required bool forceNow,
 }) {
   final accountState = instance<AccountInfoCubit>().state;
 
@@ -173,6 +176,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
     primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
     futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',
     flow: HomePlanConfirmationEntryFlow.skip,
+    forceNow: forceNow,
   );
 }
 

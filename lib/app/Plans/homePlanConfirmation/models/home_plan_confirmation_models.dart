@@ -34,6 +34,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   final String futurePlanStartDate;
   final HomePlanConfirmationEntryFlow flow;
   final List<HomePlanConfirmationSelectedAddOn> selectedAddOns;
+  final bool forceNow;
 
   /// When `true`, the primary plan is treated as already-active context:
   /// it is omitted from charged line items and excluded from totals.
@@ -52,24 +53,26 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     this.futurePlanStartDate = '',
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
     this.isPrimaryPlanActive = false,
+    this.forceNow = false,
   });
 
   bool get defaultTermsChecked => flow == HomePlanConfirmationEntryFlow.skip;
 
   @override
   List<Object?> get props => [
-    phoneNumber,
-    accountHolderName,
-    primaryPlanId,
-    primaryPlanName,
-    primaryPlanTypeCode,
-    primaryPlanPrice,
-    primaryPlanVatAmount,
-    futurePlanStartDate,
-    flow,
-    selectedAddOns,
-    isPrimaryPlanActive,
-  ];
+        phoneNumber,
+        accountHolderName,
+        primaryPlanId,
+        primaryPlanName,
+        primaryPlanTypeCode,
+        primaryPlanPrice,
+        primaryPlanVatAmount,
+        futurePlanStartDate,
+        flow,
+        selectedAddOns,
+        isPrimaryPlanActive,
+        forceNow,
+      ];
 }
 
 class PurchaseLineItem extends Equatable {
@@ -100,14 +103,14 @@ class PurchaseLineItem extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    type,
-    planTypeCode,
-    label,
-    title,
-    subtitle,
-    price,
-  ];
+        id,
+        type,
+        planTypeCode,
+        label,
+        title,
+        subtitle,
+        price,
+      ];
 }
 
 class PurchaseTotals extends Equatable {
@@ -139,10 +142,10 @@ class HomePlanConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-    phoneNumber,
-    headerTitle,
-    beginsOnDateText,
-    items,
-    totals,
-  ];
+        phoneNumber,
+        headerTitle,
+        beginsOnDateText,
+        items,
+        totals,
+      ];
 }

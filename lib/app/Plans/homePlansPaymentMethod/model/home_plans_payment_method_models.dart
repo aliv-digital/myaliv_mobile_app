@@ -95,6 +95,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
 
   /// Selected plan/add-on lines from the confirmation screen.
   final List<HomePlansPaymentSelectedItem> selectedItems;
+  final bool forceNow;
 
   const HomePlansPaymentMethodRouteArgs({
     this.subscriberType = HomePlansSubscriberType.prepaid,
@@ -102,6 +103,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     this.amount,
     this.vatNote,
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
+    this.forceNow = false,
   });
 
   @override
@@ -111,5 +113,6 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
         amount,
         vatNote,
         selectedItems,
+        forceNow,
       ];
 }

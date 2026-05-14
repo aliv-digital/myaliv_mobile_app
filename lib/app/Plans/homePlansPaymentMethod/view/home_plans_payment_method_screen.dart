@@ -56,6 +56,7 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
             vatNote: args.vatNote,
             phoneNumber: args.phoneNumber,
             selectedItems: args.selectedItems,
+            forceNow: args.forceNow,
           ),
         );
 
@@ -71,6 +72,7 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
     debugPrint('phoneNumber: ${args.phoneNumber}');
     debugPrint('amount: ${args.amount}');
     debugPrint('vatNote: ${args.vatNote}');
+    debugPrint('forceNow: ${args.forceNow}');
     debugPrint('selectedItems count: ${args.selectedItems.length}');
 
     for (final item in args.selectedItems) {
@@ -108,7 +110,7 @@ class _HomePlansPaymentMethodViewState
     // cached API result when fresh, and only fetch again when needed.
     context.read<BalanceCubit>().loadBalances(
           deviceAccountId: accountInfo.idAcc,
-    );
+        );
   }
 
   Widget _buildPaymentMethodContent(
@@ -223,7 +225,8 @@ class _HomePlansPaymentMethodViewState
       'dateText': dateText,
       'timeText': timeText,
       'paymentMethod': paymentMethod,
-      'statusMessage': 'It will take a few moments for the plan to appear on the account.',
+      'statusMessage':
+          'It will take a few moments for the plan to appear on the account.',
       'leftType': 'service',
       'rightType': state.isPrepaidUser ? 'prepaid' : 'postpaid',
       'details': _buildReceiptDetails(
@@ -254,7 +257,9 @@ class _HomePlansPaymentMethodViewState
     final details = <HomePlanPurchaseReceiptDetailItem>[
       for (final item in state.selectedItems)
         HomePlanPurchaseReceiptDetailItem(
-          label: item.label.trim().isEmpty ? _planTypeLabel(item.planType) : item.label,
+          label: item.label.trim().isEmpty
+              ? _planTypeLabel(item.planType)
+              : item.label,
           value: item.title,
         ),
       HomePlanPurchaseReceiptDetailItem(label: 'date', value: dateText),
