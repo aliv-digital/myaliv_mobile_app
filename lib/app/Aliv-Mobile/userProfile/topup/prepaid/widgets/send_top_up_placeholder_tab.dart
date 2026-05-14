@@ -195,6 +195,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                   return TopUpPrepaidBalanceRow(
                     balance: balanceState.walletBalance,
                     enteredAmount: _amountValue,
+                    isSendTopUp: true,
                   );
                 },
               ),

@@ -39,11 +39,13 @@ class SavedCardTile extends StatelessWidget {
                   '${_brandLabel(card.brand)} ending in ${card.ending}',
                   style: AddOrEditCardsPrepaidTheme.cardTitle(),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  'expiry ${card.expiry}',
-                  style: AddOrEditCardsPrepaidTheme.cardSubTitle(),
-                ),
+                if (card.expiry.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    'expiry ${card.expiry}',
+                    style: AddOrEditCardsPrepaidTheme.cardSubTitle(),
+                  ),
+                ],
               ],
             ),
           ),
