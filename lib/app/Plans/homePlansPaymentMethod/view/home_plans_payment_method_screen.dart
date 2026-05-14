@@ -269,7 +269,7 @@ class _HomePlansPaymentMethodViewState
     if (phoneNumber.isNotEmpty) {
       details.add(
         HomePlanPurchaseReceiptDetailItem(
-          label: 'mobile no.',
+          label: 'phone no.',
           value: phoneNumber,
         ),
       );
