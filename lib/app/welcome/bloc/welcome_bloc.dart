@@ -69,7 +69,9 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
       HomeUiConfig(
         userType:
             paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
-        hasActivePlan: true,
+        // Defaults to false; home screen's PlansCubit listener flips this to
+        // true once the bundles API confirms a primary plan exists.
+        hasActivePlan: false,
         isFuturePlan: false,
         openMyLimits: false,
       ),

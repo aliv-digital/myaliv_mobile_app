@@ -12,7 +12,7 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
     : super(
         const HomeUiConfig(
           userType: UserType.postpaid,
-          hasActivePlan: true,
+          hasActivePlan: false,
           isFuturePlan: false,
           isCurrentPlan: false,
         ),

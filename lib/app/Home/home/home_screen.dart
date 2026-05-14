@@ -118,11 +118,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const SizedBox(height: 20),
 
-                    config.hasActivePlan
-                        ? config.userType == UserType.prepaid
-                              ? const PrepaidActivePlanCardWithData()
-                              : PostpaidActivePlanCard(config: config)
-                        : const NoActivePlanCard(),
+                    BlocBuilder<PlansCubit, PlansState>(
+                      buildWhen: (previous, current) =>
+                          previous.status != current.status ||
+                          previous.addOnsApiPrimaryPlans !=
+                              current.addOnsApiPrimaryPlans,
+                      builder: (context, plansState) {
+                        // While plans are still being fetched, show the active
+                        // plan card so its internal skeleton renders. Once the
+                        // API resolves, decide from real data instead of the
+                        // stale `hasActivePlan` flag.
+                        final isResolving =
+                            plansState.status == PlansStatus.initial ||
+                            plansState.status == PlansStatus.loading;
+                        final showActiveCard = isResolving ||
+                            plansState.addOnsApiPrimaryPlans.isNotEmpty;
+
+                        if (!showActiveCard) {
+                          return const NoActivePlanCard();
+                        }
+
+                        return config.userType == UserType.prepaid
+                            ? const PrepaidActivePlanCardWithData()
+                            : PostpaidActivePlanCard(config: config);
+                      },
+                    ),
 
                     config.userType == UserType.prepaid
                         ? const SizedBox(height: 40)

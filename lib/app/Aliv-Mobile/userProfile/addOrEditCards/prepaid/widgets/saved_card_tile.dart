@@ -88,23 +88,49 @@ class _BrandLogo extends StatelessWidget {
   final CardBrand brand;
   const _BrandLogo({required this.brand});
 
+  static const double _logoBoxWidth = 56;
+  static const double _logoBoxHeight = 40;
+  static const double _logoBoxRadius = 8;
+
   @override
   Widget build(BuildContext context) {
-    final isVisa = brand == CardBrand.visa;
-
     return Container(
-      // width: 52,
-      // height: 38,
-      alignment: Alignment.center,
+      width: _logoBoxWidth,
+      height: _logoBoxHeight,
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F5F7),
-        borderRadius: BorderRadius.circular(8),
-        // border: Border.all(color: const Color(0xFFE5E7EB)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(_logoBoxRadius),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 6,
+            offset: Offset(0, 1),
+          ),
+        ],
       ),
-      child: SvgPicture.asset(
-        isVisa ? AssetConstant.visaCardSVG : AssetConstant.masterCardSVG,
-        // keep natural size as figma look
+      alignment: Alignment.center,
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: _buildBrandArtwork(),
       ),
     );
+  }
+
+  Widget _buildBrandArtwork() {
+    switch (brand) {
+      case CardBrand.visa:
+        return SvgPicture.asset(AssetConstant.visaCardSVG, fit: BoxFit.contain);
+      case CardBrand.mastercard:
+        return SvgPicture.asset(
+          AssetConstant.masterCardSVG,
+          fit: BoxFit.contain,
+        );
+      case CardBrand.unknown:
+        return const Icon(
+          Icons.credit_card,
+          size: 22,
+          color: Color(0xFF707070),
+        );
+    }
   }
 }
