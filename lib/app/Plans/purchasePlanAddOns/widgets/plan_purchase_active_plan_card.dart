@@ -630,7 +630,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import '../model/plan_purchase_add_on_models.dart';
 
@@ -828,14 +827,14 @@ class _CardBody extends StatelessWidget {
                       children: [
                         _DateBlock(
                           label: plan.activeDateLabel, // "active"
-                          value: plan.activeDate,      // "20/08/24"
+                          value: plan.activeDate, // "20/08/24"
                           alignEnd: false,
                           scale: scale,
                         ),
                         const Spacer(),
                         _DateBlock(
                           label: plan.expireDateLabel, // "expire"
-                          value: plan.expireDate,      // "19/09/24"
+                          value: plan.expireDate, // "19/09/24"
                           alignEnd: true,
                           scale: scale,
                         ),
@@ -876,7 +875,10 @@ class AutoRenewToggle extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         height: 32 * scale,
-        padding: EdgeInsets.symmetric(horizontal: 8 * scale, vertical: 4 * scale),
+        padding: EdgeInsets.symmetric(
+          horizontal: 8 * scale,
+          vertical: 4 * scale,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(999),
@@ -901,13 +903,17 @@ class AutoRenewToggle extends StatelessWidget {
               width: 24 * scale,
               height: 24 * scale,
               decoration: BoxDecoration(
-                color: value ? PlanPurchasePlanAddOnsTheme.planRedDark : offCircle,
+                color: value
+                    ? PlanPurchasePlanAddOnsTheme.planRedDark
+                    : offCircle,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 value ? Icons.check : Icons.close,
                 size: 15 * scale,
-                color: value ? Colors.white : PlanPurchasePlanAddOnsTheme.planRedDark,
+                color: value
+                    ? Colors.white
+                    : PlanPurchasePlanAddOnsTheme.planRedDark,
               ),
             ),
           ],
@@ -933,7 +939,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(

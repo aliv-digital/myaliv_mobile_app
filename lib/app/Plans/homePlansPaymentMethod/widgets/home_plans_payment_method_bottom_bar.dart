@@ -34,11 +34,15 @@ class HomePlansPaymentMethodBottomBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(amountText,
-                          style: HomePlansPaymentMethodTheme.bottomAmount),
+                      Text(
+                        amountText,
+                        style: HomePlansPaymentMethodTheme.bottomAmount,
+                      ),
                       const SizedBox(height: 4),
-                      Text(vatNote,
-                          style: HomePlansPaymentMethodTheme.bottomVat),
+                      Text(
+                        vatNote,
+                        style: HomePlansPaymentMethodTheme.bottomVat,
+                      ),
                     ],
                   ),
                 ),
@@ -64,8 +68,10 @@ class HomePlansPaymentMethodBottomBar extends StatelessWidget {
                               color: Colors.white,
                             ),
                           )
-                        : Text('pay now',
-                            style: HomePlansPaymentMethodTheme.payNow),
+                        : Text(
+                            'pay now',
+                            style: HomePlansPaymentMethodTheme.payNow,
+                          ),
                   ),
                 ),
               ],

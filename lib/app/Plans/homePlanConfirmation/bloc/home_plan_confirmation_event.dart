@@ -7,8 +7,7 @@ sealed class HomePlanConfirmationEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class HomePlanConfirmationStarted
-    extends HomePlanConfirmationEvent {
+final class HomePlanConfirmationStarted extends HomePlanConfirmationEvent {
   final HomePlanConfirmationRouteArgs args;
   const HomePlanConfirmationStarted(this.args);
 
@@ -25,8 +24,22 @@ final class HomePlanConfirmationRemoveItemPressed
   List<Object?> get props => [itemId];
 }
 
-final class HomePlanConfirmationTermsPressed
+final class HomePlanConfirmationPromoCodeChanged
     extends HomePlanConfirmationEvent {
+  final String value;
+
+  const HomePlanConfirmationPromoCodeChanged(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}
+
+final class HomePlanConfirmationPromoApplyPressed
+    extends HomePlanConfirmationEvent {
+  const HomePlanConfirmationPromoApplyPressed();
+}
+
+final class HomePlanConfirmationTermsPressed extends HomePlanConfirmationEvent {
   const HomePlanConfirmationTermsPressed();
 }
 

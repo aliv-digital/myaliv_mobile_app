@@ -31,7 +31,9 @@ class HomeRoamingConfirmationScallopBottomClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(covariant HomeRoamingConfirmationScallopBottomClipper oldClipper) {
+  bool shouldReclip(
+    covariant HomeRoamingConfirmationScallopBottomClipper oldClipper,
+  ) {
     return oldClipper.radius != radius;
   }
 }

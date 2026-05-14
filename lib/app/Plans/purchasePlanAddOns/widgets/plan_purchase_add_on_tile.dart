@@ -40,7 +40,9 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
     // Split around the "minutes" token so values like "100minutes"
     // become "100 min" without hardcoding the numeric portion.
     final prefix = trimmedValue.substring(0, minutesIndex).trimRight();
-    final suffix = trimmedValue.substring(minutesIndex + minutesText.length).trimLeft();
+    final suffix = trimmedValue
+        .substring(minutesIndex + minutesText.length)
+        .trimLeft();
 
     final parts = <String>[
       if (prefix.isNotEmpty) prefix,
@@ -54,8 +56,9 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = PlanPurchasePlanAddOnsTheme.outlinePurple;
-    final cardRadius =
-        BorderRadius.circular(PlanPurchasePlanAddOnsTheme.addOnCardRadius);
+    final cardRadius = BorderRadius.circular(
+      PlanPurchasePlanAddOnsTheme.addOnCardRadius,
+    );
 
     return Material(
       color: Colors.transparent,
@@ -66,8 +69,9 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: PlanPurchasePlanAddOnsTheme.cardWhite,
             borderRadius: cardRadius,
-            border:
-                selected ? Border.all(color: borderColor, width: 1.2) : null,
+            border: selected
+                ? Border.all(color: borderColor, width: 1.2)
+                : null,
             boxShadow: const [
               BoxShadow(
                 blurRadius: 16,
@@ -90,16 +94,14 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                         style: PlanPurchasePlanAddOnsTheme.addOnTitle,
                       ),
                     ),
-                    _SquareCheckbox(
-                      value: selected,
-                      onChanged: onChanged,
-                    ),
+                    _SquareCheckbox(value: selected, onChanged: onChanged),
                   ],
                 ),
 
                 const SizedBox(
-                    height:
-                        PlanPurchasePlanAddOnsTheme.addOnCardTitleToDetailsGap),
+                  height:
+                      PlanPurchasePlanAddOnsTheme.addOnCardTitleToDetailsGap,
+                ),
 
                 Row(
                   children: [
@@ -108,8 +110,9 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
                         children: [
                           _DataIcon(),
                           const SizedBox(
-                              width: PlanPurchasePlanAddOnsTheme
-                                  .addOnCardIconToLabelGap),
+                            width: PlanPurchasePlanAddOnsTheme
+                                .addOnCardIconToLabelGap,
+                          ),
                           Text(
                             item.subtitleLabel,
                             style: PlanPurchasePlanAddOnsTheme.addOnLabel,

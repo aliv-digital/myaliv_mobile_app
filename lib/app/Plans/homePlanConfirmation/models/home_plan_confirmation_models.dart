@@ -9,21 +9,24 @@ class HomePlanConfirmationSelectedAddOn extends Equatable {
   final String title;
   final double price;
   final double vatAmount;
+  final String planTypeCode;
 
   const HomePlanConfirmationSelectedAddOn({
     required this.id,
     required this.title,
     required this.price,
     this.vatAmount = 0,
+    this.planTypeCode = 'S',
   });
 
   @override
-  List<Object?> get props => [id, title, price, vatAmount];
+  List<Object?> get props => [id, title, price, vatAmount, planTypeCode];
 }
 
 class HomePlanConfirmationRouteArgs extends Equatable {
   final String phoneNumber;
   final String accountHolderName;
+  final String primaryPlanId;
   final String primaryPlanName;
   final String primaryPlanTypeCode;
   final double primaryPlanPrice;
@@ -31,6 +34,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   final String futurePlanStartDate;
   final HomePlanConfirmationEntryFlow flow;
   final List<HomePlanConfirmationSelectedAddOn> selectedAddOns;
+  final bool forceNow;
 
   /// When `true`, the primary plan is treated as already-active context:
   /// it is omitted from charged line items and excluded from totals.
@@ -43,11 +47,13 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanName,
     required this.primaryPlanPrice,
     required this.flow,
+    this.primaryPlanId = '',
     this.primaryPlanTypeCode = '',
     this.primaryPlanVatAmount = 0,
     this.futurePlanStartDate = '',
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
     this.isPrimaryPlanActive = false,
+    this.forceNow = false,
   });
 
   bool get defaultTermsChecked => flow == HomePlanConfirmationEntryFlow.skip;
@@ -56,6 +62,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   List<Object?> get props => [
         phoneNumber,
         accountHolderName,
+        primaryPlanId,
         primaryPlanName,
         primaryPlanTypeCode,
         primaryPlanPrice,
@@ -64,12 +71,14 @@ class HomePlanConfirmationRouteArgs extends Equatable {
         flow,
         selectedAddOns,
         isPrimaryPlanActive,
+        forceNow,
       ];
 }
 
 class PurchaseLineItem extends Equatable {
   final String id;
   final PurchaseLineType type;
+  final String planTypeCode;
 
   /// e.g. "primary plan" / "add-on"
   final String label;
@@ -85,6 +94,7 @@ class PurchaseLineItem extends Equatable {
   const PurchaseLineItem({
     required this.id,
     required this.type,
+    required this.planTypeCode,
     required this.label,
     required this.title,
     required this.subtitle,
@@ -92,17 +102,22 @@ class PurchaseLineItem extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+        id,
+        type,
+        planTypeCode,
+        label,
+        title,
+        subtitle,
+        price,
+      ];
 }
 
 class PurchaseTotals extends Equatable {
   final double subTotal;
   final double vat;
 
-  const PurchaseTotals({
-    required this.subTotal,
-    required this.vat,
-  });
+  const PurchaseTotals({required this.subTotal, required this.vat});
 
   double get total => subTotal + vat;
 

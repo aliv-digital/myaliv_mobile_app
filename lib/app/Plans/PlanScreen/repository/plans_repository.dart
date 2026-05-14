@@ -34,9 +34,9 @@ class PlansRepository {
     PlanApiService? apiService,
     PlanParserService? parserService,
     PlanCacheService? cacheService,
-  })  : _apiService = apiService ?? PlanApiService(),
-        _parserService = parserService ?? PlanParserService(),
-        _cacheService = cacheService ?? PlanCacheService();
+  }) : _apiService = apiService ?? PlanApiService(),
+       _parserService = parserService ?? PlanParserService(),
+       _cacheService = cacheService ?? PlanCacheService();
 
   final PlanApiService _apiService;
   final PlanParserService _parserService;
@@ -50,7 +50,8 @@ class PlansRepository {
     Duration cacheTtl = const Duration(hours: 1),
   }) async {
     // Return cached data if available and fresh
-    if (!forceRefresh && _cacheService.hasFreshCategorizedPlans(ttl: cacheTtl)) {
+    if (!forceRefresh &&
+        _cacheService.hasFreshCategorizedPlans(ttl: cacheTtl)) {
       final cached = _cacheService.getCategorizedPlans();
       if (cached != null) return cached;
     }
@@ -197,10 +198,8 @@ class PlansRepository {
         .asMap()
         .entries
         .map(
-          (entry) => _SortablePrimaryPlan(
-            originalIndex: entry.key,
-            plan: entry.value,
-          ),
+          (entry) =>
+              _SortablePrimaryPlan(originalIndex: entry.key, plan: entry.value),
         )
         .toList(growable: false);
 
@@ -238,14 +237,16 @@ class PlansRepository {
             value: _buildAddOnValue(addOnPlan),
             price: addOnPlan.planAmount,
             vatAmount: addOnPlan.vatAmount,
+            planTypeCode: addOnPlan.planType,
           ),
         )
         .toList(growable: false);
   }
 
   String _buildAddOnLabel(BasePlanModel addOnPlan) {
-    final firstBucket =
-        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return 'balance';
@@ -269,8 +270,9 @@ class PlansRepository {
   }
 
   String _buildAddOnValue(BasePlanModel addOnPlan) {
-    final firstBucket =
-        addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return '';
@@ -311,10 +313,7 @@ class PlansRepository {
 }
 
 class _SortablePrimaryPlan {
-  const _SortablePrimaryPlan({
-    required this.originalIndex,
-    required this.plan,
-  });
+  const _SortablePrimaryPlan({required this.originalIndex, required this.plan});
 
   final int originalIndex;
   final BasePlanModel plan;

@@ -5,6 +5,7 @@ class HomePlanAddOnModel {
   final String value; // e.g. 1gb
   final double price; // base amount before VAT
   final double vatAmount;
+  final String planTypeCode;
 
   const HomePlanAddOnModel({
     required this.id,
@@ -13,6 +14,7 @@ class HomePlanAddOnModel {
     required this.value,
     required this.price,
     required this.vatAmount,
+    this.planTypeCode = 'S',
   });
 
   double get totalPrice => price + vatAmount;

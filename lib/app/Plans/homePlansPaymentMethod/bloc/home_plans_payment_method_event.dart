@@ -10,17 +10,30 @@ abstract class HomePlansPaymentMethodEvent extends Equatable {
 
 class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final HomePlansSubscriberType subscriberType;
+  final String phoneNumber;
   final double? amount;
   final String? vatNote;
+  final List<HomePlansPaymentSelectedItem> selectedItems;
+  final bool forceNow;
 
   const HomePlansPaymentMethodStarted({
     required this.subscriberType,
+    this.phoneNumber = '',
     this.amount,
     this.vatNote,
+    this.selectedItems = const <HomePlansPaymentSelectedItem>[],
+    this.forceNow = false,
   });
 
   @override
-  List<Object?> get props => [subscriberType, amount, vatNote];
+  List<Object?> get props => [
+        subscriberType,
+        phoneNumber,
+        amount,
+        vatNote,
+        selectedItems,
+        forceNow,
+      ];
 }
 
 class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {
@@ -37,6 +50,15 @@ class HomePlansPayWithCardPressed extends HomePlansPaymentMethodEvent {
 
 class HomePlansPayFromWalletPressed extends HomePlansPaymentMethodEvent {
   const HomePlansPayFromWalletPressed();
+}
+
+class HomePlansPayFromWalletConfirmed extends HomePlansPaymentMethodEvent {
+  final double walletBalance;
+
+  const HomePlansPayFromWalletConfirmed({required this.walletBalance});
+
+  @override
+  List<Object?> get props => [walletBalance];
 }
 
 class HomePlansPayNowPressed extends HomePlansPaymentMethodEvent {

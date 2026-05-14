@@ -8,12 +8,14 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
   final BasePlanModel? selectedPlan;
   final DateTime? beginDate;
   final bool showDateField;
+  final bool forceNow;
 
   const HomeRoamingConfirmationRouteArgs({
     required this.phoneNumber,
     required this.showDateField,
     this.selectedPlan,
     this.beginDate,
+    this.forceNow = false,
   });
 
   HomeRoamingConfirmationRouteArgs copyWith({
@@ -21,12 +23,14 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
     BasePlanModel? selectedPlan,
     DateTime? beginDate,
     bool? showDateField,
+    bool? forceNow,
   }) {
     return HomeRoamingConfirmationRouteArgs(
       phoneNumber: phoneNumber ?? this.phoneNumber,
       selectedPlan: selectedPlan ?? this.selectedPlan,
       beginDate: beginDate ?? this.beginDate,
       showDateField: showDateField ?? this.showDateField,
+      forceNow: forceNow ?? this.forceNow,
     );
   }
 
@@ -36,12 +40,14 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
         selectedPlan,
         beginDate,
         showDateField,
+        forceNow,
       ];
 }
 
 class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   final String id;
   final HomeRoamingConfirmationPurchaseLineType type;
+  final String planTypeCode;
 
   /// e.g. "primary plan" / "add-on"
   final String label;
@@ -57,6 +63,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   const HomeRoamingConfirmationPurchaseLineItem({
     required this.id,
     required this.type,
+    required this.planTypeCode,
     required this.label,
     required this.title,
     required this.subtitle,
@@ -66,6 +73,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   HomeRoamingConfirmationPurchaseLineItem copyWith({
     String? id,
     HomeRoamingConfirmationPurchaseLineType? type,
+    String? planTypeCode,
     String? label,
     String? title,
     String? subtitle,
@@ -74,6 +82,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
     return HomeRoamingConfirmationPurchaseLineItem(
       id: id ?? this.id,
       type: type ?? this.type,
+      planTypeCode: planTypeCode ?? this.planTypeCode,
       label: label ?? this.label,
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
@@ -82,7 +91,15 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, type, label, title, subtitle, price];
+  List<Object?> get props => [
+        id,
+        type,
+        planTypeCode,
+        label,
+        title,
+        subtitle,
+        price,
+      ];
 }
 
 class HomeRoamingConfirmationPurchaseTotals extends Equatable {

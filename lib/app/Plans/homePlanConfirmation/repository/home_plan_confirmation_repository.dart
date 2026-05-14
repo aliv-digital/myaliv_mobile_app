@@ -1,6 +1,16 @@
+import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+
 import '../models/home_plan_confirmation_models.dart';
+import '../models/home_plan_promo_response_model.dart';
 
 class HomePlanConfirmationRepository {
+  HomePlanConfirmationRepository({NetworkService? networkService})
+    : _networkService = networkService ?? instance<NetworkService>();
+
+  final NetworkService _networkService;
+
   /// Future: call API, build the same data shape, return it.
   Future<HomePlanConfirmationData> load({
     required HomePlanConfirmationRouteArgs args,
@@ -12,8 +22,9 @@ class HomePlanConfirmationRepository {
     if (!args.isPrimaryPlanActive) {
       items.add(
         PurchaseLineItem(
-          id: 'primary',
+          id: args.primaryPlanId,
           type: PurchaseLineType.primaryPlan,
+          planTypeCode: args.primaryPlanTypeCode,
           // The label comes from the API plan type, not a hardcoded
           // "primary plan" string. This matches purchase_confirmation_screen.
           label: _primaryPlanTypeLabel(args.primaryPlanTypeCode),
@@ -30,6 +41,7 @@ class HomePlanConfirmationRepository {
           (addOn) => PurchaseLineItem(
             id: addOn.id,
             type: PurchaseLineType.addOn,
+            planTypeCode: addOn.planTypeCode,
             label: 'add-on',
             title: addOn.title,
             subtitle: 'begins immediately',
@@ -39,8 +51,9 @@ class HomePlanConfirmationRepository {
       );
     }
 
-    final double primaryVat =
-        args.isPrimaryPlanActive ? 0 : args.primaryPlanVatAmount;
+    final double primaryVat = args.isPrimaryPlanActive
+        ? 0
+        : args.primaryPlanVatAmount;
     final double addOnsVat = args.selectedAddOns.fold<double>(
       0,
       (sum, addOn) => sum + addOn.vatAmount,
@@ -58,6 +71,71 @@ class HomePlanConfirmationRepository {
       items: items,
       totals: totals,
     );
+  }
+
+  Future<HomePlanPromoResponse> applyPromo({
+    required String code,
+    required int deviceAcId,
+  }) async {
+    final promoCode = code.trim();
+
+    if (promoCode.isEmpty) {
+      throw Exception('Promo code is required.');
+    }
+
+    if (deviceAcId <= 0) {
+      throw Exception('Device account ID not found.');
+    }
+
+    final url = Api.applyPromoCodeUrl(
+      deviceAccountId: deviceAcId,
+      promoCode: promoCode,
+    );
+
+    if (kDebugMode) {
+      debugPrint('HomePlanConfirmationRepository: applying promo from $url');
+    }
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.get,
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'HomePlanConfirmationRepository: apply promo status=${response.statusCode}',
+        );
+        debugPrint("response body : ${response.data}");
+      }
+
+      return HomePlanPromoResponse.fromDynamic(response.data);
+    } on NetworkException catch (error) {
+      throw Exception(_promoErrorMessage(error));
+    } catch (error) {
+      throw Exception('Failed to apply promo code: $error');
+    }
+  }
+
+  String _promoErrorMessage(NetworkException error) {
+    if (error is NoInternetException || error is HostUnreachableException) {
+      return error.message;
+    }
+
+    if (error is TimeoutException) {
+      return 'Request timeout. Please try again.';
+    }
+
+    if (error is SessionExpiredException || error.statusCode == 401) {
+      return 'Session expired. Please log in again.';
+    }
+
+    final message = error.message.trim();
+    if (message.isNotEmpty && message != 'An error occurred') {
+      return message;
+    }
+
+    return 'Failed to apply promo code.';
   }
 
   String _primaryPlanTypeLabel(String planTypeCode) {

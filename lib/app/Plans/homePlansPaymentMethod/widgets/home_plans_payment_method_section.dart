@@ -123,10 +123,7 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
               color: HomePlansPaymentMethodTheme.plus,
             ),
             const SizedBox(width: 8),
-            Text(
-              'pay with card',
-              style: HomePlansPaymentMethodTheme.addCard,
-            ),
+            Text('pay with card', style: HomePlansPaymentMethodTheme.addCard),
             const Spacer(),
             _buildChevronIcon(),
           ],
@@ -152,10 +149,7 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             // how wallet balance text is showing , from which source
-            Text(
-              'pay from wallet',
-              style: HomePlansPaymentMethodTheme.addCard,
-            ),
+            Text('pay from wallet', style: HomePlansPaymentMethodTheme.addCard),
             const SizedBox(width: 10),
             Container(
               padding: const EdgeInsets.symmetric(
@@ -167,7 +161,8 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
                 color: HomePlansPaymentMethodTheme.walletChipBackground,
                 borderRadius: BorderRadius.all(
                   Radius.circular(
-                      HomePlansPaymentMethodTheme.walletChipCornerRadius),
+                    HomePlansPaymentMethodTheme.walletChipCornerRadius,
+                  ),
                 ),
               ),
               child: Text(

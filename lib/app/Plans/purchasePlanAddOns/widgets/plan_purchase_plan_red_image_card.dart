@@ -51,12 +51,12 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
                 Image.asset(
                   AssetConstant.planRedCardPNG,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: PlanPurchasePlanAddOnsTheme.planRed,
-                  ),
+                  errorBuilder: (context, error, stackTrace) =>
+                      Container(color: PlanPurchasePlanAddOnsTheme.planRed),
                 ),
                 Padding(
-                  padding: PlanPurchasePlanAddOnsTheme.planRedCardContentPadding,
+                  padding:
+                      PlanPurchasePlanAddOnsTheme.planRedCardContentPadding,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -94,14 +94,16 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
                       Row(
                         children: [
                           _DateBlock(
-                              label: activeLabel,
-                              value: activeDate,
-                              alignEnd: false),
+                            label: activeLabel,
+                            value: activeDate,
+                            alignEnd: false,
+                          ),
                           const Spacer(),
                           _DateBlock(
-                              label: expireLabel,
-                              value: expireDate,
-                              alignEnd: true),
+                            label: expireLabel,
+                            value: expireDate,
+                            alignEnd: true,
+                          ),
                         ],
                       ),
                     ],
@@ -117,10 +119,7 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
 }
 
 class _AutoRenewSection extends StatelessWidget {
-  const _AutoRenewSection({
-    required this.value,
-    required this.onChanged,
-  });
+  const _AutoRenewSection({required this.value, required this.onChanged});
 
   final bool value;
   final ValueChanged<bool>? onChanged;
@@ -130,10 +129,7 @@ class _AutoRenewSection extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _AutoRenewToggle(
-          value: value,
-          onChanged: onChanged,
-        ),
+        _AutoRenewToggle(value: value, onChanged: onChanged),
         const SizedBox(width: 8),
         const Text(
           'auto renew',
@@ -142,9 +138,7 @@ class _AutoRenewSection extends StatelessWidget {
             fontSize: 12,
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w400,
-            fontVariations: <FontVariation>[
-              FontVariation('wght', 450),
-            ],
+            fontVariations: <FontVariation>[FontVariation('wght', 450)],
           ),
         ),
       ],
@@ -153,10 +147,7 @@ class _AutoRenewSection extends StatelessWidget {
 }
 
 class _AutoRenewToggle extends StatefulWidget {
-  const _AutoRenewToggle({
-    required this.value,
-    required this.onChanged,
-  });
+  const _AutoRenewToggle({required this.value, required this.onChanged});
 
   final bool value;
   final ValueChanged<bool>? onChanged;
@@ -209,10 +200,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: _AutoRenewToggle._toggleBorder,
-          width: 1,
-        ),
+        border: Border.all(color: _AutoRenewToggle._toggleBorder, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -277,8 +265,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(

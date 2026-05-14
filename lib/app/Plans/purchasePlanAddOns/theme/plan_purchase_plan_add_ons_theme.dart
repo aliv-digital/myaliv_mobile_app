@@ -101,8 +101,12 @@ class PlanPurchasePlanAddOnsTheme {
   static const double addOnCardRadius = 8;
 
   // Internal card spacing: left, top, right, bottom.
-  static const EdgeInsets addOnCardPadding =
-      EdgeInsets.fromLTRB(16, 16, 16, 16);
+  static const EdgeInsets addOnCardPadding = EdgeInsets.fromLTRB(
+    16,
+    16,
+    16,
+    16,
+  );
 
   // Gap between title row and details row.
   static const double addOnCardTitleToDetailsGap = 16;

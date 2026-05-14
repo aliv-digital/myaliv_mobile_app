@@ -1,8 +1,18 @@
+import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+
 import '../../../../resources/extentions/dateformatter.dart';
 import '../../PlanScreen/models/base_plan_model.dart';
 import '../models/home_roaming_confirmation_models.dart';
+import '../models/home_roaming_promo_response_model.dart';
 
 class HomeRoamingConfirmationRepository {
+  HomeRoamingConfirmationRepository({NetworkService? networkService})
+    : _networkService = networkService ?? instance<NetworkService>();
+
+  final NetworkService _networkService;
+
   /// Future: call API, build the same data shape, return it.
   Future<HomeRoamingConfirmationData> load({
     required HomeRoamingConfirmationRouteArgs args,
@@ -14,6 +24,7 @@ class HomeRoamingConfirmationRepository {
       HomeRoamingConfirmationPurchaseLineItem(
         id: selectedPlan?.planId ?? 'roaming-plan',
         type: HomeRoamingConfirmationPurchaseLineType.primaryPlan,
+        planTypeCode: selectedPlan?.planType ?? '',
         // Label is derived from the selected API plan type.
         label: _planTypeLabel(selectedPlan?.planType),
         title: _planTitle(selectedPlan),
@@ -48,9 +59,75 @@ class HomeRoamingConfirmationRepository {
       phoneNumber: data.phoneNumber,
       headerTitle: data.headerTitle,
       beginsOnDateText: formatWithOrdinal(beginDate),
-      items: data.items.map((item) => item.copyWith(subtitle: subtitle)).toList(),
+      items: data.items
+          .map((item) => item.copyWith(subtitle: subtitle))
+          .toList(),
       totals: data.totals,
     );
+  }
+
+  Future<HomeRoamingPromoResponse> applyPromo({
+    required String code,
+    required int deviceAcId,
+  }) async {
+    final promoCode = code.trim();
+
+    if (promoCode.isEmpty) {
+      throw Exception('Promo code is required.');
+    }
+
+    if (deviceAcId <= 0) {
+      throw Exception('Device account ID not found.');
+    }
+
+    final url = Api.applyPromoCodeUrl(
+      deviceAccountId: deviceAcId,
+      promoCode: promoCode,
+    );
+
+    if (kDebugMode) {
+      debugPrint('HomeRoamingConfirmationRepository: applying promo from $url');
+    }
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.get,
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'HomeRoamingConfirmationRepository: apply promo status=${response.statusCode}',
+        );
+      }
+
+      return HomeRoamingPromoResponse.fromDynamic(response.data);
+    } on NetworkException catch (error) {
+      throw Exception(_promoErrorMessage(error));
+    } catch (error) {
+      throw Exception('Failed to apply promo code: $error');
+    }
+  }
+
+  String _promoErrorMessage(NetworkException error) {
+    if (error is NoInternetException || error is HostUnreachableException) {
+      return error.message;
+    }
+
+    if (error is TimeoutException) {
+      return 'Request timeout. Please try again.';
+    }
+
+    if (error is SessionExpiredException || error.statusCode == 401) {
+      return 'Session expired. Please log in again.';
+    }
+
+    final message = error.message.trim();
+    if (message.isNotEmpty && message != 'An error occurred') {
+      return message;
+    }
+
+    return 'Failed to apply promo code.';
   }
 
   String _planTitle(BasePlanModel? selectedPlan) {

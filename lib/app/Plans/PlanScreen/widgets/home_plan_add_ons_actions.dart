@@ -55,6 +55,7 @@ class HomePlanAddOnsActions {
               title: addOn.title,
               price: addOn.price,
               vatAmount: addOn.vatAmount,
+              planTypeCode: addOn.planTypeCode,
             ),
           )
           .toList(growable: false),

@@ -4,8 +4,10 @@ class PlanPurchasePlanAddOnsRouteArgs {
   const PlanPurchasePlanAddOnsRouteArgs({
     required this.selectedApiPlan,
     this.selectedIndex,
+    this.forceNow = false,
   });
 
-  final BasePlanModel selectedApiPlan;
+  final BasePlanModel? selectedApiPlan;
   final int? selectedIndex;
+  final bool forceNow;
 }

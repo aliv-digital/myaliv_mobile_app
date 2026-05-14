@@ -60,7 +60,8 @@ class PlanPurchasePlanAddOnsRepository {
       return const <PlanPurchaseAddOnItem>[];
     }
 
-    return primaryPlan.availableBoltOns.map(
+    return primaryPlan.availableBoltOns
+        .map(
           (addOnPlan) => PlanPurchaseAddOnItem(
             id: addOnPlan.planId,
             title: addOnPlan.planName,
@@ -68,13 +69,16 @@ class PlanPurchasePlanAddOnsRepository {
             subtitleValue: _buildAddOnValue(addOnPlan),
             price: addOnPlan.planAmount,
             vatAmount: addOnPlan.vatAmount,
+            planTypeCode: addOnPlan.planType,
           ),
         )
         .toList(growable: false);
   }
 
   String _buildAddOnLabel(BasePlanModel addOnPlan) {
-    final firstBucket = addOnPlan.planBuckets.isEmpty ? null : addOnPlan.planBuckets.first;
+    final firstBucket = addOnPlan.planBuckets.isEmpty
+        ? null
+        : addOnPlan.planBuckets.first;
 
     if (firstBucket == null) {
       return 'balance';

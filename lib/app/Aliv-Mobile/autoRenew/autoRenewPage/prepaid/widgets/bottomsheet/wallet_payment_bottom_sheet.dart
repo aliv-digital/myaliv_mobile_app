@@ -11,17 +11,20 @@ import '../../theme/auto_renew_prepaid_theme.dart';
 class WalletPaymentBottomSheet extends StatelessWidget {
   final String walletBalanceText;
   final String amountText;
+  final bool navigateToReceiptOnConfirm;
 
   const WalletPaymentBottomSheet({
     super.key,
     required this.walletBalanceText,
     required this.amountText,
+    this.navigateToReceiptOnConfirm = true,
   });
 
   static Future<bool?> show(
     BuildContext context, {
     required String walletBalanceText,
     required String amountText,
+    bool navigateToReceiptOnConfirm = true,
   }) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -31,6 +34,7 @@ class WalletPaymentBottomSheet extends StatelessWidget {
       builder: (_) => WalletPaymentBottomSheet(
         walletBalanceText: walletBalanceText,
         amountText: amountText,
+        navigateToReceiptOnConfirm: navigateToReceiptOnConfirm,
       ),
     );
   }
@@ -155,7 +159,10 @@ class WalletPaymentBottomSheet extends StatelessWidget {
         ),
       ),
       child: Text(
-        (AppSession.appRoute == 'prepaidPlanPurchase')? '\$ 75.00' : amountText,
+        navigateToReceiptOnConfirm &&
+                AppSession.appRoute == 'prepaidPlanPurchase'
+            ? '\$ 75.00'
+            : amountText,
         style: AutoRenewPrepaidTheme.walletPaymentAmountValueStyle,
       ),
     );
@@ -170,7 +177,8 @@ class WalletPaymentBottomSheet extends StatelessWidget {
           Navigator.of(context).pop(true);
           // Navigation handled by state listener for auto-renew flow
           // Only navigate directly for plan purchase flow
-          if (AppSession.appRoute == 'prepaidPlanPurchase') {
+          if (navigateToReceiptOnConfirm &&
+              AppSession.appRoute == 'prepaidPlanPurchase') {
             context.push(AppRoutes.homePlanPurchaseReceiptScreen);
           }
         },

@@ -260,6 +260,7 @@ class HomePlanRepositoryV2 implements BasePlanRepository {
             value: _buildAddOnValue(addOnPlan),
             price: addOnPlan.planAmount,
             vatAmount: addOnPlan.vatAmount,
+            planTypeCode: addOnPlan.planType,
           ),
         )
         .toList(growable: false);

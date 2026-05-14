@@ -65,4 +65,15 @@ class Api {
 
   static const prepaidTermsConditions = "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-prepaid";
   static const postPaidTermsConditions = "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-postpaid";
+
+  // {{baseUrl}}/v1/MyAliv/device/{{deviceAccountId}}/promo-code-info?promoCode=12345
+  static String applyPromoCodeUrl({
+    required int deviceAccountId,
+    required String promoCode,
+  }) {
+    final encodedPromoCode = Uri.encodeQueryComponent(promoCode);
+    return '$baseUrl/v1/MyAliv/device/$deviceAccountId/promo-code-info?promoCode=$encodedPromoCode';
+  }
+
+  static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
 }

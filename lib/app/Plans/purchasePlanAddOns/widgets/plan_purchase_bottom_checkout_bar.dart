@@ -69,18 +69,20 @@ class PlanPurchaseBottomPayBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: isLoading ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.4,
-                      color: Colors.white,
-                    ),
-                  )
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            color: Colors.white,
+                          ),
+                        )
                       : Text(
-                    buttonText,
-                    style: PlanPurchasePlanAddOnsTheme.bottomBarButtonText,
-                  ),
+                          buttonText,
+                          style:
+                              PlanPurchasePlanAddOnsTheme.bottomBarButtonText,
+                        ),
                 ),
               ),
             ],

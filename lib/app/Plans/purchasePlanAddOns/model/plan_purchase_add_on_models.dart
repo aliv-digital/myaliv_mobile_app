@@ -33,14 +33,14 @@ class PlanPurchaseActivePlanSummary extends Equatable {
 
   @override
   List<Object?> get props => [
-        label,
-        name,
-        autoRenew,
-        activeDateLabel,
-        activeDate,
-        expireDateLabel,
-        expireDate,
-      ];
+    label,
+    name,
+    autoRenew,
+    activeDateLabel,
+    activeDate,
+    expireDateLabel,
+    expireDate,
+  ];
 }
 
 class PlanPurchaseAddOnItem extends Equatable {
@@ -50,6 +50,7 @@ class PlanPurchaseAddOnItem extends Equatable {
   final String subtitleValue; // "1gb"
   final double price; // base amount before VAT
   final double vatAmount;
+  final String planTypeCode;
   final String currencySymbol; // "$"
 
   const PlanPurchaseAddOnItem({
@@ -59,6 +60,7 @@ class PlanPurchaseAddOnItem extends Equatable {
     required this.subtitleValue,
     required this.price,
     required this.vatAmount,
+    this.planTypeCode = 'S',
     this.currencySymbol = r'$',
   });
 
@@ -66,14 +68,15 @@ class PlanPurchaseAddOnItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        subtitleLabel,
-        subtitleValue,
-        price,
-        vatAmount,
-        currencySymbol,
-      ];
+    id,
+    title,
+    subtitleLabel,
+    subtitleValue,
+    price,
+    vatAmount,
+    planTypeCode,
+    currencySymbol,
+  ];
 }
 
 class PlanPurchaseFairUsePolicy extends Equatable {

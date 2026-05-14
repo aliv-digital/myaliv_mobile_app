@@ -73,8 +73,9 @@ class PurchaseSummaryCard extends StatelessWidget {
                 item: data.items[i],
                 onRemove: () {
                   final itemId = data.items[i].id;
-                  final remainingItemCount =
-                      data.items.where((item) => item.id != itemId).length;
+                  final remainingItemCount = data.items
+                      .where((item) => item.id != itemId)
+                      .length;
 
                   onRemoveItem(itemId);
 

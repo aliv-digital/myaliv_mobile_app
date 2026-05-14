@@ -21,8 +21,10 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     required this.timeText,
     this.hideSaveCreditCard = false,
     this.paymentMethod = 'credit card',
-    this.statusMessage =
-        'It will take a few moments for the top-up to appear on the account. ',
+    this.statusMessage = 'It will take a few moments for the top-up to appear on the account. ',
+    this.leftType = 'service',
+    this.rightType = 'REV',
+    this.details,
   });
 
   final String phoneNumber;
@@ -32,47 +34,52 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
   final bool hideSaveCreditCard;
   final String paymentMethod;
   final String statusMessage;
+  final String leftType;
+  final String rightType;
+  final List<HomePlanPurchaseReceiptDetailItem>? details;
 
   @override
   Widget build(BuildContext context) {
-    /// Dynamic details list (future: API mapping will fill this)
-    final details = <HomePlanPurchaseReceiptDetailItem>[
-      HomePlanPurchaseReceiptDetailItem(
-        label: 'plan',
-        value: 'liberty70',
-        valueBold: false,
-      ),
-      HomePlanPurchaseReceiptDetailItem(
-        label: 'add-on',
-        value: 'liberty data 1',
-      ),
-      HomePlanPurchaseReceiptDetailItem(label: 'date', value: dateText),
-      HomePlanPurchaseReceiptDetailItem(
-        label: 'time',
-        value: '7:30 am',
-      ), //timeText),
-      HomePlanPurchaseReceiptDetailItem(label: 'phone no.', value: phoneNumber),
-      HomePlanPurchaseReceiptDetailItem(
-        label: 'email address',
-        value: 'jade123@hotmail.com',
-      ),
-      HomePlanPurchaseReceiptDetailItem(
-        label: 'payment method',
-        value: AppSession.appRoute == 'prepaidPlanPurchase'
-            ? 'wallet'
-            : paymentMethod,
-      ),
-    ];
+    final displayPaymentMethod =
+        AppSession.appRoute == 'prepaidPlanPurchase' ? 'wallet' : paymentMethod;
+
+    /// Dynamic details list. Prefer values passed through route `extra`; keep
+    /// the old placeholder rows only for legacy callers that do not pass data.
+    final receiptDetails = details ?? <HomePlanPurchaseReceiptDetailItem>[
+          const HomePlanPurchaseReceiptDetailItem(
+            label: 'plan',
+            value: 'liberty70',
+            valueBold: false,
+          ),
+          const HomePlanPurchaseReceiptDetailItem(
+            label: 'add-on',
+            value: 'liberty data 1',
+          ),
+          HomePlanPurchaseReceiptDetailItem(label: 'date', value: dateText),
+          HomePlanPurchaseReceiptDetailItem(label: 'time', value: timeText),
+          HomePlanPurchaseReceiptDetailItem(
+            label: 'phone no.',
+            value: phoneNumber,
+          ),
+          const HomePlanPurchaseReceiptDetailItem(
+            label: 'email address',
+            value: 'jade123@hotmail.com',
+          ),
+          HomePlanPurchaseReceiptDetailItem(
+            label: 'payment method',
+            value: displayPaymentMethod,
+          ),
+        ];
 
     final receiptData = HomePlanPurchaseReceiptData(
-      leftType: 'service',
-      rightType: 'REV',
+      leftType: leftType,
+      rightType: rightType,
       dateText: dateText,
-      timeText: '7:30 am', //timeText,
+      timeText: timeText,
       phoneNumber: phoneNumber,
-      paymentMethod: paymentMethod,
+      paymentMethod: displayPaymentMethod,
       amount: amount,
-      details: details, // required for dynamic rows
+      details: receiptDetails,
     );
 
     return RepositoryProvider(
@@ -118,10 +125,7 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<
-      HomePlanPurchaseReceiptBloc,
-      HomePlanPurchaseReceiptState
-    >(
+    return BlocListener<HomePlanPurchaseReceiptBloc, HomePlanPurchaseReceiptState>(
       listenWhen: (p, c) => p.backHomeRequestId != c.backHomeRequestId,
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
@@ -149,41 +153,37 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                     top: 29,
                     bottom: 30,
                   ),
-                  child:
-                      BlocBuilder<
-                        HomePlanPurchaseReceiptBloc,
-                        HomePlanPurchaseReceiptState
-                      >(
-                        builder: (context, state) {
-                          final data = state.data;
-                          if (data == null) return const SizedBox.shrink();
+                  child: BlocBuilder<HomePlanPurchaseReceiptBloc,
+                      HomePlanPurchaseReceiptState>(
+                    builder: (context, state) {
+                      final data = state.data;
+                      if (data == null) return const SizedBox.shrink();
 
-                          return HomePlanPurchaseReceiptSuccessCard(
-                            data: data,
-                            onBackHome: () {
-                              if (AppSession.appRoute == 'prepaidPlan' ||
-                                  AppSession.appRoute ==
-                                      'prepaidPlanPurchase' ||
-                                  AppSession.appRoute == 'addOnsPrepaid') {
-                                context.go(AppRoutes.home);
-                                AppSession.resetAppRoute();
-                              } else {
-                                context.go(AppRoutes.logIn);
-                              }
-                            },
-                            onSaveCard: () {
-                              _showSaveCardBottomSheet(context);
-                            },
-                            hideSaveCreditCard:
-                                AppSession.appRoute == 'prepaidPlanPurchase'
+                      return HomePlanPurchaseReceiptSuccessCard(
+                        data: data,
+                        onBackHome: () {
+                          if (AppSession.appRoute == 'prepaidPlan' ||
+                              AppSession.appRoute == 'prepaidPlanPurchase' ||
+                              AppSession.appRoute == 'addOnsPrepaid') {
+                            context.go(AppRoutes.home);
+                            AppSession.resetAppRoute();
+                          } else {
+                            context.go(AppRoutes.home);
+                          }
+                        },
+                        onSaveCard: () {
+                          _showSaveCardBottomSheet(context);
+                        },
+                        hideSaveCreditCard:
+                            AppSession.appRoute == 'prepaidPlanPurchase'
                                 ? true
                                 : hideSaveCreditCard,
-                            pageBackground:
-                                HomePlanPurchaseReceiptTheme.circleBackground,
-                            statusMessage: statusMessage,
-                          );
-                        },
-                      ),
+                        pageBackground:
+                            HomePlanPurchaseReceiptTheme.circleBackground,
+                        statusMessage: statusMessage,
+                      );
+                    },
+                  ),
                 ),
               ),
 
