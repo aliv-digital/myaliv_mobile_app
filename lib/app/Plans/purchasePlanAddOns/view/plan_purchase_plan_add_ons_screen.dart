@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -357,44 +360,62 @@ class _ReadyContent extends StatelessWidget {
   }
 }
 
-class _ActivePlanCard extends StatelessWidget {
+class _ActivePlanCard extends StatefulWidget {
   const _ActivePlanCard({required this.state});
 
   final PlanPurchasePlanAddOnsState state;
 
-  //final PlanPurchaseActivePlanSummary activePlan;
+  @override
+  State<_ActivePlanCard> createState() => _ActivePlanCardState();
+}
 
+class _ActivePlanCardState extends State<_ActivePlanCard> {
   static final DateFormat _cardDateFormat = DateFormat('dd/MM/yy');
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure DeviceLimitsCubit has data so the toggle reflects the real
+    // auto-renew state (mirrors home screen behaviour).
+    instance<DeviceLimitsCubit>().loadDeviceLimits();
+  }
 
   @override
   Widget build(BuildContext context) {
     // `selectedApiPlan` comes from routeArgs. It is the real API plan selected
-    // on the previous screen. `activePlan` is kept only as a fallback summary.
-    final selectedPlan = state.selectedApiPlan;
+    // on the previous screen.
+    final selectedPlan = widget.state.selectedApiPlan;
     final planName = _planNameFromApiOrFallback(selectedPlan?.planName);
     final activeDate = _dateFromApiOrFallback(
       selectedPlan?.startDateTime,
-      fallback: "--/--", //activePlan.activeDate,
+      fallback: '--/--',
     );
     final expireDate = _dateFromApiOrFallback(
       selectedPlan?.endDateTime,
-      fallback: "--/--", //activePlan.expireDate,
+      fallback: '--/--',
     );
 
-    return PlanPurchasePlanRedImageCard(
-      planLabel: 'active plan',
-      //activePlan.label,
-      planName: planName,
-      activeLabel: 'active',
-      //activePlan.activeDateLabel,
-      activeDate: activeDate,
-      expireLabel: 'expire',
-      //activePlan.expireDateLabel,
-      expireDate: expireDate,
-      autoRenew: state.autoRenew,
-      onAutoRenewChanged: (value) {
-        context.read<PlanPurchasePlanAddOnsBloc>().add(
-          PlanPurchasePlanAddOnsAutoRenewToggled(value),
+    return BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+      bloc: instance<DeviceLimitsCubit>(),
+      buildWhen: (previous, current) =>
+          previous.autoRenew != current.autoRenew ||
+          previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
+      builder: (context, deviceLimitsState) {
+        return PlanPurchasePlanRedImageCard(
+          planLabel: 'active plan',
+          planName: planName,
+          activeLabel: 'active',
+          activeDate: activeDate,
+          expireLabel: 'expire',
+          expireDate: expireDate,
+          autoRenew: deviceLimitsState.autoRenew,
+          onAutoRenewChanged: (_) {
+            if (deviceLimitsState.isTogglingAutoRenew) return;
+            handleAutoRenewToggle(
+              context,
+              currentValue: deviceLimitsState.autoRenew,
+            );
+          },
         );
       },
     );
@@ -406,16 +427,13 @@ class _ActivePlanCard extends StatelessWidget {
       return name;
     }
 
-    return '---'; //activePlan.name;
+    return '---';
   }
 
   String _dateFromApiOrFallback(DateTime? apiDate, {required String fallback}) {
     if (apiDate == null) {
       return fallback;
     }
-
-    // API format example: "2022-06-09 19:14:00".
-    // BasePlanModel parses that into DateTime, then we show "09/06/22".
     return _cardDateFormat.format(apiDate);
   }
 }
