@@ -59,7 +59,7 @@ class DefaultBottomPayBar extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                       isVatExclusive ? 'no vat applied' : 'vat included',
+                       isVatExclusive ? 'no vat applied' : 'vat inclusive',
                         style: const TextStyle(
                           fontSize: 12,
                           fontFamily: 'CircularPro',

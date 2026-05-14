@@ -118,7 +118,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                     phoneNumber: state.data!.phoneNumber,
                     amount: state.data!.totals.total,
                     vatNote: state.data!.totals.vat > 0
-                        ? 'vat included'
+                        ? 'vat inclusive'
                         : 'no vat applied',
                     forceNow: state.forceNow,
                     selectedItems: state.data!.items

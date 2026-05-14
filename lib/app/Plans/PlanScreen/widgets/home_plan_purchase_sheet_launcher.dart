@@ -30,8 +30,11 @@ Future<void> showHomePlanPurchaseBottomSheet({
   int? selectedIndex,
 }) {
   final hasActivePlan = homeUiConfig.hasActivePlan;
-  final activePlanEndDate =
-      context.read<PlansCubit>().state.earliestAddOnsPrimaryPlan?.endDateTime;
+  final activePlanEndDate = context
+      .read<PlansCubit>()
+      .state
+      .earliestAddOnsPrimaryPlan
+      ?.endDateTime;
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
@@ -93,6 +96,18 @@ Future<void> showHomePlanPurchaseBottomSheet({
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
+            if (selectedTab == HomePlanTab.mifi ||
+                selectedTab == HomePlanTab.libertyGlobal) {
+              context.push(
+                AppRoutes.homePlanConfirmationScreen,
+                extra: _futurePlanConfirmationRouteArgs(
+                  selectedApiPlan: selectedApiPlan,
+                  fallbackPlan: plan,
+                  forceNow: true,
+                ),
+              );
+              return;
+            }
             context.push(
               AppRoutes.homePurchasePlanAddOns,
               extra: selectedPlanExtra,
@@ -124,6 +139,17 @@ Future<void> showHomePlanPurchaseBottomSheet({
         onActivateNowPressed: () {
           AppSession.appRoute = 'prepaidPlan';
           Navigator.of(sheetContext).pop();
+          if (selectedTab == HomePlanTab.mifi) {
+            context.push(
+              AppRoutes.homePlanConfirmationScreen,
+              extra: _futurePlanConfirmationRouteArgs(
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: true,
+              ),
+            );
+            return;
+          }
           context.push(
             AppRoutes.homePurchasePlanAddOns,
             extra: selectedPlanExtra,

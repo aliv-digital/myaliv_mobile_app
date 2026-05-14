@@ -6,7 +6,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/plan_purchase_plan_add_ons_bloc.dart';
@@ -41,6 +43,7 @@ class PlanPurchasePlanAddOnsScreen extends StatelessWidget {
 
 class _PlanPurchasePlanAddOnsView extends StatelessWidget {
   const _PlanPurchasePlanAddOnsView();
+
   static const double _defaultPrimaryPlanPrice = 0;
 
   @override
@@ -290,12 +293,34 @@ class _ReadyContent extends StatelessWidget {
       children: [
         _ActivePlanCard(state: state),
         const SizedBox(height: 16),
-        PlanPurchaseFairUsePolicyCard(policy: fairUsePolicy, onTap: () {}),
+        PlanPurchaseFairUsePolicyCard(
+          policy: fairUsePolicy,
+          onTap: _openFairUsePolicy,
+        ),
         const SizedBox(height: 16),
         ..._buildAddOnTiles(context),
         const SizedBox(height: 4),
       ],
     );
+  }
+
+  static final Uri _fairUsePolicyUri = Uri.parse(
+    'https://www.bealiv.com/fair-use-policy/',
+  );
+
+  Future<void> _openFairUsePolicy() async {
+    try {
+      final launched = await launchUrl(
+        _fairUsePolicyUri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launched) return;
+    } catch (_) {
+      AppToast.show(
+        message: 'could not open fair use policy',
+        type: ToastType.error,
+      );
+    }
   }
 
   List<Widget> _buildAddOnTiles(BuildContext context) {
@@ -336,6 +361,7 @@ class _ActivePlanCard extends StatelessWidget {
   const _ActivePlanCard({required this.state});
 
   final PlanPurchasePlanAddOnsState state;
+
   //final PlanPurchaseActivePlanSummary activePlan;
 
   static final DateFormat _cardDateFormat = DateFormat('dd/MM/yy');
@@ -356,11 +382,14 @@ class _ActivePlanCard extends StatelessWidget {
     );
 
     return PlanPurchasePlanRedImageCard(
-      planLabel: 'active plan', //activePlan.label,
+      planLabel: 'active plan',
+      //activePlan.label,
       planName: planName,
-      activeLabel: 'active', //activePlan.activeDateLabel,
+      activeLabel: 'active',
+      //activePlan.activeDateLabel,
       activeDate: activeDate,
-      expireLabel: 'expire', //activePlan.expireDateLabel,
+      expireLabel: 'expire',
+      //activePlan.expireDateLabel,
       expireDate: expireDate,
       autoRenew: state.autoRenew,
       onAutoRenewChanged: (value) {
