@@ -1,12 +1,17 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../model/home_plans_payment_method_models.dart';
 import '../theme/home_plans_payment_method_theme.dart';
 import 'home_plans_payment_method_tile.dart';
 
-class HomePlansPaymentMethodSection extends StatelessWidget {
+class HomePlansPaymentMethodSection extends StatefulWidget {
   final List<HomePlansSavedPaymentMethod> methods;
   final String? selectedId;
   final ValueChanged<String> onSelect;
@@ -25,6 +30,19 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
     required this.walletBalanceText,
     required this.onPayFromWallet,
   });
+
+  @override
+  State<HomePlansPaymentMethodSection> createState() =>
+      _HomePlansPaymentMethodSectionState();
+}
+
+class _HomePlansPaymentMethodSectionState
+    extends State<HomePlansPaymentMethodSection> {
+  @override
+  void initState() {
+    super.initState();
+    instance<SavedCardsCubit>().fetchSavedCards();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +78,7 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
             height: HomePlansPaymentMethodTheme.thirdCardToPayWithCardGap,
           ),
           _buildPayWithCardRow(),
-          if (showPayFromWallet) ...[
+          if (widget.showPayFromWallet) ...[
             const SizedBox(
               height: HomePlansPaymentMethodTheme.payWithCardToWalletGap,
             ),
@@ -72,47 +90,87 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
   }
 
   Widget _buildPaymentMethodList() {
-    return Column(
-      children: <Widget>[
-        for (int index = 0; index < methods.length; index++) ...[
-          HomePlansPaymentMethodTile(
-            logoSvgAsset: methods[index].logoSvgAsset,
-            title: methods[index].isChargeToMyAccount
-                ? 'charge to my account'
-                : '${_brandText(methods[index])} ending in ${methods[index].ending}',
-            subtitle: methods[index].isChargeToMyAccount
-                ? null
-                : 'expiry ${methods[index].expiry}',
-            showLogo: !methods[index].isChargeToMyAccount,
-            titleStyle: methods[index].isChargeToMyAccount
-                ? HomePlansPaymentMethodTheme.chargeToAccount
-                : null,
-            tilePadding: methods[index].isChargeToMyAccount
-                ? HomePlansPaymentMethodTheme.chargeToAccountTilePadding
-                : null,
-            indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
-            textToIndicatorGap: methods[index].isChargeToMyAccount ? 16 : 4,
-            selected: selectedId == methods[index].id,
-            onTap: () {
-              onSelect(methods[index].id);
-            },
-          ),
-          if (index == 0)
-            const SizedBox(
-              height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
+    final chargeToAccountMethods = widget.methods
+        .where((HomePlansSavedPaymentMethod m) => m.isChargeToMyAccount)
+        .toList(growable: false);
+
+    return BlocBuilder<SavedCardsCubit, SavedCardsState>(
+      bloc: instance<SavedCardsCubit>(),
+      builder: (context, savedCardsState) {
+        final List<Widget> tiles = <Widget>[];
+
+        for (final method in chargeToAccountMethods) {
+          tiles.add(_buildChargeToAccountTile(method));
+        }
+
+        if (savedCardsState.isLoading && !savedCardsState.hasCards) {
+          if (tiles.isNotEmpty) {
+            tiles.add(
+              const SizedBox(
+                height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
+              ),
+            );
+          }
+          tiles.add(
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
             ),
-          if (index == 1)
-            const SizedBox(
-              height: HomePlansPaymentMethodTheme.secondToThirdCardGap,
-            ),
-        ],
-      ],
+          );
+        } else {
+          for (final SavedCardModel card in savedCardsState.cards) {
+            if (tiles.isNotEmpty) {
+              tiles.add(
+                const SizedBox(
+                  height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
+                ),
+              );
+            }
+            tiles.add(_buildSavedCardTile(card));
+          }
+        }
+
+        return Column(children: tiles);
+      },
+    );
+  }
+
+  Widget _buildChargeToAccountTile(HomePlansSavedPaymentMethod method) {
+    return HomePlansPaymentMethodTile(
+      logoSvgAsset: method.logoSvgAsset,
+      title: 'charge to my account',
+      subtitle: null,
+      showLogo: false,
+      titleStyle: HomePlansPaymentMethodTheme.chargeToAccount,
+      tilePadding: HomePlansPaymentMethodTheme.chargeToAccountTilePadding,
+      indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
+      textToIndicatorGap: 16,
+      selected: widget.selectedId == method.id,
+      onTap: () => widget.onSelect(method.id),
+    );
+  }
+
+  Widget _buildSavedCardTile(SavedCardModel card) {
+    return HomePlansPaymentMethodTile(
+      logoSvgAsset: AssetConstant.creditCardIconSVG,
+      title: card.displayLabel,
+      showLogo: true,
+      indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
+      textToIndicatorGap: 4,
+      selected: widget.selectedId == card.token,
+      onTap: () => widget.onSelect(card.token),
     );
   }
 
   Widget _buildPayWithCardRow() {
     return InkWell(
-      onTap: onPayWithCard,
+      onTap: widget.onPayWithCard,
       child: Padding(
         padding: HomePlansPaymentMethodTheme.payWithCardRowPadding,
         child: Row(
@@ -134,7 +192,7 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
 
   Widget _buildPayFromWalletRow() {
     return InkWell(
-      onTap: onPayFromWallet,
+      onTap: widget.onPayFromWallet,
       child: Padding(
         padding: HomePlansPaymentMethodTheme.payWithCardRowPadding,
         child: Row(
@@ -166,7 +224,7 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
                 ),
               ),
               child: Text(
-                walletBalanceText,
+                widget.walletBalanceText,
                 style: HomePlansPaymentMethodTheme.walletAmount,
               ),
             ),
@@ -191,14 +249,4 @@ class HomePlansPaymentMethodSection extends StatelessWidget {
     );
   }
 
-  String _brandText(HomePlansSavedPaymentMethod m) {
-    switch (m.brand) {
-      case HomePlansCardBrand.visa:
-        return 'visa';
-      case HomePlansCardBrand.mastercard:
-        return 'mastercard';
-      case HomePlansCardBrand.unknown:
-        return 'card';
-    }
-  }
 }

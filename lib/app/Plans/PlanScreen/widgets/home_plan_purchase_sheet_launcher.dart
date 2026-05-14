@@ -1,10 +1,13 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
@@ -27,6 +30,8 @@ Future<void> showHomePlanPurchaseBottomSheet({
   int? selectedIndex,
 }) {
   final hasActivePlan = homeUiConfig.hasActivePlan;
+  final activePlanEndDate =
+      context.read<PlansCubit>().state.earliestAddOnsPrimaryPlan?.endDateTime;
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
@@ -74,11 +79,14 @@ Future<void> showHomePlanPurchaseBottomSheet({
 
       if (hasActivePlan) {
         //&& selectedTab == HomePlanTab.addOns
+        final endDateText = activePlanEndDate != null
+            ? DateFormat('dd MMM yyyy').format(activePlanEndDate)
+            : 'the end of your current plan';
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
           warningText:
               'activating now replaces the account owner current plan, '
               'you can activate the account owner plan as a future plan and '
-              'it will start when their current plan ends on XXX.',
+              'it will start when their current plan ends on $endDateText.',
           planName: plan.title,
           planDurationText: plan.subtitle,
           planPriceText: _priceText(plan.price),
@@ -108,7 +116,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
       // will work here
       return HomePlanWalletPaymentActivateBottomSheet(
         warningText:
-            'the account owner has no current plan, so their new plan will start immediately.',
+            'you have no current plans, so your new plan will start immediately.',
         planName: plan.title,
         planDurationText: plan.subtitle,
         planPriceText: _priceText(plan.price),
