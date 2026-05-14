@@ -9,7 +9,7 @@ import '../models/home_roaming_promo_response_model.dart';
 
 class HomeRoamingConfirmationRepository {
   HomeRoamingConfirmationRepository({NetworkService? networkService})
-    : _networkService = networkService ?? instance<NetworkService>();
+      : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -32,6 +32,7 @@ class HomeRoamingConfirmationRepository {
             ? 'begins ${_shortDate(beginDate)}'
             : 'begins immediately',
         price: selectedPlan?.planAmount ?? 0,
+        vatAmount: selectedPlan?.vatAmount ?? 0,
       ),
     ];
 
@@ -59,9 +60,8 @@ class HomeRoamingConfirmationRepository {
       phoneNumber: data.phoneNumber,
       headerTitle: data.headerTitle,
       beginsOnDateText: formatWithOrdinal(beginDate),
-      items: data.items
-          .map((item) => item.copyWith(subtitle: subtitle))
-          .toList(),
+      items:
+          data.items.map((item) => item.copyWith(subtitle: subtitle)).toList(),
       totals: data.totals,
     );
   }

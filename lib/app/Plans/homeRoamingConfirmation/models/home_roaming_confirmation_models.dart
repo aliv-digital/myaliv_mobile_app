@@ -59,6 +59,9 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
   final String subtitle;
 
   final double price;
+  final double vatAmount;
+
+  double get totalPrice => price + vatAmount;
 
   const HomeRoamingConfirmationPurchaseLineItem({
     required this.id,
@@ -68,6 +71,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
     required this.title,
     required this.subtitle,
     required this.price,
+    this.vatAmount = 0,
   });
 
   HomeRoamingConfirmationPurchaseLineItem copyWith({
@@ -78,6 +82,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
     String? title,
     String? subtitle,
     double? price,
+    double? vatAmount,
   }) {
     return HomeRoamingConfirmationPurchaseLineItem(
       id: id ?? this.id,
@@ -87,6 +92,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
       title: title ?? this.title,
       subtitle: subtitle ?? this.subtitle,
       price: price ?? this.price,
+      vatAmount: vatAmount ?? this.vatAmount,
     );
   }
 
@@ -99,6 +105,7 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
         title,
         subtitle,
         price,
+        vatAmount,
       ];
 }
 

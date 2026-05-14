@@ -8,6 +8,8 @@ class ConfirmationBreakdown extends StatelessWidget {
   final String vatText;
   final String totalText;
   final String? promoValue;
+  final bool promoEnabled;
+  final bool isPromoActionLoading;
   final ValueChanged<String>? onPromoChanged;
   final VoidCallback? onPromoApply;
 
@@ -17,6 +19,8 @@ class ConfirmationBreakdown extends StatelessWidget {
     required this.vatText,
     required this.totalText,
     this.promoValue,
+    this.promoEnabled = true,
+    this.isPromoActionLoading = false,
     this.onPromoChanged,
     this.onPromoApply,
   });
@@ -32,6 +36,8 @@ class ConfirmationBreakdown extends StatelessWidget {
               value: promoValue!,
               hintText: 'promo code',
               actionText: 'apply',
+              enabled: promoEnabled,
+              isActionLoading: isPromoActionLoading,
               onChanged: onPromoChanged,
               onActionTap: onPromoApply,
             )

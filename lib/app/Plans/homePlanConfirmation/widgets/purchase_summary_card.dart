@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
 import '../models/home_plan_confirmation_models.dart';
 import '../theme/home_plan_confirmation_theme.dart';
 import 'purchase_item_row.dart';
@@ -49,7 +50,7 @@ class PurchaseSummaryCard extends StatelessWidget {
                       .purchaseSummaryHeaderTitleToPhoneGap,
                 ),
                 Text(
-                  data.phoneNumber,
+                  PhoneNumberFormatterService.format(data.phoneNumber),
                   style: HomePlanConfirmationTheme
                       .purchaseSummaryHeaderPhoneTextStyle,
                 ),
@@ -73,9 +74,7 @@ class PurchaseSummaryCard extends StatelessWidget {
                 item: data.items[i],
                 onRemove: () {
                   final itemId = data.items[i].id;
-                  final remainingItemCount = data.items
-                      .where((item) => item.id != itemId)
-                      .length;
+                  final remainingItemCount = data.items.where((item) => item.id != itemId).length;
 
                   onRemoveItem(itemId);
 

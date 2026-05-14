@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import '../../../Home/best-plans/best_plan_injection.dart';
@@ -24,15 +25,7 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
   ) {
     if (showDateField) return item;
 
-    return HomeRoamingConfirmationPurchaseLineItem(
-      id: item.id,
-      type: item.type,
-      planTypeCode: item.planTypeCode,
-      label: item.label,
-      title: item.title,
-      subtitle: 'begins immediately',
-      price: item.price,
-    );
+    return item.copyWith(subtitle: 'begins immediately');
   }
 
   String _accountDisplayName(AccountInfoState accountState) {
@@ -108,7 +101,7 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
                       .purchaseSummaryHeaderTitleToPhoneGap,
                 ),
                 Text(
-                  userPhoneNumber,
+                  PhoneNumberFormatterService.format(userPhoneNumber),
                   style: HomeRoamingConfirmationTheme
                       .purchaseSummaryHeaderPhoneTextStyle,
                 ),
@@ -132,9 +125,8 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
                 item: _resolveDisplayItem(data.items[i]),
                 onRemove: () {
                   final itemId = data.items[i].id;
-                  final remainingItemCount = data.items
-                      .where((item) => item.id != itemId)
-                      .length;
+                  final remainingItemCount =
+                      data.items.where((item) => item.id != itemId).length;
 
                   onRemoveItem(itemId);
 
