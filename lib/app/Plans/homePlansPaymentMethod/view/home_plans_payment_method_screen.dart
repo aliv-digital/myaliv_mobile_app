@@ -269,7 +269,7 @@ class _HomePlansPaymentMethodViewState
     if (phoneNumber.isNotEmpty) {
       details.add(
         HomePlanPurchaseReceiptDetailItem(
-          label: 'phone no.',
+          label: 'mobile no.',
           value: phoneNumber,
         ),
       );
@@ -330,12 +330,28 @@ class _HomePlansPaymentMethodViewState
 
   String _receiptPhoneNumber(HomePlansPaymentMethodState state) {
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
-    return _firstNonEmpty([
+    final phoneNumber = _firstNonEmpty([
       state.phoneNumber,
       accountInfo?.phoneNumber,
       accountInfo?.primaryPhoneNumber,
       accountInfo?.username,
     ]);
+
+    return _formatMobileNumberForReceipt(phoneNumber);
+  }
+
+  String _formatMobileNumberForReceipt(String value) {
+    final trimmed = value.trim();
+    final digitsOnly = trimmed.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.isEmpty) return trimmed;
+
+    if (digitsOnly.length == 10) {
+      return '${digitsOnly.substring(0, 3)}-'
+          '${digitsOnly.substring(3, 6)}-'
+          '${digitsOnly.substring(6)}';
+    }
+
+    return trimmed;
   }
 
   String _receiptEmailAddress() {
