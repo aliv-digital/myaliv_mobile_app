@@ -9,7 +9,7 @@ import 'home_plans_payment_method_repository.dart';
 class HomePlansPaymentMethodRepositoryImpl
     implements HomePlansPaymentMethodRepository {
   HomePlansPaymentMethodRepositoryImpl({NetworkService? networkService})
-    : _networkService = networkService ?? instance<NetworkService>();
+      : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -22,21 +22,21 @@ class HomePlansPaymentMethodRepositoryImpl
 
     const List<HomePlansSavedPaymentMethod> commonMethods =
         <HomePlansSavedPaymentMethod>[
-          HomePlansSavedPaymentMethod(
-            id: 'visa-1234',
-            brand: HomePlansCardBrand.visa,
-            ending: '1234',
-            expiry: '06/2024',
-            logoSvgAsset: AssetConstant.visaCardSVG,
-          ),
-          HomePlansSavedPaymentMethod(
-            id: 'mc-1234',
-            brand: HomePlansCardBrand.mastercard,
-            ending: '1234',
-            expiry: '06/2024',
-            logoSvgAsset: AssetConstant.masterCardSVG,
-          ),
-        ];
+      HomePlansSavedPaymentMethod(
+        id: 'visa-1234',
+        brand: HomePlansCardBrand.visa,
+        ending: '1234',
+        expiry: '06/2024',
+        logoSvgAsset: AssetConstant.visaCardSVG,
+      ),
+      HomePlansSavedPaymentMethod(
+        id: 'mc-1234',
+        brand: HomePlansCardBrand.mastercard,
+        ending: '1234',
+        expiry: '06/2024',
+        logoSvgAsset: AssetConstant.masterCardSVG,
+      ),
+    ];
 
     if (subscriberType == HomePlansSubscriberType.prepaid) {
       // Prepaid UI should not show "charge to my account".
@@ -67,10 +67,12 @@ class HomePlansPaymentMethodRepositoryImpl
   Future<void> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
   }) async {
     final requestBody = _walletPaymentRequestBody(
       amount: amount,
       selectedItems: selectedItems,
+      forceNow: forceNow,
     );
 
     if (kDebugMode) {
@@ -99,6 +101,7 @@ class HomePlansPaymentMethodRepositoryImpl
   Map<String, dynamic> _walletPaymentRequestBody({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
   }) {
     final primaryPlans = <int>[];
     final secondaryPlans = <int>[];
@@ -144,7 +147,7 @@ class HomePlansPaymentMethodRepositoryImpl
         'SecondaryPlans': secondaryPlans,
         'StandalonePlans': standalonePlans,
       },
-      'ForceNow': false,
+      'ForceNow': forceNow,
       'SaveCard': false,
       'UseAsRenewalCard': false,
       'Bonuses': <Map<String, dynamic>>[],

@@ -144,6 +144,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
       primaryPlanVatAmount: _primaryPlanVatAmount(state),
       flow: flow,
       selectedAddOns: _selectedAddOns(state),
+      forceNow: state.routeArgs?.forceNow ?? false,
     );
   }
 

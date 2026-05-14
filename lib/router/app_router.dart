@@ -20,6 +20,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.d
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/view/home_plan_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
@@ -160,7 +161,8 @@ class AppRouter {
         path: AppRoutes.homeRoamingConfirmation,
         builder: (context, state) {
           final extra = state.extra;
-          HomeRoamingConfirmationRouteArgs args = const HomeRoamingConfirmationRouteArgs(
+          HomeRoamingConfirmationRouteArgs args =
+              const HomeRoamingConfirmationRouteArgs(
             phoneNumber: '242-801-1616',
             showDateField: true,
           );
@@ -294,9 +296,8 @@ class AppRouter {
         path: AppRoutes.topUpPaymentPrepaidScreen,
         builder: (context, state) {
           final amountString = state.uri.queryParameters['amount'];
-          final amount = amountString == null
-              ? null
-              : double.tryParse(amountString);
+          final amount =
+              amountString == null ? null : double.tryParse(amountString);
           return TopUpPaymentPrepaidScreen(amount: amount);
         },
       ),
@@ -390,6 +391,16 @@ class AppRouter {
         builder: (context, state) {
           final Object? extra = state.extra;
           bool hideSaveCreditCard = false;
+          String phoneNumber = '242-801-1616';
+          double amount = 75;
+          String dateText = 'Mar 12, 2023';
+          String timeText = '7:30 am';
+          String paymentMethod = 'credit card';
+          String statusMessage =
+              'It will take a few moments for the top-up to appear on the account. ';
+          String leftType = 'service';
+          String rightType = 'REV';
+          List<HomePlanPurchaseReceiptDetailItem>? details;
 
           if (extra is Map<String, dynamic>) {
             final dynamic value = extra['hideSaveCreditCard'];
@@ -398,14 +409,70 @@ class AppRouter {
             } else if (value is String) {
               hideSaveCreditCard = value.toLowerCase() == 'true';
             }
+
+            final dynamic phoneValue = extra['phoneNumber'];
+            if (phoneValue is String && phoneValue.trim().isNotEmpty) {
+              phoneNumber = phoneValue;
+            }
+
+            final dynamic amountValue = extra['amount'];
+            if (amountValue is num) {
+              amount = amountValue.toDouble();
+            } else if (amountValue is String) {
+              amount = double.tryParse(amountValue) ?? amount;
+            }
+
+            final dynamic dateValue = extra['dateText'];
+            if (dateValue is String && dateValue.trim().isNotEmpty) {
+              dateText = dateValue;
+            }
+
+            final dynamic timeValue = extra['timeText'];
+            if (timeValue is String && timeValue.trim().isNotEmpty) {
+              timeText = timeValue;
+            }
+
+            final dynamic paymentMethodValue = extra['paymentMethod'];
+            if (paymentMethodValue is String &&
+                paymentMethodValue.trim().isNotEmpty) {
+              paymentMethod = paymentMethodValue;
+            }
+
+            final dynamic statusMessageValue = extra['statusMessage'];
+            if (statusMessageValue is String &&
+                statusMessageValue.trim().isNotEmpty) {
+              statusMessage = statusMessageValue;
+            }
+
+            final dynamic leftTypeValue = extra['leftType'];
+            if (leftTypeValue is String && leftTypeValue.trim().isNotEmpty) {
+              leftType = leftTypeValue;
+            }
+
+            final dynamic rightTypeValue = extra['rightType'];
+            if (rightTypeValue is String && rightTypeValue.trim().isNotEmpty) {
+              rightType = rightTypeValue;
+            }
+
+            final dynamic detailsValue = extra['details'];
+            if (detailsValue is List) {
+              details = detailsValue
+                  .whereType<HomePlanPurchaseReceiptDetailItem>()
+                  .toList(growable: false);
+            }
           }
 
           return HomePlanPurchaseReceiptScreen(
-            phoneNumber: '242-801-1616',
-            amount: 75,
-            dateText: 'Mar 12, 2023',
-            timeText: '7:30 am',
+            phoneNumber: phoneNumber,
+            amount: amount,
+            dateText: dateText,
+            timeText: timeText,
             hideSaveCreditCard: hideSaveCreditCard,
+            paymentMethod: paymentMethod,
+            statusMessage: statusMessage,
+            leftType: leftType,
+            rightType: rightType,
+            details: details,
           );
         },
       ),
@@ -718,9 +785,8 @@ class AppRouter {
           }
 
           final amountString = state.uri.queryParameters['amount'];
-          final topUpAmount = amountString == null
-              ? null
-              : double.tryParse(amountString);
+          final topUpAmount =
+              amountString == null ? null : double.tryParse(amountString);
 
           final recipientPhone = state.uri.queryParameters['recipient'];
 

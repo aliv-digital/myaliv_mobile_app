@@ -37,6 +37,7 @@ class HomePlanConfirmationBloc
           status: HomePlanConfirmationStatus.ready,
           data: data,
           isTermsChecked: event.args.defaultTermsChecked,
+          forceNow: event.args.forceNow,
         ),
       );
     } catch (e) {

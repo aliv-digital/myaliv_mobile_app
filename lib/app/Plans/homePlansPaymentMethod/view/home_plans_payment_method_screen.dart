@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
@@ -52,7 +54,9 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
             subscriberType: args.subscriberType,
             amount: args.amount,
             vatNote: args.vatNote,
+            phoneNumber: args.phoneNumber,
             selectedItems: args.selectedItems,
+            forceNow: args.forceNow,
           ),
         );
 
@@ -65,8 +69,10 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
   void _printRouteArgs() {
     debugPrint('HomePlansPaymentMethodScreen args:');
     debugPrint('subscriberType: ${args.subscriberType}');
+    debugPrint('phoneNumber: ${args.phoneNumber}');
     debugPrint('amount: ${args.amount}');
     debugPrint('vatNote: ${args.vatNote}');
+    debugPrint('forceNow: ${args.forceNow}');
     debugPrint('selectedItems count: ${args.selectedItems.length}');
 
     for (final item in args.selectedItems) {
@@ -103,8 +109,8 @@ class _HomePlansPaymentMethodViewState
     // BalanceCubit is the app-wide owner of wallet balance. It will reuse its
     // cached API result when fresh, and only fetch again when needed.
     context.read<BalanceCubit>().loadBalances(
-      deviceAccountId: accountInfo.idAcc,
-    );
+          deviceAccountId: accountInfo.idAcc,
+        );
   }
 
   Widget _buildPaymentMethodContent(
@@ -135,12 +141,18 @@ class _HomePlansPaymentMethodViewState
       selectedId: state.selectedMethodId,
       onSelect: (String id) {
         context.read<HomePlansPaymentMethodBloc>().add(
-          HomePlansPaymentMethodSelected(id),
-        );
+              HomePlansPaymentMethodSelected(id),
+            );
       },
       onPayWithCard: () {
         AppSession.appRoute = 'prepaidPlan';
-        context.push(AppRoutes.homePlanPurchaseReceiptScreen);
+        context.push(
+          AppRoutes.homePlanPurchaseReceiptScreen,
+          extra: _buildReceiptExtra(
+            state,
+            paymentMethod: _selectedPaymentMethodLabel(state),
+          ),
+        );
         // context.read<HomePlansPaymentMethodBloc>().add(
         //       const HomePlansPayWithCardPressed(),
         //     );
@@ -196,12 +208,169 @@ class _HomePlansPaymentMethodViewState
     AppToast.show(message: state.walletWarningMessage!, type: ToastType.error);
   }
 
+  Map<String, dynamic> _buildReceiptExtra(
+    HomePlansPaymentMethodState state, {
+    required String paymentMethod,
+  }) {
+    final now = DateTime.now();
+    final dateText = DateFormat('MMM d, yyyy').format(now);
+    final timeText = DateFormat('h:mm a').format(now).toLowerCase();
+    final phoneNumber = _receiptPhoneNumber(state);
+    final emailAddress = _receiptEmailAddress();
+
+    return <String, dynamic>{
+      'hideSaveCreditCard': paymentMethod.toLowerCase() == 'wallet',
+      'phoneNumber': phoneNumber,
+      'amount': state.amount,
+      'dateText': dateText,
+      'timeText': timeText,
+      'paymentMethod': paymentMethod,
+      'statusMessage':
+          'It will take a few moments for the plan to appear on the account.',
+      'leftType': 'service',
+      'rightType': state.isPrepaidUser ? 'prepaid' : 'postpaid',
+      'details': _buildReceiptDetails(
+        state,
+        dateText: dateText,
+        timeText: timeText,
+        phoneNumber: phoneNumber,
+        emailAddress: emailAddress,
+        paymentMethod: paymentMethod,
+      ),
+      // Keep the original payment-screen payload available to the route.
+      'subscriberType': state.subscriberType,
+      'vatNote': state.vatNote,
+      'selectedItems': state.selectedItems,
+      'selectedMethodId': state.selectedMethodId,
+      'paymentMethods': state.methods,
+    };
+  }
+
+  List<HomePlanPurchaseReceiptDetailItem> _buildReceiptDetails(
+    HomePlansPaymentMethodState state, {
+    required String dateText,
+    required String timeText,
+    required String phoneNumber,
+    required String emailAddress,
+    required String paymentMethod,
+  }) {
+    final details = <HomePlanPurchaseReceiptDetailItem>[
+      for (final item in state.selectedItems)
+        HomePlanPurchaseReceiptDetailItem(
+          label: item.label.trim().isEmpty
+              ? _planTypeLabel(item.planType)
+              : item.label,
+          value: item.title,
+        ),
+      HomePlanPurchaseReceiptDetailItem(label: 'date', value: dateText),
+      HomePlanPurchaseReceiptDetailItem(label: 'time', value: timeText),
+    ];
+
+    if (phoneNumber.isNotEmpty) {
+      details.add(
+        HomePlanPurchaseReceiptDetailItem(
+          label: 'mobile no.',
+          value: phoneNumber,
+        ),
+      );
+    }
+
+    if (emailAddress.isNotEmpty) {
+      details.add(
+        HomePlanPurchaseReceiptDetailItem(
+          label: 'email address',
+          value: emailAddress,
+        ),
+      );
+    }
+
+    details.add(
+      HomePlanPurchaseReceiptDetailItem(
+        label: 'payment method',
+        value: paymentMethod,
+      ),
+    );
+
+    if (state.vatNote.trim().isNotEmpty) {
+      details.add(
+        HomePlanPurchaseReceiptDetailItem(label: 'vat', value: state.vatNote),
+      );
+    }
+
+    return details;
+  }
+
+  String _selectedPaymentMethodLabel(HomePlansPaymentMethodState state) {
+    final selectedMethodId = state.selectedMethodId;
+    HomePlansSavedPaymentMethod? method;
+    for (final item in state.methods) {
+      if (item.id == selectedMethodId) {
+        method = item;
+        break;
+      }
+    }
+
+    if (method == null) return 'credit card';
+    if (method.isChargeToMyAccount) return 'charge to my account';
+
+    return switch (method.brand) {
+      HomePlansCardBrand.visa => 'visa ending ${method.ending}',
+      HomePlansCardBrand.mastercard => 'mastercard ending ${method.ending}',
+      HomePlansCardBrand.unknown => 'card ending ${method.ending}',
+    };
+  }
+
+  String _planTypeLabel(HomePlansPaymentPlanType type) {
+    return switch (type) {
+      HomePlansPaymentPlanType.primary => 'primary plan',
+      HomePlansPaymentPlanType.secondary => 'secondary plan',
+      HomePlansPaymentPlanType.standalone => 'plan',
+    };
+  }
+
+  String _receiptPhoneNumber(HomePlansPaymentMethodState state) {
+    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
+    final phoneNumber = _firstNonEmpty([
+      state.phoneNumber,
+      accountInfo?.phoneNumber,
+      accountInfo?.primaryPhoneNumber,
+      accountInfo?.username,
+    ]);
+
+    return _formatMobileNumberForReceipt(phoneNumber);
+  }
+
+  String _formatMobileNumberForReceipt(String value) {
+    final trimmed = value.trim();
+    final digitsOnly = trimmed.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.isEmpty) return trimmed;
+
+    if (digitsOnly.length == 10) {
+      return '${digitsOnly.substring(0, 3)}-'
+          '${digitsOnly.substring(3, 6)}-'
+          '${digitsOnly.substring(6)}';
+    }
+
+    return trimmed;
+  }
+
+  String _receiptEmailAddress() {
+    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
+    return _firstNonEmpty([accountInfo?.email]);
+  }
+
+  String _firstNonEmpty(List<String?> values) {
+    for (final value in values) {
+      final trimmed = value?.trim() ?? '';
+      if (trimmed.isNotEmpty) return trimmed;
+    }
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<
-      HomePlansPaymentMethodBloc,
-      HomePlansPaymentMethodState
-    >(
+    return BlocConsumer<HomePlansPaymentMethodBloc,
+        HomePlansPaymentMethodState>(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget ||
           p.errorMessage != c.errorMessage ||
@@ -227,13 +396,13 @@ class _HomePlansPaymentMethodViewState
           } else if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
             context.push(
               AppRoutes.homePlanPurchaseReceiptScreen,
-              extra: {'hideSaveCreditCard': true},
+              extra: _buildReceiptExtra(state, paymentMethod: 'wallet'),
             );
           }
 
           context.read<HomePlansPaymentMethodBloc>().add(
-            const HomePlansPaymentNavConsumed(),
-          );
+                const HomePlansPaymentNavConsumed(),
+              );
         }
       },
       builder: (context, state) {
@@ -250,8 +419,8 @@ class _HomePlansPaymentMethodViewState
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
               isVatExclusive: state.vatNote.toLowerCase().contains(
-                'no vat applied',
-              ),
+                    'no vat applied',
+                  ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
@@ -259,7 +428,10 @@ class _HomePlansPaymentMethodViewState
                 AppSession.appRoute = 'prepaidPlan';
                 context.push(
                   AppRoutes.homePlanPurchaseReceiptScreen,
-                  extra: {'hideSaveCreditCard': true},
+                  extra: _buildReceiptExtra(
+                    state,
+                    paymentMethod: _selectedPaymentMethodLabel(state),
+                  ),
                 );
                 // context
                 //     .read<HomePlansPaymentMethodBloc>()

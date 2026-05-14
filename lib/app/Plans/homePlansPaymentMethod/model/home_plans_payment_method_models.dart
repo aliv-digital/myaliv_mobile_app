@@ -48,13 +48,13 @@ class HomePlansSavedPaymentMethod extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    brand,
-    ending,
-    expiry,
-    logoSvgAsset,
-    isChargeToMyAccount,
-  ];
+        id,
+        brand,
+        ending,
+        expiry,
+        logoSvgAsset,
+        isChargeToMyAccount,
+      ];
 }
 
 class HomePlansPaymentSelectedItem extends Equatable {
@@ -83,6 +83,7 @@ class HomePlansPaymentSelectedItem extends Equatable {
 /// Keep this class simple and explicit so it is easy to debug and extend.
 class HomePlansPaymentMethodRouteArgs extends Equatable {
   final HomePlansSubscriberType subscriberType;
+  final String phoneNumber;
 
   /// Optional override for the amount the user is paying.
   /// `null` keeps the screen's existing default for legacy callers.
@@ -94,14 +95,24 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
 
   /// Selected plan/add-on lines from the confirmation screen.
   final List<HomePlansPaymentSelectedItem> selectedItems;
+  final bool forceNow;
 
   const HomePlansPaymentMethodRouteArgs({
     this.subscriberType = HomePlansSubscriberType.prepaid,
+    this.phoneNumber = '',
     this.amount,
     this.vatNote,
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
+    this.forceNow = false,
   });
 
   @override
-  List<Object?> get props => [subscriberType, amount, vatNote, selectedItems];
+  List<Object?> get props => [
+        subscriberType,
+        phoneNumber,
+        amount,
+        vatNote,
+        selectedItems,
+        forceNow,
+      ];
 }
