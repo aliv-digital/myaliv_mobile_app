@@ -9,7 +9,7 @@ class HomePlansPaymentMethodBloc
   final HomePlansPaymentMethodRepository repository;
 
   HomePlansPaymentMethodBloc({required this.repository})
-    : super(HomePlansPaymentMethodState.initial()) {
+      : super(HomePlansPaymentMethodState.initial()) {
     on<HomePlansPaymentMethodStarted>(_onStarted);
     on<HomePlansPaymentMethodSelected>(_onSelected);
     on<HomePlansPayWithCardPressed>(_onPayWithCard);
@@ -30,6 +30,7 @@ class HomePlansPaymentMethodBloc
         status: HomePlansPaymentMethodStatus.loading,
         errorMessage: null,
         subscriberType: event.subscriberType,
+        phoneNumber: event.phoneNumber,
         amount: event.amount,
         vatNote: event.vatNote,
         selectedItems: event.selectedItems,

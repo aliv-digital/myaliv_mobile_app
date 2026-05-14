@@ -16,6 +16,7 @@ class HomePlansPaymentMethodState extends Equatable {
   final HomePlansPaymentMethodStatus status;
   final String? errorMessage;
   final HomePlansSubscriberType subscriberType;
+  final String phoneNumber;
 
   final List<HomePlansSavedPaymentMethod> methods;
   final String? selectedMethodId;
@@ -32,6 +33,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.status,
     required this.errorMessage,
     required this.subscriberType,
+    required this.phoneNumber,
     required this.methods,
     required this.selectedMethodId,
     required this.amount,
@@ -47,6 +49,7 @@ class HomePlansPaymentMethodState extends Equatable {
       status: HomePlansPaymentMethodStatus.initial,
       errorMessage: null,
       subscriberType: HomePlansSubscriberType.postpaid,
+      phoneNumber: '',
       methods: [],
       selectedMethodId: null,
       amount: 5.00,
@@ -73,6 +76,7 @@ class HomePlansPaymentMethodState extends Equatable {
     HomePlansPaymentMethodStatus? status,
     String? errorMessage,
     HomePlansSubscriberType? subscriberType,
+    String? phoneNumber,
     List<HomePlansSavedPaymentMethod>? methods,
     String? selectedMethodId,
     double? amount,
@@ -86,6 +90,7 @@ class HomePlansPaymentMethodState extends Equatable {
       status: status ?? this.status,
       errorMessage: errorMessage,
       subscriberType: subscriberType ?? this.subscriberType,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       methods: methods ?? this.methods,
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
       amount: amount ?? this.amount,
@@ -100,16 +105,17 @@ class HomePlansPaymentMethodState extends Equatable {
 
   @override
   List<Object?> get props => [
-    status,
-    errorMessage,
-    subscriberType,
-    methods,
-    selectedMethodId,
-    amount,
-    vatNote,
-    selectedItems,
-    navTarget,
-    walletWarningMessage,
-    walletWarningRequestId,
-  ];
+        status,
+        errorMessage,
+        subscriberType,
+        phoneNumber,
+        methods,
+        selectedMethodId,
+        amount,
+        vatNote,
+        selectedItems,
+        navTarget,
+        walletWarningMessage,
+        walletWarningRequestId,
+      ];
 }

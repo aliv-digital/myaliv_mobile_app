@@ -10,19 +10,27 @@ abstract class HomePlansPaymentMethodEvent extends Equatable {
 
 class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final HomePlansSubscriberType subscriberType;
+  final String phoneNumber;
   final double? amount;
   final String? vatNote;
   final List<HomePlansPaymentSelectedItem> selectedItems;
 
   const HomePlansPaymentMethodStarted({
     required this.subscriberType,
+    this.phoneNumber = '',
     this.amount,
     this.vatNote,
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
   });
 
   @override
-  List<Object?> get props => [subscriberType, amount, vatNote, selectedItems];
+  List<Object?> get props => [
+        subscriberType,
+        phoneNumber,
+        amount,
+        vatNote,
+        selectedItems,
+      ];
 }
 
 class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {
