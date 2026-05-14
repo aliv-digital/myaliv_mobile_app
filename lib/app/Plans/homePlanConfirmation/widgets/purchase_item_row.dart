@@ -68,7 +68,7 @@ class PurchaseItemRow extends StatelessWidget {
             ),
           ),
           child: Text(
-            '\$ ${item.price.toStringAsFixed(2)}',
+            '\$ ${item.totalPrice.toStringAsFixed(2)}',
             style: HomePlanConfirmationTheme.purchaseItemAmountChipTextStyle,
           ),
         ),

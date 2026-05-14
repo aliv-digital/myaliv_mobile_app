@@ -90,6 +90,9 @@ class PurchaseLineItem extends Equatable {
   final String subtitle;
 
   final double price;
+  final double vatAmount;
+
+  double get totalPrice => price + vatAmount;
 
   const PurchaseLineItem({
     required this.id,
@@ -99,6 +102,7 @@ class PurchaseLineItem extends Equatable {
     required this.title,
     required this.subtitle,
     required this.price,
+    this.vatAmount = 0,
   });
 
   @override
@@ -110,6 +114,7 @@ class PurchaseLineItem extends Equatable {
         title,
         subtitle,
         price,
+        vatAmount,
       ];
 }
 
