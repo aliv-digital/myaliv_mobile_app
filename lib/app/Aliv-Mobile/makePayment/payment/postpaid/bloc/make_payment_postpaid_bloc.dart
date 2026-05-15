@@ -30,8 +30,6 @@ class MakePaymentPostPaidBloc
         paymentDueAmount: data.paymentDueAmount,
         bottomAmount: data.bottomAmount,
         bottomSubtitle: data.bottomSubtitle,
-        methods: data.methods,
-        selectedMethodIndex: 0,
       ),
     );
   }
@@ -61,7 +59,7 @@ class MakePaymentPostPaidBloc
     MpPaymentMethodSelected event,
     Emitter<MakePaymentPostPaidState> emit,
   ) {
-    emit(state.copyWith(selectedMethodIndex: event.index));
+    emit(state.copyWith(selectedMethodToken: event.token));
   }
 
   void _onPayNow(

@@ -1,6 +1,8 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../../core/utils/app_session.dart';
@@ -27,6 +29,7 @@ class MakePaymentPostPaidScreen extends StatelessWidget {
           repository: MakePaymentPostPaidRepositoryImpl(),
         );
         makePaymentBloc.add(const MakePaymentPostPaidStarted());
+        instance<SavedCardsCubit>().fetchSavedCards();
         return makePaymentBloc;
       },
       child: const _MakePaymentPostPaidPage(),
@@ -181,12 +184,9 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
 
                 // Payment method selection section.
                 MpPaymentMethodSection(
-                  methods: state.methods,
-                  selectedIndex: state.selectedMethodIndex,
-                  onSelect: (selectedMethodIndex) {
-                    paymentBloc.add(
-                      MpPaymentMethodSelected(selectedMethodIndex),
-                    );
+                  selectedToken: state.selectedMethodToken,
+                  onCardSelected: (card) {
+                    paymentBloc.add(MpPaymentMethodSelected(card.token));
                   },
                   onAddCard: () {},
                 ),
