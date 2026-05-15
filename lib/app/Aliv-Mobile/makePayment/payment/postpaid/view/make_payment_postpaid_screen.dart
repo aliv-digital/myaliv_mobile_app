@@ -2,7 +2,10 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../../core/utils/app_session.dart';
@@ -111,7 +114,7 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
     BuildContext context,
   ) {
     return DefaultBottomPayBar(
-      amountText: state.bottomAmount,
+      amountText: '\$ ${_resolvePayAmount(state).toStringAsFixed(2)}',
       isButtonEnabled: state.canPayNow,
       backgroundColor: MakePaymentPostPaidTheme.bottomBarBg,
       buttonColor: MakePaymentPostPaidTheme.primary,
@@ -119,15 +122,20 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
       // onPayNow: () => paymentBloc.add(const MpPayNowPressed()),
       onPayNow: () {
         AppSession.appRoute = 'postpaidPayment';
+        final now = DateTime.now();
+        final phone = _formatPhone(
+          instance<DeviceLimitsCubit>().state.deviceLimits?.tn ?? '',
+        );
+        final amount = _resolvePayAmount(state);
         context.push(
           AppRoutes.guestPayBillReceipt,
           extra: GuestPayBillReceiptArgs(
             serviceName: 'ALIV Postpaid',
             identifierLabel: 'phone no.',
-            identifierValue: '242-801-1616',
-            amount: 129.00,
-            dateText: 'Mar 22, 2023',
-            timeText: '07:30 am',
+            identifierValue: phone,
+            amount: amount,
+            dateText: DateFormat('MMM d, yyyy').format(now),
+            timeText: DateFormat('hh:mm a').format(now).toLowerCase(),
           ),
         );
       },
@@ -198,4 +206,27 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Resolves the actual amount to charge based on the user's choice:
+/// - "other amount" + parsable positive value → custom amount
+/// - otherwise → current balance due from BalanceCubit
+double _resolvePayAmount(MakePaymentPostPaidState state) {
+  if (state.amountOption == MpAmountOption.other) {
+    final parsed = double.tryParse(state.customAmount.trim());
+    if (parsed != null && parsed > 0) return parsed;
+  }
+  return instance<BalanceCubit>().state.walletBalance;
+}
+
+String _formatPhone(String phone) {
+  if (phone.isEmpty) return '';
+  final digits = phone.replaceAll(RegExp(r'\D'), '');
+  if (digits.length == 10) {
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+  }
+  if (digits.length == 11 && digits.startsWith('1')) {
+    return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
+  }
+  return phone;
 }

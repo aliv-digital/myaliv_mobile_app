@@ -35,10 +35,10 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
       leftType: 'top-up',
       rightType: 'prepaid',
       dateText: dateText,
-      timeText: '7:30 am',//timeText,
-      phoneNumber: '242-801-1616',//phoneNumber,
+      timeText: timeText,
+      phoneNumber: phoneNumber,
       paymentMethod: paymentMethod,
-      amount: 15.00//amount,
+      amount: amount,
     );
 
     return RepositoryProvider(

@@ -68,33 +68,22 @@ class ReceiptSuccessCard extends StatelessWidget {
             ),
             const SizedBox(height: ReceiptTheme.successGapAfterIcon),
 
-            // fixed title height (so notch stays exactly aligned)
+            // title
             SizedBox(
               width: ReceiptTheme.successCardContentWidth,
               height: titleBoxH,
               child: Center(
-                child: (AppSession.appRoute == 'sendTopUp')
-                    ? Text(
-                        'Wallet Transfer Successful!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )
-                    : Text(
-                        'Payment Success!',
-                        textAlign: TextAlign.center,
-                        style: ReceiptTheme.successTitle,
-                      ),
+                child: Text(
+                  'Payment Success!',
+                  textAlign: TextAlign.center,
+                  style: ReceiptTheme.successTitle,
+                ),
               ),
             ),
 
             const SizedBox(height: ReceiptTheme.successGapAfterTitle),
 
-            // ✅ dashed divider (slightly inset like screenshot)
+            // dashed divider with side notches aligned
             const Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: ReceiptTheme.successDashedDividerHorizontalInset,
@@ -105,6 +94,8 @@ class ReceiptSuccessCard extends StatelessWidget {
             ),
 
             const SizedBox(height: ReceiptTheme.successGapAfterTitle),
+
+            // body message
             LayoutBuilder(
               builder: (context, constraints) {
                 final helperTextWidth =
@@ -114,82 +105,47 @@ class ReceiptSuccessCard extends StatelessWidget {
 
                 return SizedBox(
                   width: helperTextWidth,
-                  child: (AppSession.appRoute == 'sendTopUp')
-                      ? Text(
-                          'It may take a few moments before the order is processed.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF707070),
-                            fontSize: 16,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
-                      : Text(
-                          'It will take a few moments for the top-up '
-                          'to appear on the account.',
-                          textAlign: TextAlign.center,
-                          style: ReceiptTheme.successBody,
-                        ),
+                  child: Text(
+                    'It will take a few moments for the top-up '
+                    'to appear on the account.',
+                    textAlign: TextAlign.center,
+                    style: ReceiptTheme.successBody,
+                  ),
                 );
               },
             ),
             const SizedBox(height: ReceiptTheme.successGapAfterMessage),
-            if (AppSession.appRoute == 'sendTopUp')
-              ReceiptDetailRow(
-                label: 'transferred number',
-                value: data.phoneNumber,
-                valueBold: false,
-              ),
-            if (AppSession.appRoute == 'sendTopUp')
-              ReceiptDetailRow(
-                label: 'subtotal',
-                value: '\$ 15.00',
-                valueBold: false,
-              ),
-            if (AppSession.appRoute == 'sendTopUp')
-              ReceiptDetailRow(
-                label: 'vat',
-                value: '\$ 0.00',
-                valueBold: false,
-              ),
 
-            // details
-            if (AppSession.appRoute == '')
-              ReceiptDetailRow(
-                label: 'top-up',
-                value: data.rightType,
-                valueBold: false,
-              ),
-            if (AppSession.appRoute == '')
-              ReceiptDetailRow(
-                label: 'date',
-                value: data.dateText,
-                valueBold: false,
-              ),
-            if (AppSession.appRoute == '')
-              ReceiptDetailRow(
-                label: 'time',
-                value: data.timeText,
-                valueBold: false,
-              ),
-            if (AppSession.appRoute == '')
-              ReceiptDetailRow(
-                label: 'phone no.',
-                value: data.phoneNumber,
-                valueBold: false,
-              ),
-
-            if (AppSession.appRoute == '' )
-              ReceiptDetailRow(
-                label: 'payment method',
-                value: data.paymentMethod,
-                valueBold: false,
-              ),
+            // dynamic detail rows from data
+            ReceiptDetailRow(
+              label: 'top-up',
+              value: data.rightType,
+              valueBold: false,
+            ),
+            ReceiptDetailRow(
+              label: 'date',
+              value: data.dateText,
+              valueBold: false,
+            ),
+            ReceiptDetailRow(
+              label: 'time',
+              value: data.timeText,
+              valueBold: false,
+            ),
+            ReceiptDetailRow(
+              label: 'phone no.',
+              value: data.phoneNumber,
+              valueBold: false,
+            ),
+            ReceiptDetailRow(
+              label: 'payment method',
+              value: data.paymentMethod,
+              valueBold: false,
+            ),
 
             const SizedBox(height: ReceiptTheme.successGapBeforeAmount),
 
-            // second divider (NO notches needed; this is just dashed)
+            // second divider (just dashed)
             const Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: ReceiptTheme.successDashedDividerHorizontalInset,
@@ -201,19 +157,11 @@ class ReceiptSuccessCard extends StatelessWidget {
 
             const SizedBox(height: ReceiptTheme.successGapBeforeAmount),
 
-            if (AppSession.appRoute == 'sendTopUp')
-              ReceiptDetailRow(
-                label: 'will be transferred',
-                value: _money(15.00),
-                valueBold: true,
-              ),
-
-            if (AppSession.appRoute == '')
-              ReceiptDetailRow(
-                label: 'amount',
-                value: _money(data.amount),
-                valueBold: true,
-              ),
+            ReceiptDetailRow(
+              label: 'amount',
+              value: _money(data.amount),
+              valueBold: true,
+            ),
 
             const SizedBox(height: ReceiptTheme.successGapAfterAmount),
             Divider(
