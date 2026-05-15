@@ -1,9 +1,10 @@
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/send_top_up_phone_field.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_amount_box.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
@@ -13,7 +14,6 @@ import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
-import '../../../../../Aliv-Mobile-Guest/guestTopUp/widgets/phone_number_input.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
 class SendTopUpPlaceholderTab extends StatefulWidget {
@@ -26,9 +26,18 @@ class SendTopUpPlaceholderTab extends StatefulWidget {
 }
 
 class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
+  final LoginPhoneNumberHelper _phoneNumberHelper =
+      const LoginPhoneNumberHelper();
+  final FocusNode _phoneFocusNode = FocusNode();
+  final FocusNode _confirmPhoneFocusNode = FocusNode();
+
   String _amount = '15.00';
   String _phoneNumber = '';
   String _confirmPhoneNumber = '';
+  bool _hasPhoneFocus = false;
+  bool _hasConfirmPhoneFocus = false;
+  bool _phoneFieldError = false;
+  bool _confirmPhoneFieldError = false;
  // 🔥 default amount (matches design)
 
   double get _amountValue {
@@ -36,13 +45,134 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-  static const CountryInfo _defaultCountry = CountryInfo(
-    flagEmoji: '🇧🇸',
-    dialCode: '1',
-    isoCode: 'BS',
-  );
+  static const LoginCountrySelection _defaultCountry =
+      LoginCountrySelection.defaultBahamas;
 
-  final CountryInfo _selectedCountry = _defaultCountry;
+  final LoginCountrySelection _selectedCountry = _defaultCountry;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneFocusNode.addListener(_handlePhoneFocusChange);
+    _confirmPhoneFocusNode.addListener(_handleConfirmPhoneFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _phoneFocusNode.removeListener(_handlePhoneFocusChange);
+    _confirmPhoneFocusNode.removeListener(_handleConfirmPhoneFocusChange);
+    _phoneFocusNode.dispose();
+    _confirmPhoneFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _handlePhoneFocusChange() {
+    if (_hasPhoneFocus == _phoneFocusNode.hasFocus) return;
+
+    setState(() {
+      _hasPhoneFocus = _phoneFocusNode.hasFocus;
+    });
+  }
+
+  void _handleConfirmPhoneFocusChange() {
+    if (_hasConfirmPhoneFocus == _confirmPhoneFocusNode.hasFocus) return;
+
+    setState(() {
+      _hasConfirmPhoneFocus = _confirmPhoneFocusNode.hasFocus;
+    });
+  }
+
+  LoginPhoneValidationResult _validatePhone(String value) {
+    return _phoneNumberHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: value,
+      selectedCountry: _selectedCountry,
+    );
+  }
+
+  bool _hasLivePhoneError(String value) {
+    return _phoneNumberHelper.hasLiveValidationError(
+      rawPhoneNumber: value,
+      selectedCountry: _selectedCountry,
+    );
+  }
+
+  String _digitsOnly(String value) {
+    return value.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  Widget _buildLoginStylePhoneField({
+    required String labelText,
+    required String value,
+    required bool forceError,
+    required bool hasFocus,
+    required FocusNode focusNode,
+    required ValueChanged<String> onChanged,
+    TextStyle? labelStyle,
+  }) {
+    final showLiveValidationError = _hasLivePhoneError(value);
+    final showInlineError = forceError || showLiveValidationError;
+    final showBorderError = forceError || showLiveValidationError;
+    final phoneBorderColor = !hasFocus && showBorderError
+        ? AuthModuleColors.errorRed
+        : AuthModuleColors.loginFieldBorderColor;
+    final phoneInputStyle = showLiveValidationError
+        ? AuthModuleTextStyles.fieldValue.copyWith(
+            color: AuthModuleColors.errorRed,
+          )
+        : AuthModuleTextStyles.fieldValue;
+    final phoneErrorLeftPadding = AuthModuleSizes.countryWidth +
+        AuthModuleSizes.countryToPhoneGap +
+        AuthModulePaddings.fieldHorizontal14.left;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomCountryPhoneInputRow(
+          focusNode: focusNode,
+          hideUnfocusedInputBorder: false,
+          labelText: labelText,
+          labelStyle: labelStyle,
+          hintText: '(242) 345-4356',
+          flagEmoji: _selectedCountry.flagEmoji,
+          dialCode: _selectedCountry.dialCode,
+          countryIsoCode: _selectedCountry.isoCode,
+          enableCountryPicker: false,
+          onChanged: onChanged,
+          inputFormatters: const [BahamasPhoneInputFormatter()],
+          backgroundColor: AuthModuleColors.pageBackground,
+          unfocusedBorderColor: phoneBorderColor,
+          borderRadius: AuthModuleSizes.fieldRadius,
+          borderWidth: AuthModuleSizes.fieldBorderWidth,
+          fieldHeight: AuthModuleSizes.fieldHeight,
+          countryPickerWidth: AuthModuleSizes.countryWidth,
+          countryToPhoneGap: AuthModuleSizes.countryToPhoneGap,
+          countryPickerPadding: AuthModulePaddings.countryHorizontal8,
+          showCountryPickerBorder: true,
+          countryPickerBorderColor: AuthModuleColors.loginFieldBorderColor,
+          countryPickerBorderWidth: AuthModuleSizes.fieldBorderWidth,
+          phoneInputPadding: AuthModulePaddings.fieldHorizontal14,
+          countryFlagToDialGap: AuthModuleSizes.countryFlagToCodeGap,
+          countryDialToArrowGap: AuthModuleSizes.countryCodeToArrowGap,
+          countryArrowIconSize: AuthModuleSizes.countryArrowSize,
+          countryArrowColor: AuthModuleColors.hintGrey,
+          flagStyle: AuthModuleTextStyles.countryFlag,
+          dialCodeStyle: AuthModuleTextStyles.countryCode,
+          phoneInputStyle: phoneInputStyle,
+          phoneHintStyle: AuthModuleTextStyles.fieldHint,
+        ),
+        if (showInlineError) ...[
+          const SizedBox(height: 6),
+          Padding(
+            padding: EdgeInsets.only(left: phoneErrorLeftPadding),
+            child: const Text(
+              LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+              style: AuthModuleTextStyles.invalidCredentials,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
 
   // void _showErrorSnackBar(String? errorMessage) {
   //   final resolvedMessage = errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
@@ -124,15 +254,19 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               // const _SectionLabel('enter number to top up'),
               // const SizedBox(height: 8),
               // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
-              CustomCountryPhoneInputRow(
+              _buildLoginStylePhoneField(
                 labelText: GuestTopUpTheme.activePrepaidLabel,
                 labelStyle: GuestTopUpTheme.activePrepaidPrompt,
-                hintText: GuestTopUpTheme.phoneHintText,
-                flagEmoji: _selectedCountry.flagEmoji,
-                dialCode: _selectedCountry.dialCode,
-                countryIsoCode: _selectedCountry.isoCode,
-                enableCountryPicker: false,
-                onChanged: (value) => _phoneNumber = value,
+                value: _phoneNumber,
+                forceError: _phoneFieldError,
+                hasFocus: _hasPhoneFocus,
+                focusNode: _phoneFocusNode,
+                onChanged: (value) {
+                  setState(() {
+                    _phoneNumber = value;
+                    _phoneFieldError = false;
+                  });
+                },
               ),
 
               const SizedBox(height: 20),
@@ -140,15 +274,18 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               // const _SectionLabel('confirm number to top up'),
               // const SizedBox(height: 8),
               // SendTopUpPhoneField(hint: 'eg: 242-899-9999'),
-              CustomCountryPhoneInputRow(
+              _buildLoginStylePhoneField(
                 labelText: GuestTopUpTheme.confirmMobileLabel,
-                hintText: GuestTopUpTheme.phoneHintText,
-                flagEmoji: _selectedCountry.flagEmoji,
-                enableCountryPicker: false,
-                showCountryArrow: false,
-                dialCode: _selectedCountry.dialCode,
-                countryIsoCode: _selectedCountry.isoCode,
-                onChanged: (value) => _confirmPhoneNumber = value,
+                value: _confirmPhoneNumber,
+                forceError: _confirmPhoneFieldError,
+                hasFocus: _hasConfirmPhoneFocus,
+                focusNode: _confirmPhoneFocusNode,
+                onChanged: (value) {
+                  setState(() {
+                    _confirmPhoneNumber = value;
+                    _confirmPhoneFieldError = false;
+                  });
+                },
               ),
               const SizedBox(height: 18),
 
@@ -207,15 +344,33 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_phoneNumber.trim().isEmpty ||
-                        _confirmPhoneNumber.trim().isEmpty) {
+                    final phoneValidation = _validatePhone(_phoneNumber);
+                    final confirmPhoneValidation =
+                        _validatePhone(_confirmPhoneNumber);
+                    final hasPhoneError = !phoneValidation.isValid;
+                    final hasConfirmPhoneError = !confirmPhoneValidation.isValid;
+
+                    if (hasPhoneError || hasConfirmPhoneError) {
+                      setState(() {
+                        _phoneFieldError = hasPhoneError;
+                        _confirmPhoneFieldError = hasConfirmPhoneError;
+                      });
+                      final hasEmptyPhone = _digitsOnly(_phoneNumber).isEmpty ||
+                          _digitsOnly(_confirmPhoneNumber).isEmpty;
                       AppToast.show(
-                        message: 'please enter phone number',
+                        message: hasEmptyPhone
+                            ? 'please enter phone number'
+                            : LoginPhoneNumberHelper.invalidPhoneNumberMessage,
                         type: ToastType.error,
                       );
                       return;
                     }
-                    if (_phoneNumber != _confirmPhoneNumber) {
+                    final recipientPhone =
+                        phoneValidation.phoneNumberForApi ?? '';
+                    final confirmPhone =
+                        confirmPhoneValidation.phoneNumberForApi ?? '';
+
+                    if (recipientPhone != confirmPhone) {
                       AppToast.show(
                         message: 'phone numbers do not match',
                         type: ToastType.error,
@@ -234,7 +389,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     AppSession.appRoute = 'sendTopUp';
                     final amountParam = _amountValue.toStringAsFixed(2);
                     final recipientParam = Uri.encodeQueryComponent(
-                      _phoneNumber.trim(),
+                      recipientPhone,
                     );
                     context.push(
                       '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
@@ -256,7 +411,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                   child: const Text(
                     'proceed',
                     style: TextStyle(
-                      color: const Color(0xFFF1F1F8),
+                      color: Color(0xFFF1F1F8),
                       fontSize: 15,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,
@@ -290,8 +445,7 @@ class _SectionLabel extends StatelessWidget {
           fontFamily: 'CircularPro',
           fontSize: 14,
           fontWeight: FontWeight.w700,
-          color:  Color(0xFF1C1C1C) /* Black-100% */,
-
+          color: Color(0xFF1C1C1C) /* Black-100% */,
         ),
       ),
     );
@@ -317,87 +471,9 @@ class _ReadOnlyField extends StatelessWidget {
         style: const TextStyle(
           fontFamily: 'CircularPro',
           fontSize: 14,
-          color: const Color(0xFF707070),
+          color: Color(0xFF707070),
           fontWeight: FontWeight.w400,
           height: 1.43,
-        ),
-      ),
-    );
-  }
-}
-
-class _InputPlaceholder extends StatelessWidget {
-  final String hint;
-  const _InputPlaceholder(this.hint);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: TopUpPrepaidTheme.lightBg,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        hint,
-        style: TextStyle(
-          fontFamily: 'CircularPro',
-          fontSize: 15,
-          color: TopUpPrepaidTheme.textMuted,
-        ),
-      ),
-    );
-  }
-}
-
-class _AmountCard extends StatelessWidget {
-  final int amount;
-  const _AmountCard({required this.amount});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: TopUpPrepaidTheme.amountBorderGradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Container(
-        width: 220,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '\$ $amount.00',
-              style: const TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 36,
-                fontWeight: FontWeight.w700,
-                color: TopUpPrepaidTheme.purple,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'enter top-up amount',
-              style: TextStyle(
-                fontFamily: 'CircularPro',
-                fontSize: 13,
-                color: TopUpPrepaidTheme.textMuted,
-              ),
-            ),
-          ],
         ),
       ),
     );
