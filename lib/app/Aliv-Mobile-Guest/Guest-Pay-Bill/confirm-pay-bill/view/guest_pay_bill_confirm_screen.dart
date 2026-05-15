@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -93,15 +94,16 @@ class _GuestPayBillConfirmView extends StatelessWidget {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: GuestPayBillConfirmTheme.snackBarBackground,
-        content: Text(
-          message,
-          style: GuestPayBillConfirmTheme.snackBarText,
-        ),
-      ),
-    );
+    AppToast.show(message: message);
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     backgroundColor: GuestPayBillConfirmTheme.snackBarBackground,
+    //     content: Text(
+    //       message,
+    //       style: GuestPayBillConfirmTheme.snackBarText,
+    //     ),
+    //   ),
+    // );
   }
 
   void _onStateChanged(BuildContext context, GuestPayBillConfirmState state) {

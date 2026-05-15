@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../../../../router/app_routes.dart';
 
@@ -218,9 +219,10 @@ class _ReferralCodeBox extends StatelessWidget {
               borderRadius: BorderRadius.circular(100),
               onTap: () {
                 Clipboard.setData(ClipboardData(text: code));
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('Copied')));
+                AppToast.show(message: 'Copied',type: ToastType.success);
+                // ScaffoldMessenger.of(
+                //   context,
+                // ).showSnackBar(const SnackBar(content: Text('Copied')));
               },
               child: Container(
                 height: 32,

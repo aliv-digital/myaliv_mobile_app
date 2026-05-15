@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../bloc/refer_friend_response_prepaid_bloc.dart';
 import '../bloc/refer_friend_response_prepaid_event.dart';
 import '../bloc/refer_friend_response_prepaid_state.dart';
@@ -47,13 +48,12 @@ class _ReferFriendResponsePrepaidView extends StatelessWidget {
             final msg = state.toastMessage;
             if (msg == null || msg.isEmpty) return;
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(msg)),
-            );
+            AppToast.show(message: msg.toString());
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(content: Text(msg)),
+            // );
 
-            context
-                .read<ReferFriendResponsePrepaidBloc>()
-                .add(const ReferFriendResponsePrepaidToastConsumed());
+            context.read<ReferFriendResponsePrepaidBloc>().add(const ReferFriendResponsePrepaidToastConsumed());
           },
           child: Column(
             children: [

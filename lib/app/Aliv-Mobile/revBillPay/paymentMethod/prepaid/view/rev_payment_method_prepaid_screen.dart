@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
@@ -47,11 +48,15 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
-        if (state.errorMessage != null &&
-            state.status == RevPaymentMethodPrepaidStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
+        if (state.errorMessage != null && state.status == RevPaymentMethodPrepaidStatus.failure) {
+
+          AppToast.show(
+            message: state.errorMessage!.toString(),
+            type: ToastType.error
           );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text(state.errorMessage!)),
+          // );
         }
 
         if (state.navTarget != RevPaymentMethodNavTarget.none) {

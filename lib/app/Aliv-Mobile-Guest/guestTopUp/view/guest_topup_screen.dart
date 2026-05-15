@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradi
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/extentions/hex_color.dart';
 import '../../../../resources/widgets/defaultButton.dart';
@@ -51,20 +52,20 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     isoCode: 'BS',
   );
 
-  CountryInfo _selectedCountry = _defaultCountry;
+  final CountryInfo _selectedCountry = _defaultCountry;
 
   void _showErrorSnackBar(String? errorMessage) {
-    final resolvedMessage =
-        errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
+    final resolvedMessage = errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          resolvedMessage,
-          style: GuestTopUpTheme.snackBarText,
-        ),
-      ),
-    );
+    AppToast.show(message: resolvedMessage.toString(),type: ToastType.error);
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(
+    //       resolvedMessage,
+    //       style: GuestTopUpTheme.snackBarText,
+    //     ),
+    //   ),
+    // );
   }
 
   void _goToConfirmTopUp() {

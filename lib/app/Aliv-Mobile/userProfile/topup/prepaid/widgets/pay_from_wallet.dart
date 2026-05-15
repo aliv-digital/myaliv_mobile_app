@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import '../../../../../../router/app_routes.dart';
 import '../theme/top_up_prepaid_theme.dart';
-import '../view/wallet_transfer_receipt_screen.dart';
 
 class PayFromWalletSheet extends StatelessWidget {
   final double amount;
+  final String? phoneNumber;
 
-  const PayFromWalletSheet({super.key, this.amount = 0});
+  const PayFromWalletSheet({super.key, this.amount = 0, this.phoneNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +193,15 @@ class PayFromWalletSheet extends StatelessWidget {
     //   MaterialPageRoute(builder: (_) => const WalletTransferReceiptScreen()),
     // );
     //
-    context.go( AppRoutes.guestTopUpReceipt);
+    context.go(
+      AppRoutes.userProfileReceiptScreen,
+      extra: UserProfileReceiptRouteArgs(
+        amount: amount,
+        phoneNumber: phoneNumber,
+        paymentMethod: 'wallet',
+        title: 'Wallet Transfer Successful!',
+        message: 'It may take a few moments before the order is processed.',
+      ),
+    );
   }
 }

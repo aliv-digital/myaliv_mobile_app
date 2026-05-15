@@ -24,7 +24,7 @@ class TopUpPaymentPrepaidBloc
     emit(
       state.copyWith(
         status: TopUpPaymentStatus.ready,
-        summary: PaymentSummary(total: amount, vatInclusive: true),
+        summary: PaymentSummary(total: amount, vatInclusive: false),
       ),
     );
   }

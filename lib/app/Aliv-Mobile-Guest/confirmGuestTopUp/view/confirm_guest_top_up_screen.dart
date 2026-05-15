@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -62,14 +63,15 @@ class _GuestConfirmTopUpView extends StatelessWidget {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TopUpConfirmTheme.snackBarText,
-        ),
-      ),
-    );
+    AppToast.show(message: message.toString());
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(
+    //       message,
+    //       style: TopUpConfirmTheme.snackBarText,
+    //     ),
+    //   ),
+    // );
   }
 
   void _openTerms(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../theme/guest_pay_bill_theme.dart';
 import 'guest_pay_bill_focused_input_border_wrapper.dart';
@@ -129,16 +130,17 @@ class GuestPayBillInlineSubmitButton extends StatelessWidget {
                   onTap();
                   return;
                 }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Please enter required details first.',
-                      style: TextStyle(
-                        fontFamily: AppConstants.defaultFontFamily,
-                      ),
-                    ),
-                  ),
-                );
+                AppToast.show(message:  'Please enter required details first');
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   const SnackBar(
+                //     content: Text(
+                //      ,
+                //       style: TextStyle(
+                //         fontFamily: AppConstants.defaultFontFamily,
+                //       ),
+                //     ),
+                //   ),
+                // );
               },
         child: loading
             ? const SizedBox(

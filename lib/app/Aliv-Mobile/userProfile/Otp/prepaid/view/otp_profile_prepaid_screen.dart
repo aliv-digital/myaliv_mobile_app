@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
@@ -38,10 +39,13 @@ class _OtpProfilePrepaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<OtpProfilePrepaidBloc, OtpProfilePrepaidState>(
           listener: (context, state) {
-            if (state.status == OtpProfilePrepaidStatus.failure &&
-                state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
+            if (state.status == OtpProfilePrepaidStatus.failure && state.errorMessage != null) {
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(content: Text(state.errorMessage!)),
+              // );
+              AppToast.show(
+                message: state.errorMessage.toString(),
+                type: ToastType.error
               );
             }
 

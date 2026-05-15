@@ -1,11 +1,13 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../theme/top_up_prepaid_theme.dart';
 import '../../view/auto_top_up_authorization_screen.dart';
 import 'auto_topup_amount_grid.dart';
@@ -190,7 +192,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
     );
   }
 
-  void _showError(String msg) => ScaffoldMessenger.of(
-    context,
-  ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
+  void _showError(String msg) {
+    AppToast.show(message: msg,type: ToastType.error);
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/why_aliv_bloc.dart';
 import '../bloc/why_aliv_event.dart';
@@ -74,14 +75,16 @@ class _WhyAlivView extends StatelessWidget {
               prev.status != curr.status &&
               curr.status == WhyAlivStatus.failure,
           listener: (context, state) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.errorMessage ?? 'Something went wrong',
-                  style: WhyAlivTheme.snackBarText,
-                ),
-              ),
-            );
+            final sms =  state.errorMessage ?? 'Something went wrong';
+            AppToast.show(message: sms);
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(
+            //     content: Text(
+            //       state.errorMessage ?? 'Something went wrong',
+            //       style: WhyAlivTheme.snackBarText,
+            //     ),
+            //   ),
+            // );
           },
           child: Column(
             children: [

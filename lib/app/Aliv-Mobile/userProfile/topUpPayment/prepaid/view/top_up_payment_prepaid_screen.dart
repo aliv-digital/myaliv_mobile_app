@@ -2,13 +2,14 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
+//dd
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/pay_with_card_tile.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
-import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../router/app_routes.dart';
 import '../bloc/top_up_payment_prepaid_bloc.dart';
 import '../bloc/top_up_payment_prepaid_event.dart';
@@ -57,9 +58,10 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
       listener: (context, state) {
         final msg = state.errorMessage;
         if (msg != null && msg.isNotEmpty) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(msg)));
+          AppToast.show(message: msg, type: ToastType.error);
+          // ScaffoldMessenger.of(
+          //   context,
+          // ).showSnackBar(SnackBar(content: Text(msg)));
         }
       },
       builder: (context, state) => _TopUpPaymentPrepaidScaffold(state: state),
@@ -90,8 +92,10 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         isLoading: state.status == TopUpPaymentStatus.paying,
         buttonColor: TopUpPaymentPrepaidTheme.primary,
         onPayNow: () {
-          AppSession.isTopUp = true;
-          context.push(AppRoutes.guestTopUpReceipt);
+          context.push(
+            AppRoutes.userProfileReceiptScreen,
+            extra: UserProfileReceiptRouteArgs(amount: state.summary.total),
+          );
         },
       ),
       body: CustomScrollView(
