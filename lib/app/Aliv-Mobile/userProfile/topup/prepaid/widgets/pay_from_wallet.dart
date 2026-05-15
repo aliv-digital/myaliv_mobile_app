@@ -10,8 +10,9 @@ import '../theme/top_up_prepaid_theme.dart';
 
 class PayFromWalletSheet extends StatelessWidget {
   final double amount;
+  final String? phoneNumber;
 
-  const PayFromWalletSheet({super.key, this.amount = 0});
+  const PayFromWalletSheet({super.key, this.amount = 0, this.phoneNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -196,6 +197,7 @@ class PayFromWalletSheet extends StatelessWidget {
       AppRoutes.userProfileReceiptScreen,
       extra: UserProfileReceiptRouteArgs(
         amount: amount,
+        phoneNumber: phoneNumber,
         paymentMethod: 'wallet',
         title: 'Wallet Transfer Successful!',
         message: 'It may take a few moments before the order is processed.',

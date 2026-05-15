@@ -87,7 +87,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (_) => PayFromWalletSheet(amount: widget.topUpAmount!),
+        builder: (_) => PayFromWalletSheet(
+          amount: widget.topUpAmount!,
+          phoneNumber: widget.recipientPhone,
+        ),
       );
       return;
     }
