@@ -31,8 +31,14 @@ class BottomPayBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(_money(total), style: TopUpPaymentPrepaidTheme.bottomPrice(context)),
-                  Text('vat exclusive', style: TopUpPaymentPrepaidTheme.bodySm(context)),
+                  Text(
+                    _money(total),
+                    style: TopUpPaymentPrepaidTheme.bottomPrice(context),
+                  ),
+                  Text(
+                    'vat exclusive',
+                    style: TopUpPaymentPrepaidTheme.bodySm(context),
+                  ),
                 ],
               ),
             ),
@@ -43,17 +49,24 @@ class BottomPayBar extends StatelessWidget {
                 onPressed: isLoading ? null : onPayNow,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: TopUpPaymentPrepaidTheme.primary,
-                  disabledBackgroundColor: TopUpPaymentPrepaidTheme.primary.withValues(alpha: 0.55),
+                  disabledBackgroundColor: TopUpPaymentPrepaidTheme.primary
+                      .withValues(alpha: 0.55),
                   elevation: 0,
                   shape: const StadiumBorder(),
                 ),
                 child: isLoading
                     ? const SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                )
-                    : Text('pay now', style: TopUpPaymentPrepaidTheme.buttonText(context)),
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        'pay now',
+                        style: TopUpPaymentPrepaidTheme.buttonText(context),
+                      ),
               ),
             ),
           ],
