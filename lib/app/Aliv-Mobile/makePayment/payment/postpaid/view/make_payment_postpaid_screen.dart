@@ -149,7 +149,7 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
               children: [
                 // Payment amount selection section.
                 MpPaymentDueCard(
-                  amountText: '129.00', //state.paymentDueAmount,
+                  amountText: state.paymentDueAmount,
                   selectedOption: state.amountOption,
                   customAmount: state.customAmount,
                   onOptionChanged: (selectedOption) {

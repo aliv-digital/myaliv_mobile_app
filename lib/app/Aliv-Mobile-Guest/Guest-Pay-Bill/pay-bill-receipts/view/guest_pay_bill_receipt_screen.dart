@@ -135,35 +135,6 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // SliverToBoxAdapter(
-              //   child: Center(
-              //     child: ConstrainedBox(
-              //       constraints: const BoxConstraints(maxWidth: 420),
-              //       child: Padding(
-              //         padding: const EdgeInsets.only(
-              //           left: 24,
-              //           right: 24,
-              //           top: 29,
-              //           bottom: 30,
-              //         ),
-              //         child: BlocBuilder<GuestPayBillReceiptBloc,GuestPayBillReceiptState>(
-              //           builder: (context, state) {
-              //                 final data = state.data;
-              //                 if (data == null) return const SizedBox.shrink();
-
-              //                 return PaymentFailedTicket(
-              //                   phone: "242-300-2548",
-              //                   onPressed: () {
-              //                     Navigator.pop(context);
-              //                   },
-              //                 );
-              //               },
-              //             ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
