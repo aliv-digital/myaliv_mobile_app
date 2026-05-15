@@ -379,11 +379,15 @@ class _HomePlansPaymentMethodViewState
         _showWalletWarningIfNeeded(state);
 
         // Show API/validation errors from bloc.
-        if (state.errorMessage != null &&
-            state.status == HomePlansPaymentMethodStatus.failure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+        if (state.errorMessage != null && state.status == HomePlansPaymentMethodStatus.failure) {
+
+          AppToast.show(
+              message: state.errorMessage!.toString(),
+              type:ToastType.error
+          );
+          // ScaffoldMessenger.of(
+          //   context,
+          // ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
 
         // Handle one-time navigation targets from bloc.

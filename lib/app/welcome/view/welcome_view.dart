@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -163,13 +164,17 @@ class WelcomeView extends StatelessWidget {
                                 );
 
                                 if (!isLaunched && context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Could not open ALIVfbr portal.',
-                                      ),
-                                    ),
+                                  AppToast.show(
+                                    message: 'Could not open ALIVfbr portal.',
+                                    type: ToastType.error
                                   );
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //   const SnackBar(
+                                  //     content: Text(
+                                  //       'Could not open ALIVfbr portal.',
+                                  //     ),
+                                  //   ),
+                                  // );
                                 }
                               },
                             ),

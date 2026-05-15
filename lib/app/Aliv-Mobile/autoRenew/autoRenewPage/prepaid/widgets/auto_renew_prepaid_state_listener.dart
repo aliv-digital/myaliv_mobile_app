@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
@@ -81,10 +82,10 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     if (!hasErrorMessage) {
       return;
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage)),
-    );
+    AppToast.show(message: errorMessage.toString(),type: ToastType.error);
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(content: Text(errorMessage)),
+    // );
   }
 
   // ==================== Add Card Flow ====================

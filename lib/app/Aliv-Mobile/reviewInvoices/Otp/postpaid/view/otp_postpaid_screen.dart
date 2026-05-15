@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/otp_postpaid_bloc.dart';
@@ -37,11 +38,12 @@ class _OTPPostpaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<OTPPostpaidBloc, OTPPostpaidState>(
           listener: (context, state) {
-            if (state.status == OTPPostpaidStatus.failure &&
-                state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
-              );
+            if (state.status == OTPPostpaidStatus.failure && state.errorMessage != null) {
+
+              AppToast.show(message: state.errorMessage.toString(),type: ToastType.error);
+              //ScaffoldMessenger.of(context).showSnackBar(
+              //  SnackBar(content: Text(state.errorMessage!)),
+              //);
             }
 
             // success হলে next screen এ যাওয়ার logic এখানে দিতে পারো

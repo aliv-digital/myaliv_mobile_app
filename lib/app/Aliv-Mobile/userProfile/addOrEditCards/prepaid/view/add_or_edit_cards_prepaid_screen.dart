@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/add_or_edit_cards_prepaid_bloc.dart';
@@ -54,9 +55,13 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
       listener: (context, state) async {
         final bloc = context.read<AddOrEditCardsPrepaidBloc>();
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
+          AppToast.show(
+              message: state.errorMessage.toString(),
+              type: ToastType.error
           );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text(state.errorMessage!)),
+          // );
         }
 
         // ✅ Handle one-shot navigation targets

@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_s
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+import '../../../../../resources/widgets/top_toast.dart';
 import '../bloc/guest_pay_bill_bloc.dart';
 import '../bloc/guest_pay_bill_event.dart';
 import '../bloc/guest_pay_bill_state.dart';
@@ -57,14 +58,15 @@ class _GuestPayBillView extends StatelessWidget {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: GuestPayBillTheme.snackBarTextStyle,
-        ),
-      ),
-    );
+    AppToast.show(message: message);
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(
+    //       message,
+    //       style: GuestPayBillTheme.snackBarTextStyle,
+    //     ),
+    //   ),
+    // );
   }
 
   void _onBlocStateChanged(BuildContext context, GuestPayBillState state) {

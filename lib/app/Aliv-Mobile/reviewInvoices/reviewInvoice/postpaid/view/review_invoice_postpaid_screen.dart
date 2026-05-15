@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/widgets/invoice_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/widgets/invoice_tile_skeleton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 class ReviewInvoicePostpaidScreen extends StatelessWidget {
   const ReviewInvoicePostpaidScreen({super.key});
@@ -109,14 +110,15 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
           listener: (context, state) {
             // Show error snackbar when download fails
             if (state.downloadError != null) {
-              ScaffoldMessenger.of(context)
-                ..hideCurrentSnackBar()
-                ..showSnackBar(
-                  SnackBar(
-                    content: Text(state.downloadError!),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+              AppToast.show(message: state.downloadError!.toString(),type: ToastType.error);
+              // ScaffoldMessenger.of(context)
+              //   ..hideCurrentSnackBar()
+              //   ..showSnackBar(
+              //     SnackBar(
+              //       content: Text(state.downloadError!),
+              //       behavior: SnackBarBehavior.floating,
+              //     ),
+              //   );
               context.read<ReviewInvoicePostpaidCubit>().clearDownloadError();
             }
           },

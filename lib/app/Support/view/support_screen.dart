@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -109,9 +110,13 @@ class _SupportView extends StatelessWidget {
     }
 
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(request.failureMessage)));
+      AppToast.show(
+        message: request.failureMessage.toString(),
+        type: ToastType.error
+      );
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(SnackBar(content: Text(request.failureMessage)));
     }
   }
 

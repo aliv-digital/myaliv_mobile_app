@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 // import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
@@ -42,9 +43,10 @@ class _PurchasePrepaidView extends StatelessWidget {
       listener: (context, state) {
         final err = state.errorMessage;
         if (err != null && err.isNotEmpty) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(err)));
+          AppToast.show(message: err.toString(),type: ToastType.error);
+          // ScaffoldMessenger.of(context)
+          //   ..hideCurrentSnackBar()
+          //   ..showSnackBar(SnackBar(content: Text(err)));
         }
 
         final nav = state.navigateTo;

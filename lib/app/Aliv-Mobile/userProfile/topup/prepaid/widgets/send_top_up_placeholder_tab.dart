@@ -19,7 +19,7 @@ import '../theme/top_up_prepaid_theme.dart';
 class SendTopUpPlaceholderTab extends StatefulWidget {
   final String title;
 
-  SendTopUpPlaceholderTab({super.key, required this.title});
+  const SendTopUpPlaceholderTab({super.key, required this.title});
 
   @override
   State<SendTopUpPlaceholderTab> createState() => _SendTopUpPlaceholderTabState();
@@ -42,21 +42,20 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     isoCode: 'BS',
   );
 
-  CountryInfo _selectedCountry = _defaultCountry;
+  final CountryInfo _selectedCountry = _defaultCountry;
 
-  void _showErrorSnackBar(String? errorMessage) {
-    final resolvedMessage =
-        errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          resolvedMessage,
-          style: GuestTopUpTheme.snackBarText,
-        ),
-      ),
-    );
-  }
+  // void _showErrorSnackBar(String? errorMessage) {
+  //   final resolvedMessage = errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
+  //
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Text(
+  //         resolvedMessage,
+  //         style: GuestTopUpTheme.snackBarText,
+  //       ),
+  //     ),
+  //   );
+  // }
 
 
 

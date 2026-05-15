@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
@@ -48,9 +49,13 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
 
         //  optional: show error if user presses continue without accepting terms
         if (state.showTermsError == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please accept Terms & Conditions')),
+          AppToast.show(
+              message: 'Please accept Terms & Conditions',
+              type: ToastType.error
           );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text()),
+          // );
         }
       },
       builder: (context, state) {
