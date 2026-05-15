@@ -231,7 +231,7 @@ class AppMenuDrawer extends StatelessWidget {
         } else if (label == 'REV bill pay') {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));
-          context.push(AppRoutes.revBillPayPrepaidScreen);
+          context.push(AppRoutes.revLandingPrepaidScreen);
         } else if (label == 'notifications') {
           Navigator.of(context).pop(); // close drawer
           await Future.delayed(const Duration(milliseconds: 50));

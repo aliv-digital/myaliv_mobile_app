@@ -99,6 +99,7 @@ class AppRoutes {
       '/refer-friend-response-prepaid-screen';
 
   static const revBillPayPrepaidScreen = '/rev-bill-pay-prepaid-screen';
+  static const revLandingPrepaidScreen = '/rev-landing-prepaid-screen';
   static const notificationScreen = '/notifications';
 
   static const revConfirmationPrepaidScreen =

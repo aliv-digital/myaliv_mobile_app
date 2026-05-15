@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/view/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/view/roaming_plan_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/view/rev_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/view/rev_landing_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/Otp/postpaid/view/otp_postpaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/view/add_or_edit_cards_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
@@ -235,6 +236,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.revBillPayPrepaidScreen,
         builder: (context, state) => const RevPrepaidScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.revLandingPrepaidScreen,
+        builder: (context, state) => const RevLandingPrepaidScreen(),
       ),
       GoRoute(
         path: AppRoutes.referFriendResponsePrepaidScreen,
