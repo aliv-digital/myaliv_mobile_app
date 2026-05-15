@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/no_active_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Usage/postpaid_usage_item.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/postpage_usage_tile.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
@@ -28,11 +31,34 @@ class CurrentPlanTab extends StatelessWidget {
         // padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
         children: [
           // 🔴 Active plan card (reuse your existing widget)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-            child: config.isPostpaid == true
-                ? PostpaidCurrentPlan()
-                : const PrepaidActivePlanCardWithData(showRenewButton: false),
+          BlocBuilder<PlansCubit, PlansState>(
+            buildWhen: (previous, current) =>
+                previous.status != current.status ||
+                previous.addOnsApiPrimaryPlans !=
+                    current.addOnsApiPrimaryPlans,
+            builder: (context, plansState) {
+              final isResolving =
+                  plansState.status == PlansStatus.initial ||
+                  plansState.status == PlansStatus.loading;
+              final showActiveCard = isResolving ||
+                  plansState.addOnsApiPrimaryPlans.isNotEmpty;
+
+              if (!showActiveCard) {
+                return const Padding(
+                  padding: EdgeInsets.fromLTRB(24, 16, 24, 0),
+                  child: NoActivePlanCard(),
+                );
+              }
+
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                child: config.isPostpaid == true
+                    ? PostpaidCurrentPlan()
+                    : const PrepaidActivePlanCardWithData(
+                        showRenewButton: false,
+                      ),
+              );
+            },
           ),
 
           // const SizedBox(height: 16),
