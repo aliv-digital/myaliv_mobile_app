@@ -9,18 +9,6 @@ class MakePaymentPostPaidRepositoryImpl
       paymentDueAmount: r'$ 129.00',
       bottomAmount: r'$ 129.00',
       bottomSubtitle: 'no vat applied',
-      methods: [
-        MpPaymentMethod(
-          brand: MpCardBrand.visa,
-          ending: '1234',
-          expiry: '06/2024',
-        ),
-        MpPaymentMethod(
-          brand: MpCardBrand.mastercard,
-          ending: '1234',
-          expiry: '06/2024',
-        ),
-      ],
     );
   }
 }

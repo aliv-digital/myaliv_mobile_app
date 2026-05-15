@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import '../repository/make_payment_postpaid_repository.dart';
 import 'make_payment_postpaid_event.dart';
 
 enum MpNavTarget { none, next }
@@ -16,8 +15,7 @@ class MakePaymentPostPaidState extends Equatable {
 
   final bool termsAccepted;
 
-  final List<MpPaymentMethod> methods;
-  final int selectedMethodIndex;
+  final String? selectedMethodToken;
 
   final MpNavTarget navTarget;
 
@@ -29,8 +27,7 @@ class MakePaymentPostPaidState extends Equatable {
     required this.amountOption,
     required this.customAmount,
     required this.termsAccepted,
-    required this.methods,
-    required this.selectedMethodIndex,
+    required this.selectedMethodToken,
     required this.navTarget,
   });
 
@@ -43,8 +40,7 @@ class MakePaymentPostPaidState extends Equatable {
       amountOption: MpAmountOption.current,
       customAmount: '',
       termsAccepted: false,
-      methods: [],
-      selectedMethodIndex: 0,
+      selectedMethodToken: null,
       navTarget: MpNavTarget.none,
     );
   }
@@ -61,8 +57,7 @@ class MakePaymentPostPaidState extends Equatable {
     MpAmountOption? amountOption,
     String? customAmount,
     bool? termsAccepted,
-    List<MpPaymentMethod>? methods,
-    int? selectedMethodIndex,
+    String? selectedMethodToken,
     MpNavTarget? navTarget,
   }) {
     return MakePaymentPostPaidState(
@@ -73,8 +68,7 @@ class MakePaymentPostPaidState extends Equatable {
       amountOption: amountOption ?? this.amountOption,
       customAmount: customAmount ?? this.customAmount,
       termsAccepted: termsAccepted ?? this.termsAccepted,
-      methods: methods ?? this.methods,
-      selectedMethodIndex: selectedMethodIndex ?? this.selectedMethodIndex,
+      selectedMethodToken: selectedMethodToken ?? this.selectedMethodToken,
       navTarget: navTarget ?? this.navTarget,
     );
   }
@@ -88,8 +82,7 @@ class MakePaymentPostPaidState extends Equatable {
         amountOption,
         customAmount,
         termsAccepted,
-        methods,
-        selectedMethodIndex,
+        selectedMethodToken,
         navTarget,
       ];
 }

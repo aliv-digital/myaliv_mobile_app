@@ -36,11 +36,11 @@ class MpTermsToggled extends MakePaymentPostPaidEvent {
 }
 
 class MpPaymentMethodSelected extends MakePaymentPostPaidEvent {
-  final int index;
-  const MpPaymentMethodSelected(this.index);
+  final String token;
+  const MpPaymentMethodSelected(this.token);
 
   @override
-  List<Object?> get props => [index];
+  List<Object?> get props => [token];
 }
 
 class MpPayNowPressed extends MakePaymentPostPaidEvent {
