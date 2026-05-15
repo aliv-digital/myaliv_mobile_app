@@ -53,6 +53,58 @@ class SavedCardsApiClient {
     }
   }
 
+  /// Deletes a saved card by token.
+  ///
+  /// DELETE [Api.savedCardsUrl] with body `{"token": "..."}`.
+  /// Returns `true` when the server reports `{"Success": true}`.
+  Future<bool> deleteCard(String token) async {
+    if (kDebugMode) {
+      debugPrint('SavedCardsApiClient: Deleting card $token');
+    }
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.savedCardsUrl,
+        method: HttpMethod.delete,
+        data: {'token': token},
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'SavedCardsApiClient: Delete card status=${response.statusCode}',
+        );
+      }
+
+      Map<String, dynamic>? decoded;
+      final raw = response.data;
+      if (raw is Map<String, dynamic>) {
+        decoded = raw;
+      } else if (raw is String && raw.isNotEmpty) {
+        final parsed = jsonDecode(raw);
+        if (parsed is Map<String, dynamic>) decoded = parsed;
+      }
+
+      if (decoded == null) {
+        throw const SavedCardsException(
+          type: SavedCardsErrorType.invalidResponse,
+          serverMessage: 'Invalid delete response',
+        );
+      }
+
+      return decoded['Success'] == true;
+    } on NetworkException catch (e) {
+      throw _mapNetworkExceptionToSavedCardsException(e);
+    } on SavedCardsException {
+      rethrow;
+    } catch (e) {
+      throw SavedCardsException(
+        type: SavedCardsErrorType.unknown,
+        statusCode: 0,
+        serverMessage: e.toString(),
+      );
+    }
+  }
+
   SavedCardsException _mapNetworkExceptionToSavedCardsException(
     NetworkException e,
   ) {

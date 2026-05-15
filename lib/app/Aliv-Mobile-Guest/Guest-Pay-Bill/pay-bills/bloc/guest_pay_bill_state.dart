@@ -65,6 +65,7 @@ class GuestPayBillState extends Equatable {
 
   bool get isAlivPostpaid => selectedService?.code == 'ALIV_POSTPAID';
   bool get isAlivFibr => selectedService?.code == 'ALIV_FIBR';
+  bool get isRev => selectedService?.code == 'REV';
 
   String get accountIdentifierLabel =>
       isAlivFibr ? 'account number/username' : 'account number';

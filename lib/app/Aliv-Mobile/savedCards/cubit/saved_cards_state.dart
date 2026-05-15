@@ -14,17 +14,22 @@ class SavedCardsState extends Equatable {
   const SavedCardsState({
     this.status = SavedCardsStatus.initial,
     this.cards = const [],
+    this.removingTokens = const {},
     this.errorMessage,
     this.lastFetchedAt,
   });
 
   final SavedCardsStatus status;
   final List<SavedCardModel> cards;
+  final Set<String> removingTokens;
   final String? errorMessage;
   final DateTime? lastFetchedAt;
 
   /// Factory constructor for initial state.
   factory SavedCardsState.initial() => const SavedCardsState();
+
+  /// Returns true if the given card token is currently being removed.
+  bool isRemoving(String token) => removingTokens.contains(token);
 
   /// Returns true if there are saved cards.
   bool get hasCards => cards.isNotEmpty;
@@ -54,6 +59,7 @@ class SavedCardsState extends Equatable {
   SavedCardsState copyWith({
     SavedCardsStatus? status,
     List<SavedCardModel>? cards,
+    Set<String>? removingTokens,
     String? errorMessage,
     DateTime? lastFetchedAt,
     bool clearError = false,
@@ -61,11 +67,13 @@ class SavedCardsState extends Equatable {
     return SavedCardsState(
       status: status ?? this.status,
       cards: cards ?? this.cards,
+      removingTokens: removingTokens ?? this.removingTokens,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
     );
   }
 
   @override
-  List<Object?> get props => [status, cards, errorMessage, lastFetchedAt];
+  List<Object?> get props =>
+      [status, cards, removingTokens, errorMessage, lastFetchedAt];
 }

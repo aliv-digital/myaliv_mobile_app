@@ -49,150 +49,148 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddOrEditCardsPrepaidBloc, AddOrEditCardsPrepaidState>(
-      listenWhen: (p, c) =>
-      p.errorMessage != c.errorMessage || p.navTarget != c.navTarget,
-      listener: (context, state) async {
-        final bloc = context.read<AddOrEditCardsPrepaidBloc>();
-        if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          AppToast.show(
-              message: state.errorMessage.toString(),
-              type: ToastType.error
-          );
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(content: Text(state.errorMessage!)),
-          // );
-        }
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SavedCardsCubit, SavedCardsState>(
+          listenWhen: (p, c) =>
+              p.errorMessage != c.errorMessage && c.errorMessage != null,
+          listener: (context, state) {
+            final msg = state.errorMessage;
+            if (msg != null && msg.isNotEmpty) {
+              AppToast.show(message: msg, type: ToastType.error);
+            }
+          },
+        ),
+        BlocListener<AddOrEditCardsPrepaidBloc, AddOrEditCardsPrepaidState>(
+          listenWhen: (p, c) =>
+              p.errorMessage != c.errorMessage || p.navTarget != c.navTarget,
+          listener: _onLocalBlocStateChanged,
+        ),
+      ],
+      child: _buildScaffold(context),
+    );
+  }
 
-        // ✅ Handle one-shot navigation targets
-        if (state.navTarget == AddOrEditCardsPrepaidNavTarget.addCard) {
-          // Demo অনুযায়ী last4 "1234" (repo তেও ending 1234)
-          final result = await AddCardBottomSheet.show(
-            context,
-            last4: '1234',
-          );
+  Future<void> _onLocalBlocStateChanged(
+    BuildContext context,
+    AddOrEditCardsPrepaidState state,
+  ) async {
+    final bloc = context.read<AddOrEditCardsPrepaidBloc>();
+    if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
+      AppToast.show(message: state.errorMessage!, type: ToastType.error);
+    }
 
-          if (result != null) {
-            bloc.add(
-              AddOrEditCardsPrepaidSaveCardPressed(
-                month: result.month,
-                year: result.year,
-              ),
-            );
-          }
+    if (state.navTarget == AddOrEditCardsPrepaidNavTarget.addCard) {
+      final result = await AddCardBottomSheet.show(context, last4: '1234');
 
-          bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
-          return;
-        }
-
-        if (state.navTarget == AddOrEditCardsPrepaidNavTarget.home) {
-          // TODO: integrate router/go_router for home navigation
-          bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
-          return;
-        }
-      },
-      child: Scaffold(
-        backgroundColor: AddOrEditCardsPrepaidTheme.pageBg,
-        body: SafeArea(
-          child: BlocBuilder<AddOrEditCardsPrepaidBloc, AddOrEditCardsPrepaidState>(
-            builder: (context, state) {
-              final bloc = context.read<AddOrEditCardsPrepaidBloc>();
-
-              return CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    pinned: true,
-                    backgroundColor: AddOrEditCardsPrepaidTheme.primary,
-                    elevation: 0,
-                    centerTitle: false,
-                    leading: IconButton(
-                      icon: Padding(
-                        padding: const EdgeInsets.only(left: 24.0),
-                        child: const Icon(Icons.arrow_back, color: Colors.white),
-                      ),
-                      onPressed: () => Navigator.of(context).maybePop(),
-                    ),
-                    title: const Text(
-                      'add/edit cards',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20.0),
-                        child: IconButton(
-                          onPressed: () {
-
-                            context.go(AppRoutes.home);
-                          },
-
-                          icon:
-                           SvgPicture.asset('assets/icons/home.svg',color: Colors.white,),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(28, 20, 28, 18),
-                    sliver: SliverToBoxAdapter(
-                      child: BlocBuilder<SavedCardsCubit, SavedCardsState>(
-                        builder: (context, savedCardsState) {
-                          if (savedCardsState.isLoading &&
-                              !savedCardsState.hasCards) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 40),
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-
-                          final mappedCards = savedCardsState.cards
-                              .map(_savedCardModelToSavedCard)
-                              .toList();
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              PaymentMethodSection(
-                                cards: mappedCards,
-                                deletingIds: state.deletingIds,
-                                onDelete: (id) async {
-                                  final confirmed =
-                                      await RemoveSavedCardConfirmBottomSheet
-                                          .show(context);
-                                  if (confirmed) {
-                                    bloc.add(
-                                      AddOrEditCardsPrepaidDeletePressed(id),
-                                    );
-                                  }
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              DashedAddCardButton(
-                                onTap: () {
-                                  bloc.add(
-                                    const AddOrEditCardsPrepaidAddNewCardPressed(),
-                                  );
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+      if (result != null) {
+        bloc.add(
+          AddOrEditCardsPrepaidSaveCardPressed(
+            month: result.month,
+            year: result.year,
           ),
+        );
+      }
+
+      bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
+      return;
+    }
+
+    if (state.navTarget == AddOrEditCardsPrepaidNavTarget.home) {
+      bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
+      return;
+    }
+  }
+
+  Widget _buildScaffold(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AddOrEditCardsPrepaidTheme.pageBg,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              backgroundColor: AddOrEditCardsPrepaidTheme.primary,
+              elevation: 0,
+              centerTitle: false,
+              leading: IconButton(
+                icon: const Padding(
+                  padding: EdgeInsets.only(left: 24.0),
+                  child: Icon(Icons.arrow_back, color: Colors.white),
+                ),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+              title: const Text(
+                'add/edit cards',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: IconButton(
+                    onPressed: () => context.go(AppRoutes.home),
+                    icon: SvgPicture.asset(
+                      'assets/icons/home.svg',
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(28, 20, 28, 18),
+              sliver: SliverToBoxAdapter(
+                child: BlocBuilder<SavedCardsCubit, SavedCardsState>(
+                  builder: (context, savedCardsState) {
+                    if (savedCardsState.isLoading &&
+                        !savedCardsState.hasCards) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    final mappedCards = savedCardsState.cards
+                        .map(_savedCardModelToSavedCard)
+                        .toList();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PaymentMethodSection(
+                          cards: mappedCards,
+                          deletingIds: savedCardsState.removingTokens,
+                          onDelete: (id) => _onDeletePressed(context, id),
+                        ),
+                        const SizedBox(height: 20),
+                        DashedAddCardButton(
+                          onTap: () => context
+                              .read<AddOrEditCardsPrepaidBloc>()
+                              .add(
+                                const AddOrEditCardsPrepaidAddNewCardPressed(),
+                              ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Future<void> _onDeletePressed(BuildContext context, String token) async {
+    final confirmed = await RemoveSavedCardConfirmBottomSheet.show(context);
+    if (!confirmed) return;
+    if (!context.mounted) return;
+    await context.read<SavedCardsCubit>().removeCard(token);
   }
 }
 

@@ -16,6 +16,7 @@ import '../model/guest_pay_bill_models.dart';
 import '../theme/guest_pay_bill_theme.dart';
 import '../widgets/guest_pay_bill_focused_text_field.dart';
 import '../widgets/guest_pay_bill_inline_verify_field.dart';
+import '../widgets/guest_pay_bill_pay_with_rev_card.dart';
 import '../widgets/guest_pay_bill_primary_submit_button.dart';
 import '../widgets/guest_pay_bill_read_only_box.dart';
 import '../widgets/guest_pay_bill_required_label.dart';
@@ -379,63 +380,73 @@ class _GuestPayBillView extends StatelessWidget {
                           const SizedBox(height: GuestPayBillTheme.sectionGap),
 
                           // Dynamic form by selected service type.
-                          if (state.isAlivPostpaid)
-                            ..._buildAlivPostpaidFields(context, state)
-                          else
-                            ..._buildNonPostpaidFields(context, state),
-
-                          const SizedBox(height: GuestPayBillTheme.sectionGap),
-                          Text(
-                            GuestPayBillTheme.accountStatusLabel,
-                            style: GuestPayBillTheme.labelStyle(),
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          GuestPayBillReadOnlyBox(
-                            text: state.accountInfo?.status ??
-                                GuestPayBillTheme.statusPlaceholderText,
-                          ),
-                          const SizedBox(height: GuestPayBillTheme.sectionGap),
-                          Text(
-                            GuestPayBillTheme.accountBalanceLabel,
-                            style: GuestPayBillTheme.labelStyle(),
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          Text(
-                            state.accountInfo?.balance == null
-                                ? GuestPayBillTheme.statusPlaceholderText
-                                : _money(state.accountInfo!.balance!),
-                            style: GuestPayBillTheme.accountBalanceValueStyle,
-                          ),
-
-                          const SizedBox(height: GuestPayBillTheme.sectionGap),
-                          Text(
-                            GuestPayBillTheme.customAmountLabel,
-                            style: GuestPayBillTheme.labelStyle(),
-                          ),
-                          const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
-                          GuestPayBillFocusedTextField(
-                            hint: GuestPayBillTheme.amountHintText,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
+                          if (state.isRev)
+                            GuestPayBillPayWithRevCard(
+                              onContinueToPay: () => context.push(
+                                AppRoutes.revLandingPrepaidScreen,
+                              ),
+                            )
+                          else ...[
+                            if (state.isAlivPostpaid)
+                              ..._buildAlivPostpaidFields(context, state)
+                            else
+                              ..._buildNonPostpaidFields(context, state),
+                            const SizedBox(
+                                height: GuestPayBillTheme.sectionGap),
+                            Text(
+                              GuestPayBillTheme.accountStatusLabel,
+                              style: GuestPayBillTheme.labelStyle(),
                             ),
-                            onChanged: (value) {
-                              _onAmountChanged(context, value);
-                            },
-                          ),
-
-                          const SizedBox(
-                              height: GuestPayBillTheme.submitTopGap),
-                          GuestPayBillPrimarySubmitButton(
-                            enabled: state.canSubmit,
-                            loading: state.submitStatus ==
-                                GuestPayBillSubmitStatus.loading,
-                            onTap: () {
-                              _onSubmitPressed(context, state);
-                            },
-                          ),
+                            const SizedBox(
+                                height: GuestPayBillTheme.labelToFieldGap),
+                            GuestPayBillReadOnlyBox(
+                              text: state.accountInfo?.status ??
+                                  GuestPayBillTheme.statusPlaceholderText,
+                            ),
+                            const SizedBox(
+                                height: GuestPayBillTheme.sectionGap),
+                            Text(
+                              GuestPayBillTheme.accountBalanceLabel,
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
+                            const SizedBox(
+                                height: GuestPayBillTheme.labelToFieldGap),
+                            Text(
+                              state.accountInfo?.balance == null
+                                  ? GuestPayBillTheme.statusPlaceholderText
+                                  : _money(state.accountInfo!.balance!),
+                              style:
+                                  GuestPayBillTheme.accountBalanceValueStyle,
+                            ),
+                            const SizedBox(
+                                height: GuestPayBillTheme.sectionGap),
+                            Text(
+                              GuestPayBillTheme.customAmountLabel,
+                              style: GuestPayBillTheme.labelStyle(),
+                            ),
+                            const SizedBox(
+                                height: GuestPayBillTheme.labelToFieldGap),
+                            GuestPayBillFocusedTextField(
+                              hint: GuestPayBillTheme.amountHintText,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                decimal: true,
+                              ),
+                              onChanged: (value) {
+                                _onAmountChanged(context, value);
+                              },
+                            ),
+                            const SizedBox(
+                                height: GuestPayBillTheme.submitTopGap),
+                            GuestPayBillPrimarySubmitButton(
+                              enabled: state.canSubmit,
+                              loading: state.submitStatus ==
+                                  GuestPayBillSubmitStatus.loading,
+                              onTap: () {
+                                _onSubmitPressed(context, state);
+                              },
+                            ),
+                          ],
                         ],
                       ),
                     );

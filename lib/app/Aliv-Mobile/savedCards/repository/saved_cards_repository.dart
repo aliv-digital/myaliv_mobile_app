@@ -8,6 +8,9 @@ import 'services/saved_cards_api_client.dart';
 abstract class SavedCardsRepository {
   /// Fetches saved credit cards from the API.
   Future<List<SavedCardModel>> fetchSavedCards();
+
+  /// Deletes a saved credit card by token. Throws on failure.
+  Future<void> deleteCard(String token);
 }
 
 /// Implementation of [SavedCardsRepository].
@@ -32,6 +35,21 @@ class SavedCardsRepositoryImpl implements SavedCardsRepository {
     }
 
     return cards;
+  }
+
+  @override
+  Future<void> deleteCard(String token) async {
+    if (kDebugMode) {
+      debugPrint('SavedCardsRepository: Deleting card $token');
+    }
+
+    final success = await _apiClient.deleteCard(token);
+    if (!success) {
+      throw const SavedCardsException(
+        type: SavedCardsErrorType.badResponse,
+        serverMessage: 'Failed to delete card',
+      );
+    }
   }
 
   /// Parses the raw JSON response into a list of [SavedCardModel].

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../models/saved_card_model.dart';
 import '../repository/saved_cards_exception.dart';
 import '../repository/saved_cards_repository.dart';
 import 'saved_cards_state.dart';
@@ -72,6 +73,61 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
   /// Refreshes saved cards by forcing a fetch from the API.
   Future<void> refreshSavedCards() async {
     await fetchSavedCards(forceRefresh: true);
+  }
+
+  /// Removes a saved card optimistically.
+  ///
+  /// 1. Removes the card from local state immediately (no refetch).
+  /// 2. Calls the DELETE endpoint.
+  /// 3. On success: clears the per-token spinner and leaves the list as-is.
+  /// 4. On failure: re-inserts the card at its original index and surfaces
+  ///    an [errorMessage] without flipping [status] to failure, so existing
+  ///    list/error UIs are unaffected.
+  Future<void> removeCard(String token) async {
+    if (token.isEmpty) return;
+    if (state.removingTokens.contains(token)) return;
+
+    final originalCards = state.cards;
+    final originalIndex = originalCards.indexWhere((c) => c.token == token);
+    if (originalIndex == -1) return;
+    final card = originalCards[originalIndex];
+
+    final optimisticCards = List<SavedCardModel>.from(originalCards)
+      ..removeAt(originalIndex);
+
+    _safeEmit(state.copyWith(
+      cards: optimisticCards,
+      removingTokens: {...state.removingTokens, token},
+      clearError: true,
+    ));
+
+    try {
+      await _repository.deleteCard(token);
+
+      _safeEmit(state.copyWith(
+        removingTokens: {...state.removingTokens}..remove(token),
+      ));
+
+      if (kDebugMode) {
+        debugPrint('SavedCardsCubit: Removed card $token');
+      }
+    } catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+
+      if (kDebugMode) {
+        debugPrint('SavedCardsCubit: Failed to remove card - $errorMessage');
+      }
+
+      final rolledBack = List<SavedCardModel>.from(state.cards);
+      final insertAt = originalIndex.clamp(0, rolledBack.length);
+      rolledBack.insert(insertAt, card);
+
+      _safeEmit(state.copyWith(
+        cards: rolledBack,
+        removingTokens: {...state.removingTokens}..remove(token),
+        errorMessage: errorMessage,
+      ));
+    }
   }
 
   /// Clears the saved cards state.

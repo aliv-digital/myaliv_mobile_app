@@ -75,6 +75,39 @@ class GuestPayBillTheme {
   static const double amountPrefixRightPadding = 6;
 
   // ===== Colors =====
+  // ===== Pay with REV card =====
+  static const String payWithRevTitle = 'Pay with REV';
+  static const String payWithRevButtonLabel = 'continue to pay';
+  static const String payWithRevImageAsset =
+      'assets/images/pay_with_credit_card.png';
+
+  static const Color payWithRevCardBg = Color(0xFFF1F1F8);
+  static const double payWithRevCardRadius = 12;
+  static const double payWithRevCardVerticalPadding = 28;
+  static const double payWithRevCardHorizontalPadding = 24;
+  static const double payWithRevImageWidth = 140;
+  static const double payWithRevImageToTitleGap = 16;
+  static const double payWithRevTitleToButtonGap = 24;
+  static const double payWithRevButtonHeight = 48;
+  static const double payWithRevButtonRadius = 24;
+  static const double payWithRevButtonHorizontalPadding = 32;
+
+  static const TextStyle payWithRevTitleStyle = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    height: 1.33,
+    color: Color(0xFF1C1C1C),
+  );
+
+  static const TextStyle payWithRevButtonTextStyle = TextStyle(
+    fontFamily: 'CircularPro',
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+    height: 1.2,
+    color: Colors.white,
+  );
+
   // Used by: app bar background and primary action backgrounds.
   static const Color primary = Color(0xFF5A5796);
 
