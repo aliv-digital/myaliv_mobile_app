@@ -1,6 +1,10 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import '../bloc/make_payment_confirmation_postpaid_bloc.dart';
 import '../bloc/make_payment_confirmation_postpaid_event.dart';
 import '../bloc/make_payment_confirmation_postpaid_state.dart';
@@ -19,6 +23,7 @@ class MakePaymentConfirmationPostPaidScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (buildContext) {
+        _ensureDynamicDataLoaded();
         final confirmationBloc = MakePaymentConfirmationPostPaidBloc(
           repository: MakePaymentConfirmationPostPaidRepositoryImpl(),
         );
@@ -27,6 +32,13 @@ class MakePaymentConfirmationPostPaidScreen extends StatelessWidget {
       },
       child: const _MakePaymentConfirmationPostPaidPage(),
     );
+  }
+
+  void _ensureDynamicDataLoaded() {
+    instance<DeviceLimitsCubit>().loadDeviceLimits();
+    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    if (accountInfo == null || accountInfo.idAcc <= 0) return;
+    instance<BalanceCubit>().loadBalances(deviceAccountId: accountInfo.idAcc);
   }
 }
 
