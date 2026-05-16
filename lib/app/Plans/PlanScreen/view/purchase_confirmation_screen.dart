@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 //change
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_promo_response_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -73,15 +76,19 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   void _continuePressed() {
+    final config = context.read<AppUiConfigCubit>().state;
     final isMyNumberTopUp =
         widget.topUpAmount != null && widget.recipientPhone == null;
-    if (isMyNumberTopUp) {
+    if (isMyNumberTopUp || config.isPostpaid) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
-        '${AppRoutes.topUpPaymentPrepaidScreen}?amount=$amountParam',
+        '${AppRoutes.topUpPaymentPrepaidScreen}'
+        '?amount=$amountParam'
+        '&recipientPhone=${widget.recipientPhone}',
       );
       return;
     }
+
     if (widget.topUpAmount != null) {
       showModalBottomSheet(
         context: context,
@@ -283,12 +290,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
     final total = _selectedPostpaidPlan?.planAmountWithVat ?? 20.00;
-    final subTotalText =
-        isSendTopUp ? topUpAmountText : formatConfirmationCurrency(subTotal);
-    final totalText =
-        isSendTopUp ? topUpAmountText : formatConfirmationCurrency(total);
-    final vatLabel =
-        isSendTopUp || vat <= 0 ? 'no vat applied' : ' vat applied';
+    final subTotalText = isSendTopUp
+        ? topUpAmountText
+        : formatConfirmationCurrency(subTotal);
+    final totalText = isSendTopUp
+        ? topUpAmountText
+        : formatConfirmationCurrency(total);
+    final vatLabel = isSendTopUp || vat <= 0
+        ? 'no vat applied'
+        : ' vat applied';
 
     return SafeArea(
       child: Scaffold(

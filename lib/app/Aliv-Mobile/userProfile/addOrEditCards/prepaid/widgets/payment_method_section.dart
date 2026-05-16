@@ -18,7 +18,7 @@ class PaymentMethodSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // ✅ Outer white card (as screenshot)
+      width: double.infinity,
       decoration: BoxDecoration(
         color: AddOrEditCardsPrepaidTheme.cardBg,
         borderRadius: BorderRadius.circular(AddOrEditCardsPrepaidTheme.radius),
@@ -34,7 +34,6 @@ class PaymentMethodSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Title inside the card
           Text(
             'payment method',
             style: AddOrEditCardsPrepaidTheme.sectionTitle(),

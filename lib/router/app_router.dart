@@ -78,7 +78,7 @@ import '../app/Aliv-Mobile/userProfile/rewards/prepaid/view/reward_prepaid_scree
 import '../app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/view/reward_details_screen.dart';
 import '../app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
 import '../app/Aliv-Mobile/userProfile/receipt/view/user_profile_receipt_screen.dart';
-import '../app/Aliv-Mobile/userProfile/topUpPayment/prepaid/view/top_up_payment_prepaid_screen.dart';
+import '../app/Aliv-Mobile/userProfile/topUpPayment/prepaid/view/top_up_payment_screen.dart';
 import '../app/Aliv-Mobile/userProfile/topup/postpaid/view/top_up_prepaid_number_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/topup/prepaid/view/top_up_prepaid_screen.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
@@ -305,7 +305,7 @@ class AppRouter {
           final amountString = state.uri.queryParameters['amount'];
           final amount =
               amountString == null ? null : double.tryParse(amountString);
-          return TopUpPaymentPrepaidScreen(amount: amount);
+          return TopUpPaymentScreen(amount: amount);
         },
       ),
       GoRoute(

@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 //dd
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
@@ -19,16 +20,17 @@ import '../theme/top_up_payment_prepaid_theme.dart';
 import '../widgets/payment_method_card.dart';
 import '../widgets/top_up_payment_saved_cards_section.dart';
 
-class TopUpPaymentPrepaidScreen extends StatelessWidget {
+class TopUpPaymentScreen extends StatelessWidget {
   final double? amount;
 
-  const TopUpPaymentPrepaidScreen({super.key, this.amount});
+  const TopUpPaymentScreen({super.key, this.amount});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TopUpPaymentPrepaidBloc>(
-      create: (_) => TopUpPaymentPrepaidBloc(TopUpPaymentPrepaidRepositoryImpl())
-        ..add(TopUpPaymentStarted(amount: amount)),
+      create: (_) =>
+          TopUpPaymentPrepaidBloc(TopUpPaymentPrepaidRepositoryImpl())
+            ..add(TopUpPaymentStarted(amount: amount)),
       child: const _TopUpPaymentPrepaidView(),
     );
   }
