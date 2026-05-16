@@ -190,7 +190,17 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     final confirmed = await RemoveSavedCardConfirmBottomSheet.show(context);
     if (!confirmed) return;
     if (!context.mounted) return;
-    await context.read<SavedCardsCubit>().removeCard(token);
+
+    final cubit = context.read<SavedCardsCubit>();
+    await cubit.removeCard(token);
+
+    if (!context.mounted) return;
+    if (cubit.state.errorMessage == null) {
+      AppToast.show(
+        message: 'your card has been saved successfully removed',
+        type: ToastType.success,
+      );
+    }
   }
 }
 

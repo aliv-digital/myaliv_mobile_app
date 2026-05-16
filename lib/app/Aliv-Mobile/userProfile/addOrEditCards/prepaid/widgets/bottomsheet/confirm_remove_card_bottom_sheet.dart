@@ -11,7 +11,7 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
     final res = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // ✅ for rounded top card look
+      backgroundColor: Colors.transparent,
       builder: (_) => const RemoveSavedCardConfirmBottomSheet(),
     );
 
@@ -23,7 +23,6 @@ class RemoveSavedCardConfirmBottomSheet extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        // ✅ Rounded top sheet like screenshot
         decoration: const BoxDecoration(
           color: AddOrEditCardsPrepaidTheme.pageBg,
           borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
