@@ -8,6 +8,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
   final DateTime? createdAt;
   final String title;
   final String message;
+  final String? recipientPhone;
 
   const UserProfileReceiptRouteArgs({
     required this.amount,
@@ -18,6 +19,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
     this.title = 'Payment Success!',
     this.message =
         'It will take a few moments for the top-up to appear on the account.',
+    this.recipientPhone,
   });
 
   factory UserProfileReceiptRouteArgs.fromQuery(Map<String, String> query) {

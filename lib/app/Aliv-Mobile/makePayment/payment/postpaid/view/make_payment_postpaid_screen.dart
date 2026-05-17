@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_c
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
@@ -69,7 +70,9 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
             body: Column(
               children: [
                 _buildHeader(context, state),
-                Expanded(child: _buildScrollableContent(paymentBloc, state)),
+                Expanded(
+                  child: _buildScrollableContent(paymentBloc, state, context),
+                ),
               ],
             ),
           ),
@@ -146,6 +149,7 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
   Widget _buildScrollableContent(
     MakePaymentPostPaidBloc paymentBloc,
     MakePaymentPostPaidState state,
+    BuildContext context,
   ) {
     return CustomScrollView(
       slivers: [
@@ -176,16 +180,15 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
                     paymentBloc.add(MpTermsToggled(isAccepted));
                   },
                   onTermsTap: () async {
-                    final uri = Uri.parse(
-                      'https://www.bealiv.com/terms-of-use/',
+                    await showTermsAndConditionsModal(
+                      context,
+                      badgeSize: 48,
+                      badgeInnerSize: 34,
+                      badgeCoreSize: 24,
+                      badgeIconWidth: 16,
+                      badgeIconHeight: 16,
+                      closeButtonSize: 30,
                     );
-
-                    if (!await launchUrl(
-                      uri,
-                      mode: LaunchMode.externalApplication,
-                    )) {
-                      throw 'Could not open store locator';
-                    }
                   },
                 ),
                 const SizedBox(height: _termsToMethodsGap),

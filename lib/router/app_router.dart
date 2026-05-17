@@ -303,9 +303,10 @@ class AppRouter {
         path: AppRoutes.topUpPaymentPrepaidScreen,
         builder: (context, state) {
           final amountString = state.uri.queryParameters['amount'];
+          final recipientPhone = state.uri.queryParameters['recipientPhone'];
           final amount =
               amountString == null ? null : double.tryParse(amountString);
-          return TopUpPaymentScreen(amount: amount);
+          return TopUpPaymentScreen(amount: amount,recipientPhone: recipientPhone);
         },
       ),
       GoRoute(

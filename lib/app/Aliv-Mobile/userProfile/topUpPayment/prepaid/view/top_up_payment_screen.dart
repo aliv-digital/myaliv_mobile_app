@@ -22,15 +22,17 @@ import '../widgets/top_up_payment_saved_cards_section.dart';
 
 class TopUpPaymentScreen extends StatelessWidget {
   final double? amount;
+  final String? recipientPhone;
 
-  const TopUpPaymentScreen({super.key, this.amount});
+  const TopUpPaymentScreen({super.key, this.amount, this.recipientPhone});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TopUpPaymentPrepaidBloc>(
       create: (_) =>
-          TopUpPaymentPrepaidBloc(TopUpPaymentPrepaidRepositoryImpl())
-            ..add(TopUpPaymentStarted(amount: amount)),
+          TopUpPaymentPrepaidBloc(TopUpPaymentPrepaidRepositoryImpl())..add(
+            TopUpPaymentStarted(amount: amount, recipientPhone: recipientPhone),
+          ),
       child: const _TopUpPaymentPrepaidView(),
     );
   }
@@ -96,7 +98,10 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         onPayNow: () {
           context.push(
             AppRoutes.userProfileReceiptScreen,
-            extra: UserProfileReceiptRouteArgs(amount: state.summary.total),
+            extra: UserProfileReceiptRouteArgs(
+              amount: state.summary.total,
+              recipientPhone: state.summary.recipientPhone,
+            ),
           );
         },
       ),
