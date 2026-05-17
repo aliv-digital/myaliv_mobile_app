@@ -74,8 +74,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
             CustomCountryPhoneInputRow(
               focusNode: _phoneFocusNode,
               hideUnfocusedInputBorder: false,
-              hintText:
-                  isBahamasSelected ? '(242) 345-4356' : 'eg: 242-899-9999',
+              hintText: 'eg: 242-899-9999',
               flagEmoji: state.selectedCountry.flagEmoji,
               dialCode: state.selectedCountry.dialCode,
               countryIsoCode: state.selectedCountry.isoCode,
