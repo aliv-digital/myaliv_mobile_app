@@ -17,7 +17,9 @@ class UserProfileReceiptRepository {
       topUpType: args.topUpType,
       dateText: DateFormat('MMM d, yyyy').format(createdAt),
       timeText: DateFormat('h:mm a').format(createdAt).toLowerCase(),
-      phoneNumber: args.recipientPhone ?? phoneNumber,
+      phoneNumber: args.recipientPhone == null
+          ? phoneNumber
+          : _formatPhoneNumber(args.recipientPhone!),
       paymentMethod: args.paymentMethod,
       amount: args.amount,
       title: args.title,

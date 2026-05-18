@@ -23,7 +23,8 @@ class TopUpPrepaidNumberPostPaid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TopUpPrepaidNumberPostPaidBloc()..add(const TopUpPrepaidNumberPostPaidStarted()),
+      create: (_) => TopUpPrepaidNumberPostPaidBloc()
+        ..add(const TopUpPrepaidNumberPostPaidStarted()),
       child: const _TopUpPrepaidNumberPostPaidView(),
     );
   }
@@ -34,8 +35,10 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<TopUpPrepaidNumberPostPaidBloc, TopUpPrepaidNumberPostPaidState>(
-      listenWhen: (p, c) => p.errorMessage != c.errorMessage || p.applyStatus != c.applyStatus,
+    return BlocListener<TopUpPrepaidNumberPostPaidBloc,
+        TopUpPrepaidNumberPostPaidState>(
+      listenWhen: (p, c) =>
+          p.errorMessage != c.errorMessage || p.applyStatus != c.applyStatus,
       listener: (context, state) {
         // if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
         //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
@@ -46,19 +49,20 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
         // }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,//TopUpPrepaidNumberPostPaidTheme.pageBg,
+        backgroundColor: Colors.white, //TopUpPrepaidNumberPostPaidTheme.pageBg,
         body: SafeArea(
-          child: BlocBuilder<TopUpPrepaidNumberPostPaidBloc, TopUpPrepaidNumberPostPaidState>(
+          child: BlocBuilder<TopUpPrepaidNumberPostPaidBloc,
+              TopUpPrepaidNumberPostPaidState>(
             builder: (context, state) {
               final bloc = context.read<TopUpPrepaidNumberPostPaidBloc>();
 
               return CustomScrollView(
-
                 slivers: [
                   SliverAppBar(
                     pinned: true,
                     backgroundColor: TopUpPrepaidNumberPostPaidTheme.primary,
-                    elevation: 0,centerTitle: false,
+                    elevation: 0,
+                    centerTitle: false,
                     leading: Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: IconButton(
@@ -76,8 +80,8 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                  if (state.loadStatus == TopUpPrepaidNumberPostPaidLoadStatus.loading)
+                  if (state.loadStatus ==
+                      TopUpPrepaidNumberPostPaidLoadStatus.loading)
                     const SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(child: CircularProgressIndicator()),
@@ -90,30 +94,35 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TopUpPrepaidNumberPostPaidNumberSection(
-                              onChanged: (v) => bloc.add(TopUpPrepaidNumberPostPaidNumberChanged(v)),
+                              value: state.number,
+                              onChanged: (v) => bloc.add(
+                                  TopUpPrepaidNumberPostPaidNumberChanged(v)),
                             ),
                             const SizedBox(height: 16),
-
                             TopUpPrepaidNumberPostPaidConfirmNumberSection(
-                              onChanged: (v) => bloc.add(TopUpPrepaidNumberPostPaidConfirmNumberChanged(v)),
+                              value: state.confirmNumber,
+                              onChanged: (v) => bloc.add(
+                                  TopUpPrepaidNumberPostPaidConfirmNumberChanged(
+                                      v)),
                             ),
                             const SizedBox(height: 18),
-
                             TopUpPrepaidNumberPostPaidAmountSection(
                               value: state.amountText,
-                              onChanged: (v) => bloc.add(TopUpPrepaidNumberPostPaidAmountChanged(v)),
+                              onChanged: (v) => bloc.add(
+                                  TopUpPrepaidNumberPostPaidAmountChanged(v)),
                             ),
                             const SizedBox(height: 40),
-
                             TopUpPrepaidNumberPostPaidApplySection(
                               enabled: state.canApply,
-                              loading: state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.loading,
+                              loading: state.applyStatus ==
+                                  TopUpPrepaidNumberPostPaidApplyStatus.loading,
                               onTap: () {
-                                bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed());
+                                bloc.add(
+                                    const TopUpPrepaidNumberPostPaidApplyPressed());
                                 final amountParam =
                                     state.amountValue.toStringAsFixed(2);
                                 final recipientParam = Uri.encodeQueryComponent(
-                                  state.number.trim(),
+                                  state.numberForApi ?? state.number.trim(),
                                 );
                                 context.push(
                                   '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
