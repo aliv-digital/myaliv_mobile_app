@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -82,7 +83,7 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     if (!hasErrorMessage) {
       return;
     }
-    AppToast.show(message: errorMessage.toString(),type: ToastType.error);
+    AppToast.show(message: errorMessage.toString(), type: ToastType.error);
     // ScaffoldMessenger.of(context).showSnackBar(
     //   SnackBar(content: Text(errorMessage)),
     // );
@@ -120,8 +121,9 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     AutoRenewPrepaidBloc autoRenewPrepaidBloc,
     AutoRenewPrepaidState state,
   ) async {
-    final walletBalanceText =
-        '\$${context.read<BalanceCubit>().state.walletBalanceFormatted}';
+    final walletBalanceText = BalanceCurrencyFormatterService.format(
+      context.read<BalanceCubit>().state.walletBalance,
+    );
 
     final confirmed = await WalletPaymentBottomSheet.show(
       context,

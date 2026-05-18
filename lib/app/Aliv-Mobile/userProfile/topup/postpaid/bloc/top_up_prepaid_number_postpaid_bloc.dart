@@ -4,8 +4,8 @@ import '../repository/top_up_prepaid_number_postpaid_repository.dart';
 import 'top_up_prepaid_number_postpaid_event.dart';
 import 'top_up_prepaid_number_postpaid_state.dart';
 
-class TopUpPrepaidNumberPostPaidBloc
-    extends Bloc<TopUpPrepaidNumberPostPaidEvent, TopUpPrepaidNumberPostPaidState> {
+class TopUpPrepaidNumberPostPaidBloc extends Bloc<
+    TopUpPrepaidNumberPostPaidEvent, TopUpPrepaidNumberPostPaidState> {
   final TopUpPrepaidNumberPostPaidRepository repo;
 
   TopUpPrepaidNumberPostPaidBloc({TopUpPrepaidNumberPostPaidRepository? repo})
@@ -19,51 +19,66 @@ class TopUpPrepaidNumberPostPaidBloc
   }
 
   Future<void> _onStarted(
-      TopUpPrepaidNumberPostPaidStarted event,
-      Emitter<TopUpPrepaidNumberPostPaidState> emit,
-      ) async {
-    emit(state.copyWith(loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.loading, clearError: true));
+    TopUpPrepaidNumberPostPaidStarted event,
+    Emitter<TopUpPrepaidNumberPostPaidState> emit,
+  ) async {
+    emit(state.copyWith(
+        loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.loading,
+        clearError: true));
     // If you need initial data later, load here.
     await Future.delayed(const Duration(milliseconds: 150));
-    emit(state.copyWith(loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.ready));
+    emit(
+        state.copyWith(loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.ready));
   }
 
   void _onNumberChanged(
-      TopUpPrepaidNumberPostPaidNumberChanged event,
-      Emitter<TopUpPrepaidNumberPostPaidState> emit,
-      ) {
-    emit(state.copyWith(number: event.value, applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle, clearError: true));
+    TopUpPrepaidNumberPostPaidNumberChanged event,
+    Emitter<TopUpPrepaidNumberPostPaidState> emit,
+  ) {
+    emit(state.copyWith(
+        number: event.value,
+        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
+        clearError: true));
   }
 
   void _onConfirmNumberChanged(
-      TopUpPrepaidNumberPostPaidConfirmNumberChanged event,
-      Emitter<TopUpPrepaidNumberPostPaidState> emit,
-      ) {
-    emit(state.copyWith(confirmNumber: event.value, applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle, clearError: true));
+    TopUpPrepaidNumberPostPaidConfirmNumberChanged event,
+    Emitter<TopUpPrepaidNumberPostPaidState> emit,
+  ) {
+    emit(state.copyWith(
+        confirmNumber: event.value,
+        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
+        clearError: true));
   }
 
   void _onAmountChanged(
-      TopUpPrepaidNumberPostPaidAmountChanged event,
-      Emitter<TopUpPrepaidNumberPostPaidState> emit,
-      ) {
-    emit(state.copyWith(amountText: event.value, applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle, clearError: true));
+    TopUpPrepaidNumberPostPaidAmountChanged event,
+    Emitter<TopUpPrepaidNumberPostPaidState> emit,
+  ) {
+    emit(state.copyWith(
+        amountText: event.value,
+        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
+        clearError: true));
   }
 
   Future<void> _onApplyPressed(
-      TopUpPrepaidNumberPostPaidApplyPressed event,
-      Emitter<TopUpPrepaidNumberPostPaidState> emit,
-      ) async {
+    TopUpPrepaidNumberPostPaidApplyPressed event,
+    Emitter<TopUpPrepaidNumberPostPaidState> emit,
+  ) async {
     if (!state.canApply) return;
 
-    emit(state.copyWith(applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.loading, clearError: true));
+    emit(state.copyWith(
+        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.loading,
+        clearError: true));
 
     try {
       await repo.applyTopUp(
-        number: state.number.trim(),
+        number: state.numberForApi ?? state.number.trim(),
         amount: state.amountValue,
       );
 
-      emit(state.copyWith(applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.success));
+      emit(state.copyWith(
+          applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.success));
     } catch (_) {
       emit(state.copyWith(
         applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.failure,

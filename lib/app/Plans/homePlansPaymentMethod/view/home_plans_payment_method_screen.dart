@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/default_bottom_payBar.dart';
@@ -134,7 +135,9 @@ class _HomePlansPaymentMethodViewState
     HomePlansPaymentMethodState state,
     BalanceState balanceState,
   ) {
-    final walletBalanceText = '\$${balanceState.walletBalanceFormatted}';
+    final walletBalanceText = BalanceCurrencyFormatterService.format(
+      balanceState.walletBalance,
+    );
 
     return HomePlansPaymentMethodSection(
       methods: state.methods,
@@ -379,12 +382,10 @@ class _HomePlansPaymentMethodViewState
         _showWalletWarningIfNeeded(state);
 
         // Show API/validation errors from bloc.
-        if (state.errorMessage != null && state.status == HomePlansPaymentMethodStatus.failure) {
-
+        if (state.errorMessage != null &&
+            state.status == HomePlansPaymentMethodStatus.failure) {
           AppToast.show(
-              message: state.errorMessage!.toString(),
-              type:ToastType.error
-          );
+              message: state.errorMessage!.toString(), type: ToastType.error);
           // ScaffoldMessenger.of(
           //   context,
           // ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));

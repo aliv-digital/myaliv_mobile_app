@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../router/app_routes.dart';
@@ -117,7 +117,9 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
     BuildContext context,
   ) {
     return DefaultBottomPayBar(
-      amountText: '\$ ${_resolvePayAmount(state).toStringAsFixed(2)}',
+      amountText: BalanceCurrencyFormatterService.format(
+        _resolvePayAmount(state),
+      ),
       isButtonEnabled: state.canPayNow,
       backgroundColor: MakePaymentPostPaidTheme.bottomBarBg,
       buttonColor: MakePaymentPostPaidTheme.primary,

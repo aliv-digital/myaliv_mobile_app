@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_submit_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -172,7 +173,7 @@ class _GuestPayBillView extends StatelessWidget {
   }
 
   String _money(double amount) {
-    return '\$ ${amount.toStringAsFixed(2)}';
+    return BalanceCurrencyFormatterService.format(amount);
   }
 
   GuestPayBillConfirmArgs _buildConfirmArgs(GuestPayBillState state) {
@@ -415,8 +416,7 @@ class _GuestPayBillView extends StatelessWidget {
                               state.accountInfo?.balance == null
                                   ? GuestPayBillTheme.statusPlaceholderText
                                   : _money(state.accountInfo!.balance!),
-                              style:
-                                  GuestPayBillTheme.accountBalanceValueStyle,
+                              style: GuestPayBillTheme.accountBalanceValueStyle,
                             ),
                             const SizedBox(
                                 height: GuestPayBillTheme.sectionGap),

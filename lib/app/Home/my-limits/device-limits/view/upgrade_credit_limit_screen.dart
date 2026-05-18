@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update_limits_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/widgets/limit_amount_input_field.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/common_terms_condition.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -238,7 +239,9 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
               Column(
                 children: [
                   Text(
-                    '\$${balanceState.walletBalanceFormatted}',
+                    BalanceCurrencyFormatterService.format(
+                      balanceState.walletBalance,
+                    ),
                     style: const TextStyle(
                       color: Color(0xFF5045A7),
                       fontSize: 24,
@@ -321,8 +324,8 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: UpgradeCreditLimitScreen.purple,
-                disabledBackgroundColor: UpgradeCreditLimitScreen.purple
-                    .withValues(alpha: 0.5),
+                disabledBackgroundColor:
+                    UpgradeCreditLimitScreen.purple.withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),

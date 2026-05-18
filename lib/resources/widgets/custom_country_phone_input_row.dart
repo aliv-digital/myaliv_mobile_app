@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
@@ -44,6 +43,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     this.countryIsoCode,
     this.countryFlagBorderRadius = 4,
     this.labelText,
+    this.showCountryPickerBox = true,
     this.onTapCountryPicker,
     this.enableCountryPicker = true,
     this.showCountryArrow = true,
@@ -103,6 +103,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   // Optional ISO2 code (e.g., "BS") to render flat flag from country_pickers assets.
   final String? countryIsoCode;
   final double countryFlagBorderRadius;
+  final bool showCountryPickerBox;
   final VoidCallback? onTapCountryPicker;
   final bool enableCountryPicker;
   final bool showCountryArrow;
@@ -212,9 +213,8 @@ class _CustomCountryPhoneInputRowState
     final String? isoCode = widget.countryIsoCode;
     if (isoCode != null && isoCode.isNotEmpty) {
       // country_pickers does not include AC.png; use SH asset (same flag style).
-      final String assetIsoCode = isoCode.toUpperCase() == 'AC'
-          ? 'SH'
-          : isoCode.toUpperCase();
+      final String assetIsoCode =
+          isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
 
       return ClipRRect(
         borderRadius: BorderRadius.circular(widget.countryFlagBorderRadius),
@@ -236,8 +236,7 @@ class _CustomCountryPhoneInputRowState
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle resolvedLabelStyle =
-        widget.labelStyle ??
+    final TextStyle resolvedLabelStyle = widget.labelStyle ??
         const TextStyle(
           fontSize: 14,
           height: 1.43,
@@ -246,15 +245,13 @@ class _CustomCountryPhoneInputRowState
           color: Colors.black,
         );
 
-    final TextStyle resolvedFlagStyle =
-        widget.flagStyle ??
+    final TextStyle resolvedFlagStyle = widget.flagStyle ??
         const TextStyle(
           fontSize: 18,
           fontFamily: AppConstants.defaultFontFamily,
         );
 
-    final TextStyle resolvedDialStyle =
-        widget.dialCodeStyle ??
+    final TextStyle resolvedDialStyle = widget.dialCodeStyle ??
         const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -262,8 +259,7 @@ class _CustomCountryPhoneInputRowState
           color: Color(0xFF111111),
         );
 
-    final TextStyle resolvedPhoneInputStyle =
-        widget.phoneInputStyle ??
+    final TextStyle resolvedPhoneInputStyle = widget.phoneInputStyle ??
         const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -271,8 +267,7 @@ class _CustomCountryPhoneInputRowState
           color: Color(0xFF000000),
         );
 
-    final TextStyle resolvedPhoneHintStyle =
-        widget.phoneHintStyle ??
+    final TextStyle resolvedPhoneHintStyle = widget.phoneHintStyle ??
         const TextStyle(
           color: Color(0xB3707070),
           fontSize: 14,
@@ -283,64 +278,66 @@ class _CustomCountryPhoneInputRowState
 
     final Widget row = Row(
       children: [
-        InkWell(
-          onTap: widget.enableCountryPicker ? widget.onTapCountryPicker : null,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          child: Container(
-            height: widget.fieldHeight,
-            width: widget.countryPickerWidth,
-            padding: widget.countryPickerPadding,
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-              border: widget.showCountryPickerBorder
-                  ? Border.all(
-                      color: widget.countryPickerBorderColor,
-                      width: widget.countryPickerBorderWidth,
-                    )
-                  : null,
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-
-                children: [
-                  _buildCountryFlag(resolvedFlagStyle),
-                  SizedBox(width: widget.countryFlagToDialGap),
-                  Text(widget.dialCode, style: resolvedDialStyle),
-                  if (widget.showCountryArrow) ...[
-                    SizedBox(width: widget.countryDialToArrowGap),
-                    if (widget.countryArrowWidth != null &&
-                        widget.countryArrowHeight != null)
-                      SizedBox(
-                        width: widget.countryArrowWidth,
-                        height: widget.countryArrowHeight,
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Icon(
-                            widget.countryArrowIcon,
-                            size: widget.countryArrowIconSize,
-                            color: widget.countryArrowColor,
-                          ),
-                        ),
+        if (widget.showCountryPickerBox) ...[
+          InkWell(
+            onTap:
+                widget.enableCountryPicker ? widget.onTapCountryPicker : null,
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            child: Container(
+              height: widget.fieldHeight,
+              width: widget.countryPickerWidth,
+              padding: widget.countryPickerPadding,
+              decoration: BoxDecoration(
+                color: widget.backgroundColor,
+                border: widget.showCountryPickerBorder
+                    ? Border.all(
+                        color: widget.countryPickerBorderColor,
+                        width: widget.countryPickerBorderWidth,
                       )
-                    else
-                      Icon(
-                        widget.countryArrowIcon,
-                        size: widget.countryArrowIconSize,
-                        color: widget.countryArrowColor,
-                      ),
+                    : null,
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildCountryFlag(resolvedFlagStyle),
+                    SizedBox(width: widget.countryFlagToDialGap),
+                    Text(widget.dialCode, style: resolvedDialStyle),
+                    if (widget.showCountryArrow) ...[
+                      SizedBox(width: widget.countryDialToArrowGap),
+                      if (widget.countryArrowWidth != null &&
+                          widget.countryArrowHeight != null)
+                        SizedBox(
+                          width: widget.countryArrowWidth,
+                          height: widget.countryArrowHeight,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Icon(
+                              widget.countryArrowIcon,
+                              size: widget.countryArrowIconSize,
+                              color: widget.countryArrowColor,
+                            ),
+                          ),
+                        )
+                      else
+                        Icon(
+                          widget.countryArrowIcon,
+                          size: widget.countryArrowIconSize,
+                          color: widget.countryArrowColor,
+                        ),
+                    ],
+                    if (widget.showCountryArrow == false) SizedBox(width: 16),
                   ],
-                  if (widget.showCountryArrow == false) SizedBox(width: 16),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-        SizedBox(width: widget.countryToPhoneGap),
+          SizedBox(width: widget.countryToPhoneGap),
+        ],
         Expanded(
           child: _FocusedInputBorderWrapper(
             isFocused: _hasPhoneFocus,
@@ -424,11 +421,11 @@ class _FocusedInputBorderWrapper extends StatelessWidget {
         border: isFocused
             ? null
             : (hideUnfocusedBorder
-                  ? null
-                  : Border.all(
-                      color: unfocusedBorderColor,
-                      width: borderWidth,
-                    )),
+                ? null
+                : Border.all(
+                    color: unfocusedBorderColor,
+                    width: borderWidth,
+                  )),
         borderRadius: BorderRadius.circular(radius),
       ),
       padding: EdgeInsets.all(borderWidth),
