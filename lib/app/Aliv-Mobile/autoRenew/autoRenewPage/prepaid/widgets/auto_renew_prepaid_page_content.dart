@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -130,8 +131,9 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
         autoRenewPrepaidState.isNoAutoRenewSelected && isAutoRenewToggling;
 
     final BalanceState balanceState = context.watch<BalanceCubit>().state;
-    final String walletBalanceText =
-        '\$${balanceState.walletBalanceFormatted}';
+    final String walletBalanceText = BalanceCurrencyFormatterService.format(
+      balanceState.walletBalance,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

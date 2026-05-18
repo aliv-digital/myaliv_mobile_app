@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import '../../../../../../router/app_routes.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
@@ -55,7 +56,10 @@ class PayFromWalletSheet extends StatelessWidget {
 
               // ================= WALLET ROW =================
               Padding(
-                padding: const EdgeInsets.only(left: 16,right: 16,),
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +98,9 @@ class PayFromWalletSheet extends StatelessWidget {
                           BlocBuilder<BalanceCubit, BalanceState>(
                             builder: (context, balanceState) {
                               return Text(
-                                '\$${balanceState.walletBalanceFormatted}',
+                                BalanceCurrencyFormatterService.format(
+                                  balanceState.walletBalance,
+                                ),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: const Color(0xFF222222),
@@ -116,7 +122,10 @@ class PayFromWalletSheet extends StatelessWidget {
 
               // ================= AMOUNT =================
               Padding(
-                padding: const EdgeInsets.only(left: 16,right: 16,),
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                ),
                 child: const Text(
                   'amount',
                   style: TextStyle(
@@ -129,7 +138,10 @@ class PayFromWalletSheet extends StatelessWidget {
               const SizedBox(height: 20),
 
               Padding(
-                padding: const EdgeInsets.only(left: 16,right: 16,),
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                ),
                 child: Container(
                   height: 52,
                   alignment: Alignment.center,
@@ -180,7 +192,6 @@ class PayFromWalletSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
             ],
           ),
         ),

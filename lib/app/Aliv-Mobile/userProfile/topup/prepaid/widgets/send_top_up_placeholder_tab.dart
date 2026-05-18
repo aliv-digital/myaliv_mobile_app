@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../../../core/utils/app_session.dart';
@@ -22,7 +23,8 @@ class SendTopUpPlaceholderTab extends StatefulWidget {
   const SendTopUpPlaceholderTab({super.key, required this.title});
 
   @override
-  State<SendTopUpPlaceholderTab> createState() => _SendTopUpPlaceholderTabState();
+  State<SendTopUpPlaceholderTab> createState() =>
+      _SendTopUpPlaceholderTabState();
 }
 
 class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
@@ -38,7 +40,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   bool _hasConfirmPhoneFocus = false;
   bool _phoneFieldError = false;
   bool _confirmPhoneFieldError = false;
- // 🔥 default amount (matches design)
+  // 🔥 default amount (matches design)
 
   double get _amountValue {
     final cleaned = _amount.trim().replaceAll(',', '');
@@ -187,8 +189,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   //   );
   // }
 
-
-
   /* PARKED: country picker disabled to match Login screen behavior.
      Keep this opener around for an easy revert if multi-country
      support is restored later.
@@ -243,7 +243,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               BlocBuilder<BalanceCubit, BalanceState>(
                 builder: (context, balanceState) {
                   return _ReadOnlyField(
-                    'wallet \$ ${balanceState.walletBalanceFormatted}',
+                    'wallet ${BalanceCurrencyFormatterService.format(
+                      balanceState.walletBalance,
+                    )}',
                   );
                 },
               ),
@@ -348,7 +350,8 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     final confirmPhoneValidation =
                         _validatePhone(_confirmPhoneNumber);
                     final hasPhoneError = !phoneValidation.isValid;
-                    final hasConfirmPhoneError = !confirmPhoneValidation.isValid;
+                    final hasConfirmPhoneError =
+                        !confirmPhoneValidation.isValid;
 
                     if (hasPhoneError || hasConfirmPhoneError) {
                       setState(() {
@@ -400,7 +403,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     //   ),
                     // );
                   },
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TopUpPrepaidTheme.purple,
                     elevation: 0,

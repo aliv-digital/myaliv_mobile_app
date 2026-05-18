@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 
@@ -23,11 +24,11 @@ class BalanceAmountText extends StatelessWidget {
     return BlocBuilder<BalanceCubit, BalanceState>(
       builder: (context, state) {
         final balance = type == BalanceType.wallet
-            ? state.walletBalanceFormatted
-            : state.bonusBalanceFormatted;
+            ? state.walletBalance
+            : state.bonusBalance;
 
         return Text(
-          '\$$balance',
+          BalanceCurrencyFormatterService.format(balance),
           style: style ??
               const TextStyle(
                 color: Color(0xFF5045A7),

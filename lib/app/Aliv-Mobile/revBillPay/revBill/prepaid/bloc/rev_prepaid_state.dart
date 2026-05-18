@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 
 enum RevNavTarget { none, proceed }
 
@@ -55,7 +56,7 @@ class RevPrepaidState extends Equatable {
   String get accountStatusText => accountStatus ?? '--------';
 
   String get accountBalanceText =>
-      accountBalance == null ? '--------' : r'$ ' + accountBalance!.toStringAsFixed(2);
+      BalanceCurrencyFormatterService.formatNullable(accountBalance);
 
   // Input display value for custom amount field (no dollar sign in typed text).
   String get amountInputText => amount == 0 ? '' : amount.toStringAsFixed(2);
@@ -81,8 +82,10 @@ class RevPrepaidState extends Equatable {
       service: service ?? this.service,
       accountNumber: accountNumber ?? this.accountNumber,
       name: name ?? this.name,
-      accountStatus: clearAccountData ? null : (accountStatus ?? this.accountStatus),
-      accountBalance: clearAccountData ? null : (accountBalance ?? this.accountBalance),
+      accountStatus:
+          clearAccountData ? null : (accountStatus ?? this.accountStatus),
+      accountBalance:
+          clearAccountData ? null : (accountBalance ?? this.accountBalance),
       amount: amount ?? this.amount,
       submitting: submitting ?? this.submitting,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -92,15 +95,15 @@ class RevPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-    title,
-    service,
-    accountNumber,
-    name,
-    accountStatus,
-    accountBalance,
-    amount,
-    submitting,
-    errorMessage,
-    navTarget,
-  ];
+        title,
+        service,
+        accountNumber,
+        name,
+        accountStatus,
+        accountBalance,
+        amount,
+        submitting,
+        errorMessage,
+        navTarget,
+      ];
 }

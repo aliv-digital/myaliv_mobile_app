@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 
 import '../repository/make_payment_postpaid_repository.dart';
 import 'make_payment_postpaid_event.dart';
@@ -27,7 +28,9 @@ class MakePaymentPostPaidBloc
   ) async {
     final data = await repository.fetchPaymentData();
     final balanceState = instance<BalanceCubit>().state;
-    final amount = '\$ ${balanceState.walletBalanceFormatted}';
+    final amount = BalanceCurrencyFormatterService.format(
+      balanceState.walletBalance,
+    );
 
     emit(
       state.copyWith(

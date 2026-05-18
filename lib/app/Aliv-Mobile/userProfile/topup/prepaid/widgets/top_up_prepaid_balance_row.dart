@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../../../core/utils/appUtils.dart';
-import '../theme/top_up_prepaid_theme.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 
 class TopUpPrepaidBalanceRow extends StatelessWidget {
   final double balance;
@@ -17,10 +16,8 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final remaining = (isSendTopUp
-            ? balance - enteredAmount
-            : balance + enteredAmount)
-        .clamp(0, double.infinity);
+    final remaining =
+        isSendTopUp ? balance - enteredAmount : balance + enteredAmount;
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -42,7 +39,6 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                   width: 18,
                 ),
                 SizedBox(width: 10),
-
                 Text(
                   'Current Balance will be',
                   textAlign: TextAlign.center,
@@ -67,7 +63,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    AppUtils.formatPrice(remaining),
+                    BalanceCurrencyFormatterService.format(remaining),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: const Color(0xFF222222),

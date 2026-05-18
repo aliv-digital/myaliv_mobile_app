@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 
 import '../repository/make_payment_confirmation_postpaid_repository.dart';
 import 'make_payment_confirmation_postpaid_event.dart';
 import 'make_payment_confirmation_postpaid_state.dart';
 
 class MakePaymentConfirmationPostPaidBloc extends Bloc<
-    MakePaymentConfirmationPostPaidEvent, MakePaymentConfirmationPostPaidState> {
+    MakePaymentConfirmationPostPaidEvent,
+    MakePaymentConfirmationPostPaidState> {
   final MakePaymentConfirmationPostPaidRepository repository;
 
   MakePaymentConfirmationPostPaidBloc({required this.repository})
@@ -31,11 +33,12 @@ class MakePaymentConfirmationPostPaidBloc extends Bloc<
     final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
     final balanceState = instance<BalanceCubit>().state;
 
-    final customerName =
-        deviceLimitsState.fullName ?? _nameFromEmail(email);
+    final customerName = deviceLimitsState.fullName ?? _nameFromEmail(email);
     final accountNumber =
         _formatPhone(deviceLimitsState.deviceLimits?.tn ?? '');
-    final amount = '\$ ${balanceState.walletBalanceFormatted}';
+    final amount = BalanceCurrencyFormatterService.format(
+      balanceState.walletBalance,
+    );
 
     emit(
       state.copyWith(
