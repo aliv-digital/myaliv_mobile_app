@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +12,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../core/utils/app_session.dart';
 import '../../../Home/home/data/home_ui_config.dart';
 import '../../homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
+import '../../mifiAltContact/model/mifi_alt_contact_route_args.dart';
 import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
@@ -48,9 +48,6 @@ Future<void> showHomePlanPurchaseBottomSheet({
     builder: (sheetContext) {
       if (selectedTab == HomePlanTab.roaming ||
           selectedTab == HomePlanTab.roameasy) {
-        if (kDebugMode) {
-          debugPrint("--------- selected tab is roaming or roameasy ---------");
-        }
         return HomePlanRoamBottomSheet(
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onDateApplied: (pickedDate) {
@@ -81,7 +78,6 @@ Future<void> showHomePlanPurchaseBottomSheet({
       }
 
       if (hasActivePlan) {
-        //&& selectedTab == HomePlanTab.addOns
         final endDateText = activePlanEndDate != null
             ? DateFormat('dd MMM yyyy').format(activePlanEndDate)
             : 'the end of your current plan';
@@ -96,8 +92,16 @@ Future<void> showHomePlanPurchaseBottomSheet({
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
-            if (selectedTab == HomePlanTab.mifi ||
-                selectedTab == HomePlanTab.libertyGlobal) {
+            if (selectedTab == HomePlanTab.mifi) {
+              _pushMifiAltContact(
+                context: context,
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: true,
+              );
+              return;
+            }
+            if (selectedTab == HomePlanTab.libertyGlobal) {
               context.push(
                 AppRoutes.homePlanConfirmationScreen,
                 extra: _futurePlanConfirmationRouteArgs(
@@ -115,6 +119,15 @@ Future<void> showHomePlanPurchaseBottomSheet({
           },
           onFuturePlanPressed: () {
             Navigator.of(sheetContext).pop();
+            if (selectedTab == HomePlanTab.mifi) {
+              _pushMifiAltContact(
+                context: context,
+                selectedApiPlan: selectedApiPlan,
+                fallbackPlan: plan,
+                forceNow: false,
+              );
+              return;
+            }
             context.push(
               AppRoutes.homePlanConfirmationScreen,
               extra: _futurePlanConfirmationRouteArgs(
@@ -127,8 +140,6 @@ Future<void> showHomePlanPurchaseBottomSheet({
         );
       }
 
-      // we will go to next screen to show  "AvailableBoltOns"
-      // will work here
       return HomePlanWalletPaymentActivateBottomSheet(
         warningText:
             'you have no current plans, so your new plan will start immediately.',
@@ -140,6 +151,15 @@ Future<void> showHomePlanPurchaseBottomSheet({
           AppSession.appRoute = 'prepaidPlan';
           Navigator.of(sheetContext).pop();
           if (selectedTab == HomePlanTab.mifi) {
+            _pushMifiAltContact(
+              context: context,
+              selectedApiPlan: selectedApiPlan,
+              fallbackPlan: plan,
+              forceNow: true,
+            );
+            return;
+          }
+          if (selectedTab == HomePlanTab.libertyGlobal) {
             context.push(
               AppRoutes.homePlanConfirmationScreen,
               extra: _futurePlanConfirmationRouteArgs(
@@ -157,6 +177,26 @@ Future<void> showHomePlanPurchaseBottomSheet({
         },
       );
     },
+  );
+}
+
+void _pushMifiAltContact({
+  required BuildContext context,
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+  required bool forceNow,
+}) {
+  final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+  final prefilledAltNumber = accountInfo?.altPhoneNumber.trim() ?? '';
+
+  context.push(
+    AppRoutes.homePlanMifiAltContact,
+    extra: MifiAltContactRouteArgs(
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+      forceNow: forceNow,
+      prefilledAltNumber: prefilledAltNumber,
+    ),
   );
 }
 

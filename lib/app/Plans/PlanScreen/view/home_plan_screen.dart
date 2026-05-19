@@ -104,7 +104,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     return HomePlanModel(
       id: plan.planId,
       title: plan.planName,
-      subtitle: '',
+      subtitle: _planDurationText(plan),
       price: plan.planAmount,
       description: plan.planDescription,
       benefits: const <HomePlanBenefit>[],
@@ -345,6 +345,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           context,
           _toMifiPurchaseSheetPlan(plan),
           homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
         );
       },
       onLibertyGlobalPurchaseNow: (plan) {
@@ -352,6 +353,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           context,
           _toLibertyGlobalPurchaseSheetPlan(plan),
           homeUiConfig: homeUiConfig,
+          selectedApiPlan: plan,
         );
       },
       onRoamingPurchaseNow: (plan) {

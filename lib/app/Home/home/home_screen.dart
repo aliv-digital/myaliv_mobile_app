@@ -131,7 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         final isResolving =
                             plansState.status == PlansStatus.initial ||
                             plansState.status == PlansStatus.loading;
-                        final showActiveCard = isResolving ||
+                        final showActiveCard =
+                            isResolving ||
                             plansState.addOnsApiPrimaryPlans.isNotEmpty;
 
                         if (!showActiveCard) {
