@@ -9,18 +9,23 @@ import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list
 class TopUpPaymentSavedCardsSection extends StatelessWidget {
   final String? selectedToken;
   final ValueChanged<SavedCardModel> onCardSelected;
+  final bool autoSelectFirst;
 
   const TopUpPaymentSavedCardsSection({
     super.key,
     required this.selectedToken,
     required this.onCardSelected,
+    this.autoSelectFirst = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SavedCardsCubit, SavedCardsState>(
       listener: (context, state) {
-        if (state.isSuccess && state.hasCards && selectedToken == null) {
+        if (autoSelectFirst &&
+            state.isSuccess &&
+            state.hasCards &&
+            selectedToken == null) {
           onCardSelected(state.cards.first);
         }
       },

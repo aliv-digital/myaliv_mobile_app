@@ -124,8 +124,11 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
       backgroundColor: MakePaymentPostPaidTheme.bottomBarBg,
       buttonColor: MakePaymentPostPaidTheme.primary,
       disabledButtonColor: MakePaymentPostPaidTheme.payButtonDisabled,
-      // onPayNow: () => paymentBloc.add(const MpPayNowPressed()),
       onPayNow: () {
+        if (state.paymentMode == MpPaymentMode.payWithCard) {
+          context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+          return;
+        }
         AppSession.appRoute = 'postpaidPayment';
         final now = DateTime.now();
         final phone = _formatPhone(
@@ -198,10 +201,14 @@ class _MakePaymentPostPaidPage extends StatelessWidget {
                 // Payment method selection section.
                 MpPaymentMethodSection(
                   selectedToken: state.selectedMethodToken,
+                  payWithCardSelected:
+                      state.paymentMode == MpPaymentMode.payWithCard,
                   onCardSelected: (card) {
                     paymentBloc.add(MpPaymentMethodSelected(card.token));
                   },
-                  onAddCard: () {},
+                  onPayWithCardSelected: () {
+                    paymentBloc.add(const MpPayWithCardSelected());
+                  },
                 ),
                 const SizedBox(height: _bottomScrollSpacer),
               ],

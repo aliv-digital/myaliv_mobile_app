@@ -37,14 +37,19 @@ class TopUpPaymentPrepaidBloc
     PaymentMethodSelected event,
     Emitter<TopUpPaymentPrepaidState> emit,
   ) {
-    emit(state.copyWith(selectedMethodId: event.paymentMethodId));
+    emit(
+      state.copyWith(
+        paymentMode: TopUpPaymentMode.card,
+        selectedMethodId: event.paymentMethodId,
+      ),
+    );
   }
 
   void _onPayWithCard(
     PayWithCardPressed event,
     Emitter<TopUpPaymentPrepaidState> emit,
   ) {
-    // Navigation handled in UI (GoRouter / Navigator)
+    emit(state.copyWith(paymentMode: TopUpPaymentMode.payWithCard));
   }
 
   Future<void> _onPayNow(

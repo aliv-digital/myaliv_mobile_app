@@ -8,10 +8,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepai
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_payment_method_section.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_prepaid_proceed_action_button.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/dashed_add_card_button.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/widgets/bottomsheet/add_card_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -38,6 +36,7 @@ class _AutoPayPostpaidView extends StatefulWidget {
 class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   SavedCardModel? _selectedCard;
   bool _noAutoRenewSelected = false;
+  bool _payWithCardSelected = false;
   bool _disabling = false;
 
   @override
@@ -46,9 +45,14 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
     instance<SavedCardsCubit>().fetchSavedCards();
   }
 
-  bool get _canProceed => _selectedCard != null || _noAutoRenewSelected;
+  bool get _canProceed =>
+      _selectedCard != null || _noAutoRenewSelected || _payWithCardSelected;
 
   Future<void> _onProceed() async {
+    if (_payWithCardSelected) {
+      context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+      return;
+    }
     if (_noAutoRenewSelected) {
       await _disableAutoPay();
       return;
@@ -85,10 +89,6 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
     }
   }
 
-  Future<void> _onAddCard() async {
-    await AddCardBottomSheet.show(context, last4: '1234');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,25 +116,32 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                   children: [
                     AutoRenewPaymentMethodSection(
                       selectedCard: _selectedCard,
-                      selectedMethodId: _noAutoRenewSelected
-                          ? AutoRenewPaymentMethod.none.id
-                          : _selectedCard?.token,
+                      selectedMethodId: _payWithCardSelected
+                          ? AutoRenewPaymentMethod.payWithCard.id
+                          : _noAutoRenewSelected
+                              ? AutoRenewPaymentMethod.none.id
+                              : _selectedCard?.token,
                       onCardSelected: (c) => setState(() {
                         _selectedCard = c;
                         _noAutoRenewSelected = false;
+                        _payWithCardSelected = false;
                       }),
                       showWalletRow: false,
                       showNoAutoRenewRow: true,
+                      showPayWithCardRow: true,
+                      payWithCardSelected: _payWithCardSelected,
                       noAutoRenewText: "i don't want to auto pay",
                       onNoAutoRenewSelected: () => setState(() {
                         _selectedCard = null;
                         _noAutoRenewSelected = true;
+                        _payWithCardSelected = false;
+                      }),
+                      onPayWithCardSelected: () => setState(() {
+                        _selectedCard = null;
+                        _noAutoRenewSelected = false;
+                        _payWithCardSelected = true;
                       }),
                     ),
-                    const SizedBox(
-                      height: AutoRenewPrepaidTheme.sectionToDashedGap,
-                    ),
-                    DashedAddCardButton(onTap: _onAddCard),
                     const SizedBox(
                       height: AutoRenewPrepaidTheme.dashedToActionGap,
                     ),

@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list.dart';
 
 import '../theme/make_payment_postpaid_theme.dart';
 
 class MpPaymentMethodSection extends StatelessWidget {
   final String? selectedToken;
+  final bool payWithCardSelected;
   final ValueChanged<SavedCardModel> onCardSelected;
-  final VoidCallback onAddCard;
+  final VoidCallback onPayWithCardSelected;
 
   const MpPaymentMethodSection({
     super.key,
     required this.selectedToken,
+    required this.payWithCardSelected,
     required this.onCardSelected,
-    required this.onAddCard,
+    required this.onPayWithCardSelected,
   });
 
   @override
@@ -49,14 +50,24 @@ class MpPaymentMethodSection extends StatelessWidget {
                 .paymentMethodSectionTitleToFirstCardGap,
           ),
           _MpSavedCardsList(
-            selectedToken: selectedToken,
+            selectedToken: payWithCardSelected ? null : selectedToken,
             onCardSelected: onCardSelected,
+            autoSelectFirst: !payWithCardSelected,
           ),
           const SizedBox(
             height: MakePaymentPostPaidTheme
                 .paymentMethodLastCardToPayWithCardGap,
           ),
-          _PayWithCardRow(onTap: onAddCard),
+          PaymentOptionTile(
+            title: 'pay with card',
+            selected: payWithCardSelected,
+            onTap: onPayWithCardSelected,
+            leading: const Icon(
+              Icons.add,
+              size: 18,
+              color: MakePaymentPostPaidTheme.paymentMethodAccent,
+            ),
+          ),
         ],
       ),
     );
@@ -66,17 +77,22 @@ class MpPaymentMethodSection extends StatelessWidget {
 class _MpSavedCardsList extends StatelessWidget {
   final String? selectedToken;
   final ValueChanged<SavedCardModel> onCardSelected;
+  final bool autoSelectFirst;
 
   const _MpSavedCardsList({
     required this.selectedToken,
     required this.onCardSelected,
+    this.autoSelectFirst = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SavedCardsCubit, SavedCardsState>(
       listener: (context, state) {
-        if (state.isSuccess && state.hasCards && selectedToken == null) {
+        if (autoSelectFirst &&
+            state.isSuccess &&
+            state.hasCards &&
+            selectedToken == null) {
           onCardSelected(state.cards.first);
         }
       },
@@ -185,43 +201,3 @@ class _ErrorPlaceholder extends StatelessWidget {
   }
 }
 
-class _PayWithCardRow extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _PayWithCardRow({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: MakePaymentPostPaidTheme.paymentMethodPayWithCardRowPadding,
-        child: Row(
-          children: [
-            const Icon(
-              Icons.add,
-              size: 18,
-              color: MakePaymentPostPaidTheme.paymentMethodAccent,
-            ),
-            const SizedBox(width: 8),
-            Text('pay with card', style: MakePaymentPostPaidTheme.addCard),
-            const Spacer(),
-            SizedBox(
-              width: MakePaymentPostPaidTheme.paymentMethodPayWithCardChevronSize,
-              height:
-                  MakePaymentPostPaidTheme.paymentMethodPayWithCardChevronSize,
-              child: SvgPicture.asset(
-                AssetConstant.arrowRightIconSVG,
-                width:
-                    MakePaymentPostPaidTheme.paymentMethodPayWithCardChevronSize,
-                height:
-                    MakePaymentPostPaidTheme.paymentMethodPayWithCardChevronSize,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 //dd
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/widgets/pay_with_card_tile.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -94,8 +94,13 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         amountText: _amountText(state.summary.total),
         isVatExclusive: !state.summary.vatInclusive,
         isLoading: state.status == TopUpPaymentStatus.paying,
+        isButtonEnabled: state.hasMethodSelected,
         buttonColor: TopUpPaymentPrepaidTheme.primary,
         onPayNow: () {
+          if (state.paymentMode == TopUpPaymentMode.payWithCard) {
+            context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+            return;
+          }
           context.push(
             AppRoutes.userProfileReceiptScreen,
             extra: UserProfileReceiptRouteArgs(
@@ -133,6 +138,8 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
             sliver: SliverToBoxAdapter(
               child: _PaymentMethodSection(
                 selectedToken: state.selectedMethodId,
+                payWithCardSelected:
+                    state.paymentMode == TopUpPaymentMode.payWithCard,
               ),
             ),
           ),
@@ -144,13 +151,12 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
 
 class _PaymentMethodSection extends StatelessWidget {
   final String? selectedToken;
+  final bool payWithCardSelected;
 
-  const _PaymentMethodSection({required this.selectedToken});
-
-  void _onPayWithCardPressed(BuildContext context) {
-    context.read<TopUpPaymentPrepaidBloc>().add(const PayWithCardPressed());
-    // TODO: Navigate to add card screen when route is ready.
-  }
+  const _PaymentMethodSection({
+    required this.selectedToken,
+    required this.payWithCardSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +170,8 @@ class _PaymentMethodSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           TopUpPaymentSavedCardsSection(
-            selectedToken: selectedToken,
+            selectedToken: payWithCardSelected ? null : selectedToken,
+            autoSelectFirst: !payWithCardSelected,
             onCardSelected: (card) {
               context.read<TopUpPaymentPrepaidBloc>().add(
                 PaymentMethodSelected(card.token),
@@ -172,7 +179,18 @@ class _PaymentMethodSection extends StatelessWidget {
             },
           ),
           const SizedBox(height: 12),
-          PayWithCardTile(onTap: () => _onPayWithCardPressed(context)),
+          PaymentOptionTile(
+            title: 'pay with card',
+            selected: payWithCardSelected,
+            onTap: () => context.read<TopUpPaymentPrepaidBloc>().add(
+                  const PayWithCardPressed(),
+                ),
+            leading: const Icon(
+              Icons.add,
+              size: 18,
+              color: Color(0xFF5045A7),
+            ),
+          ),
         ],
       ),
     );

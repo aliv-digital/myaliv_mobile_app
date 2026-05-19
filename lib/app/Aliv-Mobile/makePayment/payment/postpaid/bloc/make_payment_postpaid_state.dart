@@ -2,7 +2,9 @@ import 'package:equatable/equatable.dart';
 
 import 'make_payment_postpaid_event.dart';
 
-enum MpNavTarget { none, next }
+enum MpNavTarget { none, next, addCard }
+
+enum MpPaymentMode { card, payWithCard }
 
 class MakePaymentPostPaidState extends Equatable {
   final String title;
@@ -15,6 +17,7 @@ class MakePaymentPostPaidState extends Equatable {
 
   final bool termsAccepted;
 
+  final MpPaymentMode paymentMode;
   final String? selectedMethodToken;
 
   final MpNavTarget navTarget;
@@ -27,6 +30,7 @@ class MakePaymentPostPaidState extends Equatable {
     required this.amountOption,
     required this.customAmount,
     required this.termsAccepted,
+    required this.paymentMode,
     required this.selectedMethodToken,
     required this.navTarget,
   });
@@ -40,6 +44,7 @@ class MakePaymentPostPaidState extends Equatable {
       amountOption: MpAmountOption.current,
       customAmount: '',
       termsAccepted: false,
+      paymentMode: MpPaymentMode.card,
       selectedMethodToken: null,
       navTarget: MpNavTarget.none,
     );
@@ -47,7 +52,11 @@ class MakePaymentPostPaidState extends Equatable {
 
   bool get showCustomAmount => amountOption == MpAmountOption.other;
 
-  bool get canPayNow => termsAccepted;
+  bool get hasMethodSelected =>
+      paymentMode == MpPaymentMode.payWithCard ||
+      (selectedMethodToken != null && selectedMethodToken!.isNotEmpty);
+
+  bool get canPayNow => termsAccepted && hasMethodSelected;
 
   MakePaymentPostPaidState copyWith({
     String? title,
@@ -57,6 +66,7 @@ class MakePaymentPostPaidState extends Equatable {
     MpAmountOption? amountOption,
     String? customAmount,
     bool? termsAccepted,
+    MpPaymentMode? paymentMode,
     String? selectedMethodToken,
     MpNavTarget? navTarget,
   }) {
@@ -68,6 +78,7 @@ class MakePaymentPostPaidState extends Equatable {
       amountOption: amountOption ?? this.amountOption,
       customAmount: customAmount ?? this.customAmount,
       termsAccepted: termsAccepted ?? this.termsAccepted,
+      paymentMode: paymentMode ?? this.paymentMode,
       selectedMethodToken: selectedMethodToken ?? this.selectedMethodToken,
       navTarget: navTarget ?? this.navTarget,
     );
@@ -82,6 +93,7 @@ class MakePaymentPostPaidState extends Equatable {
         amountOption,
         customAmount,
         termsAccepted,
+        paymentMode,
         selectedMethodToken,
         navTarget,
       ];

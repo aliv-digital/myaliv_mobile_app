@@ -3,14 +3,18 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepa
 
 enum TopUpPaymentStatus { initial, loading, ready, paying, success, failure }
 
+enum TopUpPaymentMode { card, payWithCard }
+
 class TopUpPaymentPrepaidState extends Equatable {
   final TopUpPaymentStatus status;
+  final TopUpPaymentMode paymentMode;
   final String? selectedMethodId;
   final PaymentSummary summary;
   final String? errorMessage;
 
   const TopUpPaymentPrepaidState({
     required this.status,
+    required this.paymentMode,
     required this.selectedMethodId,
     required this.summary,
     required this.errorMessage,
@@ -18,6 +22,7 @@ class TopUpPaymentPrepaidState extends Equatable {
 
   factory TopUpPaymentPrepaidState.initial() => const TopUpPaymentPrepaidState(
     status: TopUpPaymentStatus.initial,
+    paymentMode: TopUpPaymentMode.card,
     selectedMethodId: null,
     summary: PaymentSummary(total: 0, vatInclusive: true),
     errorMessage: null,
@@ -27,8 +32,13 @@ class TopUpPaymentPrepaidState extends Equatable {
       status == TopUpPaymentStatus.loading ||
       status == TopUpPaymentStatus.paying;
 
+  bool get hasMethodSelected =>
+      paymentMode == TopUpPaymentMode.payWithCard ||
+      (selectedMethodId != null && selectedMethodId!.isNotEmpty);
+
   TopUpPaymentPrepaidState copyWith({
     TopUpPaymentStatus? status,
+    TopUpPaymentMode? paymentMode,
     String? selectedMethodId,
     PaymentSummary? summary,
     String? errorMessage,
@@ -36,6 +46,7 @@ class TopUpPaymentPrepaidState extends Equatable {
   }) {
     return TopUpPaymentPrepaidState(
       status: status ?? this.status,
+      paymentMode: paymentMode ?? this.paymentMode,
       selectedMethodId: clearSelection
           ? null
           : (selectedMethodId ?? this.selectedMethodId),
@@ -45,5 +56,6 @@ class TopUpPaymentPrepaidState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, selectedMethodId, summary, errorMessage];
+  List<Object?> get props =>
+      [status, paymentMode, selectedMethodId, summary, errorMessage];
 }
