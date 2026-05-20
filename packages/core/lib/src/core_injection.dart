@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/src/app/di.dart';
 import 'package:flutter/foundation.dart';
 
 /// Core package dependency injection

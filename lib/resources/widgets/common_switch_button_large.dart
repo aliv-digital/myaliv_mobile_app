@@ -1,7 +1,5 @@
-import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 
 // class CommonSwitchButtonLarge extends StatefulWidget {
 //   final bool initialValue;

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
 import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/my_profile_prepaid_bloc.dart';
@@ -13,7 +12,6 @@ import '../bloc/my_profile_prepaid_state.dart';
 import '../repository/my_profile_prepaid_repository.dart';
 import '../theme/my_profile_prepaid_theme.dart';
 import '../widgets/my_profile_prepaid_action_tile.dart';
-import '../widgets/my_profile_prepaid_device_card.dart';
 import '../widgets/my_profile_prepaid_header.dart';
 import '../widgets/my_profile_prepaid_info_card.dart';
 

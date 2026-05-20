@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/enter_password_autoRenew_prepaid_theme.dart';
 
 class EnterPasswordAutoRenewPrepaidHeader extends StatelessWidget {
   const EnterPasswordAutoRenewPrepaidHeader({super.key});

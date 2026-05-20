@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/enter_password_postpaid_theme.dart';
 
 class EnterPasswordPostpaidHeader extends StatelessWidget {
   const EnterPasswordPostpaidHeader({super.key});

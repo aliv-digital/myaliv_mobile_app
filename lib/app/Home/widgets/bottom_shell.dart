@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:iconsax_plus/iconsax_plus.dart';
 
 import '../../../router/app_routes.dart';
 import 'bottom_tab_icon.dart';

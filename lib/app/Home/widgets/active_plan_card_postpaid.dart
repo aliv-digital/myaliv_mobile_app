@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_skeleton.dart';
