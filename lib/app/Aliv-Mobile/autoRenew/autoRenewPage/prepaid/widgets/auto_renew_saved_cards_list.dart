@@ -8,11 +8,13 @@ import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list
 class AutoRenewSavedCardsList extends StatelessWidget {
   final String? selectedToken;
   final ValueChanged<SavedCardModel?> onCardSelected;
+  final bool autoSelectFirst;
 
   const AutoRenewSavedCardsList({
     super.key,
     required this.selectedToken,
     required this.onCardSelected,
+    this.autoSelectFirst = true,
   });
 
   @override
@@ -36,7 +38,10 @@ class AutoRenewSavedCardsList extends StatelessWidget {
   }
 
   void _onStateChanged(BuildContext context, SavedCardsState state) {
-    if (state.isSuccess && state.hasCards && selectedToken == null) {
+    if (autoSelectFirst &&
+        state.isSuccess &&
+        state.hasCards &&
+        selectedToken == null) {
       onCardSelected(state.cards.first);
     }
   }

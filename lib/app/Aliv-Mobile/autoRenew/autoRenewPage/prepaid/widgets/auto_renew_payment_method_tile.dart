@@ -85,6 +85,8 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
         return 'charge to my wallet';
       case AutoRenewMethodType.none:
         return "i don't want to auto renew";
+      case AutoRenewMethodType.payWithCard:
+        return 'pay with card';
     }
   }
 

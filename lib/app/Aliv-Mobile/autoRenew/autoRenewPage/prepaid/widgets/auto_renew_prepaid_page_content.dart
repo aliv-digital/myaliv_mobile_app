@@ -11,7 +11,6 @@ import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
-import '../../../../userProfile/addOrEditCards/prepaid/widgets/bottomsheet/add_card_bottom_sheet.dart';
 import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
@@ -20,7 +19,6 @@ import '../models/auto_renew_prepaid_models.dart';
 import '../theme/auto_renew_prepaid_theme.dart';
 import 'auto_renew_payment_method_section.dart';
 import 'auto_renew_prepaid_proceed_action_button.dart';
-import 'dashed_add_card_button.dart';
 
 class AutoRenewPrepaidPageContent extends StatelessWidget {
   const AutoRenewPrepaidPageContent({super.key});
@@ -146,6 +144,8 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
           },
           walletBalanceText: walletBalanceText,
           showNoAutoRenewRow: true,
+          showPayWithCardRow: true,
+          payWithCardSelected: autoRenewPrepaidState.isPayWithCardSelected,
           onPayFromWallet: () {
             autoRenewPrepaidBloc.add(
               AutoRenewMethodSelected(AutoRenewPaymentMethod.wallet.id),
@@ -156,16 +156,10 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
               AutoRenewMethodSelected(AutoRenewPaymentMethod.none.id),
             );
           },
-        ),
-        const SizedBox(height: AutoRenewPrepaidTheme.sectionToDashedGap),
-        DashedAddCardButton(
-          onTap: () async {
-            await AddCardBottomSheet.show(
-              context,
-              last4: '1234',
+          onPayWithCardSelected: () {
+            autoRenewPrepaidBloc.add(
+              AutoRenewMethodSelected(AutoRenewPaymentMethod.payWithCard.id),
             );
-            // will do it later,,add the functionality when api working
-            // autoRenewPrepaidBloc.add(const AutoRenewAddNewCardPressed());
           },
         ),
         const SizedBox(height: AutoRenewPrepaidTheme.dashedToActionGap),
@@ -175,6 +169,11 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
               isWalletRenewLoading ||
               isNoRenewLoading,
           onPressed: () async {
+            if (autoRenewPrepaidState.isPayWithCardSelected) {
+              context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+              return;
+            }
+
             if (autoRenewPrepaidState.isNoAutoRenewSelected) {
               await _disableAutoRenew(context);
               return;

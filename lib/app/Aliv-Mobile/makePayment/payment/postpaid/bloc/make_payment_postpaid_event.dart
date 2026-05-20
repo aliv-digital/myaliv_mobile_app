@@ -43,6 +43,10 @@ class MpPaymentMethodSelected extends MakePaymentPostPaidEvent {
   List<Object?> get props => [token];
 }
 
+class MpPayWithCardSelected extends MakePaymentPostPaidEvent {
+  const MpPayWithCardSelected();
+}
+
 class MpPayNowPressed extends MakePaymentPostPaidEvent {
   const MpPayNowPressed();
 }

@@ -4,7 +4,9 @@ import 'package:shimmer/shimmer.dart';
 /// Skeleton placeholder shown while the active plan card is loading.
 /// Each block mirrors a real element of the card so the layout doesn't shift.
 class ActivePlanCardSkeleton extends StatelessWidget {
-  const ActivePlanCardSkeleton({super.key});
+  const ActivePlanCardSkeleton({super.key, this.showRenewButton = true});
+
+  final bool showRenewButton;
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +61,11 @@ class ActivePlanCardSkeleton extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          // Button placeholder
-          const _SkeletonBox(
-            width: double.infinity,
-            height: 50,
-            radius: 100,
-          ),
+          if (showRenewButton) ...[
+            const SizedBox(height: 14),
+            // Button placeholder
+            const _SkeletonBox(width: double.infinity, height: 50, radius: 100),
+          ],
         ],
       ),
     );

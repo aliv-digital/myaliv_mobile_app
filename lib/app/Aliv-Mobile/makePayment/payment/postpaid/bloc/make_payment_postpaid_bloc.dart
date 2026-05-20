@@ -18,6 +18,7 @@ class MakePaymentPostPaidBloc
     on<MpCustomAmountChanged>(_onCustomAmountChanged);
     on<MpTermsToggled>(_onTermsToggled);
     on<MpPaymentMethodSelected>(_onMethodSelected);
+    on<MpPayWithCardSelected>(_onPayWithCardSelected);
     on<MpPayNowPressed>(_onPayNow);
     on<MpNavConsumed>(_onNavConsumed);
   }
@@ -67,7 +68,19 @@ class MakePaymentPostPaidBloc
     MpPaymentMethodSelected event,
     Emitter<MakePaymentPostPaidState> emit,
   ) {
-    emit(state.copyWith(selectedMethodToken: event.token));
+    emit(
+      state.copyWith(
+        paymentMode: MpPaymentMode.card,
+        selectedMethodToken: event.token,
+      ),
+    );
+  }
+
+  void _onPayWithCardSelected(
+    MpPayWithCardSelected event,
+    Emitter<MakePaymentPostPaidState> emit,
+  ) {
+    emit(state.copyWith(paymentMode: MpPaymentMode.payWithCard));
   }
 
   void _onPayNow(
@@ -75,7 +88,10 @@ class MakePaymentPostPaidBloc
     Emitter<MakePaymentPostPaidState> emit,
   ) {
     if (!state.canPayNow) return;
-    emit(state.copyWith(navTarget: MpNavTarget.next));
+    final target = state.paymentMode == MpPaymentMode.payWithCard
+        ? MpNavTarget.addCard
+        : MpNavTarget.next;
+    emit(state.copyWith(navTarget: target));
   }
 
   void _onNavConsumed(

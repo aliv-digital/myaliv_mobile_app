@@ -19,10 +19,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool showRenewButton;
 
-  const PrepaidActivePlanCardWithData({
-    super.key,
-    this.showRenewButton = true,
-  });
+  const PrepaidActivePlanCardWithData({super.key, this.showRenewButton = true});
 
   String _formatCardDate(DateTime? date) {
     if (date == null) {
@@ -52,7 +49,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: (state.isLoading || state.isInitial)
-              ? const ActivePlanCardSkeleton()
+              ? ActivePlanCardSkeleton(showRenewButton: showRenewButton)
               : _buildContent(state.earliestAddOnsPrimaryPlan),
         );
 
@@ -163,10 +160,7 @@ class _TopRow extends StatelessWidget {
 
 /// Auto-renew toggle (interactive)
 class _AutoRenewToggle extends StatefulWidget {
-  const _AutoRenewToggle({
-    required this.value,
-    this.isLoading = false,
-  });
+  const _AutoRenewToggle({required this.value, this.isLoading = false});
 
   final bool value;
   final bool isLoading;

@@ -66,7 +66,8 @@ class AutoRenewPrepaidBloc
     Emitter<AutoRenewPrepaidState> emit,
   ) async {
     final isStaticMethod = event.methodId == AutoRenewPaymentMethod.wallet.id ||
-        event.methodId == AutoRenewPaymentMethod.none.id;
+        event.methodId == AutoRenewPaymentMethod.none.id ||
+        event.methodId == AutoRenewPaymentMethod.payWithCard.id;
 
     emit(
       state.copyWith(

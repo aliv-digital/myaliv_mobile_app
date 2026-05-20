@@ -1,3 +1,10 @@
+// PARKED 2026-05-19: Superseded by shared PaymentOptionTile (radio-style)
+// in lib/resources/widgets/cards/payment_option_tile.dart.
+// Reason: payment-method list was unified so saved cards, "pay with card",
+// and "pay from wallet" all behave as radio-selectable items.
+// To restore: uncomment, restore the import in top_up_payment_screen.dart.
+
+/*
 import 'package:flutter/material.dart';
 
 import '../theme/top_up_payment_prepaid_theme.dart';
@@ -36,3 +43,4 @@ class PayWithCardTile extends StatelessWidget {
     );
   }
 }
+*/

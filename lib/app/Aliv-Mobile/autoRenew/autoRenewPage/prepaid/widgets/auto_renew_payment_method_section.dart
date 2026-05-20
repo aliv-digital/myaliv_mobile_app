@@ -13,10 +13,13 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
   final ValueChanged<SavedCardModel?> onCardSelected;
   final bool showWalletRow;
   final bool showNoAutoRenewRow;
+  final bool showPayWithCardRow;
   final String? walletBalanceText;
   final String noAutoRenewText;
   final VoidCallback? onPayFromWallet;
   final VoidCallback? onNoAutoRenewSelected;
+  final VoidCallback? onPayWithCardSelected;
+  final bool payWithCardSelected;
 
   const AutoRenewPaymentMethodSection({
     super.key,
@@ -25,10 +28,13 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     this.selectedMethodId,
     this.showWalletRow = true,
     this.showNoAutoRenewRow = false,
+    this.showPayWithCardRow = false,
     this.walletBalanceText,
     this.noAutoRenewText = "i don't want to auto renew",
     this.onPayFromWallet,
     this.onNoAutoRenewSelected,
+    this.onPayWithCardSelected,
+    this.payWithCardSelected = false,
   })  : assert(
           !showWalletRow ||
               (walletBalanceText != null && onPayFromWallet != null),
@@ -38,6 +44,10 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
           !(showWalletRow || showNoAutoRenewRow) ||
               onNoAutoRenewSelected != null,
           'onNoAutoRenewSelected is required when the no-auto-renew row is shown',
+        ),
+        assert(
+          !showPayWithCardRow || onPayWithCardSelected != null,
+          'onPayWithCardSelected is required when showPayWithCardRow is true',
         );
 
   @override
@@ -58,9 +68,14 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
           ),
           const SizedBox(height: AutoRenewPrepaidTheme.sectionTitleGap),
           AutoRenewSavedCardsList(
-            selectedToken: selectedCard?.token,
+            selectedToken: payWithCardSelected ? null : selectedCard?.token,
             onCardSelected: onCardSelected,
+            autoSelectFirst: !payWithCardSelected,
           ),
+          if (showPayWithCardRow) ...[
+            const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
+            _buildPayWithCardRow(),
+          ],
           if (showWalletRow || showNoAutoRenewRow)
             const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
           if (showWalletRow) ...[
@@ -112,6 +127,19 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
       selected: selectedMethodId == AutoRenewPaymentMethod.none.id,
       onTap: onNoAutoRenewSelected,
       title: noAutoRenewText,
+    );
+  }
+
+  Widget _buildPayWithCardRow() {
+    return _StaticPaymentOptionTile(
+      selected: payWithCardSelected,
+      onTap: onPayWithCardSelected,
+      leading: const Icon(
+        Icons.add,
+        size: 18,
+        color: AutoRenewPrepaidTheme.primary,
+      ),
+      title: 'pay with card',
     );
   }
 }
