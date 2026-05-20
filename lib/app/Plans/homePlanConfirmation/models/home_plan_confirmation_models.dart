@@ -41,6 +41,14 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   /// Used by the Plans → "ad-ons" tab where only add-ons are being charged.
   final bool isPrimaryPlanActive;
 
+  /// Alternate contact number collected on the MiFi alt-contact screen.
+  /// Empty when not collected (non-MiFi flows or already on file).
+  final String altContactNumber;
+
+  /// User's opt-in for plan discounts / device offers — captured on the
+  /// MiFi alt-contact screen. `false` when not asked.
+  final bool marketingOptIn;
+
   const HomePlanConfirmationRouteArgs({
     required this.phoneNumber,
     required this.accountHolderName,
@@ -54,6 +62,8 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
     this.isPrimaryPlanActive = false,
     this.forceNow = false,
+    this.altContactNumber = '',
+    this.marketingOptIn = false,
   });
 
   bool get defaultTermsChecked => flow == HomePlanConfirmationEntryFlow.skip;
@@ -72,6 +82,8 @@ class HomePlanConfirmationRouteArgs extends Equatable {
         selectedAddOns,
         isPrimaryPlanActive,
         forceNow,
+        altContactNumber,
+        marketingOptIn,
       ];
 }
 

@@ -131,4 +131,5 @@ class AppRoutes {
   static const invitingSuccess = '/inviting-success';
 
   static const homePlanConfirmationScreen = '/home-plan-confirmation-screen';
+  static const homePlanMifiAltContact = '/home-plan-mifi-alt-contact';
 }

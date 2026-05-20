@@ -21,6 +21,8 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.d
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/view/home_plan_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/model/mifi_alt_contact_route_args.dart';
+import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/view/mifi_alt_contact_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
@@ -132,6 +134,18 @@ class AppRouter {
             );
           }
           return HomePlanConfirmationScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.homePlanMifiAltContact,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! MifiAltContactRouteArgs) {
+            return const Scaffold(
+              body: Center(child: Text('missing mifi plan context')),
+            );
+          }
+          return MifiAltContactScreen(args: extra);
         },
       ),
       GoRoute(
