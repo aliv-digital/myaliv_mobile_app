@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../theme/enter_password_autoRenew_prepaid_theme.dart';
 
 class EnterPasswordAutoRenewPrepaidTermsText extends StatefulWidget {
   const EnterPasswordAutoRenewPrepaidTermsText({super.key});

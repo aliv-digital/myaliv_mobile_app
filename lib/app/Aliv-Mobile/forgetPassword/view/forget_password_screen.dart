@@ -10,7 +10,6 @@ import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_state.dart';
 import '../repository/forgetpassword_repository.dart';
 import '../theme/forget_password_theme.dart';
-import '../widgets/forgetpass_bottom_stripes.dart';
 import '../widgets/forgetpass_header.dart';
 import '../widgets/forgetpass_phone_row.dart';
 import '../widgets/termsAndConditions.dart';

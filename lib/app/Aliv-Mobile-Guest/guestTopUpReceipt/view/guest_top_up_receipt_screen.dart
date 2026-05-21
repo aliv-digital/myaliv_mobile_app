@@ -11,7 +11,6 @@ import '../bloc/guest_top_up_receipt_event.dart';
 import '../bloc/guest_top_up_receipt_state.dart';
 import '../repository/guest_top_up_receipt_repository.dart';
 import '../widgets/receipt_success_card.dart';
-import '../widgets/payment_failure.dart';
 
 class GuestTopUpReceiptScreen extends StatelessWidget {
   const GuestTopUpReceiptScreen({
