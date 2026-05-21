@@ -110,8 +110,8 @@ class _HomePlansPaymentMethodViewState
     // BalanceCubit is the app-wide owner of wallet balance. It will reuse its
     // cached API result when fresh, and only fetch again when needed.
     context.read<BalanceCubit>().loadBalances(
-          deviceAccountId: accountInfo.idAcc,
-        );
+      deviceAccountId: accountInfo.idAcc,
+    );
   }
 
   Widget _buildPaymentMethodContent(
@@ -144,8 +144,8 @@ class _HomePlansPaymentMethodViewState
       selectedId: state.selectedMethodId,
       onSelect: (String id) {
         context.read<HomePlansPaymentMethodBloc>().add(
-              HomePlansPaymentMethodSelected(id),
-            );
+          HomePlansPaymentMethodSelected(id),
+        );
       },
       onPayWithCard: () {
         AppSession.appRoute = 'prepaidPlan';
@@ -154,6 +154,7 @@ class _HomePlansPaymentMethodViewState
           extra: _buildReceiptExtra(
             state,
             paymentMethod: _selectedPaymentMethodLabel(state),
+            hideSaveCreditCard: false,
           ),
         );
         // context.read<HomePlansPaymentMethodBloc>().add(
@@ -214,6 +215,7 @@ class _HomePlansPaymentMethodViewState
   Map<String, dynamic> _buildReceiptExtra(
     HomePlansPaymentMethodState state, {
     required String paymentMethod,
+    bool hideSaveCreditCard = true,
   }) {
     final now = DateTime.now();
     final dateText = DateFormat('MMM d, yyyy').format(now);
@@ -222,7 +224,7 @@ class _HomePlansPaymentMethodViewState
     final emailAddress = _receiptEmailAddress();
 
     return <String, dynamic>{
-      'hideSaveCreditCard': paymentMethod.toLowerCase() == 'wallet',
+      'hideSaveCreditCard': hideSaveCreditCard,
       'phoneNumber': phoneNumber,
       'amount': state.amount,
       'dateText': dateText,
@@ -242,7 +244,7 @@ class _HomePlansPaymentMethodViewState
       ),
       // Keep the original payment-screen payload available to the route.
       'subscriberType': state.subscriberType,
-      'vatNote': state.vatNote,
+      // 'vatNote': state.vatNote,
       'selectedItems': state.selectedItems,
       'selectedMethodId': state.selectedMethodId,
       'paymentMethods': state.methods,
@@ -294,11 +296,12 @@ class _HomePlansPaymentMethodViewState
       ),
     );
 
-    if (state.vatNote.trim().isNotEmpty) {
-      details.add(
-        HomePlanPurchaseReceiptDetailItem(label: 'vat', value: state.vatNote),
-      );
-    }
+    // Hide VAT row on the success receipt card.
+    // if (state.vatNote.trim().isNotEmpty) {
+    //   details.add(
+    //     HomePlanPurchaseReceiptDetailItem(label: 'vat', value: state.vatNote),
+    //   );
+    // }
 
     return details;
   }
@@ -372,8 +375,10 @@ class _HomePlansPaymentMethodViewState
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomePlansPaymentMethodBloc,
-        HomePlansPaymentMethodState>(
+    return BlocConsumer<
+      HomePlansPaymentMethodBloc,
+      HomePlansPaymentMethodState
+    >(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget ||
           p.errorMessage != c.errorMessage ||
@@ -385,7 +390,9 @@ class _HomePlansPaymentMethodViewState
         if (state.errorMessage != null &&
             state.status == HomePlansPaymentMethodStatus.failure) {
           AppToast.show(
-              message: state.errorMessage!.toString(), type: ToastType.error);
+            message: state.errorMessage!.toString(),
+            type: ToastType.error,
+          );
           // ScaffoldMessenger.of(
           //   context,
           // ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
@@ -406,8 +413,8 @@ class _HomePlansPaymentMethodViewState
           }
 
           context.read<HomePlansPaymentMethodBloc>().add(
-                const HomePlansPaymentNavConsumed(),
-              );
+            const HomePlansPaymentNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
@@ -424,8 +431,8 @@ class _HomePlansPaymentMethodViewState
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
               isVatExclusive: state.vatNote.toLowerCase().contains(
-                    'no vat applied',
-                  ),
+                'no vat applied',
+              ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,

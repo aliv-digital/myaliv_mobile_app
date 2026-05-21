@@ -29,8 +29,7 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
   });
 
   static const double _addOnsTabHorizontalPadding = 25;
-  static final Uri _fairUsePolicyUri =
-      Uri.parse('https://www.bealiv.com/fair-use-policy/');
+  static final Uri _fairUsePolicyUri = Uri.parse('https://www.bealiv.com/fair-use-policy/');
 
   Future<void> _openFairUsePolicy() async {
     try {

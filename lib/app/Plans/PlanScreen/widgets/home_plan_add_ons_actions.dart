@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
@@ -22,7 +23,8 @@ class HomePlanAddOnsActions {
       return;
     }
 
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    final accountState = instance<AccountInfoCubit>().state;
+    final accountInfo = accountState.accountInfo;
     if (accountInfo == null) {
       AppToast.show(
         message: 'account information is unavailable, please try again',
@@ -31,10 +33,7 @@ class HomePlanAddOnsActions {
       return;
     }
 
-    final fullName = <String>[
-      accountInfo.fName,
-      accountInfo.lName,
-    ].where((part) => part.trim().isNotEmpty).join(' ').trim();
+    final fullName = _accountDisplayName(accountState);
     final phoneNumber = accountInfo.phoneNumber.isNotEmpty
         ? accountInfo.phoneNumber
         : accountInfo.primaryPhoneNumber;
@@ -62,5 +61,23 @@ class HomePlanAddOnsActions {
     );
 
     context.push(AppRoutes.homePlanConfirmationScreen, extra: args);
+  }
+
+  static String _accountDisplayName(AccountInfoState accountState) {
+    final fullName = accountState.fullName?.trim();
+    if (fullName != null && fullName.isNotEmpty) {
+      return fullName;
+    }
+
+    return _nameFromEmail(accountState.email);
+  }
+
+  static String _nameFromEmail(String? email) {
+    final normalizedEmail = email?.trim() ?? '';
+    if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
+      return 'User';
+    }
+
+    return normalizedEmail.split('@').first;
   }
 }

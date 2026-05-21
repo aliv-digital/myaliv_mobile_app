@@ -42,8 +42,7 @@ class PurchaseSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   data.headerTitle,
-                  style: HomePlanConfirmationTheme
-                      .purchaseSummaryHeaderTitleTextStyle,
+                  style: HomePlanConfirmationTheme.purchaseSummaryHeaderTitleTextStyle,
                 ),
                 const SizedBox(
                   height: HomePlanConfirmationTheme

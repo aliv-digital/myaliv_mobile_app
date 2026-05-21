@@ -178,12 +178,9 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        HomePlanConfirmationTheme
-                                            .contentHorizontalPadding,
-                                        HomePlanConfirmationTheme
-                                            .purchaseSummaryCardTopSpacing,
-                                        HomePlanConfirmationTheme
-                                            .contentHorizontalPadding,
+                                        HomePlanConfirmationTheme.contentHorizontalPadding,
+                                        HomePlanConfirmationTheme.purchaseSummaryCardTopSpacing,
+                                        HomePlanConfirmationTheme.contentHorizontalPadding,
                                         0,
                                       ),
                                       child: PurchaseSummaryCard(
