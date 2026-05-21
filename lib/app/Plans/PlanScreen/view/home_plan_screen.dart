@@ -155,7 +155,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
   void _onPurchaseNowPressed(
     BuildContext context,
     HomePlanModel plan, {
-    required HomeUiConfig homeUiConfig,
     BasePlanModel? selectedApiPlan,
     int? selectedIndex,
   }) {
@@ -177,7 +176,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
       context: context,
       plan: plan,
       selectedTab: cubit.state.selectedTab,
-      homeUiConfig: homeUiConfig,
       selectedApiPlan: selectedApiPlan,
       selectedIndex: selectedIndex,
     ).then((_) {
@@ -271,7 +269,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
     PlansState currentState,
     PlansStatus currentTabStatus,
     String? currentTabError,
-    HomeUiConfig homeUiConfig,
   ) {
     // Loading state - show shimmer
     if (currentTabStatus == PlansStatus.loading ||
@@ -317,7 +314,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toPrimaryPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
           selectedIndex: index,
         );
@@ -326,7 +322,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toPrimaryPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
           selectedIndex: index,
         );
@@ -335,7 +330,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toPrimaryPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
           selectedIndex: index,
         );
@@ -344,7 +338,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toMifiPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
         );
       },
@@ -352,7 +345,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toLibertyGlobalPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
         );
       },
@@ -360,7 +352,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toRoamingPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
         );
       },
@@ -368,7 +359,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
         _onPurchaseNowPressed(
           context,
           _toRoamEasyPurchaseSheetPlan(plan),
-          homeUiConfig: homeUiConfig,
           selectedApiPlan: plan,
         );
       },
@@ -500,7 +490,6 @@ class _HomePlanViewState extends State<_HomePlanView> {
                             currentState,
                             currentTabStatus,
                             currentTabError,
-                            homeUiConfig,
                           ),
                         );
                       },

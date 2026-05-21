@@ -10,7 +10,6 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
-import '../../../Home/home/data/home_ui_config.dart';
 import '../../homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
 import '../../mifiAltContact/model/mifi_alt_contact_route_args.dart';
 import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
@@ -25,16 +24,12 @@ Future<void> showHomePlanPurchaseBottomSheet({
   required BuildContext context,
   required HomePlanModel plan,
   required HomePlanTab selectedTab,
-  required HomeUiConfig homeUiConfig,
   BasePlanModel? selectedApiPlan,
   int? selectedIndex,
 }) {
-  final hasActivePlan = homeUiConfig.hasActivePlan;
-  final activePlanEndDate = context
-      .read<PlansCubit>()
-      .state
-      .earliestAddOnsPrimaryPlan
-      ?.endDateTime;
+  final plansState = context.read<PlansCubit>().state;
+  final hasActivePlan = plansState.addOnsApiPrimaryPlans.isNotEmpty;
+  final activePlanEndDate = plansState.earliestAddOnsPrimaryPlan?.endDateTime;
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,

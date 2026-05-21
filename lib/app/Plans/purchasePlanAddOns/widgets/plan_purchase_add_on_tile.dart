@@ -50,7 +50,7 @@ class PlanPurchaseAddOnTile extends StatelessWidget {
       if (suffix.isNotEmpty) suffix,
     ];
 
-    return parts.join(' ');
+    return parts.join('');
   }
 
   @override
