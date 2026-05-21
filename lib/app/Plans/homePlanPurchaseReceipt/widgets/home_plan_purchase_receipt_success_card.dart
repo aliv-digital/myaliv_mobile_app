@@ -13,7 +13,7 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
     required this.data,
     required this.onBackHome,
     required this.onSaveCard,
-    this.hideSaveCreditCard = false,
+    this.hideSaveCreditCard = true,
     required this.pageBackground,
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
@@ -132,6 +132,7 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             //  Dynamic details
             // - data.details controls how many rows are shown
             // - label/value/valueBold all driven by incoming data
+            // need to hide vat showing row here
             for (final item in data.details)
               HomePlanPurchaseReceiptDetailRow(
                 label: item.label,
@@ -159,7 +160,7 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             const SizedBox(height: 32),
             const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
             const SizedBox(height: 32),
-
+            // save credit card button
             if (!hideSaveCreditCard) ...[
               HomePlanPurchaseReceiptSaveCardButton(
                 onTap: onSaveCard,
