@@ -236,7 +236,7 @@ class _PlanPurchaseBottomBar extends StatelessWidget {
         }
 
         return DefaultBottomPayBar(
-          isVatExclusive: true,
+          isVatExclusive: false,
           buttonText: 'proceed',
           amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
           isButtonEnabled: state.selectedAddOnIds.isNotEmpty,

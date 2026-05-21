@@ -125,7 +125,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
 
             return DefaultBottomPayBar(
               buttonText: 'continue',
-              isVatExclusive: true,
+              isVatExclusive: false,
               isButtonEnabled: state.isTermsChecked,
               buttonColor: const Color(0xFF645D9C),
               onPayNow: () {
