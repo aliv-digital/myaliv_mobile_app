@@ -44,14 +44,10 @@ class _StandAloneFuturePlans extends StatelessWidget {
     return DateFormat('dd/MM/yy').format(date);
   }
 
-  // A plan starting today is "present", not "future". Compare date-only.
   bool _startsInFuture(BasePlanModel plan) {
     final start = plan.startDateTime;
     if (start == null) return false;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final startDate = DateTime(start.year, start.month, start.day);
-    return startDate.isAfter(today);
+    return start.isAfter(DateTime.now());
   }
 
   @override
