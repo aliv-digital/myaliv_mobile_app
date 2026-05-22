@@ -116,7 +116,7 @@ class HomePlansPaymentMethodTheme {
   static const double chargeToAccountIndicatorSize = 16;
 
   // Regular saved card rows (visa/mastercard) spacing.
-  static const EdgeInsets savedCardTilePadding = EdgeInsets.all(16);
+  static const EdgeInsets savedCardTilePadding = EdgeInsets.all(22);
   static const double savedCardTextToIndicatorGap = 4;
   static const double savedCardLogoWidth = 46;
   static const double savedCardLogoHeight = 32;
