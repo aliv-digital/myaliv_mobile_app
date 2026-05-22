@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -59,6 +60,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   void initState() {
+    if(kDebugMode){
+      String star = "****************************************************************************************************";
+      debugPrint(star);
+      debugPrint("we are in ConfirmationScreen() | purchase_confirmation_screen.dart ");
+      debugPrint("location : app/PlanScreen/view/purchase_confirmation_screen.dart");
+      debugPrint(star);
+    }
     super.initState();
     _selectedPostpaidPlan = widget.plan;
     _selectedBeginDate = widget.beginDate;
@@ -77,9 +85,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   void _continuePressed() {
     final config = context.read<AppUiConfigCubit>().state;
-    final isMyNumberTopUp =
-        widget.topUpAmount != null && widget.recipientPhone == null;
-    if (isMyNumberTopUp || config.isPostpaid) {
+    final isMyNumberTopUp = widget.topUpAmount != null && widget.recipientPhone == null;
+    if (isMyNumberTopUp) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
         '${AppRoutes.topUpPaymentPrepaidScreen}'
@@ -88,7 +95,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       );
       return;
     }
-
+    if(config.isPostpaid){
+      // TODO : need to integrate here postpaid flow
+      if(kDebugMode){
+        debugPrint("purchase now clicked | purchase_confirmation_screen.dart");
+        debugPrint("location : app/Plans/PlanScreen/View/purchase_confirmation_screen.dart");
+      }
+    }
     if (widget.topUpAmount != null) {
       showModalBottomSheet(
         context: context,
@@ -298,7 +311,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         : formatConfirmationCurrency(total);
     final vatLabel = isSendTopUp || vat <= 0
         ? 'no vat applied'
-        : ' vat applied';
+        : ' vat inclusive';
 
     return SafeArea(
       child: Scaffold(

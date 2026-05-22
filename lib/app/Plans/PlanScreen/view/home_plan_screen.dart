@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -207,10 +208,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
   }
 
-  void _showPostpaidStartBottomSheet(
-    BuildContext context,
-    HomePlansPostPaidPlanModel plan,
-  ) {
+  void _showPostpaidStartBottomSheet(BuildContext context,HomePlansPostPaidPlanModel plan) {
     final cubit = context.read<PlansCubit>();
     // Prevent opening multiple purchase modals simultaneously
 
@@ -364,7 +362,10 @@ class _HomePlanViewState extends State<_HomePlanView> {
       },
       // observe this flow
       onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel plan) {
-        _showPostpaidStartBottomSheet(context, plan);
+        if(kDebugMode){
+          debugPrint("tapped on onPostpaidRoamingPurchaseNow button || home_plan_screen.dart");
+        }
+         _showPostpaidStartBottomSheet(context, plan);
       },
       onPurchaseNow: (plan) {
         //_onPurchaseNowPressed(context, plan);
