@@ -6,7 +6,12 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_c
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/saved_card_brand_box.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list.dart'
+    show CardBrand;
 
+import '../bloc/home_plans_payment_method_state.dart';
 import '../model/home_plans_payment_method_models.dart';
 import '../theme/home_plans_payment_method_theme.dart';
 import 'home_plans_payment_method_tile.dart';
@@ -14,6 +19,7 @@ import 'home_plans_payment_method_tile.dart';
 class HomePlansPaymentMethodSection extends StatefulWidget {
   final List<HomePlansSavedPaymentMethod> methods;
   final String? selectedId;
+  final HomePlansPaymentMode paymentMode;
   final ValueChanged<String> onSelect;
   final VoidCallback onPayWithCard;
   final bool showPayFromWallet;
@@ -24,6 +30,7 @@ class HomePlansPaymentMethodSection extends StatefulWidget {
     super.key,
     required this.methods,
     required this.selectedId,
+    required this.paymentMode,
     required this.onSelect,
     required this.onPayWithCard,
     required this.showPayFromWallet,
@@ -75,7 +82,7 @@ class _HomePlansPaymentMethodSectionState
           ),
           _buildPaymentMethodList(),
           const SizedBox(
-            height: HomePlansPaymentMethodTheme.thirdCardToPayWithCardGap,
+            height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
           ),
           _buildPayWithCardRow(),
           if (widget.showPayFromWallet) ...[
@@ -98,10 +105,6 @@ class _HomePlansPaymentMethodSectionState
       bloc: instance<SavedCardsCubit>(),
       builder: (context, savedCardsState) {
         final List<Widget> tiles = <Widget>[];
-
-        for (final method in chargeToAccountMethods) {
-          tiles.add(_buildChargeToAccountTile(method));
-        }
 
         if (savedCardsState.isLoading && !savedCardsState.hasCards) {
           if (tiles.isNotEmpty) {
@@ -135,11 +138,23 @@ class _HomePlansPaymentMethodSectionState
             tiles.add(_buildSavedCardTile(card));
           }
         }
+        for (final method in chargeToAccountMethods) {
+          if (tiles.isNotEmpty) {
+            tiles.add(
+              const SizedBox(
+                height: HomePlansPaymentMethodTheme.firstToSecondCardGap,
+              ),
+            );
+          }
+          tiles.add(_buildChargeToAccountTile(method));
+        }
 
         return Column(children: tiles);
       },
     );
   }
+
+  bool get _cardModeActive => widget.paymentMode == HomePlansPaymentMode.card;
 
   Widget _buildChargeToAccountTile(HomePlansSavedPaymentMethod method) {
     return HomePlansPaymentMethodTile(
@@ -151,7 +166,7 @@ class _HomePlansPaymentMethodSectionState
       tilePadding: HomePlansPaymentMethodTheme.chargeToAccountTilePadding,
       indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
       textToIndicatorGap: 16,
-      selected: widget.selectedId == method.id,
+      selected: _cardModeActive && widget.selectedId == method.id,
       onTap: () => widget.onSelect(method.id),
     );
   }
@@ -163,90 +178,70 @@ class _HomePlansPaymentMethodSectionState
       showLogo: true,
       indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
       textToIndicatorGap: 4,
-      selected: widget.selectedId == card.token,
+      selected: _cardModeActive && widget.selectedId == card.token,
       onTap: () => widget.onSelect(card.token),
+      // Use the shared brand box so the leading icon reads identically to
+      // the saved-card tile on `TopUpPaymentScreen`.
+      leadingWidget: SavedCardBrandBox(
+        brand: CardBrand.unknown,
+        width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+        height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+      ),
     );
   }
 
   Widget _buildPayWithCardRow() {
-    return InkWell(
+    return PaymentOptionTile(
+      title: 'pay with card',
+      selected: widget.paymentMode == HomePlansPaymentMode.payWithCard,
       onTap: widget.onPayWithCard,
-      child: Padding(
-        padding: HomePlansPaymentMethodTheme.payWithCardRowPadding,
-        child: Row(
-          children: <Widget>[
-            const Icon(
-              Icons.add,
-              size: HomePlansPaymentMethodTheme.paymentActionIconSize,
-              color: HomePlansPaymentMethodTheme.plus,
-            ),
-            const SizedBox(width: 8),
-            Text('pay with card', style: HomePlansPaymentMethodTheme.addCard),
-            const Spacer(),
-            _buildChevronIcon(),
-          ],
-        ),
+      tileRadius: 10,
+      radioSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
+      leadingWidth: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+      leadingHeight: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+      unselectedRadioFill: HomePlansPaymentMethodTheme.unselectedIndicatorColor,
+      leading: const Icon(
+        Icons.add,
+        size: HomePlansPaymentMethodTheme.paymentActionIconSize,
+        color: HomePlansPaymentMethodTheme.plus,
       ),
     );
   }
 
   Widget _buildPayFromWalletRow() {
-    return InkWell(
+    return PaymentOptionTile(
+      title: 'pay from wallet',
+      selected: widget.paymentMode == HomePlansPaymentMode.payFromWallet,
       onTap: widget.onPayFromWallet,
-      child: Padding(
-        padding: HomePlansPaymentMethodTheme.payWithCardRowPadding,
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              width: HomePlansPaymentMethodTheme.paymentActionIconSize,
-              height: HomePlansPaymentMethodTheme.paymentActionIconSize,
-              child: SvgPicture.asset(
-                AssetConstant.walletIconSVG,
-                fit: BoxFit.contain,
-              ),
-            ),
-            const SizedBox(width: 8),
-            // how wallet balance text is showing , from which source
-            Text('pay from wallet', style: HomePlansPaymentMethodTheme.addCard),
-            const SizedBox(width: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal:
-                    HomePlansPaymentMethodTheme.walletChipHorizontalPadding,
-                vertical: HomePlansPaymentMethodTheme.walletChipVerticalPadding,
-              ),
-              decoration: const BoxDecoration(
-                color: HomePlansPaymentMethodTheme.walletChipBackground,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(
-                    HomePlansPaymentMethodTheme.walletChipCornerRadius,
-                  ),
-                ),
-              ),
-              child: Text(
-                widget.walletBalanceText,
-                style: HomePlansPaymentMethodTheme.walletAmount,
-              ),
-            ),
-            const Spacer(),
-            _buildChevronIcon(),
-          ],
+      tileRadius: 10,
+      radioSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
+      leadingWidth: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+      leadingHeight: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+      unselectedRadioFill: HomePlansPaymentMethodTheme.unselectedIndicatorColor,
+      leading: SizedBox(
+        width: HomePlansPaymentMethodTheme.paymentActionIconSize,
+        height: HomePlansPaymentMethodTheme.paymentActionIconSize,
+        child: SvgPicture.asset(
+          AssetConstant.walletIconSVG,
+          fit: BoxFit.contain,
+        ),
+      ),
+      titleTrailing: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: HomePlansPaymentMethodTheme.walletChipHorizontalPadding,
+          vertical: HomePlansPaymentMethodTheme.walletChipVerticalPadding,
+        ),
+        decoration: const BoxDecoration(
+          color: HomePlansPaymentMethodTheme.walletChipBackground,
+          borderRadius: BorderRadius.all(
+            Radius.circular(HomePlansPaymentMethodTheme.walletChipCornerRadius),
+          ),
+        ),
+        child: Text(
+          widget.walletBalanceText,
+          style: HomePlansPaymentMethodTheme.walletAmount,
         ),
       ),
     );
   }
-
-  Widget _buildChevronIcon() {
-    return SizedBox(
-      width: HomePlansPaymentMethodTheme.payWithCardChevronSize,
-      height: HomePlansPaymentMethodTheme.payWithCardChevronSize,
-      child: SvgPicture.asset(
-        AssetConstant.arrowRightIconSVG,
-        width: HomePlansPaymentMethodTheme.payWithCardChevronSize,
-        height: HomePlansPaymentMethodTheme.payWithCardChevronSize,
-        fit: BoxFit.contain,
-      ),
-    );
-  }
-
 }

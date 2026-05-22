@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/theme/top_up_payment_radio_metrics.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/saved_cards_radio_list.dart';
 
 class TopUpPaymentSavedCardsSection extends StatelessWidget {
@@ -39,7 +40,12 @@ class TopUpPaymentSavedCardsSection extends StatelessWidget {
           selectedToken: selectedToken,
           onCardSelected: onCardSelected,
           maxVisibleItems: 4,
-          tileHeight: 64,
+          tileHeight: 56,
+          tileRadius: TopUpPaymentRadioMetrics.tileRadius,
+          radioSize: TopUpPaymentRadioMetrics.radioSize,
+          logoBoxWidth: TopUpPaymentRadioMetrics.logoBoxWidth,
+          logoBoxHeight: TopUpPaymentRadioMetrics.logoBoxHeight,
+          unselectedRadioFill: TopUpPaymentRadioMetrics.unselectedRadioFill,
         );
       },
     );

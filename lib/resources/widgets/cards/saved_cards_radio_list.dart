@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
-import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/widgets/cards/saved_card_brand_box.dart';
 
 enum CardBrand { visa, mastercard, unknown }
 
@@ -16,6 +15,14 @@ class SavedCardsRadioList extends StatelessWidget {
   final int? maxVisibleItems;
   final double tileHeight;
 
+  // Optional visual overrides forwarded to each [SavedCardRadioTile] so callers
+  // can match sibling tiles on the same screen.
+  final double? tileRadius;
+  final double? radioSize;
+  final double? logoBoxWidth;
+  final double? logoBoxHeight;
+  final Color? unselectedRadioFill;
+
   const SavedCardsRadioList({
     super.key,
     required this.cards,
@@ -26,6 +33,11 @@ class SavedCardsRadioList extends StatelessWidget {
     this.itemSpacing = 12,
     this.maxVisibleItems,
     this.tileHeight = 64,
+    this.tileRadius,
+    this.radioSize,
+    this.logoBoxWidth,
+    this.logoBoxHeight,
+    this.unselectedRadioFill,
   });
 
   @override
@@ -46,6 +58,11 @@ class SavedCardsRadioList extends StatelessWidget {
             brand: brandResolver?.call(cards[i]) ?? CardBrand.unknown,
             expiry: expiryResolver?.call(cards[i]),
             onTap: () => onCardSelected(cards[i]),
+            tileRadius: tileRadius,
+            radioSize: radioSize,
+            logoBoxWidth: logoBoxWidth,
+            logoBoxHeight: logoBoxHeight,
+            unselectedRadioFill: unselectedRadioFill,
           ),
         ),
       );
@@ -61,6 +78,11 @@ class SavedCardsRadioList extends StatelessWidget {
             brand: brandResolver?.call(cards[i]) ?? CardBrand.unknown,
             expiry: expiryResolver?.call(cards[i]),
             onTap: () => onCardSelected(cards[i]),
+            tileRadius: tileRadius,
+            radioSize: radioSize,
+            logoBoxWidth: logoBoxWidth,
+            logoBoxHeight: logoBoxHeight,
+            unselectedRadioFill: unselectedRadioFill,
           ),
         ],
       ],
@@ -75,6 +97,13 @@ class SavedCardRadioTile extends StatelessWidget {
   final String? expiry;
   final VoidCallback onTap;
 
+  // Optional visual overrides — null = use defaults.
+  final double? tileRadius;
+  final double? radioSize;
+  final double? logoBoxWidth;
+  final double? logoBoxHeight;
+  final Color? unselectedRadioFill;
+
   const SavedCardRadioTile({
     super.key,
     required this.card,
@@ -82,6 +111,11 @@ class SavedCardRadioTile extends StatelessWidget {
     required this.onTap,
     this.brand = CardBrand.unknown,
     this.expiry,
+    this.tileRadius,
+    this.radioSize,
+    this.logoBoxWidth,
+    this.logoBoxHeight,
+    this.unselectedRadioFill,
   });
 
   static const _selectedBg = Color(0xFFEDEAF8);
@@ -93,16 +127,16 @@ class SavedCardRadioTile extends StatelessWidget {
   static const _unselectedSubtitleColor = Color(0xFF707070);
   static const _unselectedRadioBorder = Color(0xFFCFCFCF);
 
-  static const double _tileRadius = 12;
-  static const double _logoBoxWidth = 56;
-  static const double _logoBoxHeight = 40;
+  static const double _defaultTileRadius = 12;
+  static const double _defaultLogoBoxWidth = 56;
+  static const double _defaultLogoBoxHeight = 40;
   static const double _logoBoxRadius = 8;
-  static const double _radioSize = 22;
-  static const double _checkIconSize = 14;
+  static const double _defaultRadioSize = 22;
 
   @override
   Widget build(BuildContext context) {
-    final BorderRadius radius = BorderRadius.circular(_tileRadius);
+    final BorderRadius radius =
+        BorderRadius.circular(tileRadius ?? _defaultTileRadius);
 
     return Material(
       color: Colors.transparent,
@@ -134,44 +168,12 @@ class SavedCardRadioTile extends StatelessWidget {
   }
 
   Widget _buildBrandBox() {
-    return Container(
-      width: _logoBoxWidth,
-      height: _logoBoxHeight,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(_logoBoxRadius),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 6,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: _buildBrandArtwork(),
-      ),
+    return SavedCardBrandBox(
+      brand: brand,
+      width: logoBoxWidth ?? _defaultLogoBoxWidth,
+      height: logoBoxHeight ?? _defaultLogoBoxHeight,
+      cornerRadius: _logoBoxRadius,
     );
-  }
-
-  Widget _buildBrandArtwork() {
-    switch (brand) {
-      case CardBrand.visa:
-        return SvgPicture.asset(AssetConstant.visaCardSVG, fit: BoxFit.contain);
-      case CardBrand.mastercard:
-        return SvgPicture.asset(
-          AssetConstant.masterCardSVG,
-          fit: BoxFit.contain,
-        );
-      case CardBrand.unknown:
-        return const Icon(
-          Icons.credit_card,
-          size: 22,
-          color: Color(0xFF707070),
-        );
-    }
   }
 
   Widget _buildTextBlock() {
@@ -210,26 +212,28 @@ class SavedCardRadioTile extends StatelessWidget {
   }
 
   Widget _buildRadio() {
+    final double r = radioSize ?? _defaultRadioSize;
     if (isSelected) {
       return Container(
-        width: _radioSize,
-        height: _radioSize,
+        width: r,
+        height: r,
         decoration: const BoxDecoration(
           color: _selectedBorder,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: const Icon(
+        child: Icon(
           Icons.check,
-          size: _checkIconSize,
+          size: r * 0.64,
           color: Colors.white,
         ),
       );
     }
     return Container(
-      width: _radioSize,
-      height: _radioSize,
+      width: r,
+      height: r,
       decoration: BoxDecoration(
+        color: unselectedRadioFill,
         shape: BoxShape.circle,
         border: Border.all(color: _unselectedRadioBorder, width: 1.5),
       ),

@@ -142,37 +142,23 @@ class _HomePlansPaymentMethodViewState
     return HomePlansPaymentMethodSection(
       methods: state.methods,
       selectedId: state.selectedMethodId,
+      paymentMode: state.paymentMode,
       onSelect: (String id) {
         context.read<HomePlansPaymentMethodBloc>().add(
           HomePlansPaymentMethodSelected(id),
         );
       },
       onPayWithCard: () {
-        AppSession.appRoute =
-            state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
-        context.push(
-          AppRoutes.homePlanPurchaseReceiptScreen,
-          extra: _buildReceiptExtra(
-            state,
-            paymentMethod: _selectedPaymentMethodLabel(state),
-            hideSaveCreditCard: false,
-          ),
+        context.read<HomePlansPaymentMethodBloc>().add(
+          const HomePlansPayWithCardPressed(),
         );
-        // context.read<HomePlansPaymentMethodBloc>().add(
-        //       const HomePlansPayWithCardPressed(),
-        //     );
       },
       showPayFromWallet: state.isPrepaidUser,
       walletBalanceText: walletBalanceText,
       onPayFromWallet: () {
-        _openWalletPaymentSheet(
-          walletBalance: balanceState.walletBalance,
-          walletBalanceText: walletBalanceText,
-          amountText: state.amountText,
+        context.read<HomePlansPaymentMethodBloc>().add(
+          const HomePlansPayFromWalletPressed(),
         );
-        // context.read<HomePlansPaymentMethodBloc>().add(
-        //       const HomePlansPayFromWalletPressed(),
-        //     );
       },
     );
   }
@@ -440,16 +426,38 @@ class _HomePlansPaymentMethodViewState
               onPayNow: () {
                 AppSession.appRoute =
                     state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
-                context.push(
-                  AppRoutes.homePlanPurchaseReceiptScreen,
-                  extra: _buildReceiptExtra(
-                    state,
-                    paymentMethod: _selectedPaymentMethodLabel(state),
-                  ),
-                );
-                // context
-                //     .read<HomePlansPaymentMethodBloc>()
-                //     .add(const HomePlansPayNowPressed());
+
+                switch (state.paymentMode) {
+                  case HomePlansPaymentMode.payWithCard:
+                    context.push(
+                      AppRoutes.homePlanPurchaseReceiptScreen,
+                      extra: _buildReceiptExtra(
+                        state,
+                        paymentMethod: _selectedPaymentMethodLabel(state),
+                        hideSaveCreditCard: false,
+                      ),
+                    );
+                    return;
+                  case HomePlansPaymentMode.payFromWallet:
+                    final balanceState = context.read<BalanceCubit>().state;
+                    _openWalletPaymentSheet(
+                      walletBalance: balanceState.walletBalance,
+                      walletBalanceText: BalanceCurrencyFormatterService.format(
+                        balanceState.walletBalance,
+                      ),
+                      amountText: state.amountText,
+                    );
+                    return;
+                  case HomePlansPaymentMode.card:
+                    context.push(
+                      AppRoutes.homePlanPurchaseReceiptScreen,
+                      extra: _buildReceiptExtra(
+                        state,
+                        paymentMethod: _selectedPaymentMethodLabel(state),
+                      ),
+                    );
+                    return;
+                }
               },
             ),
             body: Column(

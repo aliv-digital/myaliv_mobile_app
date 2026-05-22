@@ -14,6 +14,11 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
   final double indicatorSize;
   final double textToIndicatorGap;
 
+  /// When provided, replaces the SVG built from [logoSvgAsset] — lets callers
+  /// drop in a richer leading (e.g. [SavedCardBrandBox]) for parity with
+  /// other payment screens.
+  final Widget? leadingWidget;
+
   const HomePlansPaymentMethodTile({
     super.key,
     required this.logoSvgAsset,
@@ -27,6 +32,7 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
     this.indicatorSize = 18,
     this.textToIndicatorGap =
         HomePlansPaymentMethodTheme.savedCardTextToIndicatorGap,
+    this.leadingWidget,
   });
 
   @override
@@ -51,14 +57,15 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
         child: Row(
           children: [
             if (showLogo) ...[
-              SizedBox(
-                width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
-                height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
-                child: SvgPicture.asset(
-                  logoSvgAsset, // ✅ তুমি পরে path set করবে
-                  fit: BoxFit.contain,
-                ),
-              ),
+              leadingWidget ??
+                  SizedBox(
+                    width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
+                    height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
+                    child: SvgPicture.asset(
+                      logoSvgAsset,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
               const SizedBox(width: 12),
             ],
             Expanded(

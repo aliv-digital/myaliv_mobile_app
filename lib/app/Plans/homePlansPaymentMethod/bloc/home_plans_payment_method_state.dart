@@ -12,6 +12,14 @@ enum HomePlansPaymentMethodStatus {
 
 enum HomePlansPaymentMethodNavTarget { none, addCard, wallet, paid }
 
+/// Which payment radio the user has currently selected.
+///
+/// `card` means a row in the saved-methods list (saved card or charge-to-my-account)
+/// — the chosen one is identified by [HomePlansPaymentMethodState.selectedMethodId].
+/// `payWithCard` and `payFromWallet` are the two action rows below the list and
+/// have no `selectedMethodId`.
+enum HomePlansPaymentMode { card, payWithCard, payFromWallet }
+
 class HomePlansPaymentMethodState extends Equatable {
   final HomePlansPaymentMethodStatus status;
   final String? errorMessage;
@@ -20,6 +28,7 @@ class HomePlansPaymentMethodState extends Equatable {
 
   final List<HomePlansSavedPaymentMethod> methods;
   final String? selectedMethodId;
+  final HomePlansPaymentMode paymentMode;
 
   final double amount;
   final String vatNote;
@@ -37,6 +46,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.phoneNumber,
     required this.methods,
     required this.selectedMethodId,
+    required this.paymentMode,
     required this.amount,
     required this.vatNote,
     required this.selectedItems,
@@ -54,6 +64,7 @@ class HomePlansPaymentMethodState extends Equatable {
       phoneNumber: '',
       methods: [],
       selectedMethodId: null,
+      paymentMode: HomePlansPaymentMode.card,
       amount: 5.00,
       vatNote: 'no vat applied',
       selectedItems: [],
@@ -71,8 +82,14 @@ class HomePlansPaymentMethodState extends Equatable {
   }
 
   bool get isPayNowEnabled {
-    return selectedMethodId != null &&
-        status != HomePlansPaymentMethodStatus.submitting;
+    if (status == HomePlansPaymentMethodStatus.submitting) return false;
+    switch (paymentMode) {
+      case HomePlansPaymentMode.card:
+        return selectedMethodId != null;
+      case HomePlansPaymentMode.payWithCard:
+      case HomePlansPaymentMode.payFromWallet:
+        return true;
+    }
   }
 
   HomePlansPaymentMethodState copyWith({
@@ -82,6 +99,7 @@ class HomePlansPaymentMethodState extends Equatable {
     String? phoneNumber,
     List<HomePlansSavedPaymentMethod>? methods,
     String? selectedMethodId,
+    HomePlansPaymentMode? paymentMode,
     double? amount,
     String? vatNote,
     List<HomePlansPaymentSelectedItem>? selectedItems,
@@ -97,6 +115,7 @@ class HomePlansPaymentMethodState extends Equatable {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       methods: methods ?? this.methods,
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
+      paymentMode: paymentMode ?? this.paymentMode,
       amount: amount ?? this.amount,
       vatNote: vatNote ?? this.vatNote,
       selectedItems: selectedItems ?? this.selectedItems,
@@ -116,6 +135,7 @@ class HomePlansPaymentMethodState extends Equatable {
         phoneNumber,
         methods,
         selectedMethodId,
+        paymentMode,
         amount,
         vatNote,
         selectedItems,

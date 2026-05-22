@@ -13,6 +13,14 @@ class PaymentOptionTile extends StatelessWidget {
   final Widget? leading;
   final Widget? titleTrailing;
 
+  // Optional visual overrides so callers can keep this tile in lockstep with
+  // sibling tiles (e.g. saved-card rows) on the same screen.
+  final double? tileRadius;
+  final double? radioSize;
+  final double? leadingWidth;
+  final double? leadingHeight;
+  final Color? unselectedRadioFill;
+
   const PaymentOptionTile({
     super.key,
     required this.title,
@@ -20,6 +28,11 @@ class PaymentOptionTile extends StatelessWidget {
     this.onTap,
     this.leading,
     this.titleTrailing,
+    this.tileRadius,
+    this.radioSize,
+    this.leadingWidth,
+    this.leadingHeight,
+    this.unselectedRadioFill,
   });
 
   static const Color _selectedBg = Color(0xFFEDEAF8);
@@ -30,14 +43,19 @@ class PaymentOptionTile extends StatelessWidget {
   static const Color _unselectedTextColor = Color(0xFF1A1A1A);
   static const Color _unselectedRadioBorder = Color(0xFFCFCFCF);
 
-  static const double _tileRadius = 12;
+  static const double _defaultTileRadius = 12;
   static const double _tileMinHeight = 64;
-  static const double _radioSize = 22;
-  static const double _checkIconSize = 14;
+  static const double _defaultRadioSize = 22;
+  static const double _defaultLeadingWidth = 20;
+  static const double _defaultLeadingHeight = 40;
 
   @override
   Widget build(BuildContext context) {
-    final BorderRadius radius = BorderRadius.circular(_tileRadius);
+    final double tileR = tileRadius ?? _defaultTileRadius;
+    final double radioR = radioSize ?? _defaultRadioSize;
+    final double leadW = leadingWidth ?? _defaultLeadingWidth;
+    final double leadH = leadingHeight ?? _defaultLeadingHeight;
+    final BorderRadius radius = BorderRadius.circular(tileR);
 
     return Material(
       color: Colors.transparent,
@@ -60,11 +78,10 @@ class PaymentOptionTile extends StatelessWidget {
               children: [
                 if (leading != null) ...[
                   SizedBox(
-                    width: 20,
-                    height: 40,
+                    width: leadW,
+                    height: leadH,
                     child: Center(child: leading),
                   ),
-                  const SizedBox(width: 12),
                 ],
                 Expanded(
                   child: Row(
@@ -81,7 +98,11 @@ class PaymentOptionTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                _SelectionIndicator(selected: selected),
+                _SelectionIndicator(
+                  selected: selected,
+                  size: radioR,
+                  unselectedFill: unselectedRadioFill,
+                ),
               ],
             ),
           ),
@@ -91,7 +112,8 @@ class PaymentOptionTile extends StatelessWidget {
   }
 
   TextStyle get _titleStyle => TextStyle(
-        color: selected ? _selectedTextColor : _unselectedTextColor,
+        color: _selectedTextColor,
+        // color: selected ? _selectedTextColor : _unselectedTextColor,
         fontSize: 16,
         fontFamily: AppConstants.defaultFontFamily,
         fontWeight: FontWeight.w700,
@@ -100,33 +122,40 @@ class PaymentOptionTile extends StatelessWidget {
 }
 
 class _SelectionIndicator extends StatelessWidget {
-  const _SelectionIndicator({required this.selected});
+  const _SelectionIndicator({
+    required this.selected,
+    required this.size,
+    this.unselectedFill,
+  });
 
   final bool selected;
+  final double size;
+  final Color? unselectedFill;
 
   @override
   Widget build(BuildContext context) {
     if (selected) {
       return Container(
-        width: PaymentOptionTile._radioSize,
-        height: PaymentOptionTile._radioSize,
+        width: size,
+        height: size,
         decoration: const BoxDecoration(
           color: PaymentOptionTile._selectedBorder,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: const Icon(
+        child: Icon(
           Icons.check,
-          size: PaymentOptionTile._checkIconSize,
+          size: size * 0.64,
           color: Colors.white,
         ),
       );
     }
 
     return Container(
-      width: PaymentOptionTile._radioSize,
-      height: PaymentOptionTile._radioSize,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
+        color: unselectedFill,
         shape: BoxShape.circle,
         border: Border.all(
           color: PaymentOptionTile._unselectedRadioBorder,

@@ -17,6 +17,7 @@ import '../bloc/top_up_payment_prepaid_event.dart';
 import '../bloc/top_up_payment_prepaid_state.dart';
 import '../repository/top_up_payment_prepaid_repository.dart';
 import '../theme/top_up_payment_prepaid_theme.dart';
+import '../theme/top_up_payment_radio_metrics.dart';
 import '../widgets/payment_method_card.dart';
 import '../widgets/top_up_payment_saved_cards_section.dart';
 
@@ -185,6 +186,11 @@ class _PaymentMethodSection extends StatelessWidget {
             onTap: () => context.read<TopUpPaymentPrepaidBloc>().add(
                   const PayWithCardPressed(),
                 ),
+            tileRadius: TopUpPaymentRadioMetrics.tileRadius,
+            radioSize: TopUpPaymentRadioMetrics.radioSize,
+            leadingWidth: TopUpPaymentRadioMetrics.logoBoxWidth,
+            leadingHeight: TopUpPaymentRadioMetrics.logoBoxHeight,
+            unselectedRadioFill: TopUpPaymentRadioMetrics.unselectedRadioFill,
             leading: const Icon(
               Icons.add,
               size: 18,

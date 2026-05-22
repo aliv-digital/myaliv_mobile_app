@@ -67,21 +67,28 @@ class HomePlansPaymentMethodBloc
     HomePlansPaymentMethodSelected event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
-    emit(state.copyWith(selectedMethodId: event.methodId));
+    emit(
+      state.copyWith(
+        paymentMode: HomePlansPaymentMode.card,
+        selectedMethodId: event.methodId,
+      ),
+    );
   }
 
+  // Pure selection: just flip the radio. Navigation happens when PAY NOW is tapped.
   void _onPayWithCard(
     HomePlansPayWithCardPressed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
-    emit(state.copyWith(navTarget: HomePlansPaymentMethodNavTarget.addCard));
+    emit(state.copyWith(paymentMode: HomePlansPaymentMode.payWithCard));
   }
 
+  // Pure selection: just flip the radio. Navigation happens when PAY NOW is tapped.
   void _onPayFromWallet(
     HomePlansPayFromWalletPressed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
-    emit(state.copyWith(navTarget: HomePlansPaymentMethodNavTarget.wallet));
+    emit(state.copyWith(paymentMode: HomePlansPaymentMode.payFromWallet));
   }
 
   Future<void> _onPayFromWalletConfirmed(
