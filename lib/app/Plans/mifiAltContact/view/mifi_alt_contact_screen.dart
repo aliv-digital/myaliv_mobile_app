@@ -42,9 +42,8 @@ class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
   @override
   void initState() {
     super.initState();
-    final initial = widget.args.prefilledAltNumber;
-    _phoneController = TextEditingController(text: initial);
-    _rawPhone = initial;
+    _phoneController = TextEditingController();
+    _rawPhone = '';
     _phoneFocusNode.addListener(_handlePhoneFocusChange);
   }
 
