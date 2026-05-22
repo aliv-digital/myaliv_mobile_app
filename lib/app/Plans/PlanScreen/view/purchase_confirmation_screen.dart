@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_promo_response_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -60,10 +61,12 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   void initState() {
-    if(kDebugMode){
-      String star = "****************************************************************************************************";
+    if (kDebugMode) {
+      const star = "****************************************************************************************************";
       debugPrint(star);
-      debugPrint("we are in ConfirmationScreen() | purchase_confirmation_screen.dart ");
+      debugPrint(
+        "we are in ConfirmationScreen() | purchase_confirmation_screen.dart ",
+      );
       debugPrint("location : app/PlanScreen/view/purchase_confirmation_screen.dart");
       debugPrint(star);
     }
@@ -85,7 +88,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   void _continuePressed() {
     final config = context.read<AppUiConfigCubit>().state;
-    final isMyNumberTopUp = widget.topUpAmount != null && widget.recipientPhone == null;
+    final isMyNumberTopUp =
+        widget.topUpAmount != null && widget.recipientPhone == null;
     if (isMyNumberTopUp) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
@@ -95,12 +99,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       );
       return;
     }
-    if(config.isPostpaid){
-      // TODO : need to integrate here postpaid flow
-      if(kDebugMode){
+    if (config.isPostpaid) {
+      if (kDebugMode) {
         debugPrint("purchase now clicked | purchase_confirmation_screen.dart");
-        debugPrint("location : app/Plans/PlanScreen/View/purchase_confirmation_screen.dart");
+        debugPrint(
+          "location : app/Plans/PlanScreen/View/purchase_confirmation_screen.dart",
+        );
       }
+      _openPostpaidPaymentMethod();
+      return;
     }
     if (widget.topUpAmount != null) {
       showModalBottomSheet(
@@ -115,6 +122,77 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       return;
     }
     context.push(AppRoutes.guestPaymentMethodScreen);
+  }
+
+  void _openPostpaidPaymentMethod() {
+    final plan = _selectedPostpaidPlan;
+    if (plan == null) {
+      AppToast.show(
+        message: 'No postpaid plan selected.',
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    context.push(
+      AppRoutes.homePlansPaymentMethodScreen,
+      extra: HomePlansPaymentMethodRouteArgs(
+        subscriberType: HomePlansSubscriberType.postpaid,
+        phoneNumber: _accountPhoneNumber(),
+        amount: plan.planAmountWithVat,
+        vatNote: plan.vatAmount > 0 ? 'vat inclusive' : 'no vat applied',
+        forceNow: !widget.showBeginOn,
+        selectedItems: <HomePlansPaymentSelectedItem>[
+          HomePlansPaymentSelectedItem(
+            id: plan.planId,
+            label: _postpaidPlanTypeLabel(plan.planType),
+            title: plan.planName,
+            subtitle: _postpaidPlanBeginsText(),
+            price: plan.planAmount,
+            planType: HomePlansPaymentPlanType.fromCode(plan.planType),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _accountPhoneNumber() {
+    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
+    return _firstNonEmpty(<String?>[
+      accountInfo?.username,
+      accountInfo?.primaryPhoneNumber,
+      accountInfo?.phoneNumber,
+    ]);
+  }
+
+  String _firstNonEmpty(List<String?> values) {
+    for (final value in values) {
+      final trimmed = value?.trim() ?? '';
+      if (trimmed.isNotEmpty) return trimmed;
+    }
+    return '';
+  }
+
+  String _postpaidPlanTypeLabel(String planTypeCode) {
+    switch (planTypeCode.trim().toUpperCase()) {
+      case 'A':
+        return 'standalone';
+      case 'S':
+        return 'secondary plan';
+      case 'P':
+        return 'primary plan';
+      default:
+        return 'plan';
+    }
+  }
+
+  String _postpaidPlanBeginsText() {
+    if (!widget.showBeginOn || _selectedBeginDate == null) {
+      return 'begins immediately';
+    }
+
+    final date = _selectedBeginDate!;
+    return 'begins ${date.month}/${date.day}/${date.year}';
   }
 
   void _onPromoCodeChanged(String value) {

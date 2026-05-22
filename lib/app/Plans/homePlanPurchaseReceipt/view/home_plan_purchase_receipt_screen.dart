@@ -163,6 +163,7 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                         data: data,
                         onBackHome: () {
                           if (AppSession.appRoute == 'prepaidPlan' ||
+                              AppSession.appRoute == 'postpaidPlan' ||
                               AppSession.appRoute == 'prepaidPlanPurchase' ||
                               AppSession.appRoute == 'addOnsPrepaid') {
                             context.go(AppRoutes.home);
