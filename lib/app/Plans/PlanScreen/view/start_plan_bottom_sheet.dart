@@ -100,9 +100,9 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
             const SizedBox(height: 20),
             _dividerOr(),
             const SizedBox(height: 20),
-            (isDateSelected == true)
-                ? _ActivateButton(selectedDate: selectedDate, plan: widget.plan)
-                : _ActivateButton(selectedDate: null, plan: widget.plan),
+            (isDateSelected == true) ?
+            _ActivateButton(selectedDate: selectedDate, plan: widget.plan) :
+            _ActivateButton(selectedDate: null, plan: widget.plan),
             const SizedBox(height: 44),
           ],
         ),

@@ -806,11 +806,9 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmation,
         pageBuilder: (context, state) {
-          final showBeginOn =
-              state.uri.queryParameters['showBeginOn'] == 'true';
+          final showBeginOn = state.uri.queryParameters['showBeginOn'] == 'true';
           final extra = state.extra;
-          final postpaidPlan =
-              extra is HomePlansPostPaidPlanModel ? extra : null;
+          final postpaidPlan = extra is HomePlansPostPaidPlanModel ? extra : null;
 
           final beginDateString = state.uri.queryParameters['beginDate'];
 
@@ -820,8 +818,7 @@ class AppRouter {
           }
 
           final amountString = state.uri.queryParameters['amount'];
-          final topUpAmount =
-              amountString == null ? null : double.tryParse(amountString);
+          final topUpAmount = amountString == null ? null : double.tryParse(amountString);
 
           final recipientPhone = state.uri.queryParameters['recipient'];
 

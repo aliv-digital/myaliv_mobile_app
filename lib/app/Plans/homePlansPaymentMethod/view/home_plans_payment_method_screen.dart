@@ -148,7 +148,8 @@ class _HomePlansPaymentMethodViewState
         );
       },
       onPayWithCard: () {
-        AppSession.appRoute = 'prepaidPlan';
+        AppSession.appRoute =
+            state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
         context.push(
           AppRoutes.homePlanPurchaseReceiptScreen,
           extra: _buildReceiptExtra(
@@ -317,7 +318,7 @@ class _HomePlansPaymentMethodViewState
     }
 
     if (method == null) return 'credit card';
-    if (method.isChargeToMyAccount) return 'charge to my account';
+    if (method.isChargeToMyAccount) return 'my account';
 
     return switch (method.brand) {
       HomePlansCardBrand.visa => 'visa ending ${method.ending}',
@@ -437,7 +438,8 @@ class _HomePlansPaymentMethodViewState
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
               onPayNow: () {
-                AppSession.appRoute = 'prepaidPlan';
+                AppSession.appRoute =
+                    state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
                 context.push(
                   AppRoutes.homePlanPurchaseReceiptScreen,
                   extra: _buildReceiptExtra(

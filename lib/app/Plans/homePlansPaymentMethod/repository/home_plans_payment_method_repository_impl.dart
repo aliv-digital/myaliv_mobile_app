@@ -45,7 +45,6 @@ class HomePlansPaymentMethodRepositoryImpl
 
     // Postpaid keeps the current options.
     return <HomePlansSavedPaymentMethod>[
-      ...commonMethods,
       const HomePlansSavedPaymentMethod(
         id: 'charge-account',
         brand: HomePlansCardBrand.unknown,
@@ -54,6 +53,7 @@ class HomePlansPaymentMethodRepositoryImpl
         logoSvgAsset: '',
         isChargeToMyAccount: true,
       ),
+      ...commonMethods,
     ];
   }
 
