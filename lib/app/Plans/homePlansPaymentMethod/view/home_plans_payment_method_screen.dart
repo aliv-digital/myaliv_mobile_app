@@ -406,8 +406,7 @@ class _HomePlansPaymentMethodViewState
       },
       builder: (context, state) {
         final isLoading = state.status == HomePlansPaymentMethodStatus.loading;
-        final isSubmitting =
-            state.status == HomePlansPaymentMethodStatus.submitting;
+        final isSubmitting = state.status == HomePlansPaymentMethodStatus.submitting;
 
         return MediaQuery(
           data: MediaQuery.of(
@@ -424,8 +423,7 @@ class _HomePlansPaymentMethodViewState
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
               onPayNow: () {
-                AppSession.appRoute =
-                    state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
+                AppSession.appRoute = state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
 
                 switch (state.paymentMode) {
                   case HomePlansPaymentMode.payWithCard:

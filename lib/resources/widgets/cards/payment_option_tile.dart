@@ -71,7 +71,7 @@ class PaymentOptionTile extends StatelessWidget {
               width: selected ? 1.5 : 1,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.only(top: 12,bottom: 12,right: 16),//symmetric(horizontal: 16, vertical: 12),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: _tileMinHeight - 24),
             child: Row(

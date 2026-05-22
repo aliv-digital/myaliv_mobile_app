@@ -87,7 +87,7 @@ class _HomePlansPaymentMethodSectionState
           _buildPayWithCardRow(),
           if (widget.showPayFromWallet) ...[
             const SizedBox(
-              height: HomePlansPaymentMethodTheme.payWithCardToWalletGap,
+              height: HomePlansPaymentMethodTheme.firstToSecondCardGap,//payWithCardToWalletGap,
             ),
             _buildPayFromWalletRow(),
           ],
@@ -97,9 +97,7 @@ class _HomePlansPaymentMethodSectionState
   }
 
   Widget _buildPaymentMethodList() {
-    final chargeToAccountMethods = widget.methods
-        .where((HomePlansSavedPaymentMethod m) => m.isChargeToMyAccount)
-        .toList(growable: false);
+    final chargeToAccountMethods = widget.methods.where((HomePlansSavedPaymentMethod m) => m.isChargeToMyAccount).toList(growable: false);
 
     return BlocBuilder<SavedCardsCubit, SavedCardsState>(
       bloc: instance<SavedCardsCubit>(),
@@ -163,7 +161,7 @@ class _HomePlansPaymentMethodSectionState
       subtitle: null,
       showLogo: false,
       titleStyle: HomePlansPaymentMethodTheme.chargeToAccount,
-      tilePadding: HomePlansPaymentMethodTheme.chargeToAccountTilePadding,
+     // tilePadding: HomePlansPaymentMethodTheme.chargeToAccountTilePadding,
       indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
       textToIndicatorGap: 16,
       selected: _cardModeActive && widget.selectedId == method.id,
@@ -173,6 +171,7 @@ class _HomePlansPaymentMethodSectionState
 
   Widget _buildSavedCardTile(SavedCardModel card) {
     return HomePlansPaymentMethodTile(
+     // tilePadding: EdgeInsets.only(left: 16,right: 16,top: 28,bottom: 28),
       logoSvgAsset: AssetConstant.creditCardIconSVG,
       title: card.displayLabel,
       showLogo: true,

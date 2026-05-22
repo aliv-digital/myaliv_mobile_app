@@ -45,8 +45,8 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding:
-            tilePadding ?? HomePlansPaymentMethodTheme.savedCardTilePadding,
+        //padding: const EdgeInsets.only(top: 18,bottom: 18,right: 16,left: 16),
+        padding: tilePadding ?? HomePlansPaymentMethodTheme.savedCardTilePadding,
         decoration: BoxDecoration(
           color: selected
               ? HomePlansPaymentMethodTheme.selectedCardBg
