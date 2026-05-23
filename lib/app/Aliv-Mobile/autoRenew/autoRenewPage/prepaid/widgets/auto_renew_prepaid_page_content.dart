@@ -247,6 +247,29 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     }
 
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+
+    // Wallet auto-renew also requires clearing the card-based auto-renew
+    // selection server-side. The card endpoint accepts an empty token to
+    // signal "no card linked" — mirror of the card flow which calls both
+    // endpoints sequentially.
+    final cardSuccess = await deviceLimitsCubit.enableAutoRenewCard(
+      token: '',
+      refreshAfter: false,
+    );
+    if (!cardSuccess) {
+      final errorMessage = deviceLimitsCubit.state.errorMessage;
+      AppToast.show(
+        message: errorMessage?.isNotEmpty == true
+            ? errorMessage!
+            : 'Failed to enable auto-renew',
+        type: ToastType.error,
+      );
+      if (context.mounted) {
+        context.go(AppRoutes.home);
+      }
+      return;
+    }
+
     final success =
         await deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
 

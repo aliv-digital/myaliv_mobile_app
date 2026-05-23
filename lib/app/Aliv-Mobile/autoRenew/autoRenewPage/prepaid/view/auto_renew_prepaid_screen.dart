@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -125,16 +124,6 @@ class _AutoRenewPrepaidViewState extends State<_AutoRenewPrepaidView> {
       savedCards: savedCardsState.cards,
       walletAvailable: true,
     );
-
-    if (kDebugMode) {
-      debugPrint(
-        'AutoRenewPrepaid seeder: '
-        'autoRenewOn=$autoRenewOn (from DeviceLimits), '
-        'autoRenewToken=${savedCardsState.autoRenewToken}, '
-        'cardsCount=${savedCardsState.cards.length}, '
-        'selection=${selection.runtimeType}',
-      );
-    }
 
     switch (selection) {
       case SelectSavedCard(card: final card):
