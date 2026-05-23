@@ -1,5 +1,8 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import '../models/saved_card_model.dart';
 import '../repository/saved_cards_exception.dart';
 import '../repository/saved_cards_repository.dart';
@@ -26,7 +29,14 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
   ///
   /// Uses cached data if available and not stale (5-minute TTL).
   /// Set [forceRefresh] to true to bypass the cache.
-  Future<void> fetchSavedCards({bool forceRefresh = false}) async {
+  ///
+  /// When [userType] is provided, also fetches the server-stored selected
+  /// auto-pay (postpaid) or auto-renew (prepaid) token in parallel, so the
+  /// UI can highlight the previously chosen card.
+  Future<void> fetchSavedCards({
+    bool forceRefresh = false,
+    UserType? userType,
+  }) async {
     // Use cache if available and not stale
     if (!forceRefresh && state.hasCards && !state.isCacheStale()) {
       if (kDebugMode) {
@@ -45,16 +55,40 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
     ));
 
     try {
-      final cards = await _repository.fetchSavedCards();
+      final effectiveUserType = userType ?? _resolveUserTypeFromAccount();
+
+      final results = await Future.wait<dynamic>([
+        _repository.fetchSavedCards(),
+        if (effectiveUserType?.isPostpaid == true)
+          _safeFetchToken(_repository.fetchAutoPayToken, 'auto-pay')
+        else if (effectiveUserType?.isPrepaid == true)
+          _safeFetchToken(_repository.fetchAutoRenewToken, 'auto-renew'),
+      ]);
+
+      final cards = results[0] as List<SavedCardModel>;
+      final fetchedToken = results.length > 1 ? results[1] as String? : null;
+
+      // Always rewrite both token slots so a `null` fetched token clears
+      // the previous value (otherwise `copyWith` would treat the null as
+      // "no change" and a deleted server-side card would stay highlighted).
+      final isPostpaid = effectiveUserType?.isPostpaid == true;
+      final isPrepaid = effectiveUserType?.isPrepaid == true;
 
       _safeEmit(state.copyWith(
         status: SavedCardsStatus.success,
         cards: cards,
         lastFetchedAt: DateTime.now(),
+        autoPayToken: isPostpaid ? fetchedToken : null,
+        autoRenewToken: isPrepaid ? fetchedToken : null,
+        clearAutoPayToken: !isPostpaid || fetchedToken == null,
+        clearAutoRenewToken: !isPrepaid || fetchedToken == null,
       ));
 
       if (kDebugMode) {
-        debugPrint('SavedCardsCubit: Fetched ${cards.length} cards');
+        debugPrint(
+          'SavedCardsCubit: Fetched ${cards.length} cards, '
+          'selectedToken=$fetchedToken (mode=${effectiveUserType?.label})',
+        );
       }
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
@@ -71,8 +105,38 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
   }
 
   /// Refreshes saved cards by forcing a fetch from the API.
-  Future<void> refreshSavedCards() async {
-    await fetchSavedCards(forceRefresh: true);
+  Future<void> refreshSavedCards({UserType? userType}) async {
+    await fetchSavedCards(forceRefresh: true, userType: userType);
+  }
+
+  /// Resolves the active user type from [AccountInfoCubit]. Returns `null`
+  /// when the account info is not yet available — in that case the token
+  /// endpoint is skipped (cards still load).
+  UserType? _resolveUserTypeFromAccount() {
+    try {
+      final accountState = instance<AccountInfoCubit>().state;
+      if (accountState.isPostpaid) return UserType.postpaid;
+      if (accountState.isPrepaid) return UserType.prepaid;
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Fetches a selected-card token, returning `null` on any error so that
+  /// a failure in the token endpoint does not break the cards list.
+  Future<String?> _safeFetchToken(
+    Future<String?> Function() fetcher,
+    String label,
+  ) async {
+    try {
+      return await fetcher();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('SavedCardsCubit: $label token fetch failed - $e');
+      }
+      return null;
+    }
   }
 
   /// Removes a saved card optimistically.

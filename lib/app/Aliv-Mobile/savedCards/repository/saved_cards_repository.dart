@@ -11,6 +11,12 @@ abstract class SavedCardsRepository {
 
   /// Deletes a saved credit card by token. Throws on failure.
   Future<void> deleteCard(String token);
+
+  /// Fetches the postpaid auto-pay card token. Returns `null` when unset.
+  Future<String?> fetchAutoPayToken();
+
+  /// Fetches the prepaid auto-renew card token. Returns `null` when unset.
+  Future<String?> fetchAutoRenewToken();
 }
 
 /// Implementation of [SavedCardsRepository].
@@ -51,6 +57,12 @@ class SavedCardsRepositoryImpl implements SavedCardsRepository {
       );
     }
   }
+
+  @override
+  Future<String?> fetchAutoPayToken() => _apiClient.fetchAutoPayToken();
+
+  @override
+  Future<String?> fetchAutoRenewToken() => _apiClient.fetchAutoRenewToken();
 
   /// Parses the raw JSON response into a list of [SavedCardModel].
   ///

@@ -53,6 +53,56 @@ class SavedCardsApiClient {
     }
   }
 
+  /// Fetches the currently selected auto-pay (postpaid) card token.
+  ///
+  /// Returns `null` when no card is configured (404 or empty token).
+  Future<String?> fetchAutoPayToken() => _fetchSelectedToken(
+        url: Api.creditCardAutoPay,
+        debugLabel: 'auto-pay',
+      );
+
+  /// Fetches the currently selected auto-renew (prepaid) card token.
+  ///
+  /// Returns `null` when no card is configured (404 or empty token).
+  Future<String?> fetchAutoRenewToken() => _fetchSelectedToken(
+        url: Api.creditCardAutoRenew,
+        debugLabel: 'auto-renew',
+      );
+
+  Future<String?> _fetchSelectedToken({
+    required String url,
+    required String debugLabel,
+  }) async {
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.get,
+      );
+
+      Map<String, dynamic>? decoded;
+      final raw = response.data;
+      if (raw is Map<String, dynamic>) {
+        decoded = raw;
+      } else if (raw is String && raw.isNotEmpty) {
+        final parsed = jsonDecode(raw);
+        if (parsed is Map<String, dynamic>) decoded = parsed;
+      }
+
+      final token = decoded?['Token'] as String?;
+      if (token == null || token.trim().isEmpty) return null;
+      return token.trim();
+    } on NetworkException catch (e) {
+      if (e.statusCode == 404) return null;
+      throw _mapNetworkExceptionToSavedCardsException(e);
+    } catch (e) {
+      throw SavedCardsException(
+        type: SavedCardsErrorType.unknown,
+        statusCode: 0,
+        serverMessage: 'Failed to fetch $debugLabel token: $e',
+      );
+    }
+  }
+
   /// Deletes a saved card by token.
   ///
   /// DELETE [Api.savedCardsUrl] with body `{"token": "..."}`.
