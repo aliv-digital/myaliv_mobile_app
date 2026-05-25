@@ -57,7 +57,7 @@ class SavedCardsApiClient {
   ///
   /// Returns `null` when no card is configured (404 or empty token).
   Future<String?> fetchAutoPayToken() => _fetchSelectedToken(
-        url: Api.creditCardAutoPay,
+        url: Api.creditCardAutoRenew,
         debugLabel: 'auto-pay',
       );
 
