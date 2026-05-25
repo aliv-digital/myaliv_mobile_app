@@ -26,7 +26,13 @@ class Api {
 
   /// Auto-renew from credit card: PUT /CreditCard/auto-renew
   /// Body: `{ "Token": "...", "AgreementText": "I agree to automatic renewal" }`
+  /// Also supports GET to read the currently saved auto-renew token (prepaid):
+  /// Response: `{ "Token": "..." }`
   static const creditCardAutoRenew = '$baseUrl/v1/MyAliv/CreditCard/auto-renew';
+
+  /// Auto-pay token for postpaid: GET /CreditCard/auto-pay
+  /// Response: `{ "Token": "..." }`
+  static const creditCardAutoPay = '$baseUrl/v1/MyAliv/CreditCard/auto-pay';
 
   /// Saved credit cards: GET /CreditCard/saved
   static const savedCardsUrl = '$baseUrl/v1/MyAliv/CreditCard/saved';

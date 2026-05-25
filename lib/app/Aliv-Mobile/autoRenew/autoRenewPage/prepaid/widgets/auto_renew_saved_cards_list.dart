@@ -38,12 +38,11 @@ class AutoRenewSavedCardsList extends StatelessWidget {
   }
 
   void _onStateChanged(BuildContext context, SavedCardsState state) {
-    if (autoSelectFirst &&
-        state.isSuccess &&
-        state.hasCards &&
-        selectedToken == null) {
-      onCardSelected(state.cards.first);
-    }
+    if (!autoSelectFirst) return;
+    if (!state.isSuccess || !state.hasCards) return;
+    if (selectedToken != null) return;
+    final preferred = state.prepaidSelectedCard ?? state.cards.first;
+    onCardSelected(preferred);
   }
 }
 

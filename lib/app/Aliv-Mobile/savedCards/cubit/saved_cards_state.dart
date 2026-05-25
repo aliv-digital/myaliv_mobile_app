@@ -17,6 +17,8 @@ class SavedCardsState extends Equatable {
     this.removingTokens = const {},
     this.errorMessage,
     this.lastFetchedAt,
+    this.autoPayToken,
+    this.autoRenewToken,
   });
 
   final SavedCardsStatus status;
@@ -25,11 +27,31 @@ class SavedCardsState extends Equatable {
   final String? errorMessage;
   final DateTime? lastFetchedAt;
 
+  /// Server-stored token for the postpaid auto-pay card. Null when unset.
+  final String? autoPayToken;
+
+  /// Server-stored token for the prepaid auto-renew card. Null when unset.
+  final String? autoRenewToken;
+
   /// Factory constructor for initial state.
   factory SavedCardsState.initial() => const SavedCardsState();
 
   /// Returns true if the given card token is currently being removed.
   bool isRemoving(String token) => removingTokens.contains(token);
+
+  /// Postpaid card matching the server's auto-pay token, or null.
+  SavedCardModel? get postpaidSelectedCard => _matchToken(autoPayToken);
+
+  /// Prepaid card matching the server's auto-renew token, or null.
+  SavedCardModel? get prepaidSelectedCard => _matchToken(autoRenewToken);
+
+  SavedCardModel? _matchToken(String? token) {
+    if (token == null || token.isEmpty) return null;
+    for (final c in cards) {
+      if (c.token == token) return c;
+    }
+    return null;
+  }
 
   /// Returns true if there are saved cards.
   bool get hasCards => cards.isNotEmpty;
@@ -62,7 +84,11 @@ class SavedCardsState extends Equatable {
     Set<String>? removingTokens,
     String? errorMessage,
     DateTime? lastFetchedAt,
+    String? autoPayToken,
+    String? autoRenewToken,
     bool clearError = false,
+    bool clearAutoPayToken = false,
+    bool clearAutoRenewToken = false,
   }) {
     return SavedCardsState(
       status: status ?? this.status,
@@ -70,10 +96,22 @@ class SavedCardsState extends Equatable {
       removingTokens: removingTokens ?? this.removingTokens,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
+      autoPayToken:
+          clearAutoPayToken ? null : (autoPayToken ?? this.autoPayToken),
+      autoRenewToken: clearAutoRenewToken
+          ? null
+          : (autoRenewToken ?? this.autoRenewToken),
     );
   }
 
   @override
-  List<Object?> get props =>
-      [status, cards, removingTokens, errorMessage, lastFetchedAt];
+  List<Object?> get props => [
+        status,
+        cards,
+        removingTokens,
+        errorMessage,
+        lastFetchedAt,
+        autoPayToken,
+        autoRenewToken,
+      ];
 }

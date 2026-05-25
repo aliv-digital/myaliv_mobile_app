@@ -70,7 +70,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
           AutoRenewSavedCardsList(
             selectedToken: payWithCardSelected ? null : selectedCard?.token,
             onCardSelected: onCardSelected,
-            autoSelectFirst: !payWithCardSelected,
+            autoSelectFirst: false,
           ),
           if (showPayWithCardRow) ...[
             const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),

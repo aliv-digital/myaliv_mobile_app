@@ -8,8 +8,11 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepai
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_payment_method_section.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_prepaid_proceed_action_button.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/shared/auto_pay_selection_resolver.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -38,11 +41,45 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   bool _noAutoRenewSelected = false;
   bool _payWithCardSelected = false;
   bool _disabling = false;
+  bool _seededFromServer = false;
 
   @override
   void initState() {
     super.initState();
-    instance<SavedCardsCubit>().fetchSavedCards();
+    instance<SavedCardsCubit>()
+        .fetchSavedCards(forceRefresh: true, userType: UserType.postpaid);
+  }
+
+  void _seedSelectionFromServer(SavedCardsState state) {
+    if (_seededFromServer) return;
+    if (!state.isSuccess) return;
+    if (_selectedCard != null ||
+        _noAutoRenewSelected ||
+        _payWithCardSelected) {
+      _seededFromServer = true;
+      return;
+    }
+
+    final autoPayOn =
+        instance<AccountInfoCubit>().state.accountInfo?.autoPayInvoice ?? false;
+
+    final selection = AutoPaySelectionResolver.resolve(
+      autoEnabled: autoPayOn,
+      serverToken: state.autoPayToken,
+      savedCards: state.cards,
+      // walletAvailable defaults to false — postpaid has no wallet row.
+    );
+
+    switch (selection) {
+      case SelectSavedCard(card: final card):
+        setState(() => _selectedCard = card);
+      case SelectNoAutoRenew():
+        setState(() => _noAutoRenewSelected = true);
+      case SelectPayFromWallet():
+        // Unreachable on postpaid (walletAvailable is false); ignore.
+        break;
+    }
+    _seededFromServer = true;
   }
 
   bool get _canProceed =>
@@ -91,6 +128,16 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocListener<SavedCardsCubit, SavedCardsState>(
+      listenWhen: (prev, curr) =>
+          prev.status != curr.status || prev.cards != curr.cards ||
+          prev.autoPayToken != curr.autoPayToken,
+      listener: (context, state) => _seedSelectionFromServer(state),
+      child: _buildScaffold(),
+    );
+  }
+
+  Widget _buildScaffold() {
     return Scaffold(
       backgroundColor: AutoRenewPrepaidTheme.pageBg,
       body: SafeArea(
