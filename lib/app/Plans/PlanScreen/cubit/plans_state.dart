@@ -49,6 +49,7 @@ class PlansState extends Equatable {
     // Add-ons - SAME NAMES
     this.addOns = const [],
     this.addOnsApiPrimaryPlans = const [],
+    this.secondaryPlans = const [],
     this.standAlonePlans = const [],
     this.selectedAddOnIds = const {},
     // UI state - SAME NAMES
@@ -79,6 +80,10 @@ class PlansState extends Equatable {
   // Add-ons (SAME field names)
   final List<HomePlanAddOnModel> addOns;
   final List<BasePlanModel> addOnsApiPrimaryPlans;
+
+  /// Secondary plans from bundles API. Counted alongside primary plans for
+  /// bucket-usage aggregation (see [activePlansForBucketUsage]).
+  final List<BasePlanModel> secondaryPlans;
 
   /// Stand-alone plans from bundles API (travel20/30/50 etc.).
   /// Used as the source for the "future plan" UI for both prepaid and postpaid.
@@ -115,6 +120,32 @@ class PlansState extends Equatable {
     return addOnsApiPrimaryPlans.first;
   }
 
+  /// Plans used for bucket-usage aggregation.
+  ///
+  /// Returns the union of primary and secondary plans (deduplicated by
+  /// `planId`) so usage cards reflect the user's full allowance. Falls back
+  /// to stand-alone plans only when both primary and secondary are empty
+  /// (e.g. data-only users on travel20 with no primary subscription).
+  List<BasePlanModel> get activePlansForBucketUsage {
+    final union = <BasePlanModel>[];
+    final seenIds = <String>{};
+
+    for (final plan in addOnsApiPrimaryPlans) {
+      if (seenIds.add(plan.planId)) union.add(plan);
+    }
+    for (final plan in secondaryPlans) {
+      if (seenIds.add(plan.planId)) union.add(plan);
+    }
+
+    if (union.isNotEmpty) return List.unmodifiable(union);
+
+    if (standAlonePlans.isNotEmpty) {
+      return List.unmodifiable(standAlonePlans);
+    }
+
+    return const <BasePlanModel>[];
+  }
+
   /// Check if any data exists
   bool get hasData =>
       dailyApiPlans.isNotEmpty ||
@@ -149,6 +180,7 @@ class PlansState extends Equatable {
     List<HomePlansPostPaidPlanModel>? postpaidRoamingApiPlans,
     List<HomePlanAddOnModel>? addOns,
     List<BasePlanModel>? addOnsApiPrimaryPlans,
+    List<BasePlanModel>? secondaryPlans,
     List<BasePlanModel>? standAlonePlans,
     Set<String>? selectedAddOnIds,
     Set<String>? expandedPlanIds,
@@ -175,6 +207,7 @@ class PlansState extends Equatable {
       addOns: addOns ?? this.addOns,
       addOnsApiPrimaryPlans:
           addOnsApiPrimaryPlans ?? this.addOnsApiPrimaryPlans,
+      secondaryPlans: secondaryPlans ?? this.secondaryPlans,
       standAlonePlans: standAlonePlans ?? this.standAlonePlans,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
@@ -203,6 +236,7 @@ class PlansState extends Equatable {
         postpaidRoamingApiPlans,
         addOns,
         addOnsApiPrimaryPlans,
+        secondaryPlans,
         standAlonePlans,
         selectedAddOnIds,
         expandedPlanIds,

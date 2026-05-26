@@ -162,13 +162,6 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
               throw Exception('Account information is missing');
             }
 
-            // Load this global data as soon as login has a valid device account.
-            // The Cubit also has cache protection for the HomeScreen call.
-            await instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
-              deviceAccountId: accountInfo.idAcc,
-              forceRefresh: true,
-            );
-
             // Set UI config for logged-in user
             await _setLoggedInUserUiConfig();
 

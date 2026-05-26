@@ -6,15 +6,19 @@ import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../home/data/home_ui_config.dart';
 
 class RoamingCard extends StatelessWidget {
+  final String title;
   final String used;
   final String total;
   final double progress;
+  final bool isUnlimited;
 
   const RoamingCard({
     super.key,
+    this.title = 'roaming data',
     required this.used,
     required this.total,
     required this.progress,
+    this.isUnlimited = false,
   });
 
   @override
@@ -45,7 +49,7 @@ class RoamingCard extends StatelessWidget {
               SvgPicture.asset('assets/icons/Rss.svg', height: 18, width: 18),
               SizedBox(width: 4),
               Text(
-                'roaming data',
+                title,
                 style: TextStyle(
                   color: const Color(0xFFFF6C36),
                   fontSize: 12,
@@ -57,9 +61,7 @@ class RoamingCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            config.userType == UserType.postpaid
-                ? '0.6 GB of\n0.25 GB'
-                : '1.5 of\n2 GB',
+            isUnlimited ? 'unlimited\nlocal' : '$used of\n$total',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: const Color(0xFF222222),

@@ -4,23 +4,25 @@ import 'package:flutter_svg/flutter_svg.dart';
 class UsageCard extends StatelessWidget {
   final String icon;
   final String title;
-  final String value;
-  final String total;
+  final String totalValue;
+  final String totalRemaining;
   final String remainingLabel;
   final double progress;
   final Color color;
   final bool isPostpaid;
+  final bool isUnlimited;
 
   const UsageCard({
     super.key,
     required this.icon,
     required this.title,
-    required this.value,
-    required this.total,
+    required this.totalValue,
+    required this.totalRemaining,
     required this.remainingLabel,
     required this.progress,
     required this.color,
     required this.isPostpaid,
+    this.isUnlimited = false,
   });
 
   @override
@@ -69,7 +71,7 @@ class UsageCard extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: title == 'data' ? '2.4 GB' : 'unlimited',
+                        text: isUnlimited ? 'unlimited' : totalRemaining,
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -78,7 +80,7 @@ class UsageCard extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: title == 'data' ? ' of\n14 GB' : '\nlocal',
+                        text: isUnlimited ? '\nlocal' : ' of\n$totalValue',
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -94,7 +96,7 @@ class UsageCard extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: '$value of \n',
+                        text: '$totalValue of \n',
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -103,7 +105,7 @@ class UsageCard extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: total,
+                        text: totalRemaining,
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -139,33 +141,16 @@ class UsageCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(6),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
-
-          Color mainColor = Color(0x3F808080);
-          LinearGradient gradient = LinearGradient(
-            colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
-          );
-          if (progress < 0.35) {
-            mainColor = Color(0x26DD3038);
-            gradient = LinearGradient(
-              colors: [ const Color(0xFFDD3038),const Color(0x00DD3038),],
-            );
-          } else if (progress < 0.6) {
-            mainColor = Color(0x26FFC627);
-            gradient = LinearGradient(
-              colors: [Color(0x26FFC627),Color(0xFFFFC627), ],
-            );
-          } else {
-            mainColor = Color(0x2617B26A);
-            gradient = LinearGradient(
-              // colors: [Color(0xFF17B26A), Color(0x2617B26A)],
-              colors: [Color(0x2617B26A),Color(0xFF17B26A), ],
-            );
+          if (isUnlimited) {
+            return _fullGreenBar(width: constraints.maxWidth, radius: 0);
           }
+
+          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
+          final (mainColor, gradient) = _progressColors(progress);
+
           return Stack(
             children: [
               // Background
-
               Container(height: 6, color: mainColor),
 
               // Gradient progress (width = percentage)
@@ -173,10 +158,8 @@ class UsageCard extends StatelessWidget {
                 duration: const Duration(milliseconds: 300),
                 height: 6,
                 width: width,
-                decoration: BoxDecoration(
-                    gradient: gradient),
+                decoration: BoxDecoration(gradient: gradient),
               ),
-
             ],
           );
         },
@@ -189,29 +172,12 @@ class UsageCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
-
-          Color mainColor = Color(0x3F808080);
-          LinearGradient gradient = LinearGradient(
-            colors: [const Color(0x00DD3038), const Color(0xFFDD3038)],
-          );
-          if (progress < 0.35) {
-            mainColor = Color(0x26DD3038);
-            gradient = LinearGradient(
-              colors: [ const Color(0xFFDD3038),const Color(0x00DD3038),],
-            );
-          } else if (progress < 0.6) {
-            mainColor = Color(0x26FFC627);
-            gradient = LinearGradient(
-              colors: [Color(0x26FFC627),Color(0xFFFFC627), ],
-            );
-          } else {
-            mainColor = Color(0x2617B26A);
-            gradient = LinearGradient(
-              // colors: [Color(0xFF17B26A), Color(0x2617B26A)],
-              colors: [Color(0x2617B26A),Color(0xFF17B26A), ],
-            );
+          if (isUnlimited) {
+            return _fullGreenBar(width: constraints.maxWidth, radius: 8);
           }
+
+          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
+          final (mainColor, gradient) = _progressColors(progress);
 
           return Stack(
             children: [
@@ -231,6 +197,49 @@ class UsageCard extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  (Color, LinearGradient) _progressColors(double progress) {
+    if (progress < 0.35) {
+      return (
+        const Color(0x26DD3038),
+        const LinearGradient(
+          colors: [Color(0xFFDD3038), Color(0x00DD3038)],
+        ),
+      );
+    }
+    if (progress < 0.6) {
+      return (
+        const Color(0x26FFC627),
+        const LinearGradient(
+          colors: [Color(0x26FFC627), Color(0xFFFFC627)],
+        ),
+      );
+    }
+    return (
+      const Color(0x2617B26A),
+      const LinearGradient(
+        colors: [Color(0x2617B26A), Color(0xFF17B26A)],
+      ),
+    );
+  }
+
+  Widget _fullGreenBar({required double width, required double radius}) {
+    return Stack(
+      children: [
+        Container(height: 6, width: width, color: const Color(0x2617B26A)),
+        Container(
+          height: 6,
+          width: width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            gradient: const LinearGradient(
+              colors: [Color(0x2617B26A), Color(0xFF17B26A)],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

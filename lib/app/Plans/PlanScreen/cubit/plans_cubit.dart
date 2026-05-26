@@ -225,6 +225,7 @@ class PlansCubit extends Cubit<PlansState> {
         // Add-ons data
         addOns: addOnsResult.addOns,
         addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
+        secondaryPlans: addOnsResult.secondaryPlans,
         standAlonePlans: addOnsResult.standAlonePlans,
         // Timestamps
         lastFetchedAt: now,

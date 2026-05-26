@@ -68,8 +68,8 @@ class MyLimitsCards extends StatelessWidget {
           return UsageCard(
             icon: _getIconForLimit(limit.name),
             title: limit.displayName,
-            value: '\$${limit.remainingAmount.toStringAsFixed(2)}',
-            total: '\$${limit.initialAmount.toStringAsFixed(2)}',
+            totalValue: '\$${limit.remainingAmount.toStringAsFixed(2)}',
+            totalRemaining: '\$${limit.initialAmount.toStringAsFixed(2)}',
             remainingLabel: 'remaining',
             progress: _calculateProgress(limit),
             color: _getColorForLimit(limit.name),

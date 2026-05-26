@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/repository/bucket_usage_summary_exception.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/repository/bucket_usage_summary_repository.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 
 /// Global Cubit for the bucket usage summary API.
 ///
@@ -18,22 +18,24 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
   ///
   /// The Cubit keeps a short cache so calling it from both login success and
   /// HomeScreen does not create duplicate API requests for the same user.
+  ///
+  /// Pass [activePlans] (typically `PlansCubit.state.activePlansForBucketUsage`
+  /// — the union of primary and secondary plans, falling back to stand-alone
+  /// plans). When the active plans change independently of this fetch, call
+  /// [updateActivePlans] instead of reloading.
   Future<void> loadBucketUsageSummary({
     required int deviceAccountId,
+    List<BasePlanModel> activePlans = const <BasePlanModel>[],
     bool forceRefresh = false,
   }) async {
     if (deviceAccountId <= 0) {
-      if (kDebugMode) {
-        debugPrint(
-          'BucketUsageSummaryCubit: skipped because deviceAccountId is invalid',
-        );
-      }
       return;
     }
 
     if (state.isLoading) {
-      if (kDebugMode) {
-        debugPrint('BucketUsageSummaryCubit: request already in progress');
+      // Still adopt the latest plan references even when a fetch is in flight.
+      if (!_plansEqual(activePlans, state.activePlans)) {
+        emit(state.copyWith(activePlans: activePlans));
       }
       return;
     }
@@ -41,8 +43,8 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
     if (!forceRefresh &&
         state.hasSummary &&
         state.isCacheValidFor(deviceAccountId)) {
-      if (kDebugMode) {
-        debugPrint('BucketUsageSummaryCubit: using cached summary');
+      if (!_plansEqual(activePlans, state.activePlans)) {
+        emit(state.copyWith(activePlans: activePlans));
       }
       return;
     }
@@ -51,6 +53,7 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
       state.copyWith(
         status: BucketUsageSummaryStatus.loading,
         deviceAccountId: deviceAccountId,
+        activePlans: activePlans,
         clearError: true,
       ),
     );
@@ -66,15 +69,10 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
           summary: summary,
           lastFetchedAt: DateTime.now(),
           deviceAccountId: deviceAccountId,
+          activePlans: activePlans,
           clearError: true,
         ),
       );
-
-      if (kDebugMode) {
-        debugPrint(
-          'BucketUsageSummaryCubit: loaded ${summary.itemCount} bucket items',
-        );
-      }
     } on BucketUsageSummaryException catch (e) {
       final friendlyMessage = _friendlyErrorMessage(e);
 
@@ -84,10 +82,6 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
           errorMessage: friendlyMessage,
         ),
       );
-
-      if (kDebugMode) {
-        debugPrint('BucketUsageSummaryCubit: failed - $friendlyMessage');
-      }
     } catch (e) {
       emit(
         state.copyWith(
@@ -95,19 +89,38 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
           errorMessage: 'Failed to load bucket usage summary.',
         ),
       );
+    }
+  }
 
-      if (kDebugMode) {
-        debugPrint('BucketUsageSummaryCubit: unexpected error - $e');
-      }
+  /// Sync the active plan set into this cubit without re-fetching usage.
+  ///
+  /// Pass an empty list to clear (e.g. when the user has no active plan).
+  void updateActivePlans(List<BasePlanModel> activePlans) {
+    if (_plansEqual(activePlans, state.activePlans)) {
+      return;
+    }
+
+    if (activePlans.isEmpty) {
+      emit(state.copyWith(clearActivePlans: true));
+    } else {
+      emit(state.copyWith(activePlans: activePlans));
     }
   }
 
   void reset() {
-    if (kDebugMode) {
-      debugPrint('BucketUsageSummaryCubit: resetting state');
-    }
-
     emit(BucketUsageSummaryState.initial());
+  }
+
+  /// Compares two plan lists by `planId` to avoid spurious emits when
+  /// PlansCubit rebuilds the same plans into fresh `BasePlanModel` instances
+  /// (the model doesn't implement value equality).
+  bool _plansEqual(List<BasePlanModel> a, List<BasePlanModel> b) {
+    if (identical(a, b)) return true;
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      if (a[i].planId != b[i].planId) return false;
+    }
+    return true;
   }
 
   String _friendlyErrorMessage(BucketUsageSummaryException exception) {

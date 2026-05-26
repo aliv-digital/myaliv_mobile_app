@@ -1,8 +1,11 @@
+import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/bucket_unit_converter.dart';
+
 /// Root model for the bucket usage summary API response.
 ///
 /// The API returns a list at the root, so this wrapper keeps the full list
 /// together with the fetch time for debugging and cache decisions.
-class BucketUsageSummaryModel {
+class BucketUsageSummaryModel extends Equatable {
   final List<BucketUsageItem> items;
   final DateTime fetchedAt;
 
@@ -20,13 +23,16 @@ class BucketUsageSummaryModel {
   }
 
   @override
+  List<Object?> get props => [items, fetchedAt];
+
+  @override
   String toString() {
     return 'BucketUsageSummaryModel(items: ${items.length}, fetchedAt: $fetchedAt)';
   }
 }
 
 /// One bucket from the usage summary response.
-class BucketUsageItem {
+class BucketUsageItem extends Equatable {
   final String freeUnitTypeName;
   final double totalInitialAmount;
   final double totalUnusedAmount;
@@ -72,6 +78,20 @@ class BucketUsageItem {
 
   bool get hasUsage => totalAmountUsed > 0;
 
+  /// `totalInitialAmount` converted into the unit named by [unitType]
+  /// (e.g. raw KB → GB, raw seconds → minutes).
+  double get displayInitialAmount =>
+      toDisplayUnit(totalInitialAmount, unitType);
+
+  /// `totalUnusedAmount` in display unit. See [displayInitialAmount].
+  double get displayUnusedAmount => toDisplayUnit(totalUnusedAmount, unitType);
+
+  /// `totalAmountUsed` in display unit. See [displayInitialAmount].
+  double get displayUsedAmount => toDisplayUnit(totalAmountUsed, unitType);
+
+  /// Canonical display label for [unitType] (e.g. "GB", "mins").
+  String get displayUnitLabelText => displayUnitLabel(unitType);
+
   double get usagePercent {
     if (totalInitialAmount <= 0) {
       return 0;
@@ -99,6 +119,17 @@ class BucketUsageItem {
   }
 
   @override
+  List<Object?> get props => [
+    freeUnitTypeName,
+    totalInitialAmount,
+    totalUnusedAmount,
+    totalAmountUsed,
+    nestedDetails,
+    unitType,
+    sortOrder,
+  ];
+
+  @override
   String toString() {
     return 'BucketUsageItem(name: $freeUnitTypeName, unit: $unitType, '
         'initial: $totalInitialAmount, unused: $totalUnusedAmount, '
@@ -107,7 +138,7 @@ class BucketUsageItem {
 }
 
 /// A nested usage entry inside a bucket.
-class BucketUsageDetail {
+class BucketUsageDetail extends Equatable {
   final String expireTime;
   final DateTime? expireDateTime;
   final double currentAmount;
@@ -147,6 +178,16 @@ class BucketUsageDetail {
       'MTSubscriptionID': mtSubscriptionId,
     };
   }
+
+  @override
+  List<Object?> get props => [
+    expireTime,
+    expireDateTime,
+    currentAmount,
+    instanceId,
+    purchaseSeq,
+    mtSubscriptionId,
+  ];
 
   @override
   String toString() {
