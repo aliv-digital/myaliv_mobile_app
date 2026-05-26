@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/limited_offer_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/balance_injection.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/bucket_usage_summary_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/consumption_limit_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/device_limits_injection.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_injection.dart';
@@ -49,6 +50,9 @@ class AppMainInjection {
 
     // Initialize balance feature
     await setupBalanceInjection();
+
+    // Initialize bucket usage summary feature
+    await setupBucketUsageSummaryInjection();
 
     // Initialize consumption limits (my limits) feature
     await setupConsumptionLimitInjection();

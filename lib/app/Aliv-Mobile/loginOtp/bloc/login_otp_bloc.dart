@@ -4,6 +4,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:core/core.dart';
 import '../../../../core/appConfig/app_ui_config_cubit.dart';
+import '../../../Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import '../../../Home/home/data/home_ui_config.dart';
 import '../../account-information/cubit/account_info_cubit.dart';
 import '../../account-information/cubit/account_info_state.dart';
@@ -160,6 +161,13 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
             if (accountInfo == null) {
               throw Exception('Account information is missing');
             }
+
+            // Load this global data as soon as login has a valid device account.
+            // The Cubit also has cache protection for the HomeScreen call.
+            await instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
+              deviceAccountId: accountInfo.idAcc,
+              forceRefresh: true,
+            );
 
             // Set UI config for logged-in user
             await _setLoggedInUserUiConfig();

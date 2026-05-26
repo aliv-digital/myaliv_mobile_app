@@ -82,4 +82,6 @@ class Api {
   }
 
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
+  //{{baseUrl}}/v1/MyAliv/device/:deviceAccountId/bucket-usage-summary
+  static String bucketUsageSummary(int deviceAccountId) => '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
 }

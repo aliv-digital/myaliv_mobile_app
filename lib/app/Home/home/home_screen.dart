@@ -22,6 +22,7 @@ import 'package:myaliv_mobile_app/app/Home/best-plans/view/best_plans_view.dart'
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -64,6 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     if (accountInfo != null && accountInfo.idAcc > 0) {
       context.read<BalanceCubit>().loadBalances(
+        deviceAccountId: accountInfo.idAcc,
+      );
+
+      // Load bucket usage summary when user enters HomeScreen.
+      context.read<BucketUsageSummaryCubit>().loadBucketUsageSummary(
         deviceAccountId: accountInfo.idAcc,
       );
 

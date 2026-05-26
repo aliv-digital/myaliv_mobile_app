@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -52,7 +53,9 @@ class LogoutRepository {
       // Call logout API with auth token from GlobalState
       final response = await _api.postJson(
         Api.logOutUrl,
-        headers: <String, String>{'Authorization': 'Basic ${auth.basicAuthToken}'},
+        headers: <String, String>{
+          'Authorization': 'Basic ${auth.basicAuthToken}',
+        },
       );
 
       if (kDebugMode) {
@@ -97,9 +100,7 @@ class LogoutRepository {
   Future<void> _clearAllAuthData() async {
     // 1. Use AuthManager to clear SharedPreferences + GlobalState
     final authManager = instance<AuthManager>();
-    await authManager.clearAuth(
-      clearAllPreferences: LocalStorage.clearAll,
-    );
+    await authManager.clearAuth(clearAllPreferences: LocalStorage.clearAll);
 
     // 2. Clear NetworkService auth and cookies
     final networkService = instance<NetworkService>();
@@ -126,6 +127,7 @@ class LogoutRepository {
     // across account switches.
     instance<DeviceLimitsCubit>().reset();
     instance<BalanceCubit>().reset();
+    instance<BucketUsageSummaryCubit>().reset();
     instance<LimitedOfferCubit>().reset();
     instance<BestPlanCubit>().reset();
     instance<ConsumptionLimitCubit>().reset();
