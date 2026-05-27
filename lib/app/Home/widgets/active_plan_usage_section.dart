@@ -6,6 +6,8 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usa
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/bucket_detail_modal.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -27,6 +29,11 @@ class ActivePlanUsageSection extends StatelessWidget {
         config.userType == UserType.postpaid
             ? _postpaidUsageCards()
             : _usageCards(),
+        const SizedBox(height: 20),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: ActivePlansExpander(),
+        ),
         const SizedBox(height: 20),
         if (config.userType == UserType.postpaid) _myLimitsHeader(context),
         if (config.userType == UserType.postpaid) const SizedBox(height: 10),
@@ -184,7 +191,7 @@ class ActivePlanUsageSection extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: usageRows.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (_, i) {
+            itemBuilder: (cardContext, i) {
               final usage = usageRows[i];
               final style = styleForBucket(usage.bucketName);
               return UsageCard(
@@ -197,6 +204,8 @@ class ActivePlanUsageSection extends StatelessWidget {
                 remainingLabel: 'remaining',
                 progress: usage.progress,
                 isPostpaid: false,
+                onTap: () =>
+                    BucketDetailModal.show(cardContext, usage.bucketName),
               );
             },
           ),

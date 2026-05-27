@@ -11,6 +11,7 @@ class UsageCard extends StatelessWidget {
   final Color color;
   final bool isPostpaid;
   final bool isUnlimited;
+  final VoidCallback? onTap;
 
   const UsageCard({
     super.key,
@@ -23,10 +24,24 @@ class UsageCard extends StatelessWidget {
     required this.color,
     required this.isPostpaid,
     this.isUnlimited = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final card = _cardContent();
+    if (onTap == null) return card;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: card,
+      ),
+    );
+  }
+
+  Widget _cardContent() {
     return Container(
       width: 124, //height: 124,
       padding: const EdgeInsets.all(16),
