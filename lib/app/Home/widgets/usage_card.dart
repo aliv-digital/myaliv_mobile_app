@@ -53,7 +53,8 @@ class UsageCard extends StatelessWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
-                  title,overflow:TextOverflow.clip,
+                  title,
+                  overflow: TextOverflow.clip,
                   maxLines: 1,
                   style: TextStyle(
                     color: color,
@@ -71,7 +72,7 @@ class UsageCard extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: isUnlimited ? 'unlimited' : totalRemaining,
+                        text: isUnlimited ? 'unlimited' : totalValue,
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -80,7 +81,7 @@ class UsageCard extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: isUnlimited ? '\nlocal' : ' of\n$totalValue',
+                        text: isUnlimited ? '\nlocal' : ' of\n$totalRemaining',
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -96,7 +97,7 @@ class UsageCard extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: '$totalValue of \n',
+                        text: '$totalRemaining of \n',
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -105,7 +106,7 @@ class UsageCard extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: totalRemaining,
+                        text: totalValue,
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -135,111 +136,58 @@ class UsageCard extends StatelessWidget {
     );
   }
 
-
+  /// Prepaid bar: solid green palette, width = progress (1.0 for unlimited).
+  /// Matches the Usage tab `_LimitRow` treatment for prepaid.
   Widget _progressBar() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (isUnlimited) {
-            return _fullGreenBar(width: constraints.maxWidth, radius: 0);
-          }
-
-          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
-          final (mainColor, gradient) = _progressColors(progress);
-
-          return Stack(
-            children: [
-              // Background
-              Container(height: 6, color: mainColor),
-
-              // Gradient progress (width = percentage)
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: 6,
-                width: width,
-                decoration: BoxDecoration(gradient: gradient),
-              ),
-            ],
-          );
-        },
+    return _bar(
+      borderRadius: 6,
+      backgroundColor: const Color(0x2617B26A),
+      progressGradient: const LinearGradient(
+        colors: [Color(0x0017B26A), Color(0xFF17B26A)],
       ),
     );
   }
 
+  /// Postpaid bar: solid red palette, width = progress (1.0 for unlimited).
+  /// Matches the Usage tab `_LimitRow` treatment for postpaid.
   Widget _postpaidprogressBar() {
+    return _bar(
+      borderRadius: 8,
+      backgroundColor: const Color(0x26DD3038),
+      progressGradient: const LinearGradient(
+        colors: [Color(0x00DD3038), Color(0xFFDD3038)],
+      ),
+    );
+  }
+
+  Widget _bar({
+    required double borderRadius,
+    required Color backgroundColor,
+    required LinearGradient progressGradient,
+  }) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(borderRadius),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (isUnlimited) {
-            return _fullGreenBar(width: constraints.maxWidth, radius: 8);
-          }
-
-          final width = constraints.maxWidth * progress.clamp(0.0, 1.0);
-          final (mainColor, gradient) = _progressColors(progress);
+          final fraction = isUnlimited ? 1.0 : progress.clamp(0.0, 1.0);
+          final width = constraints.maxWidth * fraction;
 
           return Stack(
             children: [
-              // Background
-              Container(height: 6, color: mainColor),
-
-              // Gradient progress (width = percentage)
+              Container(height: 6, color: backgroundColor),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: 6,
                 width: width,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    gradient: gradient),
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  gradient: progressGradient,
+                ),
               ),
             ],
           );
         },
       ),
-    );
-  }
-
-  (Color, LinearGradient) _progressColors(double progress) {
-    if (progress < 0.35) {
-      return (
-        const Color(0x26DD3038),
-        const LinearGradient(
-          colors: [Color(0xFFDD3038), Color(0x00DD3038)],
-        ),
-      );
-    }
-    if (progress < 0.6) {
-      return (
-        const Color(0x26FFC627),
-        const LinearGradient(
-          colors: [Color(0x26FFC627), Color(0xFFFFC627)],
-        ),
-      );
-    }
-    return (
-      const Color(0x2617B26A),
-      const LinearGradient(
-        colors: [Color(0x2617B26A), Color(0xFF17B26A)],
-      ),
-    );
-  }
-
-  Widget _fullGreenBar({required double width, required double radius}) {
-    return Stack(
-      children: [
-        Container(height: 6, width: width, color: const Color(0x2617B26A)),
-        Container(
-          height: 6,
-          width: width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
-            gradient: const LinearGradient(
-              colors: [Color(0x2617B26A), Color(0xFF17B26A)],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

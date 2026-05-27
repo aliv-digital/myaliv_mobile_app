@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/roaming_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -27,8 +27,6 @@ class ActivePlanUsageSection extends StatelessWidget {
         config.userType == UserType.postpaid
             ? _postpaidUsageCards()
             : _usageCards(),
-        const SizedBox(height: 28),
-        _roamingSection(config),
         const SizedBox(height: 20),
         if (config.userType == UserType.postpaid) _myLimitsHeader(context),
         if (config.userType == UserType.postpaid) const SizedBox(height: 10),
@@ -173,11 +171,9 @@ class ActivePlanUsageSection extends StatelessWidget {
       buildWhen: (a, b) =>
           a.summary != b.summary || a.activePlans != b.activePlans,
       builder: (context, state) {
-        final nonRoamingUsage = state.activePlanBucketUsage
-            .where((u) => !_isRoamingBucket(u.bucketName))
-            .toList(growable: false);
+        final usageRows = state.activePlanBucketUsage;
 
-        if (nonRoamingUsage.isEmpty) {
+        if (usageRows.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -186,81 +182,24 @@ class ActivePlanUsageSection extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             scrollDirection: Axis.horizontal,
-            itemCount: nonRoamingUsage.length,
+            itemCount: usageRows.length,
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
-              final usage = nonRoamingUsage[i];
-              final style = _styleFor(usage.bucketName);
+              final usage = usageRows[i];
+              final style = styleForBucket(usage.bucketName);
               return UsageCard(
                 icon: style.icon,
                 title: usage.bucketName,
                 color: style.color,
                 isUnlimited: usage.isUnlimited,
-                totalValue: _formatAmount(usage.remaining, usage.unitLabel),
-                totalRemaining: _formatAmount(usage.initial, usage.unitLabel),
+                totalValue: formatBucketAmount(usage.remaining, usage.unitLabel),
+                totalRemaining: formatBucketAmount(usage.initial, usage.unitLabel),
                 remainingLabel: 'remaining',
                 progress: usage.progress,
                 isPostpaid: false,
               );
             },
           ),
-        );
-      },
-    );
-  }
-
-  // ================= Roaming =================
-  Widget _roamingSection(HomeUiConfig config) {
-    return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
-      buildWhen: (a, b) =>
-          a.summary != b.summary || a.activePlans != b.activePlans,
-      builder: (context, state) {
-        final roamingUsage = state.activePlanBucketUsage
-            .where((u) => _isRoamingBucket(u.bucketName))
-            .toList(growable: false);
-
-        if (roamingUsage.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                config.userType == UserType.postpaid
-                    ? 'travel20'
-                    : 'roameasy usa and can',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            for (int i = 0; i < roamingUsage.length; i++) ...[
-              if (i > 0) const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: RoamingCard(
-                  title: roamingUsage[i].bucketName,
-                  isUnlimited: roamingUsage[i].isUnlimited,
-                  used: _formatAmount(
-                    roamingUsage[i].remaining,
-                    roamingUsage[i].unitLabel,
-                  ),
-                  total: _formatAmount(
-                    roamingUsage[i].initial,
-                    roamingUsage[i].unitLabel,
-                  ),
-                  progress: roamingUsage[i].progress,
-                ),
-              ),
-            ],
-          ],
         );
       },
     );
@@ -298,56 +237,4 @@ class ActivePlanUsageSection extends StatelessWidget {
     );
   }
 
-  /// Heuristic: roaming buckets carry "roam" in their name (e.g. "Roaming
-  /// Data", "RoamEasy"). When the API contract is finalized this can be
-  /// tightened to an exact match list.
-  bool _isRoamingBucket(String bucketName) {
-    return bucketName.toLowerCase().contains('roam');
-  }
-
-  /// Formats `value unit` (e.g. "2.4 GB", "30 mins"). Whole numbers drop the
-  /// decimal; fractional values are kept to one decimal place.
-  String _formatAmount(double value, String unit) {
-    final formatted = value == value.roundToDouble()
-        ? value.toInt().toString()
-        : value.toStringAsFixed(1);
-    if (unit.isEmpty) return formatted;
-    return '$formatted $unit';
-  }
-
-  _CardStyle _styleFor(String bucketName) {
-    final normalized = bucketName.trim().toLowerCase();
-    if (normalized.contains('data')) {
-      return const _CardStyle(
-        icon: 'assets/icons/Rss.svg',
-        color: Color(0xFFFF6C36),
-      );
-    }
-    if (normalized.contains('voice') ||
-        normalized.contains('talk') ||
-        normalized.contains('minute') ||
-        normalized.contains('mins')) {
-      return const _CardStyle(
-        icon: 'assets/icons/phone_call.svg',
-        color: Color(0xFF00B3E3),
-      );
-    }
-    if (normalized.contains('sms') ||
-        normalized.contains('text')) {
-      return const _CardStyle(
-        icon: 'assets/icons/message.svg',
-        color: Color(0xFF5045A7),
-      );
-    }
-    return const _CardStyle(
-      icon: 'assets/icons/Rss.svg',
-      color: Color(0xFF707070),
-    );
-  }
-}
-
-class _CardStyle {
-  const _CardStyle({required this.icon, required this.color});
-  final String icon;
-  final Color color;
 }

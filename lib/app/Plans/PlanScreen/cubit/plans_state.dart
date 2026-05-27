@@ -120,12 +120,14 @@ class PlansState extends Equatable {
     return addOnsApiPrimaryPlans.first;
   }
 
-  /// Plans used for bucket-usage aggregation.
+  /// Plans that drive the home screen's "active plan usage remaining" cards.
   ///
-  /// Returns the union of primary and secondary plans (deduplicated by
-  /// `planId`) so usage cards reflect the user's full allowance. Falls back
-  /// to stand-alone plans only when both primary and secondary are empty
-  /// (e.g. data-only users on travel20 with no primary subscription).
+  /// Returns the union of primary and secondary plans, deduplicated by
+  /// `planId` with first-occurrence wins. Stand-alone plans (roameasy /
+  /// travel20) are intentionally excluded — they are surfaced via
+  /// [standAlonePlansForBucketUsage] so the calculator can subtract their
+  /// contributions from any shared buckets (e.g. roameasy's local 200 MB
+  /// "data" allotment should not inflate liberty40's "data" row).
   List<BasePlanModel> get activePlansForBucketUsage {
     final union = <BasePlanModel>[];
     final seenIds = <String>{};
@@ -137,13 +139,24 @@ class PlansState extends Equatable {
       if (seenIds.add(plan.planId)) union.add(plan);
     }
 
-    if (union.isNotEmpty) return List.unmodifiable(union);
+    return List.unmodifiable(union);
+  }
 
-    if (standAlonePlans.isNotEmpty) {
-      return List.unmodifiable(standAlonePlans);
+  /// Stand-alone plans used to compute the roaming bucket usage view-model.
+  ///
+  /// Deduplicated by `planId` with first-occurrence wins — the bundles API
+  /// can return the same stand-alone plan twice (one row per active
+  /// purchase), but the API-side `BucketUsageItem.totalInitialAmount`
+  /// already aggregates across those purchases, so counting the plan once
+  /// is sufficient.
+  List<BasePlanModel> get standAlonePlansForBucketUsage {
+    if (standAlonePlans.isEmpty) return const <BasePlanModel>[];
+    final deduped = <BasePlanModel>[];
+    final seenIds = <String>{};
+    for (final plan in standAlonePlans) {
+      if (seenIds.add(plan.planId)) deduped.add(plan);
     }
-
-    return const <BasePlanModel>[];
+    return List.unmodifiable(deduped);
   }
 
   /// Check if any data exists

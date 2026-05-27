@@ -19,13 +19,17 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
   /// The Cubit keeps a short cache so calling it from both login success and
   /// HomeScreen does not create duplicate API requests for the same user.
   ///
-  /// Pass [activePlans] (typically `PlansCubit.state.activePlansForBucketUsage`
-  /// — the union of primary and secondary plans, falling back to stand-alone
-  /// plans). When the active plans change independently of this fetch, call
-  /// [updateActivePlans] instead of reloading.
+  /// Pass [activePlans] (primary + secondary, from
+  /// `PlansCubit.state.activePlansForBucketUsage`) for the home screen's
+  /// usage cards, and [standAlonePlans] (from
+  /// `PlansCubit.state.standAlonePlansForBucketUsage`) so the cubit can
+  /// expose `roamingPlanBucketUsage` for future surfaces. When either list
+  /// changes independently of this fetch, call [updateActivePlans] instead
+  /// of reloading.
   Future<void> loadBucketUsageSummary({
     required int deviceAccountId,
     List<BasePlanModel> activePlans = const <BasePlanModel>[],
+    List<BasePlanModel> standAlonePlans = const <BasePlanModel>[],
     bool forceRefresh = false,
   }) async {
     if (deviceAccountId <= 0) {
@@ -34,8 +38,12 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
 
     if (state.isLoading) {
       // Still adopt the latest plan references even when a fetch is in flight.
-      if (!_plansEqual(activePlans, state.activePlans)) {
-        emit(state.copyWith(activePlans: activePlans));
+      if (!_plansEqual(activePlans, state.activePlans) ||
+          !_plansEqual(standAlonePlans, state.standAlonePlans)) {
+        emit(state.copyWith(
+          activePlans: activePlans,
+          standAlonePlans: standAlonePlans,
+        ));
       }
       return;
     }
@@ -43,8 +51,12 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
     if (!forceRefresh &&
         state.hasSummary &&
         state.isCacheValidFor(deviceAccountId)) {
-      if (!_plansEqual(activePlans, state.activePlans)) {
-        emit(state.copyWith(activePlans: activePlans));
+      if (!_plansEqual(activePlans, state.activePlans) ||
+          !_plansEqual(standAlonePlans, state.standAlonePlans)) {
+        emit(state.copyWith(
+          activePlans: activePlans,
+          standAlonePlans: standAlonePlans,
+        ));
       }
       return;
     }
@@ -54,6 +66,7 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
         status: BucketUsageSummaryStatus.loading,
         deviceAccountId: deviceAccountId,
         activePlans: activePlans,
+        standAlonePlans: standAlonePlans,
         clearError: true,
       ),
     );
@@ -70,6 +83,7 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
           lastFetchedAt: DateTime.now(),
           deviceAccountId: deviceAccountId,
           activePlans: activePlans,
+          standAlonePlans: standAlonePlans,
           clearError: true,
         ),
       );
@@ -92,18 +106,26 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
     }
   }
 
-  /// Sync the active plan set into this cubit without re-fetching usage.
-  ///
-  /// Pass an empty list to clear (e.g. when the user has no active plan).
-  void updateActivePlans(List<BasePlanModel> activePlans) {
-    if (_plansEqual(activePlans, state.activePlans)) {
+  /// Sync the plan sets into this cubit without re-fetching usage. Pass empty
+  /// lists to clear (e.g. when the user has no active plan).
+  void updateActivePlans(
+    List<BasePlanModel> activePlans, {
+    List<BasePlanModel> standAlonePlans = const <BasePlanModel>[],
+  }) {
+    final activeUnchanged = _plansEqual(activePlans, state.activePlans);
+    final standAloneUnchanged =
+        _plansEqual(standAlonePlans, state.standAlonePlans);
+    if (activeUnchanged && standAloneUnchanged) {
       return;
     }
 
-    if (activePlans.isEmpty) {
+    if (activePlans.isEmpty && standAlonePlans.isEmpty) {
       emit(state.copyWith(clearActivePlans: true));
     } else {
-      emit(state.copyWith(activePlans: activePlans));
+      emit(state.copyWith(
+        activePlans: activePlans,
+        standAlonePlans: standAlonePlans,
+      ));
     }
   }
 

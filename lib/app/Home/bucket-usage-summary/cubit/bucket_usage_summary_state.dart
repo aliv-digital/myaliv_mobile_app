@@ -15,13 +15,18 @@ class BucketUsageSummaryState extends Equatable {
   final DateTime? lastFetchedAt;
   final int? deviceAccountId;
 
-  /// Plans counted toward bucket-usage aggregation.
+  /// Primary + secondary plans counted toward the home screen's usage cards.
   ///
-  /// Sourced from `PlansState.activePlansForBucketUsage` — the union of
-  /// primary and secondary plans, falling back to stand-alone plans when
-  /// both are empty. Used by [activePlanBucketUsage] to join with the
-  /// bucket-usage summary.
+  /// Sourced from `PlansState.activePlansForBucketUsage`. Used by
+  /// [activePlanBucketUsage], with [standAlonePlans] contributions
+  /// subtracted from any shared buckets so primary entitlements aren't
+  /// inflated by roaming-plan allotments.
   final List<BasePlanModel> activePlans;
+
+  /// Stand-alone plans (roameasy / travel20). Not rendered on the home
+  /// screen — kept here so future surfaces (e.g. the Usage tab's roaming
+  /// section) can read [roamingPlanBucketUsage] without recomputing.
+  final List<BasePlanModel> standAlonePlans;
 
   const BucketUsageSummaryState({
     required this.status,
@@ -30,6 +35,7 @@ class BucketUsageSummaryState extends Equatable {
     this.lastFetchedAt,
     this.deviceAccountId,
     this.activePlans = const <BasePlanModel>[],
+    this.standAlonePlans = const <BasePlanModel>[],
   });
 
   factory BucketUsageSummaryState.initial() {
@@ -45,6 +51,7 @@ class BucketUsageSummaryState extends Equatable {
     DateTime? lastFetchedAt,
     int? deviceAccountId,
     List<BasePlanModel>? activePlans,
+    List<BasePlanModel>? standAlonePlans,
     bool clearSummary = false,
     bool clearError = false,
     bool clearActivePlans = false,
@@ -58,6 +65,9 @@ class BucketUsageSummaryState extends Equatable {
       activePlans: clearActivePlans
           ? const <BasePlanModel>[]
           : (activePlans ?? this.activePlans),
+      standAlonePlans: clearActivePlans
+          ? const <BasePlanModel>[]
+          : (standAlonePlans ?? this.standAlonePlans),
     );
   }
 
@@ -79,7 +89,7 @@ class BucketUsageSummaryState extends Equatable {
 
   bool get hasActivePlans => activePlans.isNotEmpty;
 
-  /// Plan ids of all plans counted toward bucket-usage aggregation.
+  /// Plan ids of all primary + secondary plans counted on the home screen.
   Set<String> get activePlanIds {
     return activePlans
         .map((p) => p.planId)
@@ -87,12 +97,37 @@ class BucketUsageSummaryState extends Equatable {
         .toSet();
   }
 
-  /// Derived per-bucket view-model joining [activePlans] with [items].
+  /// Plan ids of all stand-alone (roaming) plans.
+  Set<String> get standAlonePlanIds {
+    return standAlonePlans
+        .map((p) => p.planId)
+        .where((id) => id.isNotEmpty)
+        .toSet();
+  }
+
+  /// Per-bucket view-model for primary + secondary plans, with stand-alone
+  /// nested-detail contributions stripped from any shared buckets (e.g.
+  /// roameasy's local 200 MB "data" share is moved into
+  /// [roamingPlanBucketUsage] rather than inflating liberty40's row).
   ///
   /// Pure function call — cheap on rebuilds and identical for the same
   /// state instance (BLoC state is immutable).
-  List<PlanBucketUsage> get activePlanBucketUsage =>
-      computePlanBucketUsage(activePlans: activePlans, items: items);
+  List<PlanBucketUsage> get activePlanBucketUsage => computePlanBucketUsage(
+        activePlans: activePlans,
+        items: items,
+        excludePlanIds: standAlonePlanIds,
+      );
+
+  /// Per-bucket view-model for stand-alone (roaming) plans. Mirror of
+  /// [activePlanBucketUsage] with the two plan groups swapped — primary +
+  /// secondary contributions are excluded so each row reflects only the
+  /// roaming plan's own allowance. Currently stored for future surfaces;
+  /// the home screen does not render it.
+  List<PlanBucketUsage> get roamingPlanBucketUsage => computePlanBucketUsage(
+        activePlans: standAlonePlans,
+        items: items,
+        excludePlanIds: activePlanIds,
+      );
 
   /// Cache is valid only for the same device account.
   bool isCacheValidFor(int requestedDeviceAccountId) {
@@ -116,6 +151,7 @@ class BucketUsageSummaryState extends Equatable {
     lastFetchedAt,
     deviceAccountId,
     activePlans,
+    standAlonePlans,
   ];
 
   @override
@@ -123,6 +159,7 @@ class BucketUsageSummaryState extends Equatable {
     return 'BucketUsageSummaryState(status: $status, '
         'itemCount: $itemCount, deviceAccountId: $deviceAccountId, '
         'activePlanIds: $activePlanIds, '
+        'standAlonePlanIds: $standAlonePlanIds, '
         'errorMessage: $errorMessage, lastFetchedAt: $lastFetchedAt)';
   }
 }

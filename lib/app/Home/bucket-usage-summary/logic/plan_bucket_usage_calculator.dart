@@ -6,25 +6,39 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 /// Joins the active plans' `planBuckets` with the bucket-usage summary to
 /// produce a per-bucket [PlanBucketUsage] in display units.
 ///
-/// Aggregation rules:
-///  - Plan allowances are summed across all [activePlans] for buckets that
-///    share a normalized name (e.g. primary's "Data" 14 GB + secondary's
-///    "Data" 5 GB → combined `initial = 19 GB`).
-///  - Any contributing bucket marked `unlimited` makes the combined bucket
-///    unlimited (any-unlimited-wins).
-///  - Buckets marked `suppress` are dropped from that plan's contribution
-///    (but other plans may still contribute the same bucket name).
-///  - Nested-detail rows are matched when `_planIdOf(detail.purchaseSeq)`
-///    is in the set of `activePlans` plan ids.
+/// Source of truth:
+///  - The list of bucket *names* to render comes from [activePlans] (deduped
+///    by normalized name, in first-seen order, skipping `suppress` rows).
+///  - The numeric `initial` for each row starts from the API's
+///    `BucketUsageItem.totalInitialAmount` (authoritative user entitlement)
+///    and then subtracts the sum of `currentAmount` for nested-detail rows
+///    whose `purchaseSeq` planId is in [excludePlanIds]. This lets a caller
+///    render usage for one plan subset (e.g. primary + secondary) while
+///    "moving" the contribution from another subset (e.g. stand-alone
+///    roaming) out of the row — the subtraction is exact when the excluded
+///    plans are 0% used and slightly under-counts the primary initial
+///    otherwise.
+///  - `remaining` is the sum of `currentAmount` for nested rows whose
+///    `purchaseSeq` planId matches an active plan id, converted to display
+///    unit once at the end. The `planId` filter keeps out unrelated
+///    purchase lines that may share a `BucketUsageItem` with the active
+///    plan set.
 ///
-/// Assumes that, across plans, the raw `bucket.amount` for a given bucket
-/// name is in the same unit (verified by API contract). If divergence ever
-/// shows up, convert per-instance before summing.
+/// Buckets declared on a plan but missing from the API response are skipped
+/// — the plan's declared `bucket.amount` has been observed to misrepresent
+/// the user's total entitlement (e.g. per-period quota vs accumulated
+/// allowance), so we render nothing rather than something misleading.
+///
+/// Unlimited rules:
+///  - Plan-marked unlimited (any contributing `bucket.unlimited` wins).
+///  - Effectively unlimited: API has remaining but no initial allowance
+///    (e.g. promotional buckets like "whatsapp full").
 List<PlanBucketUsage> computePlanBucketUsage({
   required List<BasePlanModel> activePlans,
   required List<BucketUsageItem> items,
+  Set<String> excludePlanIds = const <String>{},
 }) {
-  if (activePlans.isEmpty) {
+  if (activePlans.isEmpty || items.isEmpty) {
     return const <PlanBucketUsage>[];
   }
 
@@ -33,7 +47,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
     if (plan.planId.isNotEmpty) planIds.add(plan.planId);
   }
 
-  final aggregates = <String, _BucketAggregate>{};
+  final planMeta = <String, _PlanBucketMeta>{};
   final orderedKeys = <String>[]; // preserve first-seen order for stable UI
 
   for (final plan in activePlans) {
@@ -43,71 +57,80 @@ List<PlanBucketUsage> computePlanBucketUsage({
       final key = _normalize(bucket.name);
       if (key.isEmpty) continue;
 
-      final existing = aggregates[key];
+      final existing = planMeta[key];
       if (existing == null) {
-        aggregates[key] = _BucketAggregate(
+        planMeta[key] = _PlanBucketMeta(
           displayName: bucket.name,
           unitFromPlan: bucket.unit,
-          rawInitial: bucket.amount,
           isUnlimited: bucket.unlimited,
         );
         orderedKeys.add(key);
-      } else {
-        existing.rawInitial += bucket.amount;
-        if (bucket.unlimited) existing.isUnlimited = true;
+      } else if (bucket.unlimited) {
+        existing.isUnlimited = true;
       }
     }
   }
 
-  if (aggregates.isEmpty) {
+  if (planMeta.isEmpty) {
     return const <PlanBucketUsage>[];
   }
 
   final result = <PlanBucketUsage>[];
   for (final key in orderedKeys) {
-    final agg = aggregates[key]!;
-
+    final meta = planMeta[key]!;
     final matchedItem = _findItemForBucketName(items, key);
-    final unitType = (matchedItem != null && matchedItem.unitType.isNotEmpty)
-        ? matchedItem.unitType
-        : agg.unitFromPlan;
-    final unitLabel = displayUnitLabel(unitType);
-
-    if (agg.isUnlimited) {
-      result.add(
-        PlanBucketUsage(
-          bucketName: agg.displayName,
-          unitLabel: unitLabel,
-          isUnlimited: true,
-          initial: 0,
-          remaining: 0,
-          used: 0,
-          progress: 0,
-          matchedDetailCount: 0,
-        ),
-      );
+    if (matchedItem == null) {
+      // Plan declares this bucket but API hasn't reported on it — skip
+      // rather than show stale plan-side numbers.
       continue;
     }
 
-    final initial = toDisplayUnit(agg.rawInitial, unitType);
+    final unitType = matchedItem.unitType.isNotEmpty
+        ? matchedItem.unitType
+        : meta.unitFromPlan;
+    final unitLabel = displayUnitLabel(unitType);
+
+    if (meta.isUnlimited) {
+      result.add(_unlimitedRow(meta.displayName, unitLabel));
+      continue;
+    }
 
     double rawRemaining = 0;
     int matchedDetailCount = 0;
-    if (matchedItem != null) {
-      for (final detail in matchedItem.nestedDetails) {
-        if (planIds.contains(_planIdOf(detail.purchaseSeq))) {
-          rawRemaining += detail.currentAmount;
-          matchedDetailCount++;
-        }
+    double excludedContribution = 0;
+    for (final detail in matchedItem.nestedDetails) {
+      final detailPlanId = _planIdOf(detail.purchaseSeq);
+      if (excludePlanIds.contains(detailPlanId)) {
+        // Strip excluded plans' nested-detail contribution from initial so
+        // the row reflects only the requested plan subset's entitlement.
+        // Exact when the excluded plans are 0% used; under-counts the
+        // primary initial slightly when they have consumed some allowance.
+        excludedContribution += detail.currentAmount;
+        continue;
+      }
+      if (planIds.contains(detailPlanId)) {
+        rawRemaining += detail.currentAmount;
+        matchedDetailCount++;
       }
     }
+    final adjustedInitialRaw =
+        matchedItem.totalInitialAmount - excludedContribution;
+    final initial = toDisplayUnit(adjustedInitialRaw, unitType);
     final remaining = toDisplayUnit(rawRemaining, unitType);
+
+    // Effectively unlimited: API reports a balance but no initial allowance
+    // (e.g. promotional bucket like "whatsapp full").
+    if (initial <= 0 && remaining > 0) {
+      result.add(_unlimitedRow(meta.displayName, unitLabel));
+      continue;
+    }
+
     final used = (initial - remaining).clamp(0.0, double.infinity);
     final progress = initial > 0 ? (used / initial).clamp(0.0, 1.0) : 0.0;
 
     result.add(
       PlanBucketUsage(
-        bucketName: agg.displayName,
+        bucketName: meta.displayName,
         unitLabel: unitLabel,
         isUnlimited: false,
         initial: initial,
@@ -122,17 +145,28 @@ List<PlanBucketUsage> computePlanBucketUsage({
   return result;
 }
 
-class _BucketAggregate {
-  _BucketAggregate({
+PlanBucketUsage _unlimitedRow(String name, String unitLabel) {
+  return PlanBucketUsage(
+    bucketName: name,
+    unitLabel: unitLabel,
+    isUnlimited: true,
+    initial: 0,
+    remaining: 0,
+    used: 0,
+    progress: 0,
+    matchedDetailCount: 0,
+  );
+}
+
+class _PlanBucketMeta {
+  _PlanBucketMeta({
     required this.displayName,
     required this.unitFromPlan,
-    required this.rawInitial,
     required this.isUnlimited,
   });
 
   final String displayName;
   final String unitFromPlan;
-  double rawInitial;
   bool isUnlimited;
 }
 

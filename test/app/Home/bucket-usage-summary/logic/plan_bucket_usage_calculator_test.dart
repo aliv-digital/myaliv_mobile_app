@@ -36,10 +36,10 @@ Map<String, dynamic> _bucket({
 BucketUsageItem _item({
   required String freeUnitTypeName,
   String unitType = '',
-  List<BucketUsageDetail> nestedDetails = const [],
   double totalInitialAmount = 0,
   double totalUnusedAmount = 0,
   double totalAmountUsed = 0,
+  List<BucketUsageDetail> nestedDetails = const [],
 }) {
   return BucketUsageItem(
     freeUnitTypeName: freeUnitTypeName,
@@ -77,35 +77,161 @@ void main() {
       );
     });
 
+    test('returns empty when items is empty (API not loaded yet)', () {
+      expect(
+        computePlanBucketUsage(
+          activePlans: [
+            _plan(
+              planId: '29866',
+              buckets: [
+                _bucket(name: 'Data', amount: 14 * 1024 * 1024, unit: 'GB'),
+              ],
+            ),
+          ],
+          items: const [],
+        ),
+        isEmpty,
+      );
+    });
+
     test('returns empty when plans have no buckets', () {
       expect(
         computePlanBucketUsage(
           activePlans: [_plan(planId: '29866')],
-          items: const [],
+          items: [
+            _item(
+              freeUnitTypeName: 'data',
+              unitType: 'GB',
+              totalInitialAmount: 1024 * 1024,
+            ),
+          ],
         ),
         isEmpty,
       );
     });
   });
 
-  group('computePlanBucketUsage — single plan, GB conversion', () {
-    test('joins planBuckets with usage item and produces display values', () {
+  group('computePlanBucketUsage — initial comes from API', () {
+    test(
+      'initial uses totalInitialAmount, not plan bucket.amount '
+      '(fixes "900 of 15 mins" bug)',
+      () {
+        final result = computePlanBucketUsage(
+          activePlans: [
+            _plan(
+              planId: '29866',
+              buckets: [
+                // Plan says 15 mins (900 raw seconds) — but API knows better.
+                _bucket(name: 'us/can mins', amount: 900, unit: 'Minutes'),
+              ],
+            ),
+          ],
+          items: [
+            _item(
+              freeUnitTypeName: 'us/can mins',
+              unitType: 'Minutes',
+              totalInitialAmount: 54000, // 900 mins
+              nestedDetails: [
+                _detail(purchaseSeq: '29866.a', currentAmount: 54000),
+              ],
+            ),
+          ],
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.initial, 900.0);
+        expect(result.first.remaining, 900.0);
+        expect(result.first.used, 0);
+        expect(result.first.progress, 0);
+        expect(result.first.unitLabel, 'mins');
+      },
+    );
+
+    test('remaining sums currentAmount filtered by active plan ids', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
             planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 14 * 1024 * 1024, unit: 'GB'),
-            ],
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
           ),
         ],
         items: [
           _item(
             freeUnitTypeName: 'data',
             unitType: 'GB',
+            totalInitialAmount: 14 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '29866.a', currentAmount: 2 * 1024 * 1024),
+              _detail(purchaseSeq: '29866.b', currentAmount: 1 * 1024 * 1024),
+              // Foreign plan id — must be excluded.
+              _detail(
+                purchaseSeq: '99999.c',
+                currentAmount: 100 * 1024 * 1024,
+              ),
+            ],
+          ),
+        ],
+      );
+
+      expect(result.first.initial, closeTo(14.0, 1e-9));
+      expect(result.first.remaining, closeTo(3.0, 1e-9));
+      expect(result.first.used, closeTo(11.0, 1e-9));
+      expect(result.first.matchedDetailCount, 2);
+    });
+
+    test('multi-plan: details filtered by union of plan ids', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '29866',
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
+          ),
+          _plan(
+            planId: '30112',
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 19 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '29866.a', currentAmount: 2 * 1024 * 1024),
+              _detail(purchaseSeq: '30112.b', currentAmount: 3 * 1024 * 1024),
+              _detail(
+                purchaseSeq: '99999.c',
+                currentAmount: 100 * 1024 * 1024,
+              ),
+            ],
+          ),
+        ],
+      );
+
+      expect(result, hasLength(1)); // deduped by bucket name
+      expect(result.first.initial, closeTo(19.0, 1e-9));
+      expect(result.first.remaining, closeTo(5.0, 1e-9));
+      expect(result.first.matchedDetailCount, 2);
+    });
+  });
+
+  group('computePlanBucketUsage — unit conversion', () {
+    test('GB: raw KB → GB on both initial and remaining', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '29866',
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 14 * 1024 * 1024,
             nestedDetails: [
               _detail(
-                purchaseSeq: '29866.20260303153113.001.20260303153124',
+                purchaseSeq: '29866.a',
                 currentAmount: 2.4 * 1024 * 1024,
               ),
             ],
@@ -113,90 +239,25 @@ void main() {
         ],
       );
 
-      expect(result, hasLength(1));
-      final usage = result.first;
-      expect(usage.bucketName, 'Data');
-      expect(usage.unitLabel, 'GB');
-      expect(usage.isUnlimited, false);
-      expect(usage.initial, closeTo(14.0, 1e-9));
-      expect(usage.remaining, closeTo(2.4, 1e-9));
-      expect(usage.used, closeTo(11.6, 1e-9));
-      expect(usage.progress, closeTo(11.6 / 14.0, 1e-9));
-      expect(usage.matchedDetailCount, 1);
+      expect(result.first.initial, closeTo(14.0, 1e-9));
+      expect(result.first.remaining, closeTo(2.4, 1e-9));
+      expect(result.first.unitLabel, 'GB');
     });
 
-    test('sums multiple nested details for the same plan id', () {
+    test('Minutes: raw seconds → mins on both initial and remaining', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
             planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 14 * 1024 * 1024, unit: 'GB'),
-            ],
-          ),
-        ],
-        items: [
-          _item(
-            freeUnitTypeName: 'data',
-            unitType: 'GB',
-            nestedDetails: [
-              _detail(purchaseSeq: '29866.a', currentAmount: 1024 * 1024),
-              _detail(purchaseSeq: '29866.b', currentAmount: 2 * 1024 * 1024),
-              _detail(purchaseSeq: '29866.c', currentAmount: 4 * 1024 * 1024),
-            ],
-          ),
-        ],
-      );
-
-      expect(result.first.remaining, closeTo(7.0, 1e-9));
-      expect(result.first.matchedDetailCount, 3);
-    });
-
-    test('ignores nested details with non-matching plan id', () {
-      final result = computePlanBucketUsage(
-        activePlans: [
-          _plan(
-            planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 10 * 1024 * 1024, unit: 'GB'),
-            ],
-          ),
-        ],
-        items: [
-          _item(
-            freeUnitTypeName: 'data',
-            unitType: 'GB',
-            nestedDetails: [
-              _detail(purchaseSeq: '29866.a', currentAmount: 1024 * 1024),
-              _detail(purchaseSeq: '99999.b', currentAmount: 5 * 1024 * 1024),
-            ],
-          ),
-        ],
-      );
-
-      expect(result.first.remaining, closeTo(1.0, 1e-9));
-      expect(result.first.matchedDetailCount, 1);
-    });
-  });
-
-  group('computePlanBucketUsage — minutes conversion', () {
-    test('converts seconds to minutes', () {
-      final result = computePlanBucketUsage(
-        activePlans: [
-          _plan(
-            planId: '29866',
-            buckets: [
-              _bucket(name: 'Voice', amount: 1800, unit: 'Minutes'),
-            ],
+            buckets: [_bucket(name: 'Voice', amount: 0, unit: 'Minutes')],
           ),
         ],
         items: [
           _item(
             freeUnitTypeName: 'voice',
             unitType: 'Minutes',
-            nestedDetails: [
-              _detail(purchaseSeq: '29866.a', currentAmount: 600),
-            ],
+            totalInitialAmount: 1800, // 30 min
+            nestedDetails: [_detail(purchaseSeq: '29866.a', currentAmount: 600)],
           ),
         ],
       );
@@ -206,47 +267,34 @@ void main() {
       expect(result.first.remaining, 10.0);
       expect(result.first.used, 20.0);
     });
-  });
 
-  group('computePlanBucketUsage — multi-plan aggregation', () {
-    test('sums initial across primary + secondary, matches both plan ids', () {
+    test('falls back to bucket.unit when matched item has empty unitType', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
             planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 14 * 1024 * 1024, unit: 'GB'),
-            ],
-          ),
-          _plan(
-            planId: '30112',
-            buckets: [
-              _bucket(name: 'Data', amount: 5 * 1024 * 1024, unit: 'GB'),
-            ],
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
           ),
         ],
         items: [
           _item(
             freeUnitTypeName: 'data',
-            unitType: 'GB',
+            unitType: '',
+            totalInitialAmount: 1024 * 1024,
             nestedDetails: [
-              _detail(purchaseSeq: '29866.a', currentAmount: 2 * 1024 * 1024),
-              _detail(purchaseSeq: '30112.b', currentAmount: 3 * 1024 * 1024),
-              _detail(purchaseSeq: '99999.c', currentAmount: 100 * 1024 * 1024),
+              _detail(purchaseSeq: '29866.a', currentAmount: 1024 * 1024),
             ],
           ),
         ],
       );
 
-      expect(result, hasLength(1));
-      final usage = result.first;
-      expect(usage.initial, closeTo(19.0, 1e-9));
-      expect(usage.remaining, closeTo(5.0, 1e-9));
-      expect(usage.used, closeTo(14.0, 1e-9));
-      expect(usage.matchedDetailCount, 2);
+      expect(result.first.unitLabel, 'GB');
+      expect(result.first.initial, closeTo(1.0, 1e-9));
     });
+  });
 
-    test('any-unlimited wins when one plan has unlimited bucket', () {
+  group('computePlanBucketUsage — unlimited treatment', () {
+    test('plan-marked unlimited overrides API numbers', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
@@ -260,51 +308,111 @@ void main() {
               ),
             ],
           ),
-          _plan(
-            planId: '30112',
-            buckets: [
-              _bucket(name: 'Voice', amount: 600, unit: 'Minutes'),
-            ],
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'voice',
+            unitType: 'Minutes',
+            totalInitialAmount: 1800,
+            nestedDetails: [_detail(purchaseSeq: '29866.a', currentAmount: 600)],
           ),
         ],
-        items: const [],
       );
 
-      expect(result, hasLength(1));
       expect(result.first.isUnlimited, isTrue);
       expect(result.first.unitLabel, 'mins');
     });
 
-    test('suppressed buckets are dropped from that plan only', () {
+    test('any-unlimited-wins when one of multiple plans marks unlimited', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
             planId: '29866',
-            buckets: [
-              _bucket(
-                name: 'Data',
-                amount: 14 * 1024 * 1024,
-                unit: 'GB',
-                suppress: true,
-              ),
-            ],
+            buckets: [_bucket(name: 'Voice', amount: 600, unit: 'Minutes')],
           ),
           _plan(
             planId: '30112',
             buckets: [
-              _bucket(name: 'Data', amount: 5 * 1024 * 1024, unit: 'GB'),
+              _bucket(
+                name: 'Voice',
+                amount: 0,
+                unit: 'Minutes',
+                unlimited: true,
+              ),
             ],
           ),
         ],
-        items: const [],
+        items: [
+          _item(
+            freeUnitTypeName: 'voice',
+            unitType: 'Minutes',
+            totalInitialAmount: 36000,
+            nestedDetails: [_detail(purchaseSeq: '29866.a', currentAmount: 600)],
+          ),
+        ],
       );
 
-      expect(result, hasLength(1));
-      expect(result.first.initial, closeTo(5.0, 1e-9));
+      expect(result.first.isUnlimited, isTrue);
     });
 
-    test('produces multiple buckets when plans expose different bucket names',
-        () {
+    test(
+      'effectively unlimited: API has remaining but no initial allowance '
+      '(fixes "5 GB of 0.0 GB" bug)',
+      () {
+        final result = computePlanBucketUsage(
+          activePlans: [
+            _plan(
+              planId: '29866',
+              buckets: [_bucket(name: 'whatsapp full', amount: 0, unit: 'GB')],
+            ),
+          ],
+          items: [
+            _item(
+              freeUnitTypeName: 'whatsapp full',
+              unitType: 'GB',
+              totalInitialAmount: 0,
+              nestedDetails: [
+                _detail(
+                  purchaseSeq: '29866.a',
+                  currentAmount: 5 * 1024 * 1024,
+                ),
+              ],
+            ),
+          ],
+        );
+
+        expect(result.first.isUnlimited, isTrue);
+        expect(result.first.unitLabel, 'GB');
+      },
+    );
+
+    test('initial = 0 AND remaining = 0 does NOT trigger unlimited rule', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '29866',
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 0,
+            nestedDetails: const [],
+          ),
+        ],
+      );
+
+      expect(result.first.isUnlimited, isFalse);
+      expect(result.first.initial, 0);
+      expect(result.first.remaining, 0);
+      expect(result.first.progress, 0); // no division by zero
+    });
+  });
+
+  group('computePlanBucketUsage — skip / suppress / dedup', () {
+    test('plan-declared bucket missing from API is skipped', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
@@ -315,43 +423,61 @@ void main() {
             ],
           ),
         ],
-        items: const [],
-      );
-
-      expect(result, hasLength(2));
-      expect(result.map((u) => u.bucketName).toList(), ['Data', 'Voice']);
-      expect(result[0].unitLabel, 'GB');
-      expect(result[1].unitLabel, 'mins');
-    });
-  });
-
-  group('computePlanBucketUsage — edge cases', () {
-    test('no matching usage item → remaining = 0, used = initial', () {
-      final result = computePlanBucketUsage(
-        activePlans: [
-          _plan(
-            planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 10 * 1024 * 1024, unit: 'GB'),
+        items: [
+          // Only Data reported, no Voice item
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 14 * 1024 * 1024,
+            nestedDetails: [
+              _detail(
+                purchaseSeq: '29866.a',
+                currentAmount: 14 * 1024 * 1024,
+              ),
             ],
           ),
         ],
-        items: const [],
       );
 
-      expect(result.first.initial, closeTo(10.0, 1e-9));
-      expect(result.first.remaining, 0);
-      expect(result.first.used, closeTo(10.0, 1e-9));
-      expect(result.first.progress, 1.0);
+      expect(result, hasLength(1));
+      expect(result.first.bucketName, 'Data');
     });
 
-    test('matched item but no matching detail → remaining = 0', () {
+    test('suppressed buckets drop only that plan-row, not the bucket name', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
             planId: '29866',
             buckets: [
-              _bucket(name: 'Data', amount: 10 * 1024 * 1024, unit: 'GB'),
+              _bucket(name: 'Data', amount: 0, unit: 'GB', suppress: true),
+            ],
+          ),
+          _plan(
+            planId: '30112',
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 5 * 1024 * 1024,
+            nestedDetails: const [],
+          ),
+        ],
+      );
+
+      expect(result, hasLength(1));
+      expect(result.first.initial, closeTo(5.0, 1e-9));
+    });
+
+    test('all-suppressed buckets do not render', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '29866',
+            buckets: [
+              _bucket(name: 'Data', amount: 0, unit: 'GB', suppress: true),
             ],
           ),
         ],
@@ -359,18 +485,87 @@ void main() {
           _item(
             freeUnitTypeName: 'data',
             unitType: 'GB',
+            totalInitialAmount: 5 * 1024 * 1024,
+          ),
+        ],
+      );
+
+      expect(result, isEmpty);
+    });
+
+    test('bucket names dedupe across plans (case-insensitive)', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '29866',
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
+          ),
+          _plan(
+            planId: '30112',
+            buckets: [_bucket(name: 'data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'DATA',
+            unitType: 'GB',
+            totalInitialAmount: 10 * 1024 * 1024,
             nestedDetails: [
-              _detail(purchaseSeq: '99999.a', currentAmount: 5 * 1024 * 1024),
+              _detail(purchaseSeq: '29866.a', currentAmount: 4 * 1024 * 1024),
             ],
           ),
         ],
       );
 
-      expect(result.first.remaining, 0);
-      expect(result.first.matchedDetailCount, 0);
+      expect(result, hasLength(1));
+      expect(result.first.bucketName, 'Data'); // first-seen casing wins
+      expect(result.first.initial, closeTo(10.0, 1e-9));
+      expect(result.first.remaining, closeTo(4.0, 1e-9));
     });
 
-    test('initial = 0 → progress = 0 (no division by zero)', () {
+    test('output preserves first-seen plan order across plans', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '29866',
+            buckets: [
+              _bucket(name: 'Data', amount: 0, unit: 'GB'),
+              _bucket(name: 'Voice', amount: 0, unit: 'Minutes'),
+            ],
+          ),
+          _plan(
+            planId: '30112',
+            buckets: [
+              _bucket(name: 'SMS', amount: 0, unit: 'SMS'),
+              _bucket(name: 'Voice', amount: 0, unit: 'Minutes'),
+            ],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 1024 * 1024,
+          ),
+          _item(
+            freeUnitTypeName: 'voice',
+            unitType: 'Minutes',
+            totalInitialAmount: 60,
+          ),
+          _item(freeUnitTypeName: 'sms', unitType: 'SMS', totalInitialAmount: 0),
+        ],
+      );
+
+      expect(
+        result.map((u) => u.bucketName).toList(),
+        ['Data', 'Voice', 'SMS'],
+      );
+    });
+  });
+
+  group('computePlanBucketUsage — purchaseSeq filter robustness', () {
+    test('malformed purchaseSeq (no dot) matches when full string == planId',
+        () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
@@ -378,28 +573,46 @@ void main() {
             buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
           ),
         ],
-        items: const [],
+        items: [
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 10 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '29866', currentAmount: 1024 * 1024),
+              _detail(
+                purchaseSeq: '',
+                currentAmount: 99 * 1024 * 1024,
+              ),
+            ],
+          ),
+        ],
       );
 
-      expect(result.first.progress, 0);
+      expect(result.first.remaining, closeTo(1.0, 1e-9));
+      expect(result.first.matchedDetailCount, 1);
     });
+  });
 
-    test('remaining > initial (stacked add-ons) → used clamped to 0', () {
+  group('computePlanBucketUsage — math safety', () {
+    test('used clamps to 0 when remaining > initial (data anomaly)', () {
       final result = computePlanBucketUsage(
         activePlans: [
           _plan(
             planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 1 * 1024 * 1024, unit: 'GB'),
-            ],
+            buckets: [_bucket(name: 'Data', amount: 0, unit: 'GB')],
           ),
         ],
         items: [
           _item(
             freeUnitTypeName: 'data',
             unitType: 'GB',
+            totalInitialAmount: 1 * 1024 * 1024, // 1 GB
             nestedDetails: [
-              _detail(purchaseSeq: '29866.a', currentAmount: 5 * 1024 * 1024),
+              _detail(
+                purchaseSeq: '29866.a',
+                currentAmount: 5 * 1024 * 1024, // 5 GB
+              ),
             ],
           ),
         ],
@@ -409,75 +622,6 @@ void main() {
       expect(result.first.remaining, closeTo(5.0, 1e-9));
       expect(result.first.used, 0);
       expect(result.first.progress, 0);
-    });
-
-    test('malformed purchaseSeq (no dot) does not crash and uses full string',
-        () {
-      // "29866" with no dot → planIdOf() returns "29866", which matches.
-      final result = computePlanBucketUsage(
-        activePlans: [
-          _plan(
-            planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 10 * 1024 * 1024, unit: 'GB'),
-            ],
-          ),
-        ],
-        items: [
-          _item(
-            freeUnitTypeName: 'data',
-            unitType: 'GB',
-            nestedDetails: [
-              _detail(purchaseSeq: '29866', currentAmount: 1024 * 1024),
-              _detail(purchaseSeq: '', currentAmount: 999 * 1024 * 1024),
-            ],
-          ),
-        ],
-      );
-
-      expect(result.first.matchedDetailCount, 1);
-      expect(result.first.remaining, closeTo(1.0, 1e-9));
-    });
-
-    test('bucket name matching is case-insensitive', () {
-      final result = computePlanBucketUsage(
-        activePlans: [
-          _plan(
-            planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 10 * 1024 * 1024, unit: 'GB'),
-            ],
-          ),
-        ],
-        items: [
-          _item(
-            freeUnitTypeName: 'DATA',
-            unitType: 'GB',
-            nestedDetails: [
-              _detail(purchaseSeq: '29866.a', currentAmount: 4 * 1024 * 1024),
-            ],
-          ),
-        ],
-      );
-
-      expect(result.first.remaining, closeTo(4.0, 1e-9));
-    });
-
-    test('falls back to bucket.unit when matched item has empty unitType', () {
-      final result = computePlanBucketUsage(
-        activePlans: [
-          _plan(
-            planId: '29866',
-            buckets: [
-              _bucket(name: 'Data', amount: 1024 * 1024, unit: 'GB'),
-            ],
-          ),
-        ],
-        items: [_item(freeUnitTypeName: 'data', unitType: '')],
-      );
-
-      expect(result.first.unitLabel, 'GB');
-      expect(result.first.initial, closeTo(1.0, 1e-9));
     });
   });
 }

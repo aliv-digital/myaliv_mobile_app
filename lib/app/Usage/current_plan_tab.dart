@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/no_active_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
@@ -94,41 +97,32 @@ class CurrentPlanTab extends StatelessWidget {
           ),
 
           if (config.isPostpaid == true)
-            buildUsageSection([
-              PostpaidUsageItem(
-                title: "data roam free",
-                subtitle: "2.4 GB of 15 GB",
-                trailingText: "25% used",
-                progress: 0.25,
-              ),
-              PostpaidUsageItem(
-                title: "talk mins roam free",
-                subtitle: "0 of 800",
-                trailingText: "0% used",
-                progress: 0.0,
-              ),
-              PostpaidUsageItem(
-                title: "ALIV to ALIV mins",
-                subtitle: "unlimited",
-                trailingText: "unlimited",
-                isUnlimited: true,
-                progress: 0,
-              ),
-              PostpaidUsageItem(
-                title: "ALIV to ALIV sms",
-                subtitle: "unlimited",
-                trailingText: "unlimited",
-                isUnlimited: true,
-                progress: 0,
-              ),
-              PostpaidUsageItem(
-                title: "ALIV to ALIV mms",
-                subtitle: "0 of 800",
-                trailingText: "0% used",
-                isUnlimited: true,
-                progress: 0,
-              ),
-            ]),
+            BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
+              buildWhen: (a, b) =>
+                  a.summary != b.summary || a.activePlans != b.activePlans,
+              builder: (context, state) {
+                final rows = state.activePlanBucketUsage
+                    .where((u) => !isRoamingBucket(u.bucketName))
+                    .map(
+                      (u) => PostpaidUsageItem(
+                        title: u.bucketName,
+                        subtitle: u.isUnlimited
+                            ? 'unlimited'
+                            : '${formatBucketAmount(u.remaining, u.unitLabel)}'
+                                ' of ${formatBucketAmount(u.initial, u.unitLabel)}',
+                        trailingText: u.isUnlimited
+                            ? 'unlimited'
+                            : '${(u.progress * 100).round()}% used',
+                        isUnlimited: u.isUnlimited,
+                        progress: u.progress,
+                      ),
+                    )
+                    .toList(growable: false);
+
+                if (rows.isEmpty) return const SizedBox.shrink();
+                return buildUsageSection(rows);
+              },
+            ),
 
           if (config.isPostpaid == false)
             Padding(
@@ -347,68 +341,37 @@ class _UsageSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        _LimitRow(
-          title: 'data',
-          subtitle: '2.4 GB of 14 GB',
-          percentUsed: 0.25,
-          progressColor: Color(0xFFE07A4E),
-        ),
-        Divider(color: divider),
-        SizedBox(
-          height: 8,
-        ),
-        _LimitRow(
-          title: 'sms',
-          subtitle: 'unlimited Local',
-          percentUsed: 100,
-          progressColor: Color(0xFF6CB7D4),
-        ),
-        Divider(color: divider),
-        SizedBox(
-          height: 8,
-        ),
-        _LimitRow(
-          title: 'talk mins',
-          subtitle: 'unlimited Local',
-          percentUsed: 100,
-          progressColor: Color(0xFF6B63C5),
-        ),
-        Divider(color: divider),
-        SizedBox(
-          height: 8,
-        ),
-        _LimitRow(
-          title: 'bonus Data',
-          subtitle: 'unlimited WhatsApp Messaging',
-          percentUsed: 100,
-          progressColor: Color(0xFFBDBDBD),
-        ),
-        Divider(color: divider),
-        SizedBox(
-          height: 8,
-        ),
-        _LimitRow(
-          title: 'int’l mins & sms',
-          subtitle: '0 of 600',
-          percentUsed: 100,
-          progressColor: Color(0xFF6B63C5),
-        ),
-        Divider(color: divider),
-        SizedBox(
-          height: 8,
-        ),
-        _LimitRow(
-          title: 'mms',
-          subtitle: '0 of 60',
-          percentUsed: 100,
-          progressColor: Color(0xFF6B63C5),
-        ),
-        Divider(color: divider),
-      ],
+    return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
+      buildWhen: (a, b) =>
+          a.summary != b.summary || a.activePlans != b.activePlans,
+      builder: (context, state) {
+        final rows = state.activePlanBucketUsage
+            .where((u) => !isRoamingBucket(u.bucketName))
+            .toList(growable: false);
+
+        if (rows.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (int i = 0; i < rows.length; i++) ...[
+              _LimitRow(
+                title: rows[i].bucketName,
+                subtitle: rows[i].isUnlimited
+                    ? 'unlimited'
+                    : '${formatBucketAmount(rows[i].remaining, rows[i].unitLabel)}'
+                        ' of ${formatBucketAmount(rows[i].initial, rows[i].unitLabel)}',
+                percentUsed: rows[i].progress,
+                progressColor: styleForBucket(rows[i].bucketName).color,
+                isUnlimited: rows[i].isUnlimited,
+              ),
+              const Divider(color: divider),
+              if (i < rows.length - 1) const SizedBox(height: 8),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -418,12 +381,14 @@ class _LimitRow extends StatelessWidget {
   final String subtitle;
   final double percentUsed;
   final Color progressColor;
+  final bool isUnlimited;
 
   const _LimitRow({
     required this.title,
     required this.subtitle,
     required this.percentUsed,
     required this.progressColor,
+    this.isUnlimited = false,
   });
 
   @override
@@ -462,46 +427,74 @@ class _LimitRow extends StatelessWidget {
               ],
             ),
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final width = 80 * percentUsed.clamp(0.0, 1.0);
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Unlimited buckets render a full green bar regardless of
+                    // progress (matches the home-screen UsageCard treatment).
+                    final isPrepaidGreen =
+                        config.userType != UserType.postpaid;
+                    final showFullGreen = isUnlimited && isPrepaidGreen;
+                    final progressFraction = showFullGreen
+                        ? 1.0
+                        : percentUsed.clamp(0.0, 1.0);
+                    final width = 80 * progressFraction;
 
-                return Stack(
-                  children: [
-                    // Background
-                    Container(
-                      height: 6,
-                      width: 80,
-                      color: config.userType == UserType.postpaid
-                          ? const Color(0x26DD3038)
-                          : const Color(0x2617B26A).withValues(alpha: 0.2),
-                    ),
-
-                    // Gradient progress (width = percentage)
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      height: 6,
-                      width: width.toDouble(),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        gradient: LinearGradient(
-                          colors: config.userType == UserType.postpaid
-                              ? [Color(0x00DD3038), const Color(0xFFDD3038)]
-                              : [
-                                  const Color(0x0017B26A),
-                                  const Color(0xFF17B26A),
-                                ],
+                    return Stack(
+                      children: [
+                        // Background
+                        Container(
+                          height: 6,
+                          width: 80,
+                          color: config.userType == UserType.postpaid
+                              ? const Color(0x26DD3038)
+                              : const Color(0x2617B26A)
+                                  .withValues(alpha: 0.2),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+
+                        // Gradient progress (width = percentage)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: 6,
+                          width: width.toDouble(),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              colors: config.userType == UserType.postpaid
+                                  ? [
+                                      const Color(0x00DD3038),
+                                      const Color(0xFFDD3038),
+                                    ]
+                                  : [
+                                      const Color(0x0017B26A),
+                                      const Color(0xFF17B26A),
+                                    ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                isUnlimited
+                    ? 'unlimited'
+                    : '${(percentUsed.clamp(0.0, 1.0) * 100).round()}% used',
+                style: const TextStyle(
+                  color: Color(0xFF707070),
+                  fontSize: 12,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          // const SizedBox(height: 30),
         ],
       ),
     );

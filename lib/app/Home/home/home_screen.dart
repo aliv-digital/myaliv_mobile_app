@@ -68,16 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
         deviceAccountId: accountInfo.idAcc,
       );
 
-      // Load bucket usage summary together with the current active plans
-      // (primary ∪ secondary, falling back to stand-alone) so consumers can
-      // read plan-bucket allowance (name/amount/unit) from a single cubit.
-      // The plans may still be loading here; the BlocListener<PlansCubit>
-      // below re-syncs once PlansCubit emits.
-      final activePlans =
-          context.read<PlansCubit>().state.activePlansForBucketUsage;
+      // Load bucket usage summary together with the current plan groups so
+      // consumers can read plan-bucket allowance (name/amount/unit) from a
+      // single cubit. The plans may still be loading here; the
+      // BlocListener<PlansCubit> below re-syncs once PlansCubit emits.
+      final plansState = context.read<PlansCubit>().state;
       context.read<BucketUsageSummaryCubit>().loadBucketUsageSummary(
         deviceAccountId: accountInfo.idAcc,
-        activePlans: activePlans,
+        activePlans: plansState.activePlansForBucketUsage,
+        standAlonePlans: plansState.standAlonePlansForBucketUsage,
       );
 
       // Load device limits for all users (used for name display and credit limits)
@@ -99,7 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocListener<PlansCubit, PlansState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
-          previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans,
+          previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
+          previous.secondaryPlans != current.secondaryPlans ||
+          previous.standAlonePlans != current.standAlonePlans,
       listener: (context, state) {
         if (state.status != PlansStatus.success) return;
         final hasPlan = state.addOnsApiPrimaryPlans.isNotEmpty;
@@ -107,10 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
         if (cubit.state.hasActivePlan != hasPlan) {
           cubit.setHasActivePlan(hasPlan);
         }
-        // Keep BucketUsageSummaryCubit's active plan set in sync so its
-        // consumers can read planBuckets without touching PlansCubit.
+        // Keep BucketUsageSummaryCubit's plan sets in sync so its consumers
+        // can read planBuckets without touching PlansCubit.
         context.read<BucketUsageSummaryCubit>().updateActivePlans(
               state.activePlansForBucketUsage,
+              standAlonePlans: state.standAlonePlansForBucketUsage,
             );
       },
       child: Scaffold(
