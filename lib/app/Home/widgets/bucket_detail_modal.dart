@@ -258,6 +258,7 @@ class BucketDetailModal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // will work on it
           const Text(
             'expire dates',
             style: TextStyle(

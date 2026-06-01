@@ -121,6 +121,7 @@ class _ActivePlansExpanderState extends State<ActivePlansExpander> {
             ],
           ),
           const SizedBox(height: 4),
+          // will work on it
           Text(
             'expires on: ${_formatDate(row.plan.endDateTime)}',
             style: const TextStyle(

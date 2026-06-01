@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/core/utils/api_display_time.dart';
+
 /// Unified plan model for all plan types (Daily, Weekly, Monthly, Roaming, etc.)
 ///
 /// This model consolidates 8 previously duplicated models into one.
@@ -257,7 +259,9 @@ class BasePlanModel {
   /// Used by:
   /// - lib/app/Home/widgets/active_plan_card_with_data.dart
   /// - lib/app/Plans/PlanScreen/widgets/home_plan_add_ons_tab_content.dart
-  DateTime? get endDateTime => _tryParseApiDate(endDate);
+  DateTime? get endDateTime {
+    return applyApiDisplayTimeOffsetOrNull(_tryParseApiDate(endDate));
+  }
 
   // ===== Plan type helpers =====
   // PlanType codes: P = Primary, S = Stand-alone, A = Add-on.

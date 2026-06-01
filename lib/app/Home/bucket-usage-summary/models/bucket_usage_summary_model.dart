@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/core/utils/api_display_time.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/bucket_unit_converter.dart';
 
 /// Root model for the bucket usage summary API response.
@@ -222,5 +223,5 @@ DateTime? _parseDateTime(String value) {
 
   // API value example: "2026-05-29 11:27:28".
   final normalizedValue = value.replaceFirst(' ', 'T');
-  return DateTime.tryParse(normalizedValue);
+  return applyApiDisplayTimeOffsetOrNull(DateTime.tryParse(normalizedValue));
 }
