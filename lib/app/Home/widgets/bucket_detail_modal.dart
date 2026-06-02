@@ -72,10 +72,12 @@ class BucketDetailModal extends StatelessWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
-            buildWhen: (a, b) => a.summary != b.summary,
+            buildWhen: (a, b) =>
+                a.summary != b.summary || a.activePlans != b.activePlans,
             builder: (context, state) {
               final item = _findItem(state.items, bucketName);
-              return _body(context, scrollController, item);
+              final isUnlimited = _resolveIsUnlimited(state, bucketName);
+              return _body(context, scrollController, item, isUnlimited);
             },
           ),
         );
@@ -87,6 +89,7 @@ class BucketDetailModal extends StatelessWidget {
     BuildContext context,
     ScrollController scrollController,
     BucketUsageItem? item,
+    bool isUnlimited,
   ) {
     return Column(
       children: [
@@ -112,9 +115,9 @@ class BucketDetailModal extends StatelessWidget {
                     ),
                   )
                 else ...[
-                  _detailsCard(item),
+                  _detailsCard(item, isUnlimited),
                   const SizedBox(height: 16),
-                  _expireDatesCard(item),
+                  _expireDatesCard(item, isUnlimited),
                 ],
                 const SizedBox(height: 16),
                 const ActivePlansExpander(initiallyExpanded: false),
@@ -163,8 +166,10 @@ class BucketDetailModal extends StatelessWidget {
     );
   }
 
-  Widget _detailsCard(BucketUsageItem item) {
+  Widget _detailsCard(BucketUsageItem item, bool isUnlimited) {
     final unit = item.displayUnitLabelText;
+    String fmt(double amount) =>
+        isUnlimited ? 'unlimited' : formatBucketAmount(amount, unit);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -184,14 +189,14 @@ class BucketDetailModal extends StatelessWidget {
               Expanded(
                 child: _metricBox(
                   label: 'total',
-                  value: formatBucketAmount(item.displayInitialAmount, unit),
+                  value: fmt(item.displayInitialAmount),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _metricBox(
                   label: 'used',
-                  value: formatBucketAmount(item.displayUsedAmount, unit),
+                  value: fmt(item.displayUsedAmount),
                 ),
               ),
             ],
@@ -199,7 +204,7 @@ class BucketDetailModal extends StatelessWidget {
           const SizedBox(height: 10),
           _metricBox(
             label: 'remaining',
-            value: formatBucketAmount(item.displayUnusedAmount, unit),
+            value: fmt(item.displayUnusedAmount),
             fullWidth: true,
           ),
         ],
@@ -246,8 +251,8 @@ class BucketDetailModal extends StatelessWidget {
     );
   }
 
-  Widget _expireDatesCard(BucketUsageItem item) {
-    final rows = _sortedRows(item);
+  Widget _expireDatesCard(BucketUsageItem item, bool isUnlimited) {
+    final rows = _sortedRows(item, isUnlimited);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -379,7 +384,7 @@ class BucketDetailModal extends StatelessWidget {
   /// as the user spends down the allowance (the API does not expose the
   /// per-instance initial separately, so this is the closest signal).
   /// Rows are ordered earliest-expiring first for at-a-glance triage.
-  List<String> _sortedRows(BucketUsageItem item) {
+  List<String> _sortedRows(BucketUsageItem item, bool isUnlimited) {
     final details = [...item.nestedDetails];
     details.sort((a, b) {
       final aTime = a.expireDateTime;
@@ -393,9 +398,27 @@ class BucketDetailModal extends StatelessWidget {
     final unit = item.displayUnitLabelText;
     return [
       for (final detail in details)
-        '${formatBucketAmount(toDisplayUnit(detail.currentAmount, item.unitType), unit)} '
+        '${isUnlimited ? 'unlimited' : formatBucketAmount(toDisplayUnit(detail.currentAmount, item.unitType), unit)} '
             'expires ${_formatExpiry(detail.expireDateTime)}',
     ];
+  }
+
+  /// Looks up `isUnlimited` for [name] from the cubit's per-plan view-models.
+  /// Checks active plan buckets first, then roaming. Falls back to `false`.
+  bool _resolveIsUnlimited(BucketUsageSummaryState state, String name) {
+    final target = name.trim().toLowerCase();
+    if (target.isEmpty) return false;
+    for (final usage in state.activePlanBucketUsage) {
+      if (usage.bucketName.trim().toLowerCase() == target) {
+        return usage.isUnlimited;
+      }
+    }
+    for (final usage in state.roamingPlanBucketUsage) {
+      if (usage.bucketName.trim().toLowerCase() == target) {
+        return usage.isUnlimited;
+      }
+    }
+    return false;
   }
 
   String _formatExpiry(DateTime? date) {
