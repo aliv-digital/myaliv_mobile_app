@@ -26,6 +26,13 @@ String formatBucketAmount(double value, String unit) {
 /// matching keeps it resilient to API casing or minor naming variants.
 BucketCardStyle styleForBucket(String bucketName) {
   final normalized = bucketName.trim().toLowerCase();
+  // Roaming check runs first — "roaming data" must not be styled as local data.
+  if (isRoamingBucket(normalized)) {
+    return const BucketCardStyle(
+      icon: 'assets/icons/wifi_icon.svg',
+      color: Color(0xFF17B26A),
+    );
+  }
   if (normalized.contains('data')) {
     return const BucketCardStyle(
       icon: 'assets/icons/Rss.svg',
