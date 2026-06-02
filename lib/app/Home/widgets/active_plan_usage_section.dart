@@ -3,15 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_group.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 /// Home-screen "active plan usage remaining" section. Composes the two
 /// section headers with the shared [UsageGroup] (active + roaming cards
-/// with sticky labels) and the `ActivePlansExpander`. Postpaid additionally
-/// renders the "my limits" header and `MyLimitsCards` below.
+/// with sticky labels). Postpaid additionally renders the "my limits" header
+/// and `MyLimitsCards` below.
 class ActivePlanUsageSection extends StatelessWidget {
   const ActivePlanUsageSection({super.key});
 
@@ -27,10 +26,10 @@ class ActivePlanUsageSection extends StatelessWidget {
         const SizedBox(height: 16),
         UsageGroup(isPostpaid: isPostpaid),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: ActivePlansExpander(),
-        ),
+        // const Padding(
+        //   padding: EdgeInsets.symmetric(horizontal: 24),
+        //   child: ActivePlansExpander(),
+        // ),
         const SizedBox(height: 20),
         if (isPostpaid) ...[
           _myLimitsHeader(context),

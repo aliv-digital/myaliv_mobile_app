@@ -1,10 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/bucket_detail_modal.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/sticky_labels_row.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
 
@@ -80,15 +80,15 @@ class _UsageGroupState extends State<UsageGroup> {
         final activeLabel = active.isEmpty
             ? ''
             : (state.activePlans.isNotEmpty
-                ? state.activePlans.first.planName.trim().toLowerCase()
-                : '');
+                  ? state.activePlans.first.planName.trim().toLowerCase()
+                  : '');
         final roamingLabel = roaming.isEmpty ? null : 'roaming';
 
         final roamingStartX = active.isEmpty
             ? 0.0
             : active.length * _cardWidth +
-                (active.length - 1) * _cardSeparator +
-                _groupGap;
+                  (active.length - 1) * _cardSeparator +
+                  _groupGap;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +154,12 @@ class _UsageGroupState extends State<UsageGroup> {
       remainingLabel: 'remaining',
       progress: usage.progress,
       isPostpaid: widget.isPostpaid,
-      onTap: () => BucketDetailModal.show(cardContext, usage.bucketName),
+      onTap: () {
+        if (kDebugMode) {
+          debugPrint('tapped : ${usage.bucketName}');
+        }
+        // BucketDetailModal.show(cardContext, usage.bucketName);
+      },
     );
   }
 
