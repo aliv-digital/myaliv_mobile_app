@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
@@ -7,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usag
 import 'package:myaliv_mobile_app/app/Home/widgets/bucket_detail_modal.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/sticky_labels_row.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 /// Horizontal usage-cards row with a sticky labels header. Shared between
 /// prepaid and postpaid — the only difference is the [isPostpaid] flag that
@@ -154,7 +156,12 @@ class _UsageGroupState extends State<UsageGroup> {
       remainingLabel: 'remaining',
       progress: usage.progress,
       isPostpaid: widget.isPostpaid,
-      onTap: () => BucketDetailModal.show(cardContext, usage.bucketName),
+      onTap: () {
+         if(kDebugMode){
+           debugPrint("we hid showing bottom sheet");
+         }
+        // BucketDetailModal.show(cardContext, usage.bucketName);
+      }
     );
   }
 

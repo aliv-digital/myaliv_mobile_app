@@ -77,4 +77,10 @@ class AssetConstant {
   static const blackRoundedCrossSVG = 'assets/icons/ic_back_bold.svg';
   static const roundedTikSVG = 'assets/icons/rounded_tik.svg';
   static const redCreditCardSVG = 'assets/icons/redcreditcard.svg';
+  static const whatsAppIconSVG = 'assets/icons/bonus_data_icon.svg';
+  static const dataIconSVG = 'assets/icons/Rss.svg';
+  static const wifiIconsSVG = 'assets/icons/wifi_icon.svg';
+  static const phoneCallsIconSVG = 'assets/icons/phone_call.svg';
+
+  static const messageIconSVG = 'assets/icons/message.svg';
 }
