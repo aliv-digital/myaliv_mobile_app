@@ -26,6 +26,7 @@ class CurrentPlanTab extends StatelessWidget {
       color: Colors.white,
       child: ListView(
         children: [
+          // will work on it
           CurrentPlanActiveCard(config: config),
           const UsageFairUseLink(),
           if (config.isPostpaid) const PostpaidUsageSection(),

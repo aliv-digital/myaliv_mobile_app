@@ -22,20 +22,19 @@ class CurrentPlanActiveCard extends StatelessWidget {
           previous.status != current.status ||
           previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans,
       builder: (context, plansState) {
-        final isResolving = plansState.status == PlansStatus.initial ||
-            plansState.status == PlansStatus.loading;
-        final showActiveCard =
-            isResolving || plansState.addOnsApiPrimaryPlans.isNotEmpty;
+        final isResolving = plansState.status == PlansStatus.initial || plansState.status == PlansStatus.loading;
+        final showActiveCard = isResolving || plansState.addOnsApiPrimaryPlans.isNotEmpty;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-          child: showActiveCard
-              ? (config.isPostpaid
-                  ? const PostpaidCurrentPlan()
-                  : const PrepaidActivePlanCardWithData(
-                      showRenewButton: false,
-                    ))
-              : const NoActivePlanCard(),
+          child: showActiveCard ? (
+              config.isPostpaid ?
+              const PostpaidCurrentPlan() :
+              const PrepaidActivePlanCardWithData(
+                showRenewButton: false
+              )
+          ) :
+          const NoActivePlanCard(),
         );
       },
     );

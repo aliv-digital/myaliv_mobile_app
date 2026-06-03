@@ -76,4 +76,5 @@ class AssetConstant {
   static const creditCardIconSVG = 'assets/icons/credit_card.svg';
   static const blackRoundedCrossSVG = 'assets/icons/ic_back_bold.svg';
   static const roundedTikSVG = 'assets/icons/rounded_tik.svg';
+  static const redCreditCardSVG = 'assets/icons/redcreditcard.svg';
 }

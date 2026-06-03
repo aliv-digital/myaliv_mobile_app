@@ -21,6 +21,14 @@ class ActiveAddOnsChips extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
+        // this section should be dynamic
+        /*
+        The Active Add-ons section should only be displayed when the
+        user has purchased add-ons. The user should see active add-ons
+        based on what they purchased. For example,
+        if the user only purchased data add-ons,
+        then only data should be shown in the Active Add-ons section.
+         */
         Wrap(
           spacing: 10,
           children: const [
