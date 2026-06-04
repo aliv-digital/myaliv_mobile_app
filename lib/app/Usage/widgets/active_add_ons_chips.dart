@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 
 /// "active add-ons" chip row shown above the prepaid usage list.
 ///
-/// Reads the same `BucketUsageSummaryCubit` that drives the usage rows
-/// below, so chips and rows always agree. The cubit's `activePlans`
-/// already covers primary + secondary plans (roaming contributions are
-/// stripped from `activePlanBucketUsage`), giving a single source of
-/// truth for which categories the user actually has.
+/// Renders one chip per secondary plan attached to the primary plan,
+/// using each plan's `planName` verbatim. Stand-alone (roaming) plans
+/// are not represented here.
 ///
-/// Hidden entirely (title + chips) when no normalized category is found.
+/// Hidden entirely (title + chips) when there are no secondary plans.
 class ActiveAddOnsChips extends StatelessWidget {
   const ActiveAddOnsChips({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
-      buildWhen: (a, b) => a.activePlanBucketUsage != b.activePlanBucketUsage,
+    return BlocBuilder<PlansCubit, PlansState>(
+      buildWhen: (a, b) => a.secondaryPlans != b.secondaryPlans,
       builder: (context, state) {
-        final categories = _chipCategories(state);
-        if (categories.isEmpty) return const SizedBox.shrink();
+        final labels = state.secondaryPlans
+            .map((p) => p.planName.trim())
+            .where((n) => n.isNotEmpty)
+            .toList(growable: false);
+
+        if (labels.isEmpty) return const SizedBox.shrink();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,39 +40,15 @@ class ActiveAddOnsChips extends StatelessWidget {
             const SizedBox(height: 10),
             Wrap(
               spacing: 10,
+              runSpacing: 10,
               children: [
-                for (final category in categories) _Chip(category),
+                for (final label in labels) _Chip(label),
               ],
             ),
           ],
         );
       },
     );
-  }
-
-  /// Encounter-ordered set of chip categories derived from the active
-  /// bucket usage rows. Normalizes bucket names to one of `data` /
-  /// `voice` / `sms`; unknown buckets are dropped.
-  List<String> _chipCategories(BucketUsageSummaryState state) {
-    final ordered = <String>{};
-    for (final usage in state.activePlanBucketUsage) {
-      final category = _categoryFor(usage.bucketName);
-      if (category != null) ordered.add(category);
-    }
-    return ordered.toList(growable: false);
-  }
-
-  String? _categoryFor(String bucketName) {
-    final n = bucketName.trim().toLowerCase();
-    if (n.contains('data') || n.contains('whatsapp')) return 'data';
-    if (n.contains('voice') ||
-        n.contains('talk') ||
-        n.contains('minute') ||
-        n.contains('mins')) {
-      return 'voice';
-    }
-    if (n.contains('sms') || n.contains('text')) return 'sms';
-    return null;
   }
 }
 
