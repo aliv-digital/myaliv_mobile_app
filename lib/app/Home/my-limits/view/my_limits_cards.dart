@@ -114,9 +114,11 @@ class MyLimitsCards extends StatelessWidget {
     }
   }
 
-  /// Calculate progress as remaining/initial (inverted from percentUsed)
+  /// Progress = fraction USED (used/initial). The bar fills as consumption
+  /// approaches the limit so threshold-based coloring (green → yellow → red)
+  /// reads correctly.
   double _calculateProgress(ConsumptionLimitModel limit) {
     if (limit.initialAmount <= 0) return 0;
-    return (limit.remainingAmount / limit.initialAmount).clamp(0.0, 1.0);
+    return (limit.usedAmount / limit.initialAmount).clamp(0.0, 1.0);
   }
 }

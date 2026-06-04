@@ -163,14 +163,61 @@ class UsageCard extends StatelessWidget {
     );
   }
 
-  /// Postpaid bar: solid red palette, width = progress (1.0 for unlimited).
-  /// Matches the Usage tab `_LimitRow` treatment for postpaid.
+  /// Postpaid bar: color escalates green → yellow → red as `progress`
+  /// (fraction used) grows. Mirrors the Usage tab `AnimatedUsageProgress`
+  /// treatment so usage-vs-limit warnings stay consistent across the app.
   Widget _postpaidprogressBar() {
+    final style = _resolvePostpaidStyle();
     return _bar(
       borderRadius: 8,
-      backgroundColor: const Color(0x26DD3038),
-      progressGradient: const LinearGradient(
-        colors: [Color(0x00DD3038), Color(0xFFDD3038)],
+      backgroundColor: style.backgroundColor,
+      progressGradient: style.gradient,
+    );
+  }
+
+  _ProgressStyle _resolvePostpaidStyle() {
+    if (isUnlimited) {
+      return const _ProgressStyle(
+        backgroundColor: Color(0x2617B26A),
+        gradient: LinearGradient(
+          colors: [Color(0x0017B26A), Color(0xFF17B26A)],
+        ),
+      );
+    }
+
+    final clamped = (progress.clamp(0.0, 1.0) * 100).round();
+
+    if (clamped == 0) {
+      return const _ProgressStyle(
+        backgroundColor: Color(0x2617B26A),
+        gradient: LinearGradient(
+          colors: [Color(0x0017B26A), Color(0xFF17B26A)],
+        ),
+      );
+    }
+
+    if (clamped > 80) {
+      return const _ProgressStyle(
+        backgroundColor: Color(0x26DD3038),
+        gradient: LinearGradient(
+          colors: [Color(0x00DD3038), Color(0xFFDD3038)],
+        ),
+      );
+    }
+
+    if (clamped > 50) {
+      return const _ProgressStyle(
+        backgroundColor: Color(0x26FFC627),
+        gradient: LinearGradient(
+          colors: [Color(0x00FFC627), Color(0xFFFFC627)],
+        ),
+      );
+    }
+
+    return const _ProgressStyle(
+      backgroundColor: Color(0x2617B26A),
+      gradient: LinearGradient(
+        colors: [Color(0x0017B26A), Color(0xFF17B26A)],
       ),
     );
   }
@@ -205,4 +252,14 @@ class UsageCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ProgressStyle {
+  final Color backgroundColor;
+  final LinearGradient gradient;
+
+  const _ProgressStyle({
+    required this.backgroundColor,
+    required this.gradient,
+  });
 }
