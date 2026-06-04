@@ -12,6 +12,7 @@ class UsageCard extends StatelessWidget {
   final bool isPostpaid;
   final bool isUnlimited;
   final VoidCallback? onTap;
+  final double width;
 
   const UsageCard({
     super.key,
@@ -25,6 +26,7 @@ class UsageCard extends StatelessWidget {
     required this.isPostpaid,
     this.isUnlimited = false,
     this.onTap,
+    this.width = 124,
   });
 
   @override
@@ -43,7 +45,7 @@ class UsageCard extends StatelessWidget {
 
   Widget _cardContent() {
     return Container(
-      width: 124, //height: 124,
+      width: width, //height: 124,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,

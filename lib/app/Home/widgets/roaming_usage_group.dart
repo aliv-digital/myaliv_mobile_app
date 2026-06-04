@@ -7,25 +7,33 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucke
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_card.dart';
 
-/// Horizontal active-plan usage cards. Sources `state.activePlanBucketUsage`,
-/// filters out roaming-named buckets (those render in `RoamingUsageGroup`
-/// below) and shows a plain plan-name label above the cards row.
-class UsageGroup extends StatelessWidget {
-  const UsageGroup({super.key, required this.isPostpaid});
+/// Horizontal roaming usage cards. Reads `state.roamingPlanBucketUsage`
+/// (standalone roaming plans like roameasy) and currently surfaces only the
+/// `roam data us/can` bucket — other roaming buckets are intentionally
+/// hidden for now.
+class RoamingUsageGroup extends StatelessWidget {
+  const RoamingUsageGroup({super.key, required this.isPostpaid});
 
   final bool isPostpaid;
 
+  static const String _targetBucket = 'roam data us/can';
+
   static const double _cardSeparator = 12;
   static const double _leadingPad = 24;
-  static const double _labelToCardsGap = 16;
   static const double _cardsRowHeight = 160;
 
-  static const TextStyle _labelStyle = TextStyle(
-    color: Colors.black,
-    fontSize: 18,
-    fontFamily: 'CircularPro',
-    fontWeight: FontWeight.w700,
-  );
+  /// Returns true when there is at least one `roam data us/can` card to show.
+  /// Used by the home section composer to hide the "roaming" header when the
+  /// list would be empty.
+  static bool hasRoamingCards(BucketUsageSummaryState state) {
+    return _filter(state.roamingPlanBucketUsage).isNotEmpty;
+  }
+
+  static List<PlanBucketUsage> _filter(List<PlanBucketUsage> source) {
+    return source
+        .where((u) => u.bucketName.trim().toLowerCase() == _targetBucket)
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,30 +43,17 @@ class UsageGroup extends StatelessWidget {
           a.activePlans != b.activePlans ||
           a.standAlonePlans != b.standAlonePlans,
       builder: (context, state) {
-        final active = state.activePlanBucketUsage
-            .where((u) => !isRoamingBucket(u.bucketName))
-            .toList();
-
-        if (active.isEmpty) return const SizedBox.shrink();
-
-        final activeLabel = state.activePlans.isNotEmpty
-            ? state.activePlans.first.planName.trim().toLowerCase()
-            : '';
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (activeLabel.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: _leadingPad),
-                child: Text(activeLabel, style: _labelStyle),
-              ),
-            const SizedBox(height: _labelToCardsGap),
-            SizedBox(
-              height: _cardsRowHeight,
-              child: _cardsList(context, active),
-            ),
-          ],
+        final cards = _filter(state.roamingPlanBucketUsage);
+        if (cards.isEmpty) return const SizedBox.shrink();
+        if (cards.length == 1) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: _leadingPad),
+            child: _card(context, cards.first, width: double.infinity),
+          );
+        }
+        return SizedBox(
+          height: _cardsRowHeight,
+          child: _cardsList(context, cards),
         );
       },
     );
@@ -79,7 +74,11 @@ class UsageGroup extends StatelessWidget {
     );
   }
 
-  Widget _card(BuildContext context, PlanBucketUsage usage) {
+  Widget _card(
+    BuildContext context,
+    PlanBucketUsage usage, {
+    double width = 124,
+  }) {
     final style = styleForBucket(usage.bucketName);
     return UsageCard(
       icon: style.icon,
@@ -91,6 +90,7 @@ class UsageGroup extends StatelessWidget {
       remainingLabel: 'remaining',
       progress: usage.progress,
       isPostpaid: isPostpaid,
+      width: width,
       onTap: () {
         if (kDebugMode) {
           debugPrint('we hid showing bottom sheet');

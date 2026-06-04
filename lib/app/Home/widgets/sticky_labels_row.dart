@@ -1,3 +1,10 @@
+// __PARKED_STICKY_LABELS_ROW__
+// Parked: superseded by the split active/roaming sections in
+// `active_plan_usage_section.dart`. The two sections each render their own
+// plain (non-sticky) label, so the scroll-tracked sticky-header behaviour
+// this widget provided is no longer needed.
+// Kept (commented-out) for reversibility; safe to delete after QA.
+/*
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -114,3 +121,4 @@ class StickyLabelsRow extends StatelessWidget {
     return tp.height;
   }
 }
+*/

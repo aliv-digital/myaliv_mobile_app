@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
+// Parked alongside the commented `ActivePlansExpander` block below.
+// import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/roaming_usage_group.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_group.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
-/// Home-screen "active plan usage remaining" section. Composes the two
-/// section headers with the shared [UsageGroup] (active + roaming cards
-/// with sticky labels) and the `ActivePlansExpander`. Postpaid additionally
-/// renders the "my limits" header and `MyLimitsCards` below.
+/// Home-screen "active plan usage remaining" section. Composes the section
+/// header with the active-plan [UsageGroup] cards row, followed by a
+/// "roaming" header + [RoamingUsageGroup] (hidden when the user has no
+/// roaming buckets). Postpaid additionally renders the "my limits" header
+/// and [MyLimitsCards] below.
 class ActivePlanUsageSection extends StatelessWidget {
   const ActivePlanUsageSection({super.key});
 
@@ -26,13 +31,15 @@ class ActivePlanUsageSection extends StatelessWidget {
         _header(context),
         const SizedBox(height: 16),
         UsageGroup(isPostpaid: isPostpaid),
-        const SizedBox(height: 20),
-        // commented by nahin
+        // commented by nahin — when re-enabling, restore the SizedBox(20)
+        // above and below this block to keep the expander vertically padded.
+        // const SizedBox(height: 20),
         // const Padding(
         //   padding: EdgeInsets.symmetric(horizontal: 24),
         //   child: ActivePlansExpander(),
         // ),
         const SizedBox(height: 20),
+        _roamingSection(context, isPostpaid),
         if (isPostpaid) ...[
           _myLimitsHeader(context),
           const SizedBox(height: 10),
@@ -56,6 +63,35 @@ class ActivePlanUsageSection extends StatelessWidget {
     }
 
     return _SectionHeader(title: 'my limits', onTap: open);
+  }
+
+  /// "roaming" section: header + horizontal cards. The whole block is hidden
+  /// when there are no roaming cards to show, so we don't render a header
+  /// with nothing under it.
+  Widget _roamingSection(BuildContext context, bool isPostpaid) {
+    return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
+      buildWhen: (a, b) =>
+          a.summary != b.summary ||
+          a.activePlans != b.activePlans ||
+          a.standAlonePlans != b.standAlonePlans,
+      builder: (context, state) {
+        if (!RoamingUsageGroup.hasRoamingCards(state)) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionHeader(
+              title: 'roaming',
+              onTap: () => context.go(AppRoutes.usage),
+            ),
+            const SizedBox(height: 16),
+            RoamingUsageGroup(isPostpaid: isPostpaid),
+            const SizedBox(height: 20),
+          ],
+        );
+      },
+    );
   }
 }
 
