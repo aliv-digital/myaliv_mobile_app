@@ -29,7 +29,6 @@ class RoamingPlanSection extends StatelessWidget {
         final plans = state.standAlonePlans;
         if (plans.isEmpty) return const SizedBox.shrink();
 
-        final firstPlan = plans.first;
         final rows = state.roamingPlanBucketUsage;
 
         return Column(
@@ -38,7 +37,15 @@ class RoamingPlanSection extends StatelessWidget {
             const _SectionTitle(),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: UsageRoamingPlanCard(plan: firstPlan),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (int i = 0; i < plans.length; i++) ...[
+                    UsageRoamingPlanCard(plan: plans[i]),
+                    if (i < plans.length - 1) const SizedBox(height: 16),
+                  ],
+                ],
+              ),
             ),
             if (rows.isNotEmpty) _MetricRows(rows: rows),
             const SizedBox(height: 16),

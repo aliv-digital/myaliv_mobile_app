@@ -27,10 +27,11 @@ class ActivePlanUsageSection extends StatelessWidget {
         const SizedBox(height: 16),
         UsageGroup(isPostpaid: isPostpaid),
         const SizedBox(height: 20),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: ActivePlansExpander(),
-        ),
+        // commented by nahin
+        // const Padding(
+        //   padding: EdgeInsets.symmetric(horizontal: 24),
+        //   child: ActivePlansExpander(),
+        // ),
         const SizedBox(height: 20),
         if (isPostpaid) ...[
           _myLimitsHeader(context),

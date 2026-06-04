@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 /// Presentation-only helpers shared by widgets that render
 /// `PlanBucketUsage` rows (home active-plan section, Usage current-plan tab,
@@ -28,34 +30,40 @@ BucketCardStyle styleForBucket(String bucketName) {
   final normalized = bucketName.trim().toLowerCase();
   // Roaming check runs first — "roaming data" must not be styled as local data.
   if (isRoamingBucket(normalized)) {
-    return const BucketCardStyle(
-      icon: 'assets/icons/wifi_icon.svg',
+    return BucketCardStyle(
+      icon: AssetConstant.wifiIconsSVG,
       color: Color(0xFF17B26A),
     );
   }
   if (normalized.contains('data')) {
-    return const BucketCardStyle(
-      icon: 'assets/icons/Rss.svg',
+    return BucketCardStyle(
+      icon: AssetConstant.dataIconSVG,
       color: Color(0xFFFF6C36),
+    );
+  }
+  if(normalized.contains('whatsapp')){
+    return BucketCardStyle(
+      icon: AssetConstant.whatsAppIconSVG,
+      color: HexColor.fromHex('#00C4B3'),
     );
   }
   if (normalized.contains('voice') ||
       normalized.contains('talk') ||
       normalized.contains('minute') ||
       normalized.contains('mins')) {
-    return const BucketCardStyle(
-      icon: 'assets/icons/phone_call.svg',
+    return BucketCardStyle(
+      icon: AssetConstant.phoneCallsIconSVG,
       color: Color(0xFF00B3E3),
     );
   }
   if (normalized.contains('sms') || normalized.contains('text')) {
     return const BucketCardStyle(
-      icon: 'assets/icons/message.svg',
+      icon: AssetConstant.messageIconSVG,//'assets/icons/message.svg'
       color: Color(0xFF5045A7),
     );
   }
   return const BucketCardStyle(
-    icon: 'assets/icons/Rss.svg',
+    icon: AssetConstant.dataIconSVG,
     color: Color(0xFF707070),
   );
 }

@@ -11,6 +11,7 @@ import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 /// Active plan card connected to PlansCubit for real-time data.
 ///
@@ -38,19 +39,29 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
-        final card = Container(
-          height: showRenewButton ? 200 : 150,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-          decoration: BoxDecoration(
-            image: const DecorationImage(
-              image: AssetImage('assets/icons/Home Active Plan.png'),
-              fit: BoxFit.fill,
+        final redCreditCard = AssetConstant.redCreditCardSVG;
+        final cardHeight = showRenewButton ? 200.0 : 150.0;
+        final cardPadding = showRenewButton ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13) : const EdgeInsets.fromLTRB(16, 13, 16, 26);
+
+        final card = ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: SizedBox(
+            height: cardHeight,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(
+                  child: _CreditCardBackground(assetPath: redCreditCard),
+                ),
+                Padding(
+                  padding: cardPadding,
+                  child: (state.isLoading || state.isInitial) ?
+                  ActivePlanCardSkeleton(showRenewButton: showRenewButton) :
+                  _buildContent(state.earliestAddOnsPrimaryPlan),
+                ),
+              ],
             ),
-            borderRadius: BorderRadius.circular(12),
           ),
-          child: (state.isLoading || state.isInitial)
-              ? ActivePlanCardSkeleton(showRenewButton: showRenewButton)
-              : _buildContent(state.earliestAddOnsPrimaryPlan),
         );
 
         if (!showRenewButton) return card;
@@ -101,6 +112,49 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _CreditCardBackground extends StatelessWidget {
+  const _CreditCardBackground({required this.assetPath});
+
+  final String assetPath;
+
+  static const double _svgWidth = 372;
+  static const double _svgHeight = 182;
+  static const double _cardLeft = 8;
+  static const double _cardTop = 6;
+  static const double _cardWidth = 340;
+  static const double _cardHeight = 150;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // The SVG canvas includes Figma shadow gutters; crop to the 340x150 card.
+        final backgroundWidth = constraints.maxWidth * _svgWidth / _cardWidth;
+        final backgroundHeight =
+            constraints.maxHeight * _svgHeight / _cardHeight;
+        final leftOffset = constraints.maxWidth * _cardLeft / _cardWidth;
+        final topOffset = constraints.maxHeight * _cardTop / _cardHeight;
+
+        return ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.topLeft,
+            maxWidth: backgroundWidth,
+            maxHeight: backgroundHeight,
+            child: Transform.translate(
+              offset: Offset(-leftOffset, -topOffset),
+              child: SizedBox(
+                width: backgroundWidth,
+                height: backgroundHeight,
+                child: SvgPicture.asset(assetPath, fit: BoxFit.fill),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

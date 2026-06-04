@@ -26,6 +26,7 @@ class CurrentPlanTab extends StatelessWidget {
       color: Colors.white,
       child: ListView(
         children: [
+          // will work on it
           CurrentPlanActiveCard(config: config),
           const UsageFairUseLink(),
           if (config.isPostpaid) const PostpaidUsageSection(),
@@ -52,6 +53,7 @@ class CurrentPlanTab extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(24, 0, 24, 8),
       child: PurchaseAddOnButton(),
     ),
+    // will work here
     RoamingPlanSection(),
   ];
 }
