@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         return config.userType == UserType.prepaid
-                            ? const PrepaidActivePlanCardWithData()
+                            ? const PrepaidActivePlanCardWithData(isFromHome: true,) // TODO
                             : PostpaidActivePlanCard(config: config);
                       },
                     ),

@@ -84,7 +84,8 @@ class UsageRoamingPlanCard extends StatelessWidget {
   /// bundles API drops a date string.
   static String _format(DateTime? date) {
     if (date == null) return '--/--/--';
-    return DateFormat('dd/MM/yy').format(date);
+    final adjustedDate = date.add(const Duration(hours: 6));
+    return DateFormat('dd/MM/yy').format(adjustedDate);
   }
 }
 

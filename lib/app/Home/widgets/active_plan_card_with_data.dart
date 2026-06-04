@@ -19,8 +19,9 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 /// matching the original design from PrepaidActivePlanCard.
 class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool showRenewButton;
+  final bool isFromHome;
 
-  const PrepaidActivePlanCardWithData({super.key, this.showRenewButton = true});
+  const PrepaidActivePlanCardWithData({super.key, this.showRenewButton = true,this.isFromHome=false});
 
   String _formatCardDate(DateTime? date) {
     if (date == null) {
@@ -39,7 +40,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
-        final redCreditCard = AssetConstant.redCreditCardSVG;
+        final redCreditCard = isFromHome ? AssetConstant.homeRedCardSVG : AssetConstant.redCreditCardSVG;
         final cardHeight = showRenewButton ? 200.0 : 150.0;
         final cardPadding = showRenewButton ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13) : const EdgeInsets.fromLTRB(16, 13, 16, 26);
 
@@ -123,21 +124,26 @@ class _CreditCardBackground extends StatelessWidget {
 
   static const double _svgWidth = 372;
   static const double _svgHeight = 182;
+  static const double _homeSvgHeight = 232;
   static const double _cardLeft = 8;
   static const double _cardTop = 6;
   static const double _cardWidth = 340;
   static const double _cardHeight = 150;
+  static const double _homeCardHeight = 200;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // The SVG canvas includes Figma shadow gutters; crop to the 340x150 card.
+        // The SVG canvas includes Figma shadow gutters; crop to the card rect.
+        final isHomeRedCard = assetPath == AssetConstant.homeRedCardSVG;
+        final svgHeight = isHomeRedCard ? _homeSvgHeight : _svgHeight;
+        final cardHeight = isHomeRedCard ? _homeCardHeight : _cardHeight;
         final backgroundWidth = constraints.maxWidth * _svgWidth / _cardWidth;
         final backgroundHeight =
-            constraints.maxHeight * _svgHeight / _cardHeight;
+            constraints.maxHeight * svgHeight / cardHeight;
         final leftOffset = constraints.maxWidth * _cardLeft / _cardWidth;
-        final topOffset = constraints.maxHeight * _cardTop / _cardHeight;
+        final topOffset = constraints.maxHeight * _cardTop / cardHeight;
 
         return ClipRect(
           child: OverflowBox(
