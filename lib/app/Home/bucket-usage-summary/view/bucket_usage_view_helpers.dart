@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
@@ -67,6 +68,12 @@ BucketCardStyle styleForBucket(String bucketName) {
     return const BucketCardStyle(
       icon: AssetConstant.messageIconSVG,//'assets/icons/message.svg'
       color: Color(0xFF5045A7),
+    );
+  }
+  if(normalized.contains('aliv to')){
+    return BucketCardStyle(
+      icon: AssetConstant.textIconSVG,//'assets/icons/message.svg'
+      color: HexColor.fromHex('#FF6C36'),
     );
   }
   return const BucketCardStyle(

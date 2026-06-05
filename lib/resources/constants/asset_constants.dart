@@ -83,4 +83,6 @@ class AssetConstant {
   static const phoneCallsIconSVG = 'assets/icons/phone_call.svg';
 
   static const messageIconSVG = 'assets/icons/message.svg';
+  static const textIconSVG = 'assets/icons/talk_text_icon.svg';
+  static const homeRedCardSVG = 'assets/icons/home_red_card.svg';
 }
