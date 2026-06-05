@@ -52,7 +52,11 @@ List<PlanBucketUsage> computePlanBucketUsage({
 
   for (final plan in activePlans) {
     for (final bucket in plan.planBuckets) {
-      if (bucket.suppress) continue;
+      // Unlimited buckets bypass suppress — `Suppress: True` paired with
+      // `Unlimited: True` (e.g. roameasy's "ALIV to ALIV minutes/texts") is
+      // a user-facing perk that should render even though the API marks it
+      // suppressed for metered displays.
+      if (bucket.suppress && !bucket.unlimited) continue;
 
       final key = _normalize(bucket.name);
       if (key.isEmpty) continue;
@@ -80,8 +84,12 @@ List<PlanBucketUsage> computePlanBucketUsage({
     final meta = planMeta[key]!;
     final matchedItem = _findItemForBucketName(items, key);
     if (matchedItem == null) {
-      // Plan declares this bucket but API hasn't reported on it — skip
-      // rather than show stale plan-side numbers.
+      // Unlimited buckets render from plan-side info only (no numbers
+      // needed), so a missing API item is fine. Metered buckets still
+      // need the API row — without it we'd show stale plan-side numbers.
+      if (meta.isUnlimited) {
+        result.add(_unlimitedRow(meta.displayName, displayUnitLabel(meta.unitFromPlan)));
+      }
       continue;
     }
 

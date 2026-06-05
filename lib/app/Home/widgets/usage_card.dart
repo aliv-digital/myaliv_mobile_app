@@ -218,9 +218,7 @@ class UsageCard extends StatelessWidget {
 
     return const _ProgressStyle(
       backgroundColor: Color(0x2617B26A),
-      gradient: LinearGradient(
-        colors: [Color(0x0017B26A), Color(0xFF17B26A)],
-      ),
+      gradient: LinearGradient(colors: [Color(0x0017B26A), Color(0xFF17B26A)]),
     );
   }
 
@@ -260,8 +258,5 @@ class _ProgressStyle {
   final Color backgroundColor;
   final LinearGradient gradient;
 
-  const _ProgressStyle({
-    required this.backgroundColor,
-    required this.gradient,
-  });
+  const _ProgressStyle({required this.backgroundColor, required this.gradient});
 }
