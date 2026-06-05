@@ -82,7 +82,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
   final result = <PlanBucketUsage>[];
   for (final key in orderedKeys) {
     final meta = planMeta[key]!;
-    final matchedItem = _findItemForBucketName(items, key, planIds: planIds);
+    final matchedItem = _findItemForBucketName(items, key);
     if (matchedItem == null) {
       // Unlimited buckets render from plan-side info only (no numbers
       // needed), so a missing API item is fine. Metered buckets still
@@ -178,54 +178,17 @@ class _PlanBucketMeta {
   bool isUnlimited;
 }
 
-/// Resolves which `BucketUsageItem` corresponds to a plan-side bucket name.
-///
-/// Strongest signal first: pick the item whose nested details contain a
-/// `purchaseSeq` for one of the active [planIds] — that's an unambiguous
-/// "this allowance belongs to this plan" link, regardless of how the API
-/// chooses to name the bucket. Both exact and substring name matches are
-/// considered so plan-side `"roaming data"` resolves against API-side
-/// `"us/can/uk roaming data"` (same `INS_Data_roam_as_home*` unit) when
-/// the substring is the only common ground.
-///
-/// Name-only fallback: when no candidate has a matching nested detail
-/// (e.g. brand-new purchase, API just-published item with no details
-/// yet), an exact name match is preferred over a substring match so the
-/// row still gets API-side `totalInitialAmount` instead of being dropped.
-///
-/// Safety: the caller filters [BucketUsageDetail]s by `planId` again when
-/// summing `remaining`, so a loose name match cannot inflate consumption
-/// with another plan's data — at worst the row's `initial` carries an
-/// extra plan's share, which the `excludePlanIds` subtraction removes.
 BucketUsageItem? _findItemForBucketName(
   List<BucketUsageItem> items,
-  String normalizedName, {
-  Set<String> planIds = const <String>{},
-}) {
+  String normalizedName,
+) {
   if (normalizedName.isEmpty) return null;
-
-  BucketUsageItem? exactNameOnly;
-  BucketUsageItem? substringNameOnly;
-
   for (final item in items) {
-    final apiName = _normalize(item.freeUnitTypeName);
-    final isExact = apiName == normalizedName;
-    final isSubstring = !isExact && apiName.contains(normalizedName);
-    if (!isExact && !isSubstring) continue;
-
-    final hasMatchingPlan = item.nestedDetails.any(
-      (d) => planIds.contains(_planIdOf(d.purchaseSeq)),
-    );
-    if (hasMatchingPlan) return item;
-
-    if (isExact) {
-      exactNameOnly ??= item;
-    } else {
-      substringNameOnly ??= item;
+    if (_normalize(item.freeUnitTypeName) == normalizedName) {
+      return item;
     }
   }
-
-  return exactNameOnly ?? substringNameOnly;
+  return null;
 }
 
 /// Extracts the plan id from a `PurchaseSeq` value.
