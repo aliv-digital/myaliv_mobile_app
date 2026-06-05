@@ -13,13 +13,20 @@ bool isRoamingBucket(String bucketName) {
   return bucketName.toLowerCase().contains('roam');
 }
 
-/// Formats `value unit` (e.g. "2.4 GB", "30 mins"). Whole numbers drop the
-/// decimal; fractional values are kept to one decimal place. Returns the
-/// numeric part alone when [unit] is empty.
+/// Formats `value unit` (e.g. "0.25 GB", "2.4 GB", "30 mins"). Whole
+/// numbers drop the decimal; fractional values are kept to up to two
+/// decimal places with trailing zeros trimmed (so 0.25 → "0.25", 0.5 →
+/// "0.5", 1 → "1"). Returns the numeric part alone when [unit] is empty.
 String formatBucketAmount(double value, String unit) {
-  final formatted = value == value.roundToDouble()
-      ? value.toInt().toString()
-      : value.toStringAsFixed(1);
+  final String formatted;
+  if (value == value.roundToDouble()) {
+    formatted = value.toInt().toString();
+  } else {
+    final twoDecimals = value.toStringAsFixed(2);
+    formatted = twoDecimals
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
   if (unit.isEmpty) return formatted;
   return '$formatted $unit';
 }
