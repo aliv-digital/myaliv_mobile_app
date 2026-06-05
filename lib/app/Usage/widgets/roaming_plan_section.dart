@@ -9,11 +9,10 @@ import 'package:myaliv_mobile_app/app/Usage/widgets/usage_roaming_widget.dart';
 
 /// Drives the entire "roaming plan" block on the Usage tab from
 /// `BucketUsageSummaryState`. Hidden when the user has no stand-alone
-/// plan. The header card uses the first stand-alone plan (per design,
-/// which shows a single card); metric rows iterate
-/// `roamingPlanBucketUsage` so each row reflects only the roaming
-/// plan's own allowance (primary/secondary contributions already
-/// subtracted by the calculator).
+/// plan. Renders one card per stand-alone plan, followed immediately by
+/// that plan's own usage rows (computed via
+/// `state.bucketUsageForPlan(plan)` so shared bucket names from sibling
+/// roaming plans don't bleed across cards).
 class RoamingPlanSection extends StatelessWidget {
   const RoamingPlanSection({super.key});
 
@@ -29,25 +28,24 @@ class RoamingPlanSection extends StatelessWidget {
         final plans = state.standAlonePlans;
         if (plans.isEmpty) return const SizedBox.shrink();
 
-        final rows = state.roamingPlanBucketUsage;
-
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const _SectionTitle(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (int i = 0; i < plans.length; i++) ...[
-                    UsageRoamingPlanCard(plan: plans[i]),
-                    if (i < plans.length - 1) const SizedBox(height: 16),
-                  ],
-                ],
+            for (int i = 0; i < plans.length; i++) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                child: UsageRoamingPlanCard(plan: plans[i]),
               ),
-            ),
-            if (rows.isNotEmpty) _MetricRows(rows: rows),
+              Builder(
+                builder: (_) {
+                  final rows = state.bucketUsageForPlan(plans[i]);
+                  if (rows.isEmpty) return const SizedBox.shrink();
+                  return _MetricRows(rows: rows);
+                },
+              ),
+              if (i < plans.length - 1) const SizedBox(height: 24),
+            ],
             const SizedBox(height: 16),
             const _FooterTagline(),
             const SizedBox(height: 8),

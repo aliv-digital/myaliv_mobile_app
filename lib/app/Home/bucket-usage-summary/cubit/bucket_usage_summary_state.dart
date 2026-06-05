@@ -129,6 +129,21 @@ class BucketUsageSummaryState extends Equatable {
         excludePlanIds: activePlanIds,
       );
 
+  /// Per-bucket view-model for a single stand-alone plan. Excludes
+  /// primary/secondary plans **and** every other stand-alone plan so the
+  /// rows reflect only this plan's own allowance — required when the
+  /// Usage tab renders one usage block per roaming card and shared bucket
+  /// names (e.g. two roaming plans both contributing to "data") must not
+  /// bleed across cards.
+  List<PlanBucketUsage> bucketUsageForPlan(BasePlanModel plan) {
+    final otherStandAloneIds = standAlonePlanIds.difference({plan.planId});
+    return computePlanBucketUsage(
+      activePlans: [plan],
+      items: items,
+      excludePlanIds: activePlanIds.union(otherStandAloneIds),
+    );
+  }
+
   /// Cache is valid only for the same device account.
   bool isCacheValidFor(int requestedDeviceAccountId) {
     if (lastFetchedAt == null) {
