@@ -80,9 +80,10 @@ class RoamingUsageGroup extends StatelessWidget {
     double width = 124,
   }) {
     final style = styleForBucket(usage.bucketName);
+    // need to work here
     return UsageCard(
       icon: style.icon,
-      title: usage.bucketName,
+      title: usage.bucketName == 'roam data us/can' ? 'roaming data' : usage.bucketName,
       color: style.color,
       isUnlimited: usage.isUnlimited,
       totalValue: formatBucketAmount(usage.remaining, usage.unitLabel),
@@ -93,6 +94,8 @@ class RoamingUsageGroup extends StatelessWidget {
       width: width,
       onTap: () {
         if (kDebugMode) {
+          debugPrint("name : ${usage.bucketName}");
+
           debugPrint('we hid showing bottom sheet');
         }
       },
