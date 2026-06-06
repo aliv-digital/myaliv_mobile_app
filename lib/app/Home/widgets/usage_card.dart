@@ -110,31 +110,42 @@ class UsageCard extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 )
-              : Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '$totalRemaining of \n',
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 16,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
+              : isUnlimited
+                  ? const Text(
+                      'unlimited',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF222222),
+                        fontSize: 16,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w700,
                       ),
+                    )
+                  : Text.rich(
                       TextSpan(
-                        text: totalValue,
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 16,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
+                        children: [
+                          TextSpan(
+                            text: '$totalRemaining of \n',
+                            style: TextStyle(
+                              color: const Color(0xFF222222),
+                              fontSize: 16,
+                              fontFamily: 'CircularPro',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          TextSpan(
+                            text: totalValue,
+                            style: TextStyle(
+                              color: const Color(0xFF222222),
+                              fontSize: 16,
+                              fontFamily: 'CircularPro',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+                      textAlign: TextAlign.center,
+                    ),
           const SizedBox(height: 16),
           Text(
             remainingLabel,
