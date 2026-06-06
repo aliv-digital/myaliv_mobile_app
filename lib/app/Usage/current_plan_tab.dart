@@ -31,14 +31,16 @@ class CurrentPlanTab extends StatelessWidget {
           const UsageFairUseLink(),
           if (config.isPostpaid) const PostpaidUsageSection(),
           if (isPrepaid) ..._prepaidSections,
+          const RoamingPlanSection(),
         ],
       ),
     );
   }
 
-  /// Prepaid-only stack: chips → usage list → add-on CTA → roaming
-  /// block. Each child handles its own padding so this list reads as
-  /// a flat outline of the tab.
+  /// Prepaid-only stack: chips → usage list → add-on CTA. Each child
+  /// handles its own padding so this list reads as a flat outline of
+  /// the tab. Roaming is rendered unconditionally below for both
+  /// payment types and self-hides when there are no stand-alone plans.
   static const List<Widget> _prepaidSections = [
     Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
@@ -53,7 +55,5 @@ class CurrentPlanTab extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(24, 0, 24, 8),
       child: PurchaseAddOnButton(),
     ),
-    // will work here
-    RoamingPlanSection(),
   ];
 }
