@@ -153,27 +153,24 @@ class UsageCard extends StatelessWidget {
     );
   }
 
-  /// Prepaid bar: solid green palette, width = progress (1.0 for unlimited).
+  /// Prepaid bar: solid green, width = remaining (1.0 for unlimited).
   /// Matches the Usage tab `_LimitRow` treatment for prepaid.
   Widget _progressBar() {
     return _bar(
       borderRadius: 6,
       backgroundColor: const Color(0x2617B26A),
-      progressGradient: const LinearGradient(
-        colors: [Color(0x0017B26A), Color(0xFF17B26A)],
-      ),
+      progressColor: const Color(0xFF17B26A),
     );
   }
 
-  /// Postpaid bar: color escalates green → yellow → red as `progress`
-  /// (fraction used) grows. Mirrors the Usage tab `AnimatedUsageProgress`
-  /// treatment so usage-vs-limit warnings stay consistent across the app.
+  /// Postpaid bar: width = remaining; color escalates green → yellow → red
+  /// as `progress` (fraction used) grows, so a nearly-empty bar reads red.
   Widget _postpaidprogressBar() {
     final style = _resolvePostpaidStyle();
     return _bar(
       borderRadius: 8,
       backgroundColor: style.backgroundColor,
-      progressGradient: style.gradient,
+      progressColor: style.color,
     );
   }
 
@@ -181,57 +178,48 @@ class UsageCard extends StatelessWidget {
     if (isUnlimited) {
       return const _ProgressStyle(
         backgroundColor: Color(0x2617B26A),
-        gradient: LinearGradient(
-          colors: [Color(0x0017B26A), Color(0xFF17B26A)],
-        ),
+        color: Color(0xFF17B26A),
       );
     }
 
     final clamped = (progress.clamp(0.0, 1.0) * 100).round();
 
-    if (clamped == 0) {
-      return const _ProgressStyle(
-        backgroundColor: Color(0x2617B26A),
-        gradient: LinearGradient(
-          colors: [Color(0x0017B26A), Color(0xFF17B26A)],
-        ),
-      );
-    }
-
     if (clamped > 80) {
       return const _ProgressStyle(
         backgroundColor: Color(0x26DD3038),
-        gradient: LinearGradient(
-          colors: [Color(0x00DD3038), Color(0xFFDD3038)],
-        ),
+        color: Color(0xFFDD3038),
       );
     }
 
     if (clamped > 50) {
       return const _ProgressStyle(
         backgroundColor: Color(0x26FFC627),
-        gradient: LinearGradient(
-          colors: [Color(0x00FFC627), Color(0xFFFFC627)],
-        ),
+        color: Color(0xFFFFC627),
       );
     }
 
     return const _ProgressStyle(
       backgroundColor: Color(0x2617B26A),
-      gradient: LinearGradient(colors: [Color(0x0017B26A), Color(0xFF17B26A)]),
+      color: Color(0xFF17B26A),
     );
   }
 
+  /// Bar length encodes **remaining** (`1 - progress`) so the visible fill
+  /// matches the "remaining" label and the "X of Y" copy: a brand-new plan
+  /// shows a solid full bar; an exhausted plan shows only the faded
+  /// background.
   Widget _bar({
     required double borderRadius,
     required Color backgroundColor,
-    required LinearGradient progressGradient,
+    required Color progressColor,
   }) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final fraction = isUnlimited ? 1.0 : progress.clamp(0.0, 1.0);
+          final fraction = isUnlimited
+              ? 1.0
+              : (1.0 - progress.clamp(0.0, 1.0));
           final width = constraints.maxWidth * fraction;
 
           return Stack(
@@ -243,7 +231,7 @@ class UsageCard extends StatelessWidget {
                 width: width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius),
-                  gradient: progressGradient,
+                  color: progressColor,
                 ),
               ),
             ],
@@ -256,7 +244,7 @@ class UsageCard extends StatelessWidget {
 
 class _ProgressStyle {
   final Color backgroundColor;
-  final LinearGradient gradient;
+  final Color color;
 
-  const _ProgressStyle({required this.backgroundColor, required this.gradient});
+  const _ProgressStyle({required this.backgroundColor, required this.color});
 }
