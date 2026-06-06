@@ -47,8 +47,6 @@ class RoamingPlanSection extends StatelessWidget {
               if (i < plans.length - 1) const SizedBox(height: 24),
             ],
             const SizedBox(height: 16),
-            const _FooterTagline(),
-            const SizedBox(height: 8),
             const _BottomSpacer(),
           ],
         );
@@ -104,26 +102,6 @@ class _MetricRows extends StatelessWidget {
             if (i < rows.length - 1) const SizedBox(height: 8),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _FooterTagline extends StatelessWidget {
-  const _FooterTagline();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(32, 0, 32, 20),
-      child: Text(
-        'Roameasy Begins Immediately Bundle\nCalls Unlimited',
-        style: TextStyle(
-          color: Color(0xFF222222),
-          fontSize: 12,
-          fontFamily: 'CircularPro',
-          fontWeight: FontWeight.w700,
-        ),
       ),
     );
   }
