@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
 // Parked alongside the commented `ActivePlansExpander` block below.
 // import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/roaming_usage_group.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/roaming_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_group.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -39,7 +42,7 @@ class ActivePlanUsageSection extends StatelessWidget {
         //   child: ActivePlansExpander(),
         // ),
         const SizedBox(height: 20),
-        _roamingSection(context, isPostpaid),
+        _roamingSection(context),
         if (isPostpaid) ...[
           _myLimitsHeader(context),
           const SizedBox(height: 10),
@@ -65,34 +68,71 @@ class ActivePlanUsageSection extends StatelessWidget {
     return _SectionHeader(title: 'my limits', onTap: open);
   }
 
-  /// "roaming" section: header + horizontal cards. The whole block is hidden
-  /// when there are no roaming cards to show, so we don't render a header
-  /// with nothing under it.
-  Widget _roamingSection(BuildContext context, bool isPostpaid) {
+  /// One header + `RoamingCard` per standalone (roaming) plan. The section
+  /// is hidden entirely when no plan has a `roam data us/can` bucket — other
+  /// roaming buckets are intentionally suppressed on this surface, matching
+  /// the prior single-bucket behaviour.
+  Widget _roamingSection(BuildContext context) {
     return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
       buildWhen: (a, b) =>
           a.summary != b.summary ||
           a.activePlans != b.activePlans ||
           a.standAlonePlans != b.standAlonePlans,
       builder: (context, state) {
-        if (!RoamingUsageGroup.hasRoamingCards(state)) {
-          return const SizedBox.shrink();
-        }
+        final entries = _roamingEntries(state);
+        if (entries.isEmpty) return const SizedBox.shrink();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _SectionHeader(
-              title: 'roaming',
-              onTap: () => context.go(AppRoutes.usage),
-            ),
-            const SizedBox(height: 16),
-            RoamingUsageGroup(isPostpaid: isPostpaid),
-            const SizedBox(height: 20),
+            for (final entry in entries) ...[
+              _SectionHeader(
+                title: entry.plan.planName.toLowerCase(),
+                onTap: () => context.go(AppRoutes.usage),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: RoamingCard(
+                  used: formatBucketAmount(entry.usage.remaining, ''),
+                  total: formatBucketAmount(
+                    entry.usage.initial,
+                    entry.usage.unitLabel,
+                  ),
+                  progress: entry.usage.isUnlimited
+                      ? 1.0
+                      : (1.0 - entry.usage.progress).clamp(0.0, 1.0),
+                  isUnlimited: entry.usage.isUnlimited,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
           ],
         );
       },
     );
   }
+
+  static const String _roamingTargetBucket = 'roam data us/can';
+
+  /// Only the first standalone plan with a `roam data us/can` bucket is
+  /// surfaced — additional roaming plans are intentionally suppressed on the
+  /// home screen.
+  List<_RoamingEntry> _roamingEntries(BucketUsageSummaryState state) {
+    for (final plan in state.standAlonePlans) {
+      for (final usage in state.bucketUsageForPlan(plan)) {
+        if (usage.bucketName.trim().toLowerCase() == _roamingTargetBucket) {
+          return [_RoamingEntry(plan: plan, usage: usage)];
+        }
+      }
+    }
+    return const [];
+  }
+}
+
+class _RoamingEntry {
+  const _RoamingEntry({required this.plan, required this.usage});
+  final BasePlanModel plan;
+  final PlanBucketUsage usage;
 }
 
 /// Title row with a trailing "view all" affordance. Both elements share the

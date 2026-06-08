@@ -1,3 +1,10 @@
+// PARKED 2026-06-08: Superseded by per-plan rendering in
+// `active_plan_usage_section.dart` (`_roamingSection`), which iterates
+// `state.standAlonePlans`, renders the plan name as the section header, and
+// uses `RoamingCard` for the card body. To revive, restore the import in
+// `active_plan_usage_section.dart` and revert `_roamingSection` to the
+// hardcoded "roaming" header + `RoamingUsageGroup` cards row.
+/*
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -99,3 +106,4 @@ class RoamingUsageGroup extends StatelessWidget {
     );
   }
 }
+*/
