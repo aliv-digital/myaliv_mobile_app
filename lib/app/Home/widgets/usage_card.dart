@@ -242,7 +242,12 @@ class UsageCard extends StatelessWidget {
                 width: width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius),
-                  color: progressColor,
+                  gradient: LinearGradient(
+                    colors: [
+                      progressColor.withValues(alpha: 0),
+                      progressColor,
+                    ],
+                  ),
                 ),
               ),
             ],
