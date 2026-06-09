@@ -153,6 +153,11 @@ class _HomePlansPaymentMethodViewState
           HomePlansPaymentMethodSelected(id),
         );
       },
+      onChargeToAccountSelect: (String id) {
+        context.read<HomePlansPaymentMethodBloc>().add(
+          HomePlansChargeToAccountSelected(id),
+        );
+      },
       onPayWithCard: () {
         context.read<HomePlansPaymentMethodBloc>().add(
           const HomePlansPayWithCardPressed(),
@@ -402,8 +407,8 @@ class _HomePlansPaymentMethodViewState
               debugPrint("\nPayment Success! Going to receipt screen\n");
             }
             context.push(
-             AppRoutes.homePlanPurchaseReceiptScreen,
-             extra: _buildReceiptExtra(state, paymentMethod: 'wallet'),
+              AppRoutes.homePlanPurchaseReceiptScreen,
+              extra: _buildReceiptExtra(state, paymentMethod: 'wallet'),
             );
           }
 
@@ -414,7 +419,8 @@ class _HomePlansPaymentMethodViewState
       },
       builder: (context, state) {
         final isLoading = state.status == HomePlansPaymentMethodStatus.loading;
-        final isSubmitting = state.status == HomePlansPaymentMethodStatus.submitting;
+        final isSubmitting =
+            state.status == HomePlansPaymentMethodStatus.submitting;
 
         return MediaQuery(
           data: MediaQuery.of(
@@ -436,6 +442,21 @@ class _HomePlansPaymentMethodViewState
                     : 'postpaidPlan';
 
                 switch (state.paymentMode) {
+                  case HomePlansPaymentMode.chargeToMyAccount:
+                    if (kDebugMode) {
+                      debugPrint(
+                        "\ntapped (pay now) .\n method : charge to my account\n",
+                      );
+                    }
+                    final balanceState = context.read<BalanceCubit>().state;
+                    _openWalletPaymentSheet(
+                      walletBalance: balanceState.walletBalance,
+                      walletBalanceText: BalanceCurrencyFormatterService.format(
+                        balanceState.walletBalance,
+                      ),
+                      amountText: state.amountText,
+                    );
+                    return;
                   case HomePlansPaymentMode.payWithCard:
                     if (kDebugMode) {
                       debugPrint("\ntapped (pay now) .\n method : pay with\n");

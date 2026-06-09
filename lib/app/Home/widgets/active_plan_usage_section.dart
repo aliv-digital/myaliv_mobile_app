@@ -33,6 +33,7 @@ class ActivePlanUsageSection extends StatelessWidget {
       children: [
         _header(context),
         const SizedBox(height: 16),
+        // fix positioning
         UsageGroup(isPostpaid: isPostpaid),
         // commented by nahin — when re-enabling, restore the SizedBox(20)
         // above and below this block to keep the expander vertically padded.
@@ -42,10 +43,12 @@ class ActivePlanUsageSection extends StatelessWidget {
         //   child: ActivePlansExpander(),
         // ),
         const SizedBox(height: 20),
+        // need to remove view all
         _roamingSection(context),
         if (isPostpaid) ...[
           _myLimitsHeader(context),
           const SizedBox(height: 10),
+          // set limit title and icon at center
           const MyLimitsCards(),
         ],
       ],
@@ -85,7 +88,9 @@ class ActivePlanUsageSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (final entry in entries) ...[
+              // fix, remove view all
               _SectionHeader(
+                isRoamingSection: true,
                 title: entry.plan.planName.toLowerCase(),
                 onTap: () => context.go(AppRoutes.usage),
               ),
@@ -185,10 +190,11 @@ class _RoamingEntry {
 /// Title row with a trailing "view all" affordance. Both elements share the
 /// same tap target so users can hit either side of the row.
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, required this.onTap});
+  const _SectionHeader({required this.title, required this.onTap,this.isRoamingSection = false});
 
   final String title;
   final VoidCallback onTap;
+  final bool isRoamingSection;
 
   @override
   Widget build(BuildContext context) {
@@ -209,6 +215,7 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
+          !isRoamingSection ?
           GestureDetector(
             onTap: onTap,
             child: const Text(
@@ -222,7 +229,8 @@ class _SectionHeader extends StatelessWidget {
                 decorationColor: Color(0xFF645D9C),
               ),
             ),
-          ),
+          ):
+          SizedBox.shrink(),
         ],
       ),
     );

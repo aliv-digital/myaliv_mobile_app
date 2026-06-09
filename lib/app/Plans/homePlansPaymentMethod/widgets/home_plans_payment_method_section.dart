@@ -21,6 +21,7 @@ class HomePlansPaymentMethodSection extends StatefulWidget {
   final String? selectedId;
   final HomePlansPaymentMode paymentMode;
   final ValueChanged<String> onSelect;
+  final ValueChanged<String> onChargeToAccountSelect;
   final VoidCallback onPayWithCard;
   final bool showPayFromWallet;
   final String walletBalanceText;
@@ -32,6 +33,7 @@ class HomePlansPaymentMethodSection extends StatefulWidget {
     required this.selectedId,
     required this.paymentMode,
     required this.onSelect,
+    required this.onChargeToAccountSelect,
     required this.onPayWithCard,
     required this.showPayFromWallet,
     required this.walletBalanceText,
@@ -87,7 +89,7 @@ class _HomePlansPaymentMethodSectionState
           _buildPayWithCardRow(),
           if (widget.showPayFromWallet) ...[
             const SizedBox(
-              height: HomePlansPaymentMethodTheme.firstToSecondCardGap,//payWithCardToWalletGap,
+              height: HomePlansPaymentMethodTheme.firstToSecondCardGap, //payWithCardToWalletGap,
             ),
             _buildPayFromWalletRow(),
           ],
@@ -154,6 +156,10 @@ class _HomePlansPaymentMethodSectionState
 
   bool get _cardModeActive => widget.paymentMode == HomePlansPaymentMode.card;
 
+  bool get _chargeToAccountModeActive {
+    return widget.paymentMode == HomePlansPaymentMode.chargeToMyAccount;
+  }
+
   Widget _buildChargeToAccountTile(HomePlansSavedPaymentMethod method) {
     return HomePlansPaymentMethodTile(
       logoSvgAsset: method.logoSvgAsset,
@@ -161,17 +167,17 @@ class _HomePlansPaymentMethodSectionState
       subtitle: null,
       showLogo: false,
       titleStyle: HomePlansPaymentMethodTheme.chargeToAccount,
-     // tilePadding: HomePlansPaymentMethodTheme.chargeToAccountTilePadding,
+      // tilePadding: HomePlansPaymentMethodTheme.chargeToAccountTilePadding,
       indicatorSize: HomePlansPaymentMethodTheme.selectedIndicatorSize,
       textToIndicatorGap: 16,
-      selected: _cardModeActive && widget.selectedId == method.id,
-      onTap: () => widget.onSelect(method.id),
+      selected: _chargeToAccountModeActive && widget.selectedId == method.id,
+      onTap: () => widget.onChargeToAccountSelect(method.id),
     );
   }
 
   Widget _buildSavedCardTile(SavedCardModel card) {
     return HomePlansPaymentMethodTile(
-     // tilePadding: EdgeInsets.only(left: 16,right: 16,top: 28,bottom: 28),
+      // tilePadding: EdgeInsets.only(left: 16,right: 16,top: 28,bottom: 28),
       logoSvgAsset: AssetConstant.creditCardIconSVG,
       title: card.displayLabel,
       showLogo: true,

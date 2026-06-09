@@ -14,11 +14,17 @@ enum HomePlansPaymentMethodNavTarget { none, addCard, wallet, paid }
 
 /// Which payment radio the user has currently selected.
 ///
-/// `card` means a row in the saved-methods list (saved card or charge-to-my-account)
-/// — the chosen one is identified by [HomePlansPaymentMethodState.selectedMethodId].
+/// `card` means a saved card row in the saved-methods list.
+/// `chargeToMyAccount` means the postpaid "charge to my account" row.
+/// Both use [HomePlansPaymentMethodState.selectedMethodId] for the selected row.
 /// `payWithCard` and `payFromWallet` are the two action rows below the list and
 /// have no `selectedMethodId`.
-enum HomePlansPaymentMode { card, payWithCard, payFromWallet }
+enum HomePlansPaymentMode {
+  card,
+  chargeToMyAccount,
+  payWithCard,
+  payFromWallet,
+}
 
 class HomePlansPaymentMethodState extends Equatable {
   final HomePlansPaymentMethodStatus status;
@@ -88,6 +94,7 @@ class HomePlansPaymentMethodState extends Equatable {
     if (status == HomePlansPaymentMethodStatus.submitting) return false;
     switch (paymentMode) {
       case HomePlansPaymentMode.card:
+      case HomePlansPaymentMode.chargeToMyAccount:
         return selectedMethodId != null;
       case HomePlansPaymentMode.payWithCard:
       case HomePlansPaymentMode.payFromWallet:

@@ -47,6 +47,14 @@ class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {
   List<Object?> get props => [methodId];
 }
 
+class HomePlansChargeToAccountSelected extends HomePlansPaymentMethodEvent {
+  final String methodId;
+  const HomePlansChargeToAccountSelected(this.methodId);
+
+  @override
+  List<Object?> get props => [methodId];
+}
+
 class HomePlansPayWithCardPressed extends HomePlansPaymentMethodEvent {
   const HomePlansPayWithCardPressed();
 }
