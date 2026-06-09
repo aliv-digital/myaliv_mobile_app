@@ -88,7 +88,9 @@ class ActivePlanUsageSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (final entry in entries) ...[
+              // fix, remove view all
               _SectionHeader(
+                isRoamingSection: true,
                 title: entry.plan.planName.toLowerCase(),
                 onTap: () => context.go(AppRoutes.usage),
               ),
@@ -188,10 +190,11 @@ class _RoamingEntry {
 /// Title row with a trailing "view all" affordance. Both elements share the
 /// same tap target so users can hit either side of the row.
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, required this.onTap});
+  const _SectionHeader({required this.title, required this.onTap,this.isRoamingSection = false});
 
   final String title;
   final VoidCallback onTap;
+  final bool isRoamingSection;
 
   @override
   Widget build(BuildContext context) {
@@ -212,20 +215,22 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          // GestureDetector(
-          //   onTap: onTap,
-          //   child: const Text(
-          //     'view all',
-          //     style: TextStyle(
-          //       color: Color(0xFF645D9C),
-          //       fontSize: 13,
-          //       fontFamily: 'CircularPro',
-          //       fontWeight: FontWeight.w700,
-          //       decoration: TextDecoration.underline,
-          //       decorationColor: Color(0xFF645D9C),
-          //     ),
-          //   ),
-          // ),
+          !isRoamingSection ?
+          GestureDetector(
+            onTap: onTap,
+            child: const Text(
+              'view all',
+              style: TextStyle(
+                color: Color(0xFF645D9C),
+                fontSize: 13,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
+                decoration: TextDecoration.underline,
+                decorationColor: Color(0xFF645D9C),
+              ),
+            ),
+          ):
+          SizedBox.shrink(),
         ],
       ),
     );
