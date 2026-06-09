@@ -110,20 +110,36 @@ class ActivePlanUsageSection extends StatelessWidget {
     );
   }
 
-  static const String _roamingTargetBucket = 'roam data us/can';
+  /// Stable backend identifier for the US/Canada roaming data bucket.
+  /// Sourced from `PlanBuckets[].BucketUnit` in the bundles API — unlike
+  /// the user-visible name (`"roam data us/can"`), this code is tied to
+  /// the billing system and not retitled by marketing.
+  static const String _roamingTargetBucketUnit = 'INS_Data_roam_US_Canada';
 
-  /// Only the first standalone plan with a `roam data us/can` bucket is
-  /// surfaced — additional roaming plans are intentionally suppressed on the
-  /// home screen.
+  /// Legacy match against the display name. Kept as a fallback for plans
+  /// whose `BucketUnit` is missing (older payloads, demo data) so the
+  /// section still renders. Match is trimmed-lowercase to absorb minor
+  /// capitalization drift.
+  static const String _roamingTargetBucketName = 'roam data us/can';
+
+  /// Only the first standalone plan with a US/Canada roaming data bucket
+  /// is surfaced — additional roaming plans are intentionally suppressed
+  /// on the home screen.
   List<_RoamingEntry> _roamingEntries(BucketUsageSummaryState state) {
     for (final plan in state.standAlonePlans) {
       for (final usage in state.bucketUsageForPlan(plan)) {
-        if (usage.bucketName.trim().toLowerCase() == _roamingTargetBucket) {
+        if (_isUsCanadaRoamingBucket(usage)) {
           return [_RoamingEntry(plan: plan, usage: usage)];
         }
       }
     }
     return const [];
+  }
+
+  bool _isUsCanadaRoamingBucket(PlanBucketUsage usage) {
+    if (usage.bucketUnit == _roamingTargetBucketUnit) return true;
+    if (usage.bucketUnit.isNotEmpty) return false;
+    return usage.bucketName.trim().toLowerCase() == _roamingTargetBucketName;
   }
 }
 

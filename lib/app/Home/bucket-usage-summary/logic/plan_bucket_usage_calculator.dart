@@ -65,6 +65,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
       if (existing == null) {
         planMeta[key] = _PlanBucketMeta(
           displayName: bucket.name,
+          bucketUnit: bucket.bucketUnit,
           unitFromPlan: bucket.unit,
           isUnlimited: bucket.unlimited,
         );
@@ -88,7 +89,11 @@ List<PlanBucketUsage> computePlanBucketUsage({
       // needed), so a missing API item is fine. Metered buckets still
       // need the API row — without it we'd show stale plan-side numbers.
       if (meta.isUnlimited) {
-        result.add(_unlimitedRow(meta.displayName, displayUnitLabel(meta.unitFromPlan)));
+        result.add(_unlimitedRow(
+          meta.displayName,
+          meta.bucketUnit,
+          displayUnitLabel(meta.unitFromPlan),
+        ));
       }
       continue;
     }
@@ -99,7 +104,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
     final unitLabel = displayUnitLabel(unitType);
 
     if (meta.isUnlimited) {
-      result.add(_unlimitedRow(meta.displayName, unitLabel));
+      result.add(_unlimitedRow(meta.displayName, meta.bucketUnit, unitLabel));
       continue;
     }
 
@@ -129,7 +134,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
     // Effectively unlimited: API reports a balance but no initial allowance
     // (e.g. promotional bucket like "whatsapp full").
     if (initial <= 0 && remaining > 0) {
-      result.add(_unlimitedRow(meta.displayName, unitLabel));
+      result.add(_unlimitedRow(meta.displayName, meta.bucketUnit, unitLabel));
       continue;
     }
 
@@ -139,6 +144,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
     result.add(
       PlanBucketUsage(
         bucketName: meta.displayName,
+        bucketUnit: meta.bucketUnit,
         unitLabel: unitLabel,
         isUnlimited: false,
         initial: initial,
@@ -153,9 +159,10 @@ List<PlanBucketUsage> computePlanBucketUsage({
   return result;
 }
 
-PlanBucketUsage _unlimitedRow(String name, String unitLabel) {
+PlanBucketUsage _unlimitedRow(String name, String bucketUnit, String unitLabel) {
   return PlanBucketUsage(
     bucketName: name,
+    bucketUnit: bucketUnit,
     unitLabel: unitLabel,
     isUnlimited: true,
     initial: 0,
@@ -169,11 +176,13 @@ PlanBucketUsage _unlimitedRow(String name, String unitLabel) {
 class _PlanBucketMeta {
   _PlanBucketMeta({
     required this.displayName,
+    required this.bucketUnit,
     required this.unitFromPlan,
     required this.isUnlimited,
   });
 
   final String displayName;
+  final String bucketUnit;
   final String unitFromPlan;
   bool isUnlimited;
 }

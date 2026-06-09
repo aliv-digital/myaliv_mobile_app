@@ -8,6 +8,7 @@ import 'package:equatable/equatable.dart';
 class PlanBucketUsage extends Equatable {
   const PlanBucketUsage({
     required this.bucketName,
+    required this.bucketUnit,
     required this.unitLabel,
     required this.isUnlimited,
     required this.initial,
@@ -18,8 +19,14 @@ class PlanBucketUsage extends Equatable {
   });
 
   /// Plan bucket name (e.g. "Data", "Voice"). Sourced from
-  /// `BasePlanBucketModel.name`.
+  /// `BasePlanBucketModel.name`. Marketing-facing — may be renamed without
+  /// backend coordination; prefer [bucketUnit] for identity checks.
   final String bucketName;
+
+  /// Stable backend identifier (e.g. `INS_Data_roam_US_Canada`). Sourced
+  /// from `BasePlanBucketModel.bucketUnit`. Use this instead of
+  /// [bucketName] when gating UI on a specific bucket.
+  final String bucketUnit;
 
   /// Canonical display label for the unit (e.g. "GB", "mins").
   final String unitLabel;
@@ -48,6 +55,7 @@ class PlanBucketUsage extends Equatable {
   @override
   List<Object?> get props => [
     bucketName,
+    bucketUnit,
     unitLabel,
     isUnlimited,
     initial,
@@ -59,8 +67,9 @@ class PlanBucketUsage extends Equatable {
 
   @override
   String toString() {
-    return 'PlanBucketUsage(name: $bucketName, unit: $unitLabel, '
-        'unlimited: $isUnlimited, initial: $initial, remaining: $remaining, '
-        'used: $used, progress: $progress, matched: $matchedDetailCount)';
+    return 'PlanBucketUsage(name: $bucketName, code: $bucketUnit, '
+        'unit: $unitLabel, unlimited: $isUnlimited, initial: $initial, '
+        'remaining: $remaining, used: $used, progress: $progress, '
+        'matched: $matchedDetailCount)';
   }
 }
