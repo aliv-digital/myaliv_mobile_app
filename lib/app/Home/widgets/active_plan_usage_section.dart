@@ -98,9 +98,7 @@ class ActivePlanUsageSection extends StatelessWidget {
                     entry.usage.initial,
                     entry.usage.unitLabel,
                   ),
-                  progress: entry.usage.isUnlimited
-                      ? 1.0
-                      : (1.0 - entry.usage.progress).clamp(0.0, 1.0),
+                  progress: entry.usage.progress.clamp(0.0, 1.0),
                   isUnlimited: entry.usage.isUnlimited,
                 ),
               ),
