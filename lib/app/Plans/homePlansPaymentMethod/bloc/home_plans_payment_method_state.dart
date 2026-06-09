@@ -34,6 +34,7 @@ class HomePlansPaymentMethodState extends Equatable {
   final String vatNote;
   final List<HomePlansPaymentSelectedItem> selectedItems;
   final bool forceNow;
+  final DateTime? selectedBeginDate;
 
   final HomePlansPaymentMethodNavTarget navTarget;
   final String? walletWarningMessage;
@@ -51,6 +52,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.vatNote,
     required this.selectedItems,
     required this.forceNow,
+    required this.selectedBeginDate,
     required this.navTarget,
     required this.walletWarningMessage,
     required this.walletWarningRequestId,
@@ -69,6 +71,7 @@ class HomePlansPaymentMethodState extends Equatable {
       vatNote: 'no vat applied',
       selectedItems: [],
       forceNow: false,
+      selectedBeginDate: null,
       navTarget: HomePlansPaymentMethodNavTarget.none,
       walletWarningMessage: null,
       walletWarningRequestId: 0,
@@ -104,6 +107,7 @@ class HomePlansPaymentMethodState extends Equatable {
     String? vatNote,
     List<HomePlansPaymentSelectedItem>? selectedItems,
     bool? forceNow,
+    DateTime? selectedBeginDate,
     HomePlansPaymentMethodNavTarget? navTarget,
     String? walletWarningMessage,
     int? walletWarningRequestId,
@@ -120,6 +124,7 @@ class HomePlansPaymentMethodState extends Equatable {
       vatNote: vatNote ?? this.vatNote,
       selectedItems: selectedItems ?? this.selectedItems,
       forceNow: forceNow ?? this.forceNow,
+      selectedBeginDate: selectedBeginDate ?? this.selectedBeginDate,
       navTarget: navTarget ?? this.navTarget,
       walletWarningMessage: walletWarningMessage ?? this.walletWarningMessage,
       walletWarningRequestId:
@@ -129,19 +134,20 @@ class HomePlansPaymentMethodState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        errorMessage,
-        subscriberType,
-        phoneNumber,
-        methods,
-        selectedMethodId,
-        paymentMode,
-        amount,
-        vatNote,
-        selectedItems,
-        forceNow,
-        navTarget,
-        walletWarningMessage,
-        walletWarningRequestId,
-      ];
+    status,
+    errorMessage,
+    subscriberType,
+    phoneNumber,
+    methods,
+    selectedMethodId,
+    paymentMode,
+    amount,
+    vatNote,
+    selectedItems,
+    forceNow,
+    selectedBeginDate,
+    navTarget,
+    walletWarningMessage,
+    walletWarningRequestId,
+  ];
 }

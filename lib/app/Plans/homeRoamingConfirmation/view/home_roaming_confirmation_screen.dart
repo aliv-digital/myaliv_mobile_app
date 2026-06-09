@@ -58,8 +58,8 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
     if (pickedDate == null || !context.mounted) return;
 
     context.read<HomeRoamingConfirmationBloc>().add(
-          HomeRoamingConfirmationBeginDateChanged(pickedDate),
-        );
+      HomeRoamingConfirmationBeginDateChanged(pickedDate),
+    );
   }
 
   @override
@@ -115,57 +115,61 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
         backgroundColor: HomeRoamingConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<HomeRoamingConfirmationBloc,
-            HomeRoamingConfirmationState>(
-          builder: (context, state) {
-            if (state.status != HomeRoamingConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+        bottomNavigationBar:
+            BlocBuilder<
+              HomeRoamingConfirmationBloc,
+              HomeRoamingConfirmationState
+            >(
+              builder: (context, state) {
+                if (state.status != HomeRoamingConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-              buttonText: 'continue',
-              isVatExclusive: false,
-              isButtonEnabled: state.isTermsChecked,
-              buttonColor: const Color(0xFF645D9C),
-              onPayNow: () {
-                context.read<HomeRoamingConfirmationBloc>().add(
+                return DefaultBottomPayBar(
+                  buttonText: 'continue',
+                  isVatExclusive: false,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    context.read<HomeRoamingConfirmationBloc>().add(
                       const HomeRoamingConfirmationPayNowPressed(),
                     );
-                context.push(
-                  AppRoutes.homePlansPaymentMethodScreen,
-                  extra: HomePlansPaymentMethodRouteArgs(
-                    phoneNumber: state.data!.phoneNumber,
-                    amount: state.data!.totals.total,
-                    vatNote: state.data!.totals.vat > 0
-                        ? 'vat inclusive'
-                        : 'no vat applied',
-                    forceNow: state.routeArgs?.forceNow ?? false,
-                    selectedItems: state.data!.items
-                        .map(
-                          (item) => HomePlansPaymentSelectedItem(
-                            id: item.id,
-                            label: item.label,
-                            title: item.title,
-                            subtitle: item.subtitle,
-                            price: item.price,
-                            planType: HomePlansPaymentPlanType.fromCode(
-                              item.planTypeCode,
-                            ),
-                          ),
-                        )
-                        .toList(growable: false),
-                  ),
+                    context.push(
+                      AppRoutes.homePlansPaymentMethodScreen,
+                      extra: HomePlansPaymentMethodRouteArgs(
+                        phoneNumber: state.data!.phoneNumber,
+                        amount: state.data!.totals.total,
+                        vatNote: state.data!.totals.vat > 0
+                            ? 'vat inclusive'
+                            : 'no vat applied',
+                        forceNow: state.routeArgs?.forceNow ?? false,
+                        selectedBeginDate: state.routeArgs?.beginDate,
+                        selectedItems: state.data!.items
+                            .map(
+                              (item) => HomePlansPaymentSelectedItem(
+                                id: item.id,
+                                label: item.label,
+                                title: item.title,
+                                subtitle: item.subtitle,
+                                price: item.price,
+                                planType: HomePlansPaymentPlanType.fromCode(
+                                  item.planTypeCode,
+                                ),
+                              ),
+                            )
+                            .toList(growable: false),
+                      ),
+                    );
+                  },
+                  amountText:
+                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
                 );
               },
-              amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
-            );
-          },
-        ),
+            ),
 
         body: SafeArea(
-          child: BlocBuilder<HomeRoamingConfirmationBloc,
-              HomeRoamingConfirmationState>(
+          child: BlocBuilder<HomeRoamingConfirmationBloc, HomeRoamingConfirmationState>(
             builder: (context, state) {
               final data = state.data;
               final beginDate = state.routeArgs?.beginDate ?? DateTime.now();
@@ -205,8 +209,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                             .contentHorizontalPadding,
                                         0,
                                       ),
-                                      child:
-                                          HomeRoamingConfirmationPurchaseSummaryCard(
+                                      child: HomeRoamingConfirmationPurchaseSummaryCard(
                                         showDateField: showDateField,
                                         data: data,
                                         onRemoveItem: (id) => context
@@ -221,7 +224,6 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                   ),
 
                                   if (showDateField)
-
                                     /// Begins-on info card (optional via navigation flag)
                                     SliverToBoxAdapter(
                                       child: Padding(
@@ -236,14 +238,14 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                         ),
                                         child:
                                             HomeRoamingConfirmationBeginsOnCard(
-                                          dateText: data.beginsOnDateText,
-                                          onCalendarTap: () {
-                                            _openCalendarPickerSheet(
-                                              context,
-                                              beginDate,
-                                            );
-                                          },
-                                        ),
+                                              dateText: data.beginsOnDateText,
+                                              onCalendarTap: () {
+                                                _openCalendarPickerSheet(
+                                                  context,
+                                                  beginDate,
+                                                );
+                                              },
+                                            ),
                                       ),
                                     ),
 
@@ -293,19 +295,21 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                         backgroundColor: HexColor.fromHex(
                                           '#645D9C',
                                         ),
-                                        input:
-                                            CustomPaymentBreakdownInputConfig(
+                                        input: CustomPaymentBreakdownInputConfig(
                                           value: state.promoCode,
-                                          enabled: state.promoStatus !=
+                                          enabled:
+                                              state.promoStatus !=
                                               HomeRoamingConfirmationPromoStatus
                                                   .applying,
-                                          isActionLoading: state.promoStatus ==
+                                          isActionLoading:
+                                              state.promoStatus ==
                                               HomeRoamingConfirmationPromoStatus
                                                   .applying,
                                           onChanged: (value) {
                                             context
                                                 .read<
-                                                    HomeRoamingConfirmationBloc>()
+                                                  HomeRoamingConfirmationBloc
+                                                >()
                                                 .add(
                                                   HomeRoamingConfirmationPromoCodeChanged(
                                                     value,
@@ -316,7 +320,8 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                             FocusScope.of(context).unfocus();
                                             context
                                                 .read<
-                                                    HomeRoamingConfirmationBloc>()
+                                                  HomeRoamingConfirmationBloc
+                                                >()
                                                 .add(
                                                   const HomeRoamingConfirmationPromoApplyPressed(),
                                                 );
