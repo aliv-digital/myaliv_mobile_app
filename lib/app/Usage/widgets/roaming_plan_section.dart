@@ -25,7 +25,14 @@ class RoamingPlanSection extends StatelessWidget {
       buildWhen: (a, b) =>
           a.summary != b.summary || a.standAlonePlans != b.standAlonePlans,
       builder: (context, state) {
-        final plans = state.standAlonePlans;
+        // Drop plans whose StartDate is strictly after now — they belong on
+        // the Future Plans tab. Mirrors `_startsInFuture` in
+        // `future_plan_tab.dart` so each plan appears in exactly one tab.
+        final now = DateTime.now();
+        final plans = state.standAlonePlans.where((p) {
+          final start = p.startDateTime;
+          return start == null || !start.isAfter(now);
+        }).toList(growable: false);
         if (plans.isEmpty) return const SizedBox.shrink();
 
         return Column(
