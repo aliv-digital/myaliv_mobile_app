@@ -242,6 +242,74 @@ class BasePlanModel {
     );
   }
 
+  /// Returns a new `BasePlanModel` with selected fields overridden.
+  /// Used by `PlansState.standAlonePlansForBucketUsage` to merge duplicate
+  /// stand-alone purchases (same `planId`, different date ranges) into a
+  /// single card spanning the earliest start to the latest end.
+  BasePlanModel copyWith({
+    String? startDate,
+    String? endDate,
+  }) {
+    return BasePlanModel(
+      planId: planId,
+      planName: planName,
+      planDescription: planDescription,
+      planAmount: planAmount,
+      planType: planType,
+      frequency: frequency,
+      featureCodes: featureCodes,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      planDetails: planDetails,
+      createdBy: createdBy,
+      publishedBy: publishedBy,
+      retiredBy: retiredBy,
+      autoRenew: autoRenew,
+      isEditable: isEditable,
+      voice: voice,
+      data: data,
+      sms: sms,
+      mtSubscriptionId: mtSubscriptionId,
+      voiceUnlimited: voiceUnlimited,
+      dataUnlimited: dataUnlimited,
+      smsUnlimited: smsUnlimited,
+      availableBoltOns: availableBoltOns,
+      currentlyAssigned: currentlyAssigned,
+      planRenewable: planRenewable,
+      paymentOption: paymentOption,
+      canIcb: canIcb,
+      hierarchyType: hierarchyType,
+      planGroup: planGroup,
+      planGroupId: planGroupId,
+      planGroupSortOrder: planGroupSortOrder,
+      prorateOnActivate: prorateOnActivate,
+      prorateOnDeactivate: prorateOnDeactivate,
+      planCapabilities: planCapabilities,
+      planBuckets: planBuckets,
+      channelTypes: channelTypes,
+      vipTypes: vipTypes,
+      roles: roles,
+      cugs: cugs,
+      sugs: sugs,
+      unlimitedBuckets: unlimitedBuckets,
+      activeCCard: activeCCard,
+      subscriberLines: subscriberLines,
+      purchaseLimit: purchaseLimit,
+      purchaseLimitStartDate: purchaseLimitStartDate,
+      purchaseLimitEndDate: purchaseLimitEndDate,
+      contractAge: contractAge,
+      activatedAge: activatedAge,
+      contractTerm: contractTerm,
+      islands: islands,
+      rank: rank,
+      creditClass: creditClass,
+      vatAmount: vatAmount,
+      planSortOrder: planSortOrder,
+      dataRules: dataRules,
+      rawPayload: rawPayload,
+    );
+  }
+
   // ===== Computed Getters (ONLY used ones - removed dead code) =====
 
   /// Safe date parsing helper for UI formatting.

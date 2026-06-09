@@ -31,10 +31,6 @@ import 'package:core/core.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  // /// FLAG → toggle UI
-  // final bool hasActivePlan = true;
-  // final bool isPrepaid = false;
-
   static const Color purple = Color(0xFF645D9C);
   static const Color darkPurple = Color(0xFF463C6E); //#463C6E
   static const Color bg = Color(0xFFF6F9FC);
@@ -111,9 +107,9 @@ class _HomeScreenState extends State<HomeScreen> {
         // Keep BucketUsageSummaryCubit's plan sets in sync so its consumers
         // can read planBuckets without touching PlansCubit.
         context.read<BucketUsageSummaryCubit>().updateActivePlans(
-              state.activePlansForBucketUsage,
-              standAlonePlans: state.standAlonePlansForBucketUsage,
-            );
+          state.activePlansForBucketUsage,
+          standAlonePlans: state.standAlonePlansForBucketUsage,
+        );
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -157,7 +153,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         return config.userType == UserType.prepaid
-                            ? const PrepaidActivePlanCardWithData(isFromHome: true,) // TODO
+                            ? const PrepaidActivePlanCardWithData(
+                                isFromHome: true,
+                              ) // TODO
                             : PostpaidActivePlanCard(config: config);
                       },
                     ),

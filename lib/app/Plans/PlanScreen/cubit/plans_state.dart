@@ -144,19 +144,56 @@ class PlansState extends Equatable {
 
   /// Stand-alone plans used to compute the roaming bucket usage view-model.
   ///
-  /// Deduplicated by `planId` with first-occurrence wins — the bundles API
-  /// can return the same stand-alone plan twice (one row per active
-  /// purchase), but the API-side `BucketUsageItem.totalInitialAmount`
-  /// already aggregates across those purchases, so counting the plan once
-  /// is sufficient.
+  /// When the bundles API returns the same `planId` more than once (one row
+  /// per purchase — e.g. an active travel30 7-day plus a future-dated
+  /// repurchase), entries are merged into a single plan spanning the
+  /// **earliest start** and **latest end** across the group. The Usage tab's
+  /// roaming card then renders one card per `planId`, with the date range
+  /// covering all paid purchases. The API-side
+  /// `BucketUsageItem.totalInitialAmount` already aggregates allowances
+  /// across purchases, so counting the plan once still yields the correct
+  /// bucket totals.
   List<BasePlanModel> get standAlonePlansForBucketUsage {
     if (standAlonePlans.isEmpty) return const <BasePlanModel>[];
-    final deduped = <BasePlanModel>[];
-    final seenIds = <String>{};
+
+    final groupsByPlanId = <String, List<BasePlanModel>>{};
+    final planIdOrder = <String>[];
     for (final plan in standAlonePlans) {
-      if (seenIds.add(plan.planId)) deduped.add(plan);
+      if (!groupsByPlanId.containsKey(plan.planId)) {
+        planIdOrder.add(plan.planId);
+      }
+      groupsByPlanId.putIfAbsent(plan.planId, () => []).add(plan);
     }
-    return List.unmodifiable(deduped);
+
+    final merged = <BasePlanModel>[];
+    for (final planId in planIdOrder) {
+      final group = groupsByPlanId[planId]!;
+      if (group.length == 1) {
+        merged.add(group.first);
+        continue;
+      }
+
+      BasePlanModel earliestStart = group.first;
+      BasePlanModel latestEnd = group.first;
+      for (final plan in group) {
+        final candidateStart = plan.startDateTime;
+        final currentStart = earliestStart.startDateTime;
+        if (candidateStart != null &&
+            (currentStart == null || candidateStart.isBefore(currentStart))) {
+          earliestStart = plan;
+        }
+        final candidateEnd = plan.endDateTime;
+        final currentEnd = latestEnd.endDateTime;
+        if (candidateEnd != null &&
+            (currentEnd == null || candidateEnd.isAfter(currentEnd))) {
+          latestEnd = plan;
+        }
+      }
+
+      merged.add(earliestStart.copyWith(endDate: latestEnd.endDate));
+    }
+
+    return List.unmodifiable(merged);
   }
 
   /// Check if any data exists

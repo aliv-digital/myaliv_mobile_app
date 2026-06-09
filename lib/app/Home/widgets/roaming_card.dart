@@ -5,10 +5,21 @@ import 'package:flutter_svg/svg.dart';
 import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../home/data/home_ui_config.dart';
 
+class _BarStyle {
+  const _BarStyle({required this.fill, required this.background});
+  final Color fill;
+  final Color background;
+}
+
 class RoamingCard extends StatelessWidget {
   final String title;
   final String used;
   final String total;
+
+  /// Used fraction `[0..1]` — matches `UsageCard.progress` semantics. The
+  /// bar's filled width encodes **remaining** (`1 - progress`) so a fresh
+  /// plan reads full and a depleted plan reads empty. Postpaid color
+  /// escalates green → yellow → red as this value grows.
   final double progress;
   final bool isUnlimited;
 
@@ -20,6 +31,30 @@ class RoamingCard extends StatelessWidget {
     required this.progress,
     this.isUnlimited = false,
   });
+
+  static const Color _green = Color(0xFF17B26A);
+  static const Color _yellow = Color(0xFFFFC627);
+  static const Color _red = Color(0xFFDD3038);
+
+  /// Mirrors `UsageCard._resolvePostpaidStyle` thresholds so the home
+  /// screen's roaming card escalates in lockstep with the other usage
+  /// cards. Prepaid stays solid green to match `UsageCard._progressBar`.
+  _BarStyle _resolveBarStyle(bool isPostpaid) {
+    if (!isPostpaid || isUnlimited) {
+      return _BarStyle(fill: _green, background: _green.withValues(alpha: 0.2));
+    }
+    final usedPercent = (progress.clamp(0.0, 1.0) * 100).round();
+    if (usedPercent > 80) {
+      return _BarStyle(fill: _red, background: _red.withValues(alpha: 0.15));
+    }
+    if (usedPercent > 50) {
+      return _BarStyle(
+        fill: _yellow,
+        background: _yellow.withValues(alpha: 0.15),
+      );
+    }
+    return _BarStyle(fill: _green, background: _green.withValues(alpha: 0.15));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,20 +121,16 @@ class RoamingCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final width = 80 * progress.clamp(0.0, 1.0);
+                final isPostpaid = config.userType == UserType.postpaid;
+                final style = _resolveBarStyle(isPostpaid);
+                final fraction = isUnlimited
+                    ? 1.0
+                    : (1.0 - progress.clamp(0.0, 1.0));
+                final width = 80 * fraction;
 
                 return Stack(
                   children: [
-                    // Background
-                    Container(
-                      height: 6,
-                      width: 80,
-                      color: config.userType == UserType.postpaid
-                          ? Color(0x26DD3038)
-                          : const Color(0xFF17B26A).withValues(alpha: 0.2),
-                    ),
-
-                    // Gradient progress (width = percentage)
+                    Container(height: 6, width: 80, color: style.background),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       height: 6,
@@ -107,12 +138,10 @@ class RoamingCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         gradient: LinearGradient(
-                          colors: config.userType == UserType.postpaid
-                              ? [Color(0x00DD3038), const Color(0xFFDD3038)]
-                              : [
-                                  const Color(0x0017B26A),
-                                  const Color(0xFF17B26A),
-                                ],
+                          colors: [
+                            style.fill.withValues(alpha: 0),
+                            style.fill,
+                          ],
                         ),
                       ),
                     ),
