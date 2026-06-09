@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class UsageCard extends StatelessWidget {
+  static const double _valueTextSlotHeight = 40;
+
   final String icon;
   final String title;
   final String totalValue;
@@ -89,70 +91,10 @@ class UsageCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          // TODO : 
-          isPostpaid == false
-              ? Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: isUnlimited ? 'unlimited' : totalValue,
-
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 16,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextSpan(
-                        text: isUnlimited ? '\nlocal' : ' of\n$totalRemaining',
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 16,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                )
-              : isUnlimited
-              ? const Text(
-                  'unlimited',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF222222),
-                    fontSize: 16,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w700,
-                  ),
-                )
-              : Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '$totalRemaining of \n',
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 16,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextSpan(
-                        text: totalValue,
-                        style: TextStyle(
-                          color: const Color(0xFF222222),
-                          fontSize: 16,
-                          fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+          SizedBox(
+            height: _valueTextSlotHeight,
+            child: Center(child: _buildValueText()),
+          ),
           const SizedBox(height: 16),
           Text(
             remainingLabel,
@@ -168,6 +110,53 @@ class UsageCard extends StatelessWidget {
           const SizedBox(height: 0),
         ],
       ),
+    );
+  }
+
+  Widget _buildValueText() {
+    if (!isPostpaid) {
+      return Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: isUnlimited ? 'unlimited' : totalValue,
+              style: _valueTextStyle(),
+            ),
+            TextSpan(
+              text: isUnlimited ? '\nlocal' : ' of\n$totalRemaining',
+              style: _valueTextStyle(),
+            ),
+          ],
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    if (isUnlimited) {
+      return Text(
+        'unlimited',
+        textAlign: TextAlign.center,
+        style: _valueTextStyle(),
+      );
+    }
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: '$totalRemaining of \n', style: _valueTextStyle()),
+          TextSpan(text: totalValue, style: _valueTextStyle()),
+        ],
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  TextStyle _valueTextStyle() {
+    return const TextStyle(
+      color: Color(0xFF222222),
+      fontSize: 16,
+      fontFamily: 'CircularPro',
+      fontWeight: FontWeight.w700,
     );
   }
 
