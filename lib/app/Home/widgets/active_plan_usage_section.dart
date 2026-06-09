@@ -48,6 +48,7 @@ class ActivePlanUsageSection extends StatelessWidget {
         if (isPostpaid) ...[
           _myLimitsHeader(context),
           const SizedBox(height: 10),
+          // set limit title and icon at center
           const MyLimitsCards(),
         ],
       ],

@@ -13,6 +13,7 @@ class HomePlansPaymentMethodBloc
     : super(HomePlansPaymentMethodState.initial()) {
     on<HomePlansPaymentMethodStarted>(_onStarted);
     on<HomePlansPaymentMethodSelected>(_onSelected);
+    on<HomePlansChargeToAccountSelected>(_onChargeToAccountSelected);
     on<HomePlansPayWithCardPressed>(_onPayWithCard);
     on<HomePlansPayFromWalletPressed>(_onPayFromWallet);
     on<HomePlansPayFromWalletConfirmed>(_onPayFromWalletConfirmed);
@@ -46,11 +47,15 @@ class HomePlansPaymentMethodBloc
           .fetchPaymentMethods(subscriberType: event.subscriberType);
 
       // Select the first available method by default.
+      final HomePlansSavedPaymentMethod? defaultMethod = methods.isNotEmpty
+          ? methods.first
+          : null;
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.ready,
           methods: methods,
-          selectedMethodId: methods.isNotEmpty ? methods.first.id : null,
+          selectedMethodId: defaultMethod?.id,
+          paymentMode: _paymentModeForDefaultMethod(defaultMethod),
         ),
       );
     } catch (_) {
@@ -71,6 +76,28 @@ class HomePlansPaymentMethodBloc
     emit(
       state.copyWith(
         paymentMode: HomePlansPaymentMode.card,
+        selectedMethodId: event.methodId,
+      ),
+    );
+  }
+
+  HomePlansPaymentMode _paymentModeForDefaultMethod(
+    HomePlansSavedPaymentMethod? method,
+  ) {
+    if (method != null && method.isChargeToMyAccount) {
+      return HomePlansPaymentMode.chargeToMyAccount;
+    }
+
+    return HomePlansPaymentMode.card;
+  }
+
+  void _onChargeToAccountSelected(
+    HomePlansChargeToAccountSelected event,
+    Emitter<HomePlansPaymentMethodState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        paymentMode: HomePlansPaymentMode.chargeToMyAccount,
         selectedMethodId: event.methodId,
       ),
     );

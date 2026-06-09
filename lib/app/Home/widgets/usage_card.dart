@@ -69,22 +69,27 @@ class UsageCard extends StatelessWidget {
               SvgPicture.asset(icon, color: color, height: 18, width: 18),
               const SizedBox(width: 4),
               Flexible(
-                child: Text(
-                  //textAlign: TextAlign.center,
-                  title,
-                  overflow: TextOverflow.clip,
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 12,
-                    fontFamily: 'CircularPro',
-                    fontWeight: FontWeight.w500,
+                fit: FlexFit.loose,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: 1,
+                  child: Text(
+                    title,
+                    overflow: TextOverflow.clip,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 12,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
+          // TODO : 
           isPostpaid == false
               ? Text.rich(
                   TextSpan(
@@ -113,41 +118,41 @@ class UsageCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                 )
               : isUnlimited
-                  ? const Text(
-                      'unlimited',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF222222),
-                        fontSize: 16,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                      ),
-                    )
-                  : Text.rich(
+              ? const Text(
+                  'unlimited',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF222222),
+                    fontSize: 16,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : Text.rich(
+                  TextSpan(
+                    children: [
                       TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '$totalRemaining of \n',
-                            style: TextStyle(
-                              color: const Color(0xFF222222),
-                              fontSize: 16,
-                              fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          TextSpan(
-                            text: totalValue,
-                            style: TextStyle(
-                              color: const Color(0xFF222222),
-                              fontSize: 16,
-                              fontFamily: 'CircularPro',
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
+                        text: '$totalRemaining of \n',
+                        style: TextStyle(
+                          color: const Color(0xFF222222),
+                          fontSize: 16,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                      TextSpan(
+                        text: totalValue,
+                        style: TextStyle(
+                          color: const Color(0xFF222222),
+                          fontSize: 16,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
           const SizedBox(height: 16),
           Text(
             remainingLabel,
@@ -230,9 +235,7 @@ class UsageCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(borderRadius),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final fraction = isUnlimited
-              ? 1.0
-              : (1.0 - progress.clamp(0.0, 1.0));
+          final fraction = isUnlimited ? 1.0 : (1.0 - progress.clamp(0.0, 1.0));
           final width = constraints.maxWidth * fraction;
 
           return Stack(
@@ -245,10 +248,7 @@ class UsageCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(borderRadius),
                   gradient: LinearGradient(
-                    colors: [
-                      progressColor.withValues(alpha: 0),
-                      progressColor,
-                    ],
+                    colors: [progressColor.withValues(alpha: 0), progressColor],
                   ),
                 ),
               ),
