@@ -9,7 +9,7 @@ import 'home_plans_payment_method_repository.dart';
 class HomePlansPaymentMethodRepositoryImpl
     implements HomePlansPaymentMethodRepository {
   HomePlansPaymentMethodRepositoryImpl({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -22,21 +22,21 @@ class HomePlansPaymentMethodRepositoryImpl
 
     const List<HomePlansSavedPaymentMethod> commonMethods =
         <HomePlansSavedPaymentMethod>[
-      HomePlansSavedPaymentMethod(
-        id: 'visa-1234',
-        brand: HomePlansCardBrand.visa,
-        ending: '1234',
-        expiry: '06/2024',
-        logoSvgAsset: AssetConstant.visaCardSVG,
-      ),
-      HomePlansSavedPaymentMethod(
-        id: 'mc-1234',
-        brand: HomePlansCardBrand.mastercard,
-        ending: '1234',
-        expiry: '06/2024',
-        logoSvgAsset: AssetConstant.masterCardSVG,
-      ),
-    ];
+          HomePlansSavedPaymentMethod(
+            id: 'visa-1234',
+            brand: HomePlansCardBrand.visa,
+            ending: '1234',
+            expiry: '06/2024',
+            logoSvgAsset: AssetConstant.visaCardSVG,
+          ),
+          HomePlansSavedPaymentMethod(
+            id: 'mc-1234',
+            brand: HomePlansCardBrand.mastercard,
+            ending: '1234',
+            expiry: '06/2024',
+            logoSvgAsset: AssetConstant.masterCardSVG,
+          ),
+        ];
 
     if (subscriberType == HomePlansSubscriberType.prepaid) {
       // Prepaid UI should not show "charge to my account".
@@ -64,19 +64,27 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<void> payFromWallet({
+  Future<dynamic> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
+    DateTime? selectedBeginDate,
   }) async {
     final requestBody = _walletPaymentRequestBody(
       amount: amount,
       selectedItems: selectedItems,
       forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
     );
 
     if (kDebugMode) {
       debugPrint('Pay from wallet request: $requestBody');
+      if (!forceNow) {
+        debugPrint(
+          'Pay from wallet selected begin date: '
+          '${_formatSelectedBeginDate(selectedBeginDate) ?? 'not provided'}',
+        );
+      }
     }
 
     try {
@@ -91,17 +99,34 @@ class HomePlansPaymentMethodRepositoryImpl
         debugPrint('Pay from wallet response: ${response.data}');
         //): Pay from wallet response: {OrderId: 314894}
       }
+      if (response.statusCode == 200) {
+        return true;
+      }
     } on NetworkException catch (error) {
       throw Exception(_walletPaymentErrorMessage(error));
     } catch (error) {
       throw Exception('Wallet payment failed: $error');
     }
+    return false;
+  }
+
+  String? _formatSelectedBeginDate(DateTime? date) {
+    if (date == null) return null;
+
+    final year = date.year.toString().padLeft(4, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+
+    return '$year-$month-$day $hour:$minute';
   }
 
   Map<String, dynamic> _walletPaymentRequestBody({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
+    DateTime? selectedBeginDate,
   }) {
     final primaryPlans = <int>[];
     final secondaryPlans = <int>[];
@@ -132,6 +157,21 @@ class HomePlansPaymentMethodRepositoryImpl
       throw Exception('No selected plan found for wallet payment.');
     }
 
+    final bundle = <String, dynamic>{
+      'PrimaryPlans': primaryPlans,
+      'SecondaryPlans': secondaryPlans,
+      'StandalonePlans': standalonePlans,
+    };
+
+    if (!forceNow) {
+      // will pass future date only if force now = false, means we selected a date
+      final startDate = _formatSelectedBeginDate(selectedBeginDate);
+      if (startDate == null) {
+        throw Exception('Selected start date is required for future plan.');
+      }
+      bundle['StartDate'] = startDate;
+    }
+
     return <String, dynamic>{
       'CardPayment': <String, dynamic>{
         'Amount': amount,
@@ -142,11 +182,7 @@ class HomePlansPaymentMethodRepositoryImpl
         'CardSecurityCode': '042',
         'CardHolderName': 'Credit Card Holder',
       },
-      'Bundle': <String, dynamic>{
-        'PrimaryPlans': primaryPlans,
-        'SecondaryPlans': secondaryPlans,
-        'StandalonePlans': standalonePlans,
-      },
+      'Bundle': bundle,
       'ForceNow': forceNow,
       'SaveCard': false,
       'UseAsRenewalCard': false,

@@ -10,7 +10,7 @@ class HomePlansPaymentMethodBloc
   final HomePlansPaymentMethodRepository repository;
 
   HomePlansPaymentMethodBloc({required this.repository})
-      : super(HomePlansPaymentMethodState.initial()) {
+    : super(HomePlansPaymentMethodState.initial()) {
     on<HomePlansPaymentMethodStarted>(_onStarted);
     on<HomePlansPaymentMethodSelected>(_onSelected);
     on<HomePlansPayWithCardPressed>(_onPayWithCard);
@@ -36,6 +36,7 @@ class HomePlansPaymentMethodBloc
         vatNote: event.vatNote,
         selectedItems: event.selectedItems,
         forceNow: event.forceNow,
+        selectedBeginDate: event.selectedBeginDate,
       ),
     );
 
@@ -115,27 +116,41 @@ class HomePlansPaymentMethodBloc
       ),
     );
 
-    if(kDebugMode){
-      if(state.forceNow == true){
+    if (kDebugMode) {
+      if (state.forceNow == true) {
         debugPrint("force now == TRUE, we came from *active now* button");
-      }else{
-        debugPrint("force now == FALSE, we came from *future plan* or something..");
+      } else {
+        debugPrint(
+          "force now == FALSE, we came from *future plan* or something..",
+        );
       }
     }
 
     try {
-      await repository.payFromWallet(
+      final bool isSuccess = await repository.payFromWallet(
         amount: state.amount,
         selectedItems: state.selectedItems,
         forceNow: state.forceNow,
+        selectedBeginDate: state.selectedBeginDate,
       );
 
-      emit(
-        state.copyWith(
-          status: HomePlansPaymentMethodStatus.success,
-          navTarget: HomePlansPaymentMethodNavTarget.paid,
-        ),
-      );
+      if (isSuccess == true) {
+        emit(
+          state.copyWith(
+            status: HomePlansPaymentMethodStatus.success,
+            navTarget: HomePlansPaymentMethodNavTarget.paid,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: HomePlansPaymentMethodStatus.failure,
+            navTarget: HomePlansPaymentMethodNavTarget.none,
+          ),
+        );
+      }
+      // need to add conditions here,,
+      // currently we are assuming each payment is successful payment
     } catch (error) {
       emit(
         state.copyWith(

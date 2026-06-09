@@ -97,55 +97,56 @@ class _HomePlanConfirmationView extends StatelessWidget {
         /// fixed bottom (AddOns pattern)
         bottomNavigationBar:
             BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
-          builder: (context, state) {
-            if (state.status != HomePlanConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+              builder: (context, state) {
+                if (state.status != HomePlanConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-              buttonText: 'continue',
-              isVatExclusive: false,
-              isButtonEnabled: state.isTermsChecked,
-              buttonColor: const Color(0xFF645D9C),
-              onPayNow: () {
-                context.read<HomePlanConfirmationBloc>().add(
+                return DefaultBottomPayBar(
+                  buttonText: 'continue',
+                  isVatExclusive: false,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    context.read<HomePlanConfirmationBloc>().add(
                       const HomePlanConfirmationPayNowPressed(),
                     );
-                context.push(
-                  AppRoutes.homePlansPaymentMethodScreen,
-                  extra: HomePlansPaymentMethodRouteArgs(
-                    phoneNumber: state.data!.phoneNumber,
-                    amount: state.data!.totals.total,
-                    vatNote: state.data!.totals.vat > 0
-                        ? 'vat inclusive'
-                        : 'no vat applied',
-                    forceNow: state.forceNow,
-                    selectedItems: state.data!.items
-                        .map(
-                          (item) => HomePlansPaymentSelectedItem(
-                            id: item.id,
-                            label: item.label,
-                            title: item.title,
-                            subtitle: item.subtitle,
-                            price: item.price,
-                            planType: HomePlansPaymentPlanType.fromCode(
-                              item.planTypeCode,
-                            ),
-                          ),
-                        )
-                        .toList(growable: false),
-                  ),
+                    context.push(
+                      AppRoutes.homePlansPaymentMethodScreen,
+                      extra: HomePlansPaymentMethodRouteArgs(
+                        phoneNumber: state.data!.phoneNumber,
+                        amount: state.data!.totals.total,
+                        vatNote: state.data!.totals.vat > 0
+                            ? 'vat inclusive'
+                            : 'no vat applied',
+                        forceNow: state.forceNow,
+                        selectedBeginDate: state.selectedBeginDate,
+                        selectedItems: state.data!.items
+                            .map(
+                              (item) => HomePlansPaymentSelectedItem(
+                                id: item.id,
+                                label: item.label,
+                                title: item.title,
+                                subtitle: item.subtitle,
+                                price: item.price,
+                                planType: HomePlansPaymentPlanType.fromCode(
+                                  item.planTypeCode,
+                                ),
+                              ),
+                            )
+                            .toList(growable: false),
+                      ),
+                    );
+                  },
+                  amountText:
+                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
                 );
               },
-              amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
-            );
-          },
-        ),
+            ),
 
         body: SafeArea(
-          child:
-              BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
+          child: BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -178,9 +179,12 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                   SliverToBoxAdapter(
                                     child: Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        HomePlanConfirmationTheme.contentHorizontalPadding,
-                                        HomePlanConfirmationTheme.purchaseSummaryCardTopSpacing,
-                                        HomePlanConfirmationTheme.contentHorizontalPadding,
+                                        HomePlanConfirmationTheme
+                                            .contentHorizontalPadding,
+                                        HomePlanConfirmationTheme
+                                            .purchaseSummaryCardTopSpacing,
+                                        HomePlanConfirmationTheme
+                                            .contentHorizontalPadding,
                                         0,
                                       ),
                                       child: PurchaseSummaryCard(
@@ -243,19 +247,21 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                         backgroundColor: HexColor.fromHex(
                                           '#645D9C',
                                         ),
-                                        input:
-                                            CustomPaymentBreakdownInputConfig(
+                                        input: CustomPaymentBreakdownInputConfig(
                                           value: state.promoCode,
-                                          enabled: state.promoStatus !=
+                                          enabled:
+                                              state.promoStatus !=
                                               HomePlanConfirmationPromoStatus
                                                   .applying,
-                                          isActionLoading: state.promoStatus ==
+                                          isActionLoading:
+                                              state.promoStatus ==
                                               HomePlanConfirmationPromoStatus
                                                   .applying,
                                           onChanged: (value) {
                                             context
                                                 .read<
-                                                    HomePlanConfirmationBloc>()
+                                                  HomePlanConfirmationBloc
+                                                >()
                                                 .add(
                                                   HomePlanConfirmationPromoCodeChanged(
                                                     value,
@@ -266,7 +272,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                             FocusScope.of(context).unfocus();
                                             context
                                                 .read<
-                                                    HomePlanConfirmationBloc>()
+                                                  HomePlanConfirmationBloc
+                                                >()
                                                 .add(
                                                   const HomePlanConfirmationPromoApplyPressed(),
                                                 );

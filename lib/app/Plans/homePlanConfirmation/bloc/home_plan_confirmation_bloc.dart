@@ -38,6 +38,7 @@ class HomePlanConfirmationBloc
           data: data,
           isTermsChecked: event.args.defaultTermsChecked,
           forceNow: event.args.forceNow,
+          selectedBeginDate: _parseDate(event.args.futurePlanStartDate),
         ),
       );
     } catch (e) {
@@ -48,6 +49,12 @@ class HomePlanConfirmationBloc
         ),
       );
     }
+  }
+
+  DateTime? _parseDate(String rawDate) {
+    final trimmed = rawDate.trim();
+    if (trimmed.isEmpty) return null;
+    return DateTime.tryParse(trimmed.replaceFirst(' ', 'T'));
   }
 
   void _onRemoveItem(

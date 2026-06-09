@@ -15,6 +15,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final String? vatNote;
   final List<HomePlansPaymentSelectedItem> selectedItems;
   final bool forceNow;
+  final DateTime? selectedBeginDate;
 
   const HomePlansPaymentMethodStarted({
     required this.subscriberType,
@@ -23,17 +24,19 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
     this.vatNote,
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
     this.forceNow = false,
+    this.selectedBeginDate,
   });
 
   @override
   List<Object?> get props => [
-        subscriberType,
-        phoneNumber,
-        amount,
-        vatNote,
-        selectedItems,
-        forceNow,
-      ];
+    subscriberType,
+    phoneNumber,
+    amount,
+    vatNote,
+    selectedItems,
+    forceNow,
+    selectedBeginDate,
+  ];
 }
 
 class HomePlansPaymentMethodSelected extends HomePlansPaymentMethodEvent {

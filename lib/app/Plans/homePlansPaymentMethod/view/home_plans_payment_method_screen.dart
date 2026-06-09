@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +59,7 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
             phoneNumber: args.phoneNumber,
             selectedItems: args.selectedItems,
             forceNow: args.forceNow,
+            selectedBeginDate: args.selectedBeginDate,
           ),
         );
 
@@ -68,12 +70,15 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
   }
 
   void _printRouteArgs() {
+    debugPrint("now we are in home_plans_payment_method_screen.dart");
+    debugPrint("location : app/Plans/homePlansPaymentMethod/view/..");
     debugPrint('HomePlansPaymentMethodScreen args:');
     debugPrint('subscriberType: ${args.subscriberType}');
     debugPrint('phoneNumber: ${args.phoneNumber}');
     debugPrint('amount: ${args.amount}');
     debugPrint('vatNote: ${args.vatNote}');
     debugPrint('forceNow: ${args.forceNow}');
+    debugPrint('selectedBeginDate: ${args.selectedBeginDate}');
     debugPrint('selectedItems count: ${args.selectedItems.length}');
 
     for (final item in args.selectedItems) {
@@ -393,9 +398,12 @@ class _HomePlansPaymentMethodViewState
               HomePlansPaymentMethodNavTarget.wallet) {
             // TODO: Add route when wallet payment screen is ready.
           } else if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
+            if (kDebugMode) {
+              debugPrint("\nPayment Success! Going to receipt screen\n");
+            }
             context.push(
-              AppRoutes.homePlanPurchaseReceiptScreen,
-              extra: _buildReceiptExtra(state, paymentMethod: 'wallet'),
+             AppRoutes.homePlanPurchaseReceiptScreen,
+             extra: _buildReceiptExtra(state, paymentMethod: 'wallet'),
             );
           }
 
@@ -423,20 +431,30 @@ class _HomePlansPaymentMethodViewState
               isLoading: isSubmitting,
               buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
               onPayNow: () {
-                AppSession.appRoute = state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
+                AppSession.appRoute = state.isPrepaidUser
+                    ? 'prepaidPlan'
+                    : 'postpaidPlan';
 
                 switch (state.paymentMode) {
                   case HomePlansPaymentMode.payWithCard:
-                    context.push(
-                      AppRoutes.homePlanPurchaseReceiptScreen,
-                      extra: _buildReceiptExtra(
-                        state,
-                        paymentMethod: _selectedPaymentMethodLabel(state),
-                        hideSaveCreditCard: false,
-                      ),
-                    );
+                    if (kDebugMode) {
+                      debugPrint("\ntapped (pay now) .\n method : pay with\n");
+                    }
+                    // context.push(
+                    //   AppRoutes.homePlanPurchaseReceiptScreen,
+                    //   extra: _buildReceiptExtra(
+                    //     state,
+                    //     paymentMethod: _selectedPaymentMethodLabel(state),
+                    //     hideSaveCreditCard: false,
+                    //   ),
+                    // );
                     return;
                   case HomePlansPaymentMode.payFromWallet:
+                    if (kDebugMode) {
+                      debugPrint(
+                        "\ntapped (pay now) .\n method : pay from wallet\n",
+                      );
+                    }
                     final balanceState = context.read<BalanceCubit>().state;
                     _openWalletPaymentSheet(
                       walletBalance: balanceState.walletBalance,
@@ -447,13 +465,16 @@ class _HomePlansPaymentMethodViewState
                     );
                     return;
                   case HomePlansPaymentMode.card:
-                    context.push(
-                      AppRoutes.homePlanPurchaseReceiptScreen,
-                      extra: _buildReceiptExtra(
-                        state,
-                        paymentMethod: _selectedPaymentMethodLabel(state),
-                      ),
-                    );
+                    if (kDebugMode) {
+                      debugPrint("\ntapped (pay now) .\n method : card\n");
+                    }
+                    // context.push(
+                    //   AppRoutes.homePlanPurchaseReceiptScreen,
+                    //   extra: _buildReceiptExtra(
+                    //     state,
+                    //     paymentMethod: _selectedPaymentMethodLabel(state),
+                    //   ),
+                    // );
                     return;
                 }
               },

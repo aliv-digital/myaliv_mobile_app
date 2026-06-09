@@ -148,6 +148,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
       // in CustomPaymentBreakDownCard.
       primaryPlanPrice: _primaryPlanPriceBeforeVat(state),
       primaryPlanVatAmount: _primaryPlanVatAmount(state),
+      futurePlanStartDate: state.selectedApiPlan?.startDate.trim() ?? '',
       flow: flow,
       selectedAddOns: _selectedAddOns(state),
       forceNow: state.routeArgs?.forceNow ?? false,

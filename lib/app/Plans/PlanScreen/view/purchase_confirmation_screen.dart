@@ -62,12 +62,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   @override
   void initState() {
     if (kDebugMode) {
-      const star = "****************************************************************************************************";
+      const star =
+          "****************************************************************************************************";
       debugPrint(star);
       debugPrint(
         "we are in ConfirmationScreen() | purchase_confirmation_screen.dart ",
       );
-      debugPrint("location : app/PlanScreen/view/purchase_confirmation_screen.dart");
+      debugPrint(
+        "location : app/PlanScreen/view/purchase_confirmation_screen.dart",
+      );
       debugPrint(star);
     }
     super.initState();
@@ -142,6 +145,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         amount: plan.planAmountWithVat,
         vatNote: plan.vatAmount > 0 ? 'vat inclusive' : 'no vat applied',
         forceNow: !widget.showBeginOn,
+        selectedBeginDate: widget.showBeginOn ? _selectedBeginDate : null,
         selectedItems: <HomePlansPaymentSelectedItem>[
           HomePlansPaymentSelectedItem(
             id: plan.planId,
