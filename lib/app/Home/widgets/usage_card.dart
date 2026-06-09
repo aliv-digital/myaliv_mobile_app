@@ -70,6 +70,7 @@ class UsageCard extends StatelessWidget {
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
+                  //textAlign: TextAlign.center,
                   title,
                   overflow: TextOverflow.clip,
                   maxLines: 1,
@@ -90,6 +91,7 @@ class UsageCard extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: isUnlimited ? 'unlimited' : totalValue,
+
                         style: TextStyle(
                           color: const Color(0xFF222222),
                           fontSize: 16,
@@ -157,7 +159,7 @@ class UsageCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          isPostpaid == false ? _progressBar() : _postpaidprogressBar(),
+          isPostpaid == false ? _progressBar() : _postPaidProgressBar(),
           const SizedBox(height: 0),
         ],
       ),
@@ -176,7 +178,7 @@ class UsageCard extends StatelessWidget {
 
   /// Postpaid bar: width = remaining; color escalates green → yellow → red
   /// as `progress` (fraction used) grows, so a nearly-empty bar reads red.
-  Widget _postpaidprogressBar() {
+  Widget _postPaidProgressBar() {
     final style = _resolvePostpaidStyle();
     return _bar(
       borderRadius: 8,

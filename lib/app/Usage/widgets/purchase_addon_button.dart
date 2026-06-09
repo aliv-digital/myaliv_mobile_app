@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/app_session.dart';
 import '../../../router/app_routes.dart';
 
 class PurchaseAddOnButton extends StatelessWidget {
@@ -18,7 +19,10 @@ class PurchaseAddOnButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             // 🔥 purchase add-on
-            context.push(AppRoutes.guestPurchasePlanAddOns);
+            AppSession.appRoute = 'addOnsPrepaid';
+            // context.read<PlansCubit>().changeTab(HomePlanTab.addOns);
+            context.push(AppRoutes.purchaseAddOns);
+            //context.push(AppRoutes.guestPurchasePlanAddOns);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: purple,

@@ -33,6 +33,7 @@ class ActivePlanUsageSection extends StatelessWidget {
       children: [
         _header(context),
         const SizedBox(height: 16),
+        // fix positioning
         UsageGroup(isPostpaid: isPostpaid),
         // commented by nahin — when re-enabling, restore the SizedBox(20)
         // above and below this block to keep the expander vertically padded.
@@ -42,6 +43,7 @@ class ActivePlanUsageSection extends StatelessWidget {
         //   child: ActivePlansExpander(),
         // ),
         const SizedBox(height: 20),
+        // need to remove view all
         _roamingSection(context),
         if (isPostpaid) ...[
           _myLimitsHeader(context),
@@ -209,20 +211,20 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          GestureDetector(
-            onTap: onTap,
-            child: const Text(
-              'view all',
-              style: TextStyle(
-                color: Color(0xFF645D9C),
-                fontSize: 13,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
-                decoration: TextDecoration.underline,
-                decorationColor: Color(0xFF645D9C),
-              ),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: onTap,
+          //   child: const Text(
+          //     'view all',
+          //     style: TextStyle(
+          //       color: Color(0xFF645D9C),
+          //       fontSize: 13,
+          //       fontFamily: 'CircularPro',
+          //       fontWeight: FontWeight.w700,
+          //       decoration: TextDecoration.underline,
+          //       decorationColor: Color(0xFF645D9C),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
