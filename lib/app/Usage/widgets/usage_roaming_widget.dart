@@ -81,11 +81,12 @@ class UsageRoamingPlanCard extends StatelessWidget {
 
   /// Renders an unparseable / missing API date as a stable placeholder
   /// rather than throwing, so the card still lays out cleanly when the
-  /// bundles API drops a date string.
+  /// bundles API drops a date string. The API-display timezone offset
+  /// is already applied inside `BasePlanModel.endDateTime`; applying it
+  /// again here would double-shift the end date.
   static String _format(DateTime? date) {
     if (date == null) return '--/--/--';
-    final adjustedDate = date.add(const Duration(hours: 6));
-    return DateFormat('dd/MM/yy').format(adjustedDate);
+    return DateFormat('dd/MM/yy').format(date);
   }
 }
 

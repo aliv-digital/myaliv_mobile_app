@@ -110,36 +110,69 @@ class ActivePlanUsageSection extends StatelessWidget {
     );
   }
 
-  /// Stable backend identifier for the US/Canada roaming data bucket.
-  /// Sourced from `PlanBuckets[].BucketUnit` in the bundles API — unlike
-  /// the user-visible name (`"roam data us/can"`), this code is tied to
-  /// the billing system and not retitled by marketing.
-  static const String _roamingTargetBucketUnit = 'INS_Data_roam_US_Canada';
+  /// Preferred bucket — US/Canada roaming data. Sourced from
+  /// `PlanBuckets[].BucketUnit` in the bundles API. Stable backend code,
+  /// not retitled by marketing.
+  static const String _roamingPrimaryBucketUnit = 'INS_Data_roam_US_Canada';
+  static const String _roamingPrimaryLegacyName = 'roam data us/can';
 
-  /// Legacy match against the display name. Kept as a fallback for plans
-  /// whose `BucketUnit` is missing (older payloads, demo data) so the
-  /// section still renders. Match is trimmed-lowercase to absorb minor
-  /// capitalization drift.
-  static const String _roamingTargetBucketName = 'roam data us/can';
+  /// Fallback bucket — general "roaming data" allotment. Used only when
+  /// no standalone plan exposes the US/Canada bucket. The US/Canada
+  /// bucket always wins, even when it appears on a later plan in the list.
+  static const String _roamingFallbackBucketUnit = 'INS_Data_roam_as_home_v2';
+  static const String _roamingFallbackLegacyName = 'roaming data';
 
-  /// Only the first standalone plan with a US/Canada roaming data bucket
-  /// is surfaced — additional roaming plans are intentionally suppressed
-  /// on the home screen.
+  /// Two-pass search across standalone plans:
+  ///   1. Return the first plan that exposes the US/Canada bucket.
+  ///   2. Otherwise, return the first plan that exposes the general
+  ///      "roaming data" bucket.
+  /// Depleted buckets still match — a user-paid allowance with zero
+  /// remaining should render as an exhausted card, not silently fall
+  /// through to a sibling plan.
   List<_RoamingEntry> _roamingEntries(BucketUsageSummaryState state) {
-    for (final plan in state.standAlonePlans) {
-      for (final usage in state.bucketUsageForPlan(plan)) {
-        if (_isUsCanadaRoamingBucket(usage)) {
-          return [_RoamingEntry(plan: plan, usage: usage)];
-        }
-      }
-    }
+    final primary = _firstMatchingEntry(
+      state,
+      _roamingPrimaryBucketUnit,
+      _roamingPrimaryLegacyName,
+    );
+    if (primary != null) return [primary];
+
+    final fallback = _firstMatchingEntry(
+      state,
+      _roamingFallbackBucketUnit,
+      _roamingFallbackLegacyName,
+    );
+    if (fallback != null) return [fallback];
+
     return const [];
   }
 
-  bool _isUsCanadaRoamingBucket(PlanBucketUsage usage) {
-    if (usage.bucketUnit == _roamingTargetBucketUnit) return true;
+  _RoamingEntry? _firstMatchingEntry(
+    BucketUsageSummaryState state,
+    String targetBucketUnit,
+    String legacyDisplayName,
+  ) {
+    for (final plan in state.standAlonePlans) {
+      for (final usage in state.bucketUsageForPlan(plan)) {
+        if (_matchesBucket(usage, targetBucketUnit, legacyDisplayName)) {
+          return _RoamingEntry(plan: plan, usage: usage);
+        }
+      }
+    }
+    return null;
+  }
+
+  /// Prefers the stable `BucketUnit` code; falls back to the legacy
+  /// display name only when the plan payload omits `BucketUnit` (older
+  /// payloads, demo data).
+  bool _matchesBucket(
+    PlanBucketUsage usage,
+    String targetBucketUnit,
+    String legacyDisplayName,
+  ) {
+    if (usage.bucketUnit == targetBucketUnit) return true;
     if (usage.bucketUnit.isNotEmpty) return false;
-    return usage.bucketName.trim().toLowerCase() == _roamingTargetBucketName;
+    return usage.bucketName.trim().toLowerCase() == legacyDisplayName;
   }
 }
 
