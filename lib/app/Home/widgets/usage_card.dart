@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/widgets/usage_progress_bar.dart';
 
 class UsageCard extends StatelessWidget {
   static const double _valueTextSlotHeight = 40;
@@ -163,51 +164,30 @@ class UsageCard extends StatelessWidget {
   /// Prepaid bar: solid green, width = remaining (1.0 for unlimited).
   /// Matches the Usage tab `_LimitRow` treatment for prepaid.
   Widget _progressBar() {
+    final style = resolveUsageBarStyle(
+      isPostpaid: false,
+      progressUsed: progress,
+      isUnlimited: isUnlimited,
+    );
     return _bar(
       borderRadius: 6,
-      backgroundColor: const Color(0x2617B26A),
-      progressColor: const Color(0xFF17B26A),
+      backgroundColor: style.background,
+      progressColor: style.fill,
     );
   }
 
   /// Postpaid bar: width = remaining; color escalates green → yellow → red
   /// as `progress` (fraction used) grows, so a nearly-empty bar reads red.
   Widget _postPaidProgressBar() {
-    final style = _resolvePostpaidStyle();
+    final style = resolveUsageBarStyle(
+      isPostpaid: true,
+      progressUsed: progress,
+      isUnlimited: isUnlimited,
+    );
     return _bar(
       borderRadius: 8,
-      backgroundColor: style.backgroundColor,
-      progressColor: style.color,
-    );
-  }
-
-  _ProgressStyle _resolvePostpaidStyle() {
-    if (isUnlimited) {
-      return const _ProgressStyle(
-        backgroundColor: Color(0x2617B26A),
-        color: Color(0xFF17B26A),
-      );
-    }
-
-    final clamped = (progress.clamp(0.0, 1.0) * 100).round();
-
-    if (clamped > 80) {
-      return const _ProgressStyle(
-        backgroundColor: Color(0x26DD3038),
-        color: Color(0xFFDD3038),
-      );
-    }
-
-    if (clamped > 50) {
-      return const _ProgressStyle(
-        backgroundColor: Color(0x26FFC627),
-        color: Color(0xFFFFC627),
-      );
-    }
-
-    return const _ProgressStyle(
-      backgroundColor: Color(0x2617B26A),
-      color: Color(0xFF17B26A),
+      backgroundColor: style.background,
+      progressColor: style.fill,
     );
   }
 
@@ -247,11 +227,4 @@ class UsageCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ProgressStyle {
-  final Color backgroundColor;
-  final Color color;
-
-  const _ProgressStyle({required this.backgroundColor, required this.color});
 }

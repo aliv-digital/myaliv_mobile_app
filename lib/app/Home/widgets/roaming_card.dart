@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:myaliv_mobile_app/resources/widgets/usage_progress_bar.dart';
 
 import '../../../core/appConfig/app_ui_config_cubit.dart';
 import '../home/data/home_ui_config.dart';
-
-class _BarStyle {
-  const _BarStyle({required this.fill, required this.background});
-  final Color fill;
-  final Color background;
-}
 
 class RoamingCard extends StatelessWidget {
   final String title;
@@ -31,30 +26,6 @@ class RoamingCard extends StatelessWidget {
     required this.progress,
     this.isUnlimited = false,
   });
-
-  static const Color _green = Color(0xFF17B26A);
-  static const Color _yellow = Color(0xFFFFC627);
-  static const Color _red = Color(0xFFDD3038);
-
-  /// Mirrors `UsageCard._resolvePostpaidStyle` thresholds so the home
-  /// screen's roaming card escalates in lockstep with the other usage
-  /// cards. Prepaid stays solid green to match `UsageCard._progressBar`.
-  _BarStyle _resolveBarStyle(bool isPostpaid) {
-    if (!isPostpaid || isUnlimited) {
-      return _BarStyle(fill: _green, background: _green.withValues(alpha: 0.2));
-    }
-    final usedPercent = (progress.clamp(0.0, 1.0) * 100).round();
-    if (usedPercent > 80) {
-      return _BarStyle(fill: _red, background: _red.withValues(alpha: 0.15));
-    }
-    if (usedPercent > 50) {
-      return _BarStyle(
-        fill: _yellow,
-        background: _yellow.withValues(alpha: 0.15),
-      );
-    }
-    return _BarStyle(fill: _green, background: _green.withValues(alpha: 0.15));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +93,11 @@ class RoamingCard extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final isPostpaid = config.userType == UserType.postpaid;
-                final style = _resolveBarStyle(isPostpaid);
+                final style = resolveUsageBarStyle(
+                  isPostpaid: isPostpaid,
+                  progressUsed: progress,
+                  isUnlimited: isUnlimited,
+                );
                 final fraction = isUnlimited
                     ? 1.0
                     : (1.0 - progress.clamp(0.0, 1.0));

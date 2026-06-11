@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/usage_progress_bar.dart';
 
 /// Single metered bucket row used in both the prepaid usage list and the
 /// roaming section of the Usage tab. Title + subtitle on the left, a
 /// small progress bar plus `"N% used"` / `"unlimited"` label on the
-/// right. Bar palette is driven by `AppUiConfigCubit.userType`
-/// (red for postpaid, green for prepaid) — caller doesn't pick the
-/// colour, which keeps the active and roaming sections visually
-/// consistent without per-row colour wiring.
+/// right.
+///
+/// Fill direction is **used** (bar grows as usage grows) so the bar reads
+/// in lockstep with the `"N% used"` label. Palette comes from the shared
+/// [resolveUsageBarStyle] so postpaid still escalates green → yellow → red
+/// at the same thresholds as the home cards (and stays green at 0% used,
+/// rather than always-red as before).
 class UsageLimitRow extends StatelessWidget {
   const UsageLimitRow({
     super.key,
@@ -97,16 +101,17 @@ class _ProgressColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Prepaid unlimited fills the bar fully (matches home UsageCard);
+    final style = resolveUsageBarStyle(
+      isPostpaid: isPostpaid,
+      progressUsed: percentUsed,
+      isUnlimited: isUnlimited,
+    );
+    // Prepaid unlimited fills the bar fully (matches home `UsageCard`);
     // postpaid stays metered even when "unlimited" so the label carries
     // the meaning instead of the bar.
-    final showFullGreen = isUnlimited && !isPostpaid;
+    final showFullFill = isUnlimited && !isPostpaid;
     final fraction =
-        showFullGreen ? 1.0 : percentUsed.clamp(0.0, 1.0);
-    final fillColor =
-        isPostpaid ? const Color(0xFFDD3038) : const Color(0xFF17B26A);
-    final bgColor =
-        isPostpaid ? const Color(0x26DD3038) : const Color(0x2617B26A);
+        showFullFill ? 1.0 : percentUsed.clamp(0.0, 1.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -118,7 +123,7 @@ class _ProgressColumn extends StatelessWidget {
             height: _barHeight,
             child: Stack(
               children: [
-                Container(color: bgColor),
+                Container(color: style.background),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   width: _barWidth * fraction,
@@ -126,8 +131,8 @@ class _ProgressColumn extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     gradient: LinearGradient(
                       colors: [
-                        fillColor.withValues(alpha: 0),
-                        fillColor,
+                        style.fill.withValues(alpha: 0),
+                        style.fill,
                       ],
                     ),
                   ),
