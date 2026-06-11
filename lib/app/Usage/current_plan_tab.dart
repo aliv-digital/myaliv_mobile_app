@@ -29,9 +29,9 @@ class CurrentPlanTab extends StatelessWidget {
           // will work on it
           CurrentPlanActiveCard(config: config),
           const UsageFairUseLink(),
-          if (config.isPostpaid) const PostpaidUsageSection(),
+          if (config.isPostpaid) const PostpaidUsageSection(), // it is working properly
           if (isPrepaid) ..._prepaidSections,
-          const RoamingPlanSection(),
+          const RoamingPlanSection(), // need to work here
         ],
       ),
     );

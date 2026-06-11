@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Usage/usage_progress_rules.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 /// Single metered bucket row used in both the prepaid usage list and the
@@ -100,47 +101,49 @@ class _ProgressColumn extends StatelessWidget {
     // Prepaid unlimited fills the bar fully (matches home UsageCard);
     // postpaid stays metered even when "unlimited" so the label carries
     // the meaning instead of the bar.
-    final showFullGreen = isUnlimited && !isPostpaid;
-    final fraction =
-        showFullGreen ? 1.0 : percentUsed.clamp(0.0, 1.0);
-    final fillColor =
-        isPostpaid ? const Color(0xFFDD3038) : const Color(0xFF17B26A);
-    final bgColor =
-        isPostpaid ? const Color(0x26DD3038) : const Color(0x2617B26A);
-
+    // final showFullGreen = isUnlimited && !isPostpaid;
+    // final fraction = showFullGreen ? 1.0 : percentUsed.clamp(0.0, 1.0);
+    // final fillColor = isPostpaid ? const Color(0xFFDD3038) : const Color(0xFF17B26A);
+    // final bgColor = isPostpaid ? const Color(0x26DD3038) : const Color(0x2617B26A);
+    // need to work on here
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: SizedBox(
-            width: _barWidth,
-            height: _barHeight,
-            child: Stack(
-              children: [
-                Container(color: bgColor),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: _barWidth * fraction,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    gradient: LinearGradient(
-                      colors: [
-                        fillColor.withValues(alpha: 0),
-                        fillColor,
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        UsageProgressRules.progressBar(
+          usedFraction: percentUsed,
+          isUnlimited: isUnlimited,
+          width: _barWidth,
+          height: _barHeight,
+          borderRadius: 8,
         ),
+        // ClipRRect(
+        //   borderRadius: BorderRadius.circular(8),
+        //   child: SizedBox(
+        //     width: _barWidth,
+        //     height: _barHeight,
+        //     child: Stack(
+        //       children: [
+        //         Container(color: bgColor),
+        //         AnimatedContainer(
+        //           duration: const Duration(milliseconds: 300),
+        //           width: _barWidth * fraction,
+        //           decoration: BoxDecoration(
+        //             borderRadius: BorderRadius.circular(8),
+        //             gradient: LinearGradient(
+        //               colors: [
+        //                 fillColor.withValues(alpha: 0),
+        //                 fillColor,
+        //               ],
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         const SizedBox(height: 6),
         Text(
-          isUnlimited
-              ? 'unlimited'
-              : '${(percentUsed.clamp(0.0, 1.0) * 100).round()}% used',
+          isUnlimited ? 'unlimited' : '${(percentUsed.clamp(0.0, 1.0) * 100).round()}% used',
           style: const TextStyle(
             color: Color(0xFF707070),
             fontSize: 12,
