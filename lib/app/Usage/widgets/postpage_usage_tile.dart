@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/app/Usage/usage_progress_rules.dart';
 
 import '../postpaid_usage_item.dart';
 
@@ -75,16 +76,18 @@ class PostpaidUsageTile extends StatelessWidget {
   }
 
   Widget _buildProgressBar() {
-    if (item.isUnlimited) {
-      return Container(
-        width: 80,
-        height: 5,
-        decoration: BoxDecoration(
-          color: const Color(0xFF17B26A),
-          borderRadius: BorderRadius.circular(30),
-        ),
-      );
-    }
+    // Old hard-coded postpaid progress bar. Keep this block for quick
+    // rollback if product wants the previous always-green behavior again.
+    // if (item.isUnlimited) {
+    //   return Container(
+    //     width: 80,
+    //     height: 5,
+    //     decoration: BoxDecoration(
+    //       color: const Color(0xFF17B26A),
+    //       borderRadius: BorderRadius.circular(30),
+    //     ),
+    //   );
+    // }
 
     if (item.progress == null) {
       return Container(
@@ -97,17 +100,24 @@ class PostpaidUsageTile extends StatelessWidget {
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: SizedBox(
-        width: 80,
-        height: 5,
-        child: LinearProgressIndicator(
-          value: item.progress,
-          backgroundColor: const Color(0x2617B26A),
-          valueColor: const AlwaysStoppedAnimation(Color(0xFF17B26A)),
-        ),
-      ),
+    return UsageProgressRules.progressBar(
+      usedFraction: item.progress!,
+      isUnlimited: item.isUnlimited,
+      width: 80,
+      height: 5,
+      borderRadius: 30,
     );
+    // return ClipRRect(
+    //   borderRadius: BorderRadius.circular(30),
+    //   child: SizedBox(
+    //     width: 80,
+    //     height: 5,
+    //     child: LinearProgressIndicator(
+    //       value: item.progress,
+    //       backgroundColor: const Color(0x2617B26A),
+    //       valueColor: const AlwaysStoppedAnimation(Color(0xFF17B26A)),
+    //     ),
+    //   ),
+    // );
   }
 }
