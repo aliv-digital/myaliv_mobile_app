@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/bucket_name_matcher.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/bucket_unit_converter.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/models/bucket_usage_summary_model.dart';
@@ -23,6 +24,24 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 ///    unit once at the end. The `planId` filter keeps out unrelated
 ///    purchase lines that may share a `BucketUsageItem` with the active
 ///    plan set.
+///
+/// Name-matching strategy (joining plan-bucket → API item):
+///  - Two passes over a tiered matcher defined in `bucket_name_matcher.dart`:
+///    Tier A `exact`, Tier B `tokenSubset`, Tier C `tokenPrefix`, Tier D
+///    `wordBoundary`. Pass 1 resolves all Tier-A matches in plan order; pass
+///    2 sorts the remaining keys by descending specificity (more plan tokens
+///    first) and resolves the looser tiers. Each API item can be claimed by
+///    at most one plan bucket per call, so a less-specific bucket can't
+///    steal a more-specific bucket's item.
+///  - Plan-aware candidate filter: when [activePlans] have plan ids, API
+///    items whose `nestedDetails` contain zero entries from those ids are
+///    pre-claimed and excluded from matching. Without this, a plan-side
+///    name that exact-matches an API row whose details all belong to
+///    sibling plans would steal the join — burying the active plan's real
+///    entitlement in a same-family API row (e.g. travel30's "roaming data"
+///    entitlement actually lives under "US/Can/UK roaming data") that
+///    never gets matched. The filter only runs when [activePlans] declare
+///    plan ids; otherwise all items remain candidates.
 ///
 /// Buckets declared on a plan but missing from the API response are skipped
 /// — the plan's declared `bucket.amount` has been observed to misrepresent
@@ -58,7 +77,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
       // suppressed for metered displays.
       if (bucket.suppress && !bucket.unlimited) continue;
 
-      final key = _normalize(bucket.name);
+      final key = normalizeBucketName(bucket.name);
       if (key.isEmpty) continue;
 
       final existing = planMeta[key];
@@ -80,10 +99,103 @@ List<PlanBucketUsage> computePlanBucketUsage({
     return const <PlanBucketUsage>[];
   }
 
+  // ─── two-pass bucket name resolution ─────────────────────────────────────
+  //
+  // Pass 1 (exact): walk orderedKeys in plan-declared order. Exact match
+  // is 1:1 — two distinct keys can't both exact-match the same item — so
+  // order is safe here.
+  //
+  // Pass 2 (tokenSubset → wordBoundary): a single item may satisfy
+  // several plan buckets via the looser tiers, so resolving in plan-
+  // declared order would let a less-specific bucket steal a more-
+  // specific bucket's item (e.g. plan-side "data" claiming
+  // "US/Can/UK roaming data" before plan-side "roaming data" gets a
+  // chance). Sort the remaining keys by descending specificity so the
+  // most-specific bucket claims first. Once claimed, an item is removed
+  // from contention to prevent double-counting.
+  final apiNormalized = items
+      .map((it) => normalizeBucketName(it.freeUnitTypeName))
+      .toList(growable: false);
+  final apiTokens =
+      apiNormalized.map(tokenizeBucketName).toList(growable: false);
+  final bucketTokensByKey = <String, Set<String>>{
+    for (final key in orderedKeys) key: tokenizeBucketName(key),
+  };
+
+  final matchedIndexByKey = <String, int>{};
+  final claimed = <int>{};
+
+  // Pre-claim items the active plans don't contribute to. Without this,
+  // a plan-side bucket name that exact-matches an API row whose
+  // `nestedDetails` are all from sibling plans (real-world example:
+  // travel30's `"roaming data"` matching the API row `"roaming data"`
+  // whose only detail comes from a different plan) would steal the
+  // join — burying the active plan's real entitlement in a different
+  // API row (e.g. `"US/Can/UK roaming data"`) that never gets matched.
+  // Pre-claiming the empty items lets the tolerant tiers reach the
+  // right row in pass 2.
+  if (planIds.isNotEmpty) {
+    for (int i = 0; i < items.length; i++) {
+      final hasContribution = items[i].nestedDetails.any(
+        (d) => planIds.contains(_planIdOf(d.purchaseSeq)),
+      );
+      if (!hasContribution) claimed.add(i);
+    }
+  }
+
+  for (final key in orderedKeys) {
+    final match = findBestMatch(
+      bucketNormalized: key,
+      bucketTokens: bucketTokensByKey[key]!,
+      apiNormalized: apiNormalized,
+      apiTokens: apiTokens,
+      claimedIndices: claimed,
+      allowTiers: const <BucketMatchTier>{BucketMatchTier.exact},
+    );
+    if (match != null) {
+      matchedIndexByKey[key] = match.itemIndex;
+      claimed.add(match.itemIndex);
+    }
+  }
+
+  final orderIndex = <String, int>{
+    for (int i = 0; i < orderedKeys.length; i++) orderedKeys[i]: i,
+  };
+  final fuzzyKeys = orderedKeys
+      .where((k) => !matchedIndexByKey.containsKey(k))
+      .toList()
+    ..sort((a, b) {
+      final at = bucketTokensByKey[a]!.length;
+      final bt = bucketTokensByKey[b]!.length;
+      if (at != bt) return bt.compareTo(at); // more tokens first
+      if (a.length != b.length) return b.length.compareTo(a.length);
+      return orderIndex[a]!.compareTo(orderIndex[b]!);
+    });
+
+  for (final key in fuzzyKeys) {
+    final match = findBestMatch(
+      bucketNormalized: key,
+      bucketTokens: bucketTokensByKey[key]!,
+      apiNormalized: apiNormalized,
+      apiTokens: apiTokens,
+      claimedIndices: claimed,
+      allowTiers: const <BucketMatchTier>{
+        BucketMatchTier.tokenSubset,
+        BucketMatchTier.tokenPrefix,
+        BucketMatchTier.wordBoundary,
+      },
+    );
+    if (match != null) {
+      matchedIndexByKey[key] = match.itemIndex;
+      claimed.add(match.itemIndex);
+    }
+  }
+
   final result = <PlanBucketUsage>[];
   for (final key in orderedKeys) {
     final meta = planMeta[key]!;
-    final matchedItem = _findItemForBucketName(items, key);
+    final matchedIndex = matchedIndexByKey[key];
+    final matchedItem = matchedIndex != null ? items[matchedIndex] : null;
     if (matchedItem == null) {
       // Unlimited buckets render from plan-side info only (no numbers
       // needed), so a missing API item is fine. Metered buckets still
@@ -187,19 +299,6 @@ class _PlanBucketMeta {
   bool isUnlimited;
 }
 
-BucketUsageItem? _findItemForBucketName(
-  List<BucketUsageItem> items,
-  String normalizedName,
-) {
-  if (normalizedName.isEmpty) return null;
-  for (final item in items) {
-    if (_normalize(item.freeUnitTypeName) == normalizedName) {
-      return item;
-    }
-  }
-  return null;
-}
-
 /// Extracts the plan id from a `PurchaseSeq` value.
 ///
 /// Format: `"<planId>.<timestamp>.<seq>.<expiry>"`, e.g.
@@ -211,5 +310,3 @@ String _planIdOf(String purchaseSeq) {
   final dotIndex = trimmed.indexOf('.');
   return dotIndex < 0 ? trimmed : trimmed.substring(0, dotIndex);
 }
-
-String _normalize(String s) => s.trim().toLowerCase();

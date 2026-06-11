@@ -399,7 +399,10 @@ void main() {
             freeUnitTypeName: 'data',
             unitType: 'GB',
             totalInitialAmount: 0,
-            nestedDetails: const [],
+            // Zero-amount detail keeps the item past the plan-aware
+            // candidate filter so this test can still exercise the
+            // initial=0 / remaining=0 branch of the unlimited rule.
+            nestedDetails: [_detail(purchaseSeq: '29866.a', currentAmount: 0)],
           ),
         ],
       );
@@ -462,7 +465,9 @@ void main() {
             freeUnitTypeName: 'data',
             unitType: 'GB',
             totalInitialAmount: 5 * 1024 * 1024,
-            nestedDetails: const [],
+            // Detail from the non-suppressed plan keeps the item past
+            // the plan-aware candidate filter.
+            nestedDetails: [_detail(purchaseSeq: '30112.a', currentAmount: 0)],
           ),
         ],
       );
@@ -542,17 +547,26 @@ void main() {
           ),
         ],
         items: [
+          // Each item needs an active-plan nested detail to pass the
+          // plan-aware candidate filter.
           _item(
             freeUnitTypeName: 'data',
             unitType: 'GB',
             totalInitialAmount: 1024 * 1024,
+            nestedDetails: [_detail(purchaseSeq: '29866.a', currentAmount: 0)],
           ),
           _item(
             freeUnitTypeName: 'voice',
             unitType: 'Minutes',
             totalInitialAmount: 60,
+            nestedDetails: [_detail(purchaseSeq: '29866.b', currentAmount: 0)],
           ),
-          _item(freeUnitTypeName: 'sms', unitType: 'SMS', totalInitialAmount: 0),
+          _item(
+            freeUnitTypeName: 'sms',
+            unitType: 'SMS',
+            totalInitialAmount: 0,
+            nestedDetails: [_detail(purchaseSeq: '30112.a', currentAmount: 0)],
+          ),
         ],
       );
 
@@ -591,6 +605,190 @@ void main() {
 
       expect(result.first.remaining, closeTo(1.0, 1e-9));
       expect(result.first.matchedDetailCount, 1);
+    });
+  });
+
+  group('computePlanBucketUsage — tolerant name matching', () {
+    test('plan "roaming data" joins API "US/Can/UK roaming data"', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '40000',
+            buckets: [
+              _bucket(name: 'roaming data', amount: 0, unit: 'GB'),
+            ],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'US/Can/UK roaming data',
+            unitType: 'GB',
+            totalInitialAmount: 2 * 1024 * 1024,
+            nestedDetails: [
+              _detail(
+                purchaseSeq: '40000.a',
+                currentAmount: 1.5 * 1024 * 1024,
+              ),
+            ],
+          ),
+        ],
+      );
+
+      expect(result, hasLength(1));
+      expect(result.first.bucketName, 'roaming data');
+      expect(result.first.initial, closeTo(2.0, 1e-9));
+      expect(result.first.remaining, closeTo(1.5, 1e-9));
+    });
+
+    test('exact match preferred over a longer tier-B candidate', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '40000',
+            buckets: [_bucket(name: 'data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          // Tier-B candidate appears first in the list — exact still wins.
+          _item(
+            freeUnitTypeName: 'US/Can/UK data',
+            unitType: 'GB',
+            totalInitialAmount: 1 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '40000.a', currentAmount: 1 * 1024 * 1024),
+            ],
+          ),
+          _item(
+            freeUnitTypeName: 'data',
+            unitType: 'GB',
+            totalInitialAmount: 5 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '40000.b', currentAmount: 5 * 1024 * 1024),
+            ],
+          ),
+        ],
+      );
+
+      expect(result, hasLength(1));
+      expect(result.first.initial, closeTo(5.0, 1e-9));
+      expect(result.first.remaining, closeTo(5.0, 1e-9));
+    });
+
+    test(
+      'most specific bucket claims the shared API item first '
+      '("roaming data" wins over "data" even when "data" declared first)',
+      () {
+        final result = computePlanBucketUsage(
+          activePlans: [
+            _plan(
+              planId: '40000',
+              buckets: [
+                _bucket(name: 'data', amount: 0, unit: 'GB'),
+                _bucket(name: 'roaming data', amount: 0, unit: 'GB'),
+              ],
+            ),
+          ],
+          items: [
+            _item(
+              freeUnitTypeName: 'US/Can/UK roaming data',
+              unitType: 'GB',
+              totalInitialAmount: 2 * 1024 * 1024,
+              nestedDetails: [
+                _detail(
+                  purchaseSeq: '40000.a',
+                  currentAmount: 1 * 1024 * 1024,
+                ),
+              ],
+            ),
+          ],
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.bucketName, 'roaming data');
+        expect(result.first.remaining, closeTo(1.0, 1e-9));
+      },
+    );
+
+    test(
+      'plan "roaming data" joins API "roam data us/can" via prefix tier '
+      '(produces same numeric row as the "US/Can/UK roaming data" case)',
+      () {
+        final result = computePlanBucketUsage(
+          activePlans: [
+            _plan(
+              planId: '40000',
+              buckets: [
+                _bucket(name: 'roaming data', amount: 0, unit: 'GB'),
+              ],
+            ),
+          ],
+          items: [
+            _item(
+              freeUnitTypeName: 'roam data us/can',
+              unitType: 'GB',
+              totalInitialAmount: 2 * 1024 * 1024,
+              nestedDetails: [
+                _detail(
+                  purchaseSeq: '40000.a',
+                  currentAmount: 1.5 * 1024 * 1024,
+                ),
+              ],
+            ),
+          ],
+        );
+
+        expect(result, hasLength(1));
+        expect(result.first.bucketName, 'roaming data');
+        expect(result.first.initial, closeTo(2.0, 1e-9));
+        expect(result.first.remaining, closeTo(1.5, 1e-9));
+        expect(result.first.used, closeTo(0.5, 1e-9));
+      },
+    );
+
+    test('plan "data" does NOT match API "user database access" (denylist)',
+        () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '40000',
+            buckets: [_bucket(name: 'data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'user database access',
+            unitType: 'GB',
+            totalInitialAmount: 1 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '40000.a', currentAmount: 1 * 1024 * 1024),
+            ],
+          ),
+        ],
+      );
+      expect(result, isEmpty);
+    });
+
+    test('plain "data" does NOT silently match API "metadata"', () {
+      final result = computePlanBucketUsage(
+        activePlans: [
+          _plan(
+            planId: '40000',
+            buckets: [_bucket(name: 'data', amount: 0, unit: 'GB')],
+          ),
+        ],
+        items: [
+          _item(
+            freeUnitTypeName: 'metadata',
+            unitType: 'GB',
+            totalInitialAmount: 1 * 1024 * 1024,
+            nestedDetails: [
+              _detail(purchaseSeq: '40000.a', currentAmount: 1 * 1024 * 1024),
+            ],
+          ),
+        ],
+      );
+
+      expect(result, isEmpty);
     });
   });
 

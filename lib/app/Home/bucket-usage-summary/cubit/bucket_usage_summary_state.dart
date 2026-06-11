@@ -135,6 +135,14 @@ class BucketUsageSummaryState extends Equatable {
   /// Usage tab renders one usage block per roaming card and shared bucket
   /// names (e.g. two roaming plans both contributing to "data") must not
   /// bleed across cards.
+  ///
+  /// Plan-aware matching: `computePlanBucketUsage` joins this plan's
+  /// `planBuckets` to API items via the tiered matcher in
+  /// `bucket_name_matcher.dart`, and skips any API row that has no
+  /// nested-detail contribution from `plan.planId`. That filter is the
+  /// reason a plan like travel30 (id 18933) renders its "roaming data"
+  /// row against API `"US/Can/UK roaming data"` instead of the same-
+  /// name API row whose details all belong to a sibling plan.
   List<PlanBucketUsage> bucketUsageForPlan(BasePlanModel plan) {
     final otherStandAloneIds = standAlonePlanIds.difference({plan.planId});
     return computePlanBucketUsage(
