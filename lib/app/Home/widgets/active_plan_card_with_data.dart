@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
@@ -22,13 +21,6 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool isFromHome;
 
   const PrepaidActivePlanCardWithData({super.key, this.showRenewButton = true,this.isFromHome=false});
-
-  String _formatCardDate(DateTime? date) {
-    if (date == null) {
-      return '--/--/--';
-    }
-    return DateFormat('dd/MM/yy').format(date);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +86,8 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         ),
         const Spacer(),
         _DatesRow(
-          activeDate: _formatCardDate(activePlan?.startDateTime),
-          expireDate: _formatCardDate(activePlan?.endDateTime),
+          activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
+          expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
         ),
         if (showRenewButton) ...[
           const SizedBox(height: 14),

@@ -1,4 +1,4 @@
-import 'package:myaliv_mobile_app/core/utils/api_display_time.dart';
+import 'package:core/core.dart';
 
 /// Unified plan model for all plan types (Daily, Weekly, Monthly, Roaming, etc.)
 ///
@@ -312,24 +312,14 @@ class BasePlanModel {
 
   // ===== Computed Getters (ONLY used ones - removed dead code) =====
 
-  /// Safe date parsing helper for UI formatting.
-  /// Returns `null` when source date is empty/invalid.
-  ///
-  /// Used by:
-  /// - lib/app/Home/widgets/active_plan_card_with_data.dart
-  /// - lib/app/Plans/PlanScreen/widgets/home_plan_add_ons_tab_content.dart
-  /// - lib/app/Plans/PlanScreen/repository/home_plan_repository_v2.dart
-  DateTime? get startDateTime => _tryParseApiDate(startDate);
+  /// Backend dates come as UTC. We localize at the getter so every
+  /// downstream formatter (`DateFormat(...).format(...)`, the
+  /// `DateTimeX` extension, comparisons against `DateTime.now()`)
+  /// sees the device's wall-clock time without each call site
+  /// having to remember to convert.
+  DateTime? get startDateTime => parseApiDate(startDate)?.toLocal();
 
-  /// Safe date parsing helper for UI formatting.
-  /// Returns `null` when source date is empty/invalid.
-  ///
-  /// Used by:
-  /// - lib/app/Home/widgets/active_plan_card_with_data.dart
-  /// - lib/app/Plans/PlanScreen/widgets/home_plan_add_ons_tab_content.dart
-  DateTime? get endDateTime {
-    return applyApiDisplayTimeOffsetOrNull(_tryParseApiDate(endDate));
-  }
+  DateTime? get endDateTime => parseApiDate(endDate)?.toLocal();
 
   // ===== Plan type helpers =====
   // PlanType codes: P = Primary, S = Stand-alone, A = Add-on.
@@ -457,72 +447,6 @@ class BasePlanModel {
         .toList(growable: false);
   }
 
-  /// Unified date parsing that handles multiple formats.
-  ///
-  /// Supports:
-  /// - ISO format: "2024-10-22 18:43:00"
-  /// - US format with meridiem: "1/29/2023 1:23:00 PM"
-  /// - US format with extra spaces: "1/29/2023  1:23:00  PM"
-  ///
-  /// This consolidates different parsing approaches from the original models
-  /// into one robust implementation.
-  static DateTime? _tryParseApiDate(String value) {
-    if (value.trim().isEmpty) return null;
-
-    // Try ISO format first: "2024-10-22 18:43:00"
-    final String isoCandidate = value.replaceFirst(' ', 'T');
-    final DateTime? isoParsed = DateTime.tryParse(isoCandidate);
-    if (isoParsed != null) return isoParsed;
-
-    // Try regex-based meridiem parsing: "1/29/2023 1:23:00 PM"
-    final RegExp meridiemPattern = RegExp(
-      r'^(\d{1,2})/(\d{1,2})/(\d{4}) (\d{1,2}):(\d{2}):(\d{2}) (AM|PM)$',
-      caseSensitive: false,
-    );
-    final RegExpMatch? match = meridiemPattern.firstMatch(value.trim());
-    if (match != null) {
-      final int month = int.tryParse(match.group(1) ?? '') ?? 1;
-      final int day = int.tryParse(match.group(2) ?? '') ?? 1;
-      final int year = int.tryParse(match.group(3) ?? '') ?? 1970;
-      int hour = int.tryParse(match.group(4) ?? '') ?? 0;
-      final int minute = int.tryParse(match.group(5) ?? '') ?? 0;
-      final int second = int.tryParse(match.group(6) ?? '') ?? 0;
-      final String meridiem = (match.group(7) ?? '').toUpperCase();
-
-      if (meridiem == 'PM' && hour < 12) hour += 12;
-      if (meridiem == 'AM' && hour == 12) hour = 0;
-
-      return DateTime(year, month, day, hour, minute, second);
-    }
-
-    // Fallback: split-based parsing for "1/29/2023 1:23:00 PM" with extra spaces
-    String normalized = value.trim();
-    while (normalized.contains('  ')) {
-      normalized = normalized.replaceAll('  ', ' ');
-    }
-
-    final List<String> parts = normalized.split(' ');
-    if (parts.length == 3) {
-      final List<String> dateParts = parts[0].split('/');
-      final List<String> timeParts = parts[1].split(':');
-      if (dateParts.length == 3 && timeParts.length == 3) {
-        final int month = int.tryParse(dateParts[0]) ?? 1;
-        final int day = int.tryParse(dateParts[1]) ?? 1;
-        final int year = int.tryParse(dateParts[2]) ?? 1970;
-        int hour = int.tryParse(timeParts[0]) ?? 0;
-        final int minute = int.tryParse(timeParts[1]) ?? 0;
-        final int second = int.tryParse(timeParts[2]) ?? 0;
-        final String meridiem = parts[2].toUpperCase();
-
-        if (meridiem == 'PM' && hour < 12) hour += 12;
-        if (meridiem == 'AM' && hour == 12) hour = 0;
-
-        return DateTime(year, month, day, hour, minute, second);
-      }
-    }
-
-    return null;
-  }
 }
 
 // ===== Nested Models =====

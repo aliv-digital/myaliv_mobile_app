@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+
 /// Dedicated model for Postpaid roaming plan API data.
 ///
 /// Goals:
@@ -209,8 +211,8 @@ class HomePlansPostPaidPlanModel {
         paymentOption.trim().toLowerCase() == 'postpay';
   }
 
-  DateTime? get startDateTime => _tryParseApiDate(startDate);
-  DateTime? get endDateTime => _tryParseApiDate(endDate);
+  DateTime? get startDateTime => parseApiDate(startDate)?.toLocal();
+  DateTime? get endDateTime => parseApiDate(endDate)?.toLocal();
   double get planAmountWithVat => planAmount + vatAmount; // need to show this
 
   String get durationText {
@@ -363,13 +365,6 @@ class HomePlansPostPaidPlanModel {
 
     final normalized = value.toString().trim().toLowerCase();
     return normalized == 'true' || normalized == '1';
-  }
-
-  static DateTime? _tryParseApiDate(String value) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) return null;
-
-    return DateTime.tryParse(normalized.replaceFirst(' ', 'T'));
   }
 
   static String _formatWholeOrDecimal(double value) {

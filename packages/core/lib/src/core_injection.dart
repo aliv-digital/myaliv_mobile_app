@@ -34,7 +34,12 @@ class CoreInjection {
       debugPrint('========== CoreInjection START ==========');
     }
 
-    // ========== 1. Register AuthManager ==========
+    // ========== 1. Register TimezoneService ==========
+    if (!instance.isRegistered<TimezoneService>()) {
+      instance.registerSingleton<TimezoneService>(const DeviceTimezoneService());
+    }
+
+    // ========== 2. Register AuthManager ==========
     final authManager = AuthManager();
     instance.registerSingleton<AuthManager>(authManager);
 

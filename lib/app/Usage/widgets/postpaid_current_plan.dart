@@ -1,6 +1,6 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 
@@ -17,13 +17,6 @@ class PostpaidCurrentPlan extends StatelessWidget {
 
   static const Color red = Color(0xFFD94B4B);
   static const Color redDark = Color(0xFFCC3F3F);
-
-  String _formatCardDate(DateTime? date) {
-    if (date == null) {
-      return '--/--/--';
-    }
-    return DateFormat('dd/MM/yy').format(date);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +47,8 @@ class PostpaidCurrentPlan extends StatelessWidget {
                 _buildTopRow(activePlan?.planName),
                 const SizedBox(height: 20),
                 _buildDatesRow(
-                  activeDate: _formatCardDate(activePlan?.startDateTime),
-                  expireDate: _formatCardDate(activePlan?.endDateTime),
+                  activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
+                  expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
                 ),
               ],
             ),

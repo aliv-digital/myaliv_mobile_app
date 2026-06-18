@@ -1,5 +1,5 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 
 /// Visual header for the Usage tab's "roaming plan" section. Reads its
@@ -64,12 +64,12 @@ class UsageRoamingPlanCard extends StatelessWidget {
             children: [
               _DateColumn(
                 title: 'active',
-                value: _format(plan.startDateTime),
+                value: plan.startDateTime.formatDdMmYyOrDash(),
               ),
               const Spacer(),
               _DateColumn(
                 title: 'expire',
-                value: _format(plan.endDateTime),
+                value: plan.endDateTime.formatDdMmYyOrDash(),
                 alignRight: true,
               ),
             ],
@@ -79,15 +79,6 @@ class UsageRoamingPlanCard extends StatelessWidget {
     );
   }
 
-  /// Renders an unparseable / missing API date as a stable placeholder
-  /// rather than throwing, so the card still lays out cleanly when the
-  /// bundles API drops a date string. The API-display timezone offset
-  /// is already applied inside `BasePlanModel.endDateTime`; applying it
-  /// again here would double-shift the end date.
-  static String _format(DateTime? date) {
-    if (date == null) return '--/--/--';
-    return DateFormat('dd/MM/yy').format(date);
-  }
 }
 
 class _DateColumn extends StatelessWidget {
