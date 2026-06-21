@@ -19,6 +19,7 @@ class TransactionsRepository {
   Future<List<TransactionModel>> fetchTransactions({
     required DateTime startDate,
     required DateTime endDate,
+    required int accountId,
   }) async {
     if (kDebugMode) {
       debugPrint('TransactionsRepository: Fetching transactions');
@@ -27,6 +28,7 @@ class TransactionsRepository {
     final rawJson = await _apiClient.fetchTransactions(
       startDate: startDate,
       endDate: endDate,
+      accountId: accountId,
     );
 
     final transactions = _parseTransactions(rawJson);

@@ -18,17 +18,19 @@ class TransactionsApiClient {
   /// Parameters:
   /// - [startDate]: Start date in ISO 8601 format
   /// - [endDate]: End date in ISO 8601 format
+  /// - [accountId]: Device account id (from `id_acc`)
   ///
   /// Returns raw JSON response string on success.
   /// Throws [NetworkException] on errors.
   Future<String> fetchTransactions({
     required DateTime startDate,
     required DateTime endDate,
+    required int accountId,
   }) async {
     final startDateStr = startDate.toUtc().toIso8601String();
     final endDateStr = endDate.toUtc().toIso8601String();
     final url =
-        '${Api.transactions}?startDate=$startDateStr&endDate=$endDateStr';
+        '${Api.transactions}?startDate=$startDateStr&endDate=$endDateStr&AccountId=$accountId';
 
     if (kDebugMode) {
       debugPrint('TransactionsApiClient: Fetching transactions from $url');

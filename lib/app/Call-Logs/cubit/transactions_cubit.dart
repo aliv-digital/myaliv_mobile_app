@@ -1,16 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/transactions_repository.dart';
 
 import 'transactions_state.dart';
 
 /// Cubit for managing transactions data
 class TransactionsCubit extends Cubit<TransactionsState> {
-  TransactionsCubit({required TransactionsRepository repository})
-      : _repository = repository,
+  TransactionsCubit({
+    required TransactionsRepository repository,
+    required AccountInfoCubit accountInfoCubit,
+  })  : _repository = repository,
+        _accountInfoCubit = accountInfoCubit,
         super(const TransactionsState());
 
   final TransactionsRepository _repository;
+  final AccountInfoCubit _accountInfoCubit;
 
   /// Fetch transactions for the selected month
   Future<void> fetchTransactions() async {
@@ -19,12 +24,22 @@ class TransactionsCubit extends Cubit<TransactionsState> {
           'TransactionsCubit: Fetching transactions for ${state.currentMonth}');
     }
 
+    final accountId = _accountInfoCubit.state.accountInfo?.idAcc ?? 0;
+    if (accountId <= 0) {
+      emit(state.copyWith(
+        status: TransactionsStatus.failure,
+        errorMessage: 'Account ID unavailable. Please try again.',
+      ));
+      return;
+    }
+
     emit(state.copyWith(status: TransactionsStatus.loading, errorMessage: null));
 
     try {
       final transactions = await _repository.fetchTransactions(
         startDate: state.startDate,
         endDate: state.endDate,
+        accountId: accountId,
       );
 
       emit(state.copyWith(

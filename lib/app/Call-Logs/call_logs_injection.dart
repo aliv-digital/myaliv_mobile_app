@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/call_logs_repository.dart';
@@ -51,7 +52,10 @@ Future<void> setupCallLogsInjection() async {
   // Register Transactions cubit as factory (new instance per screen)
   if (!instance.isRegistered<TransactionsCubit>()) {
     instance.registerFactory<TransactionsCubit>(
-      () => TransactionsCubit(repository: instance<TransactionsRepository>()),
+      () => TransactionsCubit(
+        repository: instance<TransactionsRepository>(),
+        accountInfoCubit: instance<AccountInfoCubit>(),
+      ),
     );
   }
 }
