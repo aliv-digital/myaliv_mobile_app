@@ -82,6 +82,11 @@ class Api {
   }
 
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
+
+  /// Wallet-to-wallet transfer (send top-up):
+  /// POST /Order/transfer
+  /// Body: `{ "ToNumber": "<digits>", "Amount": <number> }`
+  static const orderTransferUrl = '$baseUrl/v1/MyAliv/Order/transfer';
   //{{baseUrl}}/v1/MyAliv/device/:deviceAccountId/bucket-usage-summary
   static String bucketUsageSummary(int deviceAccountId) => '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
 }
