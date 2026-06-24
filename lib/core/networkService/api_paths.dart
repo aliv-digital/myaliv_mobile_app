@@ -81,6 +81,11 @@ class Api {
     return '$baseUrl/v1/MyAliv/device/$deviceAccountId/promo-code-info?promoCode=$encodedPromoCode';
   }
 
+  /// Alternate-contact number validation: GET /AltNumber/validate/{altNumber}
+  /// Response: `{ "IsValid": true }`
+  static String altNumberValidate(String altNumber) =>
+      '$baseUrl/v1/MyAliv/AltNumber/validate/${Uri.encodeComponent(altNumber.trim())}';
+
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
 
   /// Wallet-to-wallet transfer (send top-up):

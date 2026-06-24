@@ -68,6 +68,9 @@ class HomePlanConfirmationRouteArgs extends Equatable {
 
   bool get defaultTermsChecked => flow == HomePlanConfirmationEntryFlow.skip;
 
+  /// `true` when the user tapped "future plan", `false` for "activate now".
+  bool get isFuture => !forceNow;
+
   @override
   List<Object?> get props => [
         phoneNumber,

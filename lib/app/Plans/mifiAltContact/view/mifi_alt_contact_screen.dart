@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
@@ -11,23 +12,40 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/theme/home_plan_confirmation_theme.dart';
+import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/cubit/alt_number_validation_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/cubit/alt_number_validation_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/model/mifi_alt_contact_route_args.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
-class MifiAltContactScreen extends StatefulWidget {
+class MifiAltContactScreen extends StatelessWidget {
   const MifiAltContactScreen({super.key, required this.args});
 
   final MifiAltContactRouteArgs args;
 
   @override
-  State<MifiAltContactScreen> createState() => _MifiAltContactScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<AltNumberValidationCubit>(
+      create: (_) => instance<AltNumberValidationCubit>(),
+      child: _MifiAltContactView(args: args),
+    );
+  }
 }
 
-class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
+class _MifiAltContactView extends StatefulWidget {
+  const _MifiAltContactView({required this.args});
+
+  final MifiAltContactRouteArgs args;
+
+  @override
+  State<_MifiAltContactView> createState() => _MifiAltContactViewState();
+}
+
+class _MifiAltContactViewState extends State<_MifiAltContactView> {
   static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
 
   late final TextEditingController _phoneController;
@@ -78,6 +96,17 @@ class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
     );
     if (!validation.isValid) return;
 
+    final altNumber = validation.phoneNumberForApi ?? '';
+    context.read<AltNumberValidationCubit>().validate(altNumber);
+  }
+
+  void _onValidationSuccess() {
+    final validation = _phoneHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: _rawPhone,
+      selectedCountry: _selectedCountry,
+    );
+    if (!validation.isValid) return;
+
     final accountState = instance<AccountInfoCubit>().state;
     final args = _buildConfirmationArgs(
       accountState: accountState,
@@ -120,6 +149,32 @@ class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocListener<AltNumberValidationCubit, AltNumberValidationState>(
+      listenWhen: (prev, curr) => prev.signalId != curr.signalId,
+      listener: (context, state) {
+        switch (state.status) {
+          case AltNumberValidationStatus.valid:
+            _onValidationSuccess();
+            break;
+          case AltNumberValidationStatus.invalid:
+          case AltNumberValidationStatus.failure:
+            AppToast.show(
+              message: state.errorMessage.isNotEmpty
+                  ? state.errorMessage
+                  : 'this mobile number is not valid.',
+              type: ToastType.error,
+            );
+            break;
+          case AltNumberValidationStatus.initial:
+          case AltNumberValidationStatus.loading:
+            break;
+        }
+      },
+      child: _scaffold(context),
+    );
+  }
+
+  Widget _scaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: HomePlanConfirmationTheme.bg,
       resizeToAvoidBottomInset: true,
@@ -137,75 +192,94 @@ class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'we would like to stay connected. please provide a '
-                          'mobile number that is not your mifi number.',
-                          style: _MifiAltContactStyles.bodyText,
+            child:
+                BlocBuilder<AltNumberValidationCubit, AltNumberValidationState>(
+              builder: (context, state) {
+                final bool busy = state.isLoading;
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'we would like to stay connected. please provide a '
+                              'mobile number that is not your mifi number.',
+                              style: _MifiAltContactStyles.bodyText,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'mobile number:',
+                              style: _MifiAltContactStyles.fieldLabel,
+                            ),
+                            const SizedBox(height: 8),
+                            _phoneRow(readOnly: busy),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'mobile number:',
-                          style: _MifiAltContactStyles.fieldLabel,
+                      ),
+                      const SizedBox(height: 16),
+                      _Card(
+                        padding: EdgeInsets.zero,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                              child: Text(
+                                'would you like to receive plan discounts and '
+                                'other device offers from aliv?',
+                                style: _MifiAltContactStyles.bodyText,
+                              ),
+                            ),
+                            _RadioRow(
+                              label: 'yes',
+                              selected: _marketingOptIn == true,
+                              onTap: busy
+                                  ? null
+                                  : () =>
+                                      setState(() => _marketingOptIn = true),
+                            ),
+                            const Divider(
+                              height: 1,
+                              thickness: 1,
+                              color: Color(0xFFE6E8F2),
+                            ),
+                            _RadioRow(
+                              label: 'no',
+                              selected: _marketingOptIn == false,
+                              onTap: busy
+                                  ? null
+                                  : () =>
+                                      setState(() => _marketingOptIn = false),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        _phoneRow(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  _Card(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
-                          child: Text(
-                            'would you like to receive plan discounts and '
-                            'other device offers from aliv?',
-                            style: _MifiAltContactStyles.bodyText,
-                          ),
-                        ),
-                        _RadioRow(
-                          label: 'yes',
-                          selected: _marketingOptIn == true,
-                          onTap: () => setState(() => _marketingOptIn = true),
-                        ),
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Color(0xFFE6E8F2),
-                        ),
-                        _RadioRow(
-                          label: 'no',
-                          selected: _marketingOptIn == false,
-                          onTap: () => setState(() => _marketingOptIn = false),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
           SafeArea(
             top: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-              child: DefaultButton(
-                label: 'continue',
-                isLoading: false,
-                onPressed: _canContinue ? _onContinuePressed : null,
+              child:
+                  BlocBuilder<AltNumberValidationCubit, AltNumberValidationState>(
+                builder: (context, state) {
+                  final bool busy = state.isLoading;
+                  return DefaultButton(
+                    label: 'continue',
+                    isLoading: busy,
+                    onPressed:
+                        !busy && _canContinue ? _onContinuePressed : null,
+                  );
+                },
               ),
             ),
           ),
@@ -214,7 +288,7 @@ class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
     );
   }
 
-  Widget _phoneRow() {
+  Widget _phoneRow({bool readOnly = false}) {
     final bool showLiveError = _phoneHelper.hasLiveValidationError(
       rawPhoneNumber: _rawPhone,
       selectedCountry: _selectedCountry,
@@ -245,6 +319,7 @@ class _MifiAltContactScreenState extends State<MifiAltContactScreen> {
           dialCode: _selectedCountry.dialCode,
           countryIsoCode: _selectedCountry.isoCode,
           enableCountryPicker: false,
+          readOnly: readOnly,
           onChanged: (value) => setState(() => _rawPhone = value),
           inputFormatters:
               isBahamas ? const [BahamasPhoneInputFormatter()] : null,
@@ -353,7 +428,7 @@ class _RadioRow extends StatelessWidget {
 
   final String label;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

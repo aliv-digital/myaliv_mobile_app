@@ -122,6 +122,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                             : 'no vat applied',
                         forceNow: state.forceNow,
                         selectedBeginDate: state.selectedBeginDate,
+                        marketingOptIn: state.marketingOptIn,
                         selectedItems: state.data!.items
                             .map(
                               (item) => HomePlansPaymentSelectedItem(

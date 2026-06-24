@@ -24,6 +24,9 @@ class MifiAltContactRouteArgs extends Equatable {
     this.prefilledAltNumber = '',
   });
 
+  /// `true` when the user tapped "future plan", `false` for "activate now".
+  bool get isFuture => !forceNow;
+
   @override
   List<Object?> get props => [
         selectedApiPlan,

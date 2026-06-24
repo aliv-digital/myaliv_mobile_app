@@ -39,6 +39,7 @@ class HomePlanConfirmationBloc
           isTermsChecked: event.args.defaultTermsChecked,
           forceNow: event.args.forceNow,
           selectedBeginDate: _parseDate(event.args.futurePlanStartDate),
+          marketingOptIn: event.args.marketingOptIn,
         ),
       );
     } catch (e) {

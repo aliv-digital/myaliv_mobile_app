@@ -98,6 +98,10 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
   final bool forceNow;
   final DateTime? selectedBeginDate;
 
+  /// Forwarded from the MiFi alt-contact screen's marketing opt-in radio.
+  /// Default `false` for non-MiFi flows.
+  final bool marketingOptIn;
+
   const HomePlansPaymentMethodRouteArgs({
     this.subscriberType = HomePlansSubscriberType.prepaid,
     this.phoneNumber = '',
@@ -106,7 +110,11 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
     this.forceNow = false,
     this.selectedBeginDate,
+    this.marketingOptIn = false,
   });
+
+  /// `true` when the user tapped "future plan", `false` for "activate now".
+  bool get isFuture => !forceNow;
 
   @override
   List<Object?> get props => [
@@ -117,5 +125,6 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     selectedItems,
     forceNow,
     selectedBeginDate,
+    marketingOptIn,
   ];
 }

@@ -24,6 +24,10 @@ class HomePlanConfirmationState extends Equatable {
   final bool forceNow;
   final DateTime? selectedBeginDate;
 
+  /// Captured from the MiFi alt-contact screen ("yes/no" radio).
+  /// Default `false` for non-MiFi flows where this isn't asked.
+  final bool marketingOptIn;
+
   final String promoCode;
   final HomePlanConfirmationPromoStatus promoStatus;
   final String promoErrorMessage;
@@ -48,6 +52,7 @@ class HomePlanConfirmationState extends Equatable {
     required this.promoToastRequestId,
     required this.promoToastMessage,
     required this.promoToastType,
+    this.marketingOptIn = false,
   });
 
   factory HomePlanConfirmationState.initial() {
@@ -90,6 +95,7 @@ class HomePlanConfirmationState extends Equatable {
     int? promoToastRequestId,
     String? promoToastMessage,
     HomePlanConfirmationToastType? promoToastType,
+    bool? marketingOptIn,
   }) {
     return HomePlanConfirmationState(
       status: status ?? this.status,
@@ -109,6 +115,7 @@ class HomePlanConfirmationState extends Equatable {
       promoToastRequestId: promoToastRequestId ?? this.promoToastRequestId,
       promoToastMessage: promoToastMessage ?? this.promoToastMessage,
       promoToastType: promoToastType ?? this.promoToastType,
+      marketingOptIn: marketingOptIn ?? this.marketingOptIn,
     );
   }
 
@@ -129,5 +136,6 @@ class HomePlanConfirmationState extends Equatable {
     promoToastRequestId,
     promoToastMessage,
     promoToastType,
+    marketingOptIn,
   ];
 }
