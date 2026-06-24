@@ -86,6 +86,11 @@ class Api {
   static String altNumberValidate(String altNumber) =>
       '$baseUrl/v1/MyAliv/AltNumber/validate/${Uri.encodeComponent(altNumber.trim())}';
 
+  /// Alternate-contact number update: POST /AltNumber
+  /// Body: `{ "NewAltNumber": "<number>" }`
+  /// Response: `{ "Success": true }`
+  static const altNumberUpdate = '$baseUrl/v1/MyAliv/AltNumber';
+
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
 
   /// Wallet-to-wallet transfer (send top-up):

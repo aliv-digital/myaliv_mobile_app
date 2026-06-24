@@ -182,7 +182,23 @@ void _pushMifiAltContact({
   required bool forceNow,
 }) {
   final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-  final prefilledAltNumber = accountInfo?.altPhoneNumber.trim() ?? '';
+  final existingAltNumber = accountInfo?.altPhoneNumber.trim() ?? '';
+
+  // If the account already has an alt number on file, skip the alt-contact
+  // screen and go straight to confirmation. Marketing opt-in defaults to
+  // false since the prompt is skipped.
+  if (existingAltNumber.isNotEmpty) {
+    context.push(
+      AppRoutes.homePlanConfirmationScreen,
+      extra: _futurePlanConfirmationRouteArgs(
+        selectedApiPlan: selectedApiPlan,
+        fallbackPlan: fallbackPlan,
+        forceNow: forceNow,
+        altContactNumber: existingAltNumber,
+      ),
+    );
+    return;
+  }
 
   context.push(
     AppRoutes.homePlanMifiAltContact,
@@ -190,7 +206,7 @@ void _pushMifiAltContact({
       selectedApiPlan: selectedApiPlan,
       fallbackPlan: fallbackPlan,
       forceNow: forceNow,
-      prefilledAltNumber: prefilledAltNumber,
+      prefilledAltNumber: existingAltNumber,
     ),
   );
 }
@@ -229,6 +245,8 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   required BasePlanModel? selectedApiPlan,
   required HomePlanModel fallbackPlan,
   required bool forceNow,
+  String altContactNumber = '',
+  bool marketingOptIn = false,
 }) {
   final accountState = instance<AccountInfoCubit>().state;
 
@@ -246,6 +264,8 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
     futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',
     flow: HomePlanConfirmationEntryFlow.skip,
     forceNow: forceNow,
+    altContactNumber: altContactNumber,
+    marketingOptIn: marketingOptIn,
   );
 }
 

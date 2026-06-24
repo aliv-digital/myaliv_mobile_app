@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 
 import 'cubit/alt_number_validation_cubit.dart';
 import 'repository/alt_number_validation_repository.dart';
@@ -24,6 +25,7 @@ Future<void> setupMifiAltContactInjection() async {
   instance.registerFactory<AltNumberValidationCubit>(
     () => AltNumberValidationCubit(
       repository: instance<AltNumberValidationRepository>(),
+      accountInfoCubit: instance<AccountInfoCubit>(),
     ),
   );
 }
