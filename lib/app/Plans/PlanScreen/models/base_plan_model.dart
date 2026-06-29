@@ -317,9 +317,9 @@ class BasePlanModel {
   /// `DateTimeX` extension, comparisons against `DateTime.now()`)
   /// sees the device's wall-clock time without each call site
   /// having to remember to convert.
-  DateTime? get startDateTime => parseApiDate(startDate)?.toLocal();
+  DateTime? get startDateTime => startDate.toLocalApiDate();
 
-  DateTime? get endDateTime => parseApiDate(endDate)?.toLocal();
+  DateTime? get endDateTime => endDate.toLocalApiDate();
 
   // ===== Plan type helpers =====
   // PlanType codes: P = Primary, S = Stand-alone, A = Add-on.

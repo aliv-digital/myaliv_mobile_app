@@ -211,8 +211,8 @@ class HomePlansPostPaidPlanModel {
         paymentOption.trim().toLowerCase() == 'postpay';
   }
 
-  DateTime? get startDateTime => parseApiDate(startDate)?.toLocal();
-  DateTime? get endDateTime => parseApiDate(endDate)?.toLocal();
+  DateTime? get startDateTime => startDate.toLocalApiDate();
+  DateTime? get endDateTime => endDate.toLocalApiDate();
   double get planAmountWithVat => planAmount + vatAmount; // need to show this
 
   String get durationText {

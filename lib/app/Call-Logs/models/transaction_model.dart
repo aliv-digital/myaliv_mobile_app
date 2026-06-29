@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:equatable/equatable.dart';
 
 /// Model representing a single transaction entry from the API
@@ -15,7 +16,7 @@ class TransactionModel extends Equatable {
   final String? reasonDesc;
   final String? initiatingOrderId;
   final int subId;
-  final String? planStartDate;
+  final DateTime? planStartDate;
 
   const TransactionModel({
     required this.date,
@@ -36,7 +37,7 @@ class TransactionModel extends Equatable {
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
-      date: _parseDate(json['Date'] as String?),
+      date: parseApiDate(json['Date'] as String?) ?? DateTime.now().toUtc(),
       phoneNumber: json['PhoneNumber'] as String?,
       type: json['Type'] as String? ?? '',
       plan: json['Plan'] as String? ?? '',
@@ -49,18 +50,8 @@ class TransactionModel extends Equatable {
       reasonDesc: json['ReasonDesc'] as String?,
       initiatingOrderId: json['InitiatingOrderID'] as String?,
       subId: json['SubID'] as int? ?? 0,
-      planStartDate: json['PlanStartDate'] as String?,
+      planStartDate: parseApiDate(json['PlanStartDate'] as String?),
     );
-  }
-
-  static DateTime _parseDate(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return DateTime.now();
-    // Handle format: "2026-03-12 18:13:36"
-    try {
-      return DateTime.parse(dateStr.replaceFirst(' ', 'T'));
-    } catch (_) {
-      return DateTime.now();
-    }
   }
 
   /// Check if this is a credit (positive amount)
