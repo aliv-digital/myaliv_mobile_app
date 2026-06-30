@@ -176,56 +176,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     );
   }
 
-  // void _showErrorSnackBar(String? errorMessage) {
-  //   final resolvedMessage = errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
-  //
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text(
-  //         resolvedMessage,
-  //         style: GuestTopUpTheme.snackBarText,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  /* PARKED: country picker disabled to match Login screen behavior.
-     Keep this opener around for an easy revert if multi-country
-     support is restored later.
-
-  void _pickCountry() {
-    showCountryPicker(
-      context: context,
-      showPhoneCode: true,
-      customFlagBuilder: (Country country) {
-        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
-            ? 'sh'
-            : country.countryCode.toLowerCase();
-
-        return Image.asset(
-          'assets/$assetIsoCode.png',
-          package: 'country_pickers',
-          width: 26,
-          height: 20,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Text(country.flagEmoji,
-                style: const TextStyle(fontSize: 18));
-          },
-        );
-      },
-      onSelect: (Country country) {
-        setState(() {
-          _selectedCountry = CountryInfo(
-            flagEmoji: country.flagEmoji,
-            dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
-            isoCode: country.countryCode,
-          );
-        });
-      },
-    );
-  }
-  */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -291,23 +241,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               ),
               const SizedBox(height: 18),
 
-              // ================= CURRENT BALANCE =================
-              // Center(
-              //   child:Text(
-              //     'current balance: \$129.00',
-              //     style: TextStyle(
-              //       color: const Color(0xFF1C1C1C) /* Black-100% */,
-              //       fontSize: 14,
-              //       fontFamily: 'CircularPro',
-              //       fontWeight: FontWeight.w700,
-              //       height: 1.43,
-              //     ),
-              //   )
-              // ),
-              //
-              // const SizedBox(height: 24),
-
-              // ================= AMOUNT CARD =================
               GradientInputField(
                 label: GuestTopUpTheme.amountLabel,
                 hint: GuestTopUpTheme.amountHintText,
@@ -315,17 +248,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                   setState(() => _amount = value);
                 },
               ),
-              // Center(
-              //   child:
-              //   TopUpPrepaidAmountBox(
-              //     value: _amount,
-              //     onChanged: (v) {
-              //       setState(() {
-              //         _amount = v;
-              //       });
-              //     },
-              //   ),
-              // ),
 
               const SizedBox(height: 30),
               BlocBuilder<BalanceCubit, BalanceState>(

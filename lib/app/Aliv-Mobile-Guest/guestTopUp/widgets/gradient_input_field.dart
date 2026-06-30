@@ -24,12 +24,6 @@ class _GradientInputFieldState extends State<GradientInputField> {
   final TextEditingController _controller = TextEditingController();
   bool _isFormatting = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller.text = GuestTopUpTheme.amountDefaultValue;
-  }
-
   void _handleInputChange(String raw) {
     if (_isFormatting) return;
 
@@ -44,8 +38,9 @@ class _GradientInputFieldState extends State<GradientInputField> {
 
     _isFormatting = true;
     _controller.text = '\$$cleaned';
-    _controller.selection =
-        TextSelection.collapsed(offset: _controller.text.length);
+    _controller.selection = TextSelection.collapsed(
+      offset: _controller.text.length,
+    );
     _isFormatting = false;
     widget.onChanged(cleaned);
   }
@@ -64,7 +59,8 @@ class _GradientInputFieldState extends State<GradientInputField> {
 
   @override
   Widget build(BuildContext context) {
-    final innerRadius = GuestTopUpTheme.amountFieldRadius -
+    final innerRadius =
+        GuestTopUpTheme.amountFieldRadius -
         GuestTopUpTheme.amountFieldBorderWidth;
 
     return Padding(
@@ -93,7 +89,8 @@ class _GradientInputFieldState extends State<GradientInputField> {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(
-                        GuestTopUpTheme.amountFieldRadius),
+                      GuestTopUpTheme.amountFieldRadius,
+                    ),
                     // Anchor gradient start exactly at top-left for
                     // consistent pixel positioning across widths.
                     gradient: SweepGradient(
@@ -105,14 +102,17 @@ class _GradientInputFieldState extends State<GradientInputField> {
                       BoxShadow(
                         color: GuestTopUpTheme.amountFieldShadowColor,
                         blurRadius: GuestTopUpTheme.amountFieldShadowBlur,
-                        offset:
-                            Offset(0, GuestTopUpTheme.amountFieldShadowOffsetY),
+                        offset: Offset(
+                          0,
+                          GuestTopUpTheme.amountFieldShadowOffsetY,
+                        ),
                       ),
                     ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(
-                        GuestTopUpTheme.amountFieldBorderWidth),
+                      GuestTopUpTheme.amountFieldBorderWidth,
+                    ),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white,
