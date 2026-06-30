@@ -52,13 +52,14 @@ class _HomePlansPaymentMethodViewState
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
-      final isCard = state.paymentMode == HomePlansPaymentMode.card;
+      final isCardPath = state.paymentMode == HomePlansPaymentMode.card ||
+          state.paymentMode == HomePlansPaymentMode.payWithCard;
       context.push(
         AppRoutes.homePlanPurchaseReceiptScreen,
         extra: PaymentReceiptBuilder.build(
           context,
           state,
-          hideSaveCreditCard: !isCard,
+          hideSaveCreditCard: !isCardPath,
         ),
       );
     }

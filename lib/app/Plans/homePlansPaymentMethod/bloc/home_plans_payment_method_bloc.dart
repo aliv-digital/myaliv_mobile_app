@@ -17,6 +17,7 @@ class HomePlansPaymentMethodBloc
     on<HomePlansPayFromWalletPressed>(_onPayFromWallet);
     on<HomePlansPayFromWalletConfirmed>(_onPayFromWalletConfirmed);
     on<HomePlansPaySavedCardConfirmed>(_onPaySavedCardConfirmed);
+    on<HomePlansPayWithCardConfirmed>(_onPayWithCardConfirmed);
     on<HomePlansPayNowPressed>(_onPayNow);
     on<HomePlansPaymentNavConsumed>(_onNavConsumed);
   }
@@ -169,6 +170,23 @@ class HomePlansPaymentMethodBloc
       () => repository.payWithSavedCard(
         amount: state.amount,
         cardToken: token,
+        selectedItems: state.selectedItems,
+        forceNow: state.forceNow,
+        selectedBeginDate: state.selectedBeginDate,
+      ),
+      'Card payment failed. Try again.',
+    );
+  }
+
+  Future<void> _onPayWithCardConfirmed(
+    HomePlansPayWithCardConfirmed event,
+    Emitter<HomePlansPaymentMethodState> emit,
+  ) {
+    return _submitChangeBundle(
+      emit,
+      () => repository.payWithCardDetails(
+        amount: state.amount,
+        details: event.details,
         selectedItems: state.selectedItems,
         forceNow: state.forceNow,
         selectedBeginDate: state.selectedBeginDate,

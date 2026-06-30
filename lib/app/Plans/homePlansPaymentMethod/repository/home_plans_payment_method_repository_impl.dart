@@ -1,18 +1,22 @@
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
-import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/repository/plan_bundle_mapper.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_service.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../model/home_plans_payment_method_models.dart';
-import 'change_bundle_request_factory.dart';
 import 'home_plans_payment_method_repository.dart';
 
+/// Thin adapter that delegates every payment call to [ChangeBundleService].
+/// Keeps the bloc/cubit talking through this feature's repository interface
+/// while the actual API + body building lives in the shared service.
 class HomePlansPaymentMethodRepositoryImpl
     implements HomePlansPaymentMethodRepository {
-  HomePlansPaymentMethodRepositoryImpl({NetworkService? networkService})
-    : _networkService = networkService ?? instance<NetworkService>();
+  HomePlansPaymentMethodRepositoryImpl({ChangeBundleService? service})
+    : _service = service ?? instance<ChangeBundleService>();
 
-  final NetworkService _networkService;
+  final ChangeBundleService _service;
 
   @override
   Future<List<HomePlansSavedPaymentMethod>> fetchPaymentMethods({
@@ -58,7 +62,7 @@ class HomePlansPaymentMethodRepositoryImpl
 
   @override
   Future<void> payNow({required String methodId}) async {
-    // This is mock behavior for now. Replace with API integration later.
+    // Mock placeholder for the unused saved-card "pay now" path.
     await Future<void>.delayed(const Duration(milliseconds: 400));
   }
 
@@ -68,14 +72,14 @@ class HomePlansPaymentMethodRepositoryImpl
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
     DateTime? selectedBeginDate,
-  }) {
-    return _changeBundle(
-      cardPayment: ChangeBundleRequestFactory.walletCardPayment(amount: amount),
-      selectedItems: selectedItems,
+  }) async {
+    final result = await _service.payFromWallet(
+      amount: amount,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
-      logTag: 'wallet',
     );
+    return _unwrap(result);
   }
 
   @override
@@ -85,74 +89,44 @@ class HomePlansPaymentMethodRepositoryImpl
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
     DateTime? selectedBeginDate,
-  }) {
-    return _changeBundle(
-      cardPayment: ChangeBundleRequestFactory.tokenCardPayment(
-        amount: amount,
-        cardToken: cardToken,
-      ),
-      selectedItems: selectedItems,
+  }) async {
+    final result = await _service.payWithSavedCard(
+      amount: amount,
+      cardToken: cardToken,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
-      logTag: 'saved-card',
     );
+    return _unwrap(result);
   }
 
-  Future<bool> _changeBundle({
-    required Map<String, dynamic> cardPayment,
+  @override
+  Future<bool> payWithCardDetails({
+    required double amount,
+    required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
     DateTime? selectedBeginDate,
-    required String logTag,
   }) async {
-    final body = ChangeBundleRequestFactory.body(
-      cardPayment: cardPayment,
-      selectedItems: selectedItems,
+    final result = await _service.payWithNewCard(
+      amount: amount,
+      details: details,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
-
-    if (kDebugMode) {
-      debugPrint('change-bundle [$logTag] request: $body');
-    }
-
-    try {
-      final response = await _networkService.request<dynamic>(
-        Api.payFromWalletUrl,
-        method: HttpMethod.post,
-        data: body,
-      );
-
-      if (kDebugMode) {
-        debugPrint(
-          'change-bundle [$logTag] status: ${response.statusCode} '
-          'body: ${response.data}',
-        );
-      }
-
-      final code = response.statusCode ?? 0;
-      return code >= 200 && code < 300;
-    } on NetworkException catch (error) {
-      throw Exception(_errorMessage(error));
-    } catch (error) {
-      throw Exception('Payment failed: $error');
-    }
+    return _unwrap(result);
   }
 
-  String _errorMessage(NetworkException error) {
-    if (error is NoInternetException || error is HostUnreachableException) {
-      return error.message;
+  /// Converts the typed service result into the `Future<bool>` the existing
+  /// bloc expects. Failure messages bubble up as exceptions so the bloc's
+  /// `try/catch` continues to surface them on toasts.
+  bool _unwrap(ChangeBundleResult result) {
+    switch (result) {
+      case ChangeBundleSuccess():
+        return true;
+      case ChangeBundleFailure(:final message):
+        throw Exception(message);
     }
-    if (error is TimeoutException) {
-      return 'Request timeout. Please try again.';
-    }
-    if (error is SessionExpiredException || error.statusCode == 401) {
-      return 'Session expired. Please log in again.';
-    }
-    final message = error.message.trim();
-    if (message.isNotEmpty && message != 'An error occurred') {
-      return message;
-    }
-    return 'Payment failed. Try again.';
   }
 }

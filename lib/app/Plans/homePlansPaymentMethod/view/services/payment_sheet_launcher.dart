@@ -7,7 +7,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_m
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_event.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_state.dart';
-import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/widgets/saved_card_payment_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/checkout_card_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/saved_card_payment_bottom_sheet.dart';
 
 /// Opens the payment confirmation sheets and forwards the result to the bloc.
 /// Pure plumbing — kept out of the view so widgets stay declarative.
@@ -53,6 +54,19 @@ class PaymentSheetLauncher {
     if (confirmed != true) return;
 
     bloc.add(const HomePlansPaySavedCardConfirmed());
+  }
+
+  static Future<void> openPayWithCard(BuildContext context) async {
+    final bloc = context.read<HomePlansPaymentMethodBloc>();
+    if (bloc.state.status == HomePlansPaymentMethodStatus.submitting) return;
+
+    final details = await CheckoutCardBottomSheet.show(
+      context,
+      amountText: bloc.state.amountText,
+    );
+    if (details == null) return;
+
+    bloc.add(HomePlansPayWithCardConfirmed(details));
   }
 
   static SavedCardModel? _cardByToken(String token) {

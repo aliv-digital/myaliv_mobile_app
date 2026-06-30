@@ -82,15 +82,17 @@ class PaymentReceiptBuilder {
     return items;
   }
 
-  /// Wallet-funded paths render as 'wallet'; card paths show brand+ending.
+  /// Wallet-funded paths render as 'wallet'; saved-card shows brand+ending;
+  /// new-card (`payWithCard`) is always Visa per the current factory.
   static String _paymentMethodLabel(HomePlansPaymentMethodState state) {
     switch (state.paymentMode) {
       case HomePlansPaymentMode.payFromWallet:
       case HomePlansPaymentMode.chargeToMyAccount:
         return 'wallet';
       case HomePlansPaymentMode.card:
-      case HomePlansPaymentMode.payWithCard:
         return _selectedMethodLabel(state);
+      case HomePlansPaymentMode.payWithCard:
+        return 'visa';
     }
   }
 

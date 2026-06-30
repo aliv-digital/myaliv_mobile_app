@@ -44,7 +44,7 @@ class PaymentPayBar extends StatelessWidget {
         PaymentSheetLauncher.openSavedCard(context);
         return;
       case HomePlansPaymentMode.payWithCard:
-        // TODO: open add-card flow when route is ready.
+        PaymentSheetLauncher.openPayWithCard(context);
         return;
     }
   }

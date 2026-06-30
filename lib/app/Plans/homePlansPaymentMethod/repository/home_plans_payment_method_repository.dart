@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+
 import '../model/home_plans_payment_method_models.dart';
 
 abstract class HomePlansPaymentMethodRepository {
@@ -17,6 +19,14 @@ abstract class HomePlansPaymentMethodRepository {
   Future<bool> payWithSavedCard({
     required double amount,
     required String cardToken,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  });
+
+  Future<bool> payWithCardDetails({
+    required double amount,
+    required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
     DateTime? selectedBeginDate,

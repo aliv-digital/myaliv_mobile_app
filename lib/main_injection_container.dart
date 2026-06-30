@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/review_invoice_
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/saved_cards_injection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/send_topup_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/mifi_alt_contact_injection.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/payments_injection.dart';
 
 /// Main app dependency injection
 ///
@@ -79,5 +80,8 @@ class AppMainInjection {
 
     // Initialize MiFi alt-contact validation feature
     await setupMifiAltContactInjection();
+
+    // Initialize shared payments service (change-bundle API)
+    await setupPaymentsInjection();
   }
 }
