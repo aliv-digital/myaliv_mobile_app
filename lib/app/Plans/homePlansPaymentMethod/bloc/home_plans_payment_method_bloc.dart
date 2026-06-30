@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../model/home_plans_payment_method_models.dart';
 import '../repository/home_plans_payment_method_repository.dart';
@@ -17,6 +16,7 @@ class HomePlansPaymentMethodBloc
     on<HomePlansPayWithCardPressed>(_onPayWithCard);
     on<HomePlansPayFromWalletPressed>(_onPayFromWallet);
     on<HomePlansPayFromWalletConfirmed>(_onPayFromWalletConfirmed);
+    on<HomePlansPaySavedCardConfirmed>(_onPaySavedCardConfirmed);
     on<HomePlansPayNowPressed>(_onPayNow);
     on<HomePlansPaymentNavConsumed>(_onNavConsumed);
   }
@@ -123,8 +123,6 @@ class HomePlansPaymentMethodBloc
     HomePlansPayFromWalletConfirmed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) async {
-    if (state.status == HomePlansPaymentMethodStatus.submitting) return;
-
     // Do not hit the wallet payment API unless balance can cover the order.
     if (!_hasEnoughWalletBalance(event.walletBalance)) {
       emit(
@@ -136,6 +134,60 @@ class HomePlansPaymentMethodBloc
       return;
     }
 
+    await _submitChangeBundle(
+      emit,
+      () => repository.payFromWallet(
+        amount: state.amount,
+        selectedItems: state.selectedItems,
+        forceNow: state.forceNow,
+        selectedBeginDate: state.selectedBeginDate,
+      ),
+      'Wallet payment failed. Try again.',
+    );
+  }
+
+  Future<void> _onPaySavedCardConfirmed(
+    HomePlansPaySavedCardConfirmed event,
+    Emitter<HomePlansPaymentMethodState> emit,
+  ) async {
+    // In card mode the section widget passes the saved-card vault token as
+    // the method id (see HomePlansPaymentMethodSection._buildSavedCardTile),
+    // so [selectedMethodId] is the token we need for `CardPayment.CardNumber`.
+    final token = state.selectedMethodId?.trim() ?? '';
+    if (token.isEmpty) {
+      emit(
+        state.copyWith(
+          status: HomePlansPaymentMethodStatus.failure,
+          errorMessage: 'Please select a saved card first.',
+        ),
+      );
+      return;
+    }
+
+    await _submitChangeBundle(
+      emit,
+      () => repository.payWithSavedCard(
+        amount: state.amount,
+        cardToken: token,
+        selectedItems: state.selectedItems,
+        forceNow: state.forceNow,
+        selectedBeginDate: state.selectedBeginDate,
+      ),
+      'Card payment failed. Try again.',
+    );
+  }
+
+  /// Wraps the submit → success/failure transition for any change-bundle call.
+  /// Centralises the [HomePlansPaymentMethodStatus.submitting] guard, error
+  /// mapping, and nav-target on success so wallet and saved-card paths stay
+  /// in lockstep.
+  Future<void> _submitChangeBundle(
+    Emitter<HomePlansPaymentMethodState> emit,
+    Future<bool> Function() invoke,
+    String failureFallback,
+  ) async {
+    if (state.status == HomePlansPaymentMethodStatus.submitting) return;
+
     emit(
       state.copyWith(
         status: HomePlansPaymentMethodStatus.submitting,
@@ -143,49 +195,23 @@ class HomePlansPaymentMethodBloc
       ),
     );
 
-    if (kDebugMode) {
-      if (state.forceNow == true) {
-        debugPrint("force now == TRUE, we came from *active now* button");
-      } else {
-        debugPrint(
-          "force now == FALSE, we came from *future plan* or something..",
-        );
-      }
-    }
-
     try {
-      final bool isSuccess = await repository.payFromWallet(
-        amount: state.amount,
-        selectedItems: state.selectedItems,
-        forceNow: state.forceNow,
-        selectedBeginDate: state.selectedBeginDate,
+      final ok = await invoke();
+      emit(
+        state.copyWith(
+          status: ok
+              ? HomePlansPaymentMethodStatus.success
+              : HomePlansPaymentMethodStatus.failure,
+          navTarget: ok
+              ? HomePlansPaymentMethodNavTarget.paid
+              : HomePlansPaymentMethodNavTarget.none,
+        ),
       );
-
-      if (isSuccess == true) {
-        emit(
-          state.copyWith(
-            status: HomePlansPaymentMethodStatus.success,
-            navTarget: HomePlansPaymentMethodNavTarget.paid,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: HomePlansPaymentMethodStatus.failure,
-            navTarget: HomePlansPaymentMethodNavTarget.none,
-          ),
-        );
-      }
-      // need to add conditions here,,
-      // currently we are assuming each payment is successful payment
     } catch (error) {
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.failure,
-          errorMessage: _cleanErrorMessage(
-            error,
-            fallback: 'Wallet payment failed. Try again.',
-          ),
+          errorMessage: _cleanErrorMessage(error, fallback: failureFallback),
         ),
       );
     }

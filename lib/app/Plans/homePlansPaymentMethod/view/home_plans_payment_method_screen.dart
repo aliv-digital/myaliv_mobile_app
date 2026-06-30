@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
@@ -23,6 +26,7 @@ import '../model/home_plans_payment_method_models.dart';
 import '../repository/home_plans_payment_method_repository_impl.dart';
 import '../theme/home_plans_payment_method_theme.dart';
 import '../widgets/home_plans_payment_method_section.dart';
+import '../widgets/saved_card_payment_bottom_sheet.dart';
 
 class HomePlansPaymentMethodScreen extends StatelessWidget {
   final HomePlansPaymentMethodRouteArgs args;
@@ -198,6 +202,43 @@ class _HomePlansPaymentMethodViewState
     );
   }
 
+  /// Opens the saved-card confirmation sheet and, on confirm, kicks off the
+  /// token-based `change-bundle` call.
+  /// Opens the saved-card confirmation sheet and, on confirm, kicks off the
+  /// token-based `change-bundle` call. The card is looked up in
+  /// [SavedCardsCubit] (the real source of truth) by token, which is what
+  /// [HomePlansPaymentMethodState.selectedMethodId] holds in card mode.
+  Future<void> _openSavedCardPaymentSheet() async {
+    final paymentBloc = context.read<HomePlansPaymentMethodBloc>();
+    final state = paymentBloc.state;
+
+    if (state.status == HomePlansPaymentMethodStatus.submitting) return;
+
+    final token = state.selectedMethodId;
+    if (token == null || token.isEmpty) return;
+
+    final card = _findSavedCardByToken(token);
+    if (card == null) return;
+
+    final bool? confirmed = await SavedCardPaymentBottomSheet.show(
+      context,
+      cardLabel: card.displayLabel,
+      amountText: state.amountText,
+    );
+
+    if (!mounted || confirmed != true) return;
+
+    paymentBloc.add(const HomePlansPaySavedCardConfirmed());
+  }
+
+  SavedCardModel? _findSavedCardByToken(String token) {
+    final cards = instance<SavedCardsCubit>().state.cards;
+    for (final c in cards) {
+      if (c.token == token) return c;
+    }
+    return null;
+  }
+
   void _showWalletWarningIfNeeded(HomePlansPaymentMethodState state) {
     final bool hasNewWarning =
         state.walletWarningRequestId > _lastWalletWarningRequestId;
@@ -303,6 +344,20 @@ class _HomePlansPaymentMethodViewState
     return details;
   }
 
+  /// Maps [HomePlansPaymentMode] to the receipt's `paymentMethod` field.
+  /// Wallet-funded paths ([payFromWallet]/[chargeToMyAccount]) hit the wallet
+  /// API today, so both render as 'wallet'; card paths show the brand+ending.
+  String _paymentMethodReceiptLabel(HomePlansPaymentMethodState state) {
+    switch (state.paymentMode) {
+      case HomePlansPaymentMode.payFromWallet:
+      case HomePlansPaymentMode.chargeToMyAccount:
+        return 'wallet';
+      case HomePlansPaymentMode.card:
+      case HomePlansPaymentMode.payWithCard:
+        return _selectedPaymentMethodLabel(state);
+    }
+  }
+
   String _selectedPaymentMethodLabel(HomePlansPaymentMethodState state) {
     final selectedMethodId = state.selectedMethodId;
     HomePlansSavedPaymentMethod? method;
@@ -406,9 +461,14 @@ class _HomePlansPaymentMethodViewState
             if (kDebugMode) {
               debugPrint("\nPayment Success! Going to receipt screen\n");
             }
+            final isCard = state.paymentMode == HomePlansPaymentMode.card;
             context.push(
               AppRoutes.homePlanPurchaseReceiptScreen,
-              extra: _buildReceiptExtra(state, paymentMethod: 'wallet'),
+              extra: _buildReceiptExtra(
+                state,
+                paymentMethod: _paymentMethodReceiptLabel(state),
+                hideSaveCreditCard: !isCard,
+              ),
             );
           }
 
@@ -489,13 +549,7 @@ class _HomePlansPaymentMethodViewState
                     if (kDebugMode) {
                       debugPrint("\ntapped (pay now) .\n method : card\n");
                     }
-                    // context.push(
-                    //   AppRoutes.homePlanPurchaseReceiptScreen,
-                    //   extra: _buildReceiptExtra(
-                    //     state,
-                    //     paymentMethod: _selectedPaymentMethodLabel(state),
-                    //   ),
-                    // );
+                    _openSavedCardPaymentSheet();
                     return;
                 }
               },

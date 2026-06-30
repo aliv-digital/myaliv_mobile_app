@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 import '../model/home_plans_payment_method_models.dart';
+import 'change_bundle_request_factory.dart';
 import 'home_plans_payment_method_repository.dart';
 
 class HomePlansPaymentMethodRepositoryImpl
@@ -39,11 +40,9 @@ class HomePlansPaymentMethodRepositoryImpl
         ];
 
     if (subscriberType == HomePlansSubscriberType.prepaid) {
-      // Prepaid UI should not show "charge to my account".
       return commonMethods;
     }
 
-    // Postpaid keeps the current options.
     return <HomePlansSavedPaymentMethod>[
       const HomePlansSavedPaymentMethod(
         id: 'charge-account',
@@ -64,152 +63,96 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<dynamic> payFromWallet({
+  Future<bool> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required bool forceNow,
     DateTime? selectedBeginDate,
+  }) {
+    return _changeBundle(
+      cardPayment: ChangeBundleRequestFactory.walletCardPayment(amount: amount),
+      selectedItems: selectedItems,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+      logTag: 'wallet',
+    );
+  }
+
+  @override
+  Future<bool> payWithSavedCard({
+    required double amount,
+    required String cardToken,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) {
+    return _changeBundle(
+      cardPayment: ChangeBundleRequestFactory.tokenCardPayment(
+        amount: amount,
+        cardToken: cardToken,
+      ),
+      selectedItems: selectedItems,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+      logTag: 'saved-card',
+    );
+  }
+
+  Future<bool> _changeBundle({
+    required Map<String, dynamic> cardPayment,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+    required String logTag,
   }) async {
-    final requestBody = _walletPaymentRequestBody(
-      amount: amount,
+    final body = ChangeBundleRequestFactory.body(
+      cardPayment: cardPayment,
       selectedItems: selectedItems,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
 
     if (kDebugMode) {
-      debugPrint('Pay from wallet request: $requestBody');
-      if (!forceNow) {
-        debugPrint(
-          'Pay from wallet selected begin date: '
-          '${_formatSelectedBeginDate(selectedBeginDate) ?? 'not provided'}',
-        );
-      }
+      debugPrint('change-bundle [$logTag] request: $body');
     }
 
     try {
       final response = await _networkService.request<dynamic>(
         Api.payFromWalletUrl,
         method: HttpMethod.post,
-        data: requestBody,
+        data: body,
       );
 
       if (kDebugMode) {
-        debugPrint('Pay from wallet status: ${response.statusCode}');
-        debugPrint('Pay from wallet response: ${response.data}');
-        //): Pay from wallet response: {OrderId: 314894}
+        debugPrint(
+          'change-bundle [$logTag] status: ${response.statusCode} '
+          'body: ${response.data}',
+        );
       }
-      if (response.statusCode == 200) {
-        return true;
-      }
+
+      final code = response.statusCode ?? 0;
+      return code >= 200 && code < 300;
     } on NetworkException catch (error) {
-      throw Exception(_walletPaymentErrorMessage(error));
+      throw Exception(_errorMessage(error));
     } catch (error) {
-      throw Exception('Wallet payment failed: $error');
+      throw Exception('Payment failed: $error');
     }
-    return false;
   }
 
-  String? _formatSelectedBeginDate(DateTime? date) {
-    if (date == null) return null;
-
-    final year = date.year.toString().padLeft(4, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final day = date.day.toString().padLeft(2, '0');
-    final hour = date.hour.toString().padLeft(2, '0');
-    final minute = date.minute.toString().padLeft(2, '0');
-
-    return '$year-$month-$day $hour:$minute';
-  }
-
-  Map<String, dynamic> _walletPaymentRequestBody({
-    required double amount,
-    required List<HomePlansPaymentSelectedItem> selectedItems,
-    required bool forceNow,
-    DateTime? selectedBeginDate,
-  }) {
-    final primaryPlans = <int>[];
-    final secondaryPlans = <int>[];
-    final standalonePlans = <int>[];
-
-    for (final item in selectedItems) {
-      final planId = int.tryParse(item.id.trim());
-      if (planId == null) {
-        throw Exception('Invalid plan id for ${item.title}.');
-      }
-
-      switch (item.planType) {
-        case HomePlansPaymentPlanType.primary:
-          primaryPlans.add(planId);
-          break;
-        case HomePlansPaymentPlanType.secondary:
-          secondaryPlans.add(planId);
-          break;
-        case HomePlansPaymentPlanType.standalone:
-          standalonePlans.add(planId);
-          break;
-      }
-    }
-
-    if (primaryPlans.isEmpty &&
-        secondaryPlans.isEmpty &&
-        standalonePlans.isEmpty) {
-      throw Exception('No selected plan found for wallet payment.');
-    }
-
-    final bundle = <String, dynamic>{
-      'PrimaryPlans': primaryPlans,
-      'SecondaryPlans': secondaryPlans,
-      'StandalonePlans': standalonePlans,
-    };
-
-    if (!forceNow) {
-      // will pass future date only if force now = false, means we selected a date
-      final startDate = _formatSelectedBeginDate(selectedBeginDate);
-      if (startDate == null) {
-        throw Exception('Selected start date is required for future plan.');
-      }
-      bundle['StartDate'] = startDate;
-    }
-
-    return <String, dynamic>{
-      'CardPayment': <String, dynamic>{
-        'Amount': amount,
-        'KountSessionId': '9c61063f-283d-4cdb-80e4-dc36ed57d179',
-        'PaymentInstrument': 'Wallet',
-        'CardNumber': 'Wallet',
-        'CardExpiration': '2027-12',
-        'CardSecurityCode': '042',
-        'CardHolderName': 'Credit Card Holder',
-      },
-      'Bundle': bundle,
-      'ForceNow': forceNow,
-      'SaveCard': false,
-      'UseAsRenewalCard': false,
-      'Bonuses': <Map<String, dynamic>>[],
-      'PromoCodes': <Map<String, dynamic>>[],
-      'Note': 'Payment',
-    };
-  }
-
-  String _walletPaymentErrorMessage(NetworkException error) {
+  String _errorMessage(NetworkException error) {
     if (error is NoInternetException || error is HostUnreachableException) {
       return error.message;
     }
-
     if (error is TimeoutException) {
       return 'Request timeout. Please try again.';
     }
-
     if (error is SessionExpiredException || error.statusCode == 401) {
       return 'Session expired. Please log in again.';
     }
-
     final message = error.message.trim();
     if (message.isNotEmpty && message != 'An error occurred') {
       return message;
     }
-
-    return 'Wallet payment failed. Try again.';
+    return 'Payment failed. Try again.';
   }
 }

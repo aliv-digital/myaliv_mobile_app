@@ -72,6 +72,10 @@ class HomePlansPayFromWalletConfirmed extends HomePlansPaymentMethodEvent {
   List<Object?> get props => [walletBalance];
 }
 
+class HomePlansPaySavedCardConfirmed extends HomePlansPaymentMethodEvent {
+  const HomePlansPaySavedCardConfirmed();
+}
+
 class HomePlansPayNowPressed extends HomePlansPaymentMethodEvent {
   const HomePlansPayNowPressed();
 }
