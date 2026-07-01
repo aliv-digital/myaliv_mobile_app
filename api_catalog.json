@@ -1,0 +1,923 @@
+{
+  "project": "myaliv_mobile_app",
+  "version": "3.0.0+7",
+  "generatedOn": "2026-07-02",
+  "baseUrls": {
+    "mainApi": "https://mockservice.newcomobile.com/NewCoRestApi",
+    "appSettingsApi": "https://myalivappuat-api.bealiv.com"
+  },
+  "authentication": {
+    "type": "HTTP Basic Auth",
+    "header": "Authorization: Basic base64(username:password)",
+    "source": "GlobalState.basicAuthToken (managed by AuthManager)",
+    "appliedBy": "NetworkService automatically for all authenticated requests",
+    "cookieJar": "PersistCookieJar for session persistence"
+  },
+  "errorHandling": {
+    "exceptions": [
+      "TimeoutException",
+      "NoInternetException",
+      "SessionExpiredException",
+      "ServerException",
+      "HostUnreachableException"
+    ],
+    "statusCodes": {
+      "401/403": "Session expired -> force re-login",
+      "404": "Resource not found",
+      "408": "Request timeout",
+      "5xx": "Server errors",
+      "0": "No internet connection"
+    }
+  },
+  "categories": {
+    "authentication": {
+      "description": "Login, OTP, and session lifecycle endpoints",
+      "endpoints": [
+        {
+          "id": "auth.login",
+          "name": "Login",
+          "method": "POST",
+          "path": "/v1/MyAliv/Auth/login",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Auth/login",
+          "requestBody": {
+            "username": "string (phone number)",
+            "password": "string"
+          },
+          "response": {
+            "TwoFactorKey": "string",
+            "Message": "string"
+          },
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/login/repository/auth_repository.dart",
+            "bloc": "LoginCubit"
+          },
+          "dataUsage": "Returns TwoFactorKey which is passed to the OTP screen; drives navigation to LoginOTP page after successful primary credential verification."
+        },
+        {
+          "id": "auth.verifyOtp",
+          "name": "Verify OTP (Two-Factor Auth)",
+          "method": "POST",
+          "path": "/v1/MyAliv/Auth/two-factor-auth",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Auth/two-factor-auth",
+          "requestBody": {
+            "PhoneNumber": "string",
+            "Key": "string (TwoFactorKey from login)",
+            "PinCode": "string (OTP)"
+          },
+          "response": {
+            "Ticket": "string (session ticket)",
+            "AccountId": "int",
+            "Success": "bool"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/loginOtp/repository/services/login_otp_api_client.dart",
+            "bloc": "LoginOtpBloc"
+          },
+          "dataUsage": "On success, ticket + accountId are saved via AuthManager -> LocalStorage; NetworkService.updateAuthHeaders() is called; AccountInfoCubit.fetchAccountInfo() runs; user is routed to Home."
+        },
+        {
+          "id": "auth.resendOtp",
+          "name": "Resend OTP",
+          "method": "POST",
+          "path": "/v1/MyAliv/Auth/two-factor-auth/resend",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Auth/two-factor-auth/resend",
+          "requestBody": {
+            "PhoneNumber": "string",
+            "Key": "string (TwoFactorKey from login)"
+          },
+          "response": {
+            "Message": "string"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/loginOtp/repository/services/login_otp_api_client.dart",
+            "bloc": "LoginOtpBloc"
+          },
+          "dataUsage": "Triggered when user taps 'Resend Code' on the OTP screen; restarts the OTP countdown timer."
+        },
+        {
+          "id": "auth.logout",
+          "name": "Logout",
+          "method": "POST",
+          "path": "/v1/MyAliv/Auth/logout",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Auth/logout",
+          "requestBody": null,
+          "response": {},
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/logOut/repository/logout_repository.dart",
+            "bloc": "LogoutCubit"
+          },
+          "dataUsage": "Terminates server session. Local side effects: clears SharedPreferences credentials, AccountInfoCubit state, GlobalState auth context, cookies, HydratedBloc storage; navigates to welcome screen."
+        }
+      ]
+    },
+    "account": {
+      "description": "User account profile endpoints",
+      "endpoints": [
+        {
+          "id": "account.info",
+          "name": "Account Information",
+          "method": "GET",
+          "path": "/v1/MyAliv/Account",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account",
+          "requestBody": null,
+          "response": {
+            "email": "string",
+            "accountType": "string (prepaid|postpaid)",
+            "paymentOption": "string",
+            "accountStatus": "string",
+            "devices": "array of device objects"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/account-information/repository/services/account_info_api_client.dart",
+            "cubit": "AccountInfoCubit (HydratedCubit - auto-persisted)"
+          },
+          "dataUsage": "Persisted via HydratedBloc. Drives: Home header (email, plan type), Menu (account type/payment option), routing decisions (prepaid vs postpaid flows), Settings screens. Accessed globally via instance<AccountInfoCubit>()."
+        },
+        {
+          "id": "account.invoiceAutoPayment",
+          "name": "Set Invoice Auto-Payment (Postpaid)",
+          "method": "PUT",
+          "path": "/v1/MyAliv/Account/invoice-autopayment",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account/invoice-autopayment?autoPayInvoice={true|false}",
+          "queryParams": {
+            "autoPayInvoice": "bool"
+          },
+          "requestBody": null,
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/account-information/repository/services/account_info_api_client.dart"
+          },
+          "dataUsage": "Toggles auto-payment of postpaid invoices from the Postpaid Settings screen."
+        },
+        {
+          "id": "account.devices",
+          "name": "Account Devices",
+          "method": "GET",
+          "path": "/v1/MyAliv/Account/devices",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account/devices",
+          "requestBody": null,
+          "response": {
+            "devices": "array of device objects with deviceAccountId, creditLimit, threshold"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart"
+          },
+          "dataUsage": "Populates the My Limits > Device Limits screen; provides deviceAccountId list required by other device-scoped endpoints."
+        }
+      ]
+    },
+    "balancesAndUsage": {
+      "description": "Balances, usage, and consumption endpoints",
+      "endpoints": [
+        {
+          "id": "balances.get",
+          "name": "Get Balances",
+          "method": "GET",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/balances",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": null,
+          "response": {
+            "walletBalance": "number",
+            "bonusBalance": "number",
+            "creditBalance": "number"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/balance/repository/services/balance_api_service.dart",
+            "cubit": "BalanceCubit"
+          },
+          "dataUsage": "Powers the Home screen balance card (wallet + bonus balance). Cached briefly; refreshed on pull-to-refresh."
+        },
+        {
+          "id": "usage.consumptionLimits",
+          "name": "Query Consumption Limits",
+          "method": "GET",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/query-consumption-limit",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": null,
+          "response": {
+            "limits": "array of consumption limit rules and thresholds"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/my-limits/repository/services/consumption_limit_api_service.dart",
+            "cubit": "ConsumptionLimitCubit"
+          },
+          "dataUsage": "Displayed in My Limits screen showing configured spend/data caps."
+        },
+        {
+          "id": "usage.bucketSummary",
+          "name": "Bucket Usage Summary",
+          "method": "GET",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/bucket-usage-summary",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": null,
+          "response": {
+            "buckets": "array of BucketUsageItem { name, used, total, unit, nestedDetails[] }"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/bucket-usage-summary/repository/services/bucket_usage_summary_api_service.dart",
+            "cubit": "BucketUsageSummaryCubit"
+          },
+          "dataUsage": "Joined with each active plan's declared planBuckets via computePlanBucketUsage (bucket_name_matcher.dart) to render: Home usage cards, Usage tab current plan rows (primary, prepaid add-ons, postpaid usage), and per-plan roaming cards."
+        },
+        {
+          "id": "usage.usages",
+          "name": "Usage / Call Logs",
+          "method": "GET",
+          "path": "/v1/MyAliv/Account/usages",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account/usages?startDate={ISO8601}&endDate={ISO8601}",
+          "queryParams": {
+            "startDate": "ISO 8601 datetime",
+            "endDate": "ISO 8601 datetime"
+          },
+          "requestBody": null,
+          "response": {
+            "usages": "array of call/data/sms usage records"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Call-Logs/repository/services/call_logs_api_client.dart",
+            "repository": "CallLogsRepository"
+          },
+          "dataUsage": "Powers the Call Logs tab within the Usage screen; filtered by user-selected date range."
+        },
+        {
+          "id": "usage.transactions",
+          "name": "Transactions",
+          "method": "GET",
+          "path": "/v1/MyAliv/Account/transactions",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account/transactions?startDate={ISO8601}&endDate={ISO8601}",
+          "queryParams": {
+            "startDate": "ISO 8601 datetime",
+            "endDate": "ISO 8601 datetime"
+          },
+          "requestBody": null,
+          "response": {
+            "transactions": "array of transaction records { amount, date, type, description }"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Call-Logs/repository/services/transactions_api_client.dart",
+            "repository": "TransactionsRepository"
+          },
+          "dataUsage": "Renders the Transactions tab (top-ups, plan purchases, transfers, invoice payments)."
+        }
+      ]
+    },
+    "plansAndBundles": {
+      "description": "Plan/bundle catalog and promotional offer endpoints",
+      "endpoints": [
+        {
+          "id": "plans.available",
+          "name": "Available Plans / Bundles",
+          "method": "GET",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/available-plans",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": null,
+          "response": {
+            "plans": "array of Plan objects { planId, name, price, planBuckets, duration, planTypeCode }"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Plans/PlanScreen/repository/services/plan_api_client.dart",
+            "repository": "PlansRepository (home_plan_repository_v2.dart)"
+          },
+          "dataUsage": "Populates the Plans tab (prepaid) and the plan carousels; drives plan selection for purchase flow."
+        },
+        {
+          "id": "plans.bundles",
+          "name": "Bundles (Add-Ons)",
+          "method": "GET",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/bundles",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": null,
+          "response": {
+            "bundles": "array of AddOn objects"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Plans/PlanScreen/repository/services/plan_api_client.dart"
+          },
+          "dataUsage": "Feeds the add-ons section in the Purchase Plan Add-Ons screen and the Purchase Add-Ons flow."
+        },
+        {
+          "id": "plans.bestPlans",
+          "name": "Best Plans (Public Promotions)",
+          "method": "GET",
+          "path": "/api/plans/active",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/plans/active",
+          "authRequired": false,
+          "requestBody": null,
+          "response": {
+            "plans": "array of BestPlan { title, price, startFrom, expireOn, status }"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/best-plans/repository/services/best_plan_api_service.dart",
+            "cubit": "BestPlanCubit (5-min TTL cache)"
+          },
+          "dataUsage": "Renders the 'Our Best Plans' horizontal carousel on Home. Filtered by BestPlanParserService (active + not expired, date-only comparison). Section is hidden entirely when no plans returned."
+        },
+        {
+          "id": "plans.limitedOffer",
+          "name": "Limited Time Offers (Ads Timer)",
+          "method": "GET",
+          "path": "/api/ads-timer/active",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/ads-timer/active",
+          "authRequired": false,
+          "requestBody": null,
+          "response": {
+            "offers": "array with countdown metadata { title, endsAt, imageUrl, cta }"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/limited-time-offer/repository/services/limited_offer_api_service.dart",
+            "cubit": "LimitedOfferCubit"
+          },
+          "dataUsage": "Renders flash-deal banners with countdown timers on the Home screen."
+        },
+        {
+          "id": "plans.promoCode",
+          "name": "Apply Promo Code",
+          "method": "GET",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/promo-code-info",
+          "fullUrl": "{baseUrl}/v1/MyAliv/device/{deviceAccountId}/promo-code-info?promoCode={code}",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "queryParams": {
+            "promoCode": "string (URL-encoded)"
+          },
+          "requestBody": null,
+          "response": {
+            "discount": "number",
+            "expiry": "ISO 8601 date",
+            "isValid": "bool",
+            "message": "string"
+          },
+          "usedBy": {
+            "repository": "lib/app/Plans/homePlanConfirmation/repository/home_plan_confirmation_repository.dart"
+          },
+          "dataUsage": "Validates a promo code entered on the Plan Confirmation screen; adjusts final price shown before purchase."
+        },
+        {
+          "id": "plans.startFuture",
+          "name": "Start Future Plan Immediately",
+          "method": "PUT",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/jump-start-future-plan",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": null,
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "repository": "lib/app/Usage/repository/usage_repository.dart"
+          },
+          "dataUsage": "Called from the Usage screen when the user chooses to activate a scheduled future plan early."
+        }
+      ]
+    },
+    "paymentsAndOrders": {
+      "description": "Purchase, wallet transfer, and order endpoints",
+      "endpoints": [
+        {
+          "id": "order.changeBundle",
+          "name": "Change Bundle / Purchase Plan",
+          "method": "POST",
+          "path": "/v1/MyAliv/Order/change-bundle",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Order/change-bundle",
+          "requestBody": {
+            "CardPayment": {
+              "PaymentType": "Wallet | NewCard | Token",
+              "Amount": "number",
+              "CardToken": "string (when PaymentType=Token)",
+              "CardNumber": "string (when PaymentType=NewCard)",
+              "CardHolderName": "string",
+              "ExpiryMonth": "int",
+              "ExpiryYear": "int",
+              "CVV": "string",
+              "SaveCard": "bool"
+            },
+            "PlanBundle": {
+              "Plans": "array of { PlanId, PlanTypeCode }",
+              "AddOns": "array of { AddOnId }"
+            },
+            "ForceNow": "bool",
+            "SelectedBeginDate": "ISO 8601 date (optional, for scheduled plans)",
+            "PromoCode": "string (optional)"
+          },
+          "response": {
+            "OrderId": "int",
+            "Success": "bool",
+            "Message": "string"
+          },
+          "usedBy": {
+            "service": "lib/app/common/services/payments/change_bundle_service.dart",
+            "flows": [
+              "Home Plan Confirmation",
+              "Home Roaming Confirmation",
+              "Purchase Plan Add-Ons",
+              "Guest Purchase Plan Confirmation",
+              "Add-Ons Confirmation",
+              "Wallet Pay from Home"
+            ]
+          },
+          "dataUsage": "Single endpoint handles all plan/bundle purchases: wallet, saved card, or new card. Result feeds the Receipt screen and refreshes BalanceCubit/BucketUsageSummary."
+        },
+        {
+          "id": "order.transfer",
+          "name": "Wallet-to-Wallet Transfer",
+          "method": "POST",
+          "path": "/v1/MyAliv/Order/transfer",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Order/transfer",
+          "requestBody": {
+            "ToNumber": "string (recipient phone, digits only)",
+            "Amount": "number"
+          },
+          "response": {
+            "Success": "bool",
+            "Message": "string"
+          },
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart"
+          },
+          "dataUsage": "Send Top-Up feature; on success displays receipt and refreshes wallet balance."
+        }
+      ]
+    },
+    "deviceLimitsAndAutoRenew": {
+      "description": "Per-device credit limits, auto-renew, threshold settings",
+      "endpoints": [
+        {
+          "id": "device.updateLimits",
+          "name": "Update Device Credit Limits",
+          "method": "PUT",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/limits",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": {
+            "creditLimit": "number",
+            "warningThreshold": "number"
+          },
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart"
+          },
+          "dataUsage": "My Limits > Device Limits: persists user-adjusted credit caps."
+        },
+        {
+          "id": "device.autoRenew",
+          "name": "Toggle Auto-Renew from Wallet",
+          "method": "PUT",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/auto-renew",
+          "fullUrl": "{baseUrl}/v1/MyAliv/device/{deviceAccountId}/auto-renew?autoRenew={true|false}",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "queryParams": {
+            "autoRenew": "bool"
+          },
+          "requestBody": null,
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/repository/auto_renew_prepaid_repository.dart"
+          },
+          "dataUsage": "Toggles wallet-based prepaid auto-renewal from the Auto-Renew screen."
+        },
+        {
+          "id": "device.balanceThreshold",
+          "name": "Balance Threshold Settings",
+          "method": "PUT",
+          "path": "/v1/MyAliv/device/{deviceAccountId}/balance-threshold-settings",
+          "pathParams": {
+            "deviceAccountId": "int"
+          },
+          "requestBody": {
+            "threshold": "number",
+            "enabled": "bool",
+            "notificationEnabled": "bool"
+          },
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "apiService": "lib/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart"
+          },
+          "dataUsage": "Configures the low-balance alert threshold surfaced in Settings and drives push notifications."
+        }
+      ]
+    },
+    "creditCards": {
+      "description": "Saved cards and auto-pay/auto-renew card tokens",
+      "endpoints": [
+        {
+          "id": "card.saved.list",
+          "name": "List Saved Credit Cards",
+          "method": "GET",
+          "path": "/v1/MyAliv/CreditCard/saved",
+          "fullUrl": "{baseUrl}/v1/MyAliv/CreditCard/saved",
+          "requestBody": null,
+          "response": {
+            "cards": "array of { Token, MaskedNumber, CardType, ExpiryMonth, ExpiryYear, CardHolderName }"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/savedCards/repository/services/saved_cards_api_client.dart"
+          },
+          "dataUsage": "Saved Cards screen; payment method selection during purchase / top-up / bill-pay flows."
+        },
+        {
+          "id": "card.saved.delete",
+          "name": "Delete Saved Card",
+          "method": "DELETE",
+          "path": "/v1/MyAliv/CreditCard/saved",
+          "fullUrl": "{baseUrl}/v1/MyAliv/CreditCard/saved",
+          "requestBody": {
+            "token": "string"
+          },
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/savedCards/repository/services/saved_cards_api_client.dart"
+          },
+          "dataUsage": "Removes a stored card token from the user's wallet."
+        },
+        {
+          "id": "card.autoRenew",
+          "name": "Credit Card Auto-Renew (Prepaid)",
+          "method": "GET | POST",
+          "path": "/v1/MyAliv/CreditCard/auto-renew",
+          "fullUrl": "{baseUrl}/v1/MyAliv/CreditCard/auto-renew",
+          "requestBody": {
+            "Token": "string",
+            "AgreementText": "I agree to automatic renewal"
+          },
+          "response": {
+            "Token": "string (on GET) | Success: bool (on POST)"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/savedCards/repository/services/saved_cards_api_client.dart"
+          },
+          "dataUsage": "GET reveals whether a card is already configured for auto-renew; POST sets/updates the token for prepaid auto-renew."
+        },
+        {
+          "id": "card.autoPay",
+          "name": "Credit Card Auto-Pay (Postpaid)",
+          "method": "GET",
+          "path": "/v1/MyAliv/CreditCard/auto-pay",
+          "fullUrl": "{baseUrl}/v1/MyAliv/CreditCard/auto-pay",
+          "requestBody": null,
+          "response": {
+            "Token": "string"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/savedCards/repository/services/saved_cards_api_client.dart"
+          },
+          "dataUsage": "Shows which saved card is configured for postpaid invoice auto-payment in Settings."
+        }
+      ]
+    },
+    "referral": {
+      "description": "Refer-a-Friend and referral redemption endpoints",
+      "endpoints": [
+        {
+          "id": "referral.valid",
+          "name": "Referral Validity",
+          "method": "GET",
+          "path": "/v1/MyAliv/Referral/{phoneNumber}/valid",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Referral/{phoneNumber}/valid",
+          "pathParams": {
+            "phoneNumber": "string (URL-encoded)"
+          },
+          "requestBody": null,
+          "response": {
+            "IsValid": "bool"
+          },
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/referAFriend/referFriend/prepaid/repository/refer_friend_prepaid_repository.dart"
+          },
+          "dataUsage": "Pre-checks whether a target phone number is eligible for referral before submitting the Refer form."
+        },
+        {
+          "id": "referral.refer",
+          "name": "Refer a Friend",
+          "method": "POST",
+          "path": "/v1/MyAliv/Referral/refer",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Referral/refer",
+          "requestBody": {
+            "ReferringDeviceAccountId": "int",
+            "ReferredEmail": "string",
+            "ReferredTN": "string (friend's phone)"
+          },
+          "response": {
+            "ReferralCode": "string",
+            "Success": "bool"
+          },
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/referAFriend/referFriend/prepaid/repository/refer_friend_prepaid_repository.dart"
+          },
+          "dataUsage": "Generates a referral code shown on the Refer Friend Response screen for sharing."
+        },
+        {
+          "id": "referral.redeem",
+          "name": "Redeem Referral",
+          "method": "POST",
+          "path": "/v1/MyAliv/Referral/redeem",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Referral/redeem",
+          "requestBody": {
+            "ReferralCode": "string",
+            "ReferredTN": "string (own phone number)"
+          },
+          "response": {
+            "Success": "bool",
+            "Message": "string"
+          },
+          "usedBy": {
+            "repository": "lib/app/Aliv-Mobile/referAFriend/referFriend/prepaid/repository/refer_friend_prepaid_repository.dart"
+          },
+          "dataUsage": "Applies the referral bonus to the new user's account."
+        }
+      ]
+    },
+    "invoices": {
+      "description": "Postpaid invoice listing and PDF download",
+      "endpoints": [
+        {
+          "id": "invoice.list",
+          "name": "Invoices",
+          "method": "GET",
+          "path": "/v1/MyAliv/Account/invoices",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account/invoices",
+          "requestBody": null,
+          "response": {
+            "invoices": "array of Invoice { invoiceId, amount, dueDate, status, filePath }"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/repository/services/invoice_api_client.dart"
+          },
+          "dataUsage": "Populates the Review Invoices (postpaid) screen."
+        },
+        {
+          "id": "invoice.pdf",
+          "name": "Invoice PDF",
+          "method": "GET",
+          "path": "/v1/MyAliv/Account/invoice/{invoiceId}",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Account/invoice/{invoiceId}?filename={encodedFilePath}",
+          "pathParams": {
+            "invoiceId": "int"
+          },
+          "queryParams": {
+            "filename": "string (URL-encoded file path from the invoice list)"
+          },
+          "requestBody": null,
+          "response": {
+            "InvoiceFile": "base64-encoded PDF string"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/repository/services/invoice_api_client.dart"
+          },
+          "dataUsage": "Decoded and displayed in a PDF viewer / offered as share."
+        }
+      ]
+    },
+    "rewards": {
+      "description": "Loyalty rewards endpoint",
+      "endpoints": [
+        {
+          "id": "rewards.list",
+          "name": "Rewards",
+          "method": "GET",
+          "path": "/v1/MyAliv/Info/rewards",
+          "fullUrl": "{baseUrl}/v1/MyAliv/Info/rewards",
+          "requestBody": null,
+          "response": {
+            "rewards": "array of Reward { id, title, description, imageUrl, points }"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Aliv-Mobile/userProfile/rewards/prepaid/repository/services/rewards_api_client.dart"
+          },
+          "dataUsage": "Powers the Rewards screen and Reward Details drilldown."
+        }
+      ]
+    },
+    "alternateContact": {
+      "description": "Alternate contact number validation and update",
+      "endpoints": [
+        {
+          "id": "altNumber.validate",
+          "name": "Validate Alternate Number",
+          "method": "GET",
+          "path": "/v1/MyAliv/AltNumber/validate/{altNumber}",
+          "fullUrl": "{baseUrl}/v1/MyAliv/AltNumber/validate/{altNumber}",
+          "pathParams": {
+            "altNumber": "string (URL-encoded)"
+          },
+          "requestBody": null,
+          "response": {
+            "IsValid": "bool"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Plans/mifiAltContact/repository/services/alt_number_validation_api_client.dart"
+          },
+          "dataUsage": "MiFi/Plan Alt Contact screen live-validates the entered number before enabling the submit button."
+        },
+        {
+          "id": "altNumber.update",
+          "name": "Update Alternate Number",
+          "method": "POST",
+          "path": "/v1/MyAliv/AltNumber",
+          "fullUrl": "{baseUrl}/v1/MyAliv/AltNumber",
+          "requestBody": {
+            "NewAltNumber": "string"
+          },
+          "response": {
+            "Success": "bool"
+          },
+          "usedBy": {
+            "apiClient": "lib/app/Plans/mifiAltContact/repository/services/alt_number_validation_api_client.dart"
+          },
+          "dataUsage": "Persists the alt contact number on the user's account."
+        }
+      ]
+    },
+    "appSettings": {
+      "description": "Public static-content endpoints (FAQs, policy, terms, images)",
+      "authRequired": false,
+      "endpoints": [
+        {
+          "id": "appSettings.faq",
+          "name": "FAQ",
+          "method": "GET",
+          "path": "/api/app-settings/faqs",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/faqs",
+          "response": {
+            "data": {
+              "value": "HTML/JSON blob"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Displayed in the Help > FAQ screen."
+        },
+        {
+          "id": "appSettings.privacyPolicy",
+          "name": "Privacy Policy",
+          "method": "GET",
+          "path": "/api/app-settings/privacy-policy",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/privacy-policy",
+          "response": {
+            "data": {
+              "value": "HTML string"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Rendered in the Privacy screen."
+        },
+        {
+          "id": "appSettings.security",
+          "name": "Security Information",
+          "method": "GET",
+          "path": "/api/app-settings/security",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/security",
+          "response": {
+            "data": {
+              "value": "HTML string"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Rendered in the Security settings screen."
+        },
+        {
+          "id": "appSettings.referAFriendText",
+          "name": "Refer-a-Friend Text/Terms",
+          "method": "GET",
+          "path": "/api/app-settings/refer-a-friend",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/refer-a-friend",
+          "response": {
+            "data": {
+              "value": "HTML string"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Terms/copy shown on the Refer a Friend screen."
+        },
+        {
+          "id": "appSettings.redeemReferralText",
+          "name": "Redeem Referral Text/Terms",
+          "method": "GET",
+          "path": "/api/app-settings/redeem-referral",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/redeem-referral",
+          "response": {
+            "data": {
+              "value": "HTML string"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Terms/copy shown on the Redeem Referral screen."
+        },
+        {
+          "id": "appSettings.guestPageMobileImage",
+          "name": "Guest Page Mobile Image",
+          "method": "GET",
+          "path": "/api/app-settings/guest-page-mobile-image",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/guest-page-mobile-image",
+          "response": {
+            "data": {
+              "value": "image URL"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Hero image on the Guest landing page."
+        },
+        {
+          "id": "appSettings.welcomePageMobileImage",
+          "name": "Welcome / Login Page Mobile Image",
+          "method": "GET",
+          "path": "/api/app-settings/login-page-mobile-image",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/login-page-mobile-image",
+          "response": {
+            "data": {
+              "value": "image URL"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Hero image on the Welcome / Login screen."
+        },
+        {
+          "id": "appSettings.prepaidTerms",
+          "name": "Prepaid Terms & Conditions",
+          "method": "GET",
+          "path": "/api/app-settings/terms-and-conditions-prepaid",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-prepaid",
+          "response": {
+            "data": {
+              "value": "HTML string"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Displayed at prepaid signup/checkout gating."
+        },
+        {
+          "id": "appSettings.postpaidTerms",
+          "name": "Postpaid Terms & Conditions",
+          "method": "GET",
+          "path": "/api/app-settings/terms-and-conditions-postpaid",
+          "fullUrl": "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-postpaid",
+          "response": {
+            "data": {
+              "value": "HTML string"
+            }
+          },
+          "usedBy": {
+            "repository": "lib/core/networkService/app_settings_repository.dart"
+          },
+          "dataUsage": "Displayed at postpaid signup/checkout gating."
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalEndpoints": 40,
+    "byCategory": {
+      "authentication": 4,
+      "account": 3,
+      "balancesAndUsage": 5,
+      "plansAndBundles": 6,
+      "paymentsAndOrders": 2,
+      "deviceLimitsAndAutoRenew": 3,
+      "creditCards": 4,
+      "referral": 3,
+      "invoices": 2,
+      "rewards": 1,
+      "alternateContact": 2,
+      "appSettings": 9
+    }
+  }
+}
