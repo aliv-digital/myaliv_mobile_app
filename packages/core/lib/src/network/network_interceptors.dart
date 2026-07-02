@@ -10,44 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'network_config.dart';
 import 'network_exceptions.dart';
 
-/// Redacts matching map keys recursively before data is formatted for logs.
-/// String JSON bodies are decoded when possible so the same rules apply.
-@visibleForTesting
-dynamic redactNetworkLogData(dynamic data, Iterable<String> fields) {
-  final normalizedFields = fields
-      .map((field) => field.trim().toLowerCase())
-      .where((field) => field.isNotEmpty)
-      .toSet();
-  if (normalizedFields.isEmpty) return data;
-
-  dynamic decoded = data;
-  if (data is String) {
-    try {
-      decoded = jsonDecode(data);
-    } catch (_) {
-      return data;
-    }
-  }
-
-  dynamic redact(dynamic node) {
-    if (node is Map) {
-      return node.map((key, value) {
-        final normalizedKey = key.toString().toLowerCase();
-        return MapEntry(
-          key,
-          normalizedFields.contains(normalizedKey)
-              ? '<redacted>'
-              : redact(value),
-        );
-      });
-    }
-    if (node is List) return node.map(redact).toList();
-    return node;
-  }
-
-  return redact(decoded);
-}
-
 /// Handles authentication, session, and error interception
 class NetworkInterceptorHandlers {
   NetworkInterceptorHandlers();
@@ -162,7 +124,7 @@ class NetworkLoggingInterceptor extends Interceptor {
     }
 
     if (_config.logRequestBody) {
-      _logRequestBody(_redactedData(options.data, options.extra));
+      _logRequestBody(options.data);
     }
 
     return handler.next(options);
@@ -179,95 +141,68 @@ class NetworkLoggingInterceptor extends Interceptor {
     }
 
     if (_config.logResponseBody) {
-      _logResponseBody(
-        _redactedData(response.data, response.requestOptions.extra),
-      );
+      _logResponseBody(response.data);
     }
 
     return handler.next(response);
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    final status = err.response?.statusCode;
-    final tag = status?.toString() ?? err.type.name;
-    final method = err.requestOptions.method;
-    final uri = err.requestOptions.uri;
+  void onError(DioException error, ErrorInterceptorHandler handler) {
+    final status = error.response?.statusCode;
+    final tag = status?.toString() ?? error.type.name;
+    final method = error.requestOptions.method;
+    final uri = error.requestOptions.uri;
 
     debugPrint('\n❌ ERROR [$tag] $method $uri');
-    debugPrint('🔻 Type: ${err.type.name}');
-    debugPrint('🧨 Message: ${err.message ?? "(none)"}');
+    debugPrint('🔻 Type: ${error.type.name}');
+    debugPrint('🧨 Message: ${error.message ?? "(none)"}');
 
-    if (err.error != null) {
-      debugPrint('🪤 Cause: ${err.error}');
+    if (error.error != null) {
+      debugPrint('🪤 Cause: ${error.error}');
     }
 
-    final response = err.response;
+    final response = error.response;
     if (response != null) {
       if (_config.logResponseHeaders) {
-        _printChunked('📋 Response Headers', _formatBody(response.headers.map));
+        _printChunked(
+            '📋 Response Headers', _formatBody(response.headers.map));
       }
       if (response.data != null) {
-        final redactedResponseData = _redactedData(
-          response.data,
-          err.requestOptions.extra,
-        );
-        debugPrint(
-            '📛 Extracted: ${_extractErrorMessage(redactedResponseData)}');
+        debugPrint('📛 Extracted: ${_extractErrorMessage(response.data)}');
         if (_config.logResponseBody) {
-          if (_isBinaryData(redactedResponseData)) {
+          if (_isBinaryData(response.data)) {
             debugPrint(
-                '📥 Response Body: [Binary data - ${_getDataSize(redactedResponseData)} bytes]');
+                '📥 Response Body: [Binary data - ${_getDataSize(response.data)} bytes]');
           } else {
-            _printChunked(
-              '📥 Response Body',
-              _formatBody(redactedResponseData),
-            );
+            _printChunked('📥 Response Body', _formatBody(response.data));
           }
         }
       }
     }
 
     if (_config.logErrorRequestBody) {
-      final reqData = err.requestOptions.data;
+      final reqData = error.requestOptions.data;
       if (reqData != null) {
-        final redactedRequestData = _redactedData(
-          reqData,
-          err.requestOptions.extra,
-        );
-        if (redactedRequestData is FormData) {
+        if (reqData is FormData) {
+          debugPrint('📤 Request FormData Fields: ${reqData.fields}');
+        } else if (_isBinaryData(reqData)) {
           debugPrint(
-            '📤 Request FormData Fields: ${redactedRequestData.fields}',
-          );
-        } else if (_isBinaryData(redactedRequestData)) {
-          debugPrint(
-              '📤 Request Body: [Binary data - ${_getDataSize(redactedRequestData)} bytes]');
+              '📤 Request Body: [Binary data - ${_getDataSize(reqData)} bytes]');
         } else {
-          _printChunked(
-            '📤 Request Body',
-            _formatBody(redactedRequestData),
-          );
+          _printChunked('📤 Request Body', _formatBody(reqData));
         }
       }
     }
 
-    if (_config.logErrorStack && err.stackTrace.toString().isNotEmpty) {
-      debugPrint('🧵 Stack:\n${err.stackTrace}');
+    if (_config.logErrorStack && error.stackTrace.toString().isNotEmpty) {
+      debugPrint('🧵 Stack:\n${error.stackTrace}');
     }
 
-    return handler.next(err);
+    return handler.next(error);
   }
 
   // ---------------- helpers ----------------
-
-  dynamic _redactedData(dynamic data, Map<String, dynamic> extra) {
-    final rawFields = extra[networkLogRedactedFieldsExtraKey];
-    if (rawFields is! Iterable) return data;
-    return redactNetworkLogData(
-      data,
-      rawFields.map((field) => field.toString()),
-    );
-  }
 
   void _logRequestBody(dynamic data) {
     if (data == null) return;

@@ -4,10 +4,6 @@
 /// Responsible for: Service configuration and app-specific callbacks.
 library;
 
-/// Request option key used to carry field names that must be redacted from
-/// request, response, and error-body logs.
-const networkLogRedactedFieldsExtraKey = 'networkLogRedactedFields';
-
 /// Body formatting mode for request/response logging.
 ///
 /// - [pretty]: indented JSON (most vertical space)

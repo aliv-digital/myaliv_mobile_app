@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
@@ -29,16 +28,6 @@ class SavedCardsApiClient {
         Api.addCreditCard,
         method: HttpMethod.post,
         data: _addCardPayload(details),
-        options: Options(
-          extra: const <String, Object?>{
-            networkLogRedactedFieldsExtraKey: <String>[
-              'Number',
-              'Name',
-              'SecurityCode',
-              'Token',
-            ],
-          },
-        ),
       );
 
       final responseMap = _decodeMap(response.data);
