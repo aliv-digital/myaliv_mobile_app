@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import '../models/saved_card_model.dart';
 import 'saved_cards_exception.dart';
 import 'services/saved_cards_api_client.dart';
@@ -8,6 +9,9 @@ import 'services/saved_cards_api_client.dart';
 abstract class SavedCardsRepository {
   /// Fetches saved credit cards from the API.
   Future<List<SavedCardModel>> fetchSavedCards();
+
+  /// Adds a new credit card and returns its server-issued token.
+  Future<String> addCard(NewCardDetails details);
 
   /// Deletes a saved credit card by token. Throws on failure.
   Future<void> deleteCard(String token);
@@ -41,6 +45,11 @@ class SavedCardsRepositoryImpl implements SavedCardsRepository {
     }
 
     return cards;
+  }
+
+  @override
+  Future<String> addCard(NewCardDetails details) {
+    return _apiClient.addCreditCard(details);
   }
 
   @override

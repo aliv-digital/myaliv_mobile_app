@@ -22,6 +22,7 @@ dependencies:
   country_picker: ^2.0.27
   country_pickers: ^3.0.1
   flutter_svg: ^2.2.4
+  dio: ^5.9.0
   iconsax_plus: ^1.0.0
   intl: ^0.20.2
   flutter_launcher_icons: ^0.14.4
@@ -60,4 +61,3 @@ flutter:
         - asset: assets/fonts/CircularPro-Bold.otf
         - asset: assets/fonts/CircularPro-Book.otf
           weight: 700
-

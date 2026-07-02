@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import '../saved_cards_exception.dart';
 
@@ -15,6 +17,59 @@ class SavedCardsApiClient {
       : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
+
+  /// Adds a credit card and returns the server-issued card token.
+  Future<String> addCreditCard(NewCardDetails details) async {
+    if (kDebugMode) {
+      debugPrint('SavedCardsApiClient: Adding credit card');
+    }
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.addCreditCard,
+        method: HttpMethod.post,
+        data: _addCardPayload(details),
+        options: Options(
+          extra: const <String, Object?>{
+            networkLogRedactedFieldsExtraKey: <String>[
+              'Number',
+              'Name',
+              'SecurityCode',
+              'Token',
+            ],
+          },
+        ),
+      );
+
+      final responseMap = _decodeMap(response.data);
+      final token =
+          (responseMap['Token'] ?? responseMap['token'])?.toString().trim() ??
+              '';
+      if (token.isEmpty) {
+        throw const SavedCardsException(
+          type: SavedCardsErrorType.invalidResponse,
+          serverMessage: 'Card token missing in add-card response',
+        );
+      }
+
+      if (kDebugMode) {
+        debugPrint(
+          'SavedCardsApiClient: Add card status=${response.statusCode}',
+        );
+      }
+      return token;
+    } on NetworkException catch (e) {
+      throw _mapNetworkExceptionToSavedCardsException(e);
+    } on SavedCardsException {
+      rethrow;
+    } catch (e) {
+      throw SavedCardsException(
+        type: SavedCardsErrorType.unknown,
+        statusCode: 0,
+        serverMessage: e.toString(),
+      );
+    }
+  }
 
   /// Fetches saved credit cards using Basic Auth from GlobalState.
   ///
@@ -153,6 +208,47 @@ class SavedCardsApiClient {
         serverMessage: e.toString(),
       );
     }
+  }
+
+  Map<String, dynamic> _addCardPayload(NewCardDetails details) {
+    final expirationParts = details.cardExpiration.split('-');
+    final expirationYear =
+        expirationParts.length == 2 ? int.tryParse(expirationParts[0]) : null;
+    final expirationMonth =
+        expirationParts.length == 2 ? int.tryParse(expirationParts[1]) : null;
+
+    if (expirationYear == null ||
+        expirationMonth == null ||
+        expirationMonth < 1 ||
+        expirationMonth > 12) {
+      throw const SavedCardsException(
+        type: SavedCardsErrorType.badResponse,
+        serverMessage: 'Invalid card expiration date',
+      );
+    }
+
+    return <String, dynamic>{
+      'Number': details.cardNumber,
+      'Name': details.cardHolderName,
+      'ExpirationMonth': expirationMonth,
+      'ExpirationYear': expirationYear,
+      'SecurityCode': details.cardSecurityCode,
+    };
+  }
+
+  Map<String, dynamic> _decodeMap(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) {
+      return data.map((key, value) => MapEntry(key.toString(), value));
+    }
+    if (data is String && data.trim().isNotEmpty) {
+      final decoded = jsonDecode(data);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    }
+    return <String, dynamic>{};
   }
 
   SavedCardsException _mapNetworkExceptionToSavedCardsException(
