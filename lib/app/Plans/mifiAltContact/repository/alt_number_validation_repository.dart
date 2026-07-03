@@ -70,6 +70,53 @@ class AltNumberValidationRepository {
     }
   }
 
+  /// Persists the user's offers preference for this alternate number.
+  ///
+  /// Throws [AltNumberValidationException] when the request cannot be made or
+  /// the API rejects it, keeping network errors out of the presentation layer.
+  Future<bool> setMarketingOptIn({
+    required String altNumber,
+    required int deviceAccountId,
+    required bool isOptedIn,
+  }) async {
+    final trimmed = altNumber.trim();
+    if (trimmed.isEmpty) {
+      throw const AltNumberValidationException(
+        'please enter a mobile number.',
+      );
+    }
+    if (deviceAccountId <= 0) {
+      throw const AltNumberValidationException(
+        'device account information is unavailable. please try again.',
+      );
+    }
+
+    try {
+      return await _apiClient.setMarketingOptIn(
+        altNumber: trimmed,
+        deviceAccountId: deviceAccountId,
+        isOptedIn: isOptedIn,
+      );
+    } on NetworkException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'AltNumberValidationRepository.setMarketingOptIn: '
+          '${e.statusCode} ${e.message}',
+        );
+      }
+      throw AltNumberValidationException(_optInErrorMessage(e));
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          'AltNumberValidationRepository.setMarketingOptIn: error $e',
+        );
+      }
+      throw const AltNumberValidationException(
+        'could not save your offers preference. please try again.',
+      );
+    }
+  }
+
   String _validateErrorMessage(NetworkException e) {
     final code = e.statusCode;
     if (code == 401) return 'session expired. please log in again.';
@@ -95,6 +142,22 @@ class AltNumberValidationRepository {
       return msg;
     }
     return 'could not save the mobile number. please try again.';
+  }
+
+  String _optInErrorMessage(NetworkException e) {
+    final code = e.statusCode;
+    if (code == 401) return 'session expired. please log in again.';
+    if (code == 400 || code == 404) {
+      return 'could not save your offers preference. please check the mobile number.';
+    }
+    if (code != null && code >= 500) {
+      return 'service unavailable. please try again.';
+    }
+    final msg = e.message.trim();
+    if (msg.isNotEmpty && msg.toLowerCase() != 'an error occurred') {
+      return msg;
+    }
+    return 'could not save your offers preference. please try again.';
   }
 }
 

@@ -106,4 +106,9 @@ class Api {
   static const orderTransferUrl = '$baseUrl/v1/MyAliv/Order/transfer';
   //{{baseUrl}}/v1/MyAliv/device/:deviceAccountId/bucket-usage-summary
   static String bucketUsageSummary(int deviceAccountId) => '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
+
+  /// Alternate-contact marketing preference: POST /AltNumber/opt-in/{number}
+  /// Body: `{ "DeviceAccountId": <int>, "IsOptedIn": <bool> }`
+  static String mifiAltNumber(String number) =>
+      '$baseUrl/v1/MyAliv/AltNumber/opt-in/${Uri.encodeComponent(number.trim())}';
 }

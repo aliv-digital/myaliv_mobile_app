@@ -59,6 +59,57 @@ class AltNumberValidationApiClient {
     throw Exception('Success missing in response.');
   }
 
+  /// Stores the user's offers preference for the alternate number and account.
+  ///
+  /// `POST v1/MyAliv/AltNumber/opt-in/{altNumber}`
+  /// Body: `{ "DeviceAccountId": <int>, "IsOptedIn": <bool> }`.
+  Future<bool> setMarketingOptIn({
+    required String altNumber,
+    required int deviceAccountId,
+    required bool isOptedIn,
+  }) async {
+    final url = Api.mifiAltNumber(altNumber);
+    final body = <String, dynamic>{
+      'DeviceAccountId': deviceAccountId,
+      'IsOptedIn': isOptedIn,
+    };
+
+    if (kDebugMode) {
+      debugPrint(
+        'AltNumberValidationApiClient: setting opt-in '
+        'for deviceAccountId=$deviceAccountId, isOptedIn=$isOptedIn',
+      );
+      debugPrint('AltNumberValidationApiClient: opt-in url=$url');
+      debugPrint('AltNumberValidationApiClient: opt-in request=$body');
+    }
+
+    final response = await _networkService.request<dynamic>(
+      url,
+      method: HttpMethod.post,
+      data: body,
+    );
+
+    if (kDebugMode) {
+      debugPrint(
+        'AltNumberValidationApiClient: opt-in status=${response.statusCode}',
+      );
+      debugPrint(
+        'AltNumberValidationApiClient: opt-in response=${response.data}',
+      );
+    }
+
+    final responseMap = _decodeMap(response.data);
+    final rawSuccess = responseMap['Success'] ?? responseMap['success'];
+
+    if (rawSuccess is bool) return rawSuccess;
+    if (rawSuccess is String) return rawSuccess.toLowerCase() == 'true';
+
+    // The Postman contract does not show a response body. Treat an empty 2xx
+    // response as success while still honoring an explicit Success value above.
+    final statusCode = response.statusCode ?? 0;
+    return statusCode >= 200 && statusCode < 300;
+  }
+
   Map<String, dynamic> _decodeMap(dynamic data) {
     if (data is Map<String, dynamic>) return data;
     if (data is Map) {
