@@ -60,7 +60,8 @@ class ChangeBundleRequestFactory {
     };
   }
 
-  static Map<String, dynamic> body({
+  /// Change-bundle envelope: outer body sent to `POST /Order/change-bundle`.
+  static Map<String, dynamic> changeBundleBody({
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
     required bool forceNow,
@@ -88,6 +89,22 @@ class ChangeBundleRequestFactory {
       'CardPayment': cardPayment,
       'Bundle': bundleMap,
       'ForceNow': forceNow,
+      'SaveCard': false,
+      'UseAsRenewalCard': false,
+      'Bonuses': const <Map<String, dynamic>>[],
+      'PromoCodes': const <Map<String, dynamic>>[],
+      'Note': 'Payment',
+    };
+  }
+
+  /// Top-up envelope: same as [changeBundleBody] minus the `Bundle` block.
+  /// Posted to `POST /Order/top-up/{PrimaryPhoneNumber}`.
+  static Map<String, dynamic> topUpBody({
+    required Map<String, dynamic> cardPayment,
+  }) {
+    return <String, dynamic>{
+      'CardPayment': cardPayment,
+      'ForceNow': true,
       'SaveCard': false,
       'UseAsRenewalCard': false,
       'Bonuses': const <Map<String, dynamic>>[],

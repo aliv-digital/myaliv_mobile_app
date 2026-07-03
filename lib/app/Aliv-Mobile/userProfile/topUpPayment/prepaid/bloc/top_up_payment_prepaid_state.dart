@@ -5,12 +5,17 @@ enum TopUpPaymentStatus { initial, loading, ready, paying, success, failure }
 
 enum TopUpPaymentMode { card, payWithCard }
 
+/// One-shot post-payment navigation target. Set on success, consumed by the
+/// view via [PaymentNavConsumed] once the receipt route has been pushed.
+enum TopUpPaymentNavTarget { none, paid }
+
 class TopUpPaymentPrepaidState extends Equatable {
   final TopUpPaymentStatus status;
   final TopUpPaymentMode paymentMode;
   final String? selectedMethodId;
   final PaymentSummary summary;
   final String? errorMessage;
+  final TopUpPaymentNavTarget navTarget;
 
   const TopUpPaymentPrepaidState({
     required this.status,
@@ -18,6 +23,7 @@ class TopUpPaymentPrepaidState extends Equatable {
     required this.selectedMethodId,
     required this.summary,
     required this.errorMessage,
+    required this.navTarget,
   });
 
   factory TopUpPaymentPrepaidState.initial() => const TopUpPaymentPrepaidState(
@@ -26,6 +32,7 @@ class TopUpPaymentPrepaidState extends Equatable {
     selectedMethodId: null,
     summary: PaymentSummary(total: 0, vatInclusive: true),
     errorMessage: null,
+    navTarget: TopUpPaymentNavTarget.none,
   );
 
   bool get isBusy =>
@@ -42,7 +49,9 @@ class TopUpPaymentPrepaidState extends Equatable {
     String? selectedMethodId,
     PaymentSummary? summary,
     String? errorMessage,
+    TopUpPaymentNavTarget? navTarget,
     bool clearSelection = false,
+    bool clearErrorMessage = false,
   }) {
     return TopUpPaymentPrepaidState(
       status: status ?? this.status,
@@ -51,11 +60,18 @@ class TopUpPaymentPrepaidState extends Equatable {
           ? null
           : (selectedMethodId ?? this.selectedMethodId),
       summary: summary ?? this.summary,
-      errorMessage: errorMessage,
+      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      navTarget: navTarget ?? this.navTarget,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [status, paymentMode, selectedMethodId, summary, errorMessage];
+  List<Object?> get props => [
+    status,
+    paymentMode,
+    selectedMethodId,
+    summary,
+    errorMessage,
+    navTarget,
+  ];
 }

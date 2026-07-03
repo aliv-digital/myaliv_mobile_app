@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-//dd
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/checkout_card_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/saved_card_payment_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
@@ -55,20 +57,35 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
     instance<SavedCardsCubit>().fetchSavedCards();
   }
 
+  void _onState(BuildContext context, TopUpPaymentPrepaidState state) {
+    final msg = state.errorMessage;
+    if (msg != null && msg.isNotEmpty) {
+      AppToast.show(message: msg, type: ToastType.error);
+    }
+
+    if (state.navTarget == TopUpPaymentNavTarget.paid) {
+      context.push(
+        AppRoutes.userProfileReceiptScreen,
+        extra: UserProfileReceiptRouteArgs(
+          amount: state.summary.total,
+          recipientPhone: state.summary.recipientPhone,
+          paymentMethod: state.paymentMode == TopUpPaymentMode.payWithCard
+              ? 'visa'
+              : 'credit card',
+        ),
+      );
+      context.read<TopUpPaymentPrepaidBloc>().add(const PaymentNavConsumed());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<TopUpPaymentPrepaidBloc, TopUpPaymentPrepaidState>(
-      listenWhen: (prev, curr) =>
-          prev.errorMessage != curr.errorMessage || prev.status != curr.status,
-      listener: (context, state) {
-        final msg = state.errorMessage;
-        if (msg != null && msg.isNotEmpty) {
-          AppToast.show(message: msg, type: ToastType.error);
-          // ScaffoldMessenger.of(
-          //   context,
-          // ).showSnackBar(SnackBar(content: Text(msg)));
-        }
-      },
+      listenWhen: (p, c) =>
+          p.errorMessage != c.errorMessage ||
+          p.status != c.status ||
+          p.navTarget != c.navTarget,
+      listener: _onState,
       builder: (context, state) => _TopUpPaymentPrepaidScaffold(state: state),
     );
   }
@@ -87,6 +104,50 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
     return appBarContentHeight + topInset;
   }
 
+  Future<void> _onPayNow(BuildContext context) async {
+    if (state.paymentMode == TopUpPaymentMode.payWithCard) {
+      await _payWithNewCard(context);
+      return;
+    }
+    await _payWithSavedCard(context);
+  }
+
+  Future<void> _payWithSavedCard(BuildContext context) async {
+    final bloc = context.read<TopUpPaymentPrepaidBloc>();
+    final token = state.selectedMethodId?.trim() ?? '';
+    if (token.isEmpty) return;
+
+    final card = _cardByToken(token);
+    if (card == null) return;
+
+    final confirmed = await SavedCardPaymentBottomSheet.show(
+      context,
+      cardLabel: card.displayLabel,
+      amountText: _amountText(state.summary.total),
+    );
+    if (confirmed != true) return;
+
+    bloc.add(const PaySavedCardConfirmed());
+  }
+
+  Future<void> _payWithNewCard(BuildContext context) async {
+    final bloc = context.read<TopUpPaymentPrepaidBloc>();
+    final details = await CheckoutCardBottomSheet.show(
+      context,
+      amountText: _amountText(state.summary.total),
+    );
+    if (details == null) return;
+
+    bloc.add(PayWithCardConfirmed(details));
+  }
+
+  SavedCardModel? _cardByToken(String token) {
+    for (final c in instance<SavedCardsCubit>().state.cards) {
+      if (c.token == token) return c;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,19 +158,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         isLoading: state.status == TopUpPaymentStatus.paying,
         isButtonEnabled: state.hasMethodSelected,
         buttonColor: TopUpPaymentPrepaidTheme.primary,
-        onPayNow: () {
-          if (state.paymentMode == TopUpPaymentMode.payWithCard) {
-            context.push(AppRoutes.addOrEditCardsPrepaidScreen);
-            return;
-          }
-          context.push(
-            AppRoutes.userProfileReceiptScreen,
-            extra: UserProfileReceiptRouteArgs(
-              amount: state.summary.total,
-              recipientPhone: state.summary.recipientPhone,
-            ),
-          );
-        },
+        onPayNow: () => _onPayNow(context),
       ),
       body: CustomScrollView(
         slivers: <Widget>[

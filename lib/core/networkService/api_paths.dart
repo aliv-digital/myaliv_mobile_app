@@ -93,6 +93,13 @@ class Api {
 
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
 
+  /// Top-up (recharge) endpoint. Phone number is the recipient's primary
+  /// number and lives in the URL path; body shape matches change-bundle
+  /// minus the `Bundle` block.
+  /// POST /Order/top-up/{PrimaryPhoneNumber}
+  static String topUpUrl(String primaryPhoneNumber) =>
+      '$baseUrl/v1/MyAliv/Order/top-up/${Uri.encodeComponent(primaryPhoneNumber.trim())}';
+
   /// Wallet-to-wallet transfer (send top-up):
   /// POST /Order/transfer
   /// Body: `{ "ToNumber": "<digits>", "Amount": <number> }`
