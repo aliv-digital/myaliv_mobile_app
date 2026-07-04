@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
@@ -68,7 +69,7 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
         AppRoutes.userProfileReceiptScreen,
         extra: UserProfileReceiptRouteArgs(
           amount: state.summary.total,
-          recipientPhone: state.summary.recipientPhone,
+          recipientPhone: _receiptPhone(state.summary.recipientPhone),
           paymentMethod: state.paymentMode == TopUpPaymentMode.payWithCard
               ? 'visa'
               : 'credit card',
@@ -76,6 +77,22 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
       );
       context.read<TopUpPaymentPrepaidBloc>().add(const PaymentNavConsumed());
     }
+  }
+
+  /// The `recipientPhone` route param is unreliable — upstream callers
+  /// interpolate `null` as the literal string `"null"`. Since top-up always
+  /// charges the account holder's own primary number, resolve it from
+  /// [AccountInfoCubit] and only fall back to the route value when it's a
+  /// real phone number.
+  String? _receiptPhone(String? routeValue) {
+    final account = instance<AccountInfoCubit>().state.accountInfo;
+    final primary = account?.primaryPhoneNumber.trim() ?? '';
+    if (primary.isNotEmpty) return primary;
+    final fallbackAccount = account?.phoneNumber.trim() ?? '';
+    if (fallbackAccount.isNotEmpty) return fallbackAccount;
+    final incoming = routeValue?.trim() ?? '';
+    if (incoming.isEmpty || incoming.toLowerCase() == 'null') return null;
+    return incoming;
   }
 
   @override
