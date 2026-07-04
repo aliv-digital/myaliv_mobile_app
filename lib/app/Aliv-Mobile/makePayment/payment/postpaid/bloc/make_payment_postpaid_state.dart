@@ -2,9 +2,16 @@ import 'package:equatable/equatable.dart';
 
 import 'make_payment_postpaid_event.dart';
 
-enum MpNavTarget { none, next, addCard }
+/// `next` and `addCard` are retained for the (legacy) intent-based
+/// navigation slots; `paid` is set once the `/Order/payment` call has
+/// succeeded and the view should push the receipt route.
+enum MpNavTarget { none, next, addCard, paid }
 
 enum MpPaymentMode { card, payWithCard }
+
+/// Lifecycle of the API submit. `ready` is the default idle state (the
+/// legacy code had no submit path, so this enum is new).
+enum MpPaymentStatus { ready, paying, success, failure }
 
 class MakePaymentPostPaidState extends Equatable {
   final String title;
@@ -21,6 +28,8 @@ class MakePaymentPostPaidState extends Equatable {
   final String? selectedMethodToken;
 
   final MpNavTarget navTarget;
+  final MpPaymentStatus status;
+  final String? errorMessage;
 
   const MakePaymentPostPaidState({
     required this.title,
@@ -33,6 +42,8 @@ class MakePaymentPostPaidState extends Equatable {
     required this.paymentMode,
     required this.selectedMethodToken,
     required this.navTarget,
+    required this.status,
+    required this.errorMessage,
   });
 
   factory MakePaymentPostPaidState.initial() {
@@ -47,6 +58,8 @@ class MakePaymentPostPaidState extends Equatable {
       paymentMode: MpPaymentMode.card,
       selectedMethodToken: null,
       navTarget: MpNavTarget.none,
+      status: MpPaymentStatus.ready,
+      errorMessage: null,
     );
   }
 
@@ -57,6 +70,8 @@ class MakePaymentPostPaidState extends Equatable {
       (selectedMethodToken != null && selectedMethodToken!.isNotEmpty);
 
   bool get canPayNow => termsAccepted && hasMethodSelected;
+
+  bool get isBusy => status == MpPaymentStatus.paying;
 
   MakePaymentPostPaidState copyWith({
     String? title,
@@ -69,6 +84,9 @@ class MakePaymentPostPaidState extends Equatable {
     MpPaymentMode? paymentMode,
     String? selectedMethodToken,
     MpNavTarget? navTarget,
+    MpPaymentStatus? status,
+    String? errorMessage,
+    bool clearErrorMessage = false,
   }) {
     return MakePaymentPostPaidState(
       title: title ?? this.title,
@@ -81,6 +99,10 @@ class MakePaymentPostPaidState extends Equatable {
       paymentMode: paymentMode ?? this.paymentMode,
       selectedMethodToken: selectedMethodToken ?? this.selectedMethodToken,
       navTarget: navTarget ?? this.navTarget,
+      status: status ?? this.status,
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
     );
   }
 
@@ -96,5 +118,7 @@ class MakePaymentPostPaidState extends Equatable {
         paymentMode,
         selectedMethodToken,
         navTarget,
+        status,
+        errorMessage,
       ];
 }

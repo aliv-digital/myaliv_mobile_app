@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 abstract class MakePaymentPostPaidEvent extends Equatable {
   const MakePaymentPostPaidEvent();
@@ -49,6 +50,21 @@ class MpPayWithCardSelected extends MakePaymentPostPaidEvent {
 
 class MpPayNowPressed extends MakePaymentPostPaidEvent {
   const MpPayNowPressed();
+}
+
+/// Fired after the user confirms payment with the currently selected saved
+/// card (via [SavedCardPaymentBottomSheet]).
+class MpPaySavedCardConfirmed extends MakePaymentPostPaidEvent {
+  const MpPaySavedCardConfirmed();
+}
+
+/// Fired after the user completes the new-card checkout sheet.
+class MpPayWithCardConfirmed extends MakePaymentPostPaidEvent {
+  final NewCardDetails details;
+  const MpPayWithCardConfirmed(this.details);
+
+  @override
+  List<Object?> get props => [details];
 }
 
 class MpNavConsumed extends MakePaymentPostPaidEvent {

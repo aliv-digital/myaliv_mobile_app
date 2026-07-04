@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import '../repository/auth_repository.dart';
+import '../services/auth_completion_service.dart';
 import '../utils/login_phone_number_helper.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -10,16 +12,23 @@ import 'auth_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginRepository repository;
   final LoginPhoneNumberHelper phoneNumberHelper;
+  final AppUiConfigCubit appUiConfigCubit;
+  final AuthCompletionService authCompletionService;
 
   LoginBloc({
     required this.repository,
+    required this.appUiConfigCubit,
     LoginPhoneNumberHelper? phoneNumberHelper,
+    AuthCompletionService? authCompletionService,
   })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+        authCompletionService =
+            authCompletionService ?? const AuthCompletionService(),
         super(const LoginState()) {
     on<LoginPhoneChanged>((event, emit) {
       emit(state.copyWith(
         phone: event.phone,
         status: LoginStatus.initial,
+        outcome: LoginOutcome.none,
         errorMessage: null,
         twoFactorKey: null,
         apiPhoneNumber: null,
@@ -31,6 +40,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(state.copyWith(
         password: event.password,
         status: LoginStatus.initial,
+        outcome: LoginOutcome.none,
         errorMessage: null,
         twoFactorKey: null,
         apiPhoneNumber: null,
@@ -42,6 +52,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(state.copyWith(
         selectedCountry: event.selectedCountry,
         status: LoginStatus.initial,
+        outcome: LoginOutcome.none,
         errorMessage: null,
         twoFactorKey: null,
         apiPhoneNumber: null,
@@ -67,6 +78,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     emit(
       state.copyWith(
         status: LoginStatus.failure,
+        outcome: LoginOutcome.none,
         errorMessage: message,
         twoFactorKey: null,
         apiPhoneNumber: null,
@@ -130,6 +142,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
     emit(state.copyWith(
       status: LoginStatus.loading,
+      outcome: LoginOutcome.none,
       errorMessage: null,
       twoFactorKey: null,
       apiPhoneNumber: null,
@@ -143,8 +156,33 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: state.password,
       );
 
+      // No-2FA path: ticket + accountId returned directly. Run the completion
+      // sequence here so LoginBloc reaches the same authenticated end-state
+      // that LoginOtpBloc reaches on the 2FA path.
+      if (authResponse.hasTicket) {
+        await authCompletionService.complete(
+          ticket: authResponse.ticket!,
+          accountId: authResponse.accountId!.toString(),
+          appUiConfigCubit: appUiConfigCubit,
+        );
+
+        emit(state.copyWith(
+          status: LoginStatus.success,
+          outcome: LoginOutcome.authenticated,
+          errorMessage: null,
+          twoFactorKey: null,
+          apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
+          phoneFieldError: false,
+          passwordFieldError: false,
+        ));
+        return;
+      }
+
+      // 2FA path: server dispatched a PIN and gave us a TwoFactorKey. UI
+      // forwards these to the OTP screen.
       emit(state.copyWith(
         status: LoginStatus.success,
+        outcome: LoginOutcome.needsOtp,
         errorMessage: null,
         twoFactorKey: authResponse.twoFactorKey,
         apiPhoneNumber: phoneValidationResult.phoneNumberForApi,

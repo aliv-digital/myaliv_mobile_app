@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/card_payment_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
@@ -11,7 +12,8 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 /// and any future card-based flows share the same plumbing.
 class ChangeBundleService {
   ChangeBundleService({CardPaymentService? cardPaymentService})
-    : _cardPaymentService = cardPaymentService ?? instance<CardPaymentService>();
+    : _cardPaymentService =
+          cardPaymentService ?? instance<CardPaymentService>();
 
   final CardPaymentService _cardPaymentService;
 
@@ -84,15 +86,23 @@ class ChangeBundleService {
         selectedBeginDate: selectedBeginDate,
       );
     } catch (e) {
-      return ChangeBundleFailure(
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      return ChangeBundleFailure(e.toString().replaceFirst('Exception: ', ''));
     }
 
     return _cardPaymentService.send(
-      url: Api.payFromWalletUrl,
+      url: _resolveUrl(),
       body: body,
       logTag: logTag,
     );
+  }
+
+  /// Postpaid accounts route change-bundle traffic through
+  /// `/Order/payment`; prepaid stays on `/Order/change-bundle`. The body
+  /// envelope is identical either way — server infers the account from the
+  /// auth context. `PaymentOption == 'PrePay'` is the canonical prepaid
+  /// marker (see `auth_completion_service.dart`).
+  String _resolveUrl() {
+    final isPrepaid = instance<AccountInfoCubit>().state.isPrepaid;
+    return isPrepaid ? Api.payFromWalletUrl : Api.orderPaymentUrl;
   }
 }
