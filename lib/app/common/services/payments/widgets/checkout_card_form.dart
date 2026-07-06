@@ -9,8 +9,15 @@ import 'package:myaliv_mobile_app/app/common/services/payments/widgets/card_inpu
 /// confirm button is tapped.
 class CheckoutCardForm extends StatefulWidget {
   final ValueChanged<NewCardDetails> onSubmit;
+  final String submitLabel;
+  final bool useSavedCardNumberRules;
 
-  const CheckoutCardForm({super.key, required this.onSubmit});
+  const CheckoutCardForm({
+    super.key,
+    required this.onSubmit,
+    this.submitLabel = 'confirm payment',
+    this.useSavedCardNumberRules = false,
+  });
 
   @override
   State<CheckoutCardForm> createState() => _CheckoutCardFormState();
@@ -41,7 +48,9 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
   }
 
   void _revalidate() {
-    final number = CardValidators.cardNumber(_number.text);
+    final number = widget.useSavedCardNumberRules
+        ? CardValidators.savedCardNumber(_number.text)
+        : CardValidators.cardNumber(_number.text);
     final expiry = CardValidators.expiryToApi(_expiry.text);
     final cvv = CardValidators.cvv(_cvv.text);
     final name = CardValidators.holderName(_holder.text);
@@ -71,7 +80,11 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
           _number,
           hint: '0000 0000 0000 0000',
           keyboard: TextInputType.number,
-          formatters: [CardNumberFormatter()],
+          formatters: [
+            CardNumberFormatter(
+              maxDigits: widget.useSavedCardNumberRules ? 16 : 19,
+            ),
+          ],
         ),
         const SizedBox(height: 14),
         Row(
@@ -120,8 +133,8 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
             style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
               backgroundColor: AutoRenewPrepaidTheme.primary,
             ),
-            child: const Text(
-              'confirm payment',
+            child: Text(
+              widget.submitLabel,
               style: AutoRenewPrepaidTheme.walletPaymentConfirmButtonTextStyle,
             ),
           ),

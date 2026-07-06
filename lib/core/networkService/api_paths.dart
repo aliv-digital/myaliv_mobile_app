@@ -111,4 +111,6 @@ class Api {
   static const orderTransferUrl = '$baseUrl/v1/MyAliv/Order/transfer';
   //{{baseUrl}}/v1/MyAliv/device/:deviceAccountId/bucket-usage-summary
   static String bucketUsageSummary(int deviceAccountId) => '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
+
+  static const addCreditCard = "$baseUrl/v1/MyAliv/CreditCard/add";
 }

@@ -15,6 +15,7 @@ class SavedCardsState extends Equatable {
     this.status = SavedCardsStatus.initial,
     this.cards = const [],
     this.removingTokens = const {},
+    this.isAddingCard = false,
     this.errorMessage,
     this.lastFetchedAt,
     this.autoPayToken,
@@ -24,6 +25,7 @@ class SavedCardsState extends Equatable {
   final SavedCardsStatus status;
   final List<SavedCardModel> cards;
   final Set<String> removingTokens;
+  final bool isAddingCard;
   final String? errorMessage;
   final DateTime? lastFetchedAt;
 
@@ -82,6 +84,7 @@ class SavedCardsState extends Equatable {
     SavedCardsStatus? status,
     List<SavedCardModel>? cards,
     Set<String>? removingTokens,
+    bool? isAddingCard,
     String? errorMessage,
     DateTime? lastFetchedAt,
     String? autoPayToken,
@@ -94,6 +97,7 @@ class SavedCardsState extends Equatable {
       status: status ?? this.status,
       cards: cards ?? this.cards,
       removingTokens: removingTokens ?? this.removingTokens,
+      isAddingCard: isAddingCard ?? this.isAddingCard,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
       autoPayToken:
@@ -109,6 +113,7 @@ class SavedCardsState extends Equatable {
         status,
         cards,
         removingTokens,
+        isAddingCard,
         errorMessage,
         lastFetchedAt,
         autoPayToken,

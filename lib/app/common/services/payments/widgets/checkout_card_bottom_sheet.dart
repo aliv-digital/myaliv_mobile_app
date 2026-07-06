@@ -11,8 +11,22 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 /// Reusable across the app — pass an [amountText] to display, nothing else.
 class CheckoutCardBottomSheet extends StatelessWidget {
   final String amountText;
+  final bool showAmount;
+  final String title;
+  final String submitLabel;
 
-  const CheckoutCardBottomSheet({super.key, required this.amountText});
+  const CheckoutCardBottomSheet({
+    super.key,
+    required this.amountText,
+  })  : showAmount = true,
+        title = 'Checkout',
+        submitLabel = 'confirm payment';
+
+  const CheckoutCardBottomSheet.forAddCard({super.key})
+      : amountText = '',
+        showAmount = false,
+        title = 'Add card',
+        submitLabel = 'save card';
 
   static Future<NewCardDetails?> show(
     BuildContext context, {
@@ -24,6 +38,16 @@ class CheckoutCardBottomSheet extends StatelessWidget {
       backgroundColor: AutoRenewPrepaidTheme.sheetBg,
       shape: AutoRenewPrepaidTheme.walletPaymentSheetShape(),
       builder: (_) => CheckoutCardBottomSheet(amountText: amountText),
+    );
+  }
+
+  static Future<NewCardDetails?> showForAddCard(BuildContext context) {
+    return showModalBottomSheet<NewCardDetails>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AutoRenewPrepaidTheme.sheetBg,
+      shape: AutoRenewPrepaidTheme.walletPaymentSheetShape(),
+      builder: (_) => const CheckoutCardBottomSheet.forAddCard(),
     );
   }
 
@@ -45,12 +69,19 @@ class CheckoutCardBottomSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _Header(onClose: () => Navigator.of(context).pop()),
-              const SizedBox(height: 12),
-              _AmountRow(amountText: amountText),
+              _Header(
+                title: title,
+                onClose: () => Navigator.of(context).pop(),
+              ),
+              if (showAmount) ...[
+                const SizedBox(height: 12),
+                _AmountRow(amountText: amountText),
+              ],
               const SizedBox(height: 20),
               CheckoutCardForm(
                 onSubmit: (details) => Navigator.of(context).pop(details),
+                submitLabel: submitLabel,
+                useSavedCardNumberRules: !showAmount,
               ),
             ],
           ),
@@ -61,8 +92,9 @@ class CheckoutCardBottomSheet extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
+  final String title;
   final VoidCallback onClose;
-  const _Header({required this.onClose});
+  const _Header({required this.title, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +109,8 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const Text(
-          'Checkout',
+        Text(
+          title,
           style: AutoRenewPrepaidTheme.walletPaymentTitleStyle,
         ),
         const Spacer(),

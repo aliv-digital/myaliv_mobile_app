@@ -13,7 +13,7 @@ import '../bloc/add_or_edit_cards_prepaid_event.dart';
 import '../bloc/add_or_edit_cards_prepaid_state.dart';
 import '../model/add_or_edit_cards_prepaid_models.dart';
 import '../theme/add_or_edit_cards_prepaid_theme.dart';
-import '../widgets/bottomsheet/add_card_bottom_sheet.dart';
+import '../widgets/bottomsheet/add_card_details_bottom_sheet.dart';
 import '../widgets/bottomsheet/confirm_remove_card_bottom_sheet.dart';
 import '../widgets/dashed_add_card_button.dart';
 import '../widgets/payment_method_section.dart';
@@ -81,18 +81,19 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     }
 
     if (state.navTarget == AddOrEditCardsPrepaidNavTarget.addCard) {
-      final result = await AddCardBottomSheet.show(context, last4: '1234');
+      final details = await AddCardDetailsBottomSheet.show(context);
 
-      if (result != null) {
-        bloc.add(
-          AddOrEditCardsPrepaidSaveCardPressed(
-            month: result.month,
-            year: result.year,
-          ),
-        );
-      }
-
+      if (!context.mounted) return;
       bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
+      if (details == null) return;
+
+      final added = await context.read<SavedCardsCubit>().addCard(details);
+      if (!context.mounted || !added) return;
+
+      AppToast.show(
+        message: 'your card has been added successfully',
+        type: ToastType.success,
+      );
       return;
     }
 
@@ -168,6 +169,7 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         DashedAddCardButton(
+                          isLoading: savedCardsState.isAddingCard,
                           onTap: () => context
                               .read<AddOrEditCardsPrepaidBloc>()
                               .add(
