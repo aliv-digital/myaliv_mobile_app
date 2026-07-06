@@ -9,18 +9,22 @@ class AltNumberValidationCubit extends Cubit<AltNumberValidationState> {
   AltNumberValidationCubit({
     required AltNumberValidationRepository repository,
     required AccountInfoCubit accountInfoCubit,
-  }) : _repository = repository,
-       _accountInfoCubit = accountInfoCubit,
-       super(const AltNumberValidationState());
+  })  : _repository = repository,
+        _accountInfoCubit = accountInfoCubit,
+        super(const AltNumberValidationState());
 
   final AltNumberValidationRepository _repository;
   final AccountInfoCubit _accountInfoCubit;
 
-  /// Validates the alt number, and on `IsValid: true` immediately persists it
-  /// via the update endpoint. Emits [AltNumberValidationStatus.valid] only
-  /// when both calls succeed.
-  Future<void> validate(String altNumber) async {
-    if (isClosed) return;
+  /// Submits the complete alternate-contact form.
+  ///
+  /// The operation succeeds only after the number is validated, the offers
+  /// preference is stored, and the alternate number is persisted.
+  Future<void> submit({
+    required String altNumber,
+    required bool isOptedIn,
+  }) async {
+    if (isClosed || state.isLoading) return;
     emit(
       state.copyWith(
         status: AltNumberValidationStatus.loading,
@@ -29,10 +33,35 @@ class AltNumberValidationCubit extends Cubit<AltNumberValidationState> {
       ),
     );
 
+    final deviceAccountId = _accountInfoCubit.state.accountInfo?.idAcc ?? 0;
+    if (kDebugMode) {
+      debugPrint(
+        'AltNumberValidationCubit.submit: starting '
+        'deviceAccountId=$deviceAccountId, isOptedIn=$isOptedIn',
+      );
+    }
+
+    if (deviceAccountId <= 0) {
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          status: AltNumberValidationStatus.failure,
+          errorMessage: 'device account information is unavailable. please try again.',
+          signalId: state.signalId + 1,
+        ),
+      );
+      return;
+    }
+
     // 1) Validate
     final bool isValid;
     try {
       isValid = await _repository.validate(altNumber);
+      if (kDebugMode) {
+        debugPrint(
+          'AltNumberValidationCubit.submit: validation result=$isValid',
+        );
+      }
     } on AltNumberValidationException catch (e) {
       if (isClosed) return;
       emit(
@@ -70,9 +99,70 @@ class AltNumberValidationCubit extends Cubit<AltNumberValidationState> {
       return;
     }
 
-    // 2) Persist
+    // 2) Save the explicit yes/no preference before updating the account. The
+    // purchase launcher skips this screen once an alt number exists, so this
+    // ordering ensures a failed preference request remains retryable here.
+    try {
+      final preferenceSaved = await _repository.setMarketingOptIn(
+        altNumber: altNumber,
+        deviceAccountId: deviceAccountId,
+        isOptedIn: isOptedIn,
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'AltNumberValidationCubit.submit: '
+          'marketing preference saved=$preferenceSaved',
+        );
+      }
+
+      if (!preferenceSaved) {
+        if (isClosed) return;
+        emit(
+          state.copyWith(
+            status: AltNumberValidationStatus.failure,
+            errorMessage:
+                'could not save your offers preference. please try again.',
+            signalId: state.signalId + 1,
+          ),
+        );
+        return;
+      }
+    } on AltNumberValidationException catch (e) {
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          status: AltNumberValidationStatus.failure,
+          errorMessage: e.message,
+          signalId: state.signalId + 1,
+        ),
+      );
+      return;
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('AltNumberValidationCubit.submit opt-in: $e');
+      }
+      if (isClosed) return;
+      emit(
+        state.copyWith(
+          status: AltNumberValidationStatus.failure,
+          errorMessage:
+              'could not save your offers preference. please try again.',
+          signalId: state.signalId + 1,
+        ),
+      );
+      return;
+    }
+
+    // 3) Persist the validated alternate number on the account.
     try {
       final success = await _repository.updateAltNumber(altNumber);
+
+      if (kDebugMode) {
+        debugPrint(
+          'AltNumberValidationCubit.submit: alt number saved=$success',
+        );
+      }
 
       // Refresh AccountInfoCubit so cached altPhoneNumber reflects the
       // newly-saved value. Failure here must not block navigation — the save
@@ -110,7 +200,7 @@ class AltNumberValidationCubit extends Cubit<AltNumberValidationState> {
       );
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('AltNumberValidationCubit.update: $e');
+        debugPrint('AltNumberValidationCubit.submit update: $e');
       }
       if (isClosed) return;
       emit(

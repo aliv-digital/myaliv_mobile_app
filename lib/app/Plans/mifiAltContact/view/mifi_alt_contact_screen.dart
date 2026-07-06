@@ -78,8 +78,13 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
 
   void _onContinuePressed() {
     final v = _validation;
-    if (!v.isValid) return;
-    context.read<AltNumberValidationCubit>().validate(v.phoneNumberForApi ?? '');
+    final isOptedIn = _marketingOptIn;
+    if (!v.isValid || isOptedIn == null) return;
+
+    context.read<AltNumberValidationCubit>().submit(
+          altNumber: v.phoneNumberForApi ?? '',
+          isOptedIn: isOptedIn,
+        );
   }
 
   void _onValidationSuccess() {
