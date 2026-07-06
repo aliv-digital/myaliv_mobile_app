@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import '../models/saved_card_model.dart';
 import '../repository/saved_cards_exception.dart';
 import '../repository/saved_cards_repository.dart';
@@ -107,6 +108,43 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
   /// Refreshes saved cards by forcing a fetch from the API.
   Future<void> refreshSavedCards({UserType? userType}) async {
     await fetchSavedCards(forceRefresh: true, userType: userType);
+  }
+
+  /// Adds a card, then force-refreshes the server-backed saved-card list.
+  /// Returns true only when both operations complete successfully.
+  Future<bool> addCard(NewCardDetails details) async {
+    if (state.isAddingCard) return false;
+
+    _safeEmit(state.copyWith(isAddingCard: true, clearError: true));
+
+    try {
+      await _repository.addCard(details);
+      await fetchSavedCards(forceRefresh: true);
+
+      if (state.status != SavedCardsStatus.success ||
+          state.errorMessage != null) {
+        _safeEmit(state.copyWith(
+          isAddingCard: false,
+          errorMessage: 'Card was added, but the card list could not refresh.',
+        ));
+        return false;
+      }
+
+      _safeEmit(state.copyWith(isAddingCard: false, clearError: true));
+      return true;
+    } catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+
+      if (kDebugMode) {
+        debugPrint('SavedCardsCubit: Failed to add card - $errorMessage');
+      }
+
+      _safeEmit(state.copyWith(
+        isAddingCard: false,
+        errorMessage: errorMessage,
+      ));
+      return false;
+    }
   }
 
   /// Resolves the active user type from [AccountInfoCubit]. Returns `null`

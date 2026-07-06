@@ -32,16 +32,19 @@ class LoginRepository {
     final authResponse = AuthResponse.fromJson(parsedJson);
 
     if (ApiService.isSuccessStatusCode(response.statusCode)) {
-      final key = authResponse.twoFactorKey?.trim() ?? '';
-      if (key.isEmpty) {
-        throw Exception(
-          _resolveMessage(
-            authResponse.message,
-            fallback: 'TwoFactorKey missing in login response',
-          ),
-        );
+      // Two success shapes:
+      //   200 → { Ticket, AccountId }         (no 2FA required)
+      //   202 → { TwoFactorKey }              (PIN sent, needs OTP)
+      // Prefer the completed session if the server ever returns both.
+      if (authResponse.hasTicket || authResponse.hasTwoFactorKey) {
+        return authResponse;
       }
-      return authResponse;
+      throw Exception(
+        _resolveMessage(
+          authResponse.message,
+          fallback: 'Login response missing both Ticket and TwoFactorKey',
+        ),
+      );
     }
     debugPrint("${authResponse.message}");
     throw Exception(

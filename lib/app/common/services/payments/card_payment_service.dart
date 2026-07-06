@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
@@ -55,6 +57,12 @@ class CardPaymentService {
   }
 
   String _errorMessage(NetworkException error) {
+    // Server-declared error codes take precedence — they're authoritative
+    // regardless of transport wrapper. Example: `ToManyOrders` shipped inside
+    // a 4xx body is a business signal, not a network problem.
+    final custom = _customMessageFor(_errorCodeName(error.data));
+    if (custom != null) return custom;
+
     if (error is NoInternetException || error is HostUnreachableException) {
       return error.message;
     }
@@ -69,5 +77,38 @@ class CardPaymentService {
       return message;
     }
     return 'Payment failed. Try again.';
+  }
+
+  /// Map the server's `ErrorCodeName` onto a user-facing message. Returns
+  /// null when no override exists — caller falls back to transport handling.
+  String? _customMessageFor(String? codeName) {
+    switch (codeName) {
+      case 'ToManyOrders':
+        return 'You have pending or failed orders. '
+            'Please wait for the open orders to complete '
+            'before sending another request.';
+    }
+    return null;
+  }
+
+  /// Dio may deliver the error body as a decoded `Map` or as a raw JSON
+  /// `String` depending on `ResponseType`. Handle both.
+  String? _errorCodeName(dynamic data) {
+    if (data is Map) {
+      final name = data['ErrorCodeName'];
+      return name is String ? name : name?.toString();
+    }
+    if (data is String && data.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(data);
+        if (decoded is Map) {
+          final name = decoded['ErrorCodeName'];
+          return name is String ? name : name?.toString();
+        }
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
   }
 }

@@ -1,3 +1,5 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+
 class MakePaymentPostPaidData {
   final String title;
   final String paymentDueAmount;
@@ -14,4 +16,14 @@ class MakePaymentPostPaidData {
 
 abstract class MakePaymentPostPaidRepository {
   Future<MakePaymentPostPaidData> fetchPaymentData();
+
+  Future<bool> payWithSavedCard({
+    required double amount,
+    required String cardToken,
+  });
+
+  Future<bool> payWithNewCard({
+    required double amount,
+    required NewCardDetails details,
+  });
 }

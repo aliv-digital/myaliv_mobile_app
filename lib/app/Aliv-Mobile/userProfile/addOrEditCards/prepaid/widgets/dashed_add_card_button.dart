@@ -4,10 +4,12 @@ import 'dashed_border_painter.dart';
 
 class DashedAddCardButton extends StatelessWidget {
   final VoidCallback onTap;
+  final bool isLoading;
 
   const DashedAddCardButton({
     super.key,
     required this.onTap,
+    this.isLoading = false,
   });
 
   @override
@@ -16,7 +18,7 @@ class DashedAddCardButton extends StatelessWidget {
     final borderColor = AddOrEditCardsPrepaidTheme.dashedBorder.withOpacity(1.0);
 
     return InkWell(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       borderRadius: BorderRadius.circular(999),
       child: CustomPaint(
         painter: DeepDashedRRectPainter(
@@ -37,27 +39,36 @@ class DashedAddCardButton extends StatelessWidget {
             color: AddOrEditCardsPrepaidTheme.pageBg,
             borderRadius: BorderRadius.circular(999),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(
-                Icons.add,
-                size: 26,
-                color: AddOrEditCardsPrepaidTheme.dashedBorder,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'add a new card',
-                style: TextStyle(
-                  color: const Color(0xFF645D9C),
-                  fontSize: 15,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w700,
-                  height: 1.54,
+          child: isLoading
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AddOrEditCardsPrepaidTheme.primary,
+                  ),
+                )
+              : const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.add,
+                      size: 26,
+                      color: AddOrEditCardsPrepaidTheme.dashedBorder,
+                    ),
+                    SizedBox(width: 10),
+                    Text(
+                      'add a new card',
+                      style: TextStyle(
+                        color: Color(0xFF645D9C),
+                        fontSize: 15,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w700,
+                        height: 1.54,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       ),
     );

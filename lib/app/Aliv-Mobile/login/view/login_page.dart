@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -25,7 +26,10 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginBloc(repository: LoginRepository()),
+      create: (context) => LoginBloc(
+        repository: LoginRepository(),
+        appUiConfigCubit: context.read<AppUiConfigCubit>(),
+      ),
       child: const _LoginView(),
     );
   }
@@ -68,10 +72,21 @@ class _LoginView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
+              // Direct-login path: server returned a Ticket, session already
+              // completed by LoginBloc via AuthCompletionService.
+              if (state.outcome == LoginOutcome.authenticated) {
+                AppToast.show(
+                  message: 'Logged in successfully',
+                  type: ToastType.success,
+                );
+                context.go(AppRoutes.home);
+                return;
+              }
+
+              // 2FA path: forward TwoFactorKey to the OTP screen.
               AppToast.show(
                   message: 'OTP sent successfully', type: ToastType.success);
 
-              // Read 2FA key from login state and forward it to OTP route.
               final String? twoFactorKey = state.twoFactorKey;
               if (twoFactorKey == null || twoFactorKey.isEmpty) {
                 AppToast.show(

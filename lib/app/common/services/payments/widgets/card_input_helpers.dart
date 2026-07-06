@@ -1,15 +1,20 @@
 import 'package:flutter/services.dart';
 
 /// Strips non-digits and inserts a space every 4 chars, e.g.
-/// `4012000000020006` → `4012 0000 0000 0006`. Caps at 19 digits.
+/// `4012000000020006` → `4012 0000 0000 0006`. Caps at [maxDigits]
+/// (19 by default).
 class CardNumberFormatter extends TextInputFormatter {
+  final int maxDigits;
+
+  CardNumberFormatter({this.maxDigits = 19}) : assert(maxDigits > 0);
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
     final raw = newValue.text.replaceAll(RegExp(r'\D'), '');
-    final digits = raw.length > 19 ? raw.substring(0, 19) : raw;
+    final digits = raw.length > maxDigits ? raw.substring(0, maxDigits) : raw;
     final buf = StringBuffer();
     for (var i = 0; i < digits.length; i++) {
       if (i > 0 && i % 4 == 0) buf.write(' ');
@@ -52,6 +57,13 @@ class CardValidators {
   static String? cardNumber(String input) {
     final digits = input.replaceAll(RegExp(r'\D'), '');
     if (digits.length < 13 || digits.length > 19) return null;
+    return digits;
+  }
+
+  /// Add-card API rule: exactly 16 digits beginning with 2, 4, or 5.
+  static String? savedCardNumber(String input) {
+    final digits = input.replaceAll(RegExp(r'\D'), '');
+    if (!RegExp(r'^[245][0-9]{15}$').hasMatch(digits)) return null;
     return digits;
   }
 

@@ -1,13 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
 import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:core/core.dart';
 import '../../../../core/appConfig/app_ui_config_cubit.dart';
-import '../../../Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
-import '../../../Home/home/data/home_ui_config.dart';
 import '../../account-information/cubit/account_info_cubit.dart';
-import '../../account-information/cubit/account_info_state.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
@@ -16,14 +14,18 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   static const int _otpLength = 4;
   final LoginOtpRepository repository;
   final AppUiConfigCubit appUiConfigCubit;
+  final AuthCompletionService authCompletionService;
 
   LoginOtpBloc({
     required this.repository,
     required this.appUiConfigCubit,
+    AuthCompletionService? authCompletionService,
     String initialTwoFactorKey = '',
     String initialPhoneNumber = '',
     String initialApiPhoneNumber = '',
-  }) : super(
+  })  : authCompletionService =
+            authCompletionService ?? const AuthCompletionService(),
+        super(
          LoginOtpState(
            twoFactorKey: initialTwoFactorKey,
            phoneNumber: initialPhoneNumber,
@@ -115,60 +117,19 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
     try {
       debugPrint("OTP CODE : ${state.code}");
-      await repository
-          .verifyCode(
-            phoneNumber: apiPhoneNumber,
-            twoFactorKey: twoFactorKey,
-            pinCode: enteredCode,
-          )
-          .then((response) async {
-            debugPrint("Ticket : ${response.ticket}");
-            debugPrint("Account id : ${response.accountId}");
+      final response = await repository.verifyCode(
+        phoneNumber: apiPhoneNumber,
+        twoFactorKey: twoFactorKey,
+        pinCode: enteredCode,
+      );
+      debugPrint("Ticket : ${response.ticket}");
+      debugPrint("Account id : ${response.accountId}");
 
-            final ticket = response.ticket.toString();
-            final accountId = response.accountId.toString();
-
-            // ========== Use AuthManager to save auth first ==========
-            // This stores the ticket, which is required for fetchAccountInfo
-            final authManager = instance<AuthManager>();
-            await authManager.saveAuth(
-              username: userName,
-              ticket: ticket,
-              deviceAccountID: accountId,
-              storeTicket: (t) => LocalStorage.storeTicket(ticket: t),
-              storeAccountID: (id) =>
-                  LocalStorage.storeAccountID(accountID: id),
-            );
-
-            // ========== Update NetworkService with new auth headers ==========
-            final networkService = instance<NetworkService>();
-            networkService.updateAuthHeaders();
-
-            // ========== Fetch account info using AccountInfoCubit ==========
-            // Credentials are read automatically from AuthManager
-            final accountInfoCubit = instance<AccountInfoCubit>();
-            await accountInfoCubit.fetchAccountInfo();
-
-            // Verify account info was fetched successfully
-            if (accountInfoCubit.state.status != AccountInfoStatus.success) {
-              final errorMsg =
-                  accountInfoCubit.state.errorMessage ??
-                  'Failed to fetch account information';
-              throw Exception(errorMsg);
-            }
-
-            final accountInfo = accountInfoCubit.state.accountInfo;
-            if (accountInfo == null) {
-              throw Exception('Account information is missing');
-            }
-
-            // Set UI config for logged-in user
-            await _setLoggedInUserUiConfig();
-
-            if (kDebugMode) {
-              debugPrint('✅ Login: Auth saved and NetworkService updated');
-            }
-          });
+      await authCompletionService.complete(
+        ticket: response.ticket.toString(),
+        accountId: response.accountId.toString(),
+        appUiConfigCubit: appUiConfigCubit,
+      );
 
       await Future.delayed(Duration(milliseconds: 1500));
 
@@ -203,54 +164,6 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         );
       }
     }
-  }
-
-  // NOTE: This method is no longer needed as auth is now saved via AuthManager
-  // Kept for reference but can be removed in future cleanup
-  //
-  // Future<void> _saveAccountInfo({required String password}) async {
-  //   final accountInfo = await repository.getAccountInfo(
-  //     username: userName,
-  //     password: password,
-  //   );
-  //   await LocalStorage.storeAccountInfoMap(accountInfo: accountInfo.toJson());
-  //   _setLoggedInUserUiConfig();
-  // }
-
-  /// Central config setup after successful OTP verification.
-  ///
-  /// Gets account info from AccountInfoCubit (HydratedBloc) and sets UI config.
-  Future<void> _setLoggedInUserUiConfig() async {
-    // Get account info from AccountInfoCubit
-    final accountInfoCubit = instance<AccountInfoCubit>();
-    final account = accountInfoCubit.state.accountInfo;
-
-    if (account == null) {
-      if (kDebugMode) {
-        debugPrint('⚠️ No account info available for UI config');
-      }
-      return;
-    }
-
-    final accountType = account.accountType;
-    final paymentOption = account.paymentOption;
-
-    if (kDebugMode) {
-      debugPrint("Account Type : $accountType");
-    }
-
-    appUiConfigCubit.setConfig(
-      HomeUiConfig(
-        userType: paymentOption == "PrePay"
-            ? UserType.prepaid
-            : UserType.postpaid,
-        // Defaults to false; home screen's PlansCubit listener flips this to
-        // true once the bundles API confirms a primary plan exists.
-        hasActivePlan: false,
-        isFuturePlan: false,
-        openMyLimits: false,
-      ),
-    );
   }
 
   // for testing purpose only

@@ -100,6 +100,11 @@ class Api {
   static String topUpUrl(String primaryPhoneNumber) =>
       '$baseUrl/v1/MyAliv/Order/top-up/${Uri.encodeComponent(primaryPhoneNumber.trim())}';
 
+  /// Postpaid make-payment endpoint. Same envelope shape as top-up (no
+  /// `Bundle` block); account is inferred from the auth context.
+  /// POST /Order/payment
+  static const orderPaymentUrl = '$baseUrl/v1/MyAliv/Order/payment';
+
   /// Wallet-to-wallet transfer (send top-up):
   /// POST /Order/transfer
   /// Body: `{ "ToNumber": "<digits>", "Amount": <number> }`
@@ -111,4 +116,5 @@ class Api {
   /// Body: `{ "DeviceAccountId": <int>, "IsOptedIn": <bool> }`
   static String mifiAltNumber(String number) =>
       '$baseUrl/v1/MyAliv/AltNumber/opt-in/${Uri.encodeComponent(number.trim())}';
+  static const addCreditCard = "$baseUrl/v1/MyAliv/CreditCard/add";
 }
