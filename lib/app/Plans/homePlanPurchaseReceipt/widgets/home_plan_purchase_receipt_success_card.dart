@@ -5,26 +5,27 @@ import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/theme/home_p
 import 'home_plan_purchase_receipt_detail_row.dart';
 import 'home_plan_purchase_receipt_ticket_divider.dart';
 import 'home_plan_purchase_receipt_back_button.dart';
-import 'home_plan_purchase_receipt_save_card_button.dart';
 
 class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
   const HomePlanPurchaseReceiptSuccessCard({
     super.key,
     required this.data,
     required this.onBackHome,
-    required this.onSaveCard,
-    this.hideSaveCreditCard = true,
     required this.pageBackground,
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
+    this.saveCardSection,
   });
 
   final HomePlanPurchaseReceiptData data;
   final VoidCallback onBackHome;
-  final VoidCallback onSaveCard;
-  final bool hideSaveCreditCard;
   final Color pageBackground;
   final String statusMessage;
+
+  /// Optional widget slot for the "save credit card" affordance. Pass a
+  /// [SaveCardOnReceiptSection] here; the section self-hides when there
+  /// is no card to save. Leave null on receipts that should never show it.
+  final Widget? saveCardSection;
 
   String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
 
@@ -160,13 +161,8 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             const SizedBox(height: 32),
             const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
             const SizedBox(height: 32),
-            // save credit card button
-            if (!hideSaveCreditCard) ...[
-              HomePlanPurchaseReceiptSaveCardButton(
-                onTap: onSaveCard,
-              ),
-              const SizedBox(height: 12),
-            ],
+            // save credit card button (self-hides when no card to save)
+            ?saveCardSection,
             HomePlanPurchaseReceiptBackButton(onTap: onBackHome),
             const SizedBox(height: 52),
           ],

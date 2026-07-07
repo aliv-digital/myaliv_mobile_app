@@ -1,11 +1,7 @@
-import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/postpaid_receipt_navigator.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/make_payment_postpaid_bloc.dart';
 import '../bloc/make_payment_postpaid_event.dart';
@@ -39,29 +35,16 @@ class MakePaymentPostPaidSideEffects {
   ) {
     if (state.navTarget != MpNavTarget.paid) return;
 
-    context.push(
-      AppRoutes.userProfileReceiptScreen,
-      extra: UserProfileReceiptRouteArgs(
-        amount: resolveMpAmountToCharge(state),
-        topUpType: 'postpaid',
-        recipientPhone: _accountPrimaryPhone(),
-        paymentMethod: state.paymentMode == MpPaymentMode.payWithCard
-            ? 'visa'
-            : 'credit card',
-      ),
+    PostpaidReceiptNavigator.push(
+      context,
+      amount: resolveMpAmountToCharge(state),
+      method: state.paymentMode == MpPaymentMode.payWithCard
+          ? PostpaidPaymentMethod.newCard
+          : PostpaidPaymentMethod.savedCard,
+      cardToSave: state.paymentMode == MpPaymentMode.payWithCard
+          ? state.lastNewCardDetails
+          : null,
     );
     context.read<MakePaymentPostPaidBloc>().add(const MpNavConsumed());
-  }
-
-  /// Receipt should reflect the number the API actually charged. Prefer the
-  /// account's primary phone; fall back to `phoneNumber`, then null so the
-  /// receipt repository can apply its own defaults.
-  static String? _accountPrimaryPhone() {
-    final account = instance<AccountInfoCubit>().state.accountInfo;
-    final primary = account?.primaryPhoneNumber.trim() ?? '';
-    if (primary.isNotEmpty) return primary;
-    final fallback = account?.phoneNumber.trim() ?? '';
-    if (fallback.isNotEmpty) return fallback;
-    return null;
   }
 }

@@ -129,6 +129,9 @@ class MakePaymentPostPaidBloc
     MpPayWithCardConfirmed event,
     Emitter<MakePaymentPostPaidState> emit,
   ) async {
+    // Stash the details so the success side-effect can forward them to
+    // the receipt as `cardToSave` for the save-card affordance.
+    emit(state.copyWith(lastNewCardDetails: event.details));
     await _submit(
       emit,
       () => repository.payWithNewCard(

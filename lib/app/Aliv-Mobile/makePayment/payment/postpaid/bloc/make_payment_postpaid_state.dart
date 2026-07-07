@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 import 'make_payment_postpaid_event.dart';
 
@@ -31,6 +32,12 @@ class MakePaymentPostPaidState extends Equatable {
   final MpPaymentStatus status;
   final String? errorMessage;
 
+  /// Last new-card details submitted via [MpPayWithCardConfirmed]. Kept on
+  /// state so the receipt side-effect can forward it as `cardToSave` for
+  /// the post-payment save-card affordance. Null for saved-card / wallet
+  /// payments.
+  final NewCardDetails? lastNewCardDetails;
+
   const MakePaymentPostPaidState({
     required this.title,
     required this.paymentDueAmount,
@@ -44,6 +51,7 @@ class MakePaymentPostPaidState extends Equatable {
     required this.navTarget,
     required this.status,
     required this.errorMessage,
+    this.lastNewCardDetails,
   });
 
   factory MakePaymentPostPaidState.initial() {
@@ -86,7 +94,9 @@ class MakePaymentPostPaidState extends Equatable {
     MpNavTarget? navTarget,
     MpPaymentStatus? status,
     String? errorMessage,
+    NewCardDetails? lastNewCardDetails,
     bool clearErrorMessage = false,
+    bool clearLastNewCardDetails = false,
   }) {
     return MakePaymentPostPaidState(
       title: title ?? this.title,
@@ -103,6 +113,9 @@ class MakePaymentPostPaidState extends Equatable {
       errorMessage: clearErrorMessage
           ? null
           : (errorMessage ?? this.errorMessage),
+      lastNewCardDetails: clearLastNewCardDetails
+          ? null
+          : (lastNewCardDetails ?? this.lastNewCardDetails),
     );
   }
 
@@ -120,5 +133,6 @@ class MakePaymentPostPaidState extends Equatable {
         navTarget,
         status,
         errorMessage,
+        lastNewCardDetails,
       ];
 }

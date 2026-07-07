@@ -52,15 +52,9 @@ class _HomePlansPaymentMethodViewState
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
-      final isCardPath = state.paymentMode == HomePlansPaymentMode.card ||
-          state.paymentMode == HomePlansPaymentMode.payWithCard;
       context.push(
         AppRoutes.homePlanPurchaseReceiptScreen,
-        extra: PaymentReceiptBuilder.build(
-          context,
-          state,
-          hideSaveCreditCard: !isCardPath,
-        ),
+        extra: PaymentReceiptBuilder.build(context, state),
       );
     }
     // addCard / wallet nav targets are placeholders for future routes.

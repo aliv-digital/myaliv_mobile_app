@@ -25,6 +25,7 @@ import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/model/mifi_alt_contac
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/view/mifi_alt_contact_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homeRoamingConfirmation/models/home_roaming_confirmation_models.dart';
@@ -425,7 +426,6 @@ class AppRouter {
         path: AppRoutes.homePlanPurchaseReceiptScreen,
         builder: (context, state) {
           final Object? extra = state.extra;
-          bool hideSaveCreditCard = false;
           String phoneNumber = '242-801-1616';
           double amount = 75;
           String dateText = 'Mar 12, 2023';
@@ -436,13 +436,12 @@ class AppRouter {
           String leftType = 'service';
           String rightType = 'REV';
           List<HomePlanPurchaseReceiptDetailItem>? details;
+          NewCardDetails? cardToSave;
 
           if (extra is Map<String, dynamic>) {
-            final dynamic value = extra['hideSaveCreditCard'];
-            if (value is bool) {
-              hideSaveCreditCard = value;
-            } else if (value is String) {
-              hideSaveCreditCard = value.toLowerCase() == 'true';
+            final dynamic cardToSaveValue = extra['cardToSave'];
+            if (cardToSaveValue is NewCardDetails) {
+              cardToSave = cardToSaveValue;
             }
 
             final dynamic phoneValue = extra['phoneNumber'];
@@ -502,12 +501,12 @@ class AppRouter {
             amount: amount,
             dateText: dateText,
             timeText: timeText,
-            hideSaveCreditCard: hideSaveCreditCard,
             paymentMethod: paymentMethod,
             statusMessage: statusMessage,
             leftType: leftType,
             rightType: rightType,
             details: details,
+            cardToSave: cardToSave,
           );
         },
       ),

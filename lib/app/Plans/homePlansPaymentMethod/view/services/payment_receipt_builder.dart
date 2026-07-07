@@ -14,9 +14,8 @@ class PaymentReceiptBuilder {
 
   static Map<String, dynamic> build(
     BuildContext context,
-    HomePlansPaymentMethodState state, {
-    required bool hideSaveCreditCard,
-  }) {
+    HomePlansPaymentMethodState state,
+  ) {
     final now = DateTime.now();
     final date = DateFormat('MMM d, yyyy').format(now);
     final time = DateFormat('h:mm a').format(now).toLowerCase();
@@ -25,8 +24,14 @@ class PaymentReceiptBuilder {
     final email = _firstNonEmpty([account?.email]);
     final method = _paymentMethodLabel(state);
 
+    // Only carry the card into the receipt when the user just entered a
+    // new one — saved-card / wallet / charge-to-my-account paths have no
+    // card to save.
+    final cardToSave = state.paymentMode == HomePlansPaymentMode.payWithCard
+        ? state.lastNewCardDetails
+        : null;
+
     return <String, dynamic>{
-      'hideSaveCreditCard': hideSaveCreditCard,
       'phoneNumber': phone,
       'amount': state.amount,
       'dateText': date,
@@ -41,6 +46,7 @@ class PaymentReceiptBuilder {
       'selectedItems': state.selectedItems,
       'selectedMethodId': state.selectedMethodId,
       'paymentMethods': state.methods,
+      'cardToSave': ?cardToSave,
     };
   }
 

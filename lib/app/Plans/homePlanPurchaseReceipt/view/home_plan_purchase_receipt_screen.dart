@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/repository/home_plan_purchase_receipt_repository.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../core/utils/app_session.dart';
 import '../bloc/home_plan_purchase_receipt_event.dart';
 import '../bloc/home_plan_purchase_receipt_state.dart';
 import '../theme/home_plan_purchase_receipt_theme.dart';
-import '../widgets/home_plan_purchase_receipt_save_card_bottom_sheet.dart';
 import '../widgets/home_plan_purchase_receipt_success_card.dart';
 
 class HomePlanPurchaseReceiptScreen extends StatelessWidget {
@@ -19,24 +20,28 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     required this.amount,
     required this.dateText,
     required this.timeText,
-    this.hideSaveCreditCard = false,
     this.paymentMethod = 'credit card',
     this.statusMessage = 'It will take a few moments for the top-up to appear on the account. ',
     this.leftType = 'service',
     this.rightType = 'REV',
     this.details,
+    this.cardToSave,
   });
 
   final String phoneNumber;
   final double amount;
   final String dateText;
   final String timeText;
-  final bool hideSaveCreditCard;
   final String paymentMethod;
   final String statusMessage;
   final String leftType;
   final String rightType;
   final List<HomePlanPurchaseReceiptDetailItem>? details;
+
+  /// New-card details captured during payment. When present, the save-card
+  /// button is shown; when null (wallet / saved-card payments) the button
+  /// hides itself.
+  final NewCardDetails? cardToSave;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +95,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
         )..add(HomePlanPurchaseReceiptStarted(receiptData)),
         child: _HomePlanPurchaseReceiptView(
           statusMessage: statusMessage,
-          hideSaveCreditCard: hideSaveCreditCard,
+          cardToSave: cardToSave,
         ),
       ),
     );
@@ -100,28 +105,12 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
 class _HomePlanPurchaseReceiptView extends StatelessWidget {
   const _HomePlanPurchaseReceiptView({
     required this.statusMessage,
-    required this.hideSaveCreditCard,
+    required this.cardToSave,
   });
 
   static const _bg = Color(0xFFF1F2FA);
   final String statusMessage;
-  final bool hideSaveCreditCard;
-
-  void _showSaveCardBottomSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.45),
-      isScrollControlled: true,
-      builder: (BuildContext bottomSheetContext) {
-        return const HomePlanPurchaseReceiptSaveCardBottomSheet(
-          cardMask: '*1234',
-          initialMonth: 'January',
-          initialYear: '2025',
-        );
-      },
-    );
-  }
+  final NewCardDetails? cardToSave;
 
   @override
   Widget build(BuildContext context) {
@@ -172,13 +161,9 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                             context.go(AppRoutes.home);
                           }
                         },
-                        onSaveCard: () {
-                          _showSaveCardBottomSheet(context);
-                        },
-                        hideSaveCreditCard:
-                            AppSession.appRoute == 'prepaidPlanPurchase'
-                                ? true
-                                : hideSaveCreditCard,
+                        saveCardSection: SaveCardOnReceiptSection(
+                          details: cardToSave,
+                        ),
                         pageBackground:
                             HomePlanPurchaseReceiptTheme.circleBackground,
                         statusMessage: statusMessage,

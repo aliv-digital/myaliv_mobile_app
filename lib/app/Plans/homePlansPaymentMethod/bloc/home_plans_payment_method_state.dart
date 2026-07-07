@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import '../model/home_plans_payment_method_models.dart';
 
 enum HomePlansPaymentMethodStatus {
@@ -46,6 +47,11 @@ class HomePlansPaymentMethodState extends Equatable {
   final String? walletWarningMessage;
   final int walletWarningRequestId;
 
+  /// Last new-card details submitted via [HomePlansPayWithCardConfirmed].
+  /// Forwarded to the receipt as `cardToSave` for the save-card affordance;
+  /// null for saved-card / wallet / charge-to-my-account payments.
+  final NewCardDetails? lastNewCardDetails;
+
   const HomePlansPaymentMethodState({
     required this.status,
     required this.errorMessage,
@@ -62,6 +68,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.navTarget,
     required this.walletWarningMessage,
     required this.walletWarningRequestId,
+    this.lastNewCardDetails,
   });
 
   factory HomePlansPaymentMethodState.initial() {
@@ -118,6 +125,8 @@ class HomePlansPaymentMethodState extends Equatable {
     HomePlansPaymentMethodNavTarget? navTarget,
     String? walletWarningMessage,
     int? walletWarningRequestId,
+    NewCardDetails? lastNewCardDetails,
+    bool clearLastNewCardDetails = false,
   }) {
     return HomePlansPaymentMethodState(
       status: status ?? this.status,
@@ -136,6 +145,9 @@ class HomePlansPaymentMethodState extends Equatable {
       walletWarningMessage: walletWarningMessage ?? this.walletWarningMessage,
       walletWarningRequestId:
           walletWarningRequestId ?? this.walletWarningRequestId,
+      lastNewCardDetails: clearLastNewCardDetails
+          ? null
+          : (lastNewCardDetails ?? this.lastNewCardDetails),
     );
   }
 
@@ -156,5 +168,6 @@ class HomePlansPaymentMethodState extends Equatable {
     navTarget,
     walletWarningMessage,
     walletWarningRequestId,
+    lastNewCardDetails,
   ];
 }

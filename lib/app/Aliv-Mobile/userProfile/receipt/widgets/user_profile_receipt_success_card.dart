@@ -11,10 +11,16 @@ class UserProfileReceiptSuccessCard extends StatelessWidget {
     super.key,
     required this.data,
     required this.onBackHome,
+    this.saveCardSection,
   });
 
   final UserProfileReceiptData data;
   final VoidCallback onBackHome;
+
+  /// Optional slot for the "save credit card" affordance. Pass a
+  /// [SaveCardOnReceiptSection]; it self-hides when there's no card to
+  /// save, so this stays null on receipts that should never show it.
+  final Widget? saveCardSection;
 
   String _money(double value) => '\$ ${value.toStringAsFixed(2)}';
 
@@ -137,6 +143,7 @@ class UserProfileReceiptSuccessCard extends StatelessWidget {
             const SizedBox(
               height: UserProfileReceiptTheme.gapAfterBottomDivider,
             ),
+            ?saveCardSection,
             UserProfileReceiptBackButton(onTap: onBackHome),
             const SizedBox(height: UserProfileReceiptTheme.gapAfterButton),
           ],

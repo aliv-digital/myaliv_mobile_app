@@ -12,7 +12,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/shared
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/postpaid_pay_with_new_card_flow.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -41,6 +43,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   bool _noAutoRenewSelected = false;
   bool _payWithCardSelected = false;
   bool _disabling = false;
+  bool _paying = false;
   bool _seededFromServer = false;
 
   @override
@@ -87,7 +90,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
 
   Future<void> _onProceed() async {
     if (_payWithCardSelected) {
-      context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+      await _payWithNewCard();
       return;
     }
     if (_noAutoRenewSelected) {
@@ -103,6 +106,23 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
         cardToken: card.token,
       ),
     );
+  }
+
+  /// One-shot payment via a newly entered card, POSTed to `/Order/payment`.
+  /// Delegates the entire sheet → service → receipt-nav flow to the shared
+  /// [PostpaidPayWithNewCardFlow]; the button just reflects `_paying` so
+  /// the user sees a spinner while the request is in flight.
+  Future<void> _payWithNewCard() async {
+    if (_paying) return;
+    setState(() => _paying = true);
+    try {
+      await PostpaidPayWithNewCardFlow.run(
+        context,
+        amount: instance<BalanceCubit>().state.walletBalance,
+      );
+    } finally {
+      if (mounted) setState(() => _paying = false);
+    }
   }
 
   Future<void> _disableAutoPay() async {
@@ -194,7 +214,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                     ),
                     AutoRenewPrepaidProceedActionButton(
                       isEnabled: _canProceed,
-                      isLoading: _disabling,
+                      isLoading: _disabling || _paying,
                       onPressed: _onProceed,
                     ),
                   ],

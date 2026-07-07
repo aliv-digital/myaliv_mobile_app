@@ -182,6 +182,9 @@ class HomePlansPaymentMethodBloc
     HomePlansPayWithCardConfirmed event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
+    // Stash the details so the receipt builder can forward them as
+    // `cardToSave` for the save-card affordance.
+    emit(state.copyWith(lastNewCardDetails: event.details));
     return _submitChangeBundle(
       emit,
       () => repository.payWithCardDetails(

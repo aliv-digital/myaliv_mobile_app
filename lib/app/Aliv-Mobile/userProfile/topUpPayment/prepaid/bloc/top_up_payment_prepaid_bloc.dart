@@ -108,6 +108,10 @@ class TopUpPaymentPrepaidBloc
       return;
     }
 
+    // Stash the details so the receipt navigation can forward them as
+    // `cardToSave` for the save-card affordance.
+    emit(state.copyWith(lastNewCardDetails: event.details));
+
     await _submit(
       emit,
       () => repository.payWithNewCard(

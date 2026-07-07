@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 class UserProfileReceiptRouteArgs extends Equatable {
   final double amount;
@@ -10,6 +11,11 @@ class UserProfileReceiptRouteArgs extends Equatable {
   final String message;
   final String? recipientPhone;
 
+  /// If present, the receipt shows the "save credit card" button; on tap
+  /// it saves via [SavedCardsCubit.addCard]. Null for wallet / saved-card
+  /// payments where there is nothing new to save.
+  final NewCardDetails? cardToSave;
+
   const UserProfileReceiptRouteArgs({
     required this.amount,
     this.phoneNumber,
@@ -20,6 +26,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
     this.message =
         'It will take a few moments for the top-up to appear on the account.',
     this.recipientPhone,
+    this.cardToSave,
   });
 
   factory UserProfileReceiptRouteArgs.fromQuery(Map<String, String> query) {
