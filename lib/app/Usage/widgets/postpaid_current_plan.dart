@@ -48,7 +48,10 @@ class PostpaidCurrentPlan extends StatelessWidget {
                 const SizedBox(height: 20),
                 _buildDatesRow(
                   activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
-                  expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
+                  expireDate: _displayExpiry(
+                    planEndDate: activePlan?.endDateTime,
+                    isPostpaid: true,
+                  ).formatDdMmYy(),
                 ),
               ],
             ),
@@ -122,6 +125,25 @@ class PostpaidCurrentPlan extends StatelessWidget {
       ],
     );
   }
+}
+
+// Postpaid plans carry a far-future sentinel EndDate (2036-01-01, 2106-01-01…).
+// Never surface that to the user — show the billing-cycle end instead.
+bool _isSentinelEnd(DateTime end) => end.year >= 2035;
+
+DateTime _endOfCurrentMonth() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+}
+
+DateTime _displayExpiry({
+  required DateTime? planEndDate,
+  required bool isPostpaid,
+}) {
+  if (isPostpaid || planEndDate == null || _isSentinelEnd(planEndDate)) {
+    return _endOfCurrentMonth();
+  }
+  return planEndDate;
 }
 
 // ================= Date Block =================
