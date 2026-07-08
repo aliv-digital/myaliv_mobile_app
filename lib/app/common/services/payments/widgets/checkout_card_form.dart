@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/card_input_helpers.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
@@ -238,22 +239,21 @@ class _VisaPrefix extends StatelessWidget {
 class _CheckoutCardFormStyles {
   const _CheckoutCardFormStyles._();
 
-  // 'Circular Pro' maps Book->w400 / Bold->w700 (see pubspec.yaml); the
-  // legacy 'CircularPro' family has those cuts inverted.
-  static const String fontFamily = 'Circular Pro';
-
+  // pubspec maps the CircularPro family's default entry (w400) to the
+  // Bold cut and w700 to the Book cut, so w400 here renders bold glyphs
+  // and w700 renders book glyphs.
   static const TextStyle label = TextStyle(
     color: Color(0xFF1C1C1C),
     fontSize: 14,
-    fontFamily: fontFamily,
-    fontWeight: FontWeight.w700,
+    fontFamily: AutoRenewPrepaidTheme.fontFamily,
+    fontWeight: FontWeight.w400,
     height: 1.43,
   );
 
   static const TextStyle input = TextStyle(
     color: Color(0xFF1C1C1C),
     fontSize: 14,
-    fontFamily: fontFamily,
+    fontFamily: AutoRenewPrepaidTheme.fontFamily,
     fontWeight: FontWeight.w400,
     height: 1.43,
   );
@@ -261,15 +261,15 @@ class _CheckoutCardFormStyles {
   static const TextStyle hint = TextStyle(
     color: Color(0x661C1C1C),
     fontSize: 14,
-    fontFamily: fontFamily,
+    fontFamily: AutoRenewPrepaidTheme.fontFamily,
     fontWeight: FontWeight.w400,
     height: 1.43,
   );
 
   static const TextStyle button = TextStyle(
     fontSize: 15,
-    fontFamily: fontFamily,
-    fontWeight: FontWeight.w700,
+    fontFamily: AutoRenewPrepaidTheme.fontFamily,
+    fontWeight: FontWeight.w400,
     height: 1.2,
   );
 }

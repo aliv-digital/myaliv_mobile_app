@@ -185,23 +185,21 @@ class _AmountRow extends StatelessWidget {
 class _CheckoutSheetStyles {
   const _CheckoutSheetStyles._();
 
-  // 'Circular Pro' maps Book->w400 / Bold->w700 (see pubspec.yaml); the
-  // legacy 'CircularPro' family has those cuts inverted.
-  static const String fontFamily = 'Circular Pro';
-
+  // pubspec maps the CircularPro family's default entry (w400) to the
+  // Bold cut and w700 to the Book cut, so w400 here renders bold glyphs.
   static const TextStyle label = TextStyle(
     color: Color(0xFF1C1C1C),
     fontSize: 14,
-    fontFamily: fontFamily,
-    fontWeight: FontWeight.w700,
+    fontFamily: AutoRenewPrepaidTheme.fontFamily,
+    fontWeight: FontWeight.w400,
     height: 1.43,
   );
 
   static const TextStyle amount = TextStyle(
     color: Color(0xFF1C1C1C),
     fontSize: 14,
-    fontFamily: fontFamily,
-    fontWeight: FontWeight.w700,
+    fontFamily: AutoRenewPrepaidTheme.fontFamily,
+    fontWeight: FontWeight.w400,
     height: 1.0,
   );
 }
