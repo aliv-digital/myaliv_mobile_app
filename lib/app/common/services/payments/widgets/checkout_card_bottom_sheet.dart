@@ -57,10 +57,10 @@ class CheckoutCardBottomSheet extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        AutoRenewPrepaidTheme.walletPaymentHorizontalPadding,
-        AutoRenewPrepaidTheme.walletPaymentTopPadding,
-        AutoRenewPrepaidTheme.walletPaymentHorizontalPadding,
-        AutoRenewPrepaidTheme.walletPaymentBottomPadding + keyboardInset,
+        16,
+        24,
+        16,
+        24 + keyboardInset,
       ),
       child: SafeArea(
         top: false,
@@ -70,12 +70,17 @@ class CheckoutCardBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _Header(
-                title: title,
                 onClose: () => Navigator.of(context).pop(),
               ),
               if (showAmount) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 20),
                 _AmountRow(amountText: amountText),
+                const SizedBox(height: 16),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0xFFE9E8EF),
+                ),
               ],
               const SizedBox(height: 20),
               CheckoutCardForm(
@@ -92,34 +97,50 @@ class CheckoutCardBottomSheet extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  final String title;
   final VoidCallback onClose;
-  const _Header({required this.title, required this.onClose});
+  const _Header({required this.onClose});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        InkWell(
-          onTap: onClose,
-          child: const Icon(
-            Icons.arrow_back,
-            size: AutoRenewPrepaidTheme.walletPaymentBackIconSize,
-            color: AutoRenewPrepaidTheme.textSecondary,
+        Container(
+          width: 48,
+          height: 48,
+          decoration: ShapeDecoration(
+            color: const Color(0xFFEDEBF7),
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(
+                width: 8,
+                strokeAlign: BorderSide.strokeAlignCenter,
+                color: Color(0xFFF9F5FF),
+              ),
+              borderRadius: BorderRadius.circular(28),
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: AutoRenewPrepaidTheme.walletPaymentTitleStyle,
+          alignment: Alignment.center,
+          child: SvgPicture.asset(
+            AssetConstant.creditCardSVG,
+            width: 24,
+            height: 24,
+          ),
         ),
         const Spacer(),
         SizedBox(
-          width: AutoRenewPrepaidTheme.cardLogoWidth,
-          height: AutoRenewPrepaidTheme.cardLogoHeight,
-          child: SvgPicture.asset(
-            AssetConstant.visaCardSVG,
-            fit: BoxFit.contain,
+          width: 26,
+          height: 26,
+          child: IconButton(
+            onPressed: onClose,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 26, height: 26),
+            icon: SvgPicture.asset(
+              AssetConstant.blackRoundedCrossSVG,
+              width: 26,
+              height: 26,
+            ),
+            style: IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
           ),
         ),
       ],
@@ -137,26 +158,50 @@ class _AmountRow extends StatelessWidget {
       children: <Widget>[
         const Text(
           'amount',
-          style: AutoRenewPrepaidTheme.walletPaymentAmountLabelStyle,
+          style: _CheckoutSheetStyles.label,
         ),
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: AutoRenewPrepaidTheme.walletChipHorizontalPadding,
-            vertical: AutoRenewPrepaidTheme.walletChipVerticalPadding,
+            horizontal: 10,
+            vertical: 4,
           ),
           decoration: const BoxDecoration(
-            color: AutoRenewPrepaidTheme.walletChipBackground,
+            color: Color(0xFFECECEF),
             borderRadius: BorderRadius.all(
-              Radius.circular(AutoRenewPrepaidTheme.walletChipCornerRadius),
+              Radius.circular(100),
             ),
           ),
           child: Text(
             amountText,
-            style: AutoRenewPrepaidTheme.walletPaymentWalletAmountStyle,
+            style: _CheckoutSheetStyles.amount,
           ),
         ),
       ],
     );
   }
+}
+
+class _CheckoutSheetStyles {
+  const _CheckoutSheetStyles._();
+
+  // 'Circular Pro' maps Book->w400 / Bold->w700 (see pubspec.yaml); the
+  // legacy 'CircularPro' family has those cuts inverted.
+  static const String fontFamily = 'Circular Pro';
+
+  static const TextStyle label = TextStyle(
+    color: Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
+  static const TextStyle amount = TextStyle(
+    color: Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.0,
+  );
 }

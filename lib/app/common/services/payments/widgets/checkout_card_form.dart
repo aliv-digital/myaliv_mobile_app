@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/card_input_helpers.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 /// Card details form for the Checkout sheet. Pure UI: collects four inputs,
 /// validates them, and hands a [NewCardDetails] back via [onSubmit] when the
@@ -55,14 +56,15 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
     final cvv = CardValidators.cvv(_cvv.text);
     final name = CardValidators.holderName(_holder.text);
 
-    final next = (number != null && expiry != null && cvv != null && name != null)
-        ? NewCardDetails(
-            cardNumber: number,
-            cardExpiration: expiry,
-            cardSecurityCode: cvv,
-            cardHolderName: name,
-          )
-        : null;
+    final next =
+        (number != null && expiry != null && cvv != null && name != null)
+            ? NewCardDetails(
+                cardNumber: number,
+                cardExpiration: expiry,
+                cardSecurityCode: cvv,
+                cardHolderName: name,
+              )
+            : null;
 
     if (next != _details) setState(() => _details = next);
   }
@@ -73,20 +75,21 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const _Label('card holder name'),
-        _field(_holder, hint: 'Name on card', keyboard: TextInputType.name),
-        const SizedBox(height: 14),
+        _field(_holder, hint: 'name on card', keyboard: TextInputType.name),
+        const SizedBox(height: 16),
         const _Label('card number'),
         _field(
           _number,
           hint: '0000 0000 0000 0000',
           keyboard: TextInputType.number,
+          prefix: const _VisaPrefix(),
           formatters: [
             CardNumberFormatter(
               maxDigits: widget.useSavedCardNumberRules ? 16 : 19,
             ),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         Row(
           children: <Widget>[
             Expanded(
@@ -103,7 +106,7 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,15 +130,23 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
-          height: AutoRenewPrepaidTheme.walletPaymentConfirmButtonHeight,
+          height: 50,
           child: ElevatedButton(
-            onPressed: _details == null ? null : () => widget.onSubmit(_details!),
-            style: AutoRenewPrepaidTheme.primaryPillButtonStyle(
-              backgroundColor: AutoRenewPrepaidTheme.primary,
+            onPressed:
+                _details == null ? null : () => widget.onSubmit(_details!),
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              backgroundColor: const Color(0xFF645D9C),
+              disabledBackgroundColor: const Color(0x4D645D9C),
+              foregroundColor: const Color(0xFFF1F1F8),
+              disabledForegroundColor: Colors.white,
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
             ),
             child: Text(
               widget.submitLabel,
-              style: AutoRenewPrepaidTheme.walletPaymentConfirmButtonTextStyle,
+              style: _CheckoutCardFormStyles.button,
             ),
           ),
         ),
@@ -149,24 +160,42 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
     required TextInputType keyboard,
     bool obscure = false,
     List<TextInputFormatter> formatters = const <TextInputFormatter>[],
+    Widget? prefix,
   }) {
     return TextField(
       controller: controller,
       keyboardType: keyboard,
       obscureText: obscure,
       inputFormatters: formatters,
+      style: _CheckoutCardFormStyles.input,
+      cursorColor: const Color(0xFF645D9C),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: _CheckoutCardFormStyles.hint,
         filled: true,
-        fillColor: AutoRenewPrepaidTheme.walletPaymentAmountFieldBackground,
+        fillColor: const Color(0xFFF3F1FA),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(
-            AutoRenewPrepaidTheme.walletPaymentAmountFieldRadius,
-          ),
+          borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
         ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        isDense: true,
+        constraints: const BoxConstraints.tightFor(height: 48),
+        // The fill container is sized by contentPadding + the 20px text
+        // line, not by `constraints`: 14 + 20 + 14 = the full 48px height.
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        prefixIcon: prefix,
+        // The prefix sizes itself (12 + 34 + 8); the decorator centers it
+        // vertically within the 48px field.
+        prefixIconConstraints: const BoxConstraints(),
       ),
     );
   }
@@ -179,8 +208,68 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(text, style: AutoRenewPrepaidTheme.walletPaymentAmountLabelStyle),
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(text, style: _CheckoutCardFormStyles.label),
     );
   }
+}
+
+class _VisaPrefix extends StatelessWidget {
+  const _VisaPrefix();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 12, right: 8),
+      // The asset's 46x32 viewBox is a hair wider than Figma's fixed
+      // 34x24 box; the tight SizedBox + fill keep it exactly 34x24.
+      child: SizedBox(
+        width: 34,
+        height: 24,
+        child: SvgPicture.asset(
+          AssetConstant.visaCardSVG,
+          fit: BoxFit.fill,
+        ),
+      ),
+    );
+  }
+}
+
+class _CheckoutCardFormStyles {
+  const _CheckoutCardFormStyles._();
+
+  // 'Circular Pro' maps Book->w400 / Bold->w700 (see pubspec.yaml); the
+  // legacy 'CircularPro' family has those cuts inverted.
+  static const String fontFamily = 'Circular Pro';
+
+  static const TextStyle label = TextStyle(
+    color: Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
+
+  static const TextStyle input = TextStyle(
+    color: Color(0xFF1C1C1C),
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w400,
+    height: 1.43,
+  );
+
+  static const TextStyle hint = TextStyle(
+    color: Color(0x661C1C1C),
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w400,
+    height: 1.43,
+  );
+
+  static const TextStyle button = TextStyle(
+    fontSize: 15,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.2,
+  );
 }

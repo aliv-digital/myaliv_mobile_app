@@ -60,3 +60,12 @@ flutter:
         - asset: assets/fonts/CircularPro-Bold.otf
         - asset: assets/fonts/CircularPro-Book.otf
           weight: 700
+    # Same font files with weights matching the cuts' real weights
+    # (Book=400, Bold=700). The legacy 'CircularPro' family above maps
+    # them inverted; kept untouched so existing screens don't shift.
+    - family: Circular Pro
+      fonts:
+        - asset: assets/fonts/CircularPro-Book.otf
+          weight: 400
+        - asset: assets/fonts/CircularPro-Bold.otf
+          weight: 700
