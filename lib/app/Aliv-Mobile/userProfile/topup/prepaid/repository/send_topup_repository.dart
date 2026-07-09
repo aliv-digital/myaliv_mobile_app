@@ -43,6 +43,33 @@ class SendTopupRepository {
     }
   }
 
+  /// GET /device/can-top-up/{phoneNumber}?amount={amount} — recipient
+  /// eligibility (Gate 2). Fail-closed on any error, matching the "we can't
+  /// verify → Case D" pattern from the top-up limit gate.
+  ///
+  /// Returns `true` only when the backend confirms `{ "Success": true }`.
+  Future<bool> canTopUpRecipient({
+    required String phoneNumber,
+    required double amount,
+  }) async {
+    final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty || amount <= 0) return false;
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.canTopUpRecipient(phoneNumber: digits, amount: amount),
+        method: HttpMethod.get,
+      );
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['Success'] == true;
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   String _errorMessage(NetworkException error) {
     if (error is NoInternetException || error is HostUnreachableException) {
       return 'No internet connection. Please check and try again.';

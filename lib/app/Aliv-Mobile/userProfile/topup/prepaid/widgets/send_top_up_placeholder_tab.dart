@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -5,9 +6,15 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_sele
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/top_up_prepaid_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/logic/top_up_limit_gate.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -40,7 +47,11 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   bool _hasConfirmPhoneFocus = false;
   bool _phoneFieldError = false;
   bool _confirmPhoneFieldError = false;
+  bool _isChecking = false;
   // 🔥 default amount (matches design)
+
+  static const _caseDMessage =
+      'please try again in a few minutes. if this continues, contact support at 1-242-300-2548';
 
   double get _amountValue {
     final cleaned = _amount.trim().replaceAll(',', '');
@@ -57,6 +68,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     super.initState();
     _phoneFocusNode.addListener(_handlePhoneFocusChange);
     _confirmPhoneFocusNode.addListener(_handleConfirmPhoneFocusChange);
+    // Ensure device limits are loaded before the user taps proceed — otherwise
+    // the Send Top-up gate would fall through to Case D on a direct-tab visit.
+    instance<DeviceLimitsCubit>().loadDeviceLimits();
   }
 
   @override
@@ -267,7 +281,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 width: double.infinity,
                 height: 40,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isChecking ? null : () async {
                     final phoneValidation = _validatePhone(_phoneNumber);
                     final confirmPhoneValidation =
                         _validatePhone(_confirmPhoneNumber);
@@ -311,12 +325,80 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       );
                       return;
                     }
+                    final topUpState =
+                        context.read<TopUpPrepaidBloc>().state;
+                    final gate = evaluateSendTopUpGate(
+                      amount: _amountValue,
+                      deviceLimits:
+                          instance<DeviceLimitsCubit>().state.deviceLimits,
+                      account: context
+                          .read<AccountInfoCubit>()
+                          .state
+                          .accountInfo,
+                      limitLeft: topUpState.limitLeft,
+                      limitFetchFailed: topUpState.limitFetchFailed,
+                    );
+                    if (gate.blocked) {
+                      AppToast.show(
+                        message: gate.errorMessage!,
+                        type: ToastType.error,
+                      );
+                      return;
+                    }
+
+                    // Capture context-derived refs before awaits.
+                    final topUpRepo =
+                        context.read<TopUpPrepaidBloc>().repo;
+                    final router = GoRouter.of(context);
+
+                    setState(() => _isChecking = true);
+                    try {
+                      // Gate 2: recipient eligibility for THIS amount.
+                      final recipientOk =
+                          await instance<SendTopupRepository>()
+                              .canTopUpRecipient(
+                        phoneNumber: recipientPhone,
+                        amount: _amountValue,
+                      );
+                      if (!mounted) return;
+                      if (!recipientOk) {
+                        AppToast.show(
+                          message:
+                              'this number cannot receive a top-up right now. please verify the number or try again.',
+                          type: ToastType.error,
+                        );
+                        return;
+                      }
+
+                      // Gate 3: no concurrent order in flight.
+                      final orderResult =
+                          await topUpRepo.canSubmitOrder(amount: _amountValue);
+                      if (!mounted) return;
+                      if (!orderResult.canProceed) {
+                        AppToast.show(
+                          message: orderResult.infoMessage,
+                          type: ToastType.error,
+                        );
+                        return;
+                      }
+                    } on CanSubmitOrderException {
+                      if (!mounted) return;
+                      AppToast.show(
+                        message: _caseDMessage,
+                        type: ToastType.error,
+                      );
+                      return;
+                    } finally {
+                      if (mounted) setState(() => _isChecking = false);
+                    }
+                    if (!mounted) return;
+
                     AppSession.appRoute = 'sendTopUp';
                     final amountParam = _amountValue.toStringAsFixed(2);
                     final recipientParam = Uri.encodeQueryComponent(
                       recipientPhone,
                     );
-                    context.push(
+                    router.push(
                       '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
                     );
                     // Navigator.of(context).push(
@@ -332,15 +414,25 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       borderRadius: BorderRadius.circular(32),
                     ),
                   ),
-                  child: const Text(
-                    'proceed',
-                    style: TextStyle(
-                      color: Color(0xFFF1F1F8),
-                      fontSize: 15,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  child: _isChecking
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Color(0xFFF1F1F8)),
+                          ),
+                        )
+                      : const Text(
+                          'proceed',
+                          style: TextStyle(
+                            color: Color(0xFFF1F1F8),
+                            fontSize: 15,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                 ),
               ),
             ],

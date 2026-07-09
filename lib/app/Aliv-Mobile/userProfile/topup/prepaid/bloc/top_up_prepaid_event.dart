@@ -30,3 +30,9 @@ class TopUpPrepaidAmountChanged extends TopUpPrepaidEvent {
 class TopUpPrepaidTopUpPressed extends TopUpPrepaidEvent {
   const TopUpPrepaidTopUpPressed();
 }
+
+/// Re-fetch `/top-up-limit-left` after a successful top-up / transfer so
+/// the 24h bucket stays in sync when the user comes back to either tab.
+class TopUpPrepaidLimitRefreshed extends TopUpPrepaidEvent {
+  const TopUpPrepaidLimitRefreshed();
+}

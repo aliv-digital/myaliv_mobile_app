@@ -13,6 +13,12 @@ class TopUpPrepaidState extends Equatable {
 
   final String? errorMessage;
 
+  /// 24h rolling top-up allowance remaining. `null` means we couldn't verify
+  /// (endpoint failed or hasn't returned yet) → treat as Case D.
+  final double? limitLeft;
+  final DateTime? earliestTopUpDateLocal;
+  final bool limitFetchFailed;
+
   const TopUpPrepaidState({
     required this.loadStatus,
     required this.submitStatus,
@@ -20,6 +26,9 @@ class TopUpPrepaidState extends Equatable {
     required this.balance,
     required this.amountText,
     required this.errorMessage,
+    required this.limitLeft,
+    required this.earliestTopUpDateLocal,
+    required this.limitFetchFailed,
   });
 
   factory TopUpPrepaidState.initial() => const TopUpPrepaidState(
@@ -29,6 +38,9 @@ class TopUpPrepaidState extends Equatable {
     balance: 0.0,
     amountText: '0.00',
     errorMessage: null,
+    limitLeft: null,
+    earliestTopUpDateLocal: null,
+    limitFetchFailed: false,
   );
 
   double get amountValue {
@@ -45,6 +57,9 @@ class TopUpPrepaidState extends Equatable {
     double? balance,
     String? amountText,
     String? errorMessage,
+    double? limitLeft,
+    DateTime? earliestTopUpDateLocal,
+    bool? limitFetchFailed,
     bool clearError = false,
   }) {
     return TopUpPrepaidState(
@@ -54,6 +69,9 @@ class TopUpPrepaidState extends Equatable {
       balance: balance ?? this.balance,
       amountText: amountText ?? this.amountText,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      limitLeft: limitLeft ?? this.limitLeft,
+      earliestTopUpDateLocal: earliestTopUpDateLocal ?? this.earliestTopUpDateLocal,
+      limitFetchFailed: limitFetchFailed ?? this.limitFetchFailed,
     );
   }
 
@@ -65,5 +83,8 @@ class TopUpPrepaidState extends Equatable {
     balance,
     amountText,
     errorMessage,
+    limitLeft,
+    earliestTopUpDateLocal,
+    limitFetchFailed,
   ];
 }

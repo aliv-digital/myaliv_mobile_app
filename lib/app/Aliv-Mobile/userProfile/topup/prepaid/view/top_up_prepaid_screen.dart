@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -9,6 +10,8 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../bloc/top_up_prepaid_bloc.dart';
 import '../bloc/top_up_prepaid_event.dart';
 import '../bloc/top_up_prepaid_state.dart';
+import '../logic/top_up_limit_gate.dart';
+import '../repository/top_up_prepaid_repository.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
 import '../widgets/auto_topup/auto_topup_tab.dart';
@@ -178,13 +181,66 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
   }
 }
 
-class _MyNumberTab extends StatelessWidget {
+class _MyNumberTab extends StatefulWidget {
   final TopUpPrepaidState state;
 
   const _MyNumberTab({required this.state});
 
   @override
+  State<_MyNumberTab> createState() => _MyNumberTabState();
+}
+
+class _MyNumberTabState extends State<_MyNumberTab> {
+  bool _isChecking = false;
+
+  static const _caseDMessage =
+      'please try again in a few minutes. if this continues, contact support at 1-242-300-2548';
+
+  Future<void> _onProceed() async {
+    if (_isChecking) return;
+
+    final state = widget.state;
+    final gate = evaluateMyNumberTopUpGate(
+      amount: state.amountValue,
+      account: context.read<AccountInfoCubit>().state.accountInfo,
+      limitLeft: state.limitLeft,
+      limitFetchFailed: state.limitFetchFailed,
+    );
+    if (gate.blocked) {
+      AppToast.show(message: gate.errorMessage!, type: ToastType.error);
+      return;
+    }
+
+    // Capture context-derived refs before awaits.
+    final repo = context.read<TopUpPrepaidBloc>().repo;
+    final router = GoRouter.of(context);
+
+    setState(() => _isChecking = true);
+    try {
+      // Gate 3: concurrent-order check (applies to any top-up flow).
+      final result = await repo.canSubmitOrder(amount: state.amountValue);
+      if (!mounted) return;
+      if (!result.canProceed) {
+        AppToast.show(
+          message: result.infoMessage,
+          type: ToastType.error,
+        );
+        return;
+      }
+      router.push(
+        '${AppRoutes.confirmation}?amount=${state.amountValue.toStringAsFixed(2)}',
+      );
+    } on CanSubmitOrderException {
+      if (!mounted) return;
+      AppToast.show(message: _caseDMessage, type: ToastType.error);
+    } finally {
+      if (mounted) setState(() => _isChecking = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = widget.state;
     final bloc = context.read<TopUpPrepaidBloc>();
 
     return Container(
@@ -232,14 +288,10 @@ class _MyNumberTab extends StatelessWidget {
 
               // CTA button
               TopUpPrepaidPrimaryButton(
-                enabled: state.canSubmit,
-                loading: state.submitStatus == TopUpPrepaidSubmitStatus.loading,
-                onTap: () {
-                  //bloc.add(const TopUpPrepaidTopUpPressed());
-                  context.push(
-                    '${AppRoutes.confirmation}?amount=${state.amountValue.toStringAsFixed(2)}',
-                  );
-                }
+                enabled: state.canSubmit && !_isChecking,
+                loading: _isChecking ||
+                    state.submitStatus == TopUpPrepaidSubmitStatus.loading,
+                onTap: _onProceed,
               ),
 
               // Keep spacing similar to screenshot (keyboard will push anyway)

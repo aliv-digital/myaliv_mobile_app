@@ -93,6 +93,35 @@ class Api {
 
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
 
+  /// Top-up 24h rolling limit remaining:
+  /// GET /Account/top-up-limit-left
+  /// Response: `{ "TopUp24HourLimitLeft": <number>, "EarliestTopUpDate": "YYYY-MM-DD HH:mm:ss" (UTC) }`
+  static const topUpLimitLeft = '$baseUrl/v1/MyAliv/Account/top-up-limit-left';
+
+  /// Recipient eligibility check (Send Top-up preflight, Gate 2):
+  /// GET /device/can-top-up/{phoneNumber}?amount={amount}
+  /// Response: `{ "Success": true | false }`
+  /// 400: invalid device (bad phone number)
+  ///
+  /// Note: the spec path param is `{phoneNumber}`, not deviceId. The `?amount=`
+  /// query is app-observed and may not be honored by a strict gateway.
+  static String canTopUpRecipient({
+    required String phoneNumber,
+    required double amount,
+  }) {
+    final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return '$baseUrl/v1/MyAliv/device/can-top-up/'
+        '${Uri.encodeComponent(digits)}?amount=$amount';
+  }
+
+  /// Concurrent-order pre-flight (Gate 3, both tabs):
+  /// GET /Account/can-submit-order?amount={amount}
+  /// Response is always HTTP 200. Check the body:
+  ///   `{ "Info": "" }`                          → OK
+  ///   `{ "Info": "Order # ... in progress..." }` → blocked, display Info directly
+  static String canSubmitOrder({required double amount}) =>
+      '$baseUrl/v1/MyAliv/Account/can-submit-order?amount=$amount';
+
   /// Top-up (recharge) endpoint. Phone number is the recipient's primary
   /// number and lives in the URL path; body shape matches change-bundle
   /// minus the `Bundle` block.
