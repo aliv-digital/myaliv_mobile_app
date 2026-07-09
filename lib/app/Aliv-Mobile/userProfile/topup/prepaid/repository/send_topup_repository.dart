@@ -43,6 +43,58 @@ class SendTopupRepository {
     }
   }
 
+  /// GET /device/exists/{phoneNumber} — is this an Aliv number at all?
+  ///
+  /// - 200 `{ "Success": true }` → [PhoneExistsResult.exists]
+  /// - error envelope `{ "ErrorCode": 501, "ErrorCodeName": "InvalidDevice" }`
+  ///   → [PhoneExistsResult.invalidDevice] (backend is telling us the number
+  ///   is not an Aliv device — user-actionable, distinct from a network
+  ///   failure).
+  /// - anything else (network error, timeout, 5xx, malformed body)
+  ///   → [PhoneExistsResult.unknown] → caller treats as Case D.
+  Future<PhoneExistsResult> phoneNumberExists(String phoneNumber) async {
+    final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty) return PhoneExistsResult.unknown;
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.deviceExists(phoneNumber: digits),
+        method: HttpMethod.get,
+      );
+      final data = response.data;
+      if (_isInvalidDeviceBody(data)) return PhoneExistsResult.invalidDevice;
+      if (data is Map<String, dynamic> && data['Success'] == true) {
+        return PhoneExistsResult.exists;
+      }
+      return PhoneExistsResult.unknown;
+    } on NetworkException catch (error) {
+      if (_isInvalidDeviceBody(error.data)) {
+        return PhoneExistsResult.invalidDevice;
+      }
+      return PhoneExistsResult.unknown;
+    } catch (_) {
+      return PhoneExistsResult.unknown;
+    }
+  }
+
+  bool _isInvalidDeviceBody(dynamic data) {
+    Map? map;
+    if (data is Map) {
+      map = data;
+    } else if (data is String && data.trim().isNotEmpty) {
+      try {
+        final decoded = jsonDecode(data);
+        if (decoded is Map) map = decoded;
+      } catch (_) {
+        return false;
+      }
+    }
+    if (map == null) return false;
+    final code = map['ErrorCode'];
+    final name = map['ErrorCodeName']?.toString();
+    return code == 501 || name == 'InvalidDevice';
+  }
+
   /// GET /device/can-top-up/{phoneNumber}?amount={amount} — recipient
   /// eligibility (Gate 2). Fail-closed on any error, matching the "we can't
   /// verify → Case D" pattern from the top-up limit gate.
@@ -136,3 +188,8 @@ class SendTopupException implements Exception {
   @override
   String toString() => message;
 }
+
+/// Outcome of [SendTopupRepository.phoneNumberExists]. Three-valued because
+/// "not an Aliv number" (backend-confirmed) needs different UX than "we
+/// couldn't reach the check" (network failure → Case D).
+enum PhoneExistsResult { exists, invalidDevice, unknown }

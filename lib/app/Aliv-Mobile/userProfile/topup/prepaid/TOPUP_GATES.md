@@ -4,15 +4,22 @@ Concise reference for the vendor-mandated preflight applied to the **My Number**
 
 ---
 
-## The three gates (in order, cheap → expensive)
+## The gates (in order, cheap → expensive)
 
 | # | Endpoint | Scope | Fail-closed? |
 |---|---|---|---|
 | **Limit** | `GET /Account/top-up-limit-left` | Both tabs (fetched on screen load) | Yes → Case D |
+| **Gate 0** | `GET /device/exists/{phoneNumber}` | Send Top-up only (first async check on proceed) | 3-value result — see below |
 | **Gate 2** | `GET /device/can-top-up/{phoneNumber}?amount={amount}` | Send Top-up only | Yes → recipient toast |
 | **Gate 3** | `GET /Account/can-submit-order?amount={amount}` | Both tabs (on proceed tap) | Yes → Case D |
 
 Then POST `/Order/top-up/{phone}` (My Number) or `/Order/transfer` (Send Top-up).
+
+### Gate 0 result semantics
+Backend distinguishes "not an Aliv number" from a network failure. Repository returns `PhoneExistsResult`:
+- `exists` — `{ "Success": true }` → proceed
+- `invalidDevice` — error envelope `{ "ErrorCode": 501, "ErrorCodeName": "InvalidDevice" }` → toast: *"this number is not registered on aliv. please verify the number."*
+- `unknown` — any other failure (timeout, 5xx, malformed body) → Case D toast
 
 ---
 

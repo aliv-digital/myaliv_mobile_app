@@ -350,13 +350,34 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     final topUpRepo =
                         context.read<TopUpPrepaidBloc>().repo;
                     final router = GoRouter.of(context);
+                    final sendTopupRepo = instance<SendTopupRepository>();
 
                     setState(() => _isChecking = true);
                     try {
+                      // Gate 0: is this even an Aliv number?
+                      final existsResult = await sendTopupRepo
+                          .phoneNumberExists(recipientPhone);
+                      if (!mounted) return;
+                      if (existsResult ==
+                          PhoneExistsResult.invalidDevice) {
+                        AppToast.show(
+                          message:
+                              'this number is not registered on aliv. please verify the number.',
+                          type: ToastType.error,
+                        );
+                        return;
+                      }
+                      if (existsResult == PhoneExistsResult.unknown) {
+                        AppToast.show(
+                          message: _caseDMessage,
+                          type: ToastType.error,
+                        );
+                        return;
+                      }
+
                       // Gate 2: recipient eligibility for THIS amount.
                       final recipientOk =
-                          await instance<SendTopupRepository>()
-                              .canTopUpRecipient(
+                          await sendTopupRepo.canTopUpRecipient(
                         phoneNumber: recipientPhone,
                         amount: _amountValue,
                       );

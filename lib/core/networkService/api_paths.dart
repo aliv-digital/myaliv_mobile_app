@@ -114,6 +114,15 @@ class Api {
         '${Uri.encodeComponent(digits)}?amount=$amount';
   }
 
+  /// Recipient phone-number-is-an-Aliv-device check (Send Top-up Gate 0):
+  /// GET /device/exists/{phoneNumber}
+  /// Success → 200 `{ "Success": true }`
+  /// Not found → error envelope `{ "ErrorCode": 501, "ErrorCodeName": "InvalidDevice", ... }`
+  static String deviceExists({required String phoneNumber}) {
+    final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return '$baseUrl/v1/MyAliv/device/exists/${Uri.encodeComponent(digits)}';
+  }
+
   /// Concurrent-order pre-flight (Gate 3, both tabs):
   /// GET /Account/can-submit-order?amount={amount}
   /// Response is always HTTP 200. Check the body:
