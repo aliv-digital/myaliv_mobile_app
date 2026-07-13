@@ -121,29 +121,24 @@ class _PayFromWalletSheetView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            spacing: 10,
-                            children: [
-                              BlocBuilder<BalanceCubit, BalanceState>(
-                                builder: (context, balanceState) {
-                                  return Text(
-                                    BalanceCurrencyFormatterService.format(
-                                      balanceState.walletBalance,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Color(0xFF222222),
-                                      fontSize: 14,
-                                      fontFamily: 'CircularPro',
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
+                          child: BlocBuilder<BalanceCubit, BalanceState>(
+                            builder: (context, balanceState) {
+                              return FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  BalanceCurrencyFormatterService.format(
+                                    balanceState.walletBalance,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Color(0xFF222222),
+                                    fontSize: 14,
+                                    fontFamily: 'CircularPro',
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

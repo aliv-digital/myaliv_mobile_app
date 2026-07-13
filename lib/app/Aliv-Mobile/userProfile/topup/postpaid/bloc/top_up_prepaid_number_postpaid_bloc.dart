@@ -69,16 +69,16 @@ class TopUpPrepaidNumberPostPaidBloc extends Bloc<
 
     emit(state.copyWith(
         applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.loading,
-        clearError: true));
+        clearError: true)
+    );
 
     try {
-      await repo.applyTopUp(
-        number: state.numberForApi ?? state.number.trim(),
-        amount: state.amountValue,
-      );
+      // await repo.applyTopUp(
+      //   number: state.numberForApi ?? state.number.trim(),
+      //   amount: state.amountValue,
+      // );
 
-      emit(state.copyWith(
-          applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.success));
+      emit(state.copyWith(applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.success));
     } catch (_) {
       emit(state.copyWith(
         applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.failure,

@@ -117,10 +117,8 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                               loading: state.applyStatus ==
                                   TopUpPrepaidNumberPostPaidApplyStatus.loading,
                               onTap: () {
-                                bloc.add(
-                                    const TopUpPrepaidNumberPostPaidApplyPressed());
-                                final amountParam =
-                                    state.amountValue.toStringAsFixed(2);
+                                bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed());
+                                final amountParam = state.amountValue.toStringAsFixed(2);
                                 final recipientParam = Uri.encodeQueryComponent(
                                   state.numberForApi ?? state.number.trim(),
                                 );
