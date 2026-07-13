@@ -42,10 +42,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isRefreshingToggleStatus = false;
+
   @override
   void initState() {
     super.initState();
     AppSession.resetAppRoute();
+
+    // Sync the correct toggle status whenever Home opens.
+    _refreshToggleStatus();
 
     // Preload plans in background while user is on home screen
     final userType = context.read<AppUiConfigCubit>().state.userType;
@@ -75,15 +80,35 @@ class _HomeScreenState extends State<HomeScreen> {
         standAlonePlans: plansState.standAlonePlansForBucketUsage,
       );
 
-      // Load device limits for all users (used for name display and credit limits)
-      instance<DeviceLimitsCubit>().loadDeviceLimits();
-
       // Load consumption limits for postpaid users
       if (userType.isPostpaid) {
         instance<ConsumptionLimitCubit>().loadLimits(
           deviceAccountId: accountInfo.idAcc,
         );
       }
+    }
+  }
+
+  Future<void> _refreshToggleStatus() async {
+    if (_isRefreshingToggleStatus) return;
+
+    _isRefreshingToggleStatus = true;
+    try {
+      final userType = context.read<AppUiConfigCubit>().state.userType;
+
+      if (userType.isPostpaid) {
+        // Postpaid Auto Pay comes from the Account API.
+        await context.read<AccountInfoCubit>().fetchAccountInfo(
+          forceRefresh: true,
+        );
+      } else {
+        // Prepaid Auto Renew comes from the Account Devices API.
+        await instance<DeviceLimitsCubit>().loadDeviceLimits(
+          forceRefresh: true,
+        );
+      }
+    } finally {
+      _isRefreshingToggleStatus = false;
     }
   }
 
@@ -117,77 +142,84 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             _headerBackground(),
             SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Column(
-                  children: [
-                    HomeHeader(config: config),
-                    const SizedBox(height: 16),
+              child: RefreshIndicator(
+                // Pulling down syncs Auto Pay or Auto Renew for the user type.
+                onRefresh: _refreshToggleStatus,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: Column(
+                    children: [
+                      HomeHeader(config: config),
+                      const SizedBox(height: 16),
 
-                    /// 🔥 DIFFERENT CARD BASED ON USER TYPE
-                    config.isPrepaid
-                        ? const PrepaidBalanceCard()
-                        : const PostpaidBillingCard(),
+                      ///  DIFFERENT CARD BASED ON USER TYPE
+                      config.isPrepaid
+                          ? const PrepaidBalanceCard()
+                          : const PostpaidBillingCard(),
 
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    BlocBuilder<PlansCubit, PlansState>(
-                      buildWhen: (previous, current) =>
-                          previous.status != current.status ||
-                          previous.addOnsApiPrimaryPlans !=
-                              current.addOnsApiPrimaryPlans,
-                      builder: (context, plansState) {
-                        // While plans are still being fetched, show the active
-                        // plan card so its internal skeleton renders. Once the
-                        // API resolves, decide from real data instead of the
-                        // stale `hasActivePlan` flag.
-                        final isResolving =
-                            plansState.status == PlansStatus.initial ||
-                            plansState.status == PlansStatus.loading;
-                        final showActiveCard =
-                            isResolving ||
-                            plansState.addOnsApiPrimaryPlans.isNotEmpty;
+                      BlocBuilder<PlansCubit, PlansState>(
+                        buildWhen: (previous, current) =>
+                            previous.status != current.status ||
+                            previous.addOnsApiPrimaryPlans !=
+                                current.addOnsApiPrimaryPlans,
+                        builder: (context, plansState) {
+                          // While plans are still being fetched, show the active
+                          // plan card so its internal skeleton renders. Once the
+                          // API resolves, decide from real data instead of the
+                          // stale `hasActivePlan` flag.
+                          final isResolving =
+                              plansState.status == PlansStatus.initial ||
+                              plansState.status == PlansStatus.loading;
+                          final showActiveCard =
+                              isResolving ||
+                              plansState.addOnsApiPrimaryPlans.isNotEmpty;
 
-                        if (!showActiveCard) {
-                          return const NoActivePlanCard();
-                        }
+                          if (!showActiveCard) {
+                            return const NoActivePlanCard();
+                          }
 
-                        return config.userType == UserType.prepaid
-                            ? const PrepaidActivePlanCardWithData(
-                                isFromHome: true,
-                              ) // TODO
-                            : PostpaidActivePlanCard(config: config);
-                      },
-                    ),
+                          return config.userType == UserType.prepaid
+                              ? const PrepaidActivePlanCardWithData(
+                                  isFromHome: true,
+                                ) // TODO
+                              : PostpaidActivePlanCard(config: config);
+                        },
+                      ),
 
-                    config.userType == UserType.prepaid
-                        ? const SizedBox(height: 40)
-                        : const SizedBox(height: 20),
+                      config.userType == UserType.prepaid
+                          ? const SizedBox(height: 40)
+                          : const SizedBox(height: 20),
 
-                    if (config.hasActivePlan)
+                      if (config.hasActivePlan)
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F7FA),
+                          ),
+                          child: const ActivePlanUsageSection(),
+                        ),
+
+                      const SizedBox(height: 20),
+                      // our best plans
+                      _bestPlans(context),
+
+                      // const SizedBox(height: 16),
+                      // quick actions
                       Container(
                         padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF1F7FA),
                         ),
-                        child: const ActivePlanUsageSection(),
+                        child: _quickActions(context, config),
                       ),
-
-                    const SizedBox(height: 20),
-                    // our best plans
-                    _bestPlans(context),
-
-                    // const SizedBox(height: 16),
-                    // quick actions
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                      decoration: BoxDecoration(color: const Color(0xFFF1F7FA)),
-                      child: _quickActions(context, config),
-                    ),
-                    const SizedBox(height: 24),
-                    //count down , yellow limited offers
-                    const LimitedOfferView(),
-                  ],
+                      const SizedBox(height: 24),
+                      //count down , yellow limited offers
+                      const LimitedOfferView(),
+                    ],
+                  ),
                 ),
               ),
             ),
