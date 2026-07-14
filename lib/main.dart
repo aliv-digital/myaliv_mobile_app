@@ -80,4 +80,8 @@ class MyApp extends StatelessWidget {
 I/flutter ( 8948): Ticket : db09c1ce-9969-43d3-a346-a5cb18f1d366m4hufc3hGeOp5SmURGfwMWFf8jyyfMH6jU3BKTcYlnUbxtfe3455xR0m3TT9dokmhhu01ZiiU35wXfwh0o8lBQ==
 I/flutter ( 8948): Account id : 1018469885
 I/flutter ( 8948): Account info request initiated for user: 027BA54E-973F-45DD-897B-F635E6C3EEBC
+
+
+  {"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366namVns9SFsRE493Vvnh9kO5wY/RT7ViqsBIyByqVBbvnBPBiwDyiEKKwH9iPfZOCkY56sJN/lZwiJJkf8bPqaA==","AccountId":924171314}
+
  */

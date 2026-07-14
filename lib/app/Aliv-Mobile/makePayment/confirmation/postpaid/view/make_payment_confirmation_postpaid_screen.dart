@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../bloc/make_payment_confirmation_postpaid_bloc.dart';
 import '../bloc/make_payment_confirmation_postpaid_event.dart';
 import '../bloc/make_payment_confirmation_postpaid_state.dart';
@@ -220,6 +221,18 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
     BuildContext context,
     MakePaymentConfirmationPostPaidBloc confirmationBloc,
   ) {
+    final balanceDue = instance<BalanceCubit>().state.walletBalance;
+
+    // A negative balance is displayed in parentheses. Do not continue to the
+    // payment screen when that value represents an invalid payment amount.
+    if (balanceDue < 0) {
+      AppToast.show(
+        message: 'your payment must not exceed your balance due.',
+        type: ToastType.error,
+      );
+      return;
+    }
+
     confirmationBloc.add(const MakePaymentContinuePressed());
     context.push(AppRoutes.makePaymentPostpaidScreen);
   }

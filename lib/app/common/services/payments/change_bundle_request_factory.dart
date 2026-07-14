@@ -76,7 +76,7 @@ class ChangeBundleRequestFactory {
       'SecondaryPlans': bundle.secondaryPlans,
       'StandalonePlans': bundle.standalonePlans,
     };
-
+    //Selected start date is required for future plan.
     if (!forceNow) {
       final startDate = _formatStartDate(selectedBeginDate);
       if (startDate == null) {

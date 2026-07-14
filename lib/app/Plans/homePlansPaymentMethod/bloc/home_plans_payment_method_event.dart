@@ -73,6 +73,11 @@ class HomePlansPayFromWalletConfirmed extends HomePlansPaymentMethodEvent {
   List<Object?> get props => [walletBalance];
 }
 
+/// Requests a direct postpaid account charge without using wallet balance.
+class HomePlansChargeToAccountRequested extends HomePlansPaymentMethodEvent {
+  const HomePlansChargeToAccountRequested();
+}
+
 class HomePlansPaySavedCardConfirmed extends HomePlansPaymentMethodEvent {
   const HomePlansPaySavedCardConfirmed();
 }

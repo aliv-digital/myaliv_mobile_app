@@ -16,6 +16,7 @@ class HomePlansPaymentMethodBloc
     on<HomePlansPayWithCardPressed>(_onPayWithCard);
     on<HomePlansPayFromWalletPressed>(_onPayFromWallet);
     on<HomePlansPayFromWalletConfirmed>(_onPayFromWalletConfirmed);
+    on<HomePlansChargeToAccountRequested>(_onChargeToAccountRequested);
     on<HomePlansPaySavedCardConfirmed>(_onPaySavedCardConfirmed);
     on<HomePlansPayWithCardConfirmed>(_onPayWithCardConfirmed);
     on<HomePlansPayNowPressed>(_onPayNow);
@@ -144,6 +145,21 @@ class HomePlansPaymentMethodBloc
         selectedBeginDate: state.selectedBeginDate,
       ),
       'Wallet payment failed. Try again.',
+    );
+  }
+
+  Future<void> _onChargeToAccountRequested(HomePlansChargeToAccountRequested event, Emitter<HomePlansPaymentMethodState> emit) async {
+    // Postpaid charges do not depend on wallet balance. The shared service
+    // automatically sends postpaid plan orders to /Order/payment.
+    await _submitChangeBundle(
+      emit,
+      () => repository.chargeToAccount(
+        amount: state.amount,
+        selectedItems: state.selectedItems,
+        forceNow: state.forceNow,
+        selectedBeginDate: state.selectedBeginDate,
+      ),
+      'Account charge failed. Try again.',
     );
   }
 

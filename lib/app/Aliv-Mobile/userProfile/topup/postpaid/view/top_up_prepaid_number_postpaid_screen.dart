@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +36,11 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(kDebugMode){
+      debugPrint("Screen Name : top-up a prepaid number");
+      debugPrint("file name : top_up_prepaid_number_postpaid_screen.dart");
+      debugPrint("location : Aliv-Mobile/userProfile/topup/postpaid/view");
+    }
     return BlocListener<TopUpPrepaidNumberPostPaidBloc,
         TopUpPrepaidNumberPostPaidState>(
       listenWhen: (p, c) =>
@@ -114,16 +120,19 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                             const SizedBox(height: 40),
                             TopUpPrepaidNumberPostPaidApplySection(
                               enabled: state.canApply,
-                              loading: state.applyStatus ==
-                                  TopUpPrepaidNumberPostPaidApplyStatus.loading,
+                              loading: state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.loading,
                               onTap: () {
-                                bloc.add(
-                                    const TopUpPrepaidNumberPostPaidApplyPressed());
-                                final amountParam =
-                                    state.amountValue.toStringAsFixed(2);
+
+                                bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed());
+                                final amountParam = state.amountValue.toStringAsFixed(2);
                                 final recipientParam = Uri.encodeQueryComponent(
                                   state.numberForApi ?? state.number.trim(),
                                 );
+
+                                if(kDebugMode){
+                                  debugPrint("receiver's phone : $recipientParam \n amount : $amountParam");
+                                }
+
                                 context.push(
                                   '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
                                 );

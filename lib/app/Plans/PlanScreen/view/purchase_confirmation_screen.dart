@@ -90,15 +90,52 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   void _continuePressed() {
+    /*
+     * This confirmation screen is shared by top-up and plan-purchase flows.
+     * It uses the route data to decide which payment action should run:
+     *
+     * 1. A top-up amount without a recipient means the user is topping up
+     *    their own number, so continue to the existing top-up payment screen.
+     * 2. A top-up amount with a recipient means the user is topping up another
+     *    prepaid number. If the user is postpaid, continue to the full payment
+     *    method screen before plan validation because this is not a plan purchase.
+     * 3. Any remaining postpaid transaction is treated as a plan purchase and
+     *    sent to _openPostpaidPaymentMethod(), which validates the selected plan.
+     * 4. Any remaining transaction with a top-up amount uses the existing wallet
+     *    sheet; without top-up data, it continues to the guest payment method.
+     *
+     * This order prevents a postpaid user's other-number top-up from being
+     * mistaken for a plan purchase and showing "No postpaid plan selected."
+     */
     final config = context.read<AppUiConfigCubit>().state;
-    final isMyNumberTopUp =
-        widget.topUpAmount != null && widget.recipientPhone == null;
+    final hasTopUpAmount = widget.topUpAmount != null;
+    final hasRecipientPhone = widget.recipientPhone != null;
+
+    final isMyNumberTopUp = hasTopUpAmount && !hasRecipientPhone;
+    final isPostpaidOtherNumberTopUp = config.isPostpaid && hasTopUpAmount && hasRecipientPhone;
     if (isMyNumberTopUp) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
         '${AppRoutes.topUpPaymentPrepaidScreen}'
         '?amount=$amountParam'
         '&recipientPhone=${widget.recipientPhone}',
+      );
+      return;
+    }
+    // A postpaid user can top up another prepaid number without selecting a
+    // postpaid plan. Handle that specific transaction before plan validation
+    // and pass its recipient to the full payment-method screen.
+    if (isPostpaidOtherNumberTopUp) {
+      final amountParam = widget.topUpAmount!.toStringAsFixed(2);
+      final recipientParam = Uri.encodeQueryComponent(widget.recipientPhone!);
+      if(kDebugMode){
+        debugPrint("amount : $amountParam");
+        debugPrint("receiver's phone : $recipientParam");
+      }
+      context.push(
+        '${AppRoutes.topUpPaymentPrepaidScreen}'
+        '?amount=$amountParam'
+        '&recipientPhone=$recipientParam',
       );
       return;
     }
