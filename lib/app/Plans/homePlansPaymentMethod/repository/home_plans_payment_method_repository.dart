@@ -16,6 +16,13 @@ abstract class HomePlansPaymentMethodRepository {
     DateTime? selectedBeginDate,
   });
 
+  Future<bool> chargeToAccount({
+    required double amount,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  });
+
   Future<bool> payWithSavedCard({
     required double amount,
     required String cardToken,

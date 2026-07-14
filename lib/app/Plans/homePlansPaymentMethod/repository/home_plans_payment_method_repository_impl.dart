@@ -83,6 +83,24 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
+  Future<bool> chargeToAccount({
+    required double amount,
+    required List<HomePlansPaymentSelectedItem> selectedItems,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) async {
+    // ChangeBundleService routes authenticated postpaid orders to
+    // /Order/payment while preserving the existing plan request structure.
+    final result = await _service.payFromWallet(
+      amount: amount,
+      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+    );
+    return _unwrap(result);
+  }
+
+  @override
   Future<bool> payWithSavedCard({
     required double amount,
     required String cardToken,
