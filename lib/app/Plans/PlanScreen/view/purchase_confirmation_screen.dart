@@ -128,6 +128,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     if (isPostpaidOtherNumberTopUp) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       final recipientParam = Uri.encodeQueryComponent(widget.recipientPhone!);
+      if(kDebugMode){
+        debugPrint("amount : $amountParam");
+        debugPrint("receiver's phone : $recipientParam");
+      }
       context.push(
         '${AppRoutes.topUpPaymentPrepaidScreen}'
         '?amount=$amountParam'

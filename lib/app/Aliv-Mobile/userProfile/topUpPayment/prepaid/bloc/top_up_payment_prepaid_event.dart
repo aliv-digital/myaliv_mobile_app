@@ -37,6 +37,11 @@ final class PaySavedCardConfirmed extends TopUpPaymentPrepaidEvent {
   const PaySavedCardConfirmed();
 }
 
+/// A postpaid user selected a saved card to top up another prepaid number.
+final class PayPostpaidSavedCard extends TopUpPaymentPrepaidEvent {
+  const PayPostpaidSavedCard();
+}
+
 /// User submitted the Checkout sheet — hit the top-up API with fresh card
 /// details.
 final class PayWithCardConfirmed extends TopUpPaymentPrepaidEvent {

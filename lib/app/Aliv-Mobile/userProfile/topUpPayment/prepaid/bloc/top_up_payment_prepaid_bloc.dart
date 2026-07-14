@@ -16,6 +16,7 @@ class TopUpPaymentPrepaidBloc
     on<PaymentMethodSelected>(_onSelected);
     on<PayWithCardPressed>(_onPayWithCard);
     on<PaySavedCardConfirmed>(_onPaySavedCardConfirmed);
+    on<PayPostpaidSavedCard>(_onPayPostpaidSavedCard);
     on<PayWithCardConfirmed>(_onPayWithCardConfirmed);
     on<PaymentNavConsumed>(_onNavConsumed);
   }
@@ -87,6 +88,41 @@ class TopUpPaymentPrepaidBloc
       () => repository.payWithSavedCard(
         amount: state.summary.total,
         primaryPhoneNumber: phone,
+        cardToken: token,
+      ),
+      'Top-up failed. Try again.',
+    );
+  }
+
+  Future<void> _onPayPostpaidSavedCard(PayPostpaidSavedCard event,Emitter<TopUpPaymentPrepaidState> emit) async {
+
+    final token = state.selectedMethodId?.trim() ?? '';
+    if (token.isEmpty) {
+      emit(
+        state.copyWith(
+          status: TopUpPaymentStatus.failure,
+          errorMessage: 'Please select a saved card first.',
+        ),
+      );
+      return;
+    }
+
+    final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
+    if (recipientPhone.isEmpty) {
+      emit(
+        state.copyWith(
+          status: TopUpPaymentStatus.failure,
+          errorMessage: 'Recipient phone number unavailable. Please try again.',
+        ),
+      );
+      return;
+    }
+
+    // For a postpaid user, the top-up API path must contain the prepaid
+    // recipient number received from the previous screen.
+    await _submit(emit, () => repository.payWithSavedCard(
+        amount: state.summary.total,
+        primaryPhoneNumber: recipientPhone,
         cardToken: token,
       ),
       'Top-up failed. Try again.',
