@@ -1,6 +1,8 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 
+import 'analytics/analytics_service.dart';
+
 /// Core package dependency injection
 ///
 /// Initializes core services like NetworkService and AuthManager.
@@ -69,6 +71,11 @@ class CoreInjection {
 
     // ========== 4. Initialize NetworkService ==========
     await networkService.init();
+
+    // ========== 5. Register AnalyticsService ==========
+    final analyticsService = AnalyticsService();
+    instance.registerSingleton<AnalyticsService>(analyticsService);
+    await analyticsService.init();
 
     if (kDebugMode) {
       final hasAuth = globalState.isAuthenticated;

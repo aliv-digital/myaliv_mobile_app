@@ -26,6 +26,10 @@ dependencies:
   # UI
   flutter_screenutil: ^5.9.0
 
+  # Analytics
+  firebase_core: ^3.0.0
+  firebase_analytics: ^11.0.0
+
   # Utilities
   intl: ^0.20.0
 

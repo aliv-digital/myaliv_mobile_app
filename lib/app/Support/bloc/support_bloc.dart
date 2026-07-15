@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../model/support_models.dart';
@@ -33,6 +34,7 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
   ) async {
     switch (event.item.action) {
       case SupportMenuAction.chatBot:
+        await instance<AnalyticsService>().logSupportChatOpened();
         _emitNavigation(emit, SupportNavigationTarget.chatBot);
         break;
 

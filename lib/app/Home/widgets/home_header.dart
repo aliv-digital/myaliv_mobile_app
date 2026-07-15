@@ -63,7 +63,7 @@ class HomeHeader extends StatelessWidget {
                     previous.accountInfo?.email != current.accountInfo?.email,
                 builder: (context, accountState) {
                   final email = accountState.accountInfo?.email ?? '';
-                  final name = deviceState.fullName ?? _nameFromEmail(email);
+                  final name = accountState.fullName ?? deviceState.fullName ?? _nameFromEmail(email);
                   return Text(
                     'welcome back, $name',
                     textAlign: TextAlign.center,

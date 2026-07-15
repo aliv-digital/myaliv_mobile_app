@@ -133,6 +133,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
       await Future.delayed(Duration(milliseconds: 1500));
 
+      await instance<AnalyticsService>().logLogin();
+
       emit(
         state.copyWith(
           status: LoginOtpStatus.success,

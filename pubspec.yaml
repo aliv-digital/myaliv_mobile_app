@@ -34,6 +34,7 @@ dependencies:
   phone_numbers_parser: ^9.0.21
   shimmer: ^3.0.0
   cached_network_image: ^3.4.1
+  firebase_core: ^3.0.0
   core:
     path: packages/core
   flutter_html: ^3.0.0

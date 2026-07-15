@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../model/guest_pay_bill_confirm_models.dart';
 import '../repository/guest_pay_bill_confirm_repository.dart';
@@ -68,6 +69,10 @@ class GuestPayBillConfirmBloc
         totalAmount: state.total,
       );
 
+      await instance<AnalyticsService>().logBillPayment(
+        amount: state.total,
+        paymentMethod: 'card',
+      );
       emit(state.copyWith(payStatus: GuestPayBillConfirmPayStatus.success));
     } catch (_) {
       emit(state.copyWith(

@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_limit_left_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_prepaid_repository.dart';
@@ -106,6 +107,10 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
     emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.loading, clearError: true));
     try {
       await repo.topUp(amount: state.amountValue);
+      await instance<AnalyticsService>().logWalletTopUp(
+        amount: state.amountValue,
+        paymentMethod: 'direct',
+      );
       emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.success));
       // optional: reset amount after success
       emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.idle, amountText: '0.00'));

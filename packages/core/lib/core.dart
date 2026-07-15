@@ -21,6 +21,9 @@ export 'src/time/api_date_parser.dart';
 // Extensions
 export 'src/extensions/date_time_x.dart';
 
+// Analytics
+export 'src/analytics/analytics_service.dart';
+
 // Core
 export 'src/core_injection.dart';
 export 'src/constants/constants.dart';

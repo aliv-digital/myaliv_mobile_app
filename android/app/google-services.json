@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "25251187409",
+    "firebase_url": "https://myalivphoneapp.firebaseio.com",
+    "project_id": "myalivphoneapp",
+    "storage_bucket": "myalivphoneapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25251187409:android:b15dc9b3b2eb0b81ae53f0",
+        "android_client_info": {
+          "package_name": "org.app.myaliv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj-x3-d3RZj_vh-tbRgWHOxbkTBkpkU-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,15 @@ import 'main_injection_container.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Must run before CoreInjection registers AnalyticsService.
+  // No-ops gracefully until google-services.json / GoogleService-Info.plist
+  // are added to the project (provided by Ethan / Polaris Group).
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('⚠️ Firebase not configured yet — analytics disabled: $e');
+  }
 
   // Initialize HydratedBloc storage for account info persistence
   final storageDir = await getApplicationDocumentsDirectory();

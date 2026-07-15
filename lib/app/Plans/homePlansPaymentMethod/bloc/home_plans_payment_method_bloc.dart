@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../model/home_plans_payment_method_models.dart';
 import '../repository/home_plans_payment_method_repository.dart';
@@ -234,6 +235,7 @@ class HomePlansPaymentMethodBloc
 
     try {
       final ok = await invoke();
+      if (ok) await _logPurchaseAnalytics();
       emit(
         state.copyWith(
           status: ok
@@ -278,6 +280,7 @@ class HomePlansPaymentMethodBloc
 
     try {
       await repository.payNow(methodId: state.selectedMethodId!);
+      await _logPurchaseAnalytics();
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.success,
@@ -299,5 +302,43 @@ class HomePlansPaymentMethodBloc
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
     emit(state.copyWith(navTarget: HomePlansPaymentMethodNavTarget.none));
+  }
+
+  // Fires the correct GA4 event based on whether the purchase is a plan
+  // bundle (primary plan type) or an add-on (secondary / standalone).
+  Future<void> _logPurchaseAnalytics() async {
+    if (state.selectedItems.isEmpty) return;
+    final item = state.selectedItems.first;
+    final paymentMethod = _paymentMethodLabel(state.paymentMode);
+    final analytics = instance<AnalyticsService>();
+
+    if (item.planType == HomePlansPaymentPlanType.primary) {
+      await analytics.logPlanPurchase(
+        planId: item.id,
+        planName: item.title,
+        amount: state.amount,
+        paymentMethod: paymentMethod,
+      );
+    } else {
+      await analytics.logAddonPurchase(
+        addonId: item.id,
+        addonName: item.title,
+        amount: state.amount,
+        paymentMethod: paymentMethod,
+      );
+    }
+  }
+
+  String _paymentMethodLabel(HomePlansPaymentMode mode) {
+    switch (mode) {
+      case HomePlansPaymentMode.card:
+        return 'saved_card';
+      case HomePlansPaymentMode.payWithCard:
+        return 'new_card';
+      case HomePlansPaymentMode.payFromWallet:
+        return 'wallet';
+      case HomePlansPaymentMode.chargeToMyAccount:
+        return 'charge_to_account';
+    }
   }
 }

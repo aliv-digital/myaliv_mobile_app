@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/pay_from_wallet/pay_from_wallet_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
@@ -20,6 +21,10 @@ class PayFromWalletCubit extends Cubit<PayFromWalletState> {
 
     try {
       await _repository.transfer(toNumber: toNumber, amount: amount);
+      await instance<AnalyticsService>().logWalletFunding(
+        amount: amount,
+        paymentMethod: 'wallet',
+      );
       emit(state.copyWith(status: PayFromWalletStatus.success));
     } on SendTopupException catch (e) {
       emit(state.copyWith(
