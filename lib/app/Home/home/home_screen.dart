@@ -23,6 +23,7 @@ import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -55,6 +56,20 @@ class _HomeScreenState extends State<HomeScreen> {
     // Preload plans in background while user is on home screen
     final userType = context.read<AppUiConfigCubit>().state.userType;
     context.read<PlansCubit>().loadInitialPlans(userType: userType);
+
+    // BlocListener fires only on state *changes* and misses the synchronous
+    // restoration that HydratedCubit performs before the widget subscribes.
+    // Sync AppUiConfigCubit here so ActivePlanUsageSection is visible
+    // immediately when the cache is warm (success) or stale (refreshing).
+    final cachedPlansState = context.read<PlansCubit>().state;
+    if (cachedPlansState.status == PlansStatus.success ||
+        cachedPlansState.status == PlansStatus.refreshing) {
+      context
+          .read<AppUiConfigCubit>()
+          .setHasActivePlan(
+            cachedPlansState.addOnsApiPrimaryPlans.isNotEmpty,
+          );
+    }
 
     // Load limited time offers
     context.read<LimitedOfferCubit>().loadOffers(userType: userType.label);
@@ -194,15 +209,46 @@ class _HomeScreenState extends State<HomeScreen> {
                           : const SizedBox(height: 20),
 
                       if (config.hasActivePlan)
-                        Container(
-                          padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F7FA),
-                          ),
-                          child: const ActivePlanUsageSection(),
+                        BlocBuilder<BucketUsageSummaryCubit,
+                            BucketUsageSummaryState>(
+                          buildWhen: (a, b) =>
+                              a.status != b.status ||
+                              a.activePlans != b.activePlans ||
+                              a.summary != b.summary,
+                          builder: (context, state) {
+                            final isLoading =
+                                state.status ==
+                                    BucketUsageSummaryStatus.initial ||
+                                state.status ==
+                                    BucketUsageSummaryStatus.loading;
+                            final isEmpty = !isLoading &&
+                                state.activePlanBucketUsage.isEmpty;
+
+                            if (isEmpty) return const SizedBox.shrink();
+
+                            return Container(
+                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFF1F7FA),
+                              ),
+                              child: const ActivePlanUsageSection(),
+                            );
+                          },
                         ),
 
-                      const SizedBox(height: 20),
+                      BlocBuilder<BucketUsageSummaryCubit,
+                          BucketUsageSummaryState>(
+                        buildWhen: (a, b) =>
+                            a.status != b.status ||
+                            a.activePlans != b.activePlans ||
+                            a.summary != b.summary,
+                        builder: (context, state) {
+                          final isEmpty =
+                              state.status == BucketUsageSummaryStatus.loaded &&
+                              state.activePlanBucketUsage.isEmpty;
+                          return SizedBox(height: isEmpty ? 0 : 20);
+                        },
+                      ),
                       // our best plans
                       _bestPlans(context),
 

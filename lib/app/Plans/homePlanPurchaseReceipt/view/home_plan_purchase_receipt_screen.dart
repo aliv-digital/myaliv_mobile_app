@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/repository/home_plan_purchase_receipt_repository.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -151,6 +152,12 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                       return HomePlanPurchaseReceiptSuccessCard(
                         data: data,
                         onBackHome: () {
+                          // Invalidate plan cache so the newly purchased plan
+                          // appears immediately on the home screen's active
+                          // plan card rather than waiting for the 1-hour TTL.
+                          context
+                              .read<PlansCubit>()
+                              .refreshCurrentTab();
                           if (AppSession.appRoute == 'prepaidPlan' ||
                               AppSession.appRoute == 'postpaidPlan' ||
                               AppSession.appRoute == 'prepaidPlanPurchase' ||

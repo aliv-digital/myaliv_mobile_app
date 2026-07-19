@@ -14,6 +14,7 @@ import 'package:myaliv_mobile_app/app/Home/widgets/usage_group.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:shimmer/shimmer.dart';
 
 /// Home-screen "active plan usage remaining" section. Composes the section
 /// header with the active-plan [UsageGroup] cards row, followed by a
@@ -31,18 +32,48 @@ class ActivePlanUsageSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _header(context),
-        const SizedBox(height: 16),
-        // fix positioning
-        UsageGroup(isPostpaid: isPostpaid),
-        // commented by nahin — when re-enabling, restore the SizedBox(20)
-        // above and below this block to keep the expander vertically padded.
-        // const SizedBox(height: 20),
-        // const Padding(
-        //   padding: EdgeInsets.symmetric(horizontal: 24),
-        //   child: ActivePlansExpander(),
-        // ),
-        const SizedBox(height: 20),
+        BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
+          buildWhen: (a, b) =>
+              a.status != b.status ||
+              a.activePlans != b.activePlans ||
+              a.summary != b.summary,
+          builder: (context, state) {
+            final isLoading =
+                state.status == BucketUsageSummaryStatus.initial ||
+                state.status == BucketUsageSummaryStatus.loading;
+
+            if (isLoading) {
+              return const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _UsageSectionSkeleton(),
+                  SizedBox(height: 20),
+                ],
+              );
+            }
+
+            if (state.activePlanBucketUsage.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _header(context),
+                const SizedBox(height: 16),
+                UsageGroup(isPostpaid: isPostpaid),
+                // commented by nahin — when re-enabling, restore the SizedBox(20)
+                // above and below this block to keep the expander vertically padded.
+                // const SizedBox(height: 20),
+                // const Padding(
+                //   padding: EdgeInsets.symmetric(horizontal: 24),
+                //   child: ActivePlansExpander(),
+                // ),
+                const SizedBox(height: 20),
+              ],
+            );
+          },
+        ),
         // need to remove view all
         _roamingSection(context),
         if (isPostpaid) ...[
@@ -185,6 +216,76 @@ class _RoamingEntry {
   const _RoamingEntry({required this.plan, required this.usage});
   final BasePlanModel plan;
   final PlanBucketUsage usage;
+}
+
+/// Shimmer placeholder shown while the bucket usage API is in-flight.
+/// Mirrors the real header + three usage card shapes so the layout doesn't
+/// shift when data arrives.
+class _UsageSectionSkeleton extends StatelessWidget {
+  const _UsageSectionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: const Color(0xFFDDE5EA),
+      highlightColor: const Color(0xFFEEF3F6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row: title block + "view all" block
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                _SkeletonBox(width: 200, height: 18),
+                const Spacer(),
+                _SkeletonBox(width: 52, height: 13),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Three card placeholders — matches UsageCard default width (124)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                for (int i = 0; i < 3; i++) ...[
+                  _SkeletonBox(width: 124, height: 140),
+                  if (i < 2) const SizedBox(width: 12),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({
+    required this.width,
+    required this.height,
+    this.radius = 8,
+  });
+
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
 }
 
 /// Title row with a trailing "view all" affordance. Both elements share the
