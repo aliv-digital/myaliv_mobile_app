@@ -9,7 +9,7 @@ enum PlansStatus {
   /// Initial state
   initial,
 
-  /// Loading plans
+  /// Loading plans (no data yet — show skeleton)
   loading,
 
   /// Plans loaded successfully
@@ -17,6 +17,9 @@ enum PlansStatus {
 
   /// Failed to load plans
   failure,
+
+  /// Cache is showing, silent background refresh in progress
+  refreshing,
 }
 
 /// Toast message for error display
@@ -212,6 +215,105 @@ class PlansState extends Equatable {
   bool get isSuccess => status == PlansStatus.success;
   bool get isFailure => status == PlansStatus.failure;
   bool get isInitial => status == PlansStatus.initial;
+  bool get isRefreshing => status == PlansStatus.refreshing;
+
+  // ═══════════════════════════════════════════════════════════════════
+  // SERIALIZATION (HydratedCubit persistence)
+  // Only data fields are cached — transient UI state is always reset.
+  // ═══════════════════════════════════════════════════════════════════
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'dailyApiPlans': dailyApiPlans.map((p) => p.toJson()).toList(),
+      'weeklyApiPlans': weeklyApiPlans.map((p) => p.toJson()).toList(),
+      'monthlyApiPlans': monthlyApiPlans.map((p) => p.toJson()).toList(),
+      'roamingApiPlans': roamingApiPlans.map((p) => p.toJson()).toList(),
+      'roamEasyApiPlans': roamEasyApiPlans.map((p) => p.toJson()).toList(),
+      'mifiApiPlans': mifiApiPlans.map((p) => p.toJson()).toList(),
+      'libertyGlobalApiPlans':
+          libertyGlobalApiPlans.map((p) => p.toJson()).toList(),
+      'postpaidRoamingApiPlans':
+          postpaidRoamingApiPlans.map((p) => p.toJson()).toList(),
+      'addOns': addOns.map((a) => a.toJson()).toList(),
+      'addOnsApiPrimaryPlans':
+          addOnsApiPrimaryPlans.map((p) => p.toJson()).toList(),
+      'secondaryPlans': secondaryPlans.map((p) => p.toJson()).toList(),
+      'standAlonePlans': standAlonePlans.map((p) => p.toJson()).toList(),
+      'lastFetchedAt': lastFetchedAt?.toIso8601String(),
+      'addOnsApiLastSyncedAt': addOnsApiLastSyncedAt?.toIso8601String(),
+    };
+  }
+
+  factory PlansState.fromJson(Map<String, dynamic> json) {
+    final daily = _parseList(json['dailyApiPlans'], BasePlanModel.fromJson);
+    final weekly = _parseList(json['weeklyApiPlans'], BasePlanModel.fromJson);
+    final monthly = _parseList(json['monthlyApiPlans'], BasePlanModel.fromJson);
+    final roaming = _parseList(json['roamingApiPlans'], BasePlanModel.fromJson);
+    final roamEasy =
+        _parseList(json['roamEasyApiPlans'], BasePlanModel.fromJson);
+    final mifi = _parseList(json['mifiApiPlans'], BasePlanModel.fromJson);
+    final libertyGlobal =
+        _parseList(json['libertyGlobalApiPlans'], BasePlanModel.fromJson);
+    final postpaidRoaming = _parseList(
+        json['postpaidRoamingApiPlans'], HomePlansPostPaidPlanModel.fromJson);
+    final addOns =
+        _parseList(json['addOns'], HomePlanAddOnModel.fromJson);
+    final primaryPlans =
+        _parseList(json['addOnsApiPrimaryPlans'], BasePlanModel.fromJson);
+    final secondary =
+        _parseList(json['secondaryPlans'], BasePlanModel.fromJson);
+    final standAlone =
+        _parseList(json['standAlonePlans'], BasePlanModel.fromJson);
+
+    final hasData = daily.isNotEmpty ||
+        weekly.isNotEmpty ||
+        monthly.isNotEmpty ||
+        roaming.isNotEmpty ||
+        roamEasy.isNotEmpty ||
+        mifi.isNotEmpty ||
+        libertyGlobal.isNotEmpty ||
+        postpaidRoaming.isNotEmpty ||
+        addOns.isNotEmpty;
+
+    return PlansState(
+      status: hasData ? PlansStatus.success : PlansStatus.initial,
+      dailyApiPlans: daily,
+      weeklyApiPlans: weekly,
+      monthlyApiPlans: monthly,
+      roamingApiPlans: roaming,
+      roamEasyApiPlans: roamEasy,
+      mifiApiPlans: mifi,
+      libertyGlobalApiPlans: libertyGlobal,
+      postpaidRoamingApiPlans: postpaidRoaming,
+      addOns: addOns,
+      addOnsApiPrimaryPlans: primaryPlans,
+      secondaryPlans: secondary,
+      standAlonePlans: standAlone,
+      lastFetchedAt: json['lastFetchedAt'] != null
+          ? DateTime.tryParse(json['lastFetchedAt'] as String)
+          : null,
+      addOnsApiLastSyncedAt: json['addOnsApiLastSyncedAt'] != null
+          ? DateTime.tryParse(json['addOnsApiLastSyncedAt'] as String)
+          : null,
+    );
+  }
+
+  static List<T> _parseList<T>(
+    dynamic raw,
+    T Function(Map<String, dynamic>) fromJson,
+  ) {
+    if (raw is! List) return const [];
+    final result = <T>[];
+    for (int i = 0; i < raw.length; i++) {
+      final item = raw[i];
+      if (item is Map<String, dynamic>) {
+        result.add(fromJson(item));
+      } else {
+        assert(false, 'PlansState._parseList: skipped invalid item[$i]: $item');
+      }
+    }
+    return List.unmodifiable(result);
+  }
 
   // ═══════════════════════════════════════════════════════════════════
   // COPY WITH

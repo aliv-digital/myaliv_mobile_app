@@ -18,4 +18,26 @@ class HomePlanAddOnModel {
   });
 
   double get totalPrice => price + vatAmount;
+
+  factory HomePlanAddOnModel.fromJson(Map<String, dynamic> json) {
+    return HomePlanAddOnModel(
+      id: json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      label: json['label'] as String? ?? '',
+      value: json['value'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      vatAmount: (json['vatAmount'] as num?)?.toDouble() ?? 0.0,
+      planTypeCode: json['planTypeCode'] as String? ?? 'S',
+    );
+  }
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'id': id,
+        'title': title,
+        'label': label,
+        'value': value,
+        'price': price,
+        'vatAmount': vatAmount,
+        'planTypeCode': planTypeCode,
+      };
 }

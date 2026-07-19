@@ -1,6 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
@@ -26,28 +26,32 @@ const List<String> _excludedPlanNames = [
   'test',
 ];
 
-/// Cubit for managing plan data
+/// Cubit for managing plan data with HydratedBloc persistence.
 ///
-/// Simplified implementation that:
-/// - Fetches ALL plans in a single API call (8x faster than per-tab fetching)
-/// - Fetches add-ons in parallel
-/// - Uses single flag for race condition protection
-/// - Maintains same public API as HomePlanCubit for UI compatibility
-class PlansCubit extends Cubit<PlansState> {
+/// Behaviour:
+/// - First launch: loading → fetch → success (cached to disk).
+/// - Subsequent launches: cached data shown immediately (status: success),
+///   then a silent background refresh runs if cache is stale (> 1 hour).
+/// - Pull-to-refresh: status switches to `refreshing` so cached UI stays
+///   visible while fresh data loads.
+/// - Logout: reset() wipes the disk cache so the next user starts clean.
+class PlansCubit extends HydratedCubit<PlansState> {
   PlansCubit({PlansRepository? repository})
       : _repository = repository ?? PlansRepository(),
         super(const PlansState());
 
+  // HydratedBloc storage key = "$runtimeType$id" → "PlansCubit_v1".
+  // Explicit suffix prevents collision if the class is ever renamed.
+  // Bump suffix (v2, v3…) if PlansState shape changes incompatibly.
+  @override
+  String get id => '_v1';
+
   final PlansRepository _repository;
 
-  /// Single flag to prevent duplicate fetches
   bool _isFetching = false;
 
-  // ═══════════════════════════════════════════════════════════════════
-  // PUBLIC API (SAME signatures as HomePlanCubit - UI calls these)
-  // ═══════════════════════════════════════════════════════════════════
+  // ─── Public API ──────────────────────────────────────────────────────────
 
-  /// Called by UI in initState - SAME signature as HomePlanCubit
   Future<void> started({
     required UserType userType,
     HomePlanTab? initialTab,
@@ -58,40 +62,41 @@ class PlansCubit extends Cubit<PlansState> {
       emit(state.copyWith(selectedTab: tab, expandedPlanIds: const {}));
     }
 
-    // Fetch all data if not already loaded
+    if (!globalState.isAuthenticated) return;
+
     if (!state.hasData) {
       await _fetchAllPlans();
+      return;
+    }
+
+    // Cache is warm — trigger silent background refresh if stale.
+    if (_shouldRefresh()) {
+      // Fire-and-forget: UI keeps showing cached data while fetch runs.
+      // catchError suppresses unhandled-future warnings and handles
+      // the edge case where the cubit is closed before the fetch completes.
+      _fetchAllPlans().catchError((_) {});
     }
   }
 
-  /// Called by UI on tab tap - SAME signature as HomePlanCubit
   Future<void> changeTab(HomePlanTab tab) async {
     if (tab == state.selectedTab) return;
 
     emit(state.copyWith(
       selectedTab: tab,
       expandedPlanIds: const {},
-      // Drop any in-progress add-on selection when leaving the add-ons tab
-      // so totals/proceed state don't carry across tabs.
       selectedAddOnIds: const <String>{},
     ));
-
-    // Data already loaded in single fetch, no need to fetch per tab
   }
 
-  /// Clears any selected add-ons. Call after a successful purchase flow so
-  /// returning to the tab starts from a clean slate.
   void clearSelectedAddOns() {
     if (state.selectedAddOnIds.isEmpty) return;
     emit(state.copyWith(selectedAddOnIds: const <String>{}));
   }
 
-  /// Called by UI on pull-to-refresh - SAME signature as HomePlanCubit
   Future<void> refreshCurrentTab() async {
     await _fetchAllPlans(forceRefresh: true);
   }
 
-  /// Called by UI to expand/collapse plan card - SAME signature
   void toggleExpanded(String planId) {
     final next = Set<String>.from(state.expandedPlanIds);
     if (next.contains(planId)) {
@@ -102,7 +107,6 @@ class PlansCubit extends Cubit<PlansState> {
     emit(state.copyWith(expandedPlanIds: next));
   }
 
-  /// Called by UI to select/deselect add-on - SAME signature
   void toggleAddon(HomePlanAddOnModel addOn) {
     final next = Set<String>.from(state.selectedAddOnIds);
     if (next.contains(addOn.id)) {
@@ -113,34 +117,31 @@ class PlansCubit extends Cubit<PlansState> {
     emit(state.copyWith(selectedAddOnIds: next));
   }
 
-  /// Called by UI when purchase button pressed - SAME signature
   void purchaseNowPressed(HomePlanModel plan) {
     if (!state.isPurchaseModalOpen) {
       emit(state.copyWith(isPurchaseModalOpen: true));
     }
   }
 
-  /// Called by UI when purchase modal closes - SAME signature
   void purchaseModalClosed() {
     emit(state.copyWith(isPurchaseModalOpen: false));
   }
 
-  /// Called by UI after showing toast - SAME signature
   void toastConsumed() {
     emit(state.copyWith(clearPendingToast: true));
   }
 
-  /// Called on logout - SAME signature as HomePlanCubit
+  /// Clears in-memory state and wipes the HydratedBloc disk cache.
+  /// Called on logout to ensure the next user starts from a clean slate.
   void reset() {
     _isFetching = false;
-    emit(const PlansState());
+    emit(const PlansState()); // HydratedBloc auto-persists the empty state
 
     if (kDebugMode) {
-      debugPrint('✅ PlansCubit.reset(): State reset to initial');
+      debugPrint('✅ PlansCubit.reset(): State and cache cleared');
     }
   }
 
-  /// Called by home screen to preload data - SAME signature as HomePlanCubit
   Future<void> loadInitialPlans({
     bool forceRefresh = false,
     required UserType userType,
@@ -159,9 +160,10 @@ class PlansCubit extends Cubit<PlansState> {
       return;
     }
 
-    if (!forceRefresh && state.hasData) {
+    // Fresh cache: nothing to do.
+    if (!forceRefresh && state.hasData && !_shouldRefresh()) {
       if (kDebugMode) {
-        debugPrint('⚠️ loadInitialPlans: Already loaded, skipping');
+        debugPrint('⚠️ loadInitialPlans: Cache fresh, skipping');
       }
       return;
     }
@@ -169,13 +171,41 @@ class PlansCubit extends Cubit<PlansState> {
     await _fetchAllPlans(forceRefresh: forceRefresh);
   }
 
-  // ═══════════════════════════════════════════════════════════════════
-  // PRIVATE - SIMPLIFIED IMPLEMENTATION (Single fetch for all data)
-  // ═══════════════════════════════════════════════════════════════════
+  // ─── HydratedCubit ───────────────────────────────────────────────────────
 
-  /// Single method to fetch ALL plans + add-ons in parallel
+  @override
+  PlansState? fromJson(Map<String, dynamic> json) {
+    try {
+      return PlansState.fromJson(json);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('⚠️ PlansCubit.fromJson: Failed to restore cache - $e');
+      }
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(PlansState state) {
+    // Skip writes while a fetch is in-flight — keeps the previous cache intact
+    // so a crash mid-fetch doesn't wipe the disk.
+    // All other states (success, failure, initial) are written, including the
+    // empty PlansState() emitted by reset() — this is what clears the old
+    // user's cached plans from disk on logout.
+    if (state.isLoading || state.isRefreshing) return null;
+    try {
+      return state.toJson();
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('⚠️ PlansCubit.toJson: Failed to serialize cache - $e');
+      }
+      return null;
+    }
+  }
+
+  // ─── Private ─────────────────────────────────────────────────────────────
+
   Future<void> _fetchAllPlans({bool forceRefresh = false}) async {
-    // Prevent duplicate fetches
     if (_isFetching) {
       if (kDebugMode) {
         debugPrint('⚠️ PlansCubit: Already fetching, skipping');
@@ -183,7 +213,6 @@ class PlansCubit extends Cubit<PlansState> {
       return;
     }
 
-    // Skip if data exists and cache is fresh (unless forceRefresh)
     if (!forceRefresh && state.hasData && !_shouldRefresh()) {
       if (kDebugMode) {
         debugPrint('⚠️ PlansCubit: Data fresh, skipping fetch');
@@ -192,27 +221,34 @@ class PlansCubit extends Cubit<PlansState> {
     }
 
     _isFetching = true;
-    emit(state.copyWith(status: PlansStatus.loading, errorMessage: null));
+    final hadDataBefore = state.hasData;
+
+    // Keep cached data visible during a background refresh.
+    emit(state.copyWith(
+      status: hadDataBefore ? PlansStatus.refreshing : PlansStatus.loading,
+      errorMessage: null,
+    ));
 
     if (kDebugMode) {
-      debugPrint('🔄 PlansCubit: Fetching all plans...');
+      debugPrint(
+        '🔄 PlansCubit: Fetching all plans (${hadDataBefore ? "silent refresh" : "initial load"})...',
+      );
     }
 
     try {
-      // Fetch plans and add-ons in parallel for better performance
       final results = await Future.wait([
         _repository.fetchCategorizedPlans(forceRefresh: forceRefresh),
         _repository.fetchAddOnsData(forceRefresh: forceRefresh),
       ]);
 
+      if (isClosed) return;
+
       final plansResult = results[0] as PlanCategorizationResult;
       final addOnsResult = results[1] as AddOnsResult;
-
       final now = DateTime.now();
 
       emit(state.copyWith(
         status: PlansStatus.success,
-        // Plans data
         dailyApiPlans: _filterBase(plansResult.dailyPlans),
         weeklyApiPlans: _filterBase(plansResult.weeklyPlans),
         monthlyApiPlans: _filterBase(plansResult.monthlyPlans),
@@ -220,17 +256,13 @@ class PlansCubit extends Cubit<PlansState> {
         roamEasyApiPlans: _filterBase(plansResult.roamEasyPlans),
         mifiApiPlans: _filterBase(plansResult.mifiPlans),
         libertyGlobalApiPlans: _filterBase(plansResult.libertyGlobalPlans),
-        postpaidRoamingApiPlans:
-            _filterPostpaid(plansResult.postpaidRoamingPlans),
-        // Add-ons data
+        postpaidRoamingApiPlans: _filterPostpaid(plansResult.postpaidRoamingPlans),
         addOns: addOnsResult.addOns,
         addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
         secondaryPlans: addOnsResult.secondaryPlans,
         standAlonePlans: addOnsResult.standAlonePlans,
-        // Timestamps
         lastFetchedAt: now,
         addOnsApiLastSyncedAt: now,
-        // Clear error
         errorMessage: null,
       ));
     } catch (e) {
@@ -240,44 +272,44 @@ class PlansCubit extends Cubit<PlansState> {
         debugPrint('❌ PlansCubit: Error fetching plans - $e');
       }
 
-      // Emit failure with toast
-      _emitFailureWithToast(errorMsg);
+      if (hadDataBefore) {
+        // Keep cached data visible; show toast only.
+        final nextId = state.toastSequence + 1;
+        emit(state.copyWith(
+          status: PlansStatus.success,
+          pendingToast: PlansToastMessage(id: nextId, message: errorMsg),
+          toastSequence: nextId,
+        ));
+      } else {
+        _emitFailureWithToast(errorMsg);
+      }
     } finally {
       _isFetching = false;
     }
   }
 
-  /// Emit failure state with toast message
   void _emitFailureWithToast(String errorMessage) {
-    final nextToastId = state.toastSequence + 1;
-    final toast = PlansToastMessage(
-      id: nextToastId,
-      message: errorMessage,
-    );
-
+    final nextId = state.toastSequence + 1;
     emit(state.copyWith(
       status: PlansStatus.failure,
       errorMessage: errorMessage,
-      pendingToast: toast,
-      toastSequence: nextToastId,
+      pendingToast: PlansToastMessage(id: nextId, message: errorMessage),
+      toastSequence: nextId,
     ));
   }
 
-  /// Get default tab based on user type
   HomePlanTab _defaultTabForUserType(UserType userType) {
     return userType == UserType.postpaid
         ? HomePlanTab.postpaidRoaming
         : HomePlanTab.monthly;
   }
 
-  /// Check if cache is stale (1 hour TTL)
   bool _shouldRefresh() {
     if (state.lastFetchedAt == null) return true;
-    final age = DateTime.now().difference(state.lastFetchedAt!);
-    return age > const Duration(hours: 1);
+    return DateTime.now().difference(state.lastFetchedAt!) >
+        const Duration(hours: 1);
   }
 
-  /// Substring match against the global exclusion list (case-insensitive).
   bool _isExcludedPlanName(String name) {
     final lower = name.toLowerCase();
     return _excludedPlanNames.any(lower.contains);
@@ -291,7 +323,6 @@ class PlansCubit extends Cubit<PlansState> {
   ) =>
       plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
 
-  /// Convert exception to user-friendly message
   String _friendlyErrorMessage(dynamic error) {
     final msg = error.toString().toLowerCase();
 

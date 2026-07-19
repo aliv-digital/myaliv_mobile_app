@@ -327,10 +327,12 @@ class BasePlanModel {
   bool get isStandAlonePlan => planType.toUpperCase() == 'S';
   bool get isAddOnPlan => planType.toUpperCase() == 'A';
 
-  // ===== Debug Method =====
+  // ===== Serialization =====
 
-  /// Full typed map for debugging or temporary logging.
-  Map<String, dynamic> toDebugMap() {
+  factory BasePlanModel.fromJson(Map<String, dynamic> json) =>
+      BasePlanModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'PlanID': planId,
       'PlanName': planName,
@@ -354,8 +356,7 @@ class BasePlanModel {
       'VoiceUnlimited': voiceUnlimited,
       'DataUnlimited': dataUnlimited,
       'SMSUnlimited': smsUnlimited,
-      'AvailableBoltOns':
-          availableBoltOns.map((item) => item.toDebugMap()).toList(),
+      'AvailableBoltOns': availableBoltOns.map((b) => b.toJson()).toList(),
       'CurrentlyAssigned': currentlyAssigned,
       'PlanRenewable': planRenewable,
       'PaymentOption': paymentOption,
@@ -366,9 +367,8 @@ class BasePlanModel {
       'PlanGroupSortOrder': planGroupSortOrder,
       'ProrateOnActivate': prorateOnActivate,
       'ProrateOnDeactivate': prorateOnDeactivate,
-      'PlanCapabilities':
-          planCapabilities.map((item) => item.toDebugMap()).toList(),
-      'PlanBuckets': planBuckets.map((item) => item.toDebugMap()).toList(),
+      'PlanCapabilities': planCapabilities.map((c) => c.toJson()).toList(),
+      'PlanBuckets': planBuckets.map((b) => b.toJson()).toList(),
       'ChannelTypes': channelTypes,
       'VIPTypes': vipTypes,
       'Roles': roles,
@@ -388,10 +388,14 @@ class BasePlanModel {
       'CreditClass': creditClass,
       'VATAmount': vatAmount,
       'PlanSortOrder': planSortOrder,
-      'DataRules': dataRules?.toDebugMap(),
-      'HasRawPayload': rawPayload != null,
+      'DataRules': dataRules?.toJson(),
     };
   }
+
+  // ===== Debug Method =====
+
+  Map<String, dynamic> toDebugMap() => toJson()
+    ..['HasRawPayload'] = rawPayload != null;
 
   // ===== Parsing Utilities =====
 
@@ -468,12 +472,15 @@ class BasePlanCapabilityModel {
     );
   }
 
-  Map<String, dynamic> toDebugMap() {
-    return <String, dynamic>{
-      'PlanCapabilityName': planCapabilityName,
-      'PlanCapabilityType': planCapabilityType,
-    };
-  }
+  factory BasePlanCapabilityModel.fromJson(Map<String, dynamic> json) =>
+      BasePlanCapabilityModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'PlanCapabilityName': planCapabilityName,
+        'PlanCapabilityType': planCapabilityType,
+      };
+
+  Map<String, dynamic> toDebugMap() => toJson();
 }
 
 /// One bucket inside a plan payload.
@@ -508,17 +515,20 @@ class BasePlanBucketModel {
     );
   }
 
-  Map<String, dynamic> toDebugMap() {
-    return <String, dynamic>{
-      'Name': name,
-      'Amount': amount,
-      'Unit': unit,
-      'BucketOrder': bucketOrder,
-      'Suppress': suppress,
-      'Unlimited': unlimited,
-      'BucketUnit': bucketUnit,
-    };
-  }
+  factory BasePlanBucketModel.fromJson(Map<String, dynamic> json) =>
+      BasePlanBucketModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'Name': name,
+        'Amount': amount,
+        'Unit': unit,
+        'BucketOrder': bucketOrder,
+        'Suppress': suppress,
+        'Unlimited': unlimited,
+        'BucketUnit': bucketUnit,
+      };
+
+  Map<String, dynamic> toDebugMap() => toJson();
 }
 
 /// DataRules nested object from API payload.
@@ -539,10 +549,13 @@ class BasePlanDataRulesModel {
     );
   }
 
-  Map<String, dynamic> toDebugMap() {
-    return <String, dynamic>{
-      'PlanId': planId,
-      'RequireAltContactPhone': requireAltContactPhone,
-    };
-  }
+  factory BasePlanDataRulesModel.fromJson(Map<String, dynamic> json) =>
+      BasePlanDataRulesModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'PlanId': planId,
+        'RequireAltContactPhone': requireAltContactPhone,
+      };
+
+  Map<String, dynamic> toDebugMap() => toJson();
 }

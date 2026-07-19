@@ -205,6 +205,67 @@ class HomePlansPostPaidPlanModel {
     );
   }
 
+  factory HomePlansPostPaidPlanModel.fromJson(Map<String, dynamic> json) =>
+      HomePlansPostPaidPlanModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'PlanID': planId,
+        'PlanName': planName,
+        'PlanDescription': planDescription,
+        'PlanAmount': planAmount,
+        'PlanType': planType,
+        'Frequency': frequency,
+        'FeatureCodes': featureCodes,
+        'StartDate': startDate,
+        'EndDate': endDate,
+        'PlanDetails': planDetails,
+        'CreatedBy': createdBy,
+        'PublishedBy': publishedBy,
+        'RetiredBy': retiredBy,
+        'AutoRenew': autoRenew,
+        'IsEditable': isEditable,
+        'Voice': voice,
+        'Data': data,
+        'SMS': sms,
+        'MTSubscriptionID': mtSubscriptionId,
+        'VoiceUnlimited': voiceUnlimited,
+        'DataUnlimited': dataUnlimited,
+        'SMSUnlimited': smsUnlimited,
+        'AvailableBoltOns': availableBoltOns.map((b) => b.toJson()).toList(),
+        'CurrentlyAssigned': currentlyAssigned,
+        'PlanRenewable': planRenewable,
+        'PaymentOption': paymentOption,
+        'CanICB': canIcb,
+        'HierarchyType': hierarchyType,
+        'PlanGroup': planGroup,
+        'PlanGroupID': planGroupId,
+        'PlanGroupSortOrder': planGroupSortOrder,
+        'ProrateOnActivate': prorateOnActivate,
+        'ProrateOnDeactivate': prorateOnDeactivate,
+        'PlanCapabilities': planCapabilities.map((c) => c.toJson()).toList(),
+        'PlanBuckets': planBuckets.map((b) => b.toJson()).toList(),
+        'ChannelTypes': channelTypes,
+        'VIPTypes': vipTypes,
+        'Roles': roles,
+        'Cugs': cugs,
+        'Sugs': sugs,
+        'UnlimitedBuckets': unlimitedBuckets,
+        'ActiveCCard': activeCCard,
+        'SubscriberLines': subscriberLines,
+        'PurchaseLimit': purchaseLimit,
+        'PurchaseLimitStartDate': purchaseLimitStartDate,
+        'PurchaseLimitEndDate': purchaseLimitEndDate,
+        'ContractAge': contractAge,
+        'ActivatedAge': activatedAge,
+        'ContractTerm': contractTerm,
+        'Islands': islands,
+        'Rank': rank,
+        'CreditClass': creditClass,
+        'VATAmount': vatAmount,
+        'PlanSortOrder': planSortOrder,
+        'DataRules': dataRules?.toJson(),
+      };
+
   bool get isStrictPostPaidRoamingPlan {
     return planType.trim().toUpperCase() == 'A' &&
         planGroup.trim().toLowerCase() == 'roaming' &&
@@ -445,6 +506,15 @@ class HomePlansPostPaidPlanCapabilityModel {
           HomePlansPostPaidPlanModel._asString(map['PlanCapabilityType']),
     );
   }
+
+  factory HomePlansPostPaidPlanCapabilityModel.fromJson(
+          Map<String, dynamic> json) =>
+      HomePlansPostPaidPlanCapabilityModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'PlanCapabilityName': planCapabilityName,
+        'PlanCapabilityType': planCapabilityType,
+      };
 }
 
 class HomePlansPostPaidPlanBucketModel {
@@ -479,6 +549,20 @@ class HomePlansPostPaidPlanBucketModel {
       bucketUnit: HomePlansPostPaidPlanModel._asString(map['BucketUnit']),
     );
   }
+
+  factory HomePlansPostPaidPlanBucketModel.fromJson(
+          Map<String, dynamic> json) =>
+      HomePlansPostPaidPlanBucketModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'Name': name,
+        'Amount': amount,
+        'Unit': unit,
+        'BucketOrder': bucketOrder,
+        'Suppress': suppress,
+        'Unlimited': unlimited,
+        'BucketUnit': bucketUnit,
+      };
 }
 
 class HomePlansPostPaidPlanDataRulesModel {
@@ -499,4 +583,13 @@ class HomePlansPostPaidPlanDataRulesModel {
           HomePlansPostPaidPlanModel._asBool(map['RequireAltContactPhone']),
     );
   }
+
+  factory HomePlansPostPaidPlanDataRulesModel.fromJson(
+          Map<String, dynamic> json) =>
+      HomePlansPostPaidPlanDataRulesModel.fromApiMap(json);
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'PlanId': planId,
+        'RequireAltContactPhone': requireAltContactPhone,
+      };
 }
