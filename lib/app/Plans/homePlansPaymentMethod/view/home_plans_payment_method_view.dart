@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_event.dart';
@@ -35,10 +34,8 @@ class _HomePlansPaymentMethodViewState
   }
 
   void _loadWalletBalanceIfPossible() {
-    final info = context.read<AccountInfoCubit>().state.accountInfo;
-    if (info == null || info.idAcc <= 0) return;
     // BalanceCubit owns the wallet balance app-wide; it caches & refetches.
-    context.read<BalanceCubit>().loadBalances(deviceAccountId: info.idAcc);
+    context.read<BalanceCubit>().loadBalances();
   }
 
   void _onState(BuildContext context, HomePlansPaymentMethodState state) {

@@ -5,6 +5,8 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/repository/balance_repository.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/repository/balance_repository_exception.dart';
 
+typedef DeviceAccountIdProvider = String? Function();
+
 /// Cubit for managing Balance state and business logic
 ///
 /// Features:
@@ -13,24 +15,42 @@ import 'package:myaliv_mobile_app/app/Home/balance/repository/balance_repository
 /// - Provides wallet balance (top-up) and bonus balance (rewards)
 class BalanceCubit extends Cubit<BalanceState> {
   final BalanceRepository _repository;
+  final DeviceAccountIdProvider _deviceAccountIdProvider;
+  int? _cachedDeviceAccountId;
 
-  BalanceCubit(this._repository) : super(BalanceState.initial());
+  BalanceCubit(
+    this._repository, {
+    DeviceAccountIdProvider? deviceAccountIdProvider,
+  }) : _deviceAccountIdProvider =
+           deviceAccountIdProvider ?? (() => globalState.deviceAccountID),
+       super(BalanceState.initial());
 
   /// Load balances from API
   ///
-  /// [deviceAccountId] - The account ID for the device
+  /// The device account ID comes from the authenticated login context.
   /// [forceRefresh] - bypass cache and fetch fresh data
-  Future<void> loadBalances({
-    required int deviceAccountId,
-    bool forceRefresh = false,
-  }) async {
+  Future<void> loadBalances({bool forceRefresh = false}) async {
+    final deviceAccountId = _authenticatedDeviceAccountId;
+    if (deviceAccountId == null) {
+      emit(
+        state.copyWith(
+          status: BalanceStatus.failure,
+          errorMessage: 'Unable to identify the authenticated account.',
+        ),
+      );
+      return;
+    }
+
     // Prevent duplicate loading
     if (state.isLoading) {
       return;
     }
 
-    // Use cache if valid and not forcing refresh
-    if (!forceRefresh && state.isCacheValid && state.hasBalance) {
+    // Use cache only when it belongs to the currently authenticated account.
+    if (!forceRefresh &&
+        _cachedDeviceAccountId == deviceAccountId &&
+        state.isCacheValid &&
+        state.hasBalance) {
       if (kDebugMode) {
         debugPrint('💰 BalanceCubit: Using cached balance data');
       }
@@ -52,6 +72,7 @@ class BalanceCubit extends Cubit<BalanceState> {
         clearError: true,
       );
 
+      _cachedDeviceAccountId = deviceAccountId;
       emit(newState);
 
       if (kDebugMode) {
@@ -86,6 +107,14 @@ class BalanceCubit extends Cubit<BalanceState> {
     }
   }
 
+  int? get _authenticatedDeviceAccountId {
+    final rawId = _deviceAccountIdProvider()?.trim();
+    if (rawId == null || rawId.isEmpty) return null;
+
+    final parsedId = int.tryParse(rawId);
+    return parsedId != null && parsedId > 0 ? parsedId : null;
+  }
+
   /// Map repository exceptions to user-friendly messages
   String _getFriendlyErrorMessage(BalanceRepositoryException e) {
     if (e.originalError is HostUnreachableException) {
@@ -116,6 +145,7 @@ class BalanceCubit extends Cubit<BalanceState> {
     if (kDebugMode) {
       debugPrint('🔄 BalanceCubit: Resetting to initial state');
     }
+    _cachedDeviceAccountId = null;
     emit(BalanceState.initial());
   }
 }

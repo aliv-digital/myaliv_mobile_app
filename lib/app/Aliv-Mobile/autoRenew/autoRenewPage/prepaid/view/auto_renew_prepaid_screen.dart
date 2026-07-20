@@ -1,7 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -48,12 +47,7 @@ class AutoRenewPrepaidScreen extends StatelessWidget {
     instance<SavedCardsCubit>()
         .fetchSavedCards(forceRefresh: true, userType: UserType.prepaid);
 
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    if (accountInfo != null && accountInfo.idAcc > 0) {
-      instance<BalanceCubit>().loadBalances(
-        deviceAccountId: accountInfo.idAcc,
-      );
-    }
+    instance<BalanceCubit>().loadBalances();
 
     return autoRenewPrepaidBloc;
   }

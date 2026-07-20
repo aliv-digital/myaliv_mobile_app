@@ -62,13 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load best plans
     context.read<BestPlanCubit>().loadPlans(userType: userType.label);
 
-    // Load balances and consumption limits
+    // Balance uses the AccountId from the authenticated login context.
+    context.read<BalanceCubit>().loadBalances();
+
+    // Load account-info-dependent usage data and limits.
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     if (accountInfo != null && accountInfo.idAcc > 0) {
-      context.read<BalanceCubit>().loadBalances(
-        deviceAccountId: accountInfo.idAcc,
-      );
-
       // Load bucket usage summary together with the current plan groups so
       // consumers can read plan-bucket allowance (name/amount/unit) from a
       // single cubit. The plans may still be loading here; the

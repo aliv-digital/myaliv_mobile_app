@@ -1,0 +1,400 @@
+BALANCE ACCOUNT ID ISSUE - INVESTIGATION AND FIX REPORT
+=======================================================
+
+Date: 2026-07-18
+Application: myaliv_mobile_app
+Feature: Home top-up balance / wallet balance / postpaid balance due
+
+
+1. EXECUTIVE SUMMARY
+--------------------
+
+The application displayed $0.00 even though the balance API returned a Wallet
+balance of 181.87 when tested in Postman.
+
+The balance response parser and UI field mapping were correct. The application
+was calling the balance endpoint with a different ID from the one used in the
+successful Postman request.
+
+Previous balance request ID:
+  Account API "id_acc" = 1189111789
+
+Correct authenticated ID:
+  Login/OTP API "AccountId" = 1259947673
+
+The balance flow was changed to use the authenticated AccountId stored in
+globalState.deviceAccountID. Balance requests no longer receive
+accountInfo.idAcc from individual screens.
+
+
+2. RELEVANT API URLS
+--------------------
+
+Configured API base URL:
+  https://mockservice.newcomobile.com/NewCoRestApi
+
+Login/OTP endpoint:
+  POST /v1/MyAliv/Auth/two-factor-auth
+
+Account information endpoint:
+  GET /v1/MyAliv/Account
+
+Balance endpoint:
+  GET /v1/MyAliv/device/{deviceAccountId}/balances
+
+Previous balance URL used by the app:
+  https://mockservice.newcomobile.com/NewCoRestApi/v1/MyAliv/device/1189111789/balances
+
+Balance URL expected after the fix:
+  https://mockservice.newcomobile.com/NewCoRestApi/v1/MyAliv/device/1259947673/balances
+
+
+3. API RESPONSES AND IDENTIFIERS
+--------------------------------
+
+3.1 Login/OTP response
+
+The login flow received the following values:
+
+  {
+    "Ticket": "<REDACTED>",
+    "AccountId": 1259947673
+  }
+
+The Ticket is an authentication credential and must not be committed, copied
+into source code, or printed in logs.
+
+AuthCompletionService saves AccountId as deviceAccountID:
+
+  authManager.saveAuth(
+    deviceAccountID: accountId,
+    ...
+  )
+
+It is then available through:
+
+  globalState.deviceAccountID
+
+For the investigated login:
+
+  globalState.deviceAccountID = "1259947673"
+
+
+3.2 Account information response
+
+After authentication, the application called:
+
+  GET /v1/MyAliv/Account
+
+The relevant part of that response was:
+
+  {
+    "id_acc": 1189111789,
+    "Username": "2428997091",
+    "FName": "Tanya",
+    "LName": "Bain",
+    "PaymentOption": "PrePay",
+    "OCSKey": "1189111789"
+  }
+
+AccountInfoModel maps "id_acc" to accountInfo.idAcc:
+
+  idAcc: _asInt(_first(source, const ["id_acc", "IdAcc"]))
+
+This value was freshly received from the Account API during the investigated
+login. It was not restored from the HydratedBloc cache in this run.
+
+
+3.3 Supplied Postman balance response
+
+The relevant Wallet group in the supplied response was:
+
+  {
+    "Balance": "181.87",
+    "BalanceGroupName": "Wallet",
+    "Balances": [
+      {
+        "BalanceAmount": "181.87",
+        "BalanceType": "C_MAIN_ACCOUNT",
+        "BalanceDisplayName": "Wallet",
+        "IsActive": true
+      }
+    ]
+  }
+
+The same response also contained a Bonus group whose total Balance was "0".
+
+
+3.4 Actual balance response received by the app before the fix
+
+The connected-device logs confirmed that the app called:
+
+  GET /v1/MyAliv/device/1189111789/balances
+
+The server returned HTTP 200 with:
+
+  [
+    {
+      "Balance": "0.00",
+      "BalanceGroupName": "Wallet",
+      "Balances": [
+        {
+          "BalanceAmount": "0.00",
+          "BalanceType": "C_MAIN_ACCOUNT",
+          "BalanceDisplayName": "Wallet",
+          "IsActive": true
+        }
+      ]
+    }
+  ]
+
+The logs then correctly showed:
+
+  Processing group: Wallet, balance: 0.00
+  Wallet balance: $0.00
+  BalanceCubit: Balances loaded successfully
+
+This proved that the UI did not replace 181.87 with zero. The app actually
+received 0.00 from the URL it requested.
+
+
+4. BALANCE FIELD MAPPING
+------------------------
+
+The top-up balance and postpaid balance-due UI use:
+
+  BalanceGroupName == "Wallet"
+
+The displayed numeric amount comes from:
+
+  Balance
+
+Parser logic:
+
+  final groupName = item["BalanceGroupName"];
+  final balanceValue = item["Balance"];
+
+  if (groupName == "Wallet") {
+    walletBalance = double.tryParse(balanceValue ?? "0") ?? 0.0;
+  }
+
+Therefore, this response:
+
+  {
+    "BalanceGroupName": "Wallet",
+    "Balance": "181.87"
+  }
+
+is parsed as walletBalance = 181.87 and should display as $181.87.
+
+The nested "BalanceAmount" was not the field responsible for the main balance
+shown on the Home card.
+
+
+5. PREVIOUS APPLICATION SETUP
+-----------------------------
+
+Before the fix, each screen supplied a deviceAccountId to BalanceCubit:
+
+  loadBalances(deviceAccountId: accountInfo.idAcc)
+
+The Home screen obtained that value from:
+
+  AccountInfoCubit.state.accountInfo.idAcc
+
+For the investigated account:
+
+  accountInfo.idAcc = 1189111789
+
+BalanceCubit passed this value to BalanceRepository and BalanceApiService,
+which constructed:
+
+  /v1/MyAliv/device/1189111789/balances
+
+The same previous pattern existed in these balance-loading entry points:
+
+  - Home screen
+  - Home plans payment-method screen
+  - Postpaid make-payment confirmation screen
+  - Prepaid auto-renew screen
+
+Meanwhile, the plans API already used the authenticated login ID:
+
+  auth.deviceAccountID
+
+The connected-device logs demonstrated this mismatch during one session:
+
+  Plans request ID:   1259947673
+  Balance request ID: 1189111789
+
+
+6. ROOT CAUSE
+-------------
+
+The root cause was identifier mismatch.
+
+Two different APIs returned two different identifiers:
+
+  Login/OTP AccountId: 1259947673
+  Account API id_acc:  1189111789
+
+The balance flow used Account API id_acc, while the successful balance request
+required the authenticated AccountId from the login response.
+
+This was not:
+
+  - A Balance field mapping problem
+  - A number-formatting problem
+  - A BlocBuilder rebuild problem
+  - A JSON parsing problem
+  - A cache problem in the investigated run
+
+
+7. IMPLEMENTED SOLUTION
+-----------------------
+
+7.1 Centralized authenticated ID resolution
+
+BalanceCubit now obtains the ID internally from:
+
+  globalState.deviceAccountID
+
+The default provider is:
+
+  deviceAccountIdProvider ?? (() => globalState.deviceAccountID)
+
+The returned String is trimmed, parsed as an integer, and required to be
+greater than zero before a request is made.
+
+
+7.2 Simplified screen calls
+
+Screens now request balances with:
+
+  loadBalances()
+
+They no longer pass:
+
+  accountInfo.idAcc
+
+This prevents individual balance screens from selecting the wrong identifier.
+
+
+7.3 Account-aware balance caching
+
+BalanceCubit already had a five-minute cache. The cache is now also associated
+with the authenticated device account ID.
+
+A cached balance is reused only when:
+
+  - The cache is less than five minutes old
+  - Balance data exists
+  - The authenticated AccountId matches the ID that produced the cached data
+
+If the authenticated account changes, BalanceCubit fetches the balance again
+instead of displaying another account's cached value.
+
+
+7.4 Missing or invalid authentication ID
+
+If globalState.deviceAccountID is missing, non-numeric, zero, or negative,
+BalanceCubit does not call the balance API. It emits a failure state with:
+
+  Unable to identify the authenticated account.
+
+
+8. CURRENT BALANCE FLOW
+-----------------------
+
+The current flow is:
+
+  Login/OTP API
+    -> AccountId: 1259947673
+    -> AuthCompletionService
+    -> AuthManager.saveAuth(deviceAccountID: accountId)
+    -> globalState.deviceAccountID
+    -> BalanceCubit.loadBalances()
+    -> BalanceRepository.fetchBalances(deviceAccountId: 1259947673)
+    -> GET /v1/MyAliv/device/1259947673/balances
+    -> Select response item where BalanceGroupName == "Wallet"
+    -> Parse the item's Balance field
+    -> BalanceState.walletBalance
+    -> BalanceAmountText
+    -> Display $181.87
+
+
+9. FILES CHANGED FOR THE FIX
+----------------------------
+
+Primary implementation:
+
+  lib/app/Home/balance/cubit/balance_cubit.dart
+
+Updated balance-loading entry points:
+
+  lib/app/Home/home/home_screen.dart
+  lib/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_view.dart
+  lib/app/Aliv-Mobile/makePayment/confirmation/postpaid/view/
+    make_payment_confirmation_postpaid_screen.dart
+  lib/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/
+    auto_renew_prepaid_screen.dart
+
+Added test:
+
+  test/app/Home/balance/cubit/balance_cubit_test.dart
+
+
+10. VERIFICATION
+----------------
+
+Targeted static analysis:
+
+  Result: No issues found.
+
+BalanceCubit tests:
+
+  Result: All 3 tests passed.
+
+The tests verify:
+
+  - Authenticated AccountId 1259947673 is passed to the repository
+  - A Wallet balance of 181.87 reaches BalanceState
+  - No API request is made without a valid authenticated ID
+  - Cached balance data is not reused after the authenticated ID changes
+
+A hot restart or full rebuild is required before validating the structural
+BalanceCubit change on a running device.
+
+
+11. SCOPE AND REMAINING AUDIT
+-----------------------------
+
+This change corrects balance requests only.
+
+Other application features still use accountInfo.idAcc in some places,
+including limits, auto-renew operations, future plans, usage-related requests,
+and referrals. Plans already use the authenticated deviceAccountID.
+
+It should not be assumed that every endpoint requires the same identifier.
+Each remaining /device/{id} endpoint should be compared with its API contract
+or a known-good Postman request before changing it.
+
+If all /device/{id} endpoints are confirmed to require the login AccountId,
+the recommended follow-up is to introduce one shared authenticated device-ID
+resolver and migrate those endpoints with feature-specific tests.
+
+
+12. SECURITY NOTE
+-----------------
+
+The Ticket returned by login is used as an authentication credential.
+
+Required precautions:
+
+  - Do not store a real Ticket in main.dart or another source file
+  - Do not commit Tickets to version control
+  - Do not print full Tickets or Authorization headers in application logs
+  - Redact Tickets from screenshots, reports, and chat messages
+  - Log out or invalidate any Ticket that has already been exposed
+
+All Ticket content in this report is intentionally redacted.
