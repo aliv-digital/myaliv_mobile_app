@@ -13,7 +13,7 @@ class PhoneDropdownHelper {
   // strip the "_<uuid>" suffix before processing.
   static String stripTnSuffix(String tn) {
     final i = tn.indexOf('_');
-    return i == -1 ? tn : '${tn.substring(0, i)}*DC*';
+    return i == -1 ? tn : '${tn.substring(0, i)}*dc*';
   }
 
   /// First device's TN (suffix-stripped). Empty string if devices is empty.
