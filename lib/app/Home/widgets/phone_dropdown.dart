@@ -48,8 +48,14 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
             final accountInfo = accountState.accountInfo;
             final devices = deviceState.allDeviceLimits;
 
-            final visibleNumbers = PhoneDropdownHelper.getVisibleNumbers(accountInfo, devices);
-            final primaryPhone = PhoneDropdownHelper.getPrimaryPhone(accountInfo, devices);
+            final visibleNumbers = PhoneDropdownHelper.getVisibleNumbers(
+              accountInfo,
+              devices,
+            );
+            final primaryPhone = PhoneDropdownHelper.getPrimaryPhone(
+              accountInfo,
+              devices,
+            );
 
             return ValueListenableBuilder<String>(
               valueListenable: selectedNotifier,
@@ -114,7 +120,9 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                       ),
 
                       iconStyleData: IconStyleData(
-                        icon: SvgPicture.asset('assets/icons/arrow_dropdown.svg'),
+                        icon: SvgPicture.asset(
+                          'assets/icons/arrow_dropdown.svg',
+                        ),
                       ),
 
                       style: const TextStyle(

@@ -31,8 +31,9 @@ class PhoneDropdownItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayNumber =
-        number.isNotEmpty ? _formatPhone(number) : 'No phone number';
+    final displayNumber = number.isNotEmpty
+        ? _formatPhone(number)
+        : 'No phone number';
 
     return Row(
       children: [
@@ -74,8 +75,9 @@ class PhoneDropdownSelectedItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayNumber =
-        number.isNotEmpty ? _formatPhone(number) : 'No phone number';
+    final displayNumber = number.isNotEmpty
+        ? _formatPhone(number)
+        : 'No phone number';
 
     return Row(
       children: [
