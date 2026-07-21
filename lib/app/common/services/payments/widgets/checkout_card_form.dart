@@ -239,15 +239,11 @@ class _VisaPrefix extends StatelessWidget {
 class _CheckoutCardFormStyles {
   const _CheckoutCardFormStyles._();
 
-  // pubspec maps the CircularPro family's default entry (w400) to the
-  // Bold cut and w700 to the Book cut, so w400 here renders bold glyphs
-  // and w700 renders book glyphs.
   static const TextStyle label = TextStyle(
-    color: Color(0xFF1C1C1C),
+    color: Color(0xFF222222),
     fontSize: 14,
-    fontFamily: AutoRenewPrepaidTheme.fontFamily,
-    fontWeight: FontWeight.w400,
-    height: 1.43,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
   );
 
   static const TextStyle input = TextStyle(
@@ -268,8 +264,8 @@ class _CheckoutCardFormStyles {
 
   static const TextStyle button = TextStyle(
     fontSize: 15,
-    fontFamily: AutoRenewPrepaidTheme.fontFamily,
-    fontWeight: FontWeight.w400,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
     height: 1.2,
   );
 }
