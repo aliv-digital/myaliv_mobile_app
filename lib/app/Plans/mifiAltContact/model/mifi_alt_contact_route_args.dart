@@ -13,6 +13,9 @@ class MifiAltContactRouteArgs extends Equatable {
   /// `true` → plan should start immediately, `false` → future plan.
   final bool forceNow;
 
+  /// Active plan end date to use as the future plan's start date.
+  final String futurePlanStartDate;
+
   /// Pre-fills the phone field when the account already has an alt number
   /// on file. The user can still edit before continuing.
   final String prefilledAltNumber;
@@ -21,6 +24,7 @@ class MifiAltContactRouteArgs extends Equatable {
     required this.fallbackPlan,
     this.selectedApiPlan,
     this.forceNow = true,
+    this.futurePlanStartDate = '',
     this.prefilledAltNumber = '',
   });
 
@@ -32,6 +36,7 @@ class MifiAltContactRouteArgs extends Equatable {
         selectedApiPlan,
         fallbackPlan,
         forceNow,
+        futurePlanStartDate,
         prefilledAltNumber,
       ];
 }

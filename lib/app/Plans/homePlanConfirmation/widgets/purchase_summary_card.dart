@@ -45,13 +45,11 @@ class PurchaseSummaryCard extends StatelessWidget {
                   style: HomePlanConfirmationTheme.purchaseSummaryHeaderTitleTextStyle,
                 ),
                 const SizedBox(
-                  height: HomePlanConfirmationTheme
-                      .purchaseSummaryHeaderTitleToPhoneGap,
+                  height: HomePlanConfirmationTheme.purchaseSummaryHeaderTitleToPhoneGap,
                 ),
                 Text(
-                  PhoneNumberFormatterService.format(data.phoneNumber),
-                  style: HomePlanConfirmationTheme
-                      .purchaseSummaryHeaderPhoneTextStyle,
+                  PhoneNumberFormatterService.format(data.phoneNumber), // need to know its API
+                  style: HomePlanConfirmationTheme.purchaseSummaryHeaderPhoneTextStyle,
                 ),
               ],
             ),
@@ -59,16 +57,14 @@ class PurchaseSummaryCard extends StatelessWidget {
 
           Divider(
             height: HomePlanConfirmationTheme.purchaseSummaryDividerHeight,
-            thickness:
-                HomePlanConfirmationTheme.purchaseSummaryDividerThickness,
+            thickness: HomePlanConfirmationTheme.purchaseSummaryDividerThickness,
             color: HomePlanConfirmationTheme.purchaseSummaryDividerColor,
           ),
 
           // Item blocks: strict 16/20/16/20 spacing from Figma.
           for (int i = 0; i < data.items.length; i++) ...[
             Padding(
-              padding:
-                  HomePlanConfirmationTheme.purchaseSummaryItemSectionPadding,
+              padding: HomePlanConfirmationTheme.purchaseSummaryItemSectionPadding,
               child: PurchaseItemRow(
                 item: data.items[i],
                 onRemove: () {
@@ -87,8 +83,7 @@ class PurchaseSummaryCard extends StatelessWidget {
             if (i != data.items.length - 1)
               Divider(
                 height: HomePlanConfirmationTheme.purchaseSummaryDividerHeight,
-                thickness:
-                    HomePlanConfirmationTheme.purchaseSummaryDividerThickness,
+                thickness: HomePlanConfirmationTheme.purchaseSummaryDividerThickness,
                 color: HomePlanConfirmationTheme.purchaseSummaryDividerColor,
               ),
           ],
@@ -97,3 +92,9 @@ class PurchaseSummaryCard extends StatelessWidget {
     );
   }
 }
+/*
+
+"db09c1ce-9969-43d3-a346-a5cb18f1d366xflJE2p1jMIQNX2WVTRvnus7n1rw3kMOv0uC8hrdDH7q0f9CPvwCL41RVpEiJtkJ3OfiWTPlZHjw939hvmDUdg=="
+
+230031957
+ */

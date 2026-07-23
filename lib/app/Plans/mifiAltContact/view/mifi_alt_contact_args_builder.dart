@@ -17,7 +17,7 @@ class MifiAltContactArgsBuilder {
     final fallbackPlan = routeArgs.fallbackPlan;
 
     return HomePlanConfirmationRouteArgs(
-      phoneNumber: _accountUsername(accountState),
+      phoneNumber: _accountPhoneNumber(accountState),
       accountHolderName: _accountDisplayName(accountState),
       primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
       primaryPlanName: _planName(
@@ -27,7 +27,7 @@ class MifiAltContactArgsBuilder {
       primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? 'P',
       primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
       primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
-      futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',
+      futurePlanStartDate: routeArgs.futurePlanStartDate,
       flow: HomePlanConfirmationEntryFlow.skip,
       forceNow: routeArgs.forceNow,
       altContactNumber: altContactNumber,
@@ -41,10 +41,8 @@ class MifiAltContactArgsBuilder {
     return _nameFromEmail(accountState.email);
   }
 
-  static String _accountUsername(AccountInfoState accountState) {
+  static String _accountPhoneNumber(AccountInfoState accountState) {
     final accountInfo = accountState.accountInfo;
-    final username = accountInfo?.username.trim() ?? '';
-    if (username.isNotEmpty) return username;
     final primaryPhone = accountInfo?.primaryPhoneNumber.trim() ?? '';
     if (primaryPhone.isNotEmpty) return primaryPhone;
     final phone = accountInfo?.phoneNumber.trim() ?? '';

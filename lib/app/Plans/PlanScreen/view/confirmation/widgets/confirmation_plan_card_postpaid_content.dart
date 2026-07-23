@@ -26,7 +26,7 @@ class ConfirmationPlanCardPostpaidContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final accountState = instance<AccountInfoCubit>().state;
     final userName = accountDisplayName(accountState);
-    final userNumber = accountUsername(accountState);
+    final userNumber = accountPhoneNumber(accountState);
     final title = planTitleFor(plan);
     final price = planPriceFor(plan);
     final typeLabel = planTypeLabelFor(plan);
