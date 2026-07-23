@@ -27,7 +27,7 @@ class MifiAltContactArgsBuilder {
       primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? 'P',
       primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
       primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
-      futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',
+      futurePlanStartDate: routeArgs.futurePlanStartDate,
       flow: HomePlanConfirmationEntryFlow.skip,
       forceNow: routeArgs.forceNow,
       altContactNumber: altContactNumber,

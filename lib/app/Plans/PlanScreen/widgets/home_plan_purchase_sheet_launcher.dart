@@ -30,6 +30,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
   final plansState = context.read<PlansCubit>().state;
   final hasActivePlan = plansState.addOnsApiPrimaryPlans.isNotEmpty;
   final activePlanEndDate = plansState.earliestAddOnsPrimaryPlan?.endDateTime;
+  final futurePlanStartDate = activePlanEndDate?.toIso8601String() ?? '';
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
@@ -93,6 +94,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
                 selectedApiPlan: selectedApiPlan,
                 fallbackPlan: plan,
                 forceNow: true,
+                futurePlanStartDate: '',
               );
               return;
             }
@@ -103,6 +105,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
                   selectedApiPlan: selectedApiPlan,
                   fallbackPlan: plan,
                   forceNow: true,
+                  futurePlanStartDate: '',
                 ),
               );
               return;
@@ -115,11 +118,13 @@ Future<void> showHomePlanPurchaseBottomSheet({
           onFuturePlanPressed: () {
             Navigator.of(sheetContext).pop();
             if (selectedTab == HomePlanTab.mifi) {
+              debugPrint('MIFI: Future plan pressed');
               _pushMifiAltContact(
                 context: context,
                 selectedApiPlan: selectedApiPlan,
                 fallbackPlan: plan,
                 forceNow: false,
+                futurePlanStartDate: futurePlanStartDate,
               );
               return;
             }
@@ -129,6 +134,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
                 selectedApiPlan: selectedApiPlan,
                 fallbackPlan: plan,
                 forceNow: false,
+                futurePlanStartDate: futurePlanStartDate,
               ),
             );
           },
@@ -151,6 +157,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
               selectedApiPlan: selectedApiPlan,
               fallbackPlan: plan,
               forceNow: true,
+              futurePlanStartDate: '',
             );
             return;
           }
@@ -161,6 +168,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
                 selectedApiPlan: selectedApiPlan,
                 fallbackPlan: plan,
                 forceNow: true,
+                futurePlanStartDate: '',
               ),
             );
             return;
@@ -180,6 +188,7 @@ void _pushMifiAltContact({
   required BasePlanModel? selectedApiPlan,
   required HomePlanModel fallbackPlan,
   required bool forceNow,
+  required String futurePlanStartDate,
 }) {
   final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
   final existingAltNumber = accountInfo?.altPhoneNumber.trim() ?? '';
@@ -194,6 +203,7 @@ void _pushMifiAltContact({
         selectedApiPlan: selectedApiPlan,
         fallbackPlan: fallbackPlan,
         forceNow: forceNow,
+        futurePlanStartDate: futurePlanStartDate,
         altContactNumber: existingAltNumber,
       ),
     );
@@ -206,6 +216,7 @@ void _pushMifiAltContact({
       selectedApiPlan: selectedApiPlan,
       fallbackPlan: fallbackPlan,
       forceNow: forceNow,
+      futurePlanStartDate: futurePlanStartDate,
       prefilledAltNumber: existingAltNumber,
     ),
   );
@@ -245,6 +256,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   required BasePlanModel? selectedApiPlan,
   required HomePlanModel fallbackPlan,
   required bool forceNow,
+  required String futurePlanStartDate,
   String altContactNumber = '',
   bool marketingOptIn = false,
 }) {
@@ -261,7 +273,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
     primaryPlanTypeCode: selectedApiPlan?.planType.trim() ?? 'P',
     primaryPlanPrice: selectedApiPlan?.planAmount ?? fallbackPlan.price,
     primaryPlanVatAmount: selectedApiPlan?.vatAmount ?? 0,
-    futurePlanStartDate: selectedApiPlan?.startDate.trim() ?? '',
+    futurePlanStartDate: futurePlanStartDate,
     flow: HomePlanConfirmationEntryFlow.skip,
     forceNow: forceNow,
     altContactNumber: altContactNumber,

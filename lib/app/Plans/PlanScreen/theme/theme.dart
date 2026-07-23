@@ -475,14 +475,14 @@ class HomePlanTheme {
   static final TextStyle bottomSheetPrimaryActionDualStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     color: Colors.white,
     height: 1.0,
   );
   static final TextStyle bottomSheetSecondaryActionDualStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w700,
     color: planPriceBorder,
     height: 1.0,
   );

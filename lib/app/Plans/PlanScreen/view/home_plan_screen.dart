@@ -106,7 +106,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
       id: plan.planId,
       title: plan.planName,
       subtitle: _planDurationText(plan),
-      price: plan.planAmount,
+      price: plan.planAmount + plan.vatAmount,
       description: plan.planDescription,
       benefits: const <HomePlanBenefit>[],
     );
@@ -117,7 +117,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
       id: plan.planId,
       title: plan.planName,
       subtitle: '',
-      price: plan.planAmount,
+      price: plan.planAmount + plan.vatAmount,
       description: plan.planDescription,
       benefits: const <HomePlanBenefit>[],
     );
@@ -333,6 +333,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
         );
       },
       onMifiPurchaseNow: (plan) {
+        // need to work here
         _onPurchaseNowPressed(
           context,
           _toMifiPurchaseSheetPlan(plan),
