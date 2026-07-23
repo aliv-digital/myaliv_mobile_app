@@ -200,7 +200,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   String _accountPhoneNumber() {
     final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
     return _firstNonEmpty(<String?>[
-      accountInfo?.username,
       accountInfo?.primaryPhoneNumber,
       accountInfo?.phoneNumber,
     ]);

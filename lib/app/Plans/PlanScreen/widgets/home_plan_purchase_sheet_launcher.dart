@@ -263,7 +263,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   final accountState = instance<AccountInfoCubit>().state;
 
   return HomePlanConfirmationRouteArgs(
-    phoneNumber: _accountUsername(accountState),
+    phoneNumber: _accountPhoneNumber(accountState),
     accountHolderName: _accountDisplayName(accountState),
     primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
     primaryPlanName: _primaryPlanName(
@@ -290,11 +290,10 @@ String _accountDisplayName(AccountInfoState accountState) {
   return _nameFromEmail(accountState.email);
 }
 
-String _accountUsername(AccountInfoState accountState) {
+String _accountPhoneNumber(AccountInfoState accountState) {
   final accountInfo = accountState.accountInfo;
   // final username = accountInfo?.username.trim() ?? '';
   // if (username.isNotEmpty) return username;
-
   final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
   if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
 

@@ -36,7 +36,13 @@ String accountDisplayName(AccountInfoState state) {
   return nameFromEmail(state.email);
 }
 
-String accountUsername(AccountInfoState state) {
-  final username = state.accountInfo?.username.trim() ?? '';
-  return username.isEmpty ? '--' : username;
+String accountPhoneNumber(AccountInfoState state) {
+  final accountInfo = state.accountInfo;
+  final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
+  if (primaryPhoneNumber.isNotEmpty) {
+    return formatConfirmationPhone(primaryPhoneNumber);
+  }
+
+  final phoneNumber = accountInfo?.phoneNumber.trim() ?? '';
+  return phoneNumber.isEmpty ? '--' : formatConfirmationPhone(phoneNumber);
 }
