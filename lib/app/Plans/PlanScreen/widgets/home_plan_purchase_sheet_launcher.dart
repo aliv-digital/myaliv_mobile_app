@@ -292,8 +292,8 @@ String _accountDisplayName(AccountInfoState accountState) {
 
 String _accountUsername(AccountInfoState accountState) {
   final accountInfo = accountState.accountInfo;
-  final username = accountInfo?.username.trim() ?? '';
-  if (username.isNotEmpty) return username;
+  // final username = accountInfo?.username.trim() ?? '';
+  // if (username.isNotEmpty) return username;
 
   final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
   if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
