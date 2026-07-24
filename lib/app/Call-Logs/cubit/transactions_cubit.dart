@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/transactions_repository.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
 import 'transactions_state.dart';
 
@@ -9,13 +9,13 @@ import 'transactions_state.dart';
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     required TransactionsRepository repository,
-    required AccountInfoCubit accountInfoCubit,
+    required DeviceLimitsCubit deviceLimitsCubit,
   })  : _repository = repository,
-        _accountInfoCubit = accountInfoCubit,
+        _deviceLimitsCubit = deviceLimitsCubit,
         super(const TransactionsState());
 
   final TransactionsRepository _repository;
-  final AccountInfoCubit _accountInfoCubit;
+  final DeviceLimitsCubit _deviceLimitsCubit;
 
   /// Fetch transactions for the selected month
   Future<void> fetchTransactions() async {
@@ -24,11 +24,11 @@ class TransactionsCubit extends Cubit<TransactionsState> {
           'TransactionsCubit: Fetching transactions for ${state.currentMonth}');
     }
 
-    final accountId = _accountInfoCubit.state.accountInfo?.idAcc ?? 0;
-    if (accountId <= 0) {
+    final deviceId = _deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) {
       emit(state.copyWith(
         status: TransactionsStatus.failure,
-        errorMessage: 'Account ID unavailable. Please try again.',
+        errorMessage: 'Device ID unavailable. Please try again.',
       ));
       return;
     }
@@ -39,7 +39,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       final transactions = await _repository.fetchTransactions(
         startDate: state.startDate,
         endDate: state.endDate,
-        accountId: accountId,
+        accountId: deviceId,
       );
 
       emit(state.copyWith(

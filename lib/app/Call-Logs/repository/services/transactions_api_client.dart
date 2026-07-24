@@ -18,7 +18,7 @@ class TransactionsApiClient {
   /// Parameters:
   /// - [startDate]: Start date in ISO 8601 format
   /// - [endDate]: End date in ISO 8601 format
-  /// - [accountId]: Device account id (from `id_acc`)
+  /// - [accountId]: Device ID from the `Account/devices` response
   ///
   /// Returns raw JSON response string on success.
   /// Throws [NetworkException] on errors.
