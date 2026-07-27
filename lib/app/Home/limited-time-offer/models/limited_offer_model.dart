@@ -74,8 +74,13 @@ class LimitedOfferModel {
     return expireOn.difference(now);
   }
 
-  /// Check if offer has expired
-  bool get isExpired => DateTime.now().isAfter(expireOn);
+  /// Check if offer has expired (date-only, so offer is valid for the entire expiry day)
+  bool get isExpired {
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final expireDate = DateTime(expireOn.year, expireOn.month, expireOn.day);
+    return todayDate.isAfter(expireDate);
+  }
 
   /// Check if offer is currently active
   bool get isActive => status == 'active' && !isExpired;

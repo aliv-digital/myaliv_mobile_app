@@ -1,23 +1,26 @@
-import 'dart:io';
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/repository/best_plan_repository_exception.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
-import 'package:myaliv_mobile_app/core/networkService/app_http_client.dart';
 
-/// Service for making HTTP requests to Best Plans API
-///
-/// Uses ApiService for HTTP calls with detailed debug logging.
-/// Handles network errors and converts them to typed exceptions.
 class BestPlanApiService {
-  final ApiService _apiService;
+  late final Dio _dio;
 
-  BestPlanApiService({ApiService? apiService})
-      : _apiService = apiService ?? ApiService();
+  BestPlanApiService() {
+    _dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        },
+      ),
+    );
+  }
 
-  /// Fetch active plans from API
-  ///
-  /// Returns raw JSON string response.
-  /// Throws [BestPlanRepositoryException] on network or HTTP errors.
   Future<String> fetchActivePlans() async {
     const String url = Api.bestPlans;
 
@@ -31,92 +34,85 @@ class BestPlanApiService {
     }
 
     try {
-      final response = await _apiService.get(url);
+      final response = await _dio.get<dynamic>(url);
 
       if (kDebugMode) {
         debugPrint('┌─────────────────────────────────────────');
         debugPrint('│ ✅ BEST PLANS API RESPONSE');
         debugPrint('│ Status Code: ${response.statusCode}');
-        debugPrint('│ Response Body Length: ${response.responseJson?.length ?? 0} chars');
-        debugPrint('│ Response Body: ${response.responseJson}');
+        final body = response.data is String
+            ? response.data as String
+            : jsonEncode(response.data);
+        debugPrint(
+          '│ Response Body: ${body.length > 300 ? '${body.substring(0, 300)}...' : body}',
+        );
         debugPrint('└─────────────────────────────────────────');
         debugPrint('');
       }
 
-      if (response.responseJson == null || response.responseJson!.isEmpty) {
+      if (response.data == null) {
         throw const BestPlanRepositoryException(
           'Empty response from server',
           type: BestPlanErrorType.server,
         );
       }
 
-      return response.responseJson!;
-    } on SocketException catch (e) {
+      return response.data is String
+          ? response.data as String
+          : jsonEncode(response.data);
+    } on DioException catch (e) {
       if (kDebugMode) {
-        debugPrint('┌─────────────────────────────────────────');
-        debugPrint('│ ❌ BEST PLANS API ERROR: Network');
-        debugPrint('│ Error: $e');
-        debugPrint('└─────────────────────────────────────────');
+        debugPrint('');
+        debugPrint('╔══════════════════════════════════════════════════════════════');
+        debugPrint('║ ❌ BEST PLANS — NETWORK FAILURE REPORT');
+        debugPrint('╠══════════════════════════════════════════════════════════════');
+        debugPrint('║ Endpoint   : $url');
+        debugPrint('║ Error Type : ${e.type.name}');
+        debugPrint('║ Error Msg  : ${e.message}');
+        debugPrint('║ Status Code: ${e.response?.statusCode ?? 'N/A (no response)'}');
+        debugPrint('║ ─────────────────────────────────────────────────────────────');
+        debugPrint('║ DIAGNOSIS  : Cloudflare JA3/TLS fingerprint block.');
+        debugPrint('║   • Android Chrome  → uses system TLS stack → ✅ allowed');
+        debugPrint('║   • Flutter (Dart)  → uses own BoringSSL TLS → ❌ blocked');
+        debugPrint('║   • User-Agent header has NO effect (block is at TLS layer,');
+        debugPrint('║     before any HTTP headers are sent).');
+        debugPrint('║ ─────────────────────────────────────────────────────────────');
+        debugPrint('║ FIX NEEDED (backend):');
+        debugPrint('║   Option A — Disable Cloudflare Bot Protection for:');
+        debugPrint('║     https://myalivappuat-api.bealiv.com');
+        debugPrint('║   Option B — Proxy these endpoints through the existing');
+        debugPrint('║     authenticated API server so the app calls the same');
+        debugPrint('║     domain as all other requests:');
+        debugPrint('║     GET mockservice.newcomobile.com/v1/MyAliv/plans/active');
+        debugPrint('╚══════════════════════════════════════════════════════════════');
         debugPrint('');
       }
-
-      throw BestPlanRepositoryException(
-        'No internet connection',
-        type: BestPlanErrorType.network,
-        originalError: e,
-      );
-    } on HttpException catch (e) {
-      if (kDebugMode) {
-        debugPrint('┌─────────────────────────────────────────');
-        debugPrint('│ ❌ BEST PLANS API ERROR: HTTP');
-        debugPrint('│ Error: $e');
-        debugPrint('└─────────────────────────────────────────');
-        debugPrint('');
-      }
-
-      // Check for specific HTTP status codes
-      final errorMessage = e.message ?? 'HTTP error occurred';
-      if (errorMessage.contains('404')) {
-        throw BestPlanRepositoryException(
-          'Plans not found',
-          type: BestPlanErrorType.notFound,
-          originalError: e,
-        );
-      } else if (errorMessage.contains('500') ||
-          errorMessage.contains('502') ||
-          errorMessage.contains('503')) {
-        throw BestPlanRepositoryException(
-          'Server error',
-          type: BestPlanErrorType.server,
-          originalError: e,
-        );
-      }
-
-      throw BestPlanRepositoryException(
-        errorMessage,
-        type: BestPlanErrorType.server,
-        originalError: e,
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('┌─────────────────────────────────────────');
-        debugPrint('│ ❌ BEST PLANS API ERROR: Unknown');
-        debugPrint('│ Error: $e');
-        debugPrint('│ Type: ${e.runtimeType}');
-        debugPrint('└─────────────────────────────────────────');
-        debugPrint('');
-      }
-
-      // Check if it's a timeout
-      if (e.toString().contains('timeout') ||
-          e.toString().contains('TimeoutException')) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout) {
         throw BestPlanRepositoryException(
           'Request timed out',
           type: BestPlanErrorType.timeout,
           originalError: e,
         );
       }
-
+      if (e.type == DioExceptionType.connectionError) {
+        throw BestPlanRepositoryException(
+          'No internet connection',
+          type: BestPlanErrorType.network,
+          originalError: e,
+        );
+      }
+      throw BestPlanRepositoryException(
+        e.message ?? e.type.name,
+        type: BestPlanErrorType.unknown,
+        originalError: e,
+      );
+    } catch (e) {
+      if (e is BestPlanRepositoryException) rethrow;
+      if (kDebugMode) {
+        debugPrint('│ ❌ BEST PLANS API ERROR: $e');
+      }
       throw BestPlanRepositoryException(
         'Failed to fetch plans: ${e.toString()}',
         type: BestPlanErrorType.unknown,

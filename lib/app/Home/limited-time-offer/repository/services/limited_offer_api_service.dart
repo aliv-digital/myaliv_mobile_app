@@ -1,139 +1,108 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:myaliv_mobile_app/core/networkService/app_http_client.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/repository/limited_offer_repository_exception.dart';
 
-/// Service for fetching limited time offer data from API
-///
-/// Uses ApiService for HTTP communication with the ads-timer endpoint.
-/// Does NOT require authentication (public endpoint).
-///
-/// Features:
-/// - Detailed debug logging (request URL, method, response, errors)
-/// - Automatic error handling and mapping
-/// - Response validation
 class LimitedOfferApiService {
-  final ApiService _apiService;
+  late final Dio _dio;
 
-  LimitedOfferApiService({ApiService? apiService})
-      : _apiService = apiService ?? ApiService();
+  LimitedOfferApiService() {
+    _dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        },
+      ),
+    );
+  }
 
-  /// Fetch active limited time offers from API
-  ///
-  /// Returns raw JSON string response from /v1/ads-timer/active
-  ///
-  /// Throws [LimitedOfferApiException] on API errors
-  ///
-  /// Debug logging includes:
-  /// - Request URL and method
-  /// - Response status code
-  /// - Response body (truncated if too long)
-  /// - Error details (if any)
   Future<String> fetchActiveOffers() async {
     const String url = Api.adsTimer;
-    const String method = 'GET';
 
-    // ========== DEBUG: Request Info ==========
     if (kDebugMode) {
       debugPrint('');
       debugPrint('┌─────────────────────────────────────────────────────────────');
       debugPrint('│ 🌐 LIMITED OFFER API REQUEST');
       debugPrint('├─────────────────────────────────────────────────────────────');
-      debugPrint('│ Method: $method');
+      debugPrint('│ Method: GET');
       debugPrint('│ URL: $url');
-      debugPrint('│ Body: None (GET request)');
-      debugPrint('│ Auth: Not required (public endpoint)');
       debugPrint('└─────────────────────────────────────────────────────────────');
     }
 
     try {
-      // Make GET request
-      final response = await _apiService.get(url);
+      final response = await _dio.get<dynamic>(url);
 
-      // ========== DEBUG: Response Info ==========
       if (kDebugMode) {
         debugPrint('');
         debugPrint('┌─────────────────────────────────────────────────────────────');
         debugPrint('│ ✅ LIMITED OFFER API RESPONSE');
         debugPrint('├─────────────────────────────────────────────────────────────');
         debugPrint('│ Status Code: ${response.statusCode}');
-        debugPrint('│ Success: ${ApiService.isSuccessStatusCode(response.statusCode)}');
-
-        // Show response body (truncate if too long)
-        final responseBody = response.responseJson ?? '';
-        if (responseBody.length > 500) {
-          debugPrint('│ Response Body (truncated):');
-          debugPrint('│ ${responseBody.substring(0, 500)}...');
-        } else {
-          debugPrint('│ Response Body:');
-          debugPrint('│ $responseBody');
-        }
-
+        final body = response.data is String
+            ? response.data as String
+            : jsonEncode(response.data);
+        debugPrint(
+          '│ Response Body: ${body.length > 300 ? '${body.substring(0, 300)}...' : body}',
+        );
         debugPrint('└─────────────────────────────────────────────────────────────');
         debugPrint('');
       }
 
-      // Validate response status
-      if (!ApiService.isSuccessStatusCode(response.statusCode)) {
-        // Get friendly error message
-        final errorMessage = ApiService.friendlyErrorFromResponse(response) ??
-            'Failed to fetch offers: HTTP ${response.statusCode}';
-
-        if (kDebugMode) {
-          debugPrint('❌ LIMITED OFFER API ERROR: $errorMessage');
-        }
-
-        throw LimitedOfferApiException(
-          statusCode: response.statusCode,
-          message: errorMessage,
-        );
-      }
-
-      // Validate response data
-      final data = response.responseJson;
-      if (data == null || data.isEmpty) {
-        if (kDebugMode) {
-          debugPrint('⚠️ LIMITED OFFER API: Empty response body');
-        }
-
+      if (response.data == null) {
         throw const LimitedOfferApiException(
           statusCode: 204,
           message: 'Empty response from server',
         );
       }
 
-      return data;
-    } on LimitedOfferApiException {
-      // Re-throw our custom exceptions
-      rethrow;
-    } catch (e, stackTrace) {
-      // ========== DEBUG: Error Info ==========
+      return response.data is String
+          ? response.data as String
+          : jsonEncode(response.data);
+    } on DioException catch (e) {
       if (kDebugMode) {
         debugPrint('');
-        debugPrint('┌─────────────────────────────────────────────────────────────');
-        debugPrint('│ ❌ LIMITED OFFER API EXCEPTION');
-        debugPrint('├─────────────────────────────────────────────────────────────');
-        debugPrint('│ Method: $method');
-        debugPrint('│ URL: $url');
-        debugPrint('│ Error Type: ${e.runtimeType}');
-        debugPrint('│ Error Message: $e');
-        debugPrint('├─────────────────────────────────────────────────────────────');
-        debugPrint('│ Stack Trace:');
-        debugPrint('│ $stackTrace');
-        debugPrint('└─────────────────────────────────────────────────────────────');
+        debugPrint('╔══════════════════════════════════════════════════════════════');
+        debugPrint('║ ❌ LIMITED OFFER — NETWORK FAILURE REPORT');
+        debugPrint('╠══════════════════════════════════════════════════════════════');
+        debugPrint('║ Endpoint   : $url');
+        debugPrint('║ Error Type : ${e.type.name}');
+        debugPrint('║ Error Msg  : ${e.message}');
+        debugPrint('║ Status Code: ${e.response?.statusCode ?? 'N/A (no response)'}');
+        debugPrint('║ ─────────────────────────────────────────────────────────────');
+        debugPrint('║ DIAGNOSIS  : Cloudflare JA3/TLS fingerprint block.');
+        debugPrint('║   • Android Chrome  → uses system TLS stack → ✅ allowed');
+        debugPrint('║   • Flutter (Dart)  → uses own BoringSSL TLS → ❌ blocked');
+        debugPrint('║   • User-Agent header has NO effect (block is at TLS layer,');
+        debugPrint('║     before any HTTP headers are sent).');
+        debugPrint('║ ─────────────────────────────────────────────────────────────');
+        debugPrint('║ FIX NEEDED (backend):');
+        debugPrint('║   Option A — Disable Cloudflare Bot Protection for:');
+        debugPrint('║     https://myalivappuat-api.bealiv.com');
+        debugPrint('║   Option B — Proxy these endpoints through the existing');
+        debugPrint('║     authenticated API server so the app calls the same');
+        debugPrint('║     domain as all other requests:');
+        debugPrint('║     GET mockservice.newcomobile.com/v1/MyAliv/ads-timer/active');
+        debugPrint('╚══════════════════════════════════════════════════════════════');
         debugPrint('');
       }
-
-      // Wrap unexpected errors
+      throw LimitedOfferApiException(
+        statusCode: e.response?.statusCode,
+        message: e.message ?? e.type.name,
+      );
+    } catch (e) {
+      if (e is LimitedOfferApiException) rethrow;
+      if (kDebugMode) {
+        debugPrint('❌ LIMITED OFFER API EXCEPTION: $e');
+      }
       throw LimitedOfferApiException(
         statusCode: null,
         message: 'Network error: ${e.toString()}',
       );
     }
-  }
-
-  /// Dispose of the ApiService
-  void dispose() {
-    _apiService.dispose();
   }
 }
