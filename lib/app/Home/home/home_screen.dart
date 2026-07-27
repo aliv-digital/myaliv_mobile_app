@@ -54,21 +54,26 @@ class _HomeScreenState extends State<HomeScreen> {
     _refreshToggleStatus();
 
     // Preload plans in background while user is on home screen
-    final userType = context.read<AppUiConfigCubit>().state.userType;
+    final userType = context
+        .read<AppUiConfigCubit>()
+        .state
+        .userType;
     context.read<PlansCubit>().loadInitialPlans(userType: userType);
 
     // BlocListener fires only on state *changes* and misses the synchronous
     // restoration that HydratedCubit performs before the widget subscribes.
     // Sync AppUiConfigCubit here so ActivePlanUsageSection is visible
     // immediately when the cache is warm (success) or stale (refreshing).
-    final cachedPlansState = context.read<PlansCubit>().state;
+    final cachedPlansState = context
+        .read<PlansCubit>()
+        .state;
     if (cachedPlansState.status == PlansStatus.success ||
         cachedPlansState.status == PlansStatus.refreshing) {
       context
           .read<AppUiConfigCubit>()
           .setHasActivePlan(
-            cachedPlansState.addOnsApiPrimaryPlans.isNotEmpty,
-          );
+        cachedPlansState.addOnsApiPrimaryPlans.isNotEmpty,
+      );
     }
 
     // Load limited time offers
@@ -78,7 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<BestPlanCubit>().loadPlans(userType: userType.label);
 
     // Load balances and consumption limits
-    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
+    final accountInfo = context
+        .read<AccountInfoCubit>()
+        .state
+        .accountInfo;
     if (accountInfo != null && accountInfo.idAcc > 0) {
       context.read<BalanceCubit>().loadBalances(
         deviceAccountId: accountInfo.idAcc,
@@ -88,7 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
       // consumers can read plan-bucket allowance (name/amount/unit) from a
       // single cubit. The plans may still be loading here; the
       // BlocListener<PlansCubit> below re-syncs once PlansCubit emits.
-      final plansState = context.read<PlansCubit>().state;
+      final plansState = context
+          .read<PlansCubit>()
+          .state;
       context.read<BucketUsageSummaryCubit>().loadBucketUsageSummary(
         deviceAccountId: accountInfo.idAcc,
         activePlans: plansState.activePlansForBucketUsage,
@@ -109,7 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _isRefreshingToggleStatus = true;
     try {
-      final userType = context.read<AppUiConfigCubit>().state.userType;
+      final userType = context
+          .read<AppUiConfigCubit>()
+          .state
+          .userType;
 
       if (userType.isPostpaid) {
         // Postpaid Auto Pay comes from the Account API.
@@ -129,11 +142,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
+    final HomeUiConfig config = context
+        .watch<AppUiConfigCubit>()
+        .state;
 
     return BlocListener<PlansCubit, PlansState>(
       listenWhen: (previous, current) =>
-          previous.status != current.status ||
+      previous.status != current.status ||
           previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
           previous.secondaryPlans != current.secondaryPlans ||
           previous.standAlonePlans != current.standAlonePlans,
@@ -177,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       BlocBuilder<PlansCubit, PlansState>(
                         buildWhen: (previous, current) =>
-                            previous.status != current.status ||
+                        previous.status != current.status ||
                             previous.addOnsApiPrimaryPlans !=
                                 current.addOnsApiPrimaryPlans,
                         builder: (context, plansState) {
@@ -187,10 +202,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           // stale `hasActivePlan` flag.
                           final isResolving =
                               plansState.status == PlansStatus.initial ||
-                              plansState.status == PlansStatus.loading;
+                                  plansState.status == PlansStatus.loading;
                           final showActiveCard =
                               isResolving ||
-                              plansState.addOnsApiPrimaryPlans.isNotEmpty;
+                                  plansState.addOnsApiPrimaryPlans.isNotEmpty;
 
                           if (!showActiveCard) {
                             return const NoActivePlanCard();
@@ -198,8 +213,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           return config.userType == UserType.prepaid
                               ? const PrepaidActivePlanCardWithData(
-                                  isFromHome: true,
-                                ) // TODO
+                            isFromHome: true,
+                          ) // TODO
                               : PostpaidActivePlanCard(config: config);
                         },
                       ),
@@ -212,15 +227,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         BlocBuilder<BucketUsageSummaryCubit,
                             BucketUsageSummaryState>(
                           buildWhen: (a, b) =>
-                              a.status != b.status ||
+                          a.status != b.status ||
                               a.activePlans != b.activePlans ||
                               a.summary != b.summary,
                           builder: (context, state) {
                             final isLoading =
                                 state.status ==
                                     BucketUsageSummaryStatus.initial ||
-                                state.status ==
-                                    BucketUsageSummaryStatus.loading;
+                                    state.status ==
+                                        BucketUsageSummaryStatus.loading;
                             final isEmpty = !isLoading &&
                                 state.activePlanBucketUsage.isEmpty;
 
@@ -239,13 +254,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       BlocBuilder<BucketUsageSummaryCubit,
                           BucketUsageSummaryState>(
                         buildWhen: (a, b) =>
-                            a.status != b.status ||
+                        a.status != b.status ||
                             a.activePlans != b.activePlans ||
                             a.summary != b.summary,
                         builder: (context, state) {
                           final isEmpty =
                               state.status == BucketUsageSummaryStatus.loaded &&
-                              state.activePlanBucketUsage.isEmpty;
+                                  state.activePlanBucketUsage.isEmpty;
                           return SizedBox(height: isEmpty ? 0 : 20);
                         },
                       ),
@@ -337,25 +352,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             config.userType == UserType.postpaid
                 ? GestureDetector(
-                    onTap: () {
-                      context.read<AppUiConfigCubit>().showMyLimitsView();
-                      context.go(AppRoutes.usage);
-                    },
-                    child: const ActionTile(
-                      'assets/icons/SortDescending.svg',
-                      'update\ncredit limit',
-                    ),
-                  )
+              onTap: () {
+                context.read<AppUiConfigCubit>().showMyLimitsView();
+                context.go(AppRoutes.usage);
+              },
+              child: const ActionTile(
+                'assets/icons/SortDescending.svg',
+                'update\ncredit limit',
+              ),
+            )
                 : GestureDetector(
-                    onTap: () {
-                      context.read<AppUiConfigCubit>().showFuturePlansView();
-                      context.go(AppRoutes.usage);
-                    },
-                    child: const ActionTile(
-                      'assets/icons/ListHeart.svg',
-                      'my\nfuture plans',
-                    ),
-                  ),
+              onTap: () {
+                context.read<AppUiConfigCubit>().showFuturePlansView();
+                context.go(AppRoutes.usage);
+              },
+              child: const ActionTile(
+                'assets/icons/ListHeart.svg',
+                'my\nfuture plans',
+              ),
+            ),
             GestureDetector(
               onTap: () {
                 context.push(AppRoutes.myProfilePrepaidScreen);

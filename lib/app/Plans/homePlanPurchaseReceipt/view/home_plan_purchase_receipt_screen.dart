@@ -103,15 +103,34 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
   }
 }
 
-class _HomePlanPurchaseReceiptView extends StatelessWidget {
+class _HomePlanPurchaseReceiptView extends StatefulWidget {
   const _HomePlanPurchaseReceiptView({
     required this.statusMessage,
     required this.cardToSave,
   });
 
-  static const _bg = Color(0xFFF1F2FA);
   final String statusMessage;
   final NewCardDetails? cardToSave;
+
+  @override
+  State<_HomePlanPurchaseReceiptView> createState() =>
+      _HomePlanPurchaseReceiptViewState();
+}
+
+class _HomePlanPurchaseReceiptViewState
+    extends State<_HomePlanPurchaseReceiptView> {
+  static const _bg = Color(0xFFF1F2FA);
+
+  @override
+  void initState() {
+    super.initState();
+    // Kick off a silent background refresh as soon as the receipt appears so
+    // the active plan card on the home screen is already up-to-date by the
+    // time the user taps "Back Home".
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<PlansCubit>().refreshCurrentTab();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,12 +171,6 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                       return HomePlanPurchaseReceiptSuccessCard(
                         data: data,
                         onBackHome: () {
-                          // Invalidate plan cache so the newly purchased plan
-                          // appears immediately on the home screen's active
-                          // plan card rather than waiting for the 1-hour TTL.
-                          context
-                              .read<PlansCubit>()
-                              .refreshCurrentTab();
                           if (AppSession.appRoute == 'prepaidPlan' ||
                               AppSession.appRoute == 'postpaidPlan' ||
                               AppSession.appRoute == 'prepaidPlanPurchase' ||
@@ -169,11 +182,11 @@ class _HomePlanPurchaseReceiptView extends StatelessWidget {
                           }
                         },
                         saveCardSection: SaveCardOnReceiptSection(
-                          details: cardToSave,
+                          details: widget.cardToSave,
                         ),
                         pageBackground:
                             HomePlanPurchaseReceiptTheme.circleBackground,
-                        statusMessage: statusMessage,
+                        statusMessage: widget.statusMessage,
                       );
                     },
                   ),
