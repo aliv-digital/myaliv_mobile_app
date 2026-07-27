@@ -101,18 +101,8 @@ class _HomeScreenState extends State<HomeScreen> {
       //   deviceAccountId: accountInfo.idAcc,
       // );
 
-      // Load bucket usage summary together with the current plan groups so
-      // consumers can read plan-bucket allowance (name/amount/unit) from a
-      // single cubit. The plans may still be loading here; the
-      // BlocListener<PlansCubit> below re-syncs once PlansCubit emits.
-      final plansState = context
-          .read<PlansCubit>()
-          .state;
-      context.read<BucketUsageSummaryCubit>().loadBucketUsageSummary(
-        deviceAccountId: accountInfo.idAcc,
-        activePlans: plansState.activePlansForBucketUsage,
-        standAlonePlans: plansState.standAlonePlansForBucketUsage,
-      );
+      // Bucket usage summary is loaded in _refreshToggleStatus() after
+      // DeviceLimitsCubit resolves the DeviceID from /Account/devices.
 
       // Load consumption limits for postpaid users
       if (userType.isPostpaid) {
@@ -158,8 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
       // 6) postpaid make-payment/auto-pay amounts, and
       // 7) upgrade-credit-limit current balance.
       //
-      // This does not change the IDs used by bucket usage or consumption
-      // limits above; those flows still use accountInfo.idAcc.
       final deviceLimitsCubit = instance<DeviceLimitsCubit>();
       await deviceLimitsCubit.loadDeviceLimits(forceRefresh: true);
 
@@ -167,6 +155,16 @@ class _HomeScreenState extends State<HomeScreen> {
       if (deviceId != null && deviceId > 0) {
         await instance<BalanceCubit>().loadBalances(
           deviceAccountId: deviceId,
+          forceRefresh: true,
+        );
+
+        // Bucket usage summary uses the same DeviceID from /Account/devices
+        // so the URL matches /device/{DeviceID}/bucket-usage-summary.
+        final plansState = instance<PlansCubit>().state;
+        instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
+          deviceAccountId: deviceId,
+          activePlans: plansState.activePlansForBucketUsage,
+          standAlonePlans: plansState.standAlonePlansForBucketUsage,
           forceRefresh: true,
         );
       }

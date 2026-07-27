@@ -124,11 +124,17 @@ class _HomePlanPurchaseReceiptViewState
   @override
   void initState() {
     super.initState();
-    // Kick off a silent background refresh as soon as the receipt appears so
-    // the active plan card on the home screen is already up-to-date by the
-    // time the user taps "Back Home".
+    // After purchase the backend needs a few seconds to process the plan
+    // change before /bundles reflects the new state.  We capture PlansCubit
+    // in the first frame (before any navigation could dispose this widget)
+    // and fire a forced refresh after the delay — so it runs even if the
+    // user has already tapped "Back Home" before the 3 seconds are up.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.read<PlansCubit>().refreshCurrentTab();
+      if (!mounted) return;
+      final cubit = context.read<PlansCubit>();
+      Future.delayed(const Duration(seconds: 3), () {
+        if (!cubit.isClosed) cubit.refreshCurrentTab();
+      });
     });
   }
 

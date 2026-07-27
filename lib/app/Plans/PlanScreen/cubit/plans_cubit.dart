@@ -49,6 +49,9 @@ class PlansCubit extends HydratedCubit<PlansState> {
   final PlansRepository _repository;
 
   bool _isFetching = false;
+  // Set when a forceRefresh call arrives while a fetch is in-flight.
+  // The in-flight fetch will re-run with forceRefresh once it finishes.
+  bool _pendingForceRefresh = false;
 
   // ─── Public API ──────────────────────────────────────────────────────────
 
@@ -135,6 +138,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   /// Called on logout to ensure the next user starts from a clean slate.
   void reset() {
     _isFetching = false;
+    _pendingForceRefresh = false;
     emit(const PlansState()); // HydratedBloc auto-persists the empty state
 
     if (kDebugMode) {
@@ -207,11 +211,15 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
   Future<void> _fetchAllPlans({bool forceRefresh = false}) async {
     if (_isFetching) {
+      if (forceRefresh) _pendingForceRefresh = true;
       if (kDebugMode) {
-        debugPrint('⚠️ PlansCubit: Already fetching, skipping');
+        debugPrint(
+          '⚠️ PlansCubit: Already fetching${forceRefresh ? ', queued forceRefresh' : ', skipping'}',
+        );
       }
       return;
     }
+    _pendingForceRefresh = false;
 
     if (!forceRefresh && state.hasData && !_shouldRefresh()) {
       if (kDebugMode) {
@@ -285,6 +293,10 @@ class PlansCubit extends HydratedCubit<PlansState> {
       }
     } finally {
       _isFetching = false;
+      if (_pendingForceRefresh) {
+        _pendingForceRefresh = false;
+        _fetchAllPlans(forceRefresh: true).catchError((_) {});
+      }
     }
   }
 
@@ -307,7 +319,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
   bool _shouldRefresh() {
     if (state.lastFetchedAt == null) return true;
     return DateTime.now().difference(state.lastFetchedAt!) >
-        const Duration(hours: 1);
+        const Duration(hours: 0);
   }
 
   bool _isExcludedPlanName(String name) {
