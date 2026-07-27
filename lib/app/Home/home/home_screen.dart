@@ -82,15 +82,24 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load best plans
     context.read<BestPlanCubit>().loadPlans(userType: userType.label);
 
-    // Load balances and consumption limits
+    // Load consumption limits and account-scoped home data. Balance is loaded
+    // in _refreshToggleStatus after Account/devices provides the DeviceID.
     final accountInfo = context
         .read<AccountInfoCubit>()
         .state
         .accountInfo;
+
     if (accountInfo != null && accountInfo.idAcc > 0) {
-      context.read<BalanceCubit>().loadBalances(
-        deviceAccountId: accountInfo.idAcc,
-      );
+      // OLD BALANCE FLOW — intentionally kept here for reference.
+      // This used the Account API's id_acc value directly in:
+      // GET /v1/MyAliv/device/{id_acc}/balances
+      //
+      // It is commented out (not deleted) because the active flow below now
+      // waits for GET /Account/devices and uses its DeviceID instead.
+      //
+      // context.read<BalanceCubit>().loadBalances(
+      //   deviceAccountId: accountInfo.idAcc,
+      // );
 
       // Load bucket usage summary together with the current plan groups so
       // consumers can read plan-bucket allowance (name/amount/unit) from a
@@ -129,9 +138,35 @@ class _HomeScreenState extends State<HomeScreen> {
         await context.read<AccountInfoCubit>().fetchAccountInfo(
           forceRefresh: true,
         );
-      } else {
-        // Prepaid Auto Renew comes from the Account Devices API.
-        await instance<DeviceLimitsCubit>().loadDeviceLimits(
+      }
+
+      // NEW BALANCE FLOW:
+      // 1. GET /v1/MyAliv/Account/devices.
+      // 2. DeviceLimitsCubit stores the response in allDeviceLimits.
+      // 3. deviceLimits selects the first device and exposes its DeviceID.
+      // 4. That DeviceID is sent to:
+      //    GET /v1/MyAliv/device/{DeviceID}/balances.
+      // 5. BalanceCubit stores the wallet and bonus amounts app-wide.
+      //
+      // Because BalanceCubit is shared, the refreshed value can affect these
+      // seven UI/flow areas:
+      // 1) prepaid Home top-up/reward balance,
+      // 2) postpaid Home balance due,
+      // 3) prepaid top-up/send-top-up wallet displays and validation,
+      // 4) plan-purchase wallet display and sufficient-balance validation,
+      // 5) prepaid auto-renew wallet payment,
+      // 6) postpaid make-payment/auto-pay amounts, and
+      // 7) upgrade-credit-limit current balance.
+      //
+      // This does not change the IDs used by bucket usage or consumption
+      // limits above; those flows still use accountInfo.idAcc.
+      final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+      await deviceLimitsCubit.loadDeviceLimits(forceRefresh: true);
+
+      final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId;
+      if (deviceId != null && deviceId > 0) {
+        await instance<BalanceCubit>().loadBalances(
+          deviceAccountId: deviceId,
           forceRefresh: true,
         );
       }
