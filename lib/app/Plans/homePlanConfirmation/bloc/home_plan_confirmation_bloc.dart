@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import '../../../Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import '../models/home_plan_confirmation_models.dart';
 import '../repository/home_plan_confirmation_repository.dart';
 import 'home_plan_confirmation_event.dart';
@@ -9,11 +9,11 @@ import 'home_plan_confirmation_state.dart';
 class HomePlanConfirmationBloc
     extends Bloc<HomePlanConfirmationEvent, HomePlanConfirmationState> {
   final HomePlanConfirmationRepository repository;
-  final AccountInfoCubit accountInfoCubit;
+  final DeviceLimitsCubit deviceLimitsCubit;
 
   HomePlanConfirmationBloc({
     required this.repository,
-    required this.accountInfoCubit,
+    required this.deviceLimitsCubit,
   }) : super(HomePlanConfirmationState.initial()) {
     on<HomePlanConfirmationStarted>(_onStarted);
     on<HomePlanConfirmationRemoveItemPressed>(_onRemoveItem);
@@ -117,18 +117,13 @@ class HomePlanConfirmationBloc
     );
 
     try {
-      final accountInfo = accountInfoCubit.state.accountInfo;
-      final deviceAccountId = accountInfo?.idAcc ?? 0;
-
-      if (deviceAccountId <= 0) {
-        throw Exception('Device account ID not found.');
-      }
+      final deviceId = await _resolveDeviceId();
 
       debugPrint('HomePlanConfirmationBloc: promo code=$promoCode');
 
       final response = await repository.applyPromo(
         code: promoCode,
-        deviceAcId: deviceAccountId,
+        deviceAcId: deviceId,
       );
 
       debugPrint('HomePlanConfirmationBloc: apply promo response=$response');
@@ -140,7 +135,7 @@ class HomePlanConfirmationBloc
           promoStatus: response.isApplied
               ? HomePlanConfirmationPromoStatus.applied
               : HomePlanConfirmationPromoStatus.failure,
-          promoErrorMessage: '',
+          promoErrorMessage: response.isApplied ? '' : 'Invalid promo',
           promoResponse: response,
         ),
       );
@@ -152,6 +147,23 @@ class HomePlanConfirmationBloc
         ),
       );
     }
+  }
+
+  Future<int> _resolveDeviceId() async {
+    if (deviceLimitsCubit.state.isLoading) {
+      await deviceLimitsCubit.stream.firstWhere((state) => !state.isLoading);
+    }
+
+    if (!deviceLimitsCubit.state.hasDeviceLimits) {
+      await deviceLimitsCubit.loadDeviceLimits();
+    }
+
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) {
+      throw Exception('Device ID not found.');
+    }
+
+    return deviceId;
   }
 
   String _extractErrorMessage(Object error) {

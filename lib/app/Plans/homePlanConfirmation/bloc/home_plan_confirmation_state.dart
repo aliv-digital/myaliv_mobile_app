@@ -77,7 +77,36 @@ class HomePlanConfirmationState extends Equatable {
 
   bool get canApplyPromo =>
       promoCode.trim().isNotEmpty &&
-      promoStatus != HomePlanConfirmationPromoStatus.applying;
+      promoStatus != HomePlanConfirmationPromoStatus.applying &&
+      !hasAppliedPromo;
+
+  bool get hasAppliedPromo =>
+      promoStatus == HomePlanConfirmationPromoStatus.applied &&
+      promoResponse?.isApplied == true;
+
+  double get promoDiscount {
+    final subTotal = data?.totals.subTotal ?? 0;
+    final definition = promoResponse?.definition;
+    if (!hasAppliedPromo || definition == null || subTotal <= 0) return 0;
+
+    final unitQuantity = definition.unitQty;
+    if (unitQuantity <= 0) return 0;
+
+    return _roundCurrency(unitQuantity.clamp(0, subTotal).toDouble());
+  }
+
+  PurchaseTotals get displayTotals {
+    final originalTotals = data?.totals;
+    if (originalTotals == null || !hasAppliedPromo) {
+      return originalTotals ?? const PurchaseTotals(subTotal: 0, vat: 0);
+    }
+
+    final discountedSubTotal = _roundCurrency(
+      originalTotals.subTotal - promoDiscount,
+    );
+    final vat = _roundCurrency(discountedSubTotal * 0.10);
+    return PurchaseTotals(subTotal: discountedSubTotal, vat: vat);
+  }
 
   HomePlanConfirmationState copyWith({
     HomePlanConfirmationStatus? status,
@@ -139,3 +168,5 @@ class HomePlanConfirmationState extends Equatable {
     marketingOptIn,
   ];
 }
+
+double _roundCurrency(double value) => (value * 100).round() / 100;
