@@ -51,12 +51,30 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<
-      PlanPurchasePlanAddOnsBloc,
-      PlanPurchasePlanAddOnsState
-    >(
-      listenWhen: _shouldHandleNavigation,
-      listener: _handleNavigation,
+    return MultiBlocListener(
+      // Keep each navigation request isolated. Request IDs remain in the bloc
+      // after returning from confirmation, so checking their values together
+      // can replay an older navigation and push duplicate confirmation screens.
+      listeners: [
+        BlocListener<PlanPurchasePlanAddOnsBloc, PlanPurchasePlanAddOnsState>(
+          listenWhen: (previous, current) =>
+              previous.skipRequestId != current.skipRequestId,
+          listener: (context, state) => _openConfirmation(
+            context,
+            state,
+            flow: HomePlanConfirmationEntryFlow.skip,
+          ),
+        ),
+        BlocListener<PlanPurchasePlanAddOnsBloc, PlanPurchasePlanAddOnsState>(
+          listenWhen: (previous, current) =>
+              previous.proceedRequestId != current.proceedRequestId,
+          listener: (context, state) => _openConfirmation(
+            context,
+            state,
+            flow: HomePlanConfirmationEntryFlow.proceed,
+          ),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: PlanPurchasePlanAddOnsTheme.bg,
         bottomNavigationBar: const _PlanPurchaseBottomBar(),
@@ -70,35 +88,6 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  bool _shouldHandleNavigation(
-    PlanPurchasePlanAddOnsState previous,
-    PlanPurchasePlanAddOnsState current,
-  ) {
-    return previous.skipRequestId != current.skipRequestId ||
-        previous.proceedRequestId != current.proceedRequestId;
-  }
-
-  void _handleNavigation(
-    BuildContext context,
-    PlanPurchasePlanAddOnsState state,
-  ) {
-    if (state.skipRequestId > 0) {
-      _openConfirmation(
-        context,
-        state,
-        flow: HomePlanConfirmationEntryFlow.skip,
-      );
-    }
-
-    if (state.proceedRequestId > 0) {
-      _openConfirmation(
-        context,
-        state,
-        flow: HomePlanConfirmationEntryFlow.proceed,
-      );
-    }
   }
 
   void _openConfirmation(
@@ -150,7 +139,11 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
       primaryPlanVatAmount: _primaryPlanVatAmount(state),
       futurePlanStartDate: state.selectedApiPlan?.startDate.trim() ?? '',
       flow: flow,
-      selectedAddOns: _selectedAddOns(state),
+      // Skip means purchasing only the primary plan. Add-ons are forwarded
+      // to confirmation only when the user explicitly taps "proceed".
+      selectedAddOns: flow == HomePlanConfirmationEntryFlow.proceed
+          ? _selectedAddOns(state)
+          : const <HomePlanConfirmationSelectedAddOn>[],
       forceNow: state.routeArgs?.forceNow ?? false,
     );
   }
