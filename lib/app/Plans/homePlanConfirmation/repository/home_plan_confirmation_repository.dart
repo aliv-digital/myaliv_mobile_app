@@ -131,6 +131,11 @@ class HomePlanConfirmationRepository {
       return 'Session expired. Please log in again.';
     }
 
+    final statusCode = error.statusCode;
+    if (statusCode != null && statusCode >= 400 && statusCode < 500) {
+      return 'Invalid promo';
+    }
+
     final message = error.message.trim();
     if (message.isNotEmpty && message != 'An error occurred') {
       return message;

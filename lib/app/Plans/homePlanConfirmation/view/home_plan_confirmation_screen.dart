@@ -1,7 +1,8 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -31,7 +32,7 @@ class HomePlanConfirmationScreen extends StatelessWidget {
       child: BlocProvider(
         create: (ctx) => HomePlanConfirmationBloc(
           repository: ctx.read<HomePlanConfirmationRepository>(),
-          accountInfoCubit: ctx.read<AccountInfoCubit>(),
+          deviceLimitsCubit: instance<DeviceLimitsCubit>(),
         )..add(HomePlanConfirmationStarted(args)),
         child: const _HomePlanConfirmationView(),
       ),
@@ -79,7 +80,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                 AppToast.show(
                   message: _promoToastMessage(
                     state,
-                    fallback: 'Invalid promo code.',
+                    fallback: 'Invalid promo',
                   ),
                   type: ToastType.error,
                 );
@@ -141,7 +142,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                     );
                   },
                   amountText:
-                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                      '\$ ${state.displayTotals.total.toStringAsFixed(2)}',
                 );
               },
             ),
@@ -252,8 +253,9 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                           value: state.promoCode,
                                           enabled:
                                               state.promoStatus !=
-                                              HomePlanConfirmationPromoStatus
-                                                  .applying,
+                                                  HomePlanConfirmationPromoStatus
+                                                      .applying &&
+                                              !state.hasAppliedPromo,
                                           isActionLoading:
                                               state.promoStatus ==
                                               HomePlanConfirmationPromoStatus
@@ -261,8 +263,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                           onChanged: (value) {
                                             context
                                                 .read<
-                                                  HomePlanConfirmationBloc
-                                                >()
+                                                    HomePlanConfirmationBloc>()
                                                 .add(
                                                   HomePlanConfirmationPromoCodeChanged(
                                                     value,
@@ -273,8 +274,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                             FocusScope.of(context).unfocus();
                                             context
                                                 .read<
-                                                  HomePlanConfirmationBloc
-                                                >()
+                                                    HomePlanConfirmationBloc>()
                                                 .add(
                                                   const HomePlanConfirmationPromoApplyPressed(),
                                                 );
@@ -286,19 +286,17 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',
                                             value:
-                                                '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                                '\$ ${state.displayTotals.subTotal.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            // Repository combines primary-plan VAT
-                                            // and selected add-on VAT into this value.
                                             value:
-                                                '\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                                '\$ ${state.displayTotals.vat.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
                                             value:
-                                                '\$ ${data.totals.total.toStringAsFixed(2)}',
+                                                '\$ ${state.displayTotals.total.toStringAsFixed(2)}',
                                           ),
                                         ],
                                       ),
