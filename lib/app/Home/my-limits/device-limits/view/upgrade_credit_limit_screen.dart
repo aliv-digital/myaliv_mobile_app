@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
@@ -78,10 +77,10 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
   }
 
   Future<void> _updateLimits(DeviceLimitsState state) async {
-    final accountInfo = context.read<AccountInfoCubit>().state.accountInfo;
-    if (accountInfo == null || accountInfo.idAcc <= 0) {
+    final deviceId = state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) {
       AppToast.show(
-        message: 'Account information not available',
+        message: 'Device information not available',
         type: ToastType.error,
       );
       return;
@@ -118,14 +117,13 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
     );
 
     final success = await instance<DeviceLimitsCubit>().updateLimits(
-      deviceAccountId: accountInfo.idAcc,
+      deviceAccountId: deviceId,
       request: request,
     );
 
     if (success && mounted) {
-      // Refresh consumption limits (my limits) with updated data
       instance<ConsumptionLimitCubit>().loadLimits(
-        deviceAccountId: accountInfo.idAcc,
+        deviceAccountId: deviceId,
         forceRefresh: true,
       );
 

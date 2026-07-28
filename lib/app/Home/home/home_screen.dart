@@ -82,35 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load best plans
     context.read<BestPlanCubit>().loadPlans(userType: userType.label);
 
-    // Load consumption limits and account-scoped home data. Balance is loaded
-    // in _refreshToggleStatus after Account/devices provides the DeviceID.
-    final accountInfo = context
-        .read<AccountInfoCubit>()
-        .state
-        .accountInfo;
-
-    if (accountInfo != null && accountInfo.idAcc > 0) {
-      // OLD BALANCE FLOW — intentionally kept here for reference.
-      // This used the Account API's id_acc value directly in:
-      // GET /v1/MyAliv/device/{id_acc}/balances
-      //
-      // It is commented out (not deleted) because the active flow below now
-      // waits for GET /Account/devices and uses its DeviceID instead.
-      //
-      // context.read<BalanceCubit>().loadBalances(
-      //   deviceAccountId: accountInfo.idAcc,
-      // );
-
-      // Bucket usage summary is loaded in _refreshToggleStatus() after
-      // DeviceLimitsCubit resolves the DeviceID from /Account/devices.
-
-      // Load consumption limits for postpaid users
-      if (userType.isPostpaid) {
-        instance<ConsumptionLimitCubit>().loadLimits(
-          deviceAccountId: accountInfo.idAcc,
-        );
-      }
-    }
+    // Balance, bucket usage summary, and consumption limits are all loaded in
+    // _refreshToggleStatus() after DeviceLimitsCubit resolves the DeviceID
+    // from GET /Account/devices.
   }
 
   Future<void> _refreshToggleStatus() async {
@@ -158,8 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
           forceRefresh: true,
         );
 
-        // Bucket usage summary uses the same DeviceID from /Account/devices
-        // so the URL matches /device/{DeviceID}/bucket-usage-summary.
+        // Bucket usage and consumption limits both use DeviceID from
+        // /Account/devices so the URLs match /device/{DeviceID}/...
         final plansState = instance<PlansCubit>().state;
         instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
           deviceAccountId: deviceId,
@@ -167,6 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
           standAlonePlans: plansState.standAlonePlansForBucketUsage,
           forceRefresh: true,
         );
+
+        final config = instance<AppUiConfigCubit>().state;
+        if (config.userType.isPostpaid) {
+          instance<ConsumptionLimitCubit>().loadLimits(
+            deviceAccountId: deviceId,
+            forceRefresh: true,
+          );
+        }
       }
     } finally {
       _isRefreshingToggleStatus = false;
