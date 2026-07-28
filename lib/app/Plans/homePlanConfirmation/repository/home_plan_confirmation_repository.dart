@@ -29,7 +29,7 @@ class HomePlanConfirmationRepository {
           // "primary plan" string. This matches purchase_confirmation_screen.
           label: _primaryPlanTypeLabel(args.primaryPlanTypeCode),
           title: args.primaryPlanName,
-          subtitle: _primaryPlanBeginsText(args),
+          subtitle: _planBeginsText(args),
           price: args.primaryPlanPrice,
           vatAmount: args.primaryPlanVatAmount,
         ),
@@ -45,7 +45,7 @@ class HomePlanConfirmationRepository {
             planTypeCode: addOn.planTypeCode,
             label: 'add-on',
             title: addOn.title,
-            subtitle: 'begins immediately',
+            subtitle: _planBeginsText(args),
             price: addOn.price,
             vatAmount: addOn.vatAmount,
           ),
@@ -152,8 +152,8 @@ class HomePlanConfirmationRepository {
     }
   }
 
-  String _primaryPlanBeginsText(HomePlanConfirmationRouteArgs args) {
-    if (args.flow != HomePlanConfirmationEntryFlow.skip) {
+  String _planBeginsText(HomePlanConfirmationRouteArgs args) {
+    if (args.forceNow) {
       return 'begins immediately';
     }
 
