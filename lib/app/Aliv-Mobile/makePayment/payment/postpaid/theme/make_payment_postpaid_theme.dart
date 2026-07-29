@@ -83,7 +83,11 @@ class MakePaymentPostPaidTheme {
   static const double paymentMethodSectionTitleToFirstCardGap = 16;
   static const double paymentMethodBetweenCardsGap = 8;
   static const double paymentMethodLastCardToPayWithCardGap = 16;
-  static const EdgeInsets paymentMethodPayWithCardRowPadding = EdgeInsets.zero;
+  static const EdgeInsets paymentMethodPayWithCardRowPadding =
+      EdgeInsets.symmetric(horizontal: 12, vertical: 12);
+  static const double paymentMethodPayWithCardLeadingWidth = 18;
+  static const double paymentMethodPayWithCardLeadingHeight = 40;
+  static const double paymentMethodPayWithCardLeadingToTextGap = 10;
   static const double paymentMethodPayWithCardChevronSize = 16;
 
   static const EdgeInsets paymentMethodTilePadding = EdgeInsets.all(16);

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class UserProfileReceiptData extends Equatable {
+  final String typeLabel;
   final String topUpType;
   final String dateText;
   final String timeText;
@@ -11,6 +12,7 @@ class UserProfileReceiptData extends Equatable {
   final String message;
 
   const UserProfileReceiptData({
+    required this.typeLabel,
     required this.topUpType,
     required this.dateText,
     required this.timeText,
@@ -23,6 +25,7 @@ class UserProfileReceiptData extends Equatable {
 
   @override
   List<Object?> get props => [
+    typeLabel,
     topUpType,
     dateText,
     timeText,
