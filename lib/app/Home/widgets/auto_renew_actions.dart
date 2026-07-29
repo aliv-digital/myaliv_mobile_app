@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -43,17 +42,17 @@ Future<bool> handleAutoRenewToggle(
   );
   if (confirmed != true) return false;
 
-  final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-  if (accountInfo == null || accountInfo.idAcc <= 0) {
+  final deviceId = instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+  if (deviceId <= 0) {
     AppToast.show(
-      message: 'Account info not available',
+      message: 'Device info not available',
       type: ToastType.error,
     );
     return false;
   }
 
   final success =
-      await instance<DeviceLimitsCubit>().disableAutoRenew(accountInfo.idAcc);
+      await instance<DeviceLimitsCubit>().disableAutoRenew(deviceId);
 
   if (success) {
     AppToast.show(

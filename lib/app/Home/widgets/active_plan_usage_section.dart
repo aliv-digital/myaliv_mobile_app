@@ -6,8 +6,6 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usa
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/view/bucket_usage_view_helpers.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
-// Parked alongside the commented `ActivePlansExpander` block below.
 // import 'package:myaliv_mobile_app/app/Home/widgets/active_plans_expander.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/roaming_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/usage_group.dart';
@@ -76,12 +74,6 @@ class ActivePlanUsageSection extends StatelessWidget {
         ),
         // need to remove view all
         _roamingSection(context),
-        if (isPostpaid) ...[
-          _myLimitsHeader(context),
-          const SizedBox(height: 10),
-          // set limit title and icon at center
-          const MyLimitsCards(),
-        ],
       ],
     );
   }
@@ -91,15 +83,6 @@ class ActivePlanUsageSection extends StatelessWidget {
       title: 'active plan usage remaining',
       onTap: () => context.go(AppRoutes.usage),
     );
-  }
-
-  Widget _myLimitsHeader(BuildContext context) {
-    void open() {
-      context.read<AppUiConfigCubit>().showMyLimitsView();
-      context.go(AppRoutes.usage);
-    }
-
-    return _SectionHeader(title: 'my limits', onTap: open);
   }
 
   /// One header + `RoamingCard` per standalone (roaming) plan. The section

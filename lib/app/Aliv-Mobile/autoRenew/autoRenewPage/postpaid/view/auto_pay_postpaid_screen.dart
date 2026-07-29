@@ -195,7 +195,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                       }),
                       showWalletRow: false,
                       showNoAutoRenewRow: true,
-                      showPayWithCardRow: true,
+                      showPayWithCardRow: false,
                       payWithCardSelected: _payWithCardSelected,
                       noAutoRenewText: "i don't want to auto pay",
                       onNoAutoRenewSelected: () => setState(() {

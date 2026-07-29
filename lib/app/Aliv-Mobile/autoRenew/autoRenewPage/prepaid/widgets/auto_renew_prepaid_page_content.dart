@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:core/core.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -144,7 +143,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
           },
           walletBalanceText: walletBalanceText,
           showNoAutoRenewRow: true,
-          showPayWithCardRow: true,
+          showPayWithCardRow: false,
           payWithCardSelected: autoRenewPrepaidState.isPayWithCardSelected,
           onPayFromWallet: () {
             autoRenewPrepaidBloc.add(
@@ -209,17 +208,17 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
   }
 
   Future<void> _disableAutoRenew(BuildContext context) async {
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    if (accountInfo == null || accountInfo.idAcc <= 0) {
+    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) {
       AppToast.show(
-        message: 'Account info not available',
+        message: 'Device info not available',
         type: ToastType.error,
       );
       return;
     }
 
-    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final success = await deviceLimitsCubit.disableAutoRenew(accountInfo.idAcc);
+    final success = await deviceLimitsCubit.disableAutoRenew(deviceId);
 
     final errorMessage = deviceLimitsCubit.state.errorMessage;
     AppToast.show(
@@ -237,16 +236,15 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
   }
 
   Future<void> _enableWalletAutoRenew(BuildContext context) async {
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    if (accountInfo == null || accountInfo.idAcc <= 0) {
+    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) {
       AppToast.show(
-        message: 'Account info not available',
+        message: 'Device info not available',
         type: ToastType.error,
       );
       return;
     }
-
-    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
 
     // Wallet auto-renew also requires clearing the card-based auto-renew
     // selection server-side. The card endpoint accepts an empty token to
@@ -271,7 +269,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     }
 
     final success =
-        await deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
+        await deviceLimitsCubit.enableAutoRenewWallet(deviceId);
 
     final errorMessage = deviceLimitsCubit.state.errorMessage;
     AppToast.show(

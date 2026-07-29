@@ -50,9 +50,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   bool _isChecking = false;
   // 🔥 default amount (matches design)
 
-  static const _caseDMessage =
-      'please try again in a few minutes. if this continues, contact support at 1-242-300-2548';
-
   double get _amountValue {
     final cleaned = _amount.trim().replaceAll(',', '');
     return double.tryParse(cleaned) ?? 0.0;
@@ -258,6 +255,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               GradientInputField(
                 label: GuestTopUpTheme.amountLabel,
                 hint: GuestTopUpTheme.amountHintText,
+                initialValue: _amount,
                 onChanged: (value) {
                   setState(() => _amount = value);
                 },
@@ -369,23 +367,19 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       }
                       if (existsResult == PhoneExistsResult.unknown) {
                         AppToast.show(
-                          message: _caseDMessage,
+                          message: SendTopupRepository.caseDMessage,
                           type: ToastType.error,
                         );
                         return;
                       }
 
-                      // Gate 2: recipient eligibility for THIS amount.
-                      final recipientOk =
-                          await sendTopupRepo.canTopUpRecipient(
-                        phoneNumber: recipientPhone,
-                        amount: _amountValue,
-                      );
+                      // Gate 2: recipient transfer eligibility.
+                      final transferError = await sendTopupRepo
+                          .transferIsValid(recipientPhone);
                       if (!mounted) return;
-                      if (!recipientOk) {
+                      if (transferError != null) {
                         AppToast.show(
-                          message:
-                              'this number cannot receive a top-up right now. please verify the number or try again.',
+                          message: transferError,
                           type: ToastType.error,
                         );
                         return;
@@ -405,7 +399,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                     } on CanSubmitOrderException {
                       if (!mounted) return;
                       AppToast.show(
-                        message: _caseDMessage,
+                        message: SendTopupRepository.caseDMessage,
                         type: ToastType.error,
                       );
                       return;

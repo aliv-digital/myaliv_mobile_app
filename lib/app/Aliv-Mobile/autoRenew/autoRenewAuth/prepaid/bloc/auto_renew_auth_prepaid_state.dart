@@ -55,7 +55,7 @@ class AutoRenewAuthPrepaidState extends Equatable {
 
   bool get canSubmit =>
       loadStatus == AutoRenewAuthLoadStatus.ready &&
-      name.trim().isNotEmpty &&
+      isNameValid &&
       submitStatus != AutoRenewAuthSubmitStatus.submitting;
 
   AutoRenewAuthPrepaidState copyWith({

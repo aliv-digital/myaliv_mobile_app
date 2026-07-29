@@ -95,32 +95,35 @@ class SendTopupRepository {
     return code == 501 || name == 'InvalidDevice';
   }
 
-  /// GET /device/can-top-up/{phoneNumber}?amount={amount} — recipient
-  /// eligibility (Gate 2). Fail-closed on any error, matching the "we can't
-  /// verify → Case D" pattern from the top-up limit gate.
+  /// GET /device/transfer-is-valid/{phoneNumber} — recipient eligibility
+  /// (Send Top-up Gate 2, called after Gate 0 confirms the number exists).
   ///
-  /// Returns `true` only when the backend confirms `{ "Success": true }`.
-  Future<bool> canTopUpRecipient({
-    required String phoneNumber,
-    required double amount,
-  }) async {
+  /// Returns `null` when the backend confirms `{ "Success": true }` (proceed).
+  /// Returns the server's `Message` string on any non-200 / failure response
+  /// so the caller can show it verbatim in a toast.
+  Future<String?> transferIsValid(String phoneNumber) async {
     final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    if (digits.isEmpty || amount <= 0) return false;
+    if (digits.isEmpty) return caseDMessage;
 
     try {
       final response = await _networkService.request<dynamic>(
-        Api.canTopUpRecipient(phoneNumber: digits, amount: amount),
+        Api.transferIsValid(phoneNumber: digits),
         method: HttpMethod.get,
       );
       final data = response.data;
-      if (data is Map<String, dynamic>) {
-        return data['Success'] == true;
+      if (data is Map<String, dynamic> && data['Success'] == true) {
+        return null;
       }
-      return false;
+      return _extractServerMessage(data) ?? caseDMessage;
+    } on NetworkException catch (error) {
+      return _extractServerMessage(error.data) ?? _errorMessage(error);
     } catch (_) {
-      return false;
+      return caseDMessage;
     }
   }
+
+  static const caseDMessage =
+      'please try again in a few minutes. if this continues, contact support at 1-242-300-2548';
 
   String _errorMessage(NetworkException error) {
     if (error is NoInternetException || error is HostUnreachableException) {

@@ -26,6 +26,7 @@ import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usa
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:core/core.dart';
 
@@ -142,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
           forceRefresh: true,
         );
 
-        final config = instance<AppUiConfigCubit>().state;
+        final config = context.read<AppUiConfigCubit>().state;
         if (config.userType.isPostpaid) {
           instance<ConsumptionLimitCubit>().loadLimits(
             deviceAccountId: deviceId,
@@ -279,6 +280,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           return SizedBox(height: isEmpty ? 0 : 20);
                         },
                       ),
+                      // my limits — postpaid only, independent of bucket usage
+                      if (config.userType.isPostpaid)
+                        _myLimitsSection(context),
+
                       // our best plans
                       _bestPlans(context),
 
@@ -315,6 +320,60 @@ class _HomeScreenState extends State<HomeScreen> {
           bottomLeft: Radius.circular(28),
           bottomRight: Radius.circular(28),
         ),
+      ),
+    );
+  }
+
+  // ================= MY LIMITS =================
+  Widget _myLimitsSection(BuildContext context) {
+    void open() {
+      context.read<AppUiConfigCubit>().showMyLimitsView();
+      context.go(AppRoutes.usage);
+    }
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+      decoration: const BoxDecoration(color: Color(0xFFF1F7FA)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: open,
+                  child: const Text(
+                    'my limits',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: open,
+                  child: const Text(
+                    'view all',
+                    style: TextStyle(
+                      color: Color(0xFF645D9C),
+                      fontSize: 13,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Color(0xFF645D9C),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          const MyLimitsCards(),
+        ],
       ),
     );
   }

@@ -18,6 +18,7 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final remaining =
         isSendTopUp ? balance - enteredAmount : balance + enteredAmount;
+    final isNegative = remaining < 0;
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -51,13 +52,14 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                 ),
                 SizedBox(width: 10),
                 Container(
-                  // width: 63,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 4,
                     vertical: 4,
                   ),
                   decoration: ShapeDecoration(
-                    color: const Color(0xFFF2F2F2),
+                    color: isNegative
+                        ? const Color(0xFFFFEDED)
+                        : const Color(0xFFF2F2F2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -66,7 +68,9 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
                     BalanceCurrencyFormatterService.format(remaining),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: const Color(0xFF222222),
+                      color: isNegative
+                          ? const Color(0xFFD32F2F)
+                          : const Color(0xFF222222),
                       fontSize: 14,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w700,

@@ -73,8 +73,11 @@ class AutoRenewAuthPrepaidRepositoryImpl
     // Get user's full name from DeviceLimitsCubit (same as drawer)
     // Fallback to name extracted from email if not available
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
-    final fullName = deviceLimitsCubit.state.fullName ?? _nameFromEmail(email);
+    final accountInfoCubit = instance<AccountInfoCubit>();
+    final email = accountInfoCubit.state.accountInfo?.email ?? '';
+    final fullName = accountInfoCubit.state.fullName ??
+        deviceLimitsCubit.state.fullName ??
+        _nameFromEmail(email);
 
     // Small delay for loading state
     await Future.delayed(const Duration(milliseconds: 100));
@@ -101,17 +104,13 @@ class AutoRenewAuthPrepaidRepositoryImpl
     String? cardToken,
   }) async {
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final accountInfoCubit = instance<AccountInfoCubit>();
-    final accountInfo = accountInfoCubit.state.accountInfo;
-
-    if (accountInfo == null || accountInfo.idAcc <= 0) {
-      return false;
-    }
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) return false;
 
     // Call appropriate API based on payment method
     switch (paymentMethod) {
       case AutoRenewPaymentMethodType.wallet:
-        return deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
+        return deviceLimitsCubit.enableAutoRenewWallet(deviceId);
       case AutoRenewPaymentMethodType.card:
         if (cardToken == null || cardToken.isEmpty) return false;
         final cardSuccess = await deviceLimitsCubit.enableAutoRenewCard(
@@ -119,7 +118,7 @@ class AutoRenewAuthPrepaidRepositoryImpl
           refreshAfter: false,
         );
         if (!cardSuccess) return false;
-        return deviceLimitsCubit.enableAutoRenewWallet(accountInfo.idAcc);
+        return deviceLimitsCubit.enableAutoRenewWallet(deviceId);
       case AutoRenewPaymentMethodType.postpaidInvoice:
         if (cardToken != null && cardToken.isNotEmpty) {
           final cardSuccess = await deviceLimitsCubit.enableAutoRenewCard(
@@ -128,7 +127,7 @@ class AutoRenewAuthPrepaidRepositoryImpl
           );
           if (!cardSuccess) return false;
         }
-        return accountInfoCubit.enableAutoPayInvoice();
+        return instance<AccountInfoCubit>().enableAutoPayInvoice();
     }
   }
 }

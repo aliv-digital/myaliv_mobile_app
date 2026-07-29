@@ -98,20 +98,13 @@ class Api {
   /// Response: `{ "TopUp24HourLimitLeft": <number>, "EarliestTopUpDate": "YYYY-MM-DD HH:mm:ss" (UTC) }`
   static const topUpLimitLeft = '$baseUrl/v1/MyAliv/Account/top-up-limit-left';
 
-  /// Recipient eligibility check (Send Top-up preflight, Gate 2):
-  /// GET /device/can-top-up/{phoneNumber}?amount={amount}
-  /// Response: `{ "Success": true | false }`
-  /// 400: invalid device (bad phone number)
-  ///
-  /// Note: the spec path param is `{phoneNumber}`, not deviceId. The `?amount=`
-  /// query is app-observed and may not be honored by a strict gateway.
-  static String canTopUpRecipient({
-    required String phoneNumber,
-    required double amount,
-  }) {
+  /// Recipient transfer eligibility check (Send Top-up preflight, Gate 2):
+  /// GET /device/transfer-is-valid/{phoneNumber}
+  /// 200 → `{ "Success": true }` — can proceed
+  /// non-200 → `{ "ErrorCode": ..., "Message": "...", ... }` — show Message
+  static String transferIsValid({required String phoneNumber}) {
     final digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
-    return '$baseUrl/v1/MyAliv/device/can-top-up/'
-        '${Uri.encodeComponent(digits)}?amount=$amount';
+    return '$baseUrl/v1/MyAliv/device/transfer-is-valid/${Uri.encodeComponent(digits)}';
   }
 
   /// Recipient phone-number-is-an-Aliv-device check (Send Top-up Gate 0):

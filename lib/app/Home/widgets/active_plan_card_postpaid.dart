@@ -27,10 +27,16 @@ class PostpaidActivePlanCard extends StatelessWidget {
   static const Color lightBg = Color(0xFFF4F5FA);
 
   String _formatCardDate(DateTime? date) {
-    if (date == null) {
-      return '--/--/--';
-    }
+    if (date == null) return '--/--/--';
     return DateFormat('dd/MM/yy').format(date);
+  }
+
+  // Postpaid plans carry far-future sentinel EndDates (2036-01-01, 2106-01-01…).
+  // Always show billing-cycle end (last day of current month) instead.
+  String _formatExpireDate() {
+    final now = DateTime.now();
+    final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+    return DateFormat('dd/MM/yy').format(endOfMonth);
   }
 
   @override
@@ -97,7 +103,7 @@ class PostpaidActivePlanCard extends StatelessWidget {
             const Spacer(),
             _DateBlock(
               label: 'expire',
-              value: _formatCardDate(activePlan?.endDateTime),
+              value: _formatExpireDate(),
               alignRight: true,
             ),
           ],

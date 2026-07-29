@@ -6,12 +6,14 @@ class GradientInputField extends StatefulWidget {
   final String label;
   final String hint;
   final ValueChanged<String> onChanged;
+  final String? initialValue;
 
   const GradientInputField({
     super.key,
     required this.label,
     required this.hint,
     required this.onChanged,
+    this.initialValue,
   });
 
   @override
@@ -23,6 +25,15 @@ class GradientInputField extends StatefulWidget {
 class _GradientInputFieldState extends State<GradientInputField> {
   final TextEditingController _controller = TextEditingController();
   bool _isFormatting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initialValue;
+    if (initial != null && initial.isNotEmpty) {
+      _controller.text = '\$$initial';
+    }
+  }
 
   void _handleInputChange(String raw) {
     if (_isFormatting) return;
