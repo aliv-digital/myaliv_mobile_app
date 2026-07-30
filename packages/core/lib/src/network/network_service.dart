@@ -434,7 +434,11 @@ class NetworkService {
         if (statusCode == 401) {
           return SessionExpiredException();
         } else if (statusCode != null && statusCode >= 500) {
-          return ServerException(message, statusCode: statusCode);
+          return ServerException(
+            message,
+            statusCode: statusCode,
+            data: error.response?.data,
+          );
         } else {
           return NetworkException(
             message,
