@@ -2,13 +2,18 @@ import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 class UserProfileReceiptRouteArgs extends Equatable {
+  static const String topUpPendingMessage =
+      'It will take a few moments for the top-up to appear on the account.';
+  static const String postpaidPaymentPendingMessage =
+      'It will take a few moments for the payment to appear on the account.';
+
   final double amount;
   final String? phoneNumber;
   final String topUpType;
   final String paymentMethod;
   final DateTime? createdAt;
   final String title;
-  final String message;
+  final String? message;
   final String? recipientPhone;
 
   /// If present, the receipt shows the "save credit card" button; on tap
@@ -23,11 +28,18 @@ class UserProfileReceiptRouteArgs extends Equatable {
     this.paymentMethod = 'credit card',
     this.createdAt,
     this.title = 'Payment Success!',
-    this.message =
-        'It will take a few moments for the top-up to appear on the account.',
+    this.message,
     this.recipientPhone,
     this.cardToSave,
   });
+
+  bool get isPostpaidPayment => topUpType.trim().toLowerCase() == 'postpaid';
+
+  String get receiptMessage =>
+      message ??
+      (isPostpaidPayment ? postpaidPaymentPendingMessage : topUpPendingMessage);
+
+  String get receiptTypeLabel => isPostpaidPayment ? 'service' : 'top-up';
 
   factory UserProfileReceiptRouteArgs.fromQuery(Map<String, String> query) {
     final amount = double.tryParse(query['amount'] ?? '') ?? 0;
@@ -38,10 +50,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
       topUpType: _valueOrDefault(query['topUpType'], 'prepaid'),
       paymentMethod: _valueOrDefault(query['paymentMethod'], 'credit card'),
       title: _valueOrDefault(query['title'], 'Payment Success!'),
-      message: _valueOrDefault(
-        query['message'],
-        'It will take a few moments for the top-up to appear on the account.',
-      ),
+      message: _emptyToNull(query['message']),
     );
   }
 

@@ -14,6 +14,7 @@ class UserProfileReceiptRepository {
     );
 
     return UserProfileReceiptData(
+      typeLabel: args.receiptTypeLabel,
       topUpType: args.topUpType,
       dateText: DateFormat('MMM d, yyyy').format(createdAt),
       timeText: DateFormat('h:mm a').format(createdAt).toLowerCase(),
@@ -23,7 +24,7 @@ class UserProfileReceiptRepository {
       paymentMethod: args.paymentMethod,
       amount: args.amount,
       title: args.title,
-      message: args.message,
+      message: args.receiptMessage,
     );
   }
 

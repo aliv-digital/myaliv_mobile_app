@@ -19,6 +19,8 @@ class PaymentOptionTile extends StatelessWidget {
   final double? radioSize;
   final double? leadingWidth;
   final double? leadingHeight;
+  final double leadingToTextGap;
+  final EdgeInsetsGeometry? contentPadding;
   final Color? unselectedRadioFill;
 
   const PaymentOptionTile({
@@ -32,6 +34,8 @@ class PaymentOptionTile extends StatelessWidget {
     this.radioSize,
     this.leadingWidth,
     this.leadingHeight,
+    this.leadingToTextGap = 0,
+    this.contentPadding,
     this.unselectedRadioFill,
   });
 
@@ -40,7 +44,6 @@ class PaymentOptionTile extends StatelessWidget {
   static const Color _selectedTextColor = Color(0xFF645D9C);
   static const Color _unselectedBg = Colors.white;
   static const Color _unselectedBorder = Color(0xFFE5E7EB);
-  static const Color _unselectedTextColor = Color(0xFF1A1A1A);
   static const Color _unselectedRadioBorder = Color(0xFFCFCFCF);
 
   static const double _defaultTileRadius = 12;
@@ -71,7 +74,8 @@ class PaymentOptionTile extends StatelessWidget {
               width: selected ? 1.5 : 1,
             ),
           ),
-          padding: const EdgeInsets.only(top: 12,bottom: 12,right: 16),//symmetric(horizontal: 16, vertical: 12),
+          padding: contentPadding ??
+              const EdgeInsets.only(top: 12, bottom: 12, right: 16),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: _tileMinHeight - 24),
             child: Row(
@@ -82,6 +86,7 @@ class PaymentOptionTile extends StatelessWidget {
                     height: leadH,
                     child: Center(child: leading),
                   ),
+                  if (leadingToTextGap > 0) SizedBox(width: leadingToTextGap),
                 ],
                 Expanded(
                   child: Row(
@@ -113,7 +118,6 @@ class PaymentOptionTile extends StatelessWidget {
 
   TextStyle get _titleStyle => TextStyle(
         color: _selectedTextColor,
-        // color: selected ? _selectedTextColor : _unselectedTextColor,
         fontSize: 16,
         fontFamily: AppConstants.defaultFontFamily,
         fontWeight: FontWeight.w700,

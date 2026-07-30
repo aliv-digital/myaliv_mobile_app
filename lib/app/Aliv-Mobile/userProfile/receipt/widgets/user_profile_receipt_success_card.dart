@@ -107,7 +107,10 @@ class UserProfileReceiptSuccessCard extends StatelessWidget {
               },
             ),
             const SizedBox(height: UserProfileReceiptTheme.gapAfterMessage),
-            UserProfileReceiptDetailRow(label: 'top-up', value: data.topUpType),
+            UserProfileReceiptDetailRow(
+              label: data.typeLabel,
+              value: data.topUpType,
+            ),
             UserProfileReceiptDetailRow(label: 'date', value: data.dateText),
             UserProfileReceiptDetailRow(label: 'time', value: data.timeText),
             UserProfileReceiptDetailRow(

@@ -46,5 +46,5 @@ class TimeoutException extends NetworkException {
 
 /// Exception thrown when server returns 5xx errors
 class ServerException extends NetworkException {
-  ServerException(super.message, {super.statusCode});
+  ServerException(super.message, {super.statusCode, super.data});
 }

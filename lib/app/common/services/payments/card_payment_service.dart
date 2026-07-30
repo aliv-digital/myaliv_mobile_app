@@ -9,6 +9,11 @@ import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bun
 /// mapping. Higher-level services (change-bundle, top-up) supply the URL and
 /// the outer envelope; this class knows nothing about either.
 class CardPaymentService {
+  static const pendingOrdersMessage =
+      'You have pending or failed orders. '
+      'Please wait for the open orders to complete '
+      'before sending another request.';
+
   CardPaymentService({NetworkService? networkService})
     : _networkService = networkService ?? instance<NetworkService>();
 
@@ -82,11 +87,13 @@ class CardPaymentService {
   /// Map the server's `ErrorCodeName` onto a user-facing message. Returns
   /// null when no override exists — caller falls back to transport handling.
   String? _customMessageFor(String? codeName) {
-    switch (codeName) {
-      case 'ToManyOrders':
-        return 'You have pending or failed orders. '
-            'Please wait for the open orders to complete '
-            'before sending another request.';
+    switch (codeName?.trim().toLowerCase()) {
+      // The API currently returns the misspelled "ToManyOrders". Accept the
+      // correctly spelled variant as well so the UI copy remains stable if
+      // the backend fixes its enum name.
+      case 'tomanyorders':
+      case 'toomanyorders':
+        return pendingOrdersMessage;
     }
     return null;
   }
@@ -95,16 +102,13 @@ class CardPaymentService {
   /// `String` depending on `ResponseType`. Handle both.
   String? _errorCodeName(dynamic data) {
     if (data is Map) {
-      final name = data['ErrorCodeName'];
+      final name = data['ErrorCodeName'] ?? data['errorCodeName'];
       return name is String ? name : name?.toString();
     }
     if (data is String && data.isNotEmpty) {
       try {
         final decoded = jsonDecode(data);
-        if (decoded is Map) {
-          final name = decoded['ErrorCodeName'];
-          return name is String ? name : name?.toString();
-        }
+        return _errorCodeName(decoded);
       } catch (_) {
         return null;
       }

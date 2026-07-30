@@ -58,15 +58,9 @@ class MpPaymentMethodSection extends StatelessWidget {
             height: MakePaymentPostPaidTheme
                 .paymentMethodLastCardToPayWithCardGap,
           ),
-          PaymentOptionTile(
-            title: 'pay with card',
+          _PayWithCardTile(
             selected: payWithCardSelected,
             onTap: onPayWithCardSelected,
-            leading: const Icon(
-              Icons.add,
-              size: 18,
-              color: MakePaymentPostPaidTheme.paymentMethodAccent,
-            ),
           ),
         ],
       ),
@@ -111,8 +105,44 @@ class _MpSavedCardsList extends StatelessWidget {
           onCardSelected: onCardSelected,
           maxVisibleItems: 4,
           tileHeight: 64,
+          unselectedRadioFill:
+              MakePaymentPostPaidTheme.paymentMethodUnselectedIndicatorColor,
         );
       },
+    );
+  }
+}
+
+class _PayWithCardTile extends StatelessWidget {
+  const _PayWithCardTile({
+    required this.selected,
+    required this.onTap,
+  });
+
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return PaymentOptionTile(
+      title: 'pay with card',
+      selected: selected,
+      onTap: onTap,
+      contentPadding:
+          MakePaymentPostPaidTheme.paymentMethodPayWithCardRowPadding,
+      leadingWidth:
+          MakePaymentPostPaidTheme.paymentMethodPayWithCardLeadingWidth,
+      leadingHeight:
+          MakePaymentPostPaidTheme.paymentMethodPayWithCardLeadingHeight,
+      leadingToTextGap:
+          MakePaymentPostPaidTheme.paymentMethodPayWithCardLeadingToTextGap,
+      unselectedRadioFill:
+          MakePaymentPostPaidTheme.paymentMethodUnselectedIndicatorColor,
+      leading: const Icon(
+        Icons.add,
+        size: 18,
+        color: MakePaymentPostPaidTheme.paymentMethodAccent,
+      ),
     );
   }
 }
@@ -200,4 +230,3 @@ class _ErrorPlaceholder extends StatelessWidget {
     );
   }
 }
-
