@@ -4,6 +4,13 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
+/// Optimistically-injected active plan shown immediately after a successful
+/// purchase, before the real /bundles refresh returns updated data.
+///
+/// Intentionally NOT serialised — it is ephemeral and cleared as soon as
+/// the next real [PlansStatus.success] emit lands.
+typedef OptimisticActivePlan = BasePlanModel;
+
 /// Status of plan fetching
 enum PlansStatus {
   /// Initial state
@@ -65,6 +72,8 @@ class PlansState extends Equatable {
     this.lastFetchedAt,
     this.addOnsApiLastSyncedAt,
     this.errorMessage,
+    // Optimistic state — not persisted, cleared on next real success
+    this.optimisticActivePlan,
   });
 
   final PlansStatus status;

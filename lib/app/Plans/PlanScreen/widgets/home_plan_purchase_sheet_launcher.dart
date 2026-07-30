@@ -34,6 +34,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
+    activePrimaryPlan: plansState.earliestAddOnsPrimaryPlan,
   );
 
   return showModalBottomSheet<void>(
@@ -242,11 +243,13 @@ HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
 PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   required BasePlanModel? selectedApiPlan,
   required int? selectedIndex,
+  required BasePlanModel? activePrimaryPlan,
 }) {
   return PlanPurchasePlanAddOnsRouteArgs(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
     forceNow: true,
+    activePrimaryPlan: activePrimaryPlan,
   );
 }
 

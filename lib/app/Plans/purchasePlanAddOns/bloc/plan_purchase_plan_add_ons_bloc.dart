@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
+import '../../PlanScreen/models/base_plan_model.dart';
 import '../model/plan_purchase_add_on_models.dart';
 import '../repository/plan_purchase_plan_add_ons_repository.dart';
 import 'plan_purchase_plan_add_ons_event.dart';
@@ -41,25 +43,27 @@ class PlanPurchasePlanAddOnsBloc
         selectedPlan,
       );
 
-      // Loading in parallel makes UI faster (clean + readable).
+      // Build activePlan from real route-arg data; null when no active plan.
+      final activePlan = _activePlanSummaryFrom(
+        event.routeArgs?.activePrimaryPlan,
+      );
+
       final results = await Future.wait([
-        repository.fetchActivePlan(),
         repository.fetchFairUsePolicy(),
         if (selectedPlan == null)
           repository.fetchAddOns()
         else
           Future<List<PlanPurchaseAddOnItem>>.value(selectedPlanAddOns),
       ]);
-      final activePlan = results[0] as PlanPurchaseActivePlanSummary;
 
       emit(
         state.copyWith(
           status: PlanPurchasePlanAddOnsStatus.ready,
           routeArgs: event.routeArgs,
           activePlan: activePlan,
-          fairUsePolicy: results[1] as dynamic,
-          addOns: results[2] as dynamic,
-          autoRenew: selectedPlan?.autoRenew ?? activePlan.autoRenew,
+          fairUsePolicy: results[0] as dynamic,
+          addOns: results[1] as dynamic,
+          autoRenew: activePlan?.autoRenew ?? selectedPlan?.autoRenew ?? false,
         ),
       );
     } catch (e) {
@@ -99,6 +103,27 @@ class PlanPurchasePlanAddOnsBloc
       updated.remove(event.addOnId);
     }
     emit(state.copyWith(selectedAddOnIds: updated));
+  }
+
+  static final _cardDateFormat = DateFormat('dd/MM/yy');
+
+  static PlanPurchaseActivePlanSummary? _activePlanSummaryFrom(
+    BasePlanModel? plan,
+  ) {
+    if (plan == null) return null;
+    return PlanPurchaseActivePlanSummary(
+      label: 'active plan',
+      name: plan.planName,
+      autoRenew: plan.autoRenew,
+      activeDateLabel: 'active',
+      activeDate: plan.startDateTime != null
+          ? _cardDateFormat.format(plan.startDateTime!)
+          : '--/--',
+      expireDateLabel: 'expire',
+      expireDate: plan.endDateTime != null
+          ? _cardDateFormat.format(plan.endDateTime!)
+          : '--/--',
+    );
   }
 
   void _onSkipPressed(
