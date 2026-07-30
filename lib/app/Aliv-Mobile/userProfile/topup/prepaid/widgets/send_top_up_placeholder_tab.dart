@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/top_up_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/logic/top_up_limit_gate.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/can_submit_order_result.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
@@ -391,7 +392,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       if (!mounted) return;
                       if (!orderResult.canProceed) {
                         AppToast.show(
-                          message: orderResult.infoMessage,
+                          message: CanSubmitOrderResult.pendingOrdersMessage,
                           type: ToastType.error,
                         );
                         return;

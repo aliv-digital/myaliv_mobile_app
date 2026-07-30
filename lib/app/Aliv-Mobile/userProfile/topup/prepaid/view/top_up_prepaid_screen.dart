@@ -11,6 +11,7 @@ import '../bloc/top_up_prepaid_bloc.dart';
 import '../bloc/top_up_prepaid_event.dart';
 import '../bloc/top_up_prepaid_state.dart';
 import '../logic/top_up_limit_gate.dart';
+import '../repository/can_submit_order_result.dart';
 import '../repository/top_up_prepaid_repository.dart';
 import '../theme/top_up_prepaid_theme.dart';
 
@@ -222,7 +223,7 @@ class _MyNumberTabState extends State<_MyNumberTab> {
       if (!mounted) return;
       if (!result.canProceed) {
         AppToast.show(
-          message: result.infoMessage,
+          message: CanSubmitOrderResult.pendingOrdersMessage,
           type: ToastType.error,
         );
         return;
