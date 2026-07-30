@@ -111,6 +111,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
       return;
     }
     _isFetching = true;
+    emit(state.copyWith(isRefreshingBundles: true));
 
     try {
       final addOnsResult = await _repository.fetchAddOnsData(forceRefresh: true);
@@ -124,6 +125,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
         standAlonePlans: addOnsResult.standAlonePlans,
         addOnsApiLastSyncedAt: DateTime.now(),
         errorMessage: null,
+        isRefreshingBundles: false,
         clearOptimisticActivePlan: _shouldClearOptimisticPlan(
           state.optimisticActivePlan,
           addOnsResult.primaryPlans,
@@ -136,6 +138,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
     } catch (_) {
       // Silently ignore — the optimistic plan stays visible and the next
       // background refresh will retry.
+      if (!isClosed) emit(state.copyWith(isRefreshingBundles: false));
     } finally {
       _isFetching = false;
       if (_pendingForceRefresh) {

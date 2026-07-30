@@ -75,6 +75,8 @@ class PlansState extends Equatable {
     // Optimistic state — not persisted, cleared on next real success
     this.optimisticActivePlan,
     this.optimisticSecondaryPlans = const [],
+    // Refresh tracking — not persisted
+    this.isRefreshingBundles = false,
   });
 
   final PlansStatus status;
@@ -126,6 +128,11 @@ class PlansState extends Equatable {
   /// a successful add-on purchase, before /bundles reflects the change.
   /// Not serialised to disk.
   final List<BasePlanModel> optimisticSecondaryPlans;
+
+  /// True while [refreshBundlesOnly] is in-flight. Used by the add-ons tab
+  /// to show a shimmer skeleton when the list is empty and a refresh is running.
+  /// Not serialised to disk.
+  final bool isRefreshingBundles;
 
   // ═══════════════════════════════════════════════════════════════════
   // GETTERS (SAME as HomePlanState - UI depends on these)
@@ -431,6 +438,7 @@ class PlansState extends Equatable {
     bool clearOptimisticActivePlan = false,
     List<BasePlanModel>? optimisticSecondaryPlans,
     bool clearOptimisticSecondaryPlans = false,
+    bool? isRefreshingBundles,
   }) {
     return PlansState(
       status: status ?? this.status,
@@ -465,6 +473,7 @@ class PlansState extends Equatable {
       optimisticSecondaryPlans: clearOptimisticSecondaryPlans
           ? const []
           : (optimisticSecondaryPlans ?? this.optimisticSecondaryPlans),
+      isRefreshingBundles: isRefreshingBundles ?? this.isRefreshingBundles,
     );
   }
 
@@ -494,5 +503,6 @@ class PlansState extends Equatable {
         errorMessage,
         optimisticActivePlan,
         optimisticSecondaryPlans,
+        isRefreshingBundles,
       ];
 }

@@ -10,7 +10,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_empty_state.
 /// Reusable body for the add-ons view used by both `HomePlanScreen` and
 /// the user-profile `PurchaseAddOnsScreen`. Renders the same shimmer,
 /// no-primary-plan, empty, and tab-content states from `PlansCubit` data.
-class PlanAddOnsBody extends StatelessWidget {
+class PlanAddOnsBody extends StatefulWidget {
   const PlanAddOnsBody({
     super.key,
     this.onNoPrimaryPlanPurchase,
@@ -22,6 +22,30 @@ class PlanAddOnsBody extends StatelessWidget {
   final VoidCallback? onNoPrimaryPlanPurchase;
 
   @override
+  State<PlanAddOnsBody> createState() => _PlanAddOnsBodyState();
+}
+
+class _PlanAddOnsBodyState extends State<PlanAddOnsBody> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _autoRefreshIfEmpty());
+  }
+
+  void _autoRefreshIfEmpty() {
+    if (!mounted) return;
+    final cubit = context.read<PlansCubit>();
+    final state = cubit.state;
+    // Only auto-refresh when /bundles already responded but returned no add-ons
+    // and a refresh isn't already running.
+    if (state.addOnsApiLastSyncedAt != null &&
+        state.addOns.isEmpty &&
+        !state.isRefreshingBundles) {
+      cubit.refreshBundlesOnly();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) {
@@ -30,16 +54,17 @@ class PlanAddOnsBody extends StatelessWidget {
                 current.earliestAddOnsPrimaryPlan ||
             previous.addOns != current.addOns ||
             previous.selectedAddOnIds != current.selectedAddOnIds ||
-            previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
+            previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt ||
+            previous.isRefreshingBundles != current.isRefreshingBundles;
       },
       builder: (context, state) {
         final status = state.selectedTabStatus;
-        // /bundles data drives the add-ons tab entirely — show shimmer only
-        // while bundles hasn't responded yet, regardless of available-plans.
         final bundlesReady = state.addOnsApiLastSyncedAt != null;
 
-        if (!bundlesReady) {
-          if (status == PlansStatus.failure) {
+        // Show shimmer when bundles has never responded OR when it came back
+        // empty and an auto-refresh is currently in-flight.
+        if (!bundlesReady || (state.addOns.isEmpty && state.isRefreshingBundles)) {
+          if (!bundlesReady && status == PlansStatus.failure) {
             return PlanErrorState(
               errorMessage:
                   state.selectedTabErrorMessage ?? 'Something went wrong',
@@ -51,7 +76,7 @@ class PlanAddOnsBody extends StatelessWidget {
 
         if (state.earliestAddOnsPrimaryPlan == null) {
           return AddOnsNoPrimaryPlanState(
-            onPurchasePlan: onNoPrimaryPlanPurchase ??
+            onPurchasePlan: widget.onNoPrimaryPlanPurchase ??
                 () =>
                     context.read<PlansCubit>().changeTab(HomePlanTab.monthly),
           );
