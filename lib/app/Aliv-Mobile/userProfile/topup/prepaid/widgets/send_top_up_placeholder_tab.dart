@@ -6,16 +6,13 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_sele
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/top_up_prepaid_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/logic/top_up_limit_gate.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/can_submit_order_result.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/top_up_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/top_up_prepaid_balance_row.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -41,7 +38,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _confirmPhoneFocusNode = FocusNode();
 
-  String _amount = '15.00';
+  String _amount = '0.00';
   String _phoneNumber = '';
   String _confirmPhoneNumber = '';
   bool _hasPhoneFocus = false;
@@ -66,9 +63,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     super.initState();
     _phoneFocusNode.addListener(_handlePhoneFocusChange);
     _confirmPhoneFocusNode.addListener(_handleConfirmPhoneFocusChange);
-    // Ensure device limits are loaded before the user taps proceed — otherwise
-    // the Send Top-up gate would fall through to Case D on a direct-tab visit.
-    instance<DeviceLimitsCubit>().loadDeviceLimits();
   }
 
   @override
@@ -324,27 +318,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       );
                       return;
                     }
-                    final topUpState =
-                        context.read<TopUpPrepaidBloc>().state;
-                    final gate = evaluateSendTopUpGate(
-                      amount: _amountValue,
-                      deviceLimits:
-                          instance<DeviceLimitsCubit>().state.deviceLimits,
-                      account: context
-                          .read<AccountInfoCubit>()
-                          .state
-                          .accountInfo,
-                      limitLeft: topUpState.limitLeft,
-                      limitFetchFailed: topUpState.limitFetchFailed,
-                    );
-                    if (gate.blocked) {
-                      AppToast.show(
-                        message: gate.errorMessage!,
-                        type: ToastType.error,
-                      );
-                      return;
-                    }
-
                     // Capture context-derived refs before awaits.
                     final topUpRepo =
                         context.read<TopUpPrepaidBloc>().repo;
