@@ -74,6 +74,7 @@ class PlansState extends Equatable {
     this.errorMessage,
     // Optimistic state — not persisted, cleared on next real success
     this.optimisticActivePlan,
+    this.optimisticSecondaryPlans = const [],
   });
 
   final PlansStatus status;
@@ -121,6 +122,11 @@ class PlansState extends Equatable {
   /// /bundles refresh clears it. Not serialised to disk.
   final OptimisticActivePlan? optimisticActivePlan;
 
+  /// Optimistically-injected secondary (add-on) plans shown immediately after
+  /// a successful add-on purchase, before /bundles reflects the change.
+  /// Not serialised to disk.
+  final List<BasePlanModel> optimisticSecondaryPlans;
+
   // ═══════════════════════════════════════════════════════════════════
   // GETTERS (SAME as HomePlanState - UI depends on these)
   // ═══════════════════════════════════════════════════════════════════
@@ -150,6 +156,33 @@ class PlansState extends Equatable {
       return addOnsApiPrimaryPlans;
     }
     return [optimistic, ...addOnsApiPrimaryPlans];
+  }
+
+  /// Secondary plans merged with any optimistic add-ons not yet confirmed by
+  /// a real /bundles response. Used by [ActiveAddOnsChips] so purchased
+  /// add-ons appear immediately in the Usage tab.
+  List<BasePlanModel> get effectiveSecondaryPlans {
+    final seen = <String>{};
+    final result = <BasePlanModel>[];
+    for (final p in secondaryPlans) {
+      if (seen.add(p.planId)) result.add(p);
+    }
+    for (final p in optimisticSecondaryPlans) {
+      if (seen.add(p.planId)) result.add(p);
+    }
+    return List.unmodifiable(result);
+  }
+
+  /// Finds an available bolt-on by [planId] across all primary plans'
+  /// [availableBoltOns]. Used to build the full [BasePlanModel] for optimistic
+  /// secondary-plan injection after an add-on purchase.
+  BasePlanModel? addOnById(String planId) {
+    for (final primary in addOnsApiPrimaryPlans) {
+      for (final boltOn in primary.availableBoltOns) {
+        if (boltOn.planId == planId) return boltOn;
+      }
+    }
+    return null;
   }
 
   /// Finds a plan by [planId] across all tab plan lists.
@@ -396,6 +429,8 @@ class PlansState extends Equatable {
     bool clearPendingToast = false,
     OptimisticActivePlan? optimisticActivePlan,
     bool clearOptimisticActivePlan = false,
+    List<BasePlanModel>? optimisticSecondaryPlans,
+    bool clearOptimisticSecondaryPlans = false,
   }) {
     return PlansState(
       status: status ?? this.status,
@@ -427,6 +462,9 @@ class PlansState extends Equatable {
       optimisticActivePlan: clearOptimisticActivePlan
           ? null
           : (optimisticActivePlan ?? this.optimisticActivePlan),
+      optimisticSecondaryPlans: clearOptimisticSecondaryPlans
+          ? const []
+          : (optimisticSecondaryPlans ?? this.optimisticSecondaryPlans),
     );
   }
 
@@ -455,5 +493,6 @@ class PlansState extends Equatable {
         addOnsApiLastSyncedAt,
         errorMessage,
         optimisticActivePlan,
+        optimisticSecondaryPlans,
       ];
 }

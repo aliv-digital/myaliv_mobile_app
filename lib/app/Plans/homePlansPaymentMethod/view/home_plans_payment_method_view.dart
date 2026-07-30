@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_event.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_state.dart';
@@ -87,19 +88,30 @@ class _HomePlansPaymentMethodViewState
     BuildContext context,
     HomePlansPaymentMethodState state,
   ) {
-    final primaryItem = _findPrimaryItem(state.selectedItems);
-    if (primaryItem == null) return;
-
     final plansCubit = context.read<PlansCubit>();
-    final plan = plansCubit.state.planById(primaryItem.id);
-    if (plan == null) return;
-
     final purchasedAt = state.forceNow
         ? DateTime.now()
         : (state.selectedBeginDate ?? DateTime.now());
 
-    plansCubit.injectOptimisticActivePlan(
-      plan: plan,
+    final primaryItem = _findPrimaryItem(state.selectedItems);
+    if (primaryItem != null) {
+      final plan = plansCubit.state.planById(primaryItem.id);
+      if (plan != null) {
+        plansCubit.injectOptimisticActivePlan(
+          plan: plan,
+          purchasedAt: purchasedAt,
+        );
+      }
+    }
+
+    final secondaryPlans = state.selectedItems
+        .where((i) => i.planType == HomePlansPaymentPlanType.secondary)
+        .map((i) => plansCubit.state.addOnById(i.id))
+        .whereType<BasePlanModel>()
+        .toList(growable: false);
+
+    plansCubit.injectOptimisticSecondaryPlans(
+      plans: secondaryPlans,
       purchasedAt: purchasedAt,
     );
   }

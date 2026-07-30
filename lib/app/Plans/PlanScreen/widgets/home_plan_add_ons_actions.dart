@@ -47,6 +47,7 @@ class HomePlanAddOnsActions {
       primaryPlanPrice: 0,
       flow: HomePlanConfirmationEntryFlow.proceed,
       isPrimaryPlanActive: true,
+      forceNow: true,
       selectedAddOns: selected
           .map(
             (HomePlanAddOnModel addOn) => HomePlanConfirmationSelectedAddOn(

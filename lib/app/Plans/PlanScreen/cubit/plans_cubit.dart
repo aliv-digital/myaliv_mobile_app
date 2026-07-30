@@ -128,6 +128,10 @@ class PlansCubit extends HydratedCubit<PlansState> {
           state.optimisticActivePlan,
           addOnsResult.primaryPlans,
         ),
+        clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+          state.optimisticSecondaryPlans,
+          addOnsResult.secondaryPlans,
+        ),
       ));
     } catch (_) {
       // Silently ignore — the optimistic plan stays visible and the next
@@ -168,6 +172,24 @@ class PlansCubit extends HydratedCubit<PlansState> {
     ));
   }
 
+  /// Optimistically marks [plans] as active secondary plans immediately after
+  /// a successful add-on purchase, before the real /bundles refresh returns.
+  ///
+  /// [purchasedAt] is stamped onto [startDate] of each plan — this timestamp
+  /// is used by [_shouldClearOptimisticSecondaryPlans] as the injection time
+  /// for the safety-valve TTL check, mirroring [injectOptimisticActivePlan].
+  void injectOptimisticSecondaryPlans({
+    required List<BasePlanModel> plans,
+    required DateTime purchasedAt,
+  }) {
+    if (plans.isEmpty) return;
+    final startTag = _toApiDateString(purchasedAt.toUtc());
+    final injected = plans
+        .map((p) => p.copyWith(startDate: startTag))
+        .toList(growable: false);
+    emit(state.copyWith(optimisticSecondaryPlans: injected));
+  }
+
   // ─── Optimistic-plan helpers ─────────────────────────────────────────────
 
   /// How long to keep showing an optimistic plan when /bundles hasn't
@@ -199,6 +221,36 @@ class PlansCubit extends HydratedCubit<PlansState> {
     // /bundles returned plans but ours isn't among them — unexpected.
     // Apply the safety valve to avoid showing stale data indefinitely.
     final injectedAt = optimistic.startDateTime;
+    if (injectedAt != null &&
+        DateTime.now().difference(injectedAt) > _optimisticPlanMaxAge) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Mirrors [_shouldClearOptimisticPlan] for secondary plans.
+  ///
+  /// Clears when:
+  ///   1. No optimistic secondary plans are set.
+  ///   2. All injected plan IDs appear in [newSecondaryPlans] (confirmed).
+  ///   3. Safety valve — the oldest injected plan exceeds [_optimisticPlanMaxAge].
+  ///
+  /// Keeps showing optimistic data when [newSecondaryPlans] is empty —
+  /// the backend is still processing the purchase.
+  static bool _shouldClearOptimisticSecondaryPlans(
+    List<BasePlanModel> optimistic,
+    List<BasePlanModel> newSecondaryPlans,
+  ) {
+    if (optimistic.isEmpty) return true;
+
+    if (optimistic.every(
+      (p) => newSecondaryPlans.any((n) => n.planId == p.planId),
+    )) { return true; }
+
+    if (newSecondaryPlans.isEmpty) return false;
+
+    final injectedAt = optimistic.first.startDateTime;
     if (injectedAt != null &&
         DateTime.now().difference(injectedAt) > _optimisticPlanMaxAge) {
       return true;
@@ -404,6 +456,10 @@ class PlansCubit extends HydratedCubit<PlansState> {
             state.optimisticActivePlan,
             addOnsResult.primaryPlans,
           ),
+          clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+            state.optimisticSecondaryPlans,
+            addOnsResult.secondaryPlans,
+          ),
         ));
       }).catchError((_) {});
 
@@ -435,6 +491,10 @@ class PlansCubit extends HydratedCubit<PlansState> {
         clearOptimisticActivePlan: _shouldClearOptimisticPlan(
           state.optimisticActivePlan,
           addOnsResult.primaryPlans,
+        ),
+        clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+          state.optimisticSecondaryPlans,
+          addOnsResult.secondaryPlans,
         ),
       ));
     } catch (e) {
