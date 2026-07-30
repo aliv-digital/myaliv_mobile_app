@@ -37,14 +37,16 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
     return _nameFromEmail(accountState.email);
   }
 
-  String _accountUsername(
+  String _accountPhoneNumber(
     AccountInfoState accountState, {
     required String fallbackPhoneNumber,
   }) {
-    final username = accountState.accountInfo?.username.trim() ?? '';
-    if (username.isNotEmpty) {
-      return username;
-    }
+    final accountInfo = accountState.accountInfo;
+    final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
+    if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
+
+    final phoneNumber = accountInfo?.phoneNumber.trim() ?? '';
+    if (phoneNumber.isNotEmpty) return phoneNumber;
 
     final fallback = fallbackPhoneNumber.trim();
     return fallback.isEmpty ? '--' : fallback;
@@ -63,7 +65,7 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final accountState = instance<AccountInfoCubit>().state;
     final userName = _accountDisplayName(accountState);
-    final userPhoneNumber = _accountUsername(
+    final userPhoneNumber = _accountPhoneNumber(
       accountState,
       fallbackPhoneNumber: data.phoneNumber,
     );
