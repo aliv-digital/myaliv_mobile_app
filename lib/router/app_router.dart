@@ -439,6 +439,20 @@ class AppRouter {
           NewCardDetails? cardToSave;
 
           if (extra is Map<String, dynamic>) {
+            // Payment failure — show failure ticket, skip all other fields.
+            if (extra['isPaymentFailed'] == true) {
+              final String phone = (extra['phoneNumber'] is String)
+                  ? extra['phoneNumber'] as String
+                  : phoneNumber;
+              return HomePlanPurchaseReceiptScreen(
+                phoneNumber: phone,
+                amount: 0,
+                dateText: '',
+                timeText: '',
+                isPaymentFailed: true,
+              );
+            }
+
             final dynamic cardToSaveValue = extra['cardToSave'];
             if (cardToSaveValue is NewCardDetails) {
               cardToSave = cardToSaveValue;

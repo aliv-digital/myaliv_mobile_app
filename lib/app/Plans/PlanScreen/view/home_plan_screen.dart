@@ -426,7 +426,8 @@ class _HomePlanViewState extends State<_HomePlanView> {
             return previous.selectedTab != current.selectedTab ||
                 previous.selectedTabStatus != current.selectedTabStatus ||
                 previous.selectedAddOnIds != current.selectedAddOnIds ||
-                previous.addOns != current.addOns;
+                previous.addOns != current.addOns ||
+                previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
           },
           builder: (context, state) {
             return HomePlanAddOnsBottomPayBar(

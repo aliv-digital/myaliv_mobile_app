@@ -28,6 +28,7 @@ class _ActivePlansExpanderState extends State<ActivePlansExpander> {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (a, b) =>
           a.addOnsApiPrimaryPlans != b.addOnsApiPrimaryPlans ||
+          a.optimisticActivePlan != b.optimisticActivePlan ||
           a.secondaryPlans != b.secondaryPlans ||
           a.standAlonePlans != b.standAlonePlans,
       builder: (context, state) {
@@ -198,7 +199,7 @@ class _ActivePlansExpanderState extends State<ActivePlansExpander> {
       }
     }
 
-    addGroup(state.addOnsApiPrimaryPlans, _PlanBadge.primary);
+    addGroup(state.effectivePrimaryPlans, _PlanBadge.primary);
     addGroup(state.secondaryPlans, _PlanBadge.addOn);
     addGroup(state.standAlonePlans, _PlanBadge.roaming);
 

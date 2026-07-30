@@ -12,6 +12,7 @@ import '../../../../core/utils/app_session.dart';
 import '../bloc/home_plan_purchase_receipt_event.dart';
 import '../bloc/home_plan_purchase_receipt_state.dart';
 import '../theme/home_plan_purchase_receipt_theme.dart';
+import '../widgets/home_plan_purchase_receipt_payment_failure.dart';
 import '../widgets/home_plan_purchase_receipt_success_card.dart';
 
 class HomePlanPurchaseReceiptScreen extends StatelessWidget {
@@ -27,6 +28,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     this.rightType = 'REV',
     this.details,
     this.cardToSave,
+    this.isPaymentFailed = false,
   });
 
   final String phoneNumber;
@@ -44,8 +46,16 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
   /// hides itself.
   final NewCardDetails? cardToSave;
 
+  /// When true the failure ticket is shown instead of the success card.
+  /// The bloc is not created in this case.
+  final bool isPaymentFailed;
+
   @override
   Widget build(BuildContext context) {
+    if (isPaymentFailed) {
+      return _PaymentFailedReceiptView(phoneNumber: phoneNumber);
+    }
+
     final displayPaymentMethod =
         AppSession.appRoute == 'prepaidPlanPurchase' ? 'wallet' : paymentMethod;
 
@@ -133,7 +143,8 @@ class _HomePlanPurchaseReceiptViewState
       if (!mounted) return;
       final cubit = context.read<PlansCubit>();
       Future.delayed(const Duration(seconds: 3), () {
-        if (!cubit.isClosed) cubit.refreshCurrentTab();
+        // Only /bundles is refreshed — /available-plans is unaffected by a purchase.
+        if (!cubit.isClosed) cubit.refreshBundlesOnly();
       });
     });
   }
@@ -230,6 +241,47 @@ class _HomePlanPurchaseReceiptViewState
               // ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Minimal receipt screen shown when [HomePlanPurchaseReceiptScreen.isPaymentFailed]
+/// is true. No bloc needed — the failure ticket is stateless.
+class _PaymentFailedReceiptView extends StatelessWidget {
+  const _PaymentFailedReceiptView({required this.phoneNumber});
+
+  final String phoneNumber;
+
+  static const _bg = Color(0xFFF1F2FA);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: _bg,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: DefaultAppBar(
+                showBackArrow: false,
+                title: 'my receipt',
+                onBack: () {},
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 29),
+                child: HomePlanPurchaseReceiptPaymentFailedTicket(
+                  onPressed: () {
+                    AppSession.resetAppRoute();
+                    context.go(AppRoutes.home);
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

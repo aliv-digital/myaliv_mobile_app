@@ -29,21 +29,24 @@ class PlanAddOnsBody extends StatelessWidget {
             previous.earliestAddOnsPrimaryPlan !=
                 current.earliestAddOnsPrimaryPlan ||
             previous.addOns != current.addOns ||
-            previous.selectedAddOnIds != current.selectedAddOnIds;
+            previous.selectedAddOnIds != current.selectedAddOnIds ||
+            previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
         final status = state.selectedTabStatus;
+        // /bundles data drives the add-ons tab entirely — show shimmer only
+        // while bundles hasn't responded yet, regardless of available-plans.
+        final bundlesReady = state.addOnsApiLastSyncedAt != null;
 
-        if (status == PlansStatus.loading || status == PlansStatus.initial) {
+        if (!bundlesReady) {
+          if (status == PlansStatus.failure) {
+            return PlanErrorState(
+              errorMessage:
+                  state.selectedTabErrorMessage ?? 'Something went wrong',
+              onRetry: () => context.read<PlansCubit>().refreshCurrentTab(),
+            );
+          }
           return const AddOnShimmerList();
-        }
-
-        if (status == PlansStatus.failure) {
-          return PlanErrorState(
-            errorMessage:
-                state.selectedTabErrorMessage ?? 'Something went wrong',
-            onRetry: () => context.read<PlansCubit>().refreshCurrentTab(),
-          );
         }
 
         if (state.earliestAddOnsPrimaryPlan == null) {

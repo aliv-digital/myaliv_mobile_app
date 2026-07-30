@@ -116,6 +116,11 @@ class PlansState extends Equatable {
   final DateTime? addOnsApiLastSyncedAt;
   final String? errorMessage;
 
+  /// Optimistically-injected plan shown immediately after purchase.
+  /// Takes priority over [addOnsApiPrimaryPlans] until the next real
+  /// /bundles refresh clears it. Not serialised to disk.
+  final OptimisticActivePlan? optimisticActivePlan;
+
   // ═══════════════════════════════════════════════════════════════════
   // GETTERS (SAME as HomePlanState - UI depends on these)
   // ═══════════════════════════════════════════════════════════════════
@@ -126,10 +131,47 @@ class PlansState extends Equatable {
   /// Error message for selected tab (UI uses this)
   String? get selectedTabErrorMessage => errorMessage;
 
-  /// Earliest primary plan for active card (UI uses this)
-  BasePlanModel? get earliestAddOnsPrimaryPlan {
-    if (addOnsApiPrimaryPlans.isEmpty) return null;
-    return addOnsApiPrimaryPlans.first;
+  /// The plan shown on the active-plan card.
+  ///
+  /// Returns [optimisticActivePlan] immediately after a successful purchase
+  /// (before the real /bundles API reflects the change), then falls back to
+  /// the first entry returned by the live /bundles response.
+  BasePlanModel? get earliestAddOnsPrimaryPlan =>
+      optimisticActivePlan ??
+      (addOnsApiPrimaryPlans.isEmpty ? null : addOnsApiPrimaryPlans.first);
+
+  /// Primary plans list that includes the optimistic plan when bundles has not
+  /// yet confirmed it. Use this wherever a list (not just the first plan) is
+  /// needed so the optimistic plan appears in expandable/summary views too.
+  List<BasePlanModel> get effectivePrimaryPlans {
+    final optimistic = optimisticActivePlan;
+    if (optimistic == null) return addOnsApiPrimaryPlans;
+    if (addOnsApiPrimaryPlans.any((p) => p.planId == optimistic.planId)) {
+      return addOnsApiPrimaryPlans;
+    }
+    return [optimistic, ...addOnsApiPrimaryPlans];
+  }
+
+  /// Finds a plan by [planId] across all tab plan lists.
+  ///
+  /// Used to look up the full [BasePlanModel] after purchase so it can be
+  /// injected as the optimistic active plan before /bundles refreshes.
+  BasePlanModel? planById(String planId) {
+    final allTabLists = [
+      dailyApiPlans,
+      weeklyApiPlans,
+      monthlyApiPlans,
+      roamingApiPlans,
+      roamEasyApiPlans,
+      mifiApiPlans,
+      libertyGlobalApiPlans,
+    ];
+    for (final list in allTabLists) {
+      for (final plan in list) {
+        if (plan.planId == planId) return plan;
+      }
+    }
+    return null;
   }
 
   /// Plans that drive the home screen's "active plan usage remaining" cards.
@@ -352,6 +394,8 @@ class PlansState extends Equatable {
     DateTime? addOnsApiLastSyncedAt,
     String? errorMessage,
     bool clearPendingToast = false,
+    OptimisticActivePlan? optimisticActivePlan,
+    bool clearOptimisticActivePlan = false,
   }) {
     return PlansState(
       status: status ?? this.status,
@@ -380,6 +424,9 @@ class PlansState extends Equatable {
       addOnsApiLastSyncedAt:
           addOnsApiLastSyncedAt ?? this.addOnsApiLastSyncedAt,
       errorMessage: errorMessage,
+      optimisticActivePlan: clearOptimisticActivePlan
+          ? null
+          : (optimisticActivePlan ?? this.optimisticActivePlan),
     );
   }
 
@@ -407,5 +454,6 @@ class PlansState extends Equatable {
         lastFetchedAt,
         addOnsApiLastSyncedAt,
         errorMessage,
+        optimisticActivePlan,
       ];
 }

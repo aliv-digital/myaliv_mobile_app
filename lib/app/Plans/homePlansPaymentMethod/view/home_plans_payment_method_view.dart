@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_event.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/theme/home_plans_payment_method_theme.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/services/payment_receipt_builder.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_app_bar.dart';
@@ -44,17 +46,27 @@ class _HomePlansPaymentMethodViewState
   void _onState(BuildContext context, HomePlansPaymentMethodState state) {
     _maybeShowWalletWarning(state);
 
+    // Show a toast only for non-navigable failures (e.g. loading payment methods).
+    // When navTarget is paymentFailed the user is redirected to the failure screen.
     if (state.errorMessage != null &&
-        state.status == HomePlansPaymentMethodStatus.failure) {
+        state.status == HomePlansPaymentMethodStatus.failure &&
+        state.navTarget != HomePlansPaymentMethodNavTarget.paymentFailed) {
       AppToast.show(message: state.errorMessage!, type: ToastType.error);
     }
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
+      _injectOptimisticActivePlan(context, state);
       context.push(
         AppRoutes.homePlanPurchaseReceiptScreen,
         extra: PaymentReceiptBuilder.build(context, state),
+      );
+    } else if (state.navTarget ==
+        HomePlansPaymentMethodNavTarget.paymentFailed) {
+      context.push(
+        AppRoutes.homePlanPurchaseReceiptScreen,
+        extra: {'isPaymentFailed': true, 'phoneNumber': state.phoneNumber},
       );
     }
     // addCard / wallet nav targets are placeholders for future routes.
@@ -62,6 +74,43 @@ class _HomePlansPaymentMethodViewState
     context
         .read<HomePlansPaymentMethodBloc>()
         .add(const HomePlansPaymentNavConsumed());
+  }
+
+  /// Optimistically shows the just-purchased primary plan as the active plan
+  /// before /bundles reflects the change (typically takes 5–10 s).
+  ///
+  /// Looks up the full [BasePlanModel] from [PlansCubit]'s cached tab plans
+  /// by the plan-id in [selectedItems]. Does nothing if:
+  ///   - no primary-type item is present (add-on-only purchase), or
+  ///   - the plan is not in the tab cache (shouldn't happen, but safe).
+  void _injectOptimisticActivePlan(
+    BuildContext context,
+    HomePlansPaymentMethodState state,
+  ) {
+    final primaryItem = _findPrimaryItem(state.selectedItems);
+    if (primaryItem == null) return;
+
+    final plansCubit = context.read<PlansCubit>();
+    final plan = plansCubit.state.planById(primaryItem.id);
+    if (plan == null) return;
+
+    final purchasedAt = state.forceNow
+        ? DateTime.now()
+        : (state.selectedBeginDate ?? DateTime.now());
+
+    plansCubit.injectOptimisticActivePlan(
+      plan: plan,
+      purchasedAt: purchasedAt,
+    );
+  }
+
+  static HomePlansPaymentSelectedItem? _findPrimaryItem(
+    List<HomePlansPaymentSelectedItem> items,
+  ) {
+    for (final item in items) {
+      if (item.planType == HomePlansPaymentPlanType.primary) return item;
+    }
+    return null;
   }
 
   void _maybeShowWalletWarning(HomePlansPaymentMethodState state) {

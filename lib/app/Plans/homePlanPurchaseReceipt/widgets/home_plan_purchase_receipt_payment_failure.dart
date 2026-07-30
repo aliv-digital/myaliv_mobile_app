@@ -1,212 +1,231 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/theme/home_plan_purchase_receipt_theme.dart';
+import 'home_plan_purchase_receipt_ticket_divider.dart';
 
+/// Ticket-shaped payment failure card — pixel-matched to the "Payment Failed"
+/// receipt design.
+///
+/// Layout (all heights fixed so the notch stays precisely at the divider):
+///
+///   cardPad(18) + topSpacer(30) + icon(56) + gapIcon(14) +
+///   titleH(26) + gapTitle(10) + subtitleH(48) + gapDiv(30) +
+///   dividerH/2(11)  →  notchCenterY = 243
 class HomePlanPurchaseReceiptPaymentFailedTicket extends StatelessWidget {
   const HomePlanPurchaseReceiptPaymentFailedTicket({
     super.key,
-    this.title = 'Payment Failed',
-    this.message = 'There was a problem processing your order.',
-    this.helperText = 'Please contact customer service at',
-    this.phone = '242-300-2548',
+    this.message = 'There was a problem processing\nyour order.',
     this.buttonText = 'back to home page',
     required this.onPressed,
-    this.borderColor = const Color(0xFFFF6B6B),
-    this.titleColor = const Color(0xFFE74C3C),
-    this.iconBg = const Color(0xFFFFE9E9),
-    this.backgroundColor = Colors.white,
-    this.cornerRadius = 14,
-    this.notchRadius = 12,
-    this.dashColor = const Color(0xFFFFB3B3),
   });
 
-  final String title;
   final String message;
-  final String helperText;
-  final String phone;
   final String buttonText;
   final VoidCallback onPressed;
 
-  final Color borderColor;
-  final Color titleColor;
-  final Color iconBg;
-  final Color dashColor;
-  final Color backgroundColor;
+  // ─── Layout constants (must match the notchCenterY formula) ───────────────
+  static const double _cardPad = 18;
+  static const double _cornerRadius = 16;
+  static const double _notchRadius = 10;
 
-  final double cornerRadius;
-  final double notchRadius;
+  static const double _topSpacer = 30;
+  static const double _iconSize = 80; // outer pink circle
+  static const double _innerCircleSize = 44;
+  static const double _gapAfterIcon = 14;
+  static const double _titleH = 26; // fixed to lock notch
+  static const double _gapAfterTitle = 10;
+  static const double _subtitleH = 48; // fixed to lock notch (2 lines × ~24pt)
+  static const double _gapBeforeDiv = 30;
+  static const double _dividerH = 22;
+
+  // notchCenterY = _cardPad + _topSpacer + _iconSize + _gapAfterIcon +
+  //                _titleH + _gapAfterTitle + _subtitleH + _gapBeforeDiv +
+  //                _dividerH / 2
+  static const double _notchCenterY = _cardPad +
+      _topSpacer +
+      _iconSize +
+      _gapAfterIcon +
+      _titleH +
+      _gapAfterTitle +
+      _subtitleH +
+      _gapBeforeDiv +
+      _dividerH / 2; // = 243
+
+  // ─── Design tokens ────────────────────────────────────────────────────────
+  static const _iconColor = Color(0xFFE57373); // salmon-red circle border + icon
+  static const _iconBgColor = Color(0xFFFDE8E8); // light-pink outer circle fill
+  static const _titleRed = Color(0xFFE53935);
+  static const _titleYellow = Color(0xFFFFF176); // "Failed" word highlight
+  static const _subtitleGrey = Color(0xFF707070);
+  static const _buttonTextColor = Color(0xFF655C9A); // purple
 
   @override
   Widget build(BuildContext context) {
-    // Figma-aligned content width guide shown as 300.
-    const double contentTextWidth = 300;
+    return PhysicalShape(
+      clipper: _TicketSideNotchClipper(
+        cornerRadius: _cornerRadius,
+        notchRadius: _notchRadius,
+        notchCenterY: _notchCenterY,
+      ),
+      clipBehavior: Clip.antiAlias,
+      elevation: 4,
+      // Subtle pinkish shadow — visible "red glow" around the failure card.
+      shadowColor: const Color(0x55FDA29B),
+      color: Colors.white,
+      child: DecoratedBox(
+        // Pink border painted on top of content (clipped by PhysicalShape at
+        // the notches, which creates the correct notched-border appearance).
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: HomePlanPurchaseReceiptTheme.redDashColor,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(_cornerRadius),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(_cardPad),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Top spacer ────────────────────────────────────────────────
+              const SizedBox(height: _topSpacer),
 
-    return LayoutBuilder(
-      builder: (context, c) {
-        final width = c.maxWidth.clamp(260, 420).toDouble();
-
-        return Center(
-          child: SizedBox(
-            width: width,
-            height: 649,
-            child: CustomPaint(
-              painter: _TicketBorderPainter(
-                borderColor: borderColor,
-                cornerRadius: cornerRadius,
-                notchRadius: notchRadius,
-              ),
-              child: ClipPath(
-                clipper: _TicketClipper(
-                  cornerRadius: cornerRadius,
-                  notchRadius: notchRadius,
+              // ── Alert icon: large pink bg circle + inner red border circle ─
+              Container(
+                width: _iconSize,
+                height: _iconSize,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _iconBgColor,
                 ),
+                alignment: Alignment.center,
                 child: Container(
-                  color: backgroundColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  width: _innerCircleSize,
+                  height: _innerCircleSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: _iconColor, width: 1.5),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.priority_high,
+                    color: _iconColor,
+                    size: 22,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: _gapAfterIcon),
+
+              // ── Title: "Payment " plain + "Failed" with yellow highlight ──
+              SizedBox(
+                height: _titleH,
+                child: Center(
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      // top icon
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: iconBg,
-                          shape: BoxShape.circle,
-                        ),
-                        alignment: Alignment.center,
-                        child: Icon(Icons.error_outline,
-                            color: Colors.red, size: 32),
-                      ),
-                      const SizedBox(height: 16),
-
                       Text(
-                        title,
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          color: titleColor,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      SizedBox(
-                        width: contentTextWidth,
-                        child: Text(
-                          message,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 16,
-                            height: 1.35,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      SizedBox(
-                        width: contentTextWidth,
-                        child: Text(
-                          helperText,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF333333),
-                            fontSize: 16,
-                            height: 1.35,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-
-                      Text(
-                        phone,
-                        textAlign: TextAlign.center,
+                        'Payment ',
                         style: const TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
+                          fontFamily: 'CircularPro',
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: _titleRed,
+                          height: 1.0,
                         ),
                       ),
-
-                      // Reduced to fit fixed 362px card height without overflow.
-                      const SizedBox(height: 33),
-
-                      // dashed divider
-                      SizedBox(
-                        height: 12,
-                        width: double.infinity,
-                        child: CustomPaint(
-                          painter: _DashedLinePainter(color: dashColor),
+                      Container(
+                        color: _titleYellow,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 3,
+                          vertical: 1,
                         ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // button
-                      _PillButton(
-                        text: buttonText,
-                        onPressed: onPressed,
+                        child: const Text(
+                          'Failed',
+                          style: TextStyle(
+                            fontFamily: 'CircularPro',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: _titleRed,
+                            height: 1.0,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
 
-class _PillButton extends StatelessWidget {
-  const _PillButton({required this.text, required this.onPressed});
+              const SizedBox(height: _gapAfterTitle),
 
-  final String text;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 156,
-      height: 40,
-      child: Material(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(
-            width: 1,
-            color: Color(0xFFF1F1F8),
-          ),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(100),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: HomePlanPurchaseReceiptTheme.successButtonTextColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'CircularPro',
-                    height: 1,
+              // ── Subtitle ─────────────────────────────────────────────────
+              SizedBox(
+                height: _subtitleH,
+                child: Center(
+                  child: Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _subtitleGrey,
+                      height: 1.5,
+                    ),
                   ),
                 ),
               ),
-            ),
+
+              const SizedBox(height: _gapBeforeDiv),
+
+              // ── Dashed divider (notch aligns here) ───────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: HomePlanPurchaseReceiptTicketDivider(
+                  height: _dividerH,
+                  dashColor: HomePlanPurchaseReceiptTheme.redDashColor,
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              // ── Back button — narrow, centered ────────────────────────────
+              Center(
+                child: SizedBox(
+                  width: 160,
+                  height: 40,
+                  child: OutlinedButton(
+                    onPressed: onPressed,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: Color(0xFFF1F1F8),
+                        width: 1,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Text(
+                      buttonText,
+                      style: const TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _buttonTextColor,
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // ── Empty bottom space (receipt ticket aesthetic) ─────────────
+              const SizedBox(height: 160),
+            ],
           ),
         ),
       ),
@@ -214,114 +233,49 @@ class _PillButton extends StatelessWidget {
   }
 }
 
-class _TicketClipper extends CustomClipper<Path> {
-  _TicketClipper({
+// ─── Clipper (same pattern as success card) ───────────────────────────────────
+
+class _TicketSideNotchClipper extends CustomClipper<Path> {
+  const _TicketSideNotchClipper({
     required this.cornerRadius,
     required this.notchRadius,
+    required this.notchCenterY,
   });
 
   final double cornerRadius;
   final double notchRadius;
+  final double notchCenterY;
 
   @override
   Path getClip(Size size) {
-    final r = cornerRadius;
-    final nr = notchRadius;
-    final notchCenterY = size.height * 0.50;
-
-    final rectPath = Path()
+    final base = Path()
       ..addRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(0, 0, size.width, size.height),
-          Radius.circular(r),
+          Radius.circular(cornerRadius),
         ),
       );
 
     final holes = Path()
-      // left notch (half outside to cut-in)
-      ..addOval(Rect.fromCircle(center: Offset(0, notchCenterY), radius: nr))
-      // right notch
-      ..addOval(Rect.fromCircle(
-          center: Offset(size.width, notchCenterY), radius: nr));
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(0, notchCenterY),
+          radius: notchRadius,
+        ),
+      )
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(size.width, notchCenterY),
+          radius: notchRadius,
+        ),
+      );
 
-    return Path.combine(PathOperation.difference, rectPath, holes);
+    return Path.combine(PathOperation.difference, base, holes);
   }
 
   @override
-  bool shouldReclip(covariant _TicketClipper oldClipper) {
-    return oldClipper.cornerRadius != cornerRadius ||
-        oldClipper.notchRadius != notchRadius;
-  }
-}
-
-class _TicketBorderPainter extends CustomPainter {
-  _TicketBorderPainter({
-    required this.borderColor,
-    required this.cornerRadius,
-    required this.notchRadius,
-  });
-
-  final Color borderColor;
-  final double cornerRadius;
-  final double notchRadius;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = _TicketClipper(
-      cornerRadius: cornerRadius,
-      notchRadius: notchRadius,
-    ).getClip(size);
-
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..color = borderColor;
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _TicketBorderPainter oldDelegate) {
-    return oldDelegate.borderColor != borderColor ||
-        oldDelegate.cornerRadius != cornerRadius ||
-        oldDelegate.notchRadius != notchRadius;
-  }
-}
-
-class _DashedLinePainter extends CustomPainter {
-  _DashedLinePainter({
-    required this.color,
-  })  : dashWidth = 6,
-        dashGap = 5,
-        strokeWidth = 1.4;
-
-  final Color color;
-  final double dashWidth;
-  final double dashGap;
-  final double strokeWidth;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-
-    double x = 0.0;
-    final double y = size.height / 2;
-
-    while (x < size.width) {
-      final double x2 = (x + dashWidth).clamp(0.0, size.width).toDouble();
-      canvas.drawLine(Offset(x, y), Offset(x2, y), p);
-      x += dashWidth + dashGap;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedLinePainter oldDelegate) {
-    return oldDelegate.color != color ||
-        oldDelegate.dashWidth != dashWidth ||
-        oldDelegate.dashGap != dashGap ||
-        oldDelegate.strokeWidth != strokeWidth;
-  }
+  bool shouldReclip(covariant _TicketSideNotchClipper old) =>
+      old.cornerRadius != cornerRadius ||
+      old.notchRadius != notchRadius ||
+      old.notchCenterY != notchCenterY;
 }
