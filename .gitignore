@@ -33,6 +33,7 @@ notes/
 .pub/
 /build/
 /coverage/
+/test/
 
 # Symbolication related
 app.*.symbols
