@@ -228,10 +228,10 @@ HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
   required DateTime beginDate,
   required bool forceNow,
 }) {
+  final accountState = instance<AccountInfoCubit>().state;
+
   return HomeRoamingConfirmationRouteArgs(
-    // Keep the current phone fallback. The important dynamic data for this
-    // flow is the selected roaming/roameasy plan and its chosen start date.
-    phoneNumber: '242-801-1616',
+    phoneNumber: _accountPhoneNumber(accountState),
     selectedPlan: selectedApiPlan,
     beginDate: beginDate,
     showDateField: showDateField,

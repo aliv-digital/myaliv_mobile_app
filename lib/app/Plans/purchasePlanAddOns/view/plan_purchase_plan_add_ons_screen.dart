@@ -126,7 +126,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     final accountState = instance<AccountInfoCubit>().state;
 
     return HomePlanConfirmationRouteArgs(
-      phoneNumber: _accountUsername(accountState),
+      phoneNumber: _accountPhoneNumber(accountState),
       accountHolderName: _accountDisplayName(accountState),
       primaryPlanId: state.selectedApiPlan?.planId.trim() ?? '',
       primaryPlanName: _primaryPlanName(state),
@@ -157,9 +157,13 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     return _nameFromEmail(accountState.email);
   }
 
-  String _accountUsername(AccountInfoState accountState) {
-    final username = accountState.accountInfo?.username.trim() ?? '';
-    return username.isEmpty ? '--' : username;
+  String _accountPhoneNumber(AccountInfoState accountState) {
+    final accountInfo = accountState.accountInfo;
+    final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
+    if (primaryPhoneNumber.isNotEmpty) return primaryPhoneNumber;
+
+    final phoneNumber = accountInfo?.phoneNumber.trim() ?? '';
+    return phoneNumber.isEmpty ? '--' : phoneNumber;
   }
 
   String _nameFromEmail(String? email) {
