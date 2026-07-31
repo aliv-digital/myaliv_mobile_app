@@ -1,0 +1,47 @@
+{
+  "d": {
+    "__type": "MetraTech.Custom.NewCo.NewCoData.PromoCodeResponse",
+    "Data": {
+      "PromoCodeID": 2061,
+      "Definition": {
+        "PromoCodeDefID": 7,
+        "PromoCodePrefix": "TEST10OFF",
+        "PromoCodeName": "TEST 10% Plan Discount",
+        "PromoCodeDesc": "Ten percent off any plan purchase. Promotion code received is valid for 30 days.",
+        "UnitType": "percentage",
+        "UnitQty": 10.0,
+        "StartDate": "\/Date(1641013200000)\/",
+        "EndDate": "\/Date(1787765717000)\/",
+        "CreatedDate": "\/Date(1605116279000)\/",
+        "CreatedBy": "1749596012",
+        "AgentCreatable": true,
+        "PlanList": "",
+        "IsActive": true,
+        "Days": 30
+      },
+      "Value": "TEST10OFFmW0NhBstdtDr",
+      "DeviceID": 580468973,
+      "AddedDate": "\/Date(1785173717000)\/",
+      "AddedBy": 1055875755,
+      "AddedByName": "Jade Turnquest",
+      "UsedDate": "\/Date(-62135578800000)\/",
+      "UsedBy": 0,
+      "UsedByName": null,
+      "OrderID": 0,
+      "EndDate": "\/Date(1787765717000)\/"
+    },
+    "ticket": {
+      "Value": "db09c1ce-9969-43d3-a346-a5cb18f1d366FhTAQv+d2ekSLWH8K6EQQyTk4qCtBZ/R6JVdNUWBezal3ti/KTE0KG+PyD6E+ZA1N1HVN/5a0S94BF3MacpGVw==",
+      "ticketStatus": "OK",
+      "LoginStatus": "OK",
+      "AgentID": 580468973,
+      "AccountID": 580468973,
+      "UserName": "2428999208",
+      "NameSpace": "tn",
+      "AuthType": "MT"
+    },
+    "Message": "",
+    "Code": 0,
+    "Server": "NPUATB01"
+  }
+}
