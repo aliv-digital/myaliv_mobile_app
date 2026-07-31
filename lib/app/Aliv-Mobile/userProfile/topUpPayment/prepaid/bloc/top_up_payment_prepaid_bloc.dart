@@ -133,12 +133,17 @@ class TopUpPaymentPrepaidBloc
     PayWithCardConfirmed event,
     Emitter<TopUpPaymentPrepaidState> emit,
   ) async {
-    final phone = _accountPrimaryPhone();
+    // For postpaid topping up another prepaid number the API path must use the
+    // recipient's number, not the logged-in account holder's number.
+    final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
+    final phone =
+        recipientPhone.isNotEmpty ? recipientPhone : _accountPrimaryPhone();
+
     if (phone.isEmpty) {
       emit(
         state.copyWith(
           status: TopUpPaymentStatus.failure,
-          errorMessage: 'Account phone number unavailable. Please try again.',
+          errorMessage: 'Phone number unavailable. Please try again.',
         ),
       );
       return;

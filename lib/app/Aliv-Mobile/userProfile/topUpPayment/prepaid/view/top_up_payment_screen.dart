@@ -91,20 +91,17 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
     }
   }
 
-  /// The `recipientPhone` route param is unreliable — upstream callers
-  /// interpolate `null` as the literal string `"null"`. Since top-up always
-  /// charges the account holder's own primary number, resolve it from
-  /// [AccountInfoCubit] and only fall back to the route value when it's a
-  /// real phone number.
+  /// Returns the phone number to display on the receipt.
+  /// For postpaid topping up another prepaid number, show the recipient's
+  /// number. For own-number top-up, show the account holder's primary number.
   String? _receiptPhone(String? routeValue) {
+    final incoming = routeValue?.trim() ?? '';
+    if (incoming.isNotEmpty && incoming.toLowerCase() != 'null') return incoming;
+
     final account = instance<AccountInfoCubit>().state.accountInfo;
     final primary = account?.primaryPhoneNumber.trim() ?? '';
     if (primary.isNotEmpty) return primary;
-    final fallbackAccount = account?.phoneNumber.trim() ?? '';
-    if (fallbackAccount.isNotEmpty) return fallbackAccount;
-    final incoming = routeValue?.trim() ?? '';
-    if (incoming.isEmpty || incoming.toLowerCase() == 'null') return null;
-    return incoming;
+    return account?.phoneNumber.trim() ?? '';
   }
 
   @override
