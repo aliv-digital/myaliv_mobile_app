@@ -1,10 +1,12 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/add_on_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_frequency.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
@@ -98,6 +100,230 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
   Future<void> refreshCurrentTab() async {
     await _fetchAllPlans(forceRefresh: true);
+  }
+
+  /// Post-purchase refresh — fetches only /bundles to check whether the
+  /// new plan is active yet. Skips /available-plans because the purchasable
+  /// plan catalogue does not change as a result of a purchase.
+  Future<void> refreshBundlesOnly() async {
+    if (_isFetching) {
+      _pendingForceRefresh = true;
+      return;
+    }
+    _isFetching = true;
+    emit(state.copyWith(isRefreshingBundles: true));
+
+    try {
+      final addOnsResult = await _repository.fetchAddOnsData(forceRefresh: true);
+
+      if (isClosed) return;
+
+      emit(state.copyWith(
+        addOns: addOnsResult.addOns,
+        addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
+        secondaryPlans: addOnsResult.secondaryPlans,
+        standAlonePlans: addOnsResult.standAlonePlans,
+        addOnsApiLastSyncedAt: DateTime.now(),
+        errorMessage: null,
+        isRefreshingBundles: false,
+        clearOptimisticActivePlan: _shouldClearOptimisticPlan(
+          state.optimisticActivePlan,
+          addOnsResult.primaryPlans,
+        ),
+        clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+          state.optimisticSecondaryPlans,
+          addOnsResult.secondaryPlans,
+        ),
+      ));
+    } catch (_) {
+      // Silently ignore — the optimistic plan stays visible and the next
+      // background refresh will retry.
+      if (!isClosed) emit(state.copyWith(isRefreshingBundles: false));
+    } finally {
+      _isFetching = false;
+      if (_pendingForceRefresh) {
+        _pendingForceRefresh = false;
+        _fetchAllPlans(forceRefresh: true).catchError((_) {});
+      }
+    }
+  }
+
+  /// Optimistically marks [plan] as the active plan immediately after a
+  /// successful purchase, before the real /bundles refresh returns.
+  ///
+  /// [purchasedAt] is the moment of purchase — used as the start date.
+  /// The expire date is estimated from the plan's billing frequency:
+  ///   D → +1 day · W → +7 days · M → +1 calendar month
+  /// Plans with unknown frequency (roaming, mifi, etc.) leave the expire
+  /// date empty so the card shows '--/--' until the real data arrives.
+  ///
+  /// The injected plan is cleared automatically when the next real
+  /// /bundles success emit lands — see [_fetchAllPlans].
+  void injectOptimisticActivePlan({
+    required BasePlanModel plan,
+    required DateTime purchasedAt,
+  }) {
+    final startUtc = purchasedAt.toUtc();
+    final frequency = PlanFrequency.parse(plan.frequency);
+    final endUtc = _estimateEndDate(startUtc, frequency);
+
+    emit(state.copyWith(
+      optimisticActivePlan: plan.copyWith(
+        startDate: _toApiDateString(startUtc),
+        endDate: endUtc != null ? _toApiDateString(endUtc) : '',
+      ),
+    ));
+  }
+
+  /// Combined optimistic injection for a primary-plan purchase.
+  ///
+  /// Sets the optimistic active plan AND replaces the secondary plan view with
+  /// [addOns] (empty list if no add-ons were bought). This prevents the old
+  /// plan's add-ons from appearing in "active add-ons" after switching plans,
+  /// because [PlansState.effectiveSecondaryPlans] suppresses real
+  /// [secondaryPlans] while [optimisticActivePlan] is pending.
+  ///
+  /// Use [injectOptimisticSecondaryPlans] for add-on-only purchases where the
+  /// primary plan has not changed.
+  void injectOptimisticPrimaryPlanChange({
+    required BasePlanModel plan,
+    required List<BasePlanModel> addOns,
+    required DateTime purchasedAt,
+  }) {
+    final startUtc = purchasedAt.toUtc();
+    final frequency = PlanFrequency.parse(plan.frequency);
+    final endUtc = _estimateEndDate(startUtc, frequency);
+    final startTag = _toApiDateString(startUtc);
+
+    final injectedPrimary = plan.copyWith(
+      startDate: startTag,
+      endDate: endUtc != null ? _toApiDateString(endUtc) : '',
+    );
+    final injectedSecondary = addOns
+        .map((p) => p.copyWith(startDate: startTag))
+        .toList(growable: false);
+
+    emit(state.copyWith(
+      optimisticActivePlan: injectedPrimary,
+      optimisticSecondaryPlans: injectedSecondary,
+    ));
+  }
+
+  /// Optimistically marks [plans] as active secondary plans immediately after
+  /// a successful add-on purchase, before the real /bundles refresh returns.
+  ///
+  /// [purchasedAt] is stamped onto [startDate] of each plan — this timestamp
+  /// is used by [_shouldClearOptimisticSecondaryPlans] as the injection time
+  /// for the safety-valve TTL check, mirroring [injectOptimisticActivePlan].
+  void injectOptimisticSecondaryPlans({
+    required List<BasePlanModel> plans,
+    required DateTime purchasedAt,
+  }) {
+    if (plans.isEmpty) return;
+    final startTag = _toApiDateString(purchasedAt.toUtc());
+    final injected = plans
+        .map((p) => p.copyWith(startDate: startTag))
+        .toList(growable: false);
+    emit(state.copyWith(optimisticSecondaryPlans: injected));
+  }
+
+  // ─── Optimistic-plan helpers ─────────────────────────────────────────────
+
+  /// How long to keep showing an optimistic plan when /bundles hasn't
+  /// confirmed it yet. Acts as a safety valve against stale optimistic state
+  /// if the backend never returns the plan (e.g. silent purchase failure).
+  static const _optimisticPlanMaxAge = Duration(seconds: 30);
+
+  /// Returns true if [optimistic] should be replaced by real [newPrimaryPlans].
+  ///
+  /// Clears when:
+  ///   1. No optimistic plan is set (nothing to protect).
+  ///   2. /bundles confirmed the plan — its [planId] appears in [newPrimaryPlans].
+  ///   3. Safety valve — the optimistic plan is older than [_optimisticPlanMaxAge].
+  ///      We use [BasePlanModel.startDateTime] as the injection timestamp because
+  ///      [injectOptimisticActivePlan] sets startDate to the purchase moment.
+  static bool _shouldClearOptimisticPlan(
+    OptimisticActivePlan? optimistic,
+    List<BasePlanModel> newPrimaryPlans,
+  ) {
+    if (optimistic == null) return true;
+
+    // /bundles confirmed our plan — safe to replace with real data.
+    if (newPrimaryPlans.any((p) => p.planId == optimistic.planId)) return true;
+
+    // Empty bundles means the backend is still processing the purchase.
+    // Keep showing the optimistic plan until a non-empty response arrives.
+    if (newPrimaryPlans.isEmpty) return false;
+
+    // /bundles returned plans but ours isn't among them — unexpected.
+    // Apply the safety valve to avoid showing stale data indefinitely.
+    final injectedAt = optimistic.startDateTime;
+    if (injectedAt != null &&
+        DateTime.now().difference(injectedAt) > _optimisticPlanMaxAge) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Mirrors [_shouldClearOptimisticPlan] for secondary plans.
+  ///
+  /// Clears when:
+  ///   1. No optimistic secondary plans are set.
+  ///   2. All injected plan IDs appear in [newSecondaryPlans] (confirmed).
+  ///   3. Safety valve — the oldest injected plan exceeds [_optimisticPlanMaxAge].
+  ///
+  /// Keeps showing optimistic data when [newSecondaryPlans] is empty —
+  /// the backend is still processing the purchase.
+  static bool _shouldClearOptimisticSecondaryPlans(
+    List<BasePlanModel> optimistic,
+    List<BasePlanModel> newSecondaryPlans,
+  ) {
+    if (optimistic.isEmpty) return true;
+
+    if (optimistic.every(
+      (p) => newSecondaryPlans.any((n) => n.planId == p.planId),
+    )) { return true; }
+
+    if (newSecondaryPlans.isEmpty) return false;
+
+    final injectedAt = optimistic.first.startDateTime;
+    if (injectedAt != null &&
+        DateTime.now().difference(injectedAt) > _optimisticPlanMaxAge) {
+      return true;
+    }
+
+    return false;
+  }
+
+  static final _apiDateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+  /// Formats a UTC [DateTime] into the ISO string the backend uses.
+  /// The trailing 'Z' ensures [parseApiDate] treats it as UTC.
+  static String _toApiDateString(DateTime utcDateTime) =>
+      '${_apiDateFormat.format(utcDateTime)}Z';
+
+  /// Returns the estimated plan end date based on billing [frequency].
+  /// Returns null for frequencies that don't map to a fixed duration
+  /// (roaming, mifi, liberty-global, etc.).
+  static DateTime? _estimateEndDate(DateTime start, PlanFrequency? frequency) {
+    switch (frequency) {
+      case PlanFrequency.daily:
+        return start.add(const Duration(days: 1));
+      case PlanFrequency.weekly:
+        return start.add(const Duration(days: 7));
+      case PlanFrequency.monthly:
+        return DateTime.utc(
+          start.year,
+          start.month + 1,
+          start.day,
+          start.hour,
+          start.minute,
+          start.second,
+        );
+      case null:
+        return null;
+    }
   }
 
   void toggleExpanded(String planId) {
@@ -244,10 +470,37 @@ class PlansCubit extends HydratedCubit<PlansState> {
     }
 
     try {
-      final results = await Future.wait([
-        _repository.fetchCategorizedPlans(forceRefresh: forceRefresh),
-        _repository.fetchAddOnsData(forceRefresh: forceRefresh),
-      ]);
+      // Start both requests concurrently.
+      final plansFuture = _repository.fetchCategorizedPlans(
+        forceRefresh: forceRefresh,
+      );
+      final bundlesFuture = _repository.fetchAddOnsData(
+        forceRefresh: forceRefresh,
+      );
+
+      // Emit bundles data as soon as it arrives so the active plan card is
+      // visible immediately, without waiting for the slower available-plans
+      // response. The status stays loading/refreshing until both complete.
+      bundlesFuture.then((addOnsResult) {
+        if (isClosed) return;
+        emit(state.copyWith(
+          addOns: addOnsResult.addOns,
+          addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
+          secondaryPlans: addOnsResult.secondaryPlans,
+          standAlonePlans: addOnsResult.standAlonePlans,
+          addOnsApiLastSyncedAt: DateTime.now(),
+          clearOptimisticActivePlan: _shouldClearOptimisticPlan(
+            state.optimisticActivePlan,
+            addOnsResult.primaryPlans,
+          ),
+          clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+            state.optimisticSecondaryPlans,
+            addOnsResult.secondaryPlans,
+          ),
+        ));
+      }).catchError((_) {});
+
+      final results = await Future.wait([plansFuture, bundlesFuture]);
 
       if (isClosed) return;
 
@@ -272,6 +525,14 @@ class PlansCubit extends HydratedCubit<PlansState> {
         lastFetchedAt: now,
         addOnsApiLastSyncedAt: now,
         errorMessage: null,
+        clearOptimisticActivePlan: _shouldClearOptimisticPlan(
+          state.optimisticActivePlan,
+          addOnsResult.primaryPlans,
+        ),
+        clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+          state.optimisticSecondaryPlans,
+          addOnsResult.secondaryPlans,
+        ),
       ));
     } catch (e) {
       final errorMsg = _friendlyErrorMessage(e);

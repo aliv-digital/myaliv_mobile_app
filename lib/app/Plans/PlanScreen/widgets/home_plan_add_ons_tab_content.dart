@@ -181,7 +181,9 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final tabMismatch =
         requireAddOnsTab && state.selectedTab != HomePlanTab.addOns;
-    if (tabMismatch || state.status != PlansStatus.success) {
+    // Show as soon as /bundles has responded — available-plans is irrelevant
+    // for add-ons and must not delay this bar.
+    if (tabMismatch || state.addOnsApiLastSyncedAt == null) {
       return const SizedBox.shrink();
     }
 

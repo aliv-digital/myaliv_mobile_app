@@ -16,9 +16,9 @@ class ActiveAddOnsChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlansCubit, PlansState>(
-      buildWhen: (a, b) => a.secondaryPlans != b.secondaryPlans,
+      buildWhen: (a, b) => a.effectiveSecondaryPlans != b.effectiveSecondaryPlans,
       builder: (context, state) {
-        final labels = state.secondaryPlans
+        final labels = state.effectiveSecondaryPlans
             .map((p) => p.planName.trim())
             .where((n) => n.isNotEmpty)
             .toList(growable: false);

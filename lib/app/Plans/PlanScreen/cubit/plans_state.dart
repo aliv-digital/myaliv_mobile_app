@@ -4,6 +4,13 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 
+/// Optimistically-injected active plan shown immediately after a successful
+/// purchase, before the real /bundles refresh returns updated data.
+///
+/// Intentionally NOT serialised — it is ephemeral and cleared as soon as
+/// the next real [PlansStatus.success] emit lands.
+typedef OptimisticActivePlan = BasePlanModel;
+
 /// Status of plan fetching
 enum PlansStatus {
   /// Initial state
@@ -65,6 +72,11 @@ class PlansState extends Equatable {
     this.lastFetchedAt,
     this.addOnsApiLastSyncedAt,
     this.errorMessage,
+    // Optimistic state — not persisted, cleared on next real success
+    this.optimisticActivePlan,
+    this.optimisticSecondaryPlans = const [],
+    // Refresh tracking — not persisted
+    this.isRefreshingBundles = false,
   });
 
   final PlansStatus status;
@@ -107,6 +119,21 @@ class PlansState extends Equatable {
   final DateTime? addOnsApiLastSyncedAt;
   final String? errorMessage;
 
+  /// Optimistically-injected plan shown immediately after purchase.
+  /// Takes priority over [addOnsApiPrimaryPlans] until the next real
+  /// /bundles refresh clears it. Not serialised to disk.
+  final OptimisticActivePlan? optimisticActivePlan;
+
+  /// Optimistically-injected secondary (add-on) plans shown immediately after
+  /// a successful add-on purchase, before /bundles reflects the change.
+  /// Not serialised to disk.
+  final List<BasePlanModel> optimisticSecondaryPlans;
+
+  /// True while [refreshBundlesOnly] is in-flight. Used by the add-ons tab
+  /// to show a shimmer skeleton when the list is empty and a refresh is running.
+  /// Not serialised to disk.
+  final bool isRefreshingBundles;
+
   // ═══════════════════════════════════════════════════════════════════
   // GETTERS (SAME as HomePlanState - UI depends on these)
   // ═══════════════════════════════════════════════════════════════════
@@ -117,10 +144,82 @@ class PlansState extends Equatable {
   /// Error message for selected tab (UI uses this)
   String? get selectedTabErrorMessage => errorMessage;
 
-  /// Earliest primary plan for active card (UI uses this)
-  BasePlanModel? get earliestAddOnsPrimaryPlan {
-    if (addOnsApiPrimaryPlans.isEmpty) return null;
-    return addOnsApiPrimaryPlans.first;
+  /// The plan shown on the active-plan card.
+  ///
+  /// Returns [optimisticActivePlan] immediately after a successful purchase
+  /// (before the real /bundles API reflects the change), then falls back to
+  /// the first entry returned by the live /bundles response.
+  BasePlanModel? get earliestAddOnsPrimaryPlan =>
+      optimisticActivePlan ??
+      (addOnsApiPrimaryPlans.isEmpty ? null : addOnsApiPrimaryPlans.first);
+
+  /// Primary plans list that includes the optimistic plan when bundles has not
+  /// yet confirmed it. Use this wherever a list (not just the first plan) is
+  /// needed so the optimistic plan appears in expandable/summary views too.
+  List<BasePlanModel> get effectivePrimaryPlans {
+    final optimistic = optimisticActivePlan;
+    if (optimistic == null) return addOnsApiPrimaryPlans;
+    if (addOnsApiPrimaryPlans.any((p) => p.planId == optimistic.planId)) {
+      return addOnsApiPrimaryPlans;
+    }
+    return [optimistic, ...addOnsApiPrimaryPlans];
+  }
+
+  /// Secondary plans merged with any optimistic add-ons not yet confirmed by
+  /// a real /bundles response. Used by [ActiveAddOnsChips] so purchased
+  /// add-ons appear immediately in the Usage tab.
+  ///
+  /// While [optimisticActivePlan] is set, the real [secondaryPlans] are
+  /// suppressed because they belong to the *previous* primary plan. Only
+  /// [optimisticSecondaryPlans] (the add-ons bought with the new plan, or
+  /// an empty list if none were bought) are shown until /bundles confirms
+  /// the new plan and clears [optimisticActivePlan].
+  List<BasePlanModel> get effectiveSecondaryPlans {
+    final seen = <String>{};
+    final result = <BasePlanModel>[];
+    if (optimisticActivePlan == null) {
+      for (final p in secondaryPlans) {
+        if (seen.add(p.planId)) result.add(p);
+      }
+    }
+    for (final p in optimisticSecondaryPlans) {
+      if (seen.add(p.planId)) result.add(p);
+    }
+    return List.unmodifiable(result);
+  }
+
+  /// Finds an available bolt-on by [planId] across all primary plans'
+  /// [availableBoltOns]. Used to build the full [BasePlanModel] for optimistic
+  /// secondary-plan injection after an add-on purchase.
+  BasePlanModel? addOnById(String planId) {
+    for (final primary in addOnsApiPrimaryPlans) {
+      for (final boltOn in primary.availableBoltOns) {
+        if (boltOn.planId == planId) return boltOn;
+      }
+    }
+    return null;
+  }
+
+  /// Finds a plan by [planId] across all tab plan lists.
+  ///
+  /// Used to look up the full [BasePlanModel] after purchase so it can be
+  /// injected as the optimistic active plan before /bundles refreshes.
+  BasePlanModel? planById(String planId) {
+    final allTabLists = [
+      dailyApiPlans,
+      weeklyApiPlans,
+      monthlyApiPlans,
+      roamingApiPlans,
+      roamEasyApiPlans,
+      mifiApiPlans,
+      libertyGlobalApiPlans,
+    ];
+    for (final list in allTabLists) {
+      for (final plan in list) {
+        if (plan.planId == planId) return plan;
+      }
+    }
+    return null;
   }
 
   /// Plans that drive the home screen's "active plan usage remaining" cards.
@@ -343,6 +442,11 @@ class PlansState extends Equatable {
     DateTime? addOnsApiLastSyncedAt,
     String? errorMessage,
     bool clearPendingToast = false,
+    OptimisticActivePlan? optimisticActivePlan,
+    bool clearOptimisticActivePlan = false,
+    List<BasePlanModel>? optimisticSecondaryPlans,
+    bool clearOptimisticSecondaryPlans = false,
+    bool? isRefreshingBundles,
   }) {
     return PlansState(
       status: status ?? this.status,
@@ -371,6 +475,13 @@ class PlansState extends Equatable {
       addOnsApiLastSyncedAt:
           addOnsApiLastSyncedAt ?? this.addOnsApiLastSyncedAt,
       errorMessage: errorMessage,
+      optimisticActivePlan: clearOptimisticActivePlan
+          ? null
+          : (optimisticActivePlan ?? this.optimisticActivePlan),
+      optimisticSecondaryPlans: clearOptimisticSecondaryPlans
+          ? const []
+          : (optimisticSecondaryPlans ?? this.optimisticSecondaryPlans),
+      isRefreshingBundles: isRefreshingBundles ?? this.isRefreshingBundles,
     );
   }
 
@@ -398,5 +509,8 @@ class PlansState extends Equatable {
         lastFetchedAt,
         addOnsApiLastSyncedAt,
         errorMessage,
+        optimisticActivePlan,
+        optimisticSecondaryPlans,
+        isRefreshingBundles,
       ];
 }

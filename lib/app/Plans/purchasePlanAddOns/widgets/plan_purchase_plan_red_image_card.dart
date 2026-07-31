@@ -15,6 +15,7 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
     required this.expireDate,
     this.autoRenew = true,
     this.onAutoRenewChanged,
+    this.showAutoRenew = true,
     this.topRight,
     this.maxWidth = 380,
     this.height = 150,
@@ -29,6 +30,7 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
   final String expireDate;
   final bool autoRenew;
   final ValueChanged<bool>? onAutoRenewChanged;
+  final bool showAutoRenew;
   final Widget? topRight;
 
   final double maxWidth;
@@ -73,7 +75,7 @@ class PlanPurchasePlanRedImageCard extends StatelessWidget {
                           const Spacer(),
                           if (topRight != null)
                             topRight!
-                          else
+                          else if (showAutoRenew)
                             _AutoRenewSection(
                               value: autoRenew,
                               onChanged: onAutoRenewChanged,

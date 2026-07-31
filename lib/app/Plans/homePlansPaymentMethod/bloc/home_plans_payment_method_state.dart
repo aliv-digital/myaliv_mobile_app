@@ -12,7 +12,7 @@ enum HomePlansPaymentMethodStatus {
   failure,
 }
 
-enum HomePlansPaymentMethodNavTarget { none, addCard, wallet, paid }
+enum HomePlansPaymentMethodNavTarget { none, addCard, wallet, paid, paymentFailed }
 
 /// Which payment radio the user has currently selected.
 ///

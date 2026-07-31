@@ -20,10 +20,11 @@ class CurrentPlanActiveCard extends StatelessWidget {
     return BlocBuilder<PlansCubit, PlansState>(
       buildWhen: (previous, current) =>
           previous.status != current.status ||
-          previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans,
+          previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
+          previous.optimisticActivePlan != current.optimisticActivePlan,
       builder: (context, plansState) {
         final isResolving = plansState.status == PlansStatus.initial || plansState.status == PlansStatus.loading;
-        final showActiveCard = isResolving || plansState.addOnsApiPrimaryPlans.isNotEmpty;
+        final showActiveCard = isResolving || plansState.earliestAddOnsPrimaryPlan != null;
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),

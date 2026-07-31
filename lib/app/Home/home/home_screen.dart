@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context
           .read<AppUiConfigCubit>()
           .setHasActivePlan(
-        cachedPlansState.addOnsApiPrimaryPlans.isNotEmpty,
+        cachedPlansState.earliestAddOnsPrimaryPlan != null,
       );
     }
 
@@ -166,11 +166,12 @@ class _HomeScreenState extends State<HomeScreen> {
       listenWhen: (previous, current) =>
       previous.status != current.status ||
           previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
+          previous.optimisticActivePlan != current.optimisticActivePlan ||
           previous.secondaryPlans != current.secondaryPlans ||
           previous.standAlonePlans != current.standAlonePlans,
       listener: (context, state) {
         if (state.status != PlansStatus.success) return;
-        final hasPlan = state.addOnsApiPrimaryPlans.isNotEmpty;
+        final hasPlan = state.earliestAddOnsPrimaryPlan != null;
         final cubit = context.read<AppUiConfigCubit>();
         if (cubit.state.hasActivePlan != hasPlan) {
           cubit.setHasActivePlan(hasPlan);
@@ -210,7 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         buildWhen: (previous, current) =>
                         previous.status != current.status ||
                             previous.addOnsApiPrimaryPlans !=
-                                current.addOnsApiPrimaryPlans,
+                                current.addOnsApiPrimaryPlans ||
+                            previous.optimisticActivePlan !=
+                                current.optimisticActivePlan,
                         builder: (context, plansState) {
                           // While plans are still being fetched, show the active
                           // plan card so its internal skeleton renders. Once the
@@ -221,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   plansState.status == PlansStatus.loading;
                           final showActiveCard =
                               isResolving ||
-                                  plansState.addOnsApiPrimaryPlans.isNotEmpty;
+                                  plansState.earliestAddOnsPrimaryPlan != null;
 
                           if (!showActiveCard) {
                             return const NoActivePlanCard();

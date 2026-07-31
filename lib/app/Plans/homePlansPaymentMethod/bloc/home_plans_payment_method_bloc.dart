@@ -248,13 +248,14 @@ class HomePlansPaymentMethodBloc
               : HomePlansPaymentMethodStatus.failure,
           navTarget: ok
               ? HomePlansPaymentMethodNavTarget.paid
-              : HomePlansPaymentMethodNavTarget.none,
+              : HomePlansPaymentMethodNavTarget.paymentFailed,
         ),
       );
     } catch (error) {
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.failure,
+          navTarget: HomePlansPaymentMethodNavTarget.paymentFailed,
           errorMessage: _cleanErrorMessage(error, fallback: failureFallback),
         ),
       );
@@ -296,6 +297,7 @@ class HomePlansPaymentMethodBloc
       emit(
         state.copyWith(
           status: HomePlansPaymentMethodStatus.failure,
+          navTarget: HomePlansPaymentMethodNavTarget.paymentFailed,
           errorMessage: 'Payment failed. Try again.',
         ),
       );

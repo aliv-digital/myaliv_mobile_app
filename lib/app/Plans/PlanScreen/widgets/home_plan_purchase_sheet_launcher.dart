@@ -28,12 +28,13 @@ Future<void> showHomePlanPurchaseBottomSheet({
   int? selectedIndex,
 }) {
   final plansState = context.read<PlansCubit>().state;
-  final hasActivePlan = plansState.addOnsApiPrimaryPlans.isNotEmpty;
+  final hasActivePlan = plansState.earliestAddOnsPrimaryPlan != null;
   final activePlanEndDate = plansState.earliestAddOnsPrimaryPlan?.endDateTime;
   final futurePlanStartDate = activePlanEndDate?.toIso8601String() ?? '';
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
+    activePrimaryPlan: plansState.earliestAddOnsPrimaryPlan,
   );
 
   return showModalBottomSheet<void>(
@@ -242,11 +243,13 @@ HomeRoamingConfirmationRouteArgs _roamingConfirmationRouteArgs({
 PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   required BasePlanModel? selectedApiPlan,
   required int? selectedIndex,
+  required BasePlanModel? activePrimaryPlan,
 }) {
   return PlanPurchasePlanAddOnsRouteArgs(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
     forceNow: true,
+    activePrimaryPlan: activePrimaryPlan,
   );
 }
 

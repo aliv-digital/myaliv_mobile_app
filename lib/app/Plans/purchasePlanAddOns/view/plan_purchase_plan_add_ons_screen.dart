@@ -380,42 +380,52 @@ class _ActivePlanCardState extends State<_ActivePlanCard> {
 
   @override
   Widget build(BuildContext context) {
-    // `selectedApiPlan` comes from routeArgs. It is the real API plan selected
-    // on the previous screen.
+    final activePlan = widget.state.activePlan;
     final selectedPlan = widget.state.selectedApiPlan;
-    final planName = _planNameFromApiOrFallback(selectedPlan?.planName);
-    final activeDate = _dateFromApiOrFallback(
-      selectedPlan?.startDateTime,
-      fallback: '--/--',
-    );
-    final expireDate = _dateFromApiOrFallback(
-      selectedPlan?.endDateTime,
-      fallback: '--/--',
-    );
 
-    return BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-      bloc: instance<DeviceLimitsCubit>(),
-      buildWhen: (previous, current) =>
-          previous.autoRenew != current.autoRenew ||
-          previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
-      builder: (context, deviceLimitsState) {
-        return PlanPurchasePlanRedImageCard(
-          planLabel: 'active plan',
-          planName: planName,
-          activeLabel: 'active',
-          activeDate: activeDate,
-          expireLabel: 'expire',
-          expireDate: expireDate,
-          autoRenew: deviceLimitsState.autoRenew,
-          onAutoRenewChanged: (_) {
-            if (deviceLimitsState.isTogglingAutoRenew) return;
-            handleAutoRenewToggle(
-              context,
-              currentValue: deviceLimitsState.autoRenew,
-            );
-          },
-        );
-      },
+    // When there is a real active plan, show it with the auto-renew toggle.
+    // When there is no active plan, fall back to the clicked plan — no toggle.
+    if (activePlan != null) {
+      return BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
+        bloc: instance<DeviceLimitsCubit>(),
+        buildWhen: (previous, current) =>
+            previous.autoRenew != current.autoRenew ||
+            previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
+        builder: (context, deviceLimitsState) {
+          return PlanPurchasePlanRedImageCard(
+            planLabel: activePlan.label,
+            planName: activePlan.name,
+            activeLabel: activePlan.activeDateLabel,
+            activeDate: activePlan.activeDate,
+            expireLabel: activePlan.expireDateLabel,
+            expireDate: activePlan.expireDate,
+            autoRenew: deviceLimitsState.autoRenew,
+            onAutoRenewChanged: (_) {
+              if (deviceLimitsState.isTogglingAutoRenew) return;
+              handleAutoRenewToggle(
+                context,
+                currentValue: deviceLimitsState.autoRenew,
+              );
+            },
+          );
+        },
+      );
+    }
+
+    return PlanPurchasePlanRedImageCard(
+      planLabel: 'plan',
+      planName: _planNameFromApiOrFallback(selectedPlan?.planName),
+      activeLabel: 'active',
+      activeDate: _dateFromApiOrFallback(
+        selectedPlan?.startDateTime,
+        fallback: '--/--',
+      ),
+      expireLabel: 'expire',
+      expireDate: _dateFromApiOrFallback(
+        selectedPlan?.endDateTime,
+        fallback: '--/--',
+      ),
+      showAutoRenew: false,
     );
   }
 
