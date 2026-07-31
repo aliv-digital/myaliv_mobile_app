@@ -32,6 +32,7 @@ class ChangeBundleService {
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [wallet]',
+      routePostpaidToAccountPayment: true,
     );
   }
 
@@ -84,6 +85,7 @@ class ChangeBundleService {
     required bool forceNow,
     DateTime? selectedBeginDate,
     required String logTag,
+    bool routePostpaidToAccountPayment = false,
   }) async {
     final Map<String, dynamic> body;
     try {
@@ -99,19 +101,22 @@ class ChangeBundleService {
     }
 
     return _cardPaymentService.send(
-      url: _resolveUrl(),
+      url: _resolveUrl(
+        routePostpaidToAccountPayment: routePostpaidToAccountPayment,
+      ),
       body: body,
       logTag: logTag,
     );
   }
 
-  /// Postpaid accounts route change-bundle traffic through
-  /// `/Order/payment`; prepaid stays on `/Order/change-bundle`. The body
-  /// envelope is identical either way — server infers the account from the
-  /// auth context. `PaymentOption == 'PrePay'` is the canonical prepaid
-  /// marker (see `auth_completion_service.dart`).
-  String _resolveUrl() {
+  /// Only the explicit postpaid "charge to my account" path belongs on
+  /// `/Order/payment`. Saved-card and new-card plan purchases must stay on
+  /// `/Order/change-bundle` so the selected card funds the bundle directly.
+  String _resolveUrl({required bool routePostpaidToAccountPayment}) {
     final isPrepaid = instance<AccountInfoCubit>().state.isPrepaid;
-    return isPrepaid ? Api.payFromWalletUrl : Api.orderPaymentUrl;
+    if (routePostpaidToAccountPayment && !isPrepaid) {
+      return Api.orderPaymentUrl;
+    }
+    return Api.payFromWalletUrl;
   }
 }

@@ -93,8 +93,8 @@ class HomePlansPaymentMethodRepositoryImpl
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
-    // ChangeBundleService routes authenticated postpaid orders to
-    // /Order/payment while preserving the existing plan request structure.
+    // This wallet-flavoured call is the explicit postpaid account-charge path;
+    // ChangeBundleService routes only this path to /Order/payment.
     final result = await _service.payFromWallet(
       amount: amount,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
