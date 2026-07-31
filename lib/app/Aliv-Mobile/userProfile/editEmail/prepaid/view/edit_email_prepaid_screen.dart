@@ -130,11 +130,13 @@ class _EditEmailPrepaidView extends StatelessWidget {
                                       label: 'phone number',
                                       value: data.phoneNumber,
                                     ),
-                                    const SizedBox(height: 16),
-                                    EditEmailPrepaidInfoField(
-                                      label: 'gender',
-                                      value: data.gender,
-                                    ),
+                                    if (data.gender.trim().isNotEmpty) ...[
+                                      const SizedBox(height: 16),
+                                      EditEmailPrepaidInfoField(
+                                        label: 'gender',
+                                        value: data.gender,
+                                      ),
+                                    ],
                                     const SizedBox(height: 16),
                                     Text(
                                       'email address',

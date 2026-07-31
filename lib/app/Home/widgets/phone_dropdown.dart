@@ -83,8 +83,13 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.white54, width: 1),
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton2<String>(
+                  // IgnorePointer (not onChanged: null) so the button still
+                  // renders in its enabled colour scheme — passing null would
+                  // grey out the selected text, which we don't want here.
+                  child: IgnorePointer(
+                    ignoring: !isEnabled,
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton2<String>(
                       // Fresh notifier per build — always holds a valid item,
                       // so DropdownButton2's internal uniqueness assert never fires.
                       valueListenable: ValueNotifier<String>(effectiveSelected),
@@ -149,11 +154,10 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                         );
                       }).toList(),
 
-                      onChanged: isEnabled
-                          ? (value) {
-                              if (value != null) selectedNotifier.value = value;
-                            }
-                          : null,
+                      onChanged: (value) {
+                        if (value != null) selectedNotifier.value = value;
+                      },
+                      ),
                     ),
                   ),
                 );
