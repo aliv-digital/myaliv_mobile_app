@@ -77,13 +77,17 @@ class _HomePlansPaymentMethodViewState
         .add(const HomePlansPaymentNavConsumed());
   }
 
-  /// Optimistically shows the just-purchased primary plan as the active plan
-  /// before /bundles reflects the change (typically takes 5–10 s).
+  /// Optimistically reflects the purchase immediately, before /bundles returns.
   ///
-  /// Looks up the full [BasePlanModel] from [PlansCubit]'s cached tab plans
-  /// by the plan-id in [selectedItems]. Does nothing if:
-  ///   - no primary-type item is present (add-on-only purchase), or
-  ///   - the plan is not in the tab cache (shouldn't happen, but safe).
+  /// Primary plan purchase: calls [PlansCubit.injectOptimisticPrimaryPlanChange]
+  /// which atomically sets the new active plan AND resets the secondary plan
+  /// list (add-ons bought together, or empty if none were purchased).
+  ///
+  /// Add-on-only purchase: calls [PlansCubit.injectOptimisticSecondaryPlans]
+  /// which merges the new add-ons into the existing secondary plan list.
+  ///
+  /// Silently skips primary-plan injection when the plan is not in the tab
+  /// cache (shouldn't happen, but safe — falls through to add-on injection).
   void _injectOptimisticActivePlan(
     BuildContext context,
     HomePlansPaymentMethodState state,
@@ -93,23 +97,27 @@ class _HomePlansPaymentMethodViewState
         ? DateTime.now()
         : (state.selectedBeginDate ?? DateTime.now());
 
-    final primaryItem = _findPrimaryItem(state.selectedItems);
-    if (primaryItem != null) {
-      final plan = plansCubit.state.planById(primaryItem.id);
-      if (plan != null) {
-        plansCubit.injectOptimisticActivePlan(
-          plan: plan,
-          purchasedAt: purchasedAt,
-        );
-      }
-    }
-
     final secondaryPlans = state.selectedItems
         .where((i) => i.planType == HomePlansPaymentPlanType.secondary)
         .map((i) => plansCubit.state.addOnById(i.id))
         .whereType<BasePlanModel>()
         .toList(growable: false);
 
+    final primaryItem = _findPrimaryItem(state.selectedItems);
+    if (primaryItem != null) {
+      final plan = plansCubit.state.planById(primaryItem.id);
+      if (plan != null) {
+        // Primary plan change — reset old add-ons and set new ones atomically.
+        plansCubit.injectOptimisticPrimaryPlanChange(
+          plan: plan,
+          addOns: secondaryPlans,
+          purchasedAt: purchasedAt,
+        );
+        return;
+      }
+    }
+
+    // Add-on-only purchase — existing primary plan unchanged; merge add-ons.
     plansCubit.injectOptimisticSecondaryPlans(
       plans: secondaryPlans,
       purchasedAt: purchasedAt,

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../bloc/top_up_prepaid_number_postpaid_bloc.dart';
@@ -43,16 +45,22 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
     }
     return BlocListener<TopUpPrepaidNumberPostPaidBloc,
         TopUpPrepaidNumberPostPaidState>(
-      listenWhen: (p, c) =>
-          p.errorMessage != c.errorMessage || p.applyStatus != c.applyStatus,
+      listenWhen: (p, c) => p.applyStatus != c.applyStatus,
       listener: (context, state) {
-        // if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
-        // }
-        //
-        // if (state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.success) {
-        //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Applied successfully')));
-        // }
+        if (state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.failure &&
+            state.errorMessage != null) {
+          AppToast.show(message: state.errorMessage!, type: ToastType.error);
+        }
+        if (state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.success) {
+          AppSession.appRoute = 'sendTopUp';
+          final amountParam = state.amountValue.toStringAsFixed(2);
+          final recipientParam = Uri.encodeQueryComponent(
+            state.numberForApi ?? state.number.trim(),
+          );
+          context.push(
+            '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
+          );
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.white, //TopUpPrepaidNumberPostPaidTheme.pageBg,
@@ -121,22 +129,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                             TopUpPrepaidNumberPostPaidApplySection(
                               enabled: state.canApply,
                               loading: state.applyStatus == TopUpPrepaidNumberPostPaidApplyStatus.loading,
-                              onTap: () {
-
-                                bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed());
-                                final amountParam = state.amountValue.toStringAsFixed(2);
-                                final recipientParam = Uri.encodeQueryComponent(
-                                  state.numberForApi ?? state.number.trim(),
-                                );
-
-                                if(kDebugMode){
-                                  debugPrint("receiver's phone : $recipientParam \n amount : $amountParam");
-                                }
-
-                                context.push(
-                                  '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
-                                );
-                              },
+                              onTap: () => bloc.add(const TopUpPrepaidNumberPostPaidApplyPressed()),
                             ),
                           ],
                         ),

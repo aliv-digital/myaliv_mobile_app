@@ -175,6 +175,40 @@ class PlansCubit extends HydratedCubit<PlansState> {
     ));
   }
 
+  /// Combined optimistic injection for a primary-plan purchase.
+  ///
+  /// Sets the optimistic active plan AND replaces the secondary plan view with
+  /// [addOns] (empty list if no add-ons were bought). This prevents the old
+  /// plan's add-ons from appearing in "active add-ons" after switching plans,
+  /// because [PlansState.effectiveSecondaryPlans] suppresses real
+  /// [secondaryPlans] while [optimisticActivePlan] is pending.
+  ///
+  /// Use [injectOptimisticSecondaryPlans] for add-on-only purchases where the
+  /// primary plan has not changed.
+  void injectOptimisticPrimaryPlanChange({
+    required BasePlanModel plan,
+    required List<BasePlanModel> addOns,
+    required DateTime purchasedAt,
+  }) {
+    final startUtc = purchasedAt.toUtc();
+    final frequency = PlanFrequency.parse(plan.frequency);
+    final endUtc = _estimateEndDate(startUtc, frequency);
+    final startTag = _toApiDateString(startUtc);
+
+    final injectedPrimary = plan.copyWith(
+      startDate: startTag,
+      endDate: endUtc != null ? _toApiDateString(endUtc) : '',
+    );
+    final injectedSecondary = addOns
+        .map((p) => p.copyWith(startDate: startTag))
+        .toList(growable: false);
+
+    emit(state.copyWith(
+      optimisticActivePlan: injectedPrimary,
+      optimisticSecondaryPlans: injectedSecondary,
+    ));
+  }
+
   /// Optimistically marks [plans] as active secondary plans immediately after
   /// a successful add-on purchase, before the real /bundles refresh returns.
   ///

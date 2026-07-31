@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
 
 import '../repository/top_up_prepaid_number_postpaid_repository.dart';
 import 'top_up_prepaid_number_postpaid_event.dart';
@@ -23,12 +24,11 @@ class TopUpPrepaidNumberPostPaidBloc extends Bloc<
     Emitter<TopUpPrepaidNumberPostPaidState> emit,
   ) async {
     emit(state.copyWith(
-        loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.loading,
-        clearError: true));
-    // If you need initial data later, load here.
+      loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.loading,
+      clearError: true,
+    ));
     await Future.delayed(const Duration(milliseconds: 150));
-    emit(
-        state.copyWith(loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.ready));
+    emit(state.copyWith(loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.ready));
   }
 
   void _onNumberChanged(
@@ -36,9 +36,10 @@ class TopUpPrepaidNumberPostPaidBloc extends Bloc<
     Emitter<TopUpPrepaidNumberPostPaidState> emit,
   ) {
     emit(state.copyWith(
-        number: event.value,
-        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
-        clearError: true));
+      number: event.value,
+      applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
+      clearError: true,
+    ));
   }
 
   void _onConfirmNumberChanged(
@@ -46,9 +47,10 @@ class TopUpPrepaidNumberPostPaidBloc extends Bloc<
     Emitter<TopUpPrepaidNumberPostPaidState> emit,
   ) {
     emit(state.copyWith(
-        confirmNumber: event.value,
-        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
-        clearError: true));
+      confirmNumber: event.value,
+      applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
+      clearError: true,
+    ));
   }
 
   void _onAmountChanged(
@@ -56,9 +58,10 @@ class TopUpPrepaidNumberPostPaidBloc extends Bloc<
     Emitter<TopUpPrepaidNumberPostPaidState> emit,
   ) {
     emit(state.copyWith(
-        amountText: event.value,
-        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
-        clearError: true));
+      amountText: event.value,
+      applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
+      clearError: true,
+    ));
   }
 
   Future<void> _onApplyPressed(
@@ -68,21 +71,27 @@ class TopUpPrepaidNumberPostPaidBloc extends Bloc<
     if (!state.canApply) return;
 
     emit(state.copyWith(
-        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.loading,
-        clearError: true)
-    );
+      applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.loading,
+      clearError: true,
+    ));
 
     try {
-      // await repo.applyTopUp(
-      //   number: state.numberForApi ?? state.number.trim(),
-      //   amount: state.amountValue,
-      // );
-
-      emit(state.copyWith(applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.success));
+      await repo.runGates(
+        number: state.numberForApi ?? state.number.trim(),
+        amount: state.amountValue,
+      );
+      emit(state.copyWith(
+        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.success,
+      ));
+    } on TopUpPrepaidNumberException catch (e) {
+      emit(state.copyWith(
+        applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.failure,
+        errorMessage: e.message,
+      ));
     } catch (_) {
       emit(state.copyWith(
         applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.failure,
-        errorMessage: 'Failed to apply top up. Please try again.',
+        errorMessage: SendTopupRepository.caseDMessage,
       ));
     }
   }

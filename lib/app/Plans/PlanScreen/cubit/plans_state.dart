@@ -168,11 +168,19 @@ class PlansState extends Equatable {
   /// Secondary plans merged with any optimistic add-ons not yet confirmed by
   /// a real /bundles response. Used by [ActiveAddOnsChips] so purchased
   /// add-ons appear immediately in the Usage tab.
+  ///
+  /// While [optimisticActivePlan] is set, the real [secondaryPlans] are
+  /// suppressed because they belong to the *previous* primary plan. Only
+  /// [optimisticSecondaryPlans] (the add-ons bought with the new plan, or
+  /// an empty list if none were bought) are shown until /bundles confirms
+  /// the new plan and clears [optimisticActivePlan].
   List<BasePlanModel> get effectiveSecondaryPlans {
     final seen = <String>{};
     final result = <BasePlanModel>[];
-    for (final p in secondaryPlans) {
-      if (seen.add(p.planId)) result.add(p);
+    if (optimisticActivePlan == null) {
+      for (final p in secondaryPlans) {
+        if (seen.add(p.planId)) result.add(p);
+      }
     }
     for (final p in optimisticSecondaryPlans) {
       if (seen.add(p.planId)) result.add(p);
