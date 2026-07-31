@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
@@ -109,6 +110,11 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   isButtonEnabled: state.isTermsChecked,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    // A successful promo changes the amount charged and adds
+                    // its details to the existing plan-purchase request.
+                    final paymentAmount = _paymentAmount(state);
+                    final promoCodes = _appliedPromoCodes(state);
+
                     context.read<HomePlanConfirmationBloc>().add(
                       const HomePlanConfirmationPayNowPressed(),
                     );
@@ -116,10 +122,11 @@ class _HomePlanConfirmationView extends StatelessWidget {
                       AppRoutes.homePlansPaymentMethodScreen,
                       extra: HomePlansPaymentMethodRouteArgs(
                         phoneNumber: state.data!.phoneNumber,
-                        amount: state.data!.totals.total,
+                        amount: paymentAmount,
                         vatNote: state.data!.totals.vat > 0
                             ? 'vat inclusive'
                             : 'no vat applied',
+                        promoCodes: promoCodes,
                         forceNow: state.forceNow,
                         selectedBeginDate: state.selectedBeginDate,
                         marketingOptIn: state.marketingOptIn,
@@ -417,5 +424,52 @@ class _HomePlanConfirmationView extends StatelessWidget {
         .toStringAsFixed(2)
         .replaceFirst(RegExp(r'0+$'), '')
         .replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  double _paymentAmount(HomePlanConfirmationState state) {
+    if (state.hasAppliedPromo) {
+      // The displayed promo total already contains the discounted subtotal
+      // and the recalculated VAT.
+      return state.displayTotals.total;
+    }
+
+    // Keep the existing amount unchanged when no promo was applied.
+    return state.data!.totals.total;
+  }
+
+  List<PlanPurchasePromoCode> _appliedPromoCodes(
+    HomePlanConfirmationState state,
+  ) {
+    if (!state.hasAppliedPromo) {
+      return const <PlanPurchasePromoCode>[];
+    }
+
+    final promoResponse = state.promoResponse;
+    final purchaseData = state.data;
+
+    if (promoResponse == null ||
+        purchaseData == null ||
+        purchaseData.items.isEmpty) {
+      return const <PlanPurchasePromoCode>[];
+    }
+
+    // A home-plan order normally contains a primary plan. If this flow is
+    // purchasing add-ons only, use the first selected item instead.
+    PurchaseLineItem promoPlan = purchaseData.items.first;
+    for (final item in purchaseData.items) {
+      if (item.type == PurchaseLineType.primaryPlan) {
+        promoPlan = item;
+        break;
+      }
+    }
+
+    final planId = int.parse(promoPlan.id);
+    final appliedPromo = PlanPurchasePromoCode(
+      promoCodeId: promoResponse.promoCodeId,
+      discountAmount: state.promoDiscount,
+      planId: planId,
+    );
+
+    return <PlanPurchasePromoCode>[appliedPromo];
   }
 }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 
 enum HomePlansCardBrand { visa, mastercard, unknown }
 
@@ -95,6 +96,11 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
 
   /// Selected plan/add-on lines from the confirmation screen.
   final List<HomePlansPaymentSelectedItem> selectedItems;
+
+  /// Empty for a regular purchase. Contains the successfully applied promo
+  /// when the user applied one on the confirmation screen.
+  final List<PlanPurchasePromoCode> promoCodes;
+
   final bool forceNow;
   final DateTime? selectedBeginDate;
 
@@ -108,6 +114,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     this.amount,
     this.vatNote,
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
+    this.promoCodes = const <PlanPurchasePromoCode>[],
     this.forceNow = false,
     this.selectedBeginDate,
     this.marketingOptIn = false,
@@ -123,6 +130,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     amount,
     vatNote,
     selectedItems,
+    promoCodes,
     forceNow,
     selectedBeginDate,
     marketingOptIn,
