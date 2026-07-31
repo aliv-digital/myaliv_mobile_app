@@ -1,9 +1,9 @@
 import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 import '../repository/make_payment_confirmation_postpaid_repository.dart';
 import 'make_payment_confirmation_postpaid_event.dart';
@@ -30,10 +30,9 @@ class MakePaymentConfirmationPostPaidBloc extends Bloc<
     final data = await repository.fetchConfirmation();
 
     final deviceLimitsState = instance<DeviceLimitsCubit>().state;
-    final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
     final balanceState = instance<BalanceCubit>().state;
 
-    final customerName = deviceLimitsState.fullName ?? _nameFromEmail(email);
+    final customerName = resolveUserDisplayName(devices: deviceLimitsState);
     final accountNumber =
         _formatPhone(deviceLimitsState.deviceLimits?.tn ?? '');
     final amount = BalanceCurrencyFormatterService.format(
@@ -54,11 +53,6 @@ class MakePaymentConfirmationPostPaidBloc extends Bloc<
         bottomAmount: amount,
       ),
     );
-  }
-
-  String _nameFromEmail(String email) {
-    if (email.isEmpty || !email.contains('@')) return '';
-    return email.split('@').first;
   }
 
   String _formatPhone(String phone) {

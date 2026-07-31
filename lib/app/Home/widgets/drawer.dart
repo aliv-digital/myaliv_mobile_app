@@ -3,20 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../router/app_routes.dart';
 import '../model/logout_bottom_sheet.dart';
-
-/// Extract name from email (substring before @)
-String _nameFromEmail(String email) {
-  if (email.isEmpty || !email.contains('@')) return 'User';
-  return email.split('@').first;
-}
 
 /// Format phone number as XXX-XXX-XXXX
 String _formatPhone(String phone) {
@@ -53,8 +47,7 @@ class AppMenuDrawer extends StatelessWidget {
                     child: BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
                       bloc: instance<DeviceLimitsCubit>(),
                       builder: (context, state) {
-                        final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
-                        final fullName = state.fullName ?? _nameFromEmail(email);
+                        final fullName = resolveUserDisplayName(devices: state);
                         final phone = _formatPhone(state.deviceLimits?.tn ?? '');
 
                         return Column(

@@ -8,13 +8,8 @@ import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/core/model/line_status.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/phone_dropdown.dart';
-
-/// Extract name from email (substring before @)
-String _nameFromEmail(String email) {
-  if (email.isEmpty || !email.contains('@')) return 'User';
-  return email.split('@').first;
-}
 
 Color _dotColor(LineStatus status) {
   if (status.isActive) return Colors.greenAccent;
@@ -75,10 +70,10 @@ class HomeHeader extends StatelessWidget {
                 buildWhen: (previous, current) =>
                     previous.accountInfo?.email != current.accountInfo?.email,
                 builder: (context, accountState) {
-                  final email = accountState.accountInfo?.email ?? '';
-                  final name = accountState.fullName ??
-                      deviceState.fullName ??
-                      _nameFromEmail(email);
+                  final name = resolveUserDisplayName(
+                    account: accountState,
+                    devices: deviceState,
+                  );
                   return Text(
                     'welcome back, $name',
                     textAlign: TextAlign.center,

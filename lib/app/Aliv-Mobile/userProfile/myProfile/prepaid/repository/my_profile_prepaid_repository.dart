@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import '../model/my_profile_prepaid_model.dart';
 
 class MyProfilePrepaidRepository {
@@ -8,8 +9,10 @@ class MyProfilePrepaidRepository {
     final deviceState = instance<DeviceLimitsCubit>().state;
     final accountState = instance<AccountInfoCubit>().state;
 
-    final email = accountState.accountInfo?.email ?? '';
-    final fullName = deviceState.fullName ?? _nameFromEmail(email);
+    final fullName = resolveUserDisplayName(
+      account: accountState,
+      devices: deviceState,
+    );
     final deviceLimits = deviceState.deviceLimits;
     final contract = deviceState.subscriberContract;
 
@@ -63,11 +66,5 @@ class MyProfilePrepaidRepository {
     } catch (_) {
       return dateStr;
     }
-  }
-
-  /// Extract name from email (substring before @)
-  String _nameFromEmail(String email) {
-    if (email.isEmpty || !email.contains('@')) return 'User';
-    return email.split('@').first;
   }
 }

@@ -9,6 +9,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -127,7 +128,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
 
     return HomePlanConfirmationRouteArgs(
       phoneNumber: _accountPhoneNumber(accountState),
-      accountHolderName: _accountDisplayName(accountState),
+      accountHolderName: resolveUserDisplayName(account: accountState),
       primaryPlanId: state.selectedApiPlan?.planId.trim() ?? '',
       primaryPlanName: _primaryPlanName(state),
       // Pass the raw API type code so the confirmation repository can decide
@@ -148,15 +149,6 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
     );
   }
 
-  String _accountDisplayName(AccountInfoState accountState) {
-    final fullName = accountState.fullName?.trim();
-    if (fullName != null && fullName.isNotEmpty) {
-      return fullName;
-    }
-
-    return _nameFromEmail(accountState.email);
-  }
-
   String _accountPhoneNumber(AccountInfoState accountState) {
     final accountInfo = accountState.accountInfo;
     final primaryPhoneNumber = accountInfo?.primaryPhoneNumber.trim() ?? '';
@@ -164,15 +156,6 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
 
     final phoneNumber = accountInfo?.phoneNumber.trim() ?? '';
     return phoneNumber.isEmpty ? '--' : phoneNumber;
-  }
-
-  String _nameFromEmail(String? email) {
-    final normalizedEmail = email?.trim() ?? '';
-    if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
-      return 'User';
-    }
-
-    return normalizedEmail.split('@').first;
   }
 
   String _primaryPlanName(PlanPurchasePlanAddOnsState state) {

@@ -250,7 +250,10 @@ class DefaultAppBar extends StatelessWidget {
     }
 
     if (actions.isEmpty) {
-      return const SizedBox(width: 88);
+      // No trailing actions — collapse so the title claims the space instead
+      // of ellipsing behind a phantom 88px reserve (Figma app-bar strings like
+      // "auto renew authorization form" don't fit otherwise).
+      return const SizedBox.shrink();
     }
 
     return SizedBox(

@@ -11,7 +11,7 @@ class ReferFriendPrepaidTheme {
   static const error = Color(0xFFFF3B30);
   static const fieldBg = Color(0xFFF1F1F8);
   static const fieldHeight = 50.0;
-  static const countryWidth = 76.0;
+  static const countryWidth = 60.0;
   static const countryToPhoneGap = 10.0;
   static const fieldRadius = 8.0;
   static const fieldBorderWidth = 1.0;

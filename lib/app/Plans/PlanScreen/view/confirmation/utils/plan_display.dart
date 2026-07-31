@@ -1,5 +1,6 @@
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 import 'confirmation_formatters.dart';
 
@@ -30,11 +31,8 @@ String planTypeLabelFor(HomePlansPostPaidPlanModel? plan) {
   }
 }
 
-String accountDisplayName(AccountInfoState state) {
-  final fullName = state.fullName?.trim();
-  if (fullName != null && fullName.isNotEmpty) return fullName;
-  return nameFromEmail(state.email);
-}
+String accountDisplayName(AccountInfoState state) =>
+    resolveUserDisplayName(account: state);
 
 String accountPhoneNumber(AccountInfoState state) {
   final accountInfo = state.accountInfo;

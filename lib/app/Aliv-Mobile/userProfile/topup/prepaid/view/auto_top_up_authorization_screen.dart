@@ -1,10 +1,10 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/theme/top_up_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -28,16 +28,7 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
   final _nameController = TextEditingController();
   bool _isSubmitting = false;
 
-  String get _expectedName {
-    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final email = instance<AccountInfoCubit>().state.accountInfo?.email ?? '';
-    return deviceLimitsCubit.state.fullName ?? _nameFromEmail(email);
-  }
-
-  String _nameFromEmail(String email) {
-    if (email.isEmpty || !email.contains('@')) return 'User';
-    return email.split('@').first;
-  }
+  String get _expectedName => resolveUserDisplayName();
 
   bool get _isNameValid =>
       _nameController.text.trim().toLowerCase() == _expectedName.trim().toLowerCase();

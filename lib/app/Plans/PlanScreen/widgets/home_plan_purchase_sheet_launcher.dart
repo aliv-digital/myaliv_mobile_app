@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
@@ -267,7 +268,7 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
 
   return HomePlanConfirmationRouteArgs(
     phoneNumber: _accountPhoneNumber(accountState),
-    accountHolderName: _accountDisplayName(accountState),
+    accountHolderName: resolveUserDisplayName(account: accountState),
     primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
     primaryPlanName: _primaryPlanName(
       selectedApiPlan: selectedApiPlan,
@@ -282,15 +283,6 @@ HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
     altContactNumber: altContactNumber,
     marketingOptIn: marketingOptIn,
   );
-}
-
-String _accountDisplayName(AccountInfoState accountState) {
-  final fullName = accountState.fullName?.trim();
-  if (fullName != null && fullName.isNotEmpty) {
-    return fullName;
-  }
-
-  return _nameFromEmail(accountState.email);
 }
 
 String _accountPhoneNumber(AccountInfoState accountState) {
@@ -314,13 +306,4 @@ String _primaryPlanName({
   }
 
   return fallbackPlan.title;
-}
-
-String _nameFromEmail(String? email) {
-  final normalizedEmail = email?.trim() ?? '';
-  if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
-    return 'User';
-  }
-
-  return normalizedEmail.split('@').first;
 }

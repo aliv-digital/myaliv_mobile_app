@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import '../bloc/edit_email_prepaid_state.dart';
 
 class EditEmailPrepaidRepository {
@@ -12,7 +13,10 @@ class EditEmailPrepaidRepository {
     final accountInfo = accountState.accountInfo;
 
     final email = accountInfo?.email ?? '';
-    final fullName = deviceState.fullName ?? _nameFromEmail(email);
+    final fullName = resolveUserDisplayName(
+      account: accountState,
+      devices: deviceState,
+    );
 
     return EditEmailPrepaidData(
       fullName: fullName,
@@ -45,12 +49,6 @@ class EditEmailPrepaidRepository {
   Future<void> refreshAccountData() async {
     await instance<AccountInfoCubit>().fetchAccountInfo(forceRefresh: true);
     await instance<DeviceLimitsCubit>().loadDeviceLimits(forceRefresh: true);
-  }
-
-  /// Extract name from email (substring before @)
-  String _nameFromEmail(String email) {
-    if (email.isEmpty || !email.contains('@')) return 'User';
-    return email.split('@').first;
   }
 
   /// Format phone number as XXX-XXX-XXXX

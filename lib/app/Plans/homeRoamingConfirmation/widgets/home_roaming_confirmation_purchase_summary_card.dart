@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import '../../../Home/best-plans/best_plan_injection.dart';
@@ -28,15 +29,6 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
     return item.copyWith(subtitle: 'begins immediately');
   }
 
-  String _accountDisplayName(AccountInfoState accountState) {
-    final fullName = accountState.fullName?.trim();
-    if (fullName != null && fullName.isNotEmpty) {
-      return fullName;
-    }
-
-    return _nameFromEmail(accountState.email);
-  }
-
   String _accountPhoneNumber(
     AccountInfoState accountState, {
     required String fallbackPhoneNumber,
@@ -52,19 +44,10 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
     return fallback.isEmpty ? '--' : fallback;
   }
 
-  String _nameFromEmail(String? email) {
-    final normalizedEmail = email?.trim() ?? '';
-    if (normalizedEmail.isEmpty || !normalizedEmail.contains('@')) {
-      return 'User';
-    }
-
-    return normalizedEmail.split('@').first;
-  }
-
   @override
   Widget build(BuildContext context) {
     final accountState = instance<AccountInfoCubit>().state;
-    final userName = _accountDisplayName(accountState);
+    final userName = resolveUserDisplayName(account: accountState);
     final userPhoneNumber = _accountPhoneNumber(
       accountState,
       fallbackPhoneNumber: data.phoneNumber,

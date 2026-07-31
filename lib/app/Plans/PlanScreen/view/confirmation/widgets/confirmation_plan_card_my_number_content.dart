@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 import '../utils/confirmation_formatters.dart';
 
@@ -17,8 +17,7 @@ class ConfirmationPlanCardMyNumberContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    final deviceFullName = instance<DeviceLimitsCubit>().state.fullName;
-    final fullName = deviceFullName ?? nameFromEmail(accountInfo?.email);
+    final fullName = resolveUserDisplayName();
     final ownPhone = formatConfirmationPhone(
       accountInfo?.primaryPhoneNumber ??
           accountInfo?.altPhoneNumber ??

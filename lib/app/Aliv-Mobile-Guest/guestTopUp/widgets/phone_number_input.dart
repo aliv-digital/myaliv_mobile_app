@@ -35,7 +35,7 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
   static const double _countryPickerHeight =
       GuestTopUpTheme.countryPickerHeight;
   static const double _fieldRadius = GuestTopUpTheme.phoneFieldRadius;
-  static const double _countryWidth = 76;
+  static const double _countryWidth = 60;
   static const double _countryFlagWidth = 26;
   static const double _countryFlagHeight = 20;
 

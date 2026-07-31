@@ -84,7 +84,7 @@ class AuthModuleSizes {
   static const double lockIconSize = 18;
   static const double lockToInputGap = 10;
   static const double eyeIconSize = 20;
-  static const double countryWidth = 76;
+  static const double countryWidth = 60;
   static const double countryFlagFontSize = 20;
   static const double countryFlagToCodeGap = 6;
   static const double countryCodeToArrowGap = 4;

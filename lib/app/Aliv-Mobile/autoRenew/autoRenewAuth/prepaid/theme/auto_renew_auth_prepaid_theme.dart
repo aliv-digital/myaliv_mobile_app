@@ -62,9 +62,11 @@ class AutoRenewAuthPrepaidTheme {
   static const EdgeInsets authBodyCardPadding = EdgeInsets.all(16);
 
   // ==================== Input Padding ====================
-  // Used by the name input content area.
+  // Used by the name input content area. Right padding reduced from 14→4.2
+  // (−70%) so the long hint "type your name exactly as it appears on your
+  // account" isn't clipped early.
   static const EdgeInsets nameInputContentPadding =
-      EdgeInsets.symmetric(horizontal: 14, vertical: 14);
+      EdgeInsets.fromLTRB(14, 14, 0, 14);
 
   // ==================== Button Behaviour ====================
   // Used to preserve the intended 0.45 disabled opacity with DefaultButton.
@@ -141,9 +143,10 @@ class AutoRenewAuthPrepaidTheme {
 
   // ==================== Text Style: Input Hint ====================
   // Used for placeholder text inside the authorization name input field.
+  // Hint size trimmed 14→13.0 to fit the long placeholder without ellipsis.
   static TextStyle nameInputHintTextStyle() => const TextStyle(
         color: textNeutral,
-        fontSize: 14,
+        fontSize: 13.0,
         fontFamily: fontFamily,
         fontWeight: FontWeight.w500,
         height: 1.43,

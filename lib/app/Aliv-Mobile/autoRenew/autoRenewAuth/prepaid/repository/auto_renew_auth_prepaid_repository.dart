@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
 /// Payment method for auto-renew/auto-pay
 enum AutoRenewPaymentMethodType {
@@ -24,13 +25,6 @@ class AutoRenewAuthArgs {
     required this.paymentMethod,
     this.cardToken,
   });
-}
-
-/// Extract name from email (substring before @)
-/// Same logic as used in drawer.dart
-String _nameFromEmail(String email) {
-  if (email.isEmpty || !email.contains('@')) return 'User';
-  return email.split('@').first;
 }
 
 class AutoRenewAuthContent {
@@ -70,14 +64,7 @@ class AutoRenewAuthPrepaidRepositoryImpl
     implements AutoRenewAuthPrepaidRepository {
   @override
   Future<AutoRenewAuthContent> fetchContent() async {
-    // Get user's full name from DeviceLimitsCubit (same as drawer)
-    // Fallback to name extracted from email if not available
-    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
-    final accountInfoCubit = instance<AccountInfoCubit>();
-    final email = accountInfoCubit.state.accountInfo?.email ?? '';
-    final fullName = accountInfoCubit.state.fullName ??
-        deviceLimitsCubit.state.fullName ??
-        _nameFromEmail(email);
+    final fullName = resolveUserDisplayName();
 
     // Small delay for loading state
     await Future.delayed(const Duration(milliseconds: 100));

@@ -74,6 +74,8 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                   });
                 }
 
+                final isEnabled = visibleNumbers.length > 1;
+
                 return Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -120,9 +122,9 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                       ),
 
                       iconStyleData: IconStyleData(
-                        icon: SvgPicture.asset(
-                          'assets/icons/arrow_dropdown.svg',
-                        ),
+                        icon: isEnabled
+                            ? SvgPicture.asset('assets/icons/arrow_dropdown.svg')
+                            : const SizedBox.shrink(),
                       ),
 
                       style: const TextStyle(
@@ -147,9 +149,11 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                         );
                       }).toList(),
 
-                      onChanged: (value) {
-                        if (value != null) selectedNotifier.value = value;
-                      },
+                      onChanged: isEnabled
+                          ? (value) {
+                              if (value != null) selectedNotifier.value = value;
+                            }
+                          : null,
                     ),
                   ),
                 );

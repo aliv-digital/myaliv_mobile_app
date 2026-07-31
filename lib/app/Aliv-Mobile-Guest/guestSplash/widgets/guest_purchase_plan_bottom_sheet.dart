@@ -165,7 +165,7 @@ class _SheetBody extends StatelessWidget {
                   );
                 },
                 enableCountryPicker: false,
-                showCountryArrow: true,
+                showCountryArrow: false,
                 fieldHeight: GuestSplashTheme.purchasePlanPhoneInputHeight,
                 countryPickerWidth:
                     GuestSplashTheme.purchasePlanCountryPickerWidth,
