@@ -50,6 +50,24 @@ class _StandAloneFuturePlans extends StatelessWidget {
     return start.isAfter(DateTime.now());
   }
 
+  int? _earliestFuturePrimaryPlanIndex(List<BasePlanModel> plans) {
+    int? earliestIndex;
+    DateTime? earliestStartDate;
+
+    for (var i = 0; i < plans.length; i++) {
+      final plan = plans[i];
+      final startDate = plan.startDateTime;
+      if (!plan.isPrimaryPlan || startDate == null) continue;
+
+      if (earliestStartDate == null || startDate.isBefore(earliestStartDate)) {
+        earliestIndex = i;
+        earliestStartDate = startDate;
+      }
+    }
+
+    return earliestIndex;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPostpaid = context.watch<AppUiConfigCubit>().state.isPostpaid;
@@ -65,6 +83,8 @@ class _StandAloneFuturePlans extends StatelessWidget {
           ...state.addOnsApiPrimaryPlans.where(_startsInFuture),
           ...state.standAlonePlans.where(_startsInFuture),
         ];
+        final startablePlanIndex =
+            isPostpaid ? null : _earliestFuturePrimaryPlanIndex(futurePlans);
 
         if (futurePlans.isEmpty) {
           return const _EmptyFuturePlansMessage();
@@ -83,7 +103,7 @@ class _StandAloneFuturePlans extends StatelessWidget {
                   isActivePlan: false,
                 ),
               ),
-              if (!isPostpaid && futurePlans[i].isPrimaryPlan) ...[
+              if (i == startablePlanIndex) ...[
                 const _StartPlanButton(),
                 const SizedBox(height: 16),
               ],

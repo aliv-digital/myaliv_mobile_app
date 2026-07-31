@@ -254,12 +254,16 @@ class _RoamCalendarPickerSheet extends StatefulWidget {
 }
 
 class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
+  late final DateTime _firstDate;
   late DateTime _draftSelectedDate;
 
   @override
   void initState() {
     super.initState();
-    _draftSelectedDate = widget.initialDate;
+    _firstDate = DateUtils.dateOnly(DateTime.now());
+    final initialDate = DateUtils.dateOnly(widget.initialDate);
+    _draftSelectedDate =
+        initialDate.isBefore(_firstDate) ? _firstDate : initialDate;
   }
 
   @override
@@ -303,6 +307,10 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                     dayStyle: HomePlanTheme.roamCalendarDayTextStyle,
                     dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.disabled)) {
+                          return HomePlanTheme.roamCalendarDayTextColor
+                              .withValues(alpha: 0.35);
+                        }
                         if (states.contains(WidgetState.selected)) {
                           return HomePlanTheme
                               .roamCalendarSelectedDayTextColor;
@@ -334,7 +342,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                   height: HomePlanTheme.roamCalendarPickerVisibleHeight,
                   child: CalendarDatePicker(
                     initialDate: _draftSelectedDate,
-                    firstDate: DateTime(2020, 1, 1),
+                    firstDate: _firstDate,
                     lastDate: DateTime(2035, 12, 31),
                     onDateChanged: (DateTime nextDate) {
                       setState(() {

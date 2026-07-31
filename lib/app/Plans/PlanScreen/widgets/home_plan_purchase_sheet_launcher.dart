@@ -45,7 +45,8 @@ Future<void> showHomePlanPurchaseBottomSheet({
     isScrollControlled: true,
     builder: (sheetContext) {
       if (selectedTab == HomePlanTab.roaming ||
-          selectedTab == HomePlanTab.roameasy) {
+          selectedTab == HomePlanTab.roameasy ||
+          selectedTab == HomePlanTab.libertyGlobal) {
         return HomePlanRoamBottomSheet(
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onDateApplied: (pickedDate) {

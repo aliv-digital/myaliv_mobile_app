@@ -89,10 +89,21 @@ class HomePlanConfirmationState extends Equatable {
     final definition = promoResponse?.definition;
     if (!hasAppliedPromo || definition == null || subTotal <= 0) return 0;
 
-    final unitQuantity = definition.unitQty;
-    if (unitQuantity <= 0) return 0;
+    final discountValue = definition.unitQty;
+    if (discountValue <= 0) return 0;
 
-    return _roundCurrency(unitQuantity.clamp(0, subTotal).toDouble());
+    final unitType = definition.unitType?.trim().toLowerCase();
+    double discountAmount;
+
+    if (unitType == 'percentage') {
+      discountAmount = subTotal * discountValue / 100;
+    } else {
+      // For "dollar" and other fixed-value promo types.
+      discountAmount = discountValue;
+    }
+
+    final safeDiscountAmount = discountAmount.clamp(0, subTotal).toDouble();
+    return _roundCurrency(safeDiscountAmount);
   }
 
   PurchaseTotals get displayTotals {

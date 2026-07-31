@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
@@ -43,6 +44,8 @@ class HomePlanConfirmationScreen extends StatelessWidget {
 class _HomePlanConfirmationView extends StatelessWidget {
   const _HomePlanConfirmationView();
 
+  static const Color _promoDiscountColor = Color(0xFF4DDBC0);
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -69,10 +72,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
             switch (state.promoStatus) {
               case HomePlanConfirmationPromoStatus.applied:
                 AppToast.show(
-                  message: _promoToastMessage(
-                    state,
-                    fallback: 'Promo code applied successfully.',
-                  ),
+                  message: 'promo applied',
                   type: ToastType.success,
                 );
                 break;
@@ -110,6 +110,11 @@ class _HomePlanConfirmationView extends StatelessWidget {
                   isButtonEnabled: state.isTermsChecked,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    // A successful promo changes the amount charged and adds
+                    // its details to the existing plan-purchase request.
+                    final paymentAmount = _paymentAmount(state);
+                    final promoCodes = _appliedPromoCodes(state);
+
                     context.read<HomePlanConfirmationBloc>().add(
                       const HomePlanConfirmationPayNowPressed(),
                     );
@@ -117,10 +122,11 @@ class _HomePlanConfirmationView extends StatelessWidget {
                       AppRoutes.homePlansPaymentMethodScreen,
                       extra: HomePlansPaymentMethodRouteArgs(
                         phoneNumber: state.data!.phoneNumber,
-                        amount: state.data!.totals.total,
+                        amount: paymentAmount,
                         vatNote: state.data!.totals.vat > 0
                             ? 'vat inclusive'
                             : 'no vat applied',
+                        promoCodes: promoCodes,
                         forceNow: state.forceNow,
                         selectedBeginDate: state.selectedBeginDate,
                         marketingOptIn: state.marketingOptIn,
@@ -249,40 +255,58 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                         backgroundColor: HexColor.fromHex(
                                           '#645D9C',
                                         ),
-                                        input: CustomPaymentBreakdownInputConfig(
-                                          value: state.promoCode,
-                                          enabled:
-                                              state.promoStatus !=
-                                                  HomePlanConfirmationPromoStatus
-                                                      .applying &&
-                                              !state.hasAppliedPromo,
-                                          isActionLoading:
-                                              state.promoStatus ==
-                                              HomePlanConfirmationPromoStatus
-                                                  .applying,
-                                          onChanged: (value) {
-                                            context
-                                                .read<
-                                                    HomePlanConfirmationBloc>()
-                                                .add(
-                                                  HomePlanConfirmationPromoCodeChanged(
-                                                    value,
-                                                  ),
-                                                );
-                                          },
-                                          onActionTap: () {
-                                            FocusScope.of(context).unfocus();
-                                            context
-                                                .read<
-                                                    HomePlanConfirmationBloc>()
-                                                .add(
-                                                  const HomePlanConfirmationPromoApplyPressed(),
-                                                );
-                                          },
-                                          hintText: 'promo code',
-                                          actionText: 'apply',
-                                        ),
+                                        input: state.hasAppliedPromo
+                                            ? null
+                                            : CustomPaymentBreakdownInputConfig(
+                                                value: state.promoCode,
+                                                enabled:
+                                                    state.promoStatus !=
+                                                    HomePlanConfirmationPromoStatus
+                                                        .applying,
+                                                isActionLoading:
+                                                    state.promoStatus ==
+                                                    HomePlanConfirmationPromoStatus
+                                                        .applying,
+                                                onChanged: (value) {
+                                                  context
+                                                      .read<
+                                                          HomePlanConfirmationBloc>()
+                                                      .add(
+                                                        HomePlanConfirmationPromoCodeChanged(
+                                                          value,
+                                                        ),
+                                                      );
+                                                },
+                                                onActionTap: () {
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).unfocus();
+                                                  context
+                                                      .read<
+                                                          HomePlanConfirmationBloc>()
+                                                      .add(
+                                                        const HomePlanConfirmationPromoApplyPressed(),
+                                                      );
+                                                },
+                                                hintText: 'promo code',
+                                                actionText: 'apply',
+                                              ),
                                         items: <CustomPaymentBreakdownLineItem>[
+                                          if (state.hasAppliedPromo)
+                                            CustomPaymentBreakdownLineItem(
+                                              label: state.promoCode,
+                                              labelSuffix:
+                                                  ' (${_promoDiscountDescription(state)})',
+                                              labelSuffixStyle:
+                                                  const TextStyle(
+                                                    color: _promoDiscountColor,
+                                                  ),
+                                              value:
+                                                  '- \$ ${state.promoDiscount.toStringAsFixed(2)}',
+                                              valueStyle: const TextStyle(
+                                                color: _promoDiscountColor,
+                                              ),
+                                            ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',
                                             value:
@@ -377,5 +401,75 @@ class _HomePlanConfirmationView extends StatelessWidget {
     }
 
     return fallback;
+  }
+
+  String _promoDiscountDescription(HomePlanConfirmationState state) {
+    final definition = state.promoResponse?.definition;
+    if (definition == null) return '';
+
+    final unitType = definition.unitType?.trim().toLowerCase();
+    if (unitType == 'percentage') {
+      return '${_formatPercentage(definition.unitQty)}% off';
+    }
+
+    return '\$ ${definition.unitQty.toStringAsFixed(2)} off';
+  }
+
+  String _formatPercentage(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toStringAsFixed(0);
+    }
+
+    return value
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0+$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  double _paymentAmount(HomePlanConfirmationState state) {
+    if (state.hasAppliedPromo) {
+      // The displayed promo total already contains the discounted subtotal
+      // and the recalculated VAT.
+      return state.displayTotals.total;
+    }
+
+    // Keep the existing amount unchanged when no promo was applied.
+    return state.data!.totals.total;
+  }
+
+  List<PlanPurchasePromoCode> _appliedPromoCodes(
+    HomePlanConfirmationState state,
+  ) {
+    if (!state.hasAppliedPromo) {
+      return const <PlanPurchasePromoCode>[];
+    }
+
+    final promoResponse = state.promoResponse;
+    final purchaseData = state.data;
+
+    if (promoResponse == null ||
+        purchaseData == null ||
+        purchaseData.items.isEmpty) {
+      return const <PlanPurchasePromoCode>[];
+    }
+
+    // A home-plan order normally contains a primary plan. If this flow is
+    // purchasing add-ons only, use the first selected item instead.
+    PurchaseLineItem promoPlan = purchaseData.items.first;
+    for (final item in purchaseData.items) {
+      if (item.type == PurchaseLineType.primaryPlan) {
+        promoPlan = item;
+        break;
+      }
+    }
+
+    final planId = int.parse(promoPlan.id);
+    final appliedPromo = PlanPurchasePromoCode(
+      promoCodeId: promoResponse.promoCodeId,
+      discountAmount: state.promoDiscount,
+      planId: planId,
+    );
+
+    return <PlanPurchasePromoCode>[appliedPromo];
   }
 }

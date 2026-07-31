@@ -93,8 +93,9 @@ class PaymentReceiptBuilder {
   static String _paymentMethodLabel(HomePlansPaymentMethodState state) {
     switch (state.paymentMode) {
       case HomePlansPaymentMode.payFromWallet:
-      case HomePlansPaymentMode.chargeToMyAccount:
         return 'wallet';
+      case HomePlansPaymentMode.chargeToMyAccount:
+        return 'my account';
       case HomePlansPaymentMode.card:
         return _selectedMethodLabel(state);
       case HomePlansPaymentMode.payWithCard:

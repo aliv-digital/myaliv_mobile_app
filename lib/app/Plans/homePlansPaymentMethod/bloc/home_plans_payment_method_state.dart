@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import '../model/home_plans_payment_method_models.dart';
 
 enum HomePlansPaymentMethodStatus {
@@ -40,6 +41,7 @@ class HomePlansPaymentMethodState extends Equatable {
   final double amount;
   final String vatNote;
   final List<HomePlansPaymentSelectedItem> selectedItems;
+  final List<PlanPurchasePromoCode> promoCodes;
   final bool forceNow;
   final DateTime? selectedBeginDate;
 
@@ -63,6 +65,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.amount,
     required this.vatNote,
     required this.selectedItems,
+    required this.promoCodes,
     required this.forceNow,
     required this.selectedBeginDate,
     required this.navTarget,
@@ -83,6 +86,7 @@ class HomePlansPaymentMethodState extends Equatable {
       amount: 5.00,
       vatNote: 'no vat applied',
       selectedItems: [],
+      promoCodes: [],
       forceNow: false,
       selectedBeginDate: null,
       navTarget: HomePlansPaymentMethodNavTarget.none,
@@ -120,6 +124,7 @@ class HomePlansPaymentMethodState extends Equatable {
     double? amount,
     String? vatNote,
     List<HomePlansPaymentSelectedItem>? selectedItems,
+    List<PlanPurchasePromoCode>? promoCodes,
     bool? forceNow,
     DateTime? selectedBeginDate,
     HomePlansPaymentMethodNavTarget? navTarget,
@@ -139,6 +144,7 @@ class HomePlansPaymentMethodState extends Equatable {
       amount: amount ?? this.amount,
       vatNote: vatNote ?? this.vatNote,
       selectedItems: selectedItems ?? this.selectedItems,
+      promoCodes: promoCodes ?? this.promoCodes,
       forceNow: forceNow ?? this.forceNow,
       selectedBeginDate: selectedBeginDate ?? this.selectedBeginDate,
       navTarget: navTarget ?? this.navTarget,
@@ -163,6 +169,7 @@ class HomePlansPaymentMethodState extends Equatable {
     amount,
     vatNote,
     selectedItems,
+    promoCodes,
     forceNow,
     selectedBeginDate,
     navTarget,

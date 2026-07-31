@@ -49,6 +49,10 @@ class _LoginView extends StatelessWidget {
         statusBarColor: AuthModuleColors.pageBackground,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
+        systemNavigationBarColor: AuthModuleColors.pageBackground,
+        systemNavigationBarDividerColor: AuthModuleColors.pageBackground,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarContrastEnforced: false,
       ),
     );
 

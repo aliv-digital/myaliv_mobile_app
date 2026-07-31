@@ -59,6 +59,8 @@ class CustomPaymentBreakdownLineItem {
     this.isEmphasized = false,
     this.textStyle,
     this.labelStyle,
+    this.labelSuffix,
+    this.labelSuffixStyle,
     this.valueStyle,
     this.isInputField,
   });
@@ -74,6 +76,10 @@ class CustomPaymentBreakdownLineItem {
 
   /// Optional label-only override (applied on top of row/default style).
   final TextStyle? labelStyle;
+
+  /// Optional differently styled text shown immediately after [label].
+  final String? labelSuffix;
+  final TextStyle? labelSuffixStyle;
 
   /// Optional value-only override (applied on top of row/default style).
   final TextStyle? valueStyle;
@@ -295,7 +301,23 @@ class _CustomBreakdownRow extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(child: Text(item.label, style: resolvedLabelStyle)),
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              text: item.label,
+              style: resolvedLabelStyle,
+              children: [
+                if (item.labelSuffix != null)
+                  TextSpan(
+                    text: item.labelSuffix,
+                    style: item.labelSuffixStyle,
+                  ),
+              ],
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         Text(item.value, style: resolvedValueStyle),
       ],
     );

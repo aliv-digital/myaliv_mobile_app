@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_req
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_bundle.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 /// Wraps `POST /Order/change-bundle`. Supplies the URL + change-bundle
@@ -20,12 +21,14 @@ class ChangeBundleService {
   Future<ChangeBundleResult> payFromWallet({
     required double amount,
     required PlanBundle bundle,
+    required List<PlanPurchasePromoCode> promoCodes,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
     return _send(
       cardPayment: ChangeBundleRequestFactory.walletCardPayment(amount: amount),
       bundle: bundle,
+      promoCodes: promoCodes,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [wallet]',
@@ -36,6 +39,7 @@ class ChangeBundleService {
     required double amount,
     required String cardToken,
     required PlanBundle bundle,
+    required List<PlanPurchasePromoCode> promoCodes,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -45,6 +49,7 @@ class ChangeBundleService {
         cardToken: cardToken,
       ),
       bundle: bundle,
+      promoCodes: promoCodes,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [saved-card]',
@@ -55,6 +60,7 @@ class ChangeBundleService {
     required double amount,
     required NewCardDetails details,
     required PlanBundle bundle,
+    required List<PlanPurchasePromoCode> promoCodes,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -64,6 +70,7 @@ class ChangeBundleService {
         details: details,
       ),
       bundle: bundle,
+      promoCodes: promoCodes,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [new-card]',
@@ -73,6 +80,7 @@ class ChangeBundleService {
   Future<ChangeBundleResult> _send({
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
+    required List<PlanPurchasePromoCode> promoCodes,
     required bool forceNow,
     DateTime? selectedBeginDate,
     required String logTag,
@@ -82,6 +90,7 @@ class ChangeBundleService {
       body = ChangeBundleRequestFactory.changeBundleBody(
         cardPayment: cardPayment,
         bundle: bundle,
+        promoCodes: promoCodes,
         forceNow: forceNow,
         selectedBeginDate: selectedBeginDate,
       );

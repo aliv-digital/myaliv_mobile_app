@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_bundle.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 
 /// Builds the request body for `POST /Order/change-bundle`.
 ///
@@ -64,6 +65,7 @@ class ChangeBundleRequestFactory {
   static Map<String, dynamic> changeBundleBody({
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
+    required List<PlanPurchasePromoCode> promoCodes,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -85,6 +87,13 @@ class ChangeBundleRequestFactory {
       bundleMap['StartDate'] = startDate;
     }
 
+    // A regular purchase keeps this list empty. When a promo was applied,
+    // convert its readable model into the exact API request fields.
+    final promoCodeMaps = <Map<String, dynamic>>[];
+    for (final promoCode in promoCodes) {
+      promoCodeMaps.add(promoCode.toJson());
+    }
+
     return <String, dynamic>{
       'CardPayment': cardPayment,
       'Bundle': bundleMap,
@@ -92,7 +101,7 @@ class ChangeBundleRequestFactory {
       'SaveCard': false,
       'UseAsRenewalCard': false,
       'Bonuses': const <Map<String, dynamic>>[],
-      'PromoCodes': const <Map<String, dynamic>>[],
+      'PromoCodes': promoCodeMaps,
       'Note': 'Payment',
     };
   }
