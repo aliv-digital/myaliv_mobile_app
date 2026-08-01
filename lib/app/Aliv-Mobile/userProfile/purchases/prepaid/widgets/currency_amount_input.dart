@@ -9,6 +9,7 @@ class TopUpFormInputField extends StatefulWidget {
   final TextEditingController? controller;
   final bool? isAmountType;
   final ValueChanged<String>? onChanged;
+  final bool fitHint;
 
   const TopUpFormInputField({
     super.key,
@@ -16,6 +17,7 @@ class TopUpFormInputField extends StatefulWidget {
     this.controller,
     this.isAmountType,
     this.onChanged,
+    this.fitHint = false,
   });
 
   @override
@@ -82,7 +84,14 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
                 isCollapsed: true,
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
-                hintText: widget.hint,
+                hintText: widget.fitHint ? null : widget.hint,
+                hint: widget.fitHint
+                    ? FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(widget.hint),
+                      )
+                    : null,
                 hintStyle: TextStyle(
                   fontFamily: 'CircularPro',
                   fontSize: 13,

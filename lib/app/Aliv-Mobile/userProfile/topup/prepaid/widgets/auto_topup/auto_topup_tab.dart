@@ -186,6 +186,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
           balanceThreshold: threshold,
           autoTopUpAmount: amount,
           cardToken: cardToken,
+          cardLastDigits: _selectedCard?.lastDigits ?? '',
         ),
       ),
     );
