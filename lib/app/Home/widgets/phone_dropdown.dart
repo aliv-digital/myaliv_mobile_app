@@ -148,11 +148,22 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                             child: PhoneDropdownItem(
                               number: number,
                               isPrimary: number == primaryPhone,
-                              showRadio: number == effectiveSelected,
                             ),
                           ),
                         );
                       }).toList(),
+
+                      // Collapsed button: number + badge only (no trailing
+                      // circle). The trailing arrow comes from iconStyleData.
+                      selectedItemBuilder: (context) {
+                        return visibleNumbers.map((number) {
+                          return PhoneDropdownItem(
+                            number: number,
+                            isPrimary: number == primaryPhone,
+                            showTrailing: false,
+                          );
+                        }).toList();
+                      },
 
                       onChanged: (value) {
                         if (value != null) selectedNotifier.value = value;

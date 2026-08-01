@@ -275,6 +275,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
+                textDirection: isOn ? TextDirection.ltr : TextDirection.rtl,
                 children: [
                   if (widget.isLoading)
                     const Padding(
@@ -293,11 +294,14 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                       padding: const EdgeInsets.symmetric(horizontal: 5.5),
                       child: Text(
                         isOn ? 'on' : 'off',
-                        style: const TextStyle(
-                          color: Colors.black,
+                        textDirection: TextDirection.ltr,
+                        style: TextStyle(
+                          color: isOn
+                              ? Colors.black
+                              : const Color(0xFF707070),
                           fontSize: 12,
                           fontFamily: 'CircularPro',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                           height: 1.0,
                         ),
                       ),
@@ -310,13 +314,13 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                     decoration: BoxDecoration(
                       color: isOn
                           ? const Color(0xFF645D9C)
-                          : const Color(0xFFEDECF6),
+                          : const Color(0xFF707070),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       isOn ? Icons.check : Icons.close,
                       size: 12,
-                      color: isOn ? Colors.white : const Color(0xFF645D9C),
+                      color: Colors.white,
                     ),
                   ),
                 ],
