@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../Aliv-Mobile/revBillPay/revConfirmation/prepaid/theme/rev_confirmation_prepaid_theme.dart';
 import '../bloc/guest_purchase_plan_confirmation_bloc.dart';
@@ -148,17 +148,9 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                               ),
                                             ),
                                         onTermsTap: () async {
-                                          final uri = Uri.parse(
-                                            'https://www.bealiv.com/terms-of-use/',
+                                          await showTermsAndConditionsModal(
+                                            context,
                                           );
-
-                                          if (!await launchUrl(
-                                            uri,
-                                            mode:
-                                                LaunchMode.externalApplication,
-                                          )) {
-                                            throw 'Could not open terms and conditions';
-                                          }
                                         },
                                       ),
                                     ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../../../../../../resources/widgets/custom_payment_break_down_card.dart';
@@ -118,18 +118,7 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                                     .read<RevConfirmationPrepaidBloc>()
                                     .add(RevTermsToggled(v)),
                                 onTermsTap: () async {
-                                  // TODO: open terms screen/bottomsheet
-                                  // context.push(AppRoutes.terms);
-                                  final uri = Uri.parse(
-                                    'https://www.bealiv.com/terms-of-use/',
-                                  );
-
-                                  if (!await launchUrl(
-                                    uri,
-                                    mode: LaunchMode.externalApplication,
-                                  )) {
-                                    throw 'Could not open store locator';
-                                  }
+                                  await showTermsAndConditionsModal(context);
                                 },
                               ),
 

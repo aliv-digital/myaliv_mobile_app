@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ReferFriendPrepaidInfoHtml extends StatelessWidget {
@@ -26,7 +27,7 @@ class ReferFriendPrepaidInfoHtml extends StatelessWidget {
       padding: padding,
       child: Html(
         data: _prepareHtml(htmlContent),
-        onLinkTap: (url, attributes, element) => _openLink(url),
+        onLinkTap: (url, attributes, element) => _openLink(context, url),
         style: {
           'body': _bodyStyle(margin: Margins.zero),
           'p': _bodyStyle(margin: Margins.only(bottom: 24)),
@@ -81,8 +82,12 @@ class ReferFriendPrepaidInfoHtml extends StatelessWidget {
     return html.replaceFirst('Terms & Conditions', linkedTerms);
   }
 
-  void _openLink(String? url) {
+  void _openLink(BuildContext context, String? url) {
     final uri = Uri.tryParse(url ?? '');
+    if (uri != null && uri.path.toLowerCase().contains('terms-of-use')) {
+      unawaited(showTermsAndConditionsModal(context));
+      return;
+    }
 
     if (uri == null) {
       return;
