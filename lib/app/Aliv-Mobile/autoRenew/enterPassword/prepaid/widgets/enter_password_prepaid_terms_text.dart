@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EnterPasswordAutoRenewPrepaidTermsText extends StatefulWidget {
@@ -20,12 +21,7 @@ class _EnterPasswordAutoRenewPrepaidTermsTextState
 
     _termsRecognizer = TapGestureRecognizer()
       ..onTap = () async {
-        // ✅ Navigate to Terms
-        final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
-
-        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-          throw 'Could not open store locator';
-        }
+        await showTermsAndConditionsModal(context);
       };
 
     _privacyRecognizer = TapGestureRecognizer()

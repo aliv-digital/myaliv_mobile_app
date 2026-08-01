@@ -188,15 +188,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                           bloc.add(const GuestConfirmTopUpTermsCheckboxToggled());
                         },
                         onTapTerms: () async {
-                          await showTermsAndConditionsModal(
-                            context,
-                            badgeSize: 48,
-                            badgeInnerSize: 34,
-                            badgeCoreSize: 24,
-                            badgeIconWidth: 16,
-                            badgeIconHeight: 16,
-                            closeButtonSize: 30,
-                          );
+                          await showTermsAndConditionsModal(context);
                         },
                       );
                     },

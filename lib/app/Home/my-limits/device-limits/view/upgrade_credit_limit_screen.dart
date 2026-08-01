@@ -12,9 +12,9 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/view/widgets/limit_amount_input_field.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/common_terms_condition.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class UpgradeCreditLimitScreen extends StatefulWidget {
   const UpgradeCreditLimitScreen({super.key});
@@ -296,12 +296,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
     return TermsAgreement(
       value: _agreed,
       onChanged: (val) => setState(() => _agreed = val),
-      onTermsTap: () async {
-        final uri = Uri.parse('https://www.bealiv.com/terms-of-use/');
-        if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-          throw 'Could not open terms';
-        }
-      },
+      onTermsTap: () => showTermsAndConditionsModal(context),
     );
   }
 

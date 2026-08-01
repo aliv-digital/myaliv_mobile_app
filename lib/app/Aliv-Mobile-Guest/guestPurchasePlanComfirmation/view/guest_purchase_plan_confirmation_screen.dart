@@ -183,12 +183,6 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                         onTermsTap: () async {
                                           await showTermsAndConditionsModal(
                                             context,
-                                            badgeSize: 48,
-                                            badgeInnerSize: 34,
-                                            badgeCoreSize: 24,
-                                            badgeIconWidth: 16,
-                                            badgeIconHeight: 16,
-                                            closeButtonSize: 30,
                                           );
                                         },
                                       ),

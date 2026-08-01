@@ -13,12 +13,14 @@ class AutoTopUpAuthorizationScreen extends StatefulWidget {
   final double balanceThreshold;
   final double autoTopUpAmount;
   final String cardToken;
+  final String cardLastDigits;
 
   const AutoTopUpAuthorizationScreen({
     super.key,
     required this.balanceThreshold,
     required this.autoTopUpAmount,
     required this.cardToken,
+    required this.cardLastDigits,
   });
 
   @override
@@ -31,8 +33,7 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
 
   String get _expectedName => resolveUserDisplayName();
 
-  bool get _isNameValid =>
-      _nameController.text.trim().toLowerCase() == _expectedName.trim().toLowerCase();
+  bool get _isNameValid => _nameController.text == _expectedName;
 
   @override
   void dispose() {
@@ -109,8 +110,8 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text(
-              'by providing my credit card ending *xxxx as payment method, '
+            Text(
+              'by providing my credit card ending *${widget.cardLastDigits} as payment method, '
               'I authorize ALIV and/or its agents to store my payment method '
               'information and to automatically charge plan renewal costs of '
               'qualifying plans for all subscriber lines on my account. '
@@ -142,6 +143,7 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
             const SizedBox(height: 8),
             TopUpFormInputField(
               hint: 'type your name exactly as it appears on your account',
+              fitHint: true,
               isAmountType: false,
               controller: _nameController,
             ),

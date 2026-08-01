@@ -38,13 +38,14 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _confirmPhoneFocusNode = FocusNode();
 
-  String _amount = '0.00';
+  String _amount = '';
   String _phoneNumber = '';
   String _confirmPhoneNumber = '';
   bool _hasPhoneFocus = false;
   bool _hasConfirmPhoneFocus = false;
   bool _phoneFieldError = false;
   bool _confirmPhoneFieldError = false;
+  bool _phoneNumbersDoNotMatch = false;
   bool _isChecking = false;
   // 🔥 default amount (matches design)
 
@@ -116,6 +117,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     required FocusNode focusNode,
     required ValueChanged<String> onChanged,
     TextStyle? labelStyle,
+    String? validationMessage,
   }) {
     final showLiveValidationError = _hasLivePhoneError(value);
     final showInlineError = forceError || showLiveValidationError;
@@ -172,8 +174,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
-            child: const Text(
-              LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+            child: Text(
+              validationMessage ??
+                  LoginPhoneNumberHelper.invalidPhoneNumberMessage,
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),
@@ -223,6 +226,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                   setState(() {
                     _phoneNumber = value;
                     _phoneFieldError = false;
+                    _phoneNumbersDoNotMatch = false;
                   });
                 },
               ),
@@ -235,13 +239,18 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               _buildLoginStylePhoneField(
                 labelText: GuestTopUpTheme.confirmMobileLabel,
                 value: _confirmPhoneNumber,
-                forceError: _confirmPhoneFieldError,
+                forceError:
+                    _confirmPhoneFieldError || _phoneNumbersDoNotMatch,
                 hasFocus: _hasConfirmPhoneFocus,
                 focusNode: _confirmPhoneFocusNode,
+                validationMessage: _phoneNumbersDoNotMatch
+                    ? 'Phone number do not match'
+                    : null,
                 onChanged: (value) {
                   setState(() {
                     _confirmPhoneNumber = value;
                     _confirmPhoneFieldError = false;
+                    _phoneNumbersDoNotMatch = false;
                   });
                 },
               ),
@@ -286,6 +295,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                       setState(() {
                         _phoneFieldError = hasPhoneError;
                         _confirmPhoneFieldError = hasConfirmPhoneError;
+                        _phoneNumbersDoNotMatch = false;
                       });
                       final hasEmptyPhone = _digitsOnly(_phoneNumber).isEmpty ||
                           _digitsOnly(_confirmPhoneNumber).isEmpty;
@@ -303,10 +313,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                         confirmPhoneValidation.phoneNumberForApi ?? '';
 
                     if (recipientPhone != confirmPhone) {
-                      AppToast.show(
-                        message: 'phone numbers do not match',
-                        type: ToastType.error,
-                      );
+                      setState(() => _phoneNumbersDoNotMatch = true);
                       return;
                     }
                     final walletBalance =

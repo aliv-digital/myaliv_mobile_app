@@ -1,5 +1,11 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/core/networkService/terms_and_conditions_repository.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
@@ -11,7 +17,14 @@ Future<void> showTermsAndConditionsModal(
   double badgeIconWidth = 18,
   double badgeIconHeight = 18.75,
   double closeButtonSize = 24,
+  bool? isPostpaid,
 }) {
+  final usePostpaidTerms = _shouldUsePostpaidTerms(context, isPostpaid);
+  final audience = usePostpaidTerms
+      ? TermsAndConditionsAudience.postpaid
+      : TermsAndConditionsAudience.prepaid;
+  final termsHtml = TermsAndConditionsRepository.shared.load(audience);
+
   return showDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -28,10 +41,25 @@ Future<void> showTermsAndConditionsModal(
           badgeIconWidth: badgeIconWidth,
           badgeIconHeight: badgeIconHeight,
           closeButtonSize: closeButtonSize,
+          termsHtml: termsHtml,
         ),
       );
     },
   );
+}
+
+bool _shouldUsePostpaidTerms(BuildContext context, bool? guestIsPostpaid) {
+  if (!globalState.isAuthenticated) return guestIsPostpaid == true;
+
+  final accountState = instance<AccountInfoCubit>().state;
+  if (accountState.isPostpaid) return true;
+  if (accountState.isPrepaid) return false;
+
+  try {
+    return context.read<AppUiConfigCubit>().state.isPostpaid;
+  } catch (_) {
+    return false;
+  }
 }
 
 class TermsAndConditionsDialog extends StatelessWidget {
@@ -43,6 +71,7 @@ class TermsAndConditionsDialog extends StatelessWidget {
     this.badgeIconWidth = 18,
     this.badgeIconHeight = 18.75,
     this.closeButtonSize = 24,
+    this.termsHtml,
   });
 
   final double badgeSize;
@@ -51,6 +80,7 @@ class TermsAndConditionsDialog extends StatelessWidget {
   final double badgeIconWidth;
   final double badgeIconHeight;
   final double closeButtonSize;
+  final Future<String?>? termsHtml;
 
   static const TextStyle _titleStyle = TextStyle(
     color: Color(0xFF222222),
@@ -119,11 +149,7 @@ class TermsAndConditionsDialog extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text('Terms & Conditions', style: _titleStyle),
                     const SizedBox(height: 20),
-                    const Text(_introText, style: _bodyStyle),
-                    const SizedBox(height: 20),
-                    const Text('Use of Site', style: _titleStyle),
-                    const SizedBox(height: 20),
-                    const Text(_useOfSiteText, style: _bodyStyle),
+                    _buildTermsContent(),
                   ],
                 ),
               ),
@@ -139,6 +165,56 @@ class TermsAndConditionsDialog extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTermsContent() {
+    final request = termsHtml;
+    if (request == null) return _buildFallbackContent();
+
+    return FutureBuilder<String?>(
+      future: request,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 40),
+            child: Center(
+              child: CircularProgressIndicator(color: Color(0xFF645D9C)),
+            ),
+          );
+        }
+
+        final html = snapshot.data?.trim();
+        if (html == null || html.isEmpty) return _buildFallbackContent();
+
+        return Html(
+          data: html,
+          style: {
+            'body': Style(
+              margin: Margins.zero,
+              padding: HtmlPaddings.zero,
+              color: const Color(0xFF707070),
+              fontFamily: 'CircularPro',
+              fontSize: FontSize(14),
+              fontWeight: FontWeight.w500,
+              lineHeight: const LineHeight(20 / 14),
+            ),
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildFallbackContent() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(_introText, style: _bodyStyle),
+        SizedBox(height: 20),
+        Text('Use of Site', style: _titleStyle),
+        SizedBox(height: 20),
+        Text(_useOfSiteText, style: _bodyStyle),
+      ],
     );
   }
 }

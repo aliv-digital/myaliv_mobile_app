@@ -62,6 +62,8 @@ class _TopUpPrepaidView extends StatefulWidget {
 }
 
 class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerProviderStateMixin {
+  static const _tabTitles = ['my number', 'auto top-up', 'send top-up'];
+
   late final TabController _tabController;
 
   // @override
@@ -147,7 +149,13 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                       ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
-                    title: Text('top-up', style: TopUpPrepaidTheme.appBarTitle()),
+                    title: AnimatedBuilder(
+                      animation: _tabController,
+                      builder: (context, child) => Text(
+                        _tabTitles[_tabController.index],
+                        style: TopUpPrepaidTheme.appBarTitle(),
+                      ),
+                    ),
                   ),
 
                   // Tabs row (below appbar)
