@@ -19,6 +19,9 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
     required this.dateText,
     required this.timeText,
     this.paymentMethod = 'credit card',
+    this.planName,
+    this.addOnNames = const <String>[],
+    this.emailAddress = 'guest',
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
   });
@@ -28,18 +31,22 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   final String dateText;
   final String timeText;
   final String paymentMethod;
+  final String? planName;
+  final List<String> addOnNames;
+  final String emailAddress;
   final String statusMessage;
 
   @override
   Widget build(BuildContext context) {
-    /// Dynamic details list (future: API mapping will fill this)
     final details = <ReceiptDetailItem>[
-      ReceiptDetailItem(label: 'plan', value: 'liberty70',valueBold: false),
-      ReceiptDetailItem(label: 'add-on', value: 'liberty data 1'),
+      if ((planName ?? '').isNotEmpty)
+        ReceiptDetailItem(label: 'plan', value: planName!, valueBold: false),
+      for (final addOn in addOnNames)
+        ReceiptDetailItem(label: 'add-on', value: addOn),
       ReceiptDetailItem(label: 'date', value: dateText),
-      ReceiptDetailItem(label: 'time', value: '7:30 am'),//timeText),
+      ReceiptDetailItem(label: 'time', value: timeText),
       ReceiptDetailItem(label: 'phone no.', value: phoneNumber),
-      ReceiptDetailItem(label: 'email address', value: 'jade123@hotmail.com'),
+      ReceiptDetailItem(label: 'email address', value: emailAddress),
       ReceiptDetailItem(label: 'payment method', value: paymentMethod),
     ];
 
@@ -47,11 +54,11 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
       leftType: 'service',
       rightType: 'REV',
       dateText: dateText,
-      timeText: '7:30 am',//timeText,
+      timeText: timeText,
       phoneNumber: phoneNumber,
       paymentMethod: paymentMethod,
       amount: amount,
-      details: details, // required for dynamic rows
+      details: details,
     );
 
     return RepositoryProvider(

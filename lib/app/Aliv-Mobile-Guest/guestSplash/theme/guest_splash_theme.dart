@@ -34,6 +34,13 @@ class GuestSplashTheme {
     fontWeight: FontWeight.w500,
   );
 
+  // Inline phone validation copy shown under fields.
+  static const String invalidPhoneMessage = 'invalid phone number';
+  static const String phoneMismatchMessage = 'phone numbers do not match';
+
+  // Inline validation red used for field border + input text on error.
+  static const Color errorRed = Color(0xFFFF3B30);
+
   // Bottom sheet primary button text: "continue"
   static const TextStyle continueButtonText = TextStyle(
     fontSize: 15,
