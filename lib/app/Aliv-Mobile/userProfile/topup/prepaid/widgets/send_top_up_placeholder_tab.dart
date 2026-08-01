@@ -38,7 +38,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _confirmPhoneFocusNode = FocusNode();
 
-  String _amount = '0.00';
+  String _amount = '';
   String _phoneNumber = '';
   String _confirmPhoneNumber = '';
   bool _hasPhoneFocus = false;
