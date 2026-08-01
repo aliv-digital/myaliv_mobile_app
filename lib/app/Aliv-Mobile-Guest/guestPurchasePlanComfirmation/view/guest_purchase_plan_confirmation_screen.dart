@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
@@ -72,7 +73,39 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
               isButtonEnabled: state.isTermsChecked,
               buttonColor: const Color(0xFF645D9C),
               onPayNow: () {
-                context.push(AppRoutes.guestPurchasePlanReceipt);
+                final data = state.data!;
+                final primaryPlanName = data.items
+                    .firstWhere(
+                      (item) => item.type == PurchaseLineType.primaryPlan,
+                      orElse: () => const PurchaseLineItem(
+                        id: '',
+                        type: PurchaseLineType.primaryPlan,
+                        label: '',
+                        title: '',
+                        subtitle: '',
+                        price: 0,
+                      ),
+                    )
+                    .title;
+                final addOnNames = data.items
+                    .where((item) => item.type == PurchaseLineType.addOn)
+                    .map((item) => item.title)
+                    .toList(growable: false);
+                final now = DateTime.now();
+
+                context.push(
+                  AppRoutes.guestPurchasePlanReceipt,
+                  extra: <String, Object?>{
+                    'phoneNumber': data.phoneNumber,
+                    'amount': data.totals.total,
+                    'planName': primaryPlanName.isEmpty ? null : primaryPlanName,
+                    'addOnNames': addOnNames,
+                    'dateText': DateFormat('MMM d, yyyy').format(now),
+                    'timeText':
+                        DateFormat('h:mm a').format(now).toLowerCase(),
+                    'emailAddress': 'guest',
+                  },
+                );
               },
               amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
             );

@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../theme/guest_splash_theme.dart';
 import '../bloc/guest_splash_bloc.dart';
 import '../bloc/guest_splash_event.dart';
@@ -117,6 +121,27 @@ class _GuestSplashPurchasePlanSheetView extends StatelessWidget {
 class _SheetBody extends StatelessWidget {
   const _SheetBody();
 
+  static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
+
+  LoginCountrySelection _loginCountry(Country? country) {
+    if (country == null) return LoginCountrySelection.defaultBahamas;
+    return _phoneHelper.selectionFromCountry(country);
+  }
+
+  bool _isPhoneInvalid(String value, Country? country) {
+    return _phoneHelper.hasLiveValidationError(
+      rawPhoneNumber: value,
+      selectedCountry: _loginCountry(country),
+    );
+  }
+
+  String _digitsOnly(String value) => value.replaceAll(RegExp(r'[^0-9]'), '');
+
+  bool _isMismatch(String phone, String confirm) {
+    if (confirm.isEmpty) return false;
+    return _digitsOnly(phone) != _digitsOnly(confirm);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GuestSplashBloc, GuestSplashState>(
@@ -127,6 +152,34 @@ class _SheetBody extends StatelessWidget {
             child: Center(child: CircularProgressIndicator()),
           );
         }
+
+        final bool isBahamas =
+            (state.purchaseCountry?.countryCode ?? '').toUpperCase() == 'BS';
+        final bool showPhoneError =
+            _isPhoneInvalid(state.purchasePhone, state.purchaseCountry);
+        final bool showConfirmError = _isMismatch(
+          state.purchasePhone,
+          state.purchaseConfirmPhone,
+        );
+        final Color phoneBorderColor = showPhoneError
+            ? GuestSplashTheme.errorRed
+            : GuestSplashTheme.purchasePlanFieldBorderColor;
+        final Color confirmBorderColor = showConfirmError
+            ? GuestSplashTheme.errorRed
+            : GuestSplashTheme.purchasePlanFieldBorderColor;
+        final TextStyle phoneInputStyle = showPhoneError
+            ? GuestSplashTheme.phoneInput
+                .copyWith(color: GuestSplashTheme.errorRed)
+            : GuestSplashTheme.phoneInput;
+        final TextStyle confirmInputStyle = showConfirmError
+            ? GuestSplashTheme.phoneInput
+                .copyWith(color: GuestSplashTheme.errorRed)
+            : GuestSplashTheme.phoneInput;
+        final List<TextInputFormatter> phoneFormatters = isBahamas
+            ? const <TextInputFormatter>[BahamasPhoneInputFormatter()]
+            : <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
+              ];
 
         return SafeArea(
           child: Column(
@@ -197,16 +250,20 @@ class _SheetBody extends StatelessWidget {
                     GuestSplashTheme.purchasePlanCountryArrowIconColor,
                 backgroundColor:
                     GuestSplashTheme.purchasePlanFieldBackgroundColor,
-                unfocusedBorderColor:
-                    GuestSplashTheme.purchasePlanFieldBorderColor,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
-                ],
+                unfocusedBorderColor: phoneBorderColor,
+                inputFormatters: phoneFormatters,
                 dialCodeStyle: GuestSplashTheme.dialCode,
-                phoneInputStyle: GuestSplashTheme.phoneInput,
+                phoneInputStyle: phoneInputStyle,
                 phoneHintStyle: GuestSplashTheme.phoneHint,
                 flagStyle: GuestSplashTheme.flagEmoji,
               ),
+              if (showPhoneError) ...[
+                const SizedBox(height: 6),
+                const Text(
+                  GuestSplashTheme.invalidPhoneMessage,
+                  style: GuestSplashTheme.errorText,
+                ),
+              ],
               const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
               const _Label('confirm mobile number'),
               const SizedBox(
@@ -267,16 +324,20 @@ class _SheetBody extends StatelessWidget {
                     GuestSplashTheme.purchasePlanCountryArrowIconColor,
                 backgroundColor:
                     GuestSplashTheme.purchasePlanFieldBackgroundColor,
-                unfocusedBorderColor:
-                    GuestSplashTheme.purchasePlanFieldBorderColor,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
-                ],
+                unfocusedBorderColor: confirmBorderColor,
+                inputFormatters: phoneFormatters,
                 dialCodeStyle: GuestSplashTheme.dialCode,
-                phoneInputStyle: GuestSplashTheme.phoneInput,
+                phoneInputStyle: confirmInputStyle,
                 phoneHintStyle: GuestSplashTheme.phoneHint,
                 flagStyle: GuestSplashTheme.flagEmoji,
               ),
+              if (showConfirmError) ...[
+                const SizedBox(height: 6),
+                const Text(
+                  GuestSplashTheme.phoneMismatchMessage,
+                  style: GuestSplashTheme.errorText,
+                ),
+              ],
               const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
               if (state.purchaseStatus == GuestSplashPurchasePlanStatus.failure &&
                   (state.purchaseErrorMessage?.isNotEmpty ?? false))
@@ -301,7 +362,32 @@ class _SheetBody extends StatelessWidget {
                 ),
                 textStyle: GuestSplashTheme.continueButtonText,
                 onPressed: () {
-                  context.push(AppRoutes.guestPurchasePlan);
+                  if (state.purchasePhone.isEmpty ||
+                      _isPhoneInvalid(
+                        state.purchasePhone,
+                        state.purchaseCountry,
+                      )) {
+                    AppToast.show(
+                      message: GuestSplashTheme.invalidPhoneMessage,
+                      type: ToastType.error,
+                    );
+                    return;
+                  }
+                  if (state.purchaseConfirmPhone.isEmpty ||
+                      _isMismatch(
+                        state.purchasePhone,
+                        state.purchaseConfirmPhone,
+                      )) {
+                    AppToast.show(
+                      message: GuestSplashTheme.phoneMismatchMessage,
+                      type: ToastType.error,
+                    );
+                    return;
+                  }
+                  context.push(
+                    AppRoutes.guestPurchasePlan,
+                    extra: {'phoneNumber': state.purchasePhone},
+                  );
                 },
               ),
               // SizedBox(height: 24,)

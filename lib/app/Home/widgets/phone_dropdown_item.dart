@@ -16,17 +16,42 @@ String _formatPhone(String phone) {
   return phone;
 }
 
+class _PhoneRoleBadge extends StatelessWidget {
+  final bool isPrimary;
+
+  const _PhoneRoleBadge({required this.isPrimary});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: isPrimary ? const Color(0xFF00C4B3) : const Color(0xFFF8ADCE),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        isPrimary ? 'Primary' : 'Secondary',
+        style: const TextStyle(
+          color: Color(0xFF463C6E),
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
 /// Phone item widget for dropdown menu items
 class PhoneDropdownItem extends StatelessWidget {
   final String number;
   final bool isPrimary;
-  final bool showRadio;
+  final bool showTrailing;
 
   const PhoneDropdownItem({
     super.key,
     required this.number,
     required this.isPrimary,
-    this.showRadio = false,
+    this.showTrailing = true,
   });
 
   @override
@@ -41,22 +66,18 @@ class PhoneDropdownItem extends StatelessWidget {
         const SizedBox(width: 8),
         Text(displayNumber),
         const SizedBox(width: 8),
-        if (isPrimary)
+        _PhoneRoleBadge(isPrimary: isPrimary),
+        if (showTrailing) ...[
+          const Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            width: 16,
+            height: 16,
             decoration: BoxDecoration(
-              color: const Color(0xFF00C4B3),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Text(
-              'Primary',
-              style: TextStyle(
-                color: Color(0xFF463C6E),
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-              ),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white54, width: 1),
             ),
           ),
+        ],
       ],
     );
   }
@@ -85,22 +106,7 @@ class PhoneDropdownSelectedItem extends StatelessWidget {
         const SizedBox(width: 8),
         Text(displayNumber),
         const SizedBox(width: 8),
-        if (isPrimary)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: const Color(0xFF00C4B3),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Text(
-              'Primary',
-              style: TextStyle(
-                color: Color(0xFF463C6E),
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+        _PhoneRoleBadge(isPrimary: isPrimary),
         const Spacer(),
         SvgPicture.asset('assets/icons/selected.svg'),
       ],

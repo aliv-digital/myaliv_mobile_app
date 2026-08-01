@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/view/guest_pay_bill_confirm_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/view/guest_splash_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/view/guest_top_up_receipt_screen.dart';
@@ -415,12 +416,49 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanReceipt,
-        builder: (context, state) => const GuestPurchasePlanReceiptScreen(
-          phoneNumber: '242-801-1616',
-          amount: 75,
-          dateText: 'Mar 12,2023',
-          timeText: '446332',
-        ),
+        builder: (context, state) {
+          final now = DateTime.now();
+          String phoneNumber = '';
+          double amount = 0;
+          String dateText = DateFormat('MMM d, yyyy').format(now);
+          String timeText = DateFormat('h:mm a').format(now).toLowerCase();
+          String? planName;
+          List<String> addOnNames = const <String>[];
+          String emailAddress = 'guest';
+          String paymentMethod = 'credit card';
+
+          final extra = state.extra;
+          if (extra is Map) {
+            phoneNumber = (extra['phoneNumber'] as String?) ?? phoneNumber;
+            final rawAmount = extra['amount'];
+            if (rawAmount is num) {
+              amount = rawAmount.toDouble();
+            } else if (rawAmount is String) {
+              amount = double.tryParse(rawAmount) ?? amount;
+            }
+            dateText = (extra['dateText'] as String?) ?? dateText;
+            timeText = (extra['timeText'] as String?) ?? timeText;
+            planName = extra['planName'] as String?;
+            final rawAddOns = extra['addOnNames'];
+            if (rawAddOns is List) {
+              addOnNames = rawAddOns.whereType<String>().toList(growable: false);
+            }
+            emailAddress = (extra['emailAddress'] as String?) ?? emailAddress;
+            paymentMethod =
+                (extra['paymentMethod'] as String?) ?? paymentMethod;
+          }
+
+          return GuestPurchasePlanReceiptScreen(
+            phoneNumber: phoneNumber,
+            amount: amount,
+            dateText: dateText,
+            timeText: timeText,
+            planName: planName,
+            addOnNames: addOnNames,
+            emailAddress: emailAddress,
+            paymentMethod: paymentMethod,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.homePlanPurchaseReceiptScreen,
@@ -618,7 +656,14 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlan,
-        builder: (context, state) => const GuestPurchasePlanScreen(),
+        builder: (context, state) {
+          String phoneNumber = '';
+          final extra = state.extra;
+          if (extra is Map) {
+            phoneNumber = (extra['phoneNumber'] as String?) ?? '';
+          }
+          return GuestPurchasePlanScreen(phoneNumber: phoneNumber);
+        },
       ),
       GoRoute(
         path: AppRoutes.guestTopUpReceipt,
@@ -687,8 +732,24 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.confirmGuestTopUp,
-        builder: (context, state) =>
-            GuestConfirmTopUpScreen(phoneNumber: '245-346-452356', amount: 15),
+        builder: (context, state) {
+          final extra = state.extra;
+          String phoneNumber = '';
+          double amount = 0;
+          if (extra is Map) {
+            phoneNumber = (extra['phoneNumber'] as String?) ?? '';
+            final rawAmount = extra['amount'];
+            if (rawAmount is num) {
+              amount = rawAmount.toDouble();
+            } else if (rawAmount is String) {
+              amount = double.tryParse(rawAmount) ?? 0;
+            }
+          }
+          return GuestConfirmTopUpScreen(
+            phoneNumber: phoneNumber,
+            amount: amount,
+          );
+        },
       ),
 
       ShellRoute(

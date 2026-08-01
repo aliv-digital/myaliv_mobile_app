@@ -29,7 +29,9 @@ import '../widgets/weekly_plan_card.dart';
 import '../theme/theme.dart';
 
 class GuestPurchasePlanScreen extends StatelessWidget {
-  const GuestPurchasePlanScreen({super.key});
+  const GuestPurchasePlanScreen({super.key, this.phoneNumber = ''});
+
+  final String phoneNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +39,15 @@ class GuestPurchasePlanScreen extends StatelessWidget {
       create: (_) =>
           GuestPurchasePlanBloc(GuestPurchasePlanRepository())
             ..add(GuestPurchasePlanStarted()),
-      child: const _GuestPurchasePlanView(),
+      child: _GuestPurchasePlanView(phoneNumber: phoneNumber),
     );
   }
 }
 
 class _GuestPurchasePlanView extends StatelessWidget {
-  const _GuestPurchasePlanView();
+  const _GuestPurchasePlanView({this.phoneNumber = ''});
+
+  final String phoneNumber;
 
   static const double _addOnsTabHorizontalPadding = 25;
 
@@ -217,11 +221,17 @@ class _GuestPurchasePlanView extends StatelessWidget {
             onBackPressed: () => Navigator.of(sheetContext).pop(),
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.guestPurchasePlanAddOns);
+              context.push(
+                AppRoutes.guestPurchasePlanAddOns,
+                extra: {'phoneNumber': phoneNumber},
+              );
             },
             onFuturePlanPressed: () {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.guestPurchasePlanAddOns);
+              context.push(
+                AppRoutes.guestPurchasePlanAddOns,
+                extra: {'phoneNumber': phoneNumber},
+              );
             },
           );
         }
@@ -235,7 +245,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
-            context.push(AppRoutes.guestPurchasePlanAddOns);
+            context.push(
+              AppRoutes.guestPurchasePlanAddOns,
+              extra: {'phoneNumber': phoneNumber},
+            );
           },
         );
       },
@@ -269,7 +282,8 @@ class _GuestPurchasePlanView extends StatelessWidget {
                 onPayNow: () {
                   context.push(
                     AppRoutes.addOnsConfirmation,
-                  ); //guestPurchasePlanConfirmation);
+                    extra: {'phoneNumber': phoneNumber},
+                  );
                 },
               );
             },

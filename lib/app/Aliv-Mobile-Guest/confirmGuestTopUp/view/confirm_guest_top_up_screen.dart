@@ -42,8 +42,8 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
           // Seed initial values for this screen from route arguments.
           bloc.add(
             GuestConfirmTopUpStarted(
-              phoneNumber: '242-801-1616',//phoneNumber,
-              amount: 15.00,//amount,
+              phoneNumber: phoneNumber,
+              amount: amount,
             ),
           );
 

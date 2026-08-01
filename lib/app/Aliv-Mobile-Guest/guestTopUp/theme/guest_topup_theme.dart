@@ -11,6 +11,19 @@ class GuestTopUpTheme {
   static const String amountHintText = '00.00';
   static const String nextButtonLabel = 'next';
   static const String fallbackErrorMessage = 'Something went wrong';
+  static const String invalidPhoneMessage = 'invalid phone number';
+  static const String phoneMismatchMessage = 'phone numbers do not match';
+
+  // Inline validation color for phone field errors.
+  static const Color errorRed = Color(0xFFFF3B30);
+
+  // Inline error message text style.
+  static const TextStyle inlineError = TextStyle(
+    color: errorRed,
+    fontSize: 12,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w500,
+  );
 
   // Guest top-up screen background.
   static const Color screenBackgroundColor = Color(0xFFFFFFFF);
