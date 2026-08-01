@@ -108,6 +108,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
         ),
 
         body: SafeArea(
+          top: false,
           child: BlocBuilder<RoamingPlanConfirmationBloc,
               RoamingPlanConfirmationState>(
             builder: (context, state) {

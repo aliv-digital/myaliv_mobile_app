@@ -169,6 +169,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
             ),
 
         body: SafeArea(
+          top: false,
           child: BlocBuilder<HomeRoamingConfirmationBloc, HomeRoamingConfirmationState>(
             builder: (context, state) {
               final data = state.data;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
@@ -47,16 +46,6 @@ class _GuestPayBillView extends StatelessWidget {
 
   GuestPayBillBloc _bloc(BuildContext context) {
     return context.read<GuestPayBillBloc>();
-  }
-
-  void _applySystemStatusBarStyle() {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
   }
 
   void _showSnackBar(BuildContext context, String message) {
@@ -213,7 +202,7 @@ class _GuestPayBillView extends StatelessWidget {
         enableCountryPicker: false,
         showCountryArrow: false,
         fieldHeight: GuestPayBillTheme.inlineVerifyFieldHeight,
-        countryPickerWidth: 80,
+        countryPickerWidth: 60,
         countryToPhoneGap: GuestPayBillTheme.countryPickerToInputGap,
         borderRadius: GuestPayBillTheme.radius,
         borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
@@ -243,7 +232,7 @@ class _GuestPayBillView extends StatelessWidget {
         enableCountryPicker: false,
         showCountryArrow: false,
         fieldHeight: GuestPayBillTheme.inlineVerifyFieldHeight,
-        countryPickerWidth: 80,
+        countryPickerWidth: 60,
         countryToPhoneGap: GuestPayBillTheme.countryPickerToInputGap,
         countryPickerPadding: const EdgeInsets.symmetric(horizontal: 10),
         inputContainerPadding: const EdgeInsets.all(8),
@@ -312,8 +301,6 @@ class _GuestPayBillView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _applySystemStatusBarStyle();
-
     return BlocListener<GuestPayBillBloc, GuestPayBillState>(
       listenWhen: (previousState, currentState) {
         final hasErrorChanged =
@@ -333,6 +320,7 @@ class _GuestPayBillView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: GuestPayBillTheme.pageBg,
         body: SafeArea(
+          top: false,
           child: Column(
             children: <Widget>[
               DefaultAppBar(

@@ -49,6 +49,7 @@ class _FingerPrintSecurityView extends StatelessWidget {
             body: Column(
               children: [
                 SafeArea(
+                  top: false,
                   bottom: false,
                   child: SizedBox(
                     height: FingerPrintSecurityTheme.appBarHeight,

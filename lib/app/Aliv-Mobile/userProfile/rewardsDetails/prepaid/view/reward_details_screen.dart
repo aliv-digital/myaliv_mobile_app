@@ -18,6 +18,7 @@ class RewardDetailsPrepaidScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: RewardDetailsTheme.bg,
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             DefaultAppBar(

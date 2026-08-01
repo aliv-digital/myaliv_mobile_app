@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 
 import '../../router/app_routes.dart';
 
@@ -54,8 +56,13 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
 
       /// 🔥 APP BAR
       appBar: AppBar(
-        backgroundColor: const Color(0xFF645D9C),
+        backgroundColor: ColorManager.primaryPurple,
         elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: ColorManager.primaryPurple,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 24.0),
           child: IconButton(

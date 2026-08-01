@@ -79,6 +79,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
           },
         ),
         body: SafeArea(
+          top: false,
           child: BlocBuilder<GuestPurchasePlanConfirmationBloc,
               GuestPurchasePlanConfirmationState>(
             builder: (context, state) {

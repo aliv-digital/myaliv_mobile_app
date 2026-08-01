@@ -20,7 +20,7 @@ class GuestPayBillTheme {
   static const String confirmMobileNumberLabel = 'confirm mobile number';
 
   // Used by: phone `TextField` hint and inline verify hint.
-  static const String phoneHintText = 'eg: 2428999999';
+  static const String phoneHintText = 'eg: 242-899-9999';
 
   // Used by: label above name field for REV / ALIVFibr flow.
   static const String nameLabel = 'name';

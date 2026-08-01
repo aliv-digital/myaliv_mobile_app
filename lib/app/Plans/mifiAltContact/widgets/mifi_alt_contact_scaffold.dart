@@ -35,6 +35,7 @@ class MifiAltContactScaffold extends StatelessWidget {
       body: Column(
         children: [
           SafeArea(
+            top: false,
             bottom: false,
             child: DefaultAppBar(
               title: 'alternate contact number',

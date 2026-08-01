@@ -36,19 +36,20 @@ class BottomShell extends StatelessWidget {
         key: bottomShellKey,
         body: child,
         drawer: const AppMenuDrawer(),
-        bottomNavigationBar: SafeArea(
-
-          child: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x0C000000),
-                  blurRadius: 16,
-                  offset: Offset(0, -4),
-                  spreadRadius: 0,
-                )
-              ],
-            ),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Color(0x0C000000),
+                blurRadius: 16,
+                offset: Offset(0, -4),
+                spreadRadius: 0,
+              )
+            ],
+          ),
+          child: SafeArea(
+            top: false,
             child: BottomNavigationBar(
               elevation: 0,
               currentIndex: currentIndex,

@@ -132,6 +132,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
           },
         ),
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
               DefaultAppBar(

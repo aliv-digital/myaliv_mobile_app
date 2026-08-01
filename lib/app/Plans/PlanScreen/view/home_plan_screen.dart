@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
@@ -34,14 +33,6 @@ class HomePlanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return _HomePlanView(initialTab: initialTab);
   }
 }
@@ -438,6 +429,7 @@ class _HomePlanViewState extends State<_HomePlanView> {
           },
         ),
         body: SafeArea(
+          top: false,
           child: BlocBuilder<PlansCubit, PlansState>(
             buildWhen: (previous, current) {
               // Rebuild when tab changes OR when tab status changes

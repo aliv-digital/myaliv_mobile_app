@@ -161,6 +161,7 @@ class _HomePlanPurchaseReceiptViewState
       child: Scaffold(
         backgroundColor: _bg,
         body: SafeArea(
+          top: false,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -261,6 +262,7 @@ class _PaymentFailedReceiptView extends StatelessWidget {
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
+        top: false,
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(

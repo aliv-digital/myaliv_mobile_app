@@ -48,6 +48,7 @@ class _HelpView extends StatelessWidget {
             body: Column(
               children: [
                 SafeArea(
+                  top: false,
                   bottom: false,
                   child: HelpAppBar(
                     title: 'help',

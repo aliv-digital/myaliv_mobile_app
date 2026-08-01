@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -22,14 +21,6 @@ class ChangePasswordPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) => ChangePasswordPrepaidBloc(
         ChangePasswordPrepaidRepository(),
@@ -53,6 +44,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
+        top: false,
         child:
             BlocListener<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
           listenWhen: (p, c) =>

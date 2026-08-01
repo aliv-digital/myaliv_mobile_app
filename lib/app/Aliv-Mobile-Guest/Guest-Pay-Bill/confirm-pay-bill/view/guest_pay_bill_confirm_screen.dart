@@ -191,6 +191,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
         ),
         // Main page body
         body: SafeArea(
+          top: false,
           // Rebuild body when core confirmation data changes
           child: BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
             buildWhen: (previousState, currentState) {

@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
@@ -64,6 +65,11 @@ class _CallLogsViewState extends State<_CallLogsView>
         centerTitle: false,
         elevation: 0,
         toolbarHeight: 64,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: _purple,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 22.0),
           child: IconButton(

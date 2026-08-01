@@ -51,6 +51,7 @@ class _ProfilePostpaidView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ProfilePostpaidTheme.bg,
         body: SafeArea(
+          top: false,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(

@@ -113,7 +113,7 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
       );
       emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.success));
       // optional: reset amount after success
-      emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.idle, amountText: '0.00'));
+      emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.idle, amountText: ''));
     } catch (_) {
       emit(state.copyWith(
         submitStatus: TopUpPrepaidSubmitStatus.failure,

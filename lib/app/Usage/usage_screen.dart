@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
@@ -123,6 +124,11 @@ class _UsageScreenState extends State<UsageScreen>
           centerTitle: false,
           backgroundColor: UsageScreen.purple,
           elevation: 0,
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            statusBarColor: UsageScreen.purple,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          ),
           title: Padding(
             padding: const EdgeInsets.only(left: 16.0),
             child: const Text(

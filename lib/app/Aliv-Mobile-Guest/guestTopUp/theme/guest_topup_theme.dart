@@ -7,7 +7,7 @@ class GuestTopUpTheme {
   static const String activePrepaidLabel = 'please enter an active prepaid number to top-up';
   static const String confirmMobileLabel = 'confirm mobile number';
   static const String amountLabel = 'enter top-up amount';
-  static const String phoneHintText = 'eg: 2428999999';
+  static const String phoneHintText = 'eg: 242-899-9999';
   static const String amountHintText = '00.00';
   static const String nextButtonLabel = 'next';
   static const String fallbackErrorMessage = 'Something went wrong';

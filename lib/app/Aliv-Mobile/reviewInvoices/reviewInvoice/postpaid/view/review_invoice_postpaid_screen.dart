@@ -101,6 +101,7 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
     return Scaffold(
       backgroundColor: ReviewInvoicePostpaidTheme.pageBg,
       body: SafeArea(
+        top: false,
         bottom: false,
         child: BlocConsumer<ReviewInvoicePostpaidCubit,
             ReviewInvoicePostpaidState>(

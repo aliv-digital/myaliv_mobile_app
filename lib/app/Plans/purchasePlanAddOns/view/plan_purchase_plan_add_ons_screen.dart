@@ -80,6 +80,7 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
         backgroundColor: PlanPurchasePlanAddOnsTheme.bg,
         bottomNavigationBar: const _PlanPurchaseBottomBar(),
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
               _buildAppBar(context),

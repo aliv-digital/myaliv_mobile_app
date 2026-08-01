@@ -99,6 +99,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: GuestPayBillReceiptTheme.screenBackground,
         body: SafeArea(
+          top: false,
           child: CustomScrollView(
             slivers: [
               // Top app bar

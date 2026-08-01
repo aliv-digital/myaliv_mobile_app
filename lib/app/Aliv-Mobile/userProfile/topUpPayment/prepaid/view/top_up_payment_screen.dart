@@ -202,20 +202,12 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
             pinned: true,
             delegate: _PinnedHeaderDelegate(
               height: _stickyHeaderHeight(context),
-              child: ColoredBox(
-                color: TopUpPaymentPrepaidTheme.primary,
-                child: SafeArea(
-                  bottom: false,
-                  child: SizedBox(
-                    height: 64,
-                    child: DefaultAppBar(
-                      title: 'payment',
-                      showHome: true,
-                      onBack: () => Navigator.of(context).maybePop(),
-                      onHomeTap: () => context.go(AppRoutes.home),
-                    ),
-                  ),
-                ),
+              child: DefaultAppBar(
+                title: 'payment',
+                backgroundColor: TopUpPaymentPrepaidTheme.primary,
+                showHome: true,
+                onBack: () => Navigator.of(context).maybePop(),
+                onHomeTap: () => context.go(AppRoutes.home),
               ),
             ),
           ),

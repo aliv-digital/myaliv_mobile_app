@@ -57,6 +57,7 @@ class _PurchaseAddOnsScreenState extends State<PurchaseAddOnsScreen> {
         },
       ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             DefaultAppBar(

@@ -88,6 +88,7 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: _bg,
         body: SafeArea(
+          top: false,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(

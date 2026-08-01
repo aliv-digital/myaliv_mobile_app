@@ -100,6 +100,7 @@ class _AddOnsConfirmationView extends StatelessWidget {
         ),
 
         body: SafeArea(
+          top: false,
           child: BlocBuilder<AddOnsConfirmationBloc,
               AddOnsConfirmationState>(
             builder: (context, state) {

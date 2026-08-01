@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -20,8 +19,6 @@ class ReferFriendPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _useLightStatusBar();
-
     return BlocProvider(
       create: _createBloc,
       child: const _ReferFriendPrepaidView(),
@@ -31,16 +28,6 @@ class ReferFriendPrepaidScreen extends StatelessWidget {
   ReferFriendPrepaidBloc _createBloc(BuildContext context) {
     return ReferFriendPrepaidBloc(repository: ReferFriendPrepaidRepository())
       ..add(const ReferFriendPrepaidStarted());
-  }
-
-  void _useLightStatusBar() {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
   }
 }
 
@@ -80,6 +67,7 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
       backgroundColor: ReferFriendPrepaidTheme.bg,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
+        top: false,
         child: BlocListener<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
           listenWhen: _shouldHandleStateSideEffects,
           listener: _handleStateSideEffects,

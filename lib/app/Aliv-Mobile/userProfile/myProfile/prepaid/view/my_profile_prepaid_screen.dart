@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
@@ -20,14 +19,6 @@ class MyProfilePrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) =>
           MyProfilePrepaidBloc(MyProfilePrepaidRepository())
@@ -46,6 +37,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
       backgroundColor: MyProfilePrepaidTheme.bg,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
+        top: false,
         child: BlocListener<MyProfilePrepaidBloc, MyProfilePrepaidState>(
           listenWhen: (p, c) =>
               p.navRequestId != c.navRequestId || p.navAction != c.navAction,

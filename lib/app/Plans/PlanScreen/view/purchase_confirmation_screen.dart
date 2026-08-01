@@ -431,13 +431,12 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         ? 'no vat applied'
         : ' vat inclusive';
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF1F2FA),
-        appBar: ConfirmationAppBar(
-          onBack: () => Navigator.of(context).maybePop(),
-          onHome: () => context.go(AppRoutes.home),
-        ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF1F2FA),
+      appBar: ConfirmationAppBar(
+        onBack: () => Navigator.of(context).maybePop(),
+        onHome: () => context.go(AppRoutes.home),
+      ),
         bottomNavigationBar: ConfirmationBottomBar(
           totalText: totalText,
           vatLabel: vatLabel,
@@ -486,7 +485,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

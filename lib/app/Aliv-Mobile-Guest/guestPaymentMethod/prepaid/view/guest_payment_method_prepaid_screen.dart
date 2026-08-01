@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,14 +19,6 @@ class GuestPaymentMethodPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) => GuestPaymentMethodPrepaidBloc(
         repository: GuestPaymentMethodPrepaidRepositoryImpl(),
@@ -104,20 +95,14 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
             ),
             body: Column(
               children: [
-                SafeArea(
-                  bottom: false,
-                  child: SizedBox(
-                    height: GuestPaymentMethodPrepaidTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: 'payment',
-                      height: GuestPaymentMethodPrepaidTheme.appBarHeight,
-                      backgroundColor: GuestPaymentMethodPrepaidTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: true,
-                      onBack: () => context.pop(),
-                      onHomeTap: () => context.go(AppRoutes.home),
-                    ),
-                  ),
+                DefaultAppBar(
+                  title: 'payment',
+                  height: GuestPaymentMethodPrepaidTheme.appBarHeight,
+                  backgroundColor: GuestPaymentMethodPrepaidTheme.appBarBg,
+                  showBackArrow: true,
+                  showHome: true,
+                  onBack: () => context.pop(),
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
                 Expanded(
                   child: CustomScrollView(

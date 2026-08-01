@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -65,6 +67,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white, //TopUpPrepaidNumberPostPaidTheme.pageBg,
         body: SafeArea(
+          top: false,
           child: BlocBuilder<TopUpPrepaidNumberPostPaidBloc,
               TopUpPrepaidNumberPostPaidState>(
             builder: (context, state) {
@@ -77,6 +80,11 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                     backgroundColor: TopUpPrepaidNumberPostPaidTheme.primary,
                     elevation: 0,
                     centerTitle: false,
+                    systemOverlayStyle: SystemUiOverlayStyle(
+                      statusBarColor: ColorManager.primaryPurple,
+                      statusBarIconBrightness: Brightness.light,
+                      statusBarBrightness: Brightness.dark,
+                    ),
                     leading: Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: IconButton(

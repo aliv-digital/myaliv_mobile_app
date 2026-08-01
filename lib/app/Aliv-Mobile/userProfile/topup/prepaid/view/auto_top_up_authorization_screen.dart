@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/theme/top_up_prepaid_theme.dart';
@@ -87,6 +88,11 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
         elevation: 0,
         backgroundColor: TopUpPrepaidTheme.purple,
         centerTitle: false,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: TopUpPrepaidTheme.purple,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
         leading: Padding(
           padding: const EdgeInsets.only(left: 24.0),
           child: IconButton(

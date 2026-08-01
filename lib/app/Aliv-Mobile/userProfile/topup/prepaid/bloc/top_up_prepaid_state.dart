@@ -36,7 +36,7 @@ class TopUpPrepaidState extends Equatable {
     submitStatus: TopUpPrepaidSubmitStatus.idle,
     selectedTabIndex: 0,
     balance: 0.0,
-    amountText: '0.00',
+    amountText: '',
     errorMessage: null,
     limitLeft: null,
     earliestTopUpDateLocal: null,

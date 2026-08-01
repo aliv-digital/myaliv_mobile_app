@@ -48,12 +48,14 @@ class _RevPrepaidView extends StatelessWidget {
         return Scaffold(
           backgroundColor: RevPrepaidTheme.bg,
           body: SafeArea(
+            top: false,
             child: CustomScrollView(
               slivers: [
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: RevAppBarSliver(
-                    height: RevPrepaidTheme.appBarHeight,
+                    height: RevPrepaidTheme.appBarHeight +
+                        MediaQuery.paddingOf(context).top,
                     child: DefaultAppBar(
                       title: state.title,
                       height: RevPrepaidTheme.appBarHeight,

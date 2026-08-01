@@ -161,12 +161,14 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
     return Scaffold(
       backgroundColor: AutoRenewPrepaidTheme.pageBg,
       body: SafeArea(
+        top: false,
         child: CustomScrollView(
           slivers: [
             SliverPersistentHeader(
               pinned: true,
               delegate: _PinnedHeaderDelegate(
-                height: AutoRenewPrepaidTheme.appBarHeight,
+                height: AutoRenewPrepaidTheme.appBarHeight +
+                    MediaQuery.paddingOf(context).top,
                 child: DefaultAppBar(
                   showHome: true,
                   title: 'auto pay',

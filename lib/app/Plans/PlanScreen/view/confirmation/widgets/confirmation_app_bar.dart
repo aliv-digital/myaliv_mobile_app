@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 
 class ConfirmationAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -18,9 +20,14 @@ class ConfirmationAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: const Color(0xFF645D9C),
+      backgroundColor: ColorManager.primaryPurple,
       elevation: 0,
       toolbarHeight: 64,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: ColorManager.primaryPurple,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
       leading: Padding(
         padding: const EdgeInsets.only(left: 24),
         child: IconButton(

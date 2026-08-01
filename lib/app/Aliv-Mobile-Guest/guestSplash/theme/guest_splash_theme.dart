@@ -148,7 +148,7 @@ class GuestSplashTheme {
 
   // Country picker box dimensions + inner spacing.
   static const double purchasePlanCountryPickerHeight = 52;
-  static const double purchasePlanCountryPickerWidth = 80;
+  static const double purchasePlanCountryPickerWidth = 60;
   // Left inner padding before the flag icon.
   static const double purchasePlanCountryPickerLeftPadding = 10;
   // Right inner padding when dropdown arrow is visible.

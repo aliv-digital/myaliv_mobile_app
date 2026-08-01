@@ -81,17 +81,20 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AutoRenewAuthPrepaidTheme.scaffoldBackground,
         body: SafeArea(
+          top: false,
           child:
               BlocBuilder<AutoRenewAuthPrepaidBloc, AutoRenewAuthPrepaidState>(
                 builder: (context, state) {
                   final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
+                  final topInset = MediaQuery.paddingOf(context).top;
                   return CustomScrollView(
                     slivers: [
                       SliverPersistentHeader(
                         pinned: true,
                         delegate: _PinnedHeaderDelegate(
-                          height: AutoRenewAuthPrepaidTheme.appBarHeight,
+                          height: AutoRenewAuthPrepaidTheme.appBarHeight +
+                              topInset,
                           child: DefaultAppBar(
                             showHome: false,
                             title: state.paymentMethod ==

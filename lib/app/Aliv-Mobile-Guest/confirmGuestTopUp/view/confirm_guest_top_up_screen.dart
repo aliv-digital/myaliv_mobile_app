@@ -138,6 +138,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
           },
         ),
         body: SafeArea(
+          top: false,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(

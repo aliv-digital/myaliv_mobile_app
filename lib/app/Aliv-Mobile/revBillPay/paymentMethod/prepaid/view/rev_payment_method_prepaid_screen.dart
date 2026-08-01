@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -21,14 +20,6 @@ class REVPaymentMethodPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) => RevPaymentMethodPrepaidBloc(
         repository: RevPaymentMethodPrepaidRepositoryImpl(),
@@ -104,20 +95,14 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
             ),
             body: Column(
               children: [
-                SafeArea(
-                  bottom: false,
-                  child: SizedBox(
-                    height: RevPaymentMethodPrepaidTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: 'payment',
-                      height: RevPaymentMethodPrepaidTheme.appBarHeight,
-                      backgroundColor: RevPaymentMethodPrepaidTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: true,
-                      onBack: () => context.pop(),
-                      onHomeTap: () => context.go(AppRoutes.home),
-                    ),
-                  ),
+                DefaultAppBar(
+                  title: 'payment',
+                  height: RevPaymentMethodPrepaidTheme.appBarHeight,
+                  backgroundColor: RevPaymentMethodPrepaidTheme.appBarBg,
+                  showBackArrow: true,
+                  showHome: true,
+                  onBack: () => context.pop(),
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
                 Expanded(
                   child: CustomScrollView(

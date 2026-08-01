@@ -10,20 +10,14 @@ class PaymentAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: SizedBox(
-        height: HomePlansPaymentMethodTheme.appBarHeight,
-        child: DefaultAppBar(
-          title: 'payment',
-          height: HomePlansPaymentMethodTheme.appBarHeight,
-          backgroundColor: HomePlansPaymentMethodTheme.appBarBg,
-          showBackArrow: true,
-          showHome: true,
-          onBack: () => context.pop(),
-          onHomeTap: () => context.go(AppRoutes.home),
-        ),
-      ),
+    return DefaultAppBar(
+      title: 'payment',
+      height: HomePlansPaymentMethodTheme.appBarHeight,
+      backgroundColor: HomePlansPaymentMethodTheme.appBarBg,
+      showBackArrow: true,
+      showHome: true,
+      onBack: () => context.pop(),
+      onHomeTap: () => context.go(AppRoutes.home),
     );
   }
 }

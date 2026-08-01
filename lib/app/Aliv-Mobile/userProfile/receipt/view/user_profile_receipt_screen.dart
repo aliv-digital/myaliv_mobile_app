@@ -55,6 +55,7 @@ class _UserProfileReceiptView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: UserProfileReceiptTheme.screenBackground,
         body: SafeArea(
+          top: false,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(

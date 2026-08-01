@@ -110,24 +110,18 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
     BuildContext context,
     MakePaymentConfirmationPostPaidState state,
   ) {
-    return SafeArea(
-      bottom: false,
-      child: SizedBox(
-        height: MakePaymentConfirmationPostPaidTheme.appBarHeight,
-        child: DefaultAppBar(
-          title: state.title,
-          onBack: () {
-            context.pop();
-          },
-          height: MakePaymentConfirmationPostPaidTheme.appBarHeight,
-          backgroundColor: MakePaymentConfirmationPostPaidTheme.appBarBg,
-          showBackArrow: true,
-          showHome: true,
-          onHomeTap: () {
-            context.go(AppRoutes.home);
-          },
-        ),
-      ),
+    return DefaultAppBar(
+      title: state.title,
+      onBack: () {
+        context.pop();
+      },
+      height: MakePaymentConfirmationPostPaidTheme.appBarHeight,
+      backgroundColor: MakePaymentConfirmationPostPaidTheme.appBarBg,
+      showBackArrow: true,
+      showHome: true,
+      onHomeTap: () {
+        context.go(AppRoutes.home);
+      },
     );
   }
 

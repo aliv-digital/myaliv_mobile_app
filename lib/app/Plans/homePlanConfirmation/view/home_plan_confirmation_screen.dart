@@ -154,6 +154,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
             ),
 
         body: SafeArea(
+          top: false,
           child: BlocBuilder<HomePlanConfirmationBloc, HomePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;

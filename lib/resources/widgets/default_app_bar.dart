@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 /// DefaultAppBar (Reusable)
@@ -13,7 +15,7 @@ class DefaultAppBar extends StatelessWidget {
 
     // Layout
     this.height = 64,
-    this.backgroundColor = const Color(0xFF645D9C),
+    this.backgroundColor,
     this.horizontalPadding = 24,
     this.leadingToTitleSpacing = 12,
     this.titleAlignment = AppBarTitleAlignment.left,
@@ -58,7 +60,7 @@ class DefaultAppBar extends StatelessWidget {
 
   // Layout
   final double height;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final double horizontalPadding;
   final double leadingToTitleSpacing;
   final AppBarTitleAlignment titleAlignment;
@@ -107,10 +109,32 @@ class DefaultAppBar extends StatelessWidget {
       color: Colors.white,
     );
 
-    return Material(
-      color: backgroundColor,
+    final resolvedBackground = backgroundColor ?? ColorManager.primaryPurple;
+
+    // Match the OS status bar to the app bar. Light icons over purple.
+    // On Android <15 the OS paints statusBarColor directly. On Android 15+
+    // (edge-to-edge) statusBarColor is ignored, so we also paint into any
+    // top inset that's still unclaimed by an ancestor SafeArea — that way
+    // the purple visibly extends behind the transparent status bar.
+    final overlay = SystemUiOverlayStyle(
+      statusBarColor: resolvedBackground,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    );
+
+    // padding.top is what's left after ancestor SafeAreas. If an ancestor
+    // already consumed the inset (SafeArea(top: true)) this is 0 and we
+    // add nothing — otherwise we bleed the Material into the status bar.
+    final topInset = MediaQuery.of(context).padding.top;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlay,
+      child: Material(
+      color: resolvedBackground,
       elevation: elevationShadow ? 6 : 0,
-      child: Container(
+      child: Padding(
+        padding: EdgeInsets.only(top: topInset),
+        child: Container(
         height: height,
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -147,6 +171,8 @@ class DefaultAppBar extends StatelessWidget {
               ),
           ],
         ),
+      ),
+      ),
       ),
     );
   }

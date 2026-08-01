@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -34,14 +33,6 @@ class GuestPurchasePlanScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) =>
           GuestPurchasePlanBloc(GuestPurchasePlanRepository())
@@ -284,6 +275,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
             },
           ),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             DefaultAppBar(

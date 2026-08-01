@@ -54,6 +54,7 @@ class _ProfilePrepaidView extends StatelessWidget {
         backgroundColor: ProfilePrepaidTheme.bg,
         resizeToAvoidBottomInset: true,
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
               // ---------- Scrollable content ----------

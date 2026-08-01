@@ -51,6 +51,7 @@ class _SettingsView extends StatelessWidget {
                 Column(
                   children: [
                     SafeArea(
+                      top: false,
                       bottom: false,
                       child: SizedBox(
                         height: SettingsTheme.appBarHeight,

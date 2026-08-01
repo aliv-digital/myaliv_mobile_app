@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -118,6 +120,7 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
       child: Scaffold(
         backgroundColor: TopUpPrepaidTheme.pageBg,
         body: SafeArea(
+          top: false,
           child: BlocBuilder<TopUpPrepaidBloc, TopUpPrepaidState>(
             builder: (context, state) {
               // ✅ bloc -> tab controller sync (tap থেকে index change হলে)
@@ -132,6 +135,11 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                     backgroundColor: TopUpPrepaidTheme.primary,
                     centerTitle: false,
                     elevation: 0,
+                    systemOverlayStyle: SystemUiOverlayStyle(
+                      statusBarColor: ColorManager.primaryPurple,
+                      statusBarIconBrightness: Brightness.light,
+                      statusBarBrightness: Brightness.dark,
+                    ),
                     leading: IconButton(
                       icon: Padding(
                         padding: const EdgeInsets.only(left: 24.0),

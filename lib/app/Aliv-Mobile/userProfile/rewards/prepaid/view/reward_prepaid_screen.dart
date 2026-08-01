@@ -33,6 +33,7 @@ class _RewardPrepaidView extends StatelessWidget {
       backgroundColor: const Color(0xFFF0F1F9),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
+        top: false,
         child: BlocListener<RewardPrepaidCubit, RewardPrepaidState>(
           listenWhen: (p, c) => p.action != c.action && c.action != null,
           listener: (context, state) async {

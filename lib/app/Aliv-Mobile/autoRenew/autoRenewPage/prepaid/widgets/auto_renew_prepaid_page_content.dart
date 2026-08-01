@@ -29,6 +29,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     return Scaffold(
       backgroundColor: AutoRenewPrepaidTheme.pageBg,
       body: SafeArea(
+        top: false,
         child: BlocBuilder<AutoRenewPrepaidBloc, AutoRenewPrepaidState>(
           builder: _buildFromState,
         ),
@@ -66,10 +67,14 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     BuildContext context,
     AutoRenewPrepaidBloc autoRenewPrepaidBloc,
   ) {
+    // DefaultAppBar paints into the top inset so the purple bleeds behind the
+    // status bar on edge-to-edge Android. Reserve the extra height here so the
+    // pinned sliver doesn't clip the interactive content into a sliver of purple.
+    final topInset = MediaQuery.paddingOf(context).top;
     return SliverPersistentHeader(
       pinned: true,
       delegate: _PinnedHeaderDelegate(
-        height: AutoRenewPrepaidTheme.appBarHeight,
+        height: AutoRenewPrepaidTheme.appBarHeight + topInset,
         child: DefaultAppBar(
           showHome: true,
           title: 'auto renew',

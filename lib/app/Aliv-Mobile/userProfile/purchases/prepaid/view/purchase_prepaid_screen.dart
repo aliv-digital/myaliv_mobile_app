@@ -60,6 +60,7 @@ class _PurchasePrepaidView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: PurchasePrepaidTheme.pageBg,
         body: SafeArea(
+          top: false,
           child: BlocBuilder<PurchasePrepaidBloc, PurchasePrepaidState>(
             builder: (context, state) {
               return CustomScrollView(

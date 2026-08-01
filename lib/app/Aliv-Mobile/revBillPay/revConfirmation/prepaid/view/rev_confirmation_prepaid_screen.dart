@@ -78,19 +78,13 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
             ),
             body: Column(
               children: [
-                SafeArea(
-                  bottom: false,
-                  child: SizedBox(
-                    height: RevConfirmationPrepaidTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: state.title,
-                      height: RevConfirmationPrepaidTheme.appBarHeight,
-                      backgroundColor: RevConfirmationPrepaidTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: true,
-                      onHomeTap: () => context.go(AppRoutes.home),
-                    ),
-                  ),
+                DefaultAppBar(
+                  title: state.title,
+                  height: RevConfirmationPrepaidTheme.appBarHeight,
+                  backgroundColor: RevConfirmationPrepaidTheme.appBarBg,
+                  showBackArrow: true,
+                  showHome: true,
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
 
                 Expanded(

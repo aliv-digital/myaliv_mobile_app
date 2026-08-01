@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
@@ -107,6 +109,7 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AddOrEditCardsPrepaidTheme.pageBg,
       body: SafeArea(
+        top: false,
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -114,6 +117,11 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
               backgroundColor: AddOrEditCardsPrepaidTheme.primary,
               elevation: 0,
               centerTitle: false,
+              systemOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: ColorManager.primaryPurple,
+                statusBarIconBrightness: Brightness.light,
+                statusBarBrightness: Brightness.dark,
+              ),
               leading: IconButton(
                 icon: const Padding(
                   padding: EdgeInsets.only(left: 24.0),

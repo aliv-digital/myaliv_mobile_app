@@ -47,6 +47,7 @@ class _SecurityView extends StatelessWidget {
             body: Column(
               children: [
                 SafeArea(
+                  top: false,
                   bottom: false,
                   child: SecurityAppBar(
                     title: 'security',

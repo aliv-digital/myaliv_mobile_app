@@ -114,6 +114,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     return Scaffold(
       backgroundColor: GuestTopUpTheme.screenBackgroundColor,
       body: SafeArea(
+        top: false,
         child: BlocListener<GuestTopUpBloc, GuestTopUpState>(
           listenWhen: (previousState, currentState) {
             final hasStatusChanged =

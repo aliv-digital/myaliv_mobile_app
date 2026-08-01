@@ -67,6 +67,7 @@ class _GuestTopUpReceiptView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ReceiptTheme.screenBackground,
         body: SafeArea(
+            top: false,
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(

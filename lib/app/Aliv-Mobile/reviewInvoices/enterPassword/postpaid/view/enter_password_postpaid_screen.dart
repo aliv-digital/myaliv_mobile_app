@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -23,14 +22,6 @@ class EnterPasswordPostpaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) =>
           EnterPasswordPostpaidBloc(EnterPasswordPostpaidRepository())
@@ -54,6 +45,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
+        top: false,
         child:
             BlocListener<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
           listenWhen: (p, c) =>

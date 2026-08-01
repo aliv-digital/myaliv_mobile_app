@@ -12,21 +12,15 @@ class MpHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: SizedBox(
-        height: MakePaymentPostPaidTheme.appBarHeight,
-        child: DefaultAppBar(
-          title: title,
-          height: MakePaymentPostPaidTheme.appBarHeight,
-          backgroundColor: MakePaymentPostPaidTheme.appBarBg,
-          showBackArrow: true,
-          showHome: true,
-          onHomeTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
-        ),
-      ),
+    return DefaultAppBar(
+      title: title,
+      height: MakePaymentPostPaidTheme.appBarHeight,
+      backgroundColor: MakePaymentPostPaidTheme.appBarBg,
+      showBackArrow: true,
+      showHome: true,
+      onHomeTap: () {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      },
     );
   }
 }

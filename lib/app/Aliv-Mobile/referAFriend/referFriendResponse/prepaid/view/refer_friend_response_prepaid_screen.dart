@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -15,15 +14,6 @@ class ReferFriendResponsePrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Keep status bar consistent with purple app bar
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.white,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
-
     return BlocProvider(
       create: (_) => ReferFriendResponsePrepaidBloc(
         repository: ReferFriendResponsePrepaidRepository(),
@@ -41,6 +31,7 @@ class _ReferFriendResponsePrepaidView extends StatelessWidget {
     return Scaffold(
       backgroundColor: ReferFriendResponsePrepaidTheme.bg,
       body: SafeArea(
+        top: false,
         child: BlocListener<ReferFriendResponsePrepaidBloc,
             ReferFriendResponsePrepaidState>(
           listenWhen: (p, c) => p.toastMessage != c.toastMessage,

@@ -83,11 +83,15 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  r'$',
-                  style: TopUpPrepaidTheme.amountText(),
-                ),
-                const SizedBox(width: TopUpPrepaidTheme.amountFieldCurrencyGap),
+                if (_controller.text.isNotEmpty) ...[
+                  Text(
+                    r'$',
+                    style: TopUpPrepaidTheme.amountText(),
+                  ),
+                  const SizedBox(
+                    width: TopUpPrepaidTheme.amountFieldCurrencyGap,
+                  ),
+                ],
                 ConstrainedBox(
                   constraints: const BoxConstraints(
                     minWidth: TopUpPrepaidTheme.amountFieldMinInputWidth,
@@ -105,12 +109,15 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
                       ],
                       textAlign: TextAlign.left,
                       style: TopUpPrepaidTheme.amountText(),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
+                        hintText: r'$00',
+                        hintStyle: TopUpPrepaidTheme.amountHint(),
                       ),
                       onChanged: (raw) {
+                        final wasEmpty = raw.isEmpty;
                         final cleaned = _sanitize(raw);
 
                         if (cleaned != raw) {
@@ -121,6 +128,9 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
                             ),
                           );
                         }
+
+                        // Rebuild so the leading "$" toggles with emptiness.
+                        if (wasEmpty || cleaned.isEmpty) setState(() {});
 
                         widget.onChanged(cleaned);
                       },
