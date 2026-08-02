@@ -2,12 +2,12 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/bloc/reward_prepaid_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/bloc/reward_prepaid_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/widgets/NoRewardCard..dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/widgets/reward_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,7 +29,7 @@ class _RewardPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: const Color(0xFFF0F1F9),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -63,12 +63,7 @@ class _RewardPrepaidView extends StatelessWidget {
 
             rewardCubit.clearAction();
           },
-          child: Column(
-            children: [
-              Expanded(child: _buildContent(context)),
-              const BottomStripes(),
-            ],
-          ),
+          child: _buildContent(context),
         ),
       ),
     );

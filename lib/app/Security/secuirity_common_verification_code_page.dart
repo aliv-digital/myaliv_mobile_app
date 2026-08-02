@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
 import '../../resources/constants/asset_constants.dart';
 import '../../resources/widgets/top_toast.dart';
 import '../../router/app_routes.dart';
-import '../Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 
 class VerificationCodePage extends StatefulWidget {
   final String nextRoute;
@@ -42,8 +42,7 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return StripedScaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         // elevation: 0,
@@ -70,7 +69,6 @@ class _VerificationCodePageState extends State<VerificationCodePage> {
         //   ),
         // ),
       ),
-      bottomNavigationBar: const SafeArea(top: false, child: BottomStripes()),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

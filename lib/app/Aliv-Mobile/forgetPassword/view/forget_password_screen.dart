@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../router/app_routes.dart';
@@ -39,10 +39,9 @@ class _ForgetPasswordScreenView extends StatelessWidget {
       ),
     );
 
-    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     //final phoneRowGap = _phoneRowGapFromSubtitle(context);
 
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: ForgetPasswordColors.pageBackground,
 
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
@@ -53,11 +52,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
           listener: (context, state) {
             // error/snack bar
           },
-          child: Column(
-            children: [
-              // ---------- Scrollable content ----------
-              Expanded(
-                child: CustomScrollView(
+          child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
@@ -120,17 +115,6 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-
-              // ✅ Bottom stripes vanish when keyboard opens
-              AnimatedSwitcher(
-                duration: ForgetPasswordMotion.stripeSwitcherDuration,
-                switchInCurve: ForgetPasswordMotion.stripeSwitcherInCurve,
-                switchOutCurve: ForgetPasswordMotion.stripeSwitcherOutCurve,
-                child: keyboardOpen ? const SizedBox.shrink() : const BottomStripes(),
-              ),
-            ],
-          ),
         ),
       ),
     );

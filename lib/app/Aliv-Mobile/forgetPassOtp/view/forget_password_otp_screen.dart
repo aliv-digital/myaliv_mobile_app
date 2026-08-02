@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
 import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/forget_password_otp_bloc.dart';
@@ -31,7 +32,7 @@ class _ForgetPasswordOtpView extends StatelessWidget {
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
 
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: ForgetPasswordOtpColors.screenBackground,
 
       // ✅ default keyboard behavior (auto resize + auto scroll)
@@ -55,54 +56,35 @@ class _ForgetPasswordOtpView extends StatelessWidget {
           },
           child: Stack(
             children: [
-              Column(
-                children: [
-                  // ---------- Scrollable content ----------
-                  Expanded(
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      slivers: [
-                        const SliverToBoxAdapter(
-                          child: ForgetPasswordOtpHeader(),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding:
-                                ForgetPasswordOtpPaddings.contentHorizontal,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: const [
-                                SizedBox(
-                                    height:
-                                        ForgetPasswordOtpSizes.contentTopGap),
-                                ForgetPasswordOtpCodeFields(),
-                                SizedBox(
-                                    height: ForgetPasswordOtpSizes
-                                        .otpToBottomActionsGap),
-                                ForgetPasswordOtpBottomActions(),
-                                SizedBox(
-                                    height: ForgetPasswordOtpSizes
-                                        .contentBottomGap),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+              CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: [
+                  const SliverToBoxAdapter(
+                    child: ForgetPasswordOtpHeader(),
                   ),
-
-                  // ✅ Bottom stripes vanish when keyboard opens
-                  AnimatedSwitcher(
-                    duration: ForgetPasswordOtpMotion.stripeSwitcherDuration,
-                    switchInCurve:
-                        ForgetPasswordOtpMotion.stripeSwitcherInCurve,
-                    switchOutCurve:
-                        ForgetPasswordOtpMotion.stripeSwitcherOutCurve,
-                    child: keyboardOpen
-                        ? const SizedBox.shrink()
-                        : const BottomStripes(),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding:
+                          ForgetPasswordOtpPaddings.contentHorizontal,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: const [
+                          SizedBox(
+                              height:
+                                  ForgetPasswordOtpSizes.contentTopGap),
+                          ForgetPasswordOtpCodeFields(),
+                          SizedBox(
+                              height: ForgetPasswordOtpSizes
+                                  .otpToBottomActionsGap),
+                          ForgetPasswordOtpBottomActions(),
+                          SizedBox(
+                              height: ForgetPasswordOtpSizes
+                                  .contentBottomGap),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

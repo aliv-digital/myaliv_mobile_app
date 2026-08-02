@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
 import '../../router/app_routes.dart';
 
@@ -51,9 +51,7 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-
+    return StripedScaffold(
       /// 🔥 APP BAR
       appBar: AppBar(
         backgroundColor: ColorManager.primaryPurple,
@@ -82,7 +80,6 @@ class _CommonEnterPasswordPageState extends State<CommonEnterPasswordPage> {
           ),
         ),
       ),
-      bottomNavigationBar: const SafeArea(top: false, child: BottomStripes()),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

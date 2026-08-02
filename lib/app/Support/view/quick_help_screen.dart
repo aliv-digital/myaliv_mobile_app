@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,7 +69,7 @@ class _QuickHelpView extends StatelessWidget {
           _handleLaunch(context, request);
         }
       },
-      child: Scaffold(
+      child: StripedScaffold(
         backgroundColor: _bg,
         appBar: AppBar(
           backgroundColor: _purple,
@@ -106,22 +106,15 @@ class _QuickHelpView extends StatelessWidget {
           ),
         ),
         body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocBuilder<SupportBloc, SupportState>(
-                  builder: (context, state) {
-                    return QuickHelpContent(
-                      info: state.quickHelp,
-                      onCallTap: () => context.read<SupportBloc>().add(
-                        const SupportCallPressed(),
-                      ),
-                    );
-                  },
+          child: BlocBuilder<SupportBloc, SupportState>(
+            builder: (context, state) {
+              return QuickHelpContent(
+                info: state.quickHelp,
+                onCallTap: () => context.read<SupportBloc>().add(
+                  const SupportCallPressed(),
                 ),
-              ),
-              const BottomStripes(),
-            ],
+              );
+            },
           ),
         ),
       ),

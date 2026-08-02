@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
 import '../../../../../../resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
-import '../../../../login/widgets/login_bottom_stripes.dart';
 
 import '../bloc/change_password_prepaid_bloc.dart';
 import '../bloc/change_password_prepaid_event.dart';
@@ -35,9 +35,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
-
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: ChangePasswordPrepaidTheme.bg,
 
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
@@ -66,11 +64,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
               );
             }
           },
-          child: Column(
-            children: [
-              // ---------- Scrollable content ----------
-              Expanded(
-                child: CustomScrollView(
+          child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
@@ -176,19 +170,6 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-
-              // ✅ Bottom stripes vanish when keyboard opens
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: keyboardOpen
-                    ? const SizedBox.shrink()
-                    : const BottomStripes(),
-              ),
-            ],
-          ),
         ),
       ),
     );

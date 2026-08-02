@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../loginOtp/model/login_otp_route_args.dart';
@@ -13,7 +14,6 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../repository/auth_repository.dart';
 import '../theme/login_theme.dart';
-import '../widgets/login_bottom_stripes.dart';
 import '../widgets/login_bottom_texts.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_password_field.dart';
@@ -38,10 +38,6 @@ class LoginScreen extends StatelessWidget {
 class _LoginView extends StatelessWidget {
   const _LoginView();
 
-  // BottomStripes height fixed na hole, eta constant hishebe estimate kore rekho.
-  // Better: BottomStripes er vitore exact height const kore expose kora (e.g. BottomStripes.kHeight)
-  static const double _bottomStripeHeight = BottomStripes.kHeight;
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -56,11 +52,10 @@ class _LoginView extends StatelessWidget {
       ),
     );
 
-    return Scaffold(
-      backgroundColor: AuthModuleColors.pageBackground,
-
-      // ✅ Keyboard উঠলেও body resize হবে না (BottomStripes নড়বে না)
+    return StripedScaffold(
+      // ✅ Keyboard উঠলেও body resize হবে না (BottomStripes নড়বে না)
       resizeToAvoidBottomInset: false,
+      stripesReserveSpace: true,
 
       body: SafeArea(
         child: BlocListener<LoginBloc, LoginState>(
@@ -128,108 +123,82 @@ class _LoginView extends StatelessWidget {
               //context.push(AppRoutes.loginOtp);
             }
           },
-          child: Stack(
-            children: [
-              // ----------- Main content (scrollable) -----------
-              Padding(
-                // ✅ stripes overlay করবে, তাই নিচে space reserve করে দিলাম
-                padding: const EdgeInsets.only(bottom: _bottomStripeHeight),
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    const SliverToBoxAdapter(
-                      child: LoginHeader(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: AuthModulePaddings.pageHorizontal,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
-                            const LoginPhoneRow(),
-                            const SizedBox(height: AuthModuleSizes.phoneToPasswordGap),
-                            const LoginPasswordField(),
-                            const SizedBox(height: AuthModuleSizes.passwordToErrorRowGap),
-                            BlocBuilder<LoginBloc, LoginState>(
-                              builder: (context, state) {
-                                final hasError = state.status == LoginStatus.failure && state.errorMessage != null && (state.phoneFieldError || state.passwordFieldError);
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Visibility(
-                                          visible: hasError,
-                                          maintainSize: true,
-                                          maintainState: true,
-                                          maintainAnimation: true,
-                                          //child: Text(''),
-                                          child: Text(
-                                            state.errorMessage ??
-                                                'invalid credentials!',
-                                            style: AuthModuleTextStyles
-                                                .invalidCredentials,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      style: AuthModuleButtonStyles.inlineTextLink,
-                                      onPressed: () {
-                                        context.push(AppRoutes.forgetPassword);
-                                      },
-                                      child: const Text('forgot password?',
-                                        style: AuthModuleTextStyles.forgotPassword,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                            const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
-                            BlocBuilder<LoginBloc, LoginState>(
-                              builder: (context, state) {
-                                final loading = state.status == LoginStatus.loading;
-                                return DefaultButton(
-                                  label: 'sign in',
-                                  isLoading: loading,
-                                  height: AuthModuleSizes.fieldHeight,
-                                  textStyle: AuthModuleTextStyles.signInButton,
-                                  onPressed: () {
-                                    context.read<LoginBloc>().add(const LoginSubmitted());
-                                  },
-                                );
-                              },
-                            ),
-                            const SizedBox(height: AuthModuleSizes.signInToSocialGap),
-                            const LoginSocialButtons(),
-                            const SizedBox(height: AuthModuleSizes.socialToBottomGap),
-                            LoginBottomTexts(),
-                            const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              const SliverToBoxAdapter(
+                child: LoginHeader(),
               ),
-
-              // ----------- Bottom stripes (always pinned) -----------
-              const Positioned(
-                left: 0,
-                right: 0,
-                bottom: AuthModuleSizes.bottomTextsBottomOffset,
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AuthModuleSizes.bottomTextsHorizontalPadding,
+                  padding: AuthModulePaddings.pageHorizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
+                      const LoginPhoneRow(),
+                      const SizedBox(height: AuthModuleSizes.phoneToPasswordGap),
+                      const LoginPasswordField(),
+                      const SizedBox(height: AuthModuleSizes.passwordToErrorRowGap),
+                      BlocBuilder<LoginBloc, LoginState>(
+                        builder: (context, state) {
+                          final hasError = state.status == LoginStatus.failure && state.errorMessage != null && (state.phoneFieldError || state.passwordFieldError);
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Visibility(
+                                    visible: hasError,
+                                    maintainSize: true,
+                                    maintainState: true,
+                                    maintainAnimation: true,
+                                    //child: Text(''),
+                                    child: Text(
+                                      state.errorMessage ??
+                                          'invalid credentials!',
+                                      style: AuthModuleTextStyles
+                                          .invalidCredentials,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                style: AuthModuleButtonStyles.inlineTextLink,
+                                onPressed: () {
+                                  context.push(AppRoutes.forgetPassword);
+                                },
+                                child: const Text('forgot password?',
+                                  style: AuthModuleTextStyles.forgotPassword,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
+                      BlocBuilder<LoginBloc, LoginState>(
+                        builder: (context, state) {
+                          final loading = state.status == LoginStatus.loading;
+                          return DefaultButton(
+                            label: 'sign in',
+                            isLoading: loading,
+                            height: AuthModuleSizes.fieldHeight,
+                            textStyle: AuthModuleTextStyles.signInButton,
+                            onPressed: () {
+                              context.read<LoginBloc>().add(const LoginSubmitted());
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: AuthModuleSizes.signInToSocialGap),
+                      const LoginSocialButtons(),
+                      const SizedBox(height: AuthModuleSizes.socialToBottomGap),
+                      LoginBottomTexts(),
+                      const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
+                    ],
                   ),
-                  child: SizedBox(),
                 ),
-              ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: BottomStripes(),
               ),
             ],
           ),

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import '../../../../../../resources/widgets/default_app_bar.dart';
-import '../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/settings_bloc.dart';
 import '../bloc/settings_event.dart';
 import '../bloc/settings_state.dart';
@@ -44,23 +44,21 @@ class _SettingsView extends StatelessWidget {
       builder: (context, state) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
-          child: Scaffold(
+          child: StripedScaffold(
             backgroundColor: SettingsTheme.bg,
-            body: Stack(
+            body: Column(
               children: [
-                Column(
-                  children: [
-                    DefaultAppBar(
-                      title: 'settings',
-                      height: SettingsTheme.appBarHeight,
-                      backgroundColor: SettingsTheme.appBarBg,
-                      showBackArrow: true,
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.fromLTRB(24, 31, 24, 16),//SettingsTheme.pagePadding.copyWith(bottom: 120),
-                        child: Column(
-                          children: [
+                DefaultAppBar(
+                  title: 'settings',
+                  height: SettingsTheme.appBarHeight,
+                  backgroundColor: SettingsTheme.appBarBg,
+                  showBackArrow: true,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(24, 31, 24, 16),//SettingsTheme.pagePadding.copyWith(bottom: 120),
+                    child: Column(
+                      children: [
                             // Card 1: security
                             SettingsSectionCard(
                               children: [
@@ -137,16 +135,6 @@ class _SettingsView extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ],
-                ),
-
-                // Bottom stripes (fixed)
-                const Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: BottomStripes(),
-                ),
               ],
             ),
           ),

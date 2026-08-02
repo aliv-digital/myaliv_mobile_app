@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import '../../../../login/widgets/login_bottom_stripes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import '../bloc/profile_prepaid_bloc.dart';
 import '../bloc/profile_prepaid_event.dart';
 import '../bloc/profile_prepaid_state.dart';
@@ -50,16 +50,12 @@ class _ProfilePrepaidView extends StatelessWidget {
           print('Navigate to: ${state.routeToOpen}');
         }
       },
-      child: Scaffold(
+      child: StripedScaffold(
         backgroundColor: ProfilePrepaidTheme.bg,
         resizeToAvoidBottomInset: true,
         body: SafeArea(
           top: false,
-          child: Column(
-            children: [
-              // ---------- Scrollable content ----------
-              Expanded(
-                child: CustomScrollView(
+          child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
@@ -144,12 +140,6 @@ class _ProfilePrepaidView extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-
-              // ---------- Fixed bottom stripes ----------
-              const BottomStripes(),
-            ],
-          ),
         ),
       ),
     );

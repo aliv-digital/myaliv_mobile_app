@@ -7,8 +7,8 @@ import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import '../../../../../../core/utils/app_session.dart';
-import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/purchase_prepaid_bloc.dart';
 import '../bloc/purchase_prepaid_event.dart';
 import '../bloc/purchase_prepaid_state.dart';
@@ -57,7 +57,7 @@ class _PurchasePrepaidView extends StatelessWidget {
               );
         }
       },
-      child: Scaffold(
+      child: StripedScaffold(
         backgroundColor: PurchasePrepaidTheme.pageBg,
         body: SafeArea(
           top: false,
@@ -99,15 +99,6 @@ class _PurchasePrepaidView extends StatelessWidget {
                                 );
                           },
                         ),
-                      ),
-                    ),
-
-                    // Bottom stripes pinned feel (like screenshot)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: BottomStripes(),
                       ),
                     ),
                   ],

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../router/app_routes.dart';
-import '../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/login_otp_bloc.dart';
 import '../bloc/login_otp_state.dart';
 import '../repository/login_otp_repository.dart';
@@ -51,11 +51,7 @@ class _LoginOtpView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
-
-    return Scaffold(
-      backgroundColor: LoginOtpColors.screenBackground,
-
+    return StripedScaffold(
       // ✅ Default behavior back (keyboard উঠলে body resize হবে + auto scroll works)
       resizeToAvoidBottomInset: true,
 
@@ -96,68 +92,33 @@ class _LoginOtpView extends StatelessWidget {
               );
             }
           },
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  // ---------- Scrollable content ----------
-                  Expanded(
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      slivers: [
-                        const SliverToBoxAdapter(child: OtpHeader()),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: LoginOtpPaddings.contentHorizontal,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: LoginOtpSizes.contentTopGap),
-                                OtpCodeFields(),
-                                SizedBox(
-                                  height: LoginOtpSizes.otpToBottomActionsGap,
-                                ),
-                                OtpBottomActions(),
-                                SizedBox(
-                                  height: LoginOtpSizes.contentBottomGap,
-                                ),
-                                _ChangePhoneNumberAction(),
-                                // ElevatedButton(
-                                //     onPressed: (){
-                                //       context.read<LoginOtpBloc>().add(PrintStorage());
-                                //     },
-                                //     child: Text("print storage")
-                                // ),
-                                SizedBox(height: 113),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              const SliverToBoxAdapter(child: OtpHeader()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: LoginOtpPaddings.contentHorizontal,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: LoginOtpSizes.contentTopGap),
+                      OtpCodeFields(),
+                      SizedBox(
+                        height: LoginOtpSizes.otpToBottomActionsGap,
+                      ),
+                      OtpBottomActions(),
+                      SizedBox(
+                        height: LoginOtpSizes.contentBottomGap,
+                      ),
+                      _ChangePhoneNumberAction(),
+                      SizedBox(height: 113),
+                    ],
                   ),
-
-                  // ✅ Bottom stripes will VANISH when keyboard opens (no moving up)
-                  AnimatedSwitcher(
-                    duration: LoginOtpMotion.stripeSwitcherDuration,
-                    switchInCurve: LoginOtpMotion.stripeSwitcherInCurve,
-                    switchOutCurve: LoginOtpMotion.stripeSwitcherOutCurve,
-                    child: keyboardOpen
-                        ? const SizedBox.shrink()
-                        : const BottomStripes(),
-                  ),
-                ],
+                ),
               ),
-
-              // if (!keyboardOpen)
-              //   const Positioned(
-              //     left: 0,
-              //     right: 0,
-              //     bottom: BottomStripes.kHeight + LoginOtpSizes.changePhoneBottomOffset,
-              //     child: _ChangePhoneNumberAction(),
-              //   ),
             ],
           ),
         ),

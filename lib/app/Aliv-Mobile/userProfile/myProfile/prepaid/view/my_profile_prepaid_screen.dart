@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import '../../../../../../router/app_routes.dart';
-import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/my_profile_prepaid_bloc.dart';
 import '../bloc/my_profile_prepaid_event.dart';
 import '../bloc/my_profile_prepaid_state.dart';
@@ -33,7 +33,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: MyProfilePrepaidTheme.bg,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -66,11 +66,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 break;
             }
           },
-          child: Column(
-            children: [
-              // ---------- Scrollable content ----------
-              Expanded(
-                child: CustomScrollView(
+          child: CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   keyboardDismissBehavior:
                       ScrollViewKeyboardDismissBehavior.onDrag,
@@ -177,12 +173,6 @@ class _MyProfilePrepaidView extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-
-              // fixed bottom stripes (already ok)
-              const BottomStripes(),
-            ],
-          ),
         ),
       ),
     );

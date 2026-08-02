@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_bottom_stripes.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/theme/reward_details_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewardsDetails/prepaid/widgets/reward_details_section.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class RewardDetailsPrepaidScreen extends StatelessWidget {
@@ -15,7 +15,7 @@ class RewardDetailsPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: RewardDetailsTheme.bg,
       body: SafeArea(
         top: false,
@@ -28,7 +28,6 @@ class RewardDetailsPrepaidScreen extends StatelessWidget {
               onBack: () => context.pop(),
             ),
             Expanded(child: _buildContent()),
-            const BottomStripes(),
           ],
         ),
       ),

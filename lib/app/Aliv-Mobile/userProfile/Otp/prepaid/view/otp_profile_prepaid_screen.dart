@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
-import '../../../../login/widgets/login_bottom_stripes.dart';
 import '../bloc/forgetPass_otp_bloc.dart';
 import '../bloc/forgetPass_otp_state.dart';
 import '../repository/forgetPass_otp_repository.dart';
@@ -28,11 +28,7 @@ class _OtpProfilePrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-
+    return StripedScaffold(
       // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
 
@@ -52,11 +48,7 @@ class _OtpProfilePrepaidView extends StatelessWidget {
             // success হলে next screen এ যাওয়ার logic এখানে দিতে পারো
             // if (state.status == OtpProfilePrepaidStatus.success) { ... }
           },
-          child: Column(
-            children: [
-              // ---------- Scrollable content ----------
-              Expanded(
-                child: Padding(
+          child: Padding(
                   padding: const EdgeInsets.only(),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -84,19 +76,6 @@ class _OtpProfilePrepaidView extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-
-              // ✅ Bottom stripes vanish when keyboard opens
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 180),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: keyboardOpen
-                    ? const SizedBox.shrink()
-                    : const BottomStripes(),
-              ),
-            ],
-          ),
         ),
       ),
     );

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-
-import '../../../../login/widgets/login_bottom_stripes.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String email;
@@ -32,9 +31,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return StripedScaffold(
       backgroundColor: const Color(0xFFF1F5F5),
-      bottomNavigationBar: const SafeArea(top: false, child: BottomStripes()),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
