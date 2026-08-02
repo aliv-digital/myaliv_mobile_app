@@ -79,8 +79,8 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                       const SizedBox(width: 2),
                       SvgPicture.asset(
                         'assets/icons/tikIcon.svg',
-                        height: 14,
-                        width: 14,
+                        height: 18,
+                        width: 18,
                       ),
                       const SizedBox(width: 3),
 
@@ -96,8 +96,8 @@ class CommonSwitchButtonLarge extends StatelessWidget {
 
                       SvgPicture.asset(
                         'assets/icons/cross.svg',
-                        height: 14,
-                        width: 14,
+                        height: 18,
+                        width: 18,
                         // color: const Color(0xFF707070),
                       ),
 

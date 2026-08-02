@@ -319,7 +319,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                     ),
                     child: Icon(
                       isOn ? Icons.check : Icons.close,
-                      size: 12,
+                      size: 15.0,
                       color: Colors.white,
                     ),
                   ),
