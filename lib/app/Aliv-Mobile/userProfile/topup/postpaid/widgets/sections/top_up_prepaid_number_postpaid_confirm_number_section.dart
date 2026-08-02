@@ -10,11 +10,13 @@ import '../../theme/top_up_prepaid_number_postpaid_theme.dart';
 class TopUpPrepaidNumberPostPaidConfirmNumberSection extends StatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
+  final bool hasMismatchError;
 
   const TopUpPrepaidNumberPostPaidConfirmNumberSection({
     super.key,
     required this.value,
     required this.onChanged,
+    this.hasMismatchError = false,
   });
 
   @override
@@ -55,10 +57,13 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
       rawPhoneNumber: widget.value,
       selectedCountry: selectedCountry,
     );
-    final phoneBorderColor = !_hasPhoneFocus && showLivePhoneValidationError
+    final showMismatchError =
+        widget.hasMismatchError && !showLivePhoneValidationError;
+    final hasAnyError = showLivePhoneValidationError || showMismatchError;
+    final phoneBorderColor = !_hasPhoneFocus && hasAnyError
         ? AuthModuleColors.errorRed
         : AuthModuleColors.loginFieldBorderColor;
-    final phoneInputStyle = showLivePhoneValidationError
+    final phoneInputStyle = hasAnyError
         ? AuthModuleTextStyles.fieldValue.copyWith(
             color: AuthModuleColors.errorRed,
           )
@@ -105,12 +110,14 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
           phoneInputStyle: phoneInputStyle,
           phoneHintStyle: AuthModuleTextStyles.fieldHint,
         ),
-        if (showLivePhoneValidationError) ...[
+        if (hasAnyError) ...[
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
-            child: const Text(
-              LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+            child: Text(
+              showMismatchError
+                  ? 'phone numbers do not match'
+                  : LoginPhoneNumberHelper.invalidPhoneNumberMessage,
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),

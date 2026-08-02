@@ -46,18 +46,14 @@ class _SecurityView extends StatelessWidget {
             backgroundColor: SecurityTheme.bg,
             body: Column(
               children: [
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: SecurityAppBar(
-                    title: 'security',
-                    onHomeTap: () {
-                      context.read<SecurityBloc>().add(
-                        const SecurityHomePressed(),
-                      );
-                      context.go(AppRoutes.home);
-                    },
-                  ),
+                SecurityAppBar(
+                  title: 'security',
+                  onHomeTap: () {
+                    context.read<SecurityBloc>().add(
+                      const SecurityHomePressed(),
+                    );
+                    context.go(AppRoutes.home);
+                  },
                 ),
                 Expanded(
                   child: _buildBody(state),

@@ -30,6 +30,36 @@ class BalanceModel {
     );
   }
 
+  /// Serialize for HydratedBloc persistence.
+  Map<String, dynamic> toJson() => {
+        'walletBalance': walletBalance,
+        'bonusBalance': bonusBalance,
+        'bonusDetails': bonusDetails.map((b) => b.toJson()).toList(),
+        'fetchedAt': fetchedAt.toIso8601String(),
+      };
+
+  /// Rehydrate from disk. Null-safe on missing keys so older payloads
+  /// don't crash when the model gains fields later.
+  factory BalanceModel.fromStoredJson(Map<String, dynamic> json) {
+    final rawBonusList = json['bonusDetails'];
+    final bonusList = rawBonusList is List
+        ? rawBonusList
+            .whereType<Map>()
+            .map((e) => BonusDetail.fromStoredJson(
+                  Map<String, dynamic>.from(e),
+                ))
+            .toList()
+        : const <BonusDetail>[];
+
+    return BalanceModel(
+      walletBalance: (json['walletBalance'] as num?)?.toDouble() ?? 0.0,
+      bonusBalance: (json['bonusBalance'] as num?)?.toDouble() ?? 0.0,
+      bonusDetails: bonusList,
+      fetchedAt: DateTime.tryParse(json['fetchedAt'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+    );
+  }
+
   @override
   String toString() {
     return 'BalanceModel(wallet: \$${walletBalance.toStringAsFixed(2)}, '
@@ -98,6 +128,30 @@ class BonusDetail {
       displayName: json['BalanceDisplayName'] as String? ?? '',
       description: json['BalanceDescription'] as String? ?? '',
       daysToExpiration: json['DaysToExpiration'] as int? ?? 0,
+      isActive: json['IsActive'] as bool? ?? false,
+    );
+  }
+
+  /// Serialize for HydratedBloc persistence. Keys mirror API for consistency.
+  Map<String, dynamic> toJson() => {
+        'BalanceNameID': balanceNameId,
+        'BalanceAmount': balanceAmount,
+        'BalanceType': balanceType,
+        'BalanceDisplayName': displayName,
+        'BalanceDescription': description,
+        'DaysToExpiration': daysToExpiration,
+        'IsActive': isActive,
+      };
+
+  /// Rehydrate from disk (null-safe on missing keys).
+  factory BonusDetail.fromStoredJson(Map<String, dynamic> json) {
+    return BonusDetail(
+      balanceNameId: (json['BalanceNameID'] as num?)?.toInt() ?? 0,
+      balanceAmount: json['BalanceAmount'] as String? ?? '0',
+      balanceType: json['BalanceType'] as String? ?? '',
+      displayName: json['BalanceDisplayName'] as String? ?? '',
+      description: json['BalanceDescription'] as String? ?? '',
+      daysToExpiration: (json['DaysToExpiration'] as num?)?.toInt() ?? 0,
       isActive: json['IsActive'] as bool? ?? false,
     );
   }

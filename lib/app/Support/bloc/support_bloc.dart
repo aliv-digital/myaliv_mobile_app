@@ -59,19 +59,11 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
         break;
 
       case SupportMenuAction.faq:
-        if (_isFaqOpening) {
-          return;
-        }
-
-        _isFaqOpening = true;
-        emit(state.copyWith(isFaqOpening: true));
-
-        try {
-          final Uri faqUri = await repository.fetchFaqUri();
-          _emitLaunch(emit, uri: faqUri, failureMessage: 'Could not open FAQ');
-        } catch (_) {
-          _emitFailureLaunch(emit, failureMessage: 'Could not open FAQ');
-        }
+        _emitLaunch(
+          emit,
+          uri: SupportRepository.faqUri,
+          failureMessage: 'Could not open store locator',
+        );
         break;
     }
   }

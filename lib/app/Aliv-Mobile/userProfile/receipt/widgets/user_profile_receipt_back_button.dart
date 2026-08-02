@@ -10,36 +10,28 @@ class UserProfileReceiptBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      width: double.infinity,
       height: UserProfileReceiptTheme.backButtonHeight,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: UserProfileReceiptTheme.backButtonWidth,
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: UserProfileReceiptTheme.backButtonBackgroundColor,
+          elevation: 0,
+          padding: UserProfileReceiptTheme.backButtonPadding,
+          side: BorderSide(
+            width: 1,
+            color: UserProfileReceiptTheme.backButtonBorderColor,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              UserProfileReceiptTheme.backButtonRadius,
+            ),
+          ),
         ),
-        child: OutlinedButton(
-          onPressed: onTap,
-          style: OutlinedButton.styleFrom(
-            backgroundColor: UserProfileReceiptTheme.backButtonBackgroundColor,
-            elevation: 0,
-            minimumSize: const Size(
-              UserProfileReceiptTheme.backButtonWidth,
-              UserProfileReceiptTheme.backButtonHeight,
-            ),
-            padding: UserProfileReceiptTheme.backButtonPadding,
-            side: BorderSide(
-              width: 1,
-              color: UserProfileReceiptTheme.backButtonBorderColor,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                UserProfileReceiptTheme.backButtonRadius,
-              ),
-            ),
-          ),
-          child: Text(
-            'back to home page',
-            textAlign: TextAlign.center,
-            style: UserProfileReceiptTheme.backButtonText,
-          ),
+        child: Text(
+          'back to home page',
+          textAlign: TextAlign.center,
+          style: UserProfileReceiptTheme.backButtonText,
         ),
       ),
     );

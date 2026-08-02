@@ -35,7 +35,7 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
         loadStatus: TopUpPrepaidNumberPostPaidLoadStatus.initial,
         number: '',
         confirmNumber: '',
-        amountText: '0.00',
+        amountText: '',
         applyStatus: TopUpPrepaidNumberPostPaidApplyStatus.idle,
         errorMessage: null,
       );
@@ -63,6 +63,14 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
       numberValidation.isValid &&
       confirmNumberValidation.isValid &&
       numberValidation.phoneNumberForApi ==
+          confirmNumberValidation.phoneNumberForApi;
+
+  /// True when both fields hold individually-valid phone numbers that
+  /// don't match — surfaces an inline error under the confirm field.
+  bool get hasConfirmMismatchError =>
+      numberValidation.isValid &&
+      confirmNumberValidation.isValid &&
+      numberValidation.phoneNumberForApi !=
           confirmNumberValidation.phoneNumberForApi;
 
   bool get canApply =>

@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -35,11 +34,16 @@ class MakePaymentConfirmationPostPaidScreen extends StatelessWidget {
     );
   }
 
-  void _ensureDynamicDataLoaded() {
-    instance<DeviceLimitsCubit>().loadDeviceLimits();
-    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-    if (accountInfo == null || accountInfo.idAcc <= 0) return;
-    instance<BalanceCubit>().loadBalances(deviceAccountId: accountInfo.idAcc);
+  Future<void> _ensureDynamicDataLoaded() async {
+    // Balance API is keyed by DeviceID (from /Account/devices), not the user's
+    // account id. Load devices first so we have a real deviceId before fetching
+    // the balance — otherwise the wrong id makes the API return 0 and clobbers
+    // the shared BalanceCubit for every screen that reads it.
+    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+    await deviceLimitsCubit.loadDeviceLimits();
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) return;
+    await instance<BalanceCubit>().loadBalances(deviceAccountId: deviceId);
   }
 }
 

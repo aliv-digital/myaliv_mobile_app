@@ -126,7 +126,9 @@ class LogoutRepository {
     // device limits, balance, offers, plans, and limits would persist
     // across account switches.
     instance<DeviceLimitsCubit>().reset();
-    instance<BalanceCubit>().reset();
+    // BalanceCubit is a HydratedCubit — also wipe persisted storage so the
+    // next user doesn't briefly see the previous user's balance on relaunch.
+    await instance<BalanceCubit>().clearForLogout();
     instance<BucketUsageSummaryCubit>().reset();
     instance<LimitedOfferCubit>().reset();
     instance<BestPlanCubit>().reset();

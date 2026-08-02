@@ -12,16 +12,26 @@ enum BalanceStatus {
 ///
 /// Contains balance data, loading status, and error information.
 class BalanceState {
+  /// Bump when the persisted payload shape changes in a non-backward-compatible
+  /// way, so we can drop stale caches instead of crashing on rehydrate.
+  static const int schemaVersion = 1;
+
   final BalanceStatus status;
   final BalanceModel? balance;
   final String? errorMessage;
   final DateTime? lastFetchedAt;
+
+  /// The device account id the persisted `balance` belongs to. Used to detect
+  /// TN switches / re-login-as-different-user so we don't show the wrong
+  /// account's number.
+  final int? deviceAccountId;
 
   const BalanceState({
     required this.status,
     this.balance,
     this.errorMessage,
     this.lastFetchedAt,
+    this.deviceAccountId,
   });
 
   /// Initial state factory
@@ -31,6 +41,7 @@ class BalanceState {
       balance: null,
       errorMessage: null,
       lastFetchedAt: null,
+      deviceAccountId: null,
     );
   }
 
@@ -40,6 +51,7 @@ class BalanceState {
     BalanceModel? balance,
     String? errorMessage,
     DateTime? lastFetchedAt,
+    int? deviceAccountId,
     bool clearBalance = false,
     bool clearError = false,
   }) {
@@ -48,6 +60,70 @@ class BalanceState {
       balance: clearBalance ? null : (balance ?? this.balance),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
+      deviceAccountId: deviceAccountId ?? this.deviceAccountId,
+    );
+  }
+
+  // ========== Serialization (HydratedBloc) ==========
+
+  /// Serialize for HydratedBloc. Transient statuses (loading/failure) are
+  /// coerced when rehydrated in [fromStoredJson] — we still persist them
+  /// literally so callers see the raw state during app runtime.
+  Map<String, dynamic> toJson() => {
+        'schemaVersion': schemaVersion,
+        'status': status.name,
+        'balance': balance?.toJson(),
+        'errorMessage': errorMessage,
+        'lastFetchedAt': lastFetchedAt?.toIso8601String(),
+        'deviceAccountId': deviceAccountId,
+      };
+
+  /// Rehydrate from disk. Returns `null` on schema mismatch or corrupt data
+  /// so the caller can fall back to [BalanceState.initial].
+  ///
+  /// Transient statuses are demoted so the UI never rehydrates into a
+  /// loading spinner or error banner from a previous session.
+  static BalanceState? fromStoredJson(Map<String, dynamic> json) {
+    final version = json['schemaVersion'];
+    if (version is! int || version != schemaVersion) {
+      return null;
+    }
+
+    final rawBalance = json['balance'];
+    final balance = rawBalance is Map
+        ? BalanceModel.fromStoredJson(Map<String, dynamic>.from(rawBalance))
+        : null;
+
+    final rawStatus = json['status'] as String?;
+    final persistedStatus = BalanceStatus.values.firstWhere(
+      (s) => s.name == rawStatus,
+      orElse: () => BalanceStatus.initial,
+    );
+
+    // Never rehydrate a transient status — coerce to loaded (if we have
+    // a balance) or initial (if we don't). Prevents ghost spinners and
+    // ghost error banners across sessions.
+    final BalanceStatus effectiveStatus;
+    switch (persistedStatus) {
+      case BalanceStatus.loaded:
+        effectiveStatus =
+            balance == null ? BalanceStatus.initial : BalanceStatus.loaded;
+        break;
+      case BalanceStatus.initial:
+      case BalanceStatus.loading:
+      case BalanceStatus.failure:
+        effectiveStatus =
+            balance == null ? BalanceStatus.initial : BalanceStatus.loaded;
+        break;
+    }
+
+    return BalanceState(
+      status: effectiveStatus,
+      balance: balance,
+      errorMessage: null,
+      lastFetchedAt:
+          DateTime.tryParse(json['lastFetchedAt'] as String? ?? ''),
+      deviceAccountId: (json['deviceAccountId'] as num?)?.toInt(),
     );
   }
 
@@ -103,7 +179,8 @@ class BalanceState {
         other.status == status &&
         other.balance == balance &&
         other.errorMessage == errorMessage &&
-        other.lastFetchedAt == lastFetchedAt;
+        other.lastFetchedAt == lastFetchedAt &&
+        other.deviceAccountId == deviceAccountId;
   }
 
   @override
@@ -113,6 +190,7 @@ class BalanceState {
       balance,
       errorMessage,
       lastFetchedAt,
+      deviceAccountId,
     );
   }
 }

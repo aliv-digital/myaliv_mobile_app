@@ -14,16 +14,13 @@ class HelpAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return DefaultAppBar(
+      title: title,
       height: HelpTheme.appBarHeight,
-      child: DefaultAppBar(
-        title: title,
-        height: HelpTheme.appBarHeight,
-        backgroundColor: HelpTheme.appBarBg,
-        showBackArrow: true,
-        showHome: true,
-        onHomeTap: onHomeTap,
-      ),
+      backgroundColor: HelpTheme.appBarBg,
+      showBackArrow: true,
+      showHome: true,
+      onHomeTap: onHomeTap,
     );
   }
 }

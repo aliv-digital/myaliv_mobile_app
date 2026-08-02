@@ -1,8 +1,9 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_plans_payment_method_bloc.dart';
@@ -37,11 +38,18 @@ class _HomePlansPaymentMethodViewState
     _loadWalletBalanceIfPossible();
   }
 
-  void _loadWalletBalanceIfPossible() {
-    final info = context.read<AccountInfoCubit>().state.accountInfo;
-    if (info == null || info.idAcc <= 0) return;
+  Future<void> _loadWalletBalanceIfPossible() async {
+    // Balance API is keyed by DeviceID (from /Account/devices), not the user's
+    // account id. Load devices first so we have a real deviceId — otherwise
+    // the wrong id makes the API return $0 and clobbers the shared
+    // BalanceCubit for every screen that reads it.
+    final deviceLimitsCubit = instance<DeviceLimitsCubit>();
+    await deviceLimitsCubit.loadDeviceLimits();
+    final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
+    if (deviceId <= 0) return;
+    if (!mounted) return;
     // BalanceCubit owns the wallet balance app-wide; it caches & refetches.
-    context.read<BalanceCubit>().loadBalances(deviceAccountId: info.idAcc);
+    await context.read<BalanceCubit>().loadBalances(deviceAccountId: deviceId);
   }
 
   void _onState(BuildContext context, HomePlansPaymentMethodState state) {
