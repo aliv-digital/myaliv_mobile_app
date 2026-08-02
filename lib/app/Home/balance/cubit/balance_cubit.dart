@@ -1,17 +1,20 @@
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/repository/balance_repository.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/repository/balance_repository_exception.dart';
 
-/// Cubit for managing Balance state and business logic
+/// Cubit for managing Balance state and business logic.
 ///
-/// Features:
-/// - Fetches balances from API via repository
-/// - Caches data with 5-minute TTL
-/// - Provides wallet balance (top-up) and bonus balance (rewards)
-class BalanceCubit extends Cubit<BalanceState> {
+/// Persistence:
+/// - Extends [HydratedCubit] so the last-loaded balance is restored from disk
+///   on cold start, giving the UI something to render before the API responds.
+/// - Persisted payloads are keyed by `deviceAccountId`. When the current
+///   session's device id no longer matches the persisted one (TN switch or
+///   re-login as a different user), the cached balance is dropped instead of
+///   being shown to the wrong account.
+class BalanceCubit extends HydratedCubit<BalanceState> {
   final BalanceRepository _repository;
 
   BalanceCubit(this._repository) : super(BalanceState.initial());
@@ -24,13 +27,24 @@ class BalanceCubit extends Cubit<BalanceState> {
     required int deviceAccountId,
     bool forceRefresh = false,
   }) async {
+    // Guests / unauthenticated sessions never fetch. The rehydrated cache
+    // (if any) is already gated in `fromJson`.
+    if (!globalState.isAuthenticated) {
+      return;
+    }
+
     // Prevent duplicate loading
     if (state.isLoading) {
       return;
     }
 
-    // Use cache if valid and not forcing refresh
-    if (!forceRefresh && state.isCacheValid && state.hasBalance) {
+    // Use cache if valid, still belongs to this device, and not forcing.
+    final cacheBelongsToDevice =
+        state.deviceAccountId == null || state.deviceAccountId == deviceAccountId;
+    if (!forceRefresh &&
+        state.isCacheValid &&
+        state.hasBalance &&
+        cacheBelongsToDevice) {
       if (kDebugMode) {
         debugPrint('💰 BalanceCubit: Using cached balance data');
       }
@@ -49,6 +63,7 @@ class BalanceCubit extends Cubit<BalanceState> {
         status: BalanceStatus.loaded,
         balance: balance,
         lastFetchedAt: DateTime.now(),
+        deviceAccountId: deviceAccountId,
         clearError: true,
       );
 
@@ -109,13 +124,46 @@ class BalanceCubit extends Cubit<BalanceState> {
     }
   }
 
-  /// Reset cubit to initial state
-  ///
-  /// Call this on logout or when clearing data
+  /// Reset in-memory state to initial. Callers that also want to wipe the
+  /// persisted balance from disk (e.g. logout) should use [clearForLogout]
+  /// instead, which also empties the HydratedBloc storage entry.
   void reset() {
     if (kDebugMode) {
       debugPrint('🔄 BalanceCubit: Resetting to initial state');
     }
     emit(BalanceState.initial());
+  }
+
+  /// Reset in-memory state AND wipe the persisted balance from disk. Prevents
+  /// a subsequent login (possibly as a different user) from briefly rehydrating
+  /// the previous session's balance before the new user's data loads.
+  Future<void> clearForLogout() async {
+    reset();
+    await clear();
+    if (kDebugMode) {
+      debugPrint('🧹 BalanceCubit: Persisted cache cleared');
+    }
+  }
+
+  // ========== HydratedCubit hooks ==========
+
+  @override
+  Map<String, dynamic>? toJson(BalanceState state) {
+    // Never persist a state we can't safely rehydrate later.
+    if (!state.hasBalance) return null;
+    return state.toJson();
+  }
+
+  @override
+  BalanceState? fromJson(Map<String, dynamic> json) {
+    try {
+      return BalanceState.fromStoredJson(json);
+    } catch (e, stackTrace) {
+      if (kDebugMode) {
+        debugPrint('⚠️  BalanceCubit: fromJson failed, dropping cache: $e');
+        debugPrint('$stackTrace');
+      }
+      return null;
+    }
   }
 }
