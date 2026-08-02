@@ -49,13 +49,12 @@ class AutoRenewAuthPrepaidState extends Equatable {
   /// Expected name from content for validation
   String get expectedName => content?.expectedName ?? '';
 
-  /// Check if entered name matches expected name (case-insensitive)
-  bool get isNameValid =>
-      name.trim().toLowerCase() == expectedName.trim().toLowerCase();
+  /// Check if entered name matches the displayed name exactly.
+  bool get isNameValid => name == expectedName;
 
   bool get canSubmit =>
       loadStatus == AutoRenewAuthLoadStatus.ready &&
-      isNameValid &&
+      name.trim().isNotEmpty &&
       submitStatus != AutoRenewAuthSubmitStatus.submitting;
 
   AutoRenewAuthPrepaidState copyWith({

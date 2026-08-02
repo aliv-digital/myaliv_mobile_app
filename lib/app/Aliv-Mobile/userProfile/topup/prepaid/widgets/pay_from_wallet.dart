@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_variant.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/pay_from_wallet/pay_from_wallet_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/pay_from_wallet/pay_from_wallet_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
@@ -23,10 +24,7 @@ class PayFromWalletSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<PayFromWalletCubit>(
       create: (_) => instance<PayFromWalletCubit>(),
-      child: _PayFromWalletSheetView(
-        amount: amount,
-        phoneNumber: phoneNumber,
-      ),
+      child: _PayFromWalletSheetView(amount: amount, phoneNumber: phoneNumber),
     );
   }
 }
@@ -194,8 +192,8 @@ class _PayFromWalletSheetView extends StatelessWidget {
                           : () => _onConfirmPressed(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: TopUpPrepaidTheme.purple,
-                        disabledBackgroundColor:
-                            TopUpPrepaidTheme.purple.withValues(alpha: 0.6),
+                        disabledBackgroundColor: TopUpPrepaidTheme.purple
+                            .withValues(alpha: 0.6),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32),
@@ -207,8 +205,9 @@ class _PayFromWalletSheetView extends StatelessWidget {
                               height: 22,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : const Text(
@@ -243,9 +242,9 @@ class _PayFromWalletSheetView extends StatelessWidget {
     }
 
     context.read<PayFromWalletCubit>().submitTransfer(
-          toNumber: recipient,
-          amount: amount,
-        );
+      toNumber: recipient,
+      amount: amount,
+    );
   }
 
   void _goToReceipt(BuildContext context) {
@@ -253,10 +252,11 @@ class _PayFromWalletSheetView extends StatelessWidget {
       AppRoutes.userProfileReceiptScreen,
       extra: UserProfileReceiptRouteArgs(
         amount: amount,
-        phoneNumber: phoneNumber,
+        recipientPhone: phoneNumber,
         paymentMethod: 'wallet',
         title: 'Wallet Transfer Successful!',
         message: 'It may take a few moments before the order is processed.',
+        variant: UserProfileReceiptVariant.walletTransfer,
       ),
     );
   }

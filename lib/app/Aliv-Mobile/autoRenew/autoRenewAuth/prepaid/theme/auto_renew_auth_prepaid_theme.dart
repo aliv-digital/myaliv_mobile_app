@@ -179,7 +179,11 @@ class AutoRenewAuthPrepaidTheme {
   // Used by AuthNameInput decoration to avoid inline styling.
   static InputDecoration nameInputDecoration({required String hintText}) {
     return InputDecoration(
-      hintText: hintText,
+      hint: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Text(hintText, style: nameInputHintTextStyle()),
+      ),
       hintStyle: nameInputHintTextStyle(),
       filled: true,
       fillColor: nameInputFillColor,

@@ -69,7 +69,7 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     }
 
     if (state.navTarget == AutoRenewNavTarget.proceed) {
-      _consumeProceedNavigation(context, autoRenewPrepaidBloc);
+      _consumeProceedNavigation(context, autoRenewPrepaidBloc, state);
       return;
     }
   }
@@ -158,13 +158,18 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
   void _consumeProceedNavigation(
     BuildContext context,
     AutoRenewPrepaidBloc autoRenewPrepaidBloc,
+    AutoRenewPrepaidState state,
   ) {
     autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());
 
     // Navigate to auth screen with card payment method
     context.push(
       AppRoutes.autoRenewAuthPrepaidScreen,
-      extra: AutoRenewPaymentMethodType.card,
+      extra: AutoRenewAuthArgs(
+        paymentMethod: AutoRenewPaymentMethodType.card,
+        cardToken: state.selectedCard?.token,
+        cardLastDigits: state.selectedCard?.lastDigits,
+      ),
     );
   }
 }

@@ -62,7 +62,7 @@ class _TopUpPrepaidView extends StatefulWidget {
 }
 
 class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerProviderStateMixin {
-  static const _tabTitles = ['my number', 'auto top-up', 'send top-up'];
+  static const _tabTitles = ['top-up', 'auto top-up', 'send top-up'];
 
   late final TabController _tabController;
 

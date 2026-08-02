@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'user_profile_receipt_variant.dart';
+
 class UserProfileReceiptData extends Equatable {
   final String typeLabel;
   final String topUpType;
@@ -10,6 +12,7 @@ class UserProfileReceiptData extends Equatable {
   final double amount;
   final String title;
   final String message;
+  final UserProfileReceiptVariant variant;
 
   const UserProfileReceiptData({
     required this.typeLabel,
@@ -21,6 +24,7 @@ class UserProfileReceiptData extends Equatable {
     required this.amount,
     required this.title,
     required this.message,
+    this.variant = UserProfileReceiptVariant.standard,
   });
 
   @override
@@ -34,5 +38,6 @@ class UserProfileReceiptData extends Equatable {
     amount,
     title,
     message,
+    variant,
   ];
 }

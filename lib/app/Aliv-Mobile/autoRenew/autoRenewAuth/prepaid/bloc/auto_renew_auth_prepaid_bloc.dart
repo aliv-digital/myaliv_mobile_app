@@ -29,7 +29,9 @@ class AutoRenewAuthPrepaidBloc
     ));
 
     try {
-      final content = await repository.fetchContent();
+      final content = await repository.fetchContent(
+        cardLastDigits: event.cardLastDigits,
+      );
       emit(
         state.copyWith(
           loadStatus: AutoRenewAuthLoadStatus.ready,
@@ -57,13 +59,13 @@ class AutoRenewAuthPrepaidBloc
       AutoRenewAuthSubmitPressed event,
       Emitter<AutoRenewAuthPrepaidState> emit,
       ) async {
-    final name = state.name.trim();
-    if (name.isEmpty) {
+    final name = state.name;
+    if (name.trim().isEmpty) {
       emit(state.copyWith(errorMessage: 'Please enter your name.'));
       return;
     }
 
-    // Validate name matches expected name (case-insensitive)
+    // Validate the exact displayed name before calling the API.
     if (!state.isNameValid) {
       emit(state.copyWith(
         errorMessage: 'Name does not match. Please enter your name exactly as displayed.',

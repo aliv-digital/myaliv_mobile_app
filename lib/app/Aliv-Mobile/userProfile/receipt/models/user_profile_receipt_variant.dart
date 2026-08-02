@@ -1,0 +1,1 @@
+enum UserProfileReceiptVariant { standard, walletTransfer }

@@ -25,6 +25,7 @@ class UserProfileReceiptRepository {
       amount: args.amount,
       title: args.title,
       message: args.receiptMessage,
+      variant: args.variant,
     );
   }
 
