@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
+import 'user_profile_receipt_variant.dart';
+
 class UserProfileReceiptRouteArgs extends Equatable {
   static const String topUpPendingMessage =
       'It will take a few moments for the top-up to appear on the account.';
@@ -15,6 +17,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
   final String title;
   final String? message;
   final String? recipientPhone;
+  final UserProfileReceiptVariant variant;
 
   /// If present, the receipt shows the "save credit card" button; on tap
   /// it saves via [SavedCardsCubit.addCard]. Null for wallet / saved-card
@@ -30,6 +33,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
     this.title = 'Payment Success!',
     this.message,
     this.recipientPhone,
+    this.variant = UserProfileReceiptVariant.standard,
     this.cardToSave,
   });
 
@@ -73,5 +77,6 @@ class UserProfileReceiptRouteArgs extends Equatable {
     createdAt,
     title,
     message,
+    variant,
   ];
 }

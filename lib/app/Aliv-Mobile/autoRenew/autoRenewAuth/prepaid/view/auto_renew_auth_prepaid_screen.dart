@@ -16,11 +16,13 @@ import '../widgets/auth_name_input.dart';
 class AutoRenewAuthPrepaidScreen extends StatelessWidget {
   final AutoRenewPaymentMethodType paymentMethod;
   final String? cardToken;
+  final String? cardLastDigits;
 
   const AutoRenewAuthPrepaidScreen({
     super.key,
     this.paymentMethod = AutoRenewPaymentMethodType.wallet,
     this.cardToken,
+    this.cardLastDigits,
   });
 
   @override
@@ -31,6 +33,7 @@ class AutoRenewAuthPrepaidScreen extends StatelessWidget {
       )..add(AutoRenewAuthPrepaidStarted(
           paymentMethod: paymentMethod,
           cardToken: cardToken,
+          cardLastDigits: cardLastDigits,
         )),
       child: const _AutoRenewAuthPrepaidView(),
     );

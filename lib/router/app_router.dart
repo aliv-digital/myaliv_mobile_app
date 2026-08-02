@@ -283,15 +283,18 @@ class AppRouter {
           AutoRenewPaymentMethodType paymentMethod =
               AutoRenewPaymentMethodType.wallet;
           String? cardToken;
+          String? cardLastDigits;
           if (extra is AutoRenewAuthArgs) {
             paymentMethod = extra.paymentMethod;
             cardToken = extra.cardToken;
+            cardLastDigits = extra.cardLastDigits;
           } else if (extra is AutoRenewPaymentMethodType) {
             paymentMethod = extra;
           }
           return AutoRenewAuthPrepaidScreen(
             paymentMethod: paymentMethod,
             cardToken: cardToken,
+            cardLastDigits: cardLastDigits,
           );
         },
       ),

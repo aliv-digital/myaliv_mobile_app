@@ -104,6 +104,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
       extra: AutoRenewAuthArgs(
         paymentMethod: AutoRenewPaymentMethodType.postpaidInvoice,
         cardToken: card.token,
+        cardLastDigits: card.lastDigits,
       ),
     );
   }

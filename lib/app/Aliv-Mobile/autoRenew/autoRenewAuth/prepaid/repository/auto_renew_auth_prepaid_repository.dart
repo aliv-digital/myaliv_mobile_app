@@ -20,10 +20,12 @@ enum AutoRenewPaymentMethodType {
 class AutoRenewAuthArgs {
   final AutoRenewPaymentMethodType paymentMethod;
   final String? cardToken;
+  final String? cardLastDigits;
 
   const AutoRenewAuthArgs({
     required this.paymentMethod,
     this.cardToken,
+    this.cardLastDigits,
   });
 }
 
@@ -52,7 +54,7 @@ class AutoRenewAuthContent {
 }
 
 abstract class AutoRenewAuthPrepaidRepository {
-  Future<AutoRenewAuthContent> fetchContent();
+  Future<AutoRenewAuthContent> fetchContent({String? cardLastDigits});
   Future<bool> submitAuthorization({
     required String name,
     required AutoRenewPaymentMethodType paymentMethod,
@@ -63,8 +65,14 @@ abstract class AutoRenewAuthPrepaidRepository {
 class AutoRenewAuthPrepaidRepositoryImpl
     implements AutoRenewAuthPrepaidRepository {
   @override
-  Future<AutoRenewAuthContent> fetchContent() async {
+  Future<AutoRenewAuthContent> fetchContent({String? cardLastDigits}) async {
     final fullName = resolveUserDisplayName();
+    final cardDigits = (cardLastDigits ?? '').replaceAll(RegExp(r'\D'), '');
+    final displayedCardDigits = cardDigits.isEmpty
+        ? 'xxxx'
+        : cardDigits.substring(
+            cardDigits.length > 4 ? cardDigits.length - 4 : 0,
+          );
 
     // Small delay for loading state
     await Future.delayed(const Duration(milliseconds: 100));
@@ -72,7 +80,7 @@ class AutoRenewAuthPrepaidRepositoryImpl
     return AutoRenewAuthContent(
       title: 'auto renew authorization form',
       paragraph1:
-          'by providing my credit card ending *xxxx as payment method, i authorize ALIV and/or its agents to store my payment method information and to automatically charge plan renewal costs of qualifying plans for all subscriber lines on my account. i am certifying i am the payment method owner or have authorization to use the payment method information provided for the automatic charging of plan renewal costs.',
+          'by providing my credit card ending *$displayedCardDigits as payment method, i authorize ALIV and/or its agents to store my payment method information and to automatically charge plan renewal costs of qualifying plans for all subscriber lines on my account. i am certifying i am the payment method owner or have authorization to use the payment method information provided for the automatic charging of plan renewal costs.',
       consentTitle: 'electronic communication consent',
       paragraph2:
           'by entering my pin, full name matching the name displayed and clicking agree, i am providing my electronic signature as evidence that i understand the terms i am to which i am agreeing. in addition, i understand this automatic payment authorization will remain in effect until canceled by me via the myALIV app. the complete ALIV automatic payment policy will be sent to your account email address.',

@@ -204,6 +204,7 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
               extra: AutoRenewAuthArgs(
                 paymentMethod: AutoRenewPaymentMethodType.card,
                 cardToken: card.token,
+                cardLastDigits: card.lastDigits,
               ),
             );
           },
