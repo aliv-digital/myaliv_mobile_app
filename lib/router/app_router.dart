@@ -592,7 +592,13 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestPurchasePlanAddOns,
-        builder: (context, state) => const GuestPurchasePlanAddOnsScreen(),
+        builder: (context, state) {
+          final extra = state.extra;
+          final phoneNumber = extra is Map
+              ? (extra['phoneNumber'] as String? ?? '')
+              : '';
+          return GuestPurchasePlanAddOnsScreen(phoneNumber: phoneNumber);
+        },
       ),
       GoRoute(
         path: AppRoutes.homePurchasePlanAddOns,

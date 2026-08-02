@@ -129,10 +129,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
   }
 
   Future<void> _onTapTerms(BuildContext context) async {
-    await showTermsAndConditionsModal(
-      context,
-      isPostpaid: true,
-    );
+    await showTermsAndConditionsModal(context);
   }
 
   @override
@@ -164,7 +161,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
           builder: (context, state) {
             // Shared default bottom pay bar component
             return DefaultBottomPayBar(
-              amountText: '\$ 200.00',//'\$ ${state.total.toStringAsFixed(2)}',
+              amountText: _formatAmount(state.total),
               isLoading:
                   state.payStatus == GuestPayBillConfirmPayStatus.loading,
               buttonText: GuestPayBillConfirmTheme.payNowLabel,
@@ -263,7 +260,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                             items: <CustomPaymentBreakdownLineItem>[
                               CustomPaymentBreakdownLineItem(
                                 label: GuestPayBillConfirmTheme.subTotalLabel,
-                                value: '\$ 200.00',//_formatAmount(state.subTotal),
+                                value: _formatAmount(state.subTotal),
                               ),
                               CustomPaymentBreakdownLineItem(
                                 label: GuestPayBillConfirmTheme.vatLabel,
@@ -271,7 +268,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                               ),
                               CustomPaymentBreakdownLineItem(
                                 label: GuestPayBillConfirmTheme.totalLabel,
-                                value: '\$ 200.00',//_formatAmount(state.total),
+                                value: _formatAmount(state.total),
                               ),
                             ],
                           ),

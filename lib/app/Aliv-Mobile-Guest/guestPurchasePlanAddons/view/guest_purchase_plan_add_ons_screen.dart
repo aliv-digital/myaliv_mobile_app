@@ -17,7 +17,9 @@ import '../widgets/fair_use_policy_card.dart';
 import '../widgets/plan_red_image_card.dart';
 
 class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
-  const GuestPurchasePlanAddOnsScreen({super.key});
+  const GuestPurchasePlanAddOnsScreen({super.key, this.phoneNumber = ''});
+
+  final String phoneNumber;
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +29,18 @@ class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
         create: (ctx) => GuestPurchasePlanAddOnsBloc(
           repository: ctx.read<GuestPurchasePlanAddOnsRepository>(),
         )..add(const GuestPurchasePlanAddOnsStarted()),
-        child: const _GuestPurchasePlanAddOnsView(),
+        child: _GuestPurchasePlanAddOnsView(phoneNumber: phoneNumber),
       ),
     );
   }
 }
 
 class _GuestPurchasePlanAddOnsView extends StatelessWidget {
-  const _GuestPurchasePlanAddOnsView();
+  const _GuestPurchasePlanAddOnsView({this.phoneNumber = ''});
+
+  final String phoneNumber;
 
   static const double _contentHorizontalPadding = 25;
-  static const String _defaultPhone = '242-801-1616';
   static const String _defaultAccountHolder = 'guest purchase a plan';
   static const double _defaultPrimaryPlanPrice = 75;
 
@@ -70,7 +73,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
         .toList();
 
     return GuestPurchasePlanConfirmationRouteArgs(
-      phoneNumber: _defaultPhone,
+      phoneNumber: phoneNumber,
       accountHolderName: _defaultAccountHolder,
       primaryPlanName: primaryPlanName,
       primaryPlanPrice: primaryPlanPrice,

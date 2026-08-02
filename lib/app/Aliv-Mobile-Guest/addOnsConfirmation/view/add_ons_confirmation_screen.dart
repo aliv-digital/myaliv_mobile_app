@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
@@ -81,18 +83,39 @@ class _AddOnsConfirmationView extends StatelessWidget {
                   context.read<AddOnsConfirmationBloc>().add(
                     const AddOnsConfirmationPayNowPressed(),
                   );
+                  final data = state.data!;
+                  final primaryPlanName = data.items
+                      .firstWhere(
+                        (item) =>
+                            item.type == PurchaseLineType.primaryPlan,
+                        orElse: () => const PurchaseLineItem(
+                          id: '',
+                          type: PurchaseLineType.primaryPlan,
+                          label: '',
+                          title: '',
+                          subtitle: '',
+                          price: 0,
+                        ),
+                      )
+                      .title;
+                  final addOnNames = data.items
+                      .where((item) => item.type == PurchaseLineType.addOn)
+                      .map((item) => item.title)
+                      .toList(growable: false);
+                  final now = DateTime.now();
                   context.push(
                     AppRoutes.guestPurchasePlanReceipt,
-                    // extra: GuestPayBillReceiptArgs(
-                    //   serviceName: 'liberty70',
-                    //   identifierLabel: 'mobile no.',
-                    //   identifierValue: '242-801-0000',
-                    //   amount: 200.00,
-                    //   dateText: 'Mar 22, 2023',
-                    //   timeText: '07:30 am'
-                    // )
+                    extra: <String, Object?>{
+                      'phoneNumber': data.phoneNumber,
+                      'amount': data.totals.total,
+                      'planName':
+                          primaryPlanName.isEmpty ? null : primaryPlanName,
+                      'addOnNames': addOnNames,
+                      'dateText': DateFormat('MMM d, yyyy').format(now),
+                      'timeText':
+                          DateFormat('h:mm a').format(now).toLowerCase(),
+                    },
                   );
-                  //context.push(AppRoutes.guestPaymentMethodScreen);
                 },
                 amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
             );

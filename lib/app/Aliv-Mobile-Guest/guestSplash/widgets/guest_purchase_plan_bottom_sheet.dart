@@ -386,7 +386,12 @@ class _SheetBody extends StatelessWidget {
                   }
                   context.push(
                     AppRoutes.guestPurchasePlan,
-                    extra: {'phoneNumber': state.purchasePhone},
+                    extra: {
+                      'phoneNumber':
+                          LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
+                        state.purchasePhone,
+                      ),
+                    },
                   );
                 },
               ),

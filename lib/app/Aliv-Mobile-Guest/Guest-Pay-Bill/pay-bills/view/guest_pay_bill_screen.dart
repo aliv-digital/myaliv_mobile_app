@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/model/guest_pay_bill_confirm_models.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_submit_row.dart';
@@ -169,8 +172,11 @@ class _GuestPayBillView extends StatelessWidget {
     final serviceName = state.selectedService?.label ?? '';
     final identifierLabel = state.isAlivPostpaid ? 'phone no.' : 'account no.';
 
-    final identifierValue =
-        state.isAlivPostpaid ? '242-801-0000' : state.accountNumber.trim();
+    final identifierValue = state.isAlivPostpaid
+        ? LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
+            state.mobileNumber,
+          )
+        : state.accountNumber.trim();
 
     return GuestPayBillConfirmArgs(
       serviceName: serviceName,
@@ -184,6 +190,16 @@ class _GuestPayBillView extends StatelessWidget {
     BuildContext context,
     GuestPayBillState state,
   ) {
+    final bool isBahamas = state.selectedCountry.isoCode == 'BS';
+    final List<TextInputFormatter>? phoneFormatters =
+        isBahamas ? const [BahamasPhoneInputFormatter()] : null;
+    final double mobileErrorLeftPadding = 60 +
+        GuestPayBillTheme.countryPickerToInputGap +
+        14; // picker width + gap + first-field input padding
+    final double confirmErrorLeftPadding = 60 +
+        GuestPayBillTheme.countryPickerToInputGap +
+        16; // picker width + gap + submit-row input container + input padding
+
     return <Widget>[
       Text(
         GuestPayBillTheme.mobileNumberLabel,
@@ -196,6 +212,7 @@ class _GuestPayBillView extends StatelessWidget {
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
         countryIsoCode: state.selectedCountry.isoCode,
+        inputFormatters: phoneFormatters,
         onChanged: (value) {
           _onMobileChanged(context, value);
         },
@@ -217,6 +234,16 @@ class _GuestPayBillView extends StatelessWidget {
           fontFamily: 'CircularPro',
         ),
       ),
+      if (state.showMobileInvalidError) ...[
+        const SizedBox(height: 6),
+        Padding(
+          padding: EdgeInsets.only(left: mobileErrorLeftPadding),
+          child: const Text(
+            GuestPayBillTheme.invalidPhoneErrorMessage,
+            style: GuestPayBillTheme.inlineErrorTextStyle,
+          ),
+        ),
+      ],
       const SizedBox(height: GuestPayBillTheme.sectionGap),
       Text(
         GuestPayBillTheme.confirmMobileNumberLabel,
@@ -229,6 +256,7 @@ class _GuestPayBillView extends StatelessWidget {
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
         countryIsoCode: state.selectedCountry.isoCode,
+        inputFormatters: phoneFormatters,
         enableCountryPicker: false,
         showCountryArrow: false,
         fieldHeight: GuestPayBillTheme.inlineVerifyFieldHeight,
@@ -257,6 +285,19 @@ class _GuestPayBillView extends StatelessWidget {
           _onVerifyPressed(context);
         },
       ),
+      if (state.showConfirmMobileInvalidError ||
+          state.showConfirmMobileMismatchError) ...[
+        const SizedBox(height: 6),
+        Padding(
+          padding: EdgeInsets.only(left: confirmErrorLeftPadding),
+          child: Text(
+            state.showConfirmMobileInvalidError
+                ? GuestPayBillTheme.invalidPhoneErrorMessage
+                : GuestPayBillTheme.mobileMismatchErrorMessage,
+            style: GuestPayBillTheme.inlineErrorTextStyle,
+          ),
+        ),
+      ],
     ];
   }
 
@@ -420,6 +461,21 @@ class _GuestPayBillView extends StatelessWidget {
                                   const TextInputType.numberWithOptions(
                                 decimal: true,
                               ),
+                              prefix: state.amountText.isEmpty
+                                  ? null
+                                  : Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: GuestPayBillTheme
+                                            .amountPrefixLeftPadding,
+                                        right: GuestPayBillTheme
+                                            .amountPrefixRightPadding,
+                                      ),
+                                      child: Text(
+                                        r'$',
+                                        style: GuestPayBillTheme
+                                            .amountPrefixStyle,
+                                      ),
+                                    ),
                               onChanged: (value) {
                                 _onAmountChanged(context, value);
                               },

@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 
 import '../model/guest_pay_bill_models.dart';
 
@@ -56,7 +58,7 @@ class GuestPayBillState extends Equatable {
         name: '',
         mobileNumber: '',
         confirmMobileNumber: '',
-        amountText: '0.00',
+        amountText: '',
         verifyStatus: GuestPayBillVerifyStatus.idle,
         accountInfo: null,
         errorMessage: null,
@@ -77,14 +79,55 @@ class GuestPayBillState extends Equatable {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
+  static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
+
+  LoginCountrySelection get _loginCountrySelection => LoginCountrySelection(
+        isoCode: selectedCountry.isoCode,
+        dialCode: selectedCountry.dialCode,
+        flagEmoji: selectedCountry.flagEmoji,
+      );
+
+  bool get isMobileNumberValid => _phoneHelper
+      .validateAndBuildApiUsername(
+        rawPhoneNumber: mobileNumber,
+        selectedCountry: _loginCountrySelection,
+      )
+      .isValid;
+
+  bool get isConfirmMobileNumberValid => _phoneHelper
+      .validateAndBuildApiUsername(
+        rawPhoneNumber: confirmMobileNumber,
+        selectedCountry: _loginCountrySelection,
+      )
+      .isValid;
+
+  bool get showMobileInvalidError => _phoneHelper.hasLiveValidationError(
+        rawPhoneNumber: mobileNumber,
+        selectedCountry: _loginCountrySelection,
+      );
+
+  bool get showConfirmMobileInvalidError => _phoneHelper.hasLiveValidationError(
+        rawPhoneNumber: confirmMobileNumber,
+        selectedCountry: _loginCountrySelection,
+      );
+
+  bool get showConfirmMobileMismatchError {
+    if (confirmMobileNumber.trim().isEmpty) return false;
+    if (showConfirmMobileInvalidError) return false;
+    if (!isMobileNumberValid) return false;
+    return _digitsOnly(mobileNumber) != _digitsOnly(confirmMobileNumber);
+  }
+
+  String _digitsOnly(String value) => value.replaceAll(RegExp(r'[^0-9]'), '');
+
   bool get canVerify {
     if (selectedService == null) return false;
     if (verifyStatus == GuestPayBillVerifyStatus.loading) return false;
 
     if (isAlivPostpaid) {
-      return mobileNumber.trim().isNotEmpty &&
-          confirmMobileNumber.trim().isNotEmpty &&
-          mobileNumber.trim() == confirmMobileNumber.trim();
+      return isMobileNumberValid &&
+          isConfirmMobileNumberValid &&
+          _digitsOnly(mobileNumber) == _digitsOnly(confirmMobileNumber);
     }
 
     return accountNumber.trim().isNotEmpty && name.trim().isNotEmpty;

@@ -22,6 +22,21 @@ class GuestPayBillTheme {
   // Used by: phone `TextField` hint and inline verify hint.
   static const String phoneHintText = 'eg: 242-899-9999';
 
+  // Used by: inline validation error under phone fields.
+  static const String invalidPhoneErrorMessage = 'invalid phone number';
+  static const String mobileMismatchErrorMessage =
+      'mobile numbers do not match';
+
+  static const Color errorText = Color(0xFFD92D20);
+
+  static const TextStyle inlineErrorTextStyle = TextStyle(
+    fontSize: 12,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w400,
+    height: 1.33,
+    color: errorText,
+  );
+
   // Used by: label above name field for REV / ALIVFibr flow.
   static const String nameLabel = 'name';
 
@@ -261,6 +276,9 @@ class GuestPayBillTheme {
       ),
       suffixIcon: suffix,
       prefixIcon: prefix,
+      prefixIconConstraints: prefix == null
+          ? null
+          : const BoxConstraints(minWidth: 0, minHeight: 0),
     );
   }
 
