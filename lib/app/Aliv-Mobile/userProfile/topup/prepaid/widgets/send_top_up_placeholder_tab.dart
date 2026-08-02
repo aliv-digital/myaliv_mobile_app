@@ -190,6 +190,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     return Scaffold(
       backgroundColor: TopUpPrepaidTheme.pageBg,
       body: SafeArea(
+        top: false,
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 30, 24, 32),
           child: Column(

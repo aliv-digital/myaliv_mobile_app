@@ -96,6 +96,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
     backgroundColor: TopUpPrepaidTheme.pageBg,
     resizeToAvoidBottomInset: true,
     body: SafeArea(
+      top: false,
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
           24,

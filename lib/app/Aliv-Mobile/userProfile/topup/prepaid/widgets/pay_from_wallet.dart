@@ -42,10 +42,10 @@ class _PayFromWalletSheetView extends StatelessWidget {
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: BlocConsumer<PayFromWalletCubit, PayFromWalletState>(
             listener: (context, state) {
               if (state.isSuccess) {
@@ -65,117 +65,114 @@ class _PayFromWalletSheetView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ================= HEADER =================
+                  IconButton(
+                    padding: const EdgeInsets.only(left: 4),
+                    constraints: const BoxConstraints.tightFor(
+                      width: 48,
+                      height: 48,
+                    ),
+                    alignment: Alignment.centerLeft,
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: isSubmitting
+                        ? null
+                        : () => Navigator.pop(context),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'pay from wallet',
+                    style: TextStyle(
+                      color: Color(0xFF222222),
+                      fontFamily: 'CircularPro',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // ================= WALLET ROW =================
                   Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: isSubmitting
-                            ? null
-                            : () => Navigator.pop(context),
+                      SvgPicture.asset(
+                        'assets/icons/Title.svg',
+                        width: 24,
+                        height: 24,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       const Text(
-                        'pay from wallet',
+                        'Wallet balance',
                         style: TextStyle(
+                          color: Color(0xFF222222),
+                          fontSize: 16,
                           fontFamily: 'CircularPro',
-                          fontSize: 18,
                           fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 72),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: ShapeDecoration(
+                          color: const Color(0xFFF8F8FC),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: BlocBuilder<BalanceCubit, BalanceState>(
+                          builder: (context, balanceState) {
+                            return Text(
+                              BalanceCurrencyFormatterService.format(
+                                balanceState.walletBalance,
+                              ),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Color(0xFF222222),
+                                fontSize: 14,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
-
-                  // ================= WALLET ROW =================
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SvgPicture.asset('assets/icons/Title.svg'),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Wallet balance',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF222222),
-                            fontSize: 14,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 72,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFF8F8FC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: BlocBuilder<BalanceCubit, BalanceState>(
-                            builder: (context, balanceState) {
-                              return FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  BalanceCurrencyFormatterService.format(
-                                    balanceState.walletBalance,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Color(0xFF222222),
-                                    fontSize: 14,
-                                    fontFamily: 'CircularPro',
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 34),
 
                   // ================= AMOUNT =================
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
-                    child: Text(
-                      'amount',
-                      style: TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  const Text(
+                    'amount',
+                    style: TextStyle(
+                      color: Color(0xFF222222),
+                      fontFamily: 'CircularPro',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: Container(
-                      height: 52,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: TopUpPrepaidTheme.lightBg,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '\$ ${amount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF707070),
-                        ),
+                  Container(
+                    width: double.infinity,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: TopUpPrepaidTheme.lightBg,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '\$ ${amount.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF707070),
                       ),
                     ),
                   ),
