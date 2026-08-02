@@ -265,8 +265,8 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 180),
               curve: Curves.easeOut,
-              height: 24,
-              padding: const EdgeInsets.symmetric(horizontal: 5.666),
+              height: 28.0,
+              padding: const EdgeInsets.symmetric(horizontal: 3.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(999),
@@ -291,7 +291,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                     )
                   else
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.5),
+                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
                       child: Text(
                         isOn ? 'on' : 'off',
                         textDirection: TextDirection.ltr,
@@ -299,7 +299,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                           color: isOn
                               ? Colors.black
                               : const Color(0xFF707070),
-                          fontSize: 12,
+                          fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w700,
                           height: 1.0,
@@ -309,8 +309,8 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     curve: Curves.easeOut,
-                    width: 16.67,
-                    height: 16.67,
+                    width: 20.0,
+                    height: 20.0,
                     decoration: BoxDecoration(
                       color: isOn
                           ? const Color(0xFF645D9C)

@@ -50,7 +50,7 @@ class CommonSwitchButtonLarge extends StatelessWidget {
           onTap: () => onChanged?.call(!value),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            height: 28, // 🔥 FIXED HEIGHT
+            height: 28.0, // 🔥 FIXED HEIGHT
             padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
             decoration: BoxDecoration(
               color: const Color(0xFFFDFDFD),
@@ -71,16 +71,17 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 12,
+                          fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w500,
+                          height: 1.0,
                         ),
                       ),
                       const SizedBox(width: 2),
                       SvgPicture.asset(
                         'assets/icons/tikIcon.svg',
-                        height: 18,
-                        width: 18,
+                        height: 20,
+                        width: 20,
                       ),
                       const SizedBox(width: 3),
 
@@ -96,8 +97,8 @@ class CommonSwitchButtonLarge extends StatelessWidget {
 
                       SvgPicture.asset(
                         'assets/icons/cross.svg',
-                        height: 18,
-                        width: 18,
+                        height: 20,
+                        width: 20,
                         // color: const Color(0xFF707070),
                       ),
 
@@ -107,9 +108,10 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: const Color(0xFF707070),
-                          fontSize: 12,
+                          fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w500,
+                          height: 1.0,
                         ),
                       ),
                       const SizedBox(width: 3),

@@ -21,7 +21,7 @@ class StripedScaffold extends StatelessWidget {
     this.stripesReserveSpace = false,
   });
 
-  static const Color defaultBackgroundColor = Color(0xFFF4F6FB);
+  static const Color defaultBackgroundColor = Colors.white;
 
   final Widget body;
   final PreferredSizeWidget? appBar;
