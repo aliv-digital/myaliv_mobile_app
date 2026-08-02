@@ -50,7 +50,7 @@ class CommonSwitchButtonLarge extends StatelessWidget {
           onTap: () => onChanged?.call(!value),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            height: 28.0, // 🔥 FIXED HEIGHT
+            height: 24.0, // 🔥 FIXED HEIGHT
             padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
             decoration: BoxDecoration(
               color: const Color(0xFFFDFDFD),

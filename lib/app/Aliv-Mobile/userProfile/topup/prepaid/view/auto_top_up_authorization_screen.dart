@@ -141,11 +141,41 @@ class _AutoTopUpAuthorizationScreenState extends State<AutoTopUpAuthorizationScr
             const SizedBox(height: 24),
             const Text('name', style: TextStyle(color: Color(0xFF1C1C1C), fontSize: 14, fontFamily: 'CircularPro', fontWeight: FontWeight.w700, height: 1.43)),
             const SizedBox(height: 8),
-            TopUpFormInputField(
-              hint: 'type your name exactly as it appears on your account',
-              fitHint: true,
-              isAmountType: false,
-              controller: _nameController,
+            Container(
+              height: TopUpPrepaidTheme.formInputHeight,
+              padding: TopUpPrepaidTheme.formInputHorizontalPadding,
+              decoration: BoxDecoration(
+                color: TopUpPrepaidTheme.lightBg,
+                borderRadius:
+                    BorderRadius.circular(TopUpPrepaidTheme.formInputRadius),
+              ),
+              alignment: Alignment.centerLeft,
+              child: TextField(
+                controller: _nameController,
+                keyboardType: TextInputType.name,
+                style: const TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+                decoration: InputDecoration(
+                  isCollapsed: true,
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                  hint: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'type your name exactly as it appears on your account',
+                      style: TextStyle(
+                        fontFamily: 'CircularPro',
+                        fontSize: 13,
+                        color: Color(0xFF707070),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 40),
             SizedBox(

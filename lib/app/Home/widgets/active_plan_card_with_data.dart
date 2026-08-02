@@ -20,8 +20,11 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool showRenewButton;
   final bool isFromHome;
 
-  const PrepaidActivePlanCardWithData(
-      {super.key, this.showRenewButton = true, this.isFromHome = false});
+  const PrepaidActivePlanCardWithData({
+    super.key,
+    this.showRenewButton = true,
+    this.isFromHome = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +40,9 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             ? AssetConstant.homeRedCardSVG
             : AssetConstant.redCreditCardSVG;
         final cardHeight = showRenewButton ? 200.0 : 150.0;
-        final cardPadding = showRenewButton ? const EdgeInsets.symmetric(
-            horizontal: 16, vertical: 13) : const EdgeInsets.fromLTRB(
-            16, 13, 16, 26);
+        final cardPadding = showRenewButton
+            ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
+            : const EdgeInsets.fromLTRB(16, 13, 16, 26);
 
         final card = ClipRRect(
           borderRadius: BorderRadius.circular(12),
@@ -53,9 +56,9 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
                 ),
                 Padding(
                   padding: cardPadding,
-                  child: (state.isLoading || state.isInitial) ?
-                  ActivePlanCardSkeleton(showRenewButton: showRenewButton) :
-                  _buildContent(state.earliestAddOnsPrimaryPlan),
+                  child: (state.isLoading || state.isInitial)
+                      ? ActivePlanCardSkeleton(showRenewButton: showRenewButton)
+                      : _buildContent(state.earliestAddOnsPrimaryPlan),
                 ),
               ],
             ),
@@ -77,9 +80,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
       children: [
         const _TopRow(),
         Text(
-          activePlan?.planName
-              .trim()
-              .isNotEmpty == true
+          activePlan?.planName.trim().isNotEmpty == true
               ? activePlan!.planName
               : 'no active plan',
           maxLines: 1,
@@ -102,7 +103,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
           BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
             bloc: instance<DeviceLimitsCubit>(),
             buildWhen: (previous, current) =>
-            previous.autoRenew != current.autoRenew,
+                previous.autoRenew != current.autoRenew,
             builder: (context, limitsState) {
               if (limitsState.autoRenew) {
                 return const SizedBox.shrink();
@@ -139,8 +140,7 @@ class _CreditCardBackground extends StatelessWidget {
         final svgHeight = isHomeRedCard ? _homeSvgHeight : _svgHeight;
         final cardHeight = isHomeRedCard ? _homeCardHeight : _cardHeight;
         final backgroundWidth = constraints.maxWidth * _svgWidth / _cardWidth;
-        final backgroundHeight =
-            constraints.maxHeight * svgHeight / cardHeight;
+        final backgroundHeight = constraints.maxHeight * svgHeight / cardHeight;
         final leftOffset = constraints.maxWidth * _cardLeft / _cardWidth;
         final topOffset = constraints.maxHeight * _cardTop / cardHeight;
 
@@ -203,7 +203,7 @@ class _TopRow extends StatelessWidget {
         BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
           bloc: instance<DeviceLimitsCubit>(),
           buildWhen: (previous, current) =>
-          previous.autoRenew != current.autoRenew ||
+              previous.autoRenew != current.autoRenew ||
               previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
           builder: (context, state) {
             return _AutoRenewToggle(
@@ -272,7 +272,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 180),
               curve: Curves.easeOut,
-              height: 28.0,
+              height: 24.0,
               padding: const EdgeInsets.symmetric(horizontal: 3.0),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -303,9 +303,7 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
                         isOn ? 'on' : 'off',
                         textDirection: TextDirection.ltr,
                         style: TextStyle(
-                          color: isOn
-                              ? Colors.black
-                              : const Color(0xFF707070),
+                          color: isOn ? Colors.black : const Color(0xFF707070),
                           fontSize: 15,
                           fontFamily: 'CircularPro',
                           fontWeight: FontWeight.w700,

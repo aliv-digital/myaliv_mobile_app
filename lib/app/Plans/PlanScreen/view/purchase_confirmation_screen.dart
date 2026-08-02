@@ -473,7 +473,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   subTotalText: subTotalText,
                   vatText: formatConfirmationCurrency(vat),
                   totalText: totalText,
-                  promoValue: isMyNumberTopUp ? _promoCode : null,
+                  promoValue: isMyNumberTopUp ? null : _promoCode,
                   promoEnabled:
                       _promoStatus != _ConfirmationPromoStatus.applying,
                   isPromoActionLoading:
