@@ -136,7 +136,6 @@ class HomePlanPurchaseReceiptPaymentFailedTicket extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        color: _titleYellow,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 3,
                           vertical: 1,
