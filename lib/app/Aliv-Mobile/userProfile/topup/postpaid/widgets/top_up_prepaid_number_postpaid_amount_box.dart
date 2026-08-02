@@ -34,7 +34,9 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
   }
 
   @override
-  void didUpdateWidget(covariant TopUpPrepaidNumberPostPaidAmountBox oldWidget) {
+  void didUpdateWidget(
+    covariant TopUpPrepaidNumberPostPaidAmountBox oldWidget,
+  ) {
     super.didUpdateWidget(oldWidget);
 
     // ✅ external state update -> update controller safely
@@ -85,11 +87,12 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
     final textWidth = _measureTextWidth(currentText, amountStyle);
 
     // tune these if needed to match figma tighter/looser
-    const minFieldWidth = 70.0;
     const maxFieldWidth = 220.0;
 
-    final fieldWidth = (textWidth + 18) // small breathing space
-        .clamp(minFieldWidth, maxFieldWidth);
+    // Hug the measured text/hint width so a single digit doesn't float in a
+    // wider centered field, but the "$00" hint still fits (currentText above
+    // falls back to r'$00' when empty).
+    final fieldWidth = (textWidth + 4).clamp(14.0, maxFieldWidth);
 
     return Column(
       children: [
@@ -97,15 +100,16 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
         Text(
           'enter top-up amount',
           style: TopUpPrepaidNumberPostPaidTheme.amountHint(),
-        ),        const SizedBox(height: 8),
+        ),
+        const SizedBox(height: 8),
 
         Container(
           width: 280,
           height: 92,
           decoration: BoxDecoration(
-
             borderRadius: BorderRadius.circular(
-                GuestTopUpTheme.amountFieldRadius),
+              GuestTopUpTheme.amountFieldRadius,
+            ),
             // Anchor gradient start exactly at top-left for
             // consistent pixel positioning across widths.
             gradient: SweepGradient(
@@ -117,8 +121,7 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
               BoxShadow(
                 color: GuestTopUpTheme.amountFieldShadowColor,
                 blurRadius: GuestTopUpTheme.amountFieldShadowBlur,
-                offset:
-                Offset(0, GuestTopUpTheme.amountFieldShadowOffsetY),
+                offset: Offset(0, GuestTopUpTheme.amountFieldShadowOffsetY),
               ),
             ],
           ),
@@ -135,10 +138,7 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (!isEmpty) ...[
-                    Text(r'$', style: amountStyle),
-                    const SizedBox(width: 1),
-                  ],
+                  if (!isEmpty) Text(r'$', style: amountStyle),
                   SizedBox(
                     width: fieldWidth,
                     child: TextField(
@@ -150,7 +150,8 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                       ],
                       style: amountStyle,
-                      textAlign: TextAlign.center, // ✅ visually centered
+                      textAlign: TextAlign.center,
+                      // ✅ visually centered
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         isDense: true,

@@ -159,24 +159,19 @@ class _GuestPayBillConfirmView extends StatelessWidget {
             return hasTotalChanged || hasPayStatusChanged || hasTermsCheckedChanged;
           },
           builder: (context, state) {
-            // Shared default bottom pay bar component
+            // Shared default bottom pay bar component.
+            // Pay Now stays disabled until the T&C checkbox is checked so the
+            // user cannot submit before agreeing to the terms.
             return DefaultBottomPayBar(
               amountText: _formatAmount(state.total),
               isLoading:
                   state.payStatus == GuestPayBillConfirmPayStatus.loading,
+              isButtonEnabled: state.isTermsChecked,
               buttonText: GuestPayBillConfirmTheme.payNowLabel,
               isVatExclusive: true,
               backgroundColor: Colors.white,
               buttonColor: GuestPayBillConfirmTheme.primary,
               onPayNow: () {
-                // if (!state.isTermsChecked) {
-                //   _showSnackBar(
-                //     context,
-                //     GuestPayBillConfirmTheme.termsValidationMessage,
-                //   );
-                //   return;
-                // }
-                //context.push(AppRoutes.guestPayBillReceipt, extra: _buildReceiptArgs(state));
                 _onPayNowPressed(context);
               },
             );

@@ -107,12 +107,17 @@ class _GuestConfirmTopUpView extends StatelessWidget {
         bottomNavigationBar:
             BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
           buildWhen: (previousState, currentState) {
-            // Bottom pay bar depends on total amount and loading status.
+            // Bottom pay bar depends on total amount, loading status,
+            // and whether the terms checkbox is checked (gates the button).
             final hasTotalChanged = previousState.total != currentState.total;
             final hasStatusChanged =
                 previousState.status != currentState.status;
+            final hasTermsCheckedChanged =
+                previousState.isTermsChecked != currentState.isTermsChecked;
 
-            return hasTotalChanged || hasStatusChanged;
+            return hasTotalChanged ||
+                hasStatusChanged ||
+                hasTermsCheckedChanged;
           },
           builder: (context, state) {
             final amountText = _formatCurrency(state.total);
@@ -120,8 +125,9 @@ class _GuestConfirmTopUpView extends StatelessWidget {
 
             return DefaultBottomPayBar(
               amountText: amountText,
-              
+
               isLoading: isLoading,
+              isButtonEnabled: state.isTermsChecked,
               buttonText: TopUpConfirmTheme.payNowLabel,
               isVatExclusive: true,
               backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,

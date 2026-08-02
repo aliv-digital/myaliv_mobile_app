@@ -44,8 +44,44 @@ class GuestPayBillScreen extends StatelessWidget {
   }
 }
 
-class _GuestPayBillView extends StatelessWidget {
+class _GuestPayBillView extends StatefulWidget {
   const _GuestPayBillView();
+
+  @override
+  State<_GuestPayBillView> createState() => _GuestPayBillViewState();
+}
+
+class _GuestPayBillViewState extends State<_GuestPayBillView> {
+  final FocusNode _mobileFocusNode = FocusNode();
+  final FocusNode _confirmMobileFocusNode = FocusNode();
+  bool _hasMobileFocus = false;
+  bool _hasConfirmMobileFocus = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _mobileFocusNode.addListener(_handleMobileFocusChange);
+    _confirmMobileFocusNode.addListener(_handleConfirmMobileFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _mobileFocusNode.removeListener(_handleMobileFocusChange);
+    _confirmMobileFocusNode.removeListener(_handleConfirmMobileFocusChange);
+    _mobileFocusNode.dispose();
+    _confirmMobileFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleMobileFocusChange() {
+    if (_hasMobileFocus == _mobileFocusNode.hasFocus) return;
+    setState(() => _hasMobileFocus = _mobileFocusNode.hasFocus);
+  }
+
+  void _handleConfirmMobileFocusChange() {
+    if (_hasConfirmMobileFocus == _confirmMobileFocusNode.hasFocus) return;
+    setState(() => _hasConfirmMobileFocus = _confirmMobileFocusNode.hasFocus);
+  }
 
   GuestPayBillBloc _bloc(BuildContext context) {
     return context.read<GuestPayBillBloc>();
@@ -200,6 +236,32 @@ class _GuestPayBillView extends StatelessWidget {
         GuestPayBillTheme.countryPickerToInputGap +
         16; // picker width + gap + submit-row input container + input padding
 
+    // Login-style visual feedback for the mobile phone field:
+    // red border when unfocused with an invalid value, and red input
+    // text as the user types an invalid value.
+    final bool showMobileBorderError =
+        !_hasMobileFocus && state.showMobileInvalidError;
+    final Color mobileBorderColor = showMobileBorderError
+        ? GuestPayBillTheme.errorText
+        : GuestPayBillTheme.unfocusedInputBorderColor;
+    final TextStyle mobileInputStyle = state.showMobileInvalidError
+        ? GuestPayBillTheme.inputTextStyle
+            .copyWith(color: GuestPayBillTheme.errorText)
+        : GuestPayBillTheme.inputTextStyle;
+
+    // Same treatment for the confirm field, including mismatch state.
+    final bool confirmHasError = state.showConfirmMobileInvalidError ||
+        state.showConfirmMobileMismatchError;
+    final bool showConfirmBorderError =
+        !_hasConfirmMobileFocus && confirmHasError;
+    final Color confirmBorderColor = showConfirmBorderError
+        ? GuestPayBillTheme.errorText
+        : GuestPayBillTheme.unfocusedInputBorderColor;
+    final TextStyle confirmInputStyle = confirmHasError
+        ? GuestPayBillTheme.inputTextStyle
+            .copyWith(color: GuestPayBillTheme.errorText)
+        : GuestPayBillTheme.inputTextStyle;
+
     return <Widget>[
       Text(
         GuestPayBillTheme.mobileNumberLabel,
@@ -207,12 +269,14 @@ class _GuestPayBillView extends StatelessWidget {
       ),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       CustomCountryPhoneInputRow(
-        hideUnfocusedInputBorder: true,
+        focusNode: _mobileFocusNode,
+        hideUnfocusedInputBorder: false,
         hintText: GuestPayBillTheme.phoneHintText,
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
         countryIsoCode: state.selectedCountry.isoCode,
         inputFormatters: phoneFormatters,
+        keyboardType: TextInputType.phone,
         onChanged: (value) {
           _onMobileChanged(context, value);
         },
@@ -225,8 +289,8 @@ class _GuestPayBillView extends StatelessWidget {
         borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
         countryPickerPadding: const EdgeInsets.symmetric(horizontal: 10),
         backgroundColor: GuestPayBillTheme.fieldBg,
-        unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
-        phoneInputStyle: GuestPayBillTheme.inputTextStyle,
+        unfocusedBorderColor: mobileBorderColor,
+        phoneInputStyle: mobileInputStyle,
         phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
         dialCodeStyle: GuestPayBillTheme.inputTextStyle,
         flagStyle: const TextStyle(
@@ -251,7 +315,8 @@ class _GuestPayBillView extends StatelessWidget {
       ),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       CustomCountryPhoneInputSubmitRow(
-        hideUnfocusedInputBorder: true,
+        focusNode: _confirmMobileFocusNode,
+        hideUnfocusedInputBorder: false,
         hintText: GuestPayBillTheme.phoneHintText,
         flagEmoji: state.selectedCountry.flagEmoji,
         dialCode: state.selectedCountry.dialCode,
@@ -269,11 +334,11 @@ class _GuestPayBillView extends StatelessWidget {
         countryDialToArrowGap: 4,
         countryArrowIconSize: 18,
         backgroundColor: GuestPayBillTheme.fieldBg,
-        unfocusedBorderColor: GuestPayBillTheme.unfocusedInputBorderColor,
+        unfocusedBorderColor: confirmBorderColor,
         borderRadius: GuestPayBillTheme.radius,
         borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
         keyboardType: TextInputType.phone,
-        phoneInputStyle: GuestPayBillTheme.inputTextStyle,
+        phoneInputStyle: confirmInputStyle,
         phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
         dialCodeStyle: GuestPayBillTheme.inputTextStyle,
         submitEnabled: state.canVerify,

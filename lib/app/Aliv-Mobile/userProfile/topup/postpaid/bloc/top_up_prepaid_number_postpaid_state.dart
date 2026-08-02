@@ -65,13 +65,15 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
       numberValidation.phoneNumberForApi ==
           confirmNumberValidation.phoneNumberForApi;
 
-  /// True when both fields hold individually-valid phone numbers that
-  /// don't match — surfaces an inline error under the confirm field.
-  bool get hasConfirmMismatchError =>
-      numberValidation.isValid &&
-      confirmNumberValidation.isValid &&
-      numberValidation.phoneNumberForApi !=
-          confirmNumberValidation.phoneNumberForApi;
+  /// Mirrors the guest "purchase a plan" bottom sheet: mismatch surfaces as
+  /// soon as the confirm field is non-empty and its digits differ from the
+  /// main number's digits — independent of either field's own validity.
+  bool get hasConfirmMismatchError {
+    if (confirmNumber.isEmpty) return false;
+    final digitsOnly = RegExp(r'[^0-9]');
+    return number.replaceAll(digitsOnly, '') !=
+        confirmNumber.replaceAll(digitsOnly, '');
+  }
 
   bool get canApply =>
       loadStatus == TopUpPrepaidNumberPostPaidLoadStatus.ready &&

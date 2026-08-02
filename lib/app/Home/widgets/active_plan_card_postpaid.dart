@@ -329,8 +329,7 @@ class _AutoPayToggleState extends State<_AutoPayToggle> {
         );
       } else if (success) {
         AppToast.show(
-          message:
-              "We're working on it! Auto-pay takes a few minutes to update. Thank you for your patience.",
+          message: 'your account will not auto pay',
           type: ToastType.success,
         );
       }

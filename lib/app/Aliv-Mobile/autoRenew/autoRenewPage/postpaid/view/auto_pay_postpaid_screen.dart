@@ -137,7 +137,7 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
 
     AppToast.show(
       message: success
-          ? "We're working on it! Auto-pay takes a few minutes to update. Thank you for your patience."
+          ? 'your account will not auto pay'
           : 'Failed to disable auto-pay',
       type: success ? ToastType.success : ToastType.error,
     );
