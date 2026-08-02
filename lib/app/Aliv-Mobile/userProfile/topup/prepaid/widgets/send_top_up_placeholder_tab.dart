@@ -283,7 +283,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 width: double.infinity,
                 height: 40,
                 child: ElevatedButton(
-                  onPressed: _isChecking ? null : () async {
+                  onPressed: (_isChecking || _amountValue <= 0) ? null : () async {
                     final phoneValidation = _validatePhone(_phoneNumber);
                     final confirmPhoneValidation =
                         _validatePhone(_confirmPhoneNumber);

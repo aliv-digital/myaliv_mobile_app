@@ -6,8 +6,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -370,30 +369,7 @@ class _ActivePlanCardState extends State<_ActivePlanCard> {
     // When there is a real active plan, show it with the auto-renew toggle.
     // When there is no active plan, fall back to the clicked plan — no toggle.
     if (activePlan != null) {
-      return BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-        bloc: instance<DeviceLimitsCubit>(),
-        buildWhen: (previous, current) =>
-            previous.autoRenew != current.autoRenew ||
-            previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
-        builder: (context, deviceLimitsState) {
-          return PlanPurchasePlanRedImageCard(
-            planLabel: activePlan.label,
-            planName: activePlan.name,
-            activeLabel: activePlan.activeDateLabel,
-            activeDate: activePlan.activeDate,
-            expireLabel: activePlan.expireDateLabel,
-            expireDate: activePlan.expireDate,
-            autoRenew: deviceLimitsState.autoRenew,
-            onAutoRenewChanged: (_) {
-              if (deviceLimitsState.isTogglingAutoRenew) return;
-              handleAutoRenewToggle(
-                context,
-                currentValue: deviceLimitsState.autoRenew,
-              );
-            },
-          );
-        },
-      );
+      return const PrepaidActivePlanCardWithData(showRenewButton: false);
     }
 
     return PlanPurchasePlanRedImageCard(
