@@ -32,7 +32,7 @@ class _UsageScreenState extends State<UsageScreen>
       length: _tabLength,
       initialIndex: _resolveInitialTabIndex(config),
       vsync: this,
-    );
+    )..addListener(_handleTabChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -42,8 +42,14 @@ class _UsageScreenState extends State<UsageScreen>
 
   @override
   void dispose() {
+    _tabController?.removeListener(_handleTabChanged);
     _tabController?.dispose();
     super.dispose();
+  }
+
+  void _handleTabChanged() {
+    if (!mounted) return;
+    setState(() {});
   }
 
   void _syncControllerLength(HomeUiConfig config) {
@@ -51,13 +57,14 @@ class _UsageScreenState extends State<UsageScreen>
     if (newLength == _tabLength) return;
 
     final oldIndex = _tabController?.index ?? 0;
+    _tabController?.removeListener(_handleTabChanged);
     _tabController?.dispose();
     _tabLength = newLength;
     _tabController = TabController(
       length: newLength,
       initialIndex: oldIndex.clamp(0, newLength - 1),
       vsync: this,
-    );
+    )..addListener(_handleTabChanged);
   }
 
   void _handleNavigationIntent(HomeUiConfig state) {
@@ -91,6 +98,13 @@ class _UsageScreenState extends State<UsageScreen>
     ];
   }
 
+  String _titleForIndex(int index, HomeUiConfig config) {
+    if (index == 0) return 'my plans';
+    final tabs = _tabs(config);
+    if (index < 0 || index >= tabs.length) return 'my plans';
+    return tabs[index].text ?? 'my plans';
+  }
+
   int _resolveInitialTabIndex(HomeUiConfig config) {
     if (config.isPostpaid && config.openMyLimits) {
       return 2;
@@ -111,6 +125,7 @@ class _UsageScreenState extends State<UsageScreen>
     final tabs = _tabs(config);
     final views = _tabViews(config);
     final controller = _tabController!;
+    final title = _titleForIndex(controller.index, config);
 
     return BlocListener<AppUiConfigCubit, HomeUiConfig>(
       listenWhen: (p, c) =>
@@ -131,9 +146,9 @@ class _UsageScreenState extends State<UsageScreen>
           ),
           title: Padding(
             padding: const EdgeInsets.only(left: 16.0),
-            child: const Text(
-              'my plans',
-              style: TextStyle(
+            child: Text(
+              title,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 17,
                 fontFamily: 'CircularPro',
