@@ -20,7 +20,8 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
   final bool showRenewButton;
   final bool isFromHome;
 
-  const PrepaidActivePlanCardWithData({super.key, this.showRenewButton = true,this.isFromHome=false});
+  const PrepaidActivePlanCardWithData(
+      {super.key, this.showRenewButton = true, this.isFromHome = false});
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +33,13 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
-        final redCreditCard = isFromHome ? AssetConstant.homeRedCardSVG : AssetConstant.redCreditCardSVG;
+        final redCreditCard = isFromHome
+            ? AssetConstant.homeRedCardSVG
+            : AssetConstant.redCreditCardSVG;
         final cardHeight = showRenewButton ? 200.0 : 150.0;
-        final cardPadding = showRenewButton ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13) : const EdgeInsets.fromLTRB(16, 13, 16, 26);
+        final cardPadding = showRenewButton ? const EdgeInsets.symmetric(
+            horizontal: 16, vertical: 13) : const EdgeInsets.fromLTRB(
+            16, 13, 16, 26);
 
         final card = ClipRRect(
           borderRadius: BorderRadius.circular(12),
@@ -72,7 +77,9 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
       children: [
         const _TopRow(),
         Text(
-          activePlan?.planName.trim().isNotEmpty == true
+          activePlan?.planName
+              .trim()
+              .isNotEmpty == true
               ? activePlan!.planName
               : 'no active plan',
           maxLines: 1,
@@ -95,7 +102,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
           BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
             bloc: instance<DeviceLimitsCubit>(),
             buildWhen: (previous, current) =>
-                previous.autoRenew != current.autoRenew,
+            previous.autoRenew != current.autoRenew,
             builder: (context, limitsState) {
               if (limitsState.autoRenew) {
                 return const SizedBox.shrink();
@@ -196,7 +203,7 @@ class _TopRow extends StatelessWidget {
         BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
           bloc: instance<DeviceLimitsCubit>(),
           buildWhen: (previous, current) =>
-              previous.autoRenew != current.autoRenew ||
+          previous.autoRenew != current.autoRenew ||
               previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
           builder: (context, state) {
             return _AutoRenewToggle(

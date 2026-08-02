@@ -90,7 +90,6 @@ class _PlanAddOnsBodyState extends State<PlanAddOnsBody> {
         }
 
         return HomePlanAddOnsTabContent(
-          activePrimaryPlan: state.earliestAddOnsPrimaryPlan,
           addOns: state.addOns,
           selectedAddOnIds: state.selectedAddOnIds,
           onToggleAddOn: (addOn) =>

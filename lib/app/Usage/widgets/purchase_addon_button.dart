@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../../core/utils/app_session.dart';
-import '../../../router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class PurchaseAddOnButton extends StatelessWidget {
   const PurchaseAddOnButton({super.key});
@@ -11,37 +13,46 @@ class PurchaseAddOnButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: SizedBox(
-        width: double.infinity,
-        height: 40,
-        child: ElevatedButton(
-          onPressed: () {
-            // 🔥 purchase add-on
-            AppSession.appRoute = 'addOnsPrepaid';
-            // context.read<PlansCubit>().changeTab(HomePlanTab.addOns);
-            context.push(AppRoutes.purchaseAddOns);
-            //context.push(AppRoutes.guestPurchasePlanAddOns);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: purple,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
+    return BlocBuilder<PlansCubit, PlansState>(
+      buildWhen: (a, b) =>
+          a.status != b.status ||
+          a.earliestAddOnsPrimaryPlan != b.earliestAddOnsPrimaryPlan,
+      builder: (context, state) {
+        final resolving = state.status == PlansStatus.initial ||
+            state.status == PlansStatus.loading;
+        if (resolving || state.earliestAddOnsPrimaryPlan == null) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: SizedBox(
+            width: double.infinity,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                AppSession.appRoute = 'addOnsPrepaid';
+                context.push(AppRoutes.purchaseAddOns);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: purple,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
+              ),
+              child: const Text(
+                'purchase an add-on',
+                style: TextStyle(
+                  color: Color(0xFFF1F1F8),
+                  fontSize: 15,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
-          child: const Text(
-            'purchase an add-on',
-            style: TextStyle(
-              color: const Color(0xFFF1F1F8),
-              fontSize: 15,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

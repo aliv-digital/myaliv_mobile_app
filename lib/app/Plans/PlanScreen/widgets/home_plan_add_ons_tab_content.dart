@@ -1,28 +1,24 @@
-import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/model/plan_purchase_add_on_models.dart'
     as plan_add_ons_models;
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_add_on_tile.dart';
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_fair_use_policy_card.dart';
-import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_plan_red_image_card.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../cubit/plans_state.dart';
 import '../models/add_on_model.dart';
-import '../models/base_plan_model.dart';
 import '../repository/plan_types.dart';
 
 class HomePlanAddOnsTabContent extends StatelessWidget {
   const HomePlanAddOnsTabContent({
     super.key,
-    required this.activePrimaryPlan,
     required this.addOns,
     required this.selectedAddOnIds,
     required this.onToggleAddOn,
@@ -48,24 +44,9 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
     );
   }
 
-  final BasePlanModel? activePrimaryPlan;
   final List<HomePlanAddOnModel> addOns;
   final Set<String> selectedAddOnIds;
   final ValueChanged<HomePlanAddOnModel> onToggleAddOn;
-
-  plan_add_ons_models.PlanPurchaseActivePlanSummary _buildActivePlanSummary() {
-    return plan_add_ons_models.PlanPurchaseActivePlanSummary(
-      label: 'active plan',
-      name: activePrimaryPlan?.planName.trim().isNotEmpty == true
-          ? activePrimaryPlan!.planName
-          : '--',
-      autoRenew: activePrimaryPlan?.autoRenew ?? false,
-      activeDateLabel: 'active',
-      activeDate: _formatCardDate(activePrimaryPlan?.startDateTime),
-      expireDateLabel: 'expire',
-      expireDate: _formatCardDate(activePrimaryPlan?.endDateTime),
-    );
-  }
 
   plan_add_ons_models.PlanPurchaseFairUsePolicy _fairUsePolicy() {
     return const plan_add_ons_models.PlanPurchaseFairUsePolicy(
@@ -88,18 +69,11 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
     );
   }
 
-  String _formatCardDate(DateTime? date) {
-    if (date == null) {
-      return '--/--/--';
-    }
-
-    return DateFormat('dd/MM/yy').format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final activePlan = _buildActivePlanSummary();
     final fairUsePolicy = _fairUsePolicy();
+    final isPostpaid = context.watch<AppUiConfigCubit>().state.userType ==
+        UserType.postpaid;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -109,33 +83,10 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
         16,
       ),
       children: <Widget>[
-        BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
-          bloc: instance<DeviceLimitsCubit>(),
-          buildWhen: (previous, current) =>
-              previous.autoRenew != current.autoRenew ||
-              previous.isTogglingAutoRenew != current.isTogglingAutoRenew,
-          builder: (context, deviceLimitsState) {
-            return PlanPurchasePlanRedImageCard(
-              planLabel: activePlan.label,
-              planName: activePlan.name,
-              activeLabel: activePlan.activeDateLabel,
-              activeDate: activePlan.activeDate,
-              expireLabel: activePlan.expireDateLabel,
-              expireDate: activePlan.expireDate,
-              autoRenew: deviceLimitsState.autoRenew,
-              // Always pass a callback so the toggle stays in controlled mode
-              // (i.e. doesn't fall back to flipping local state on tap). During
-              // an in-flight toggle, swallow the tap.
-              onAutoRenewChanged: (_) {
-                if (deviceLimitsState.isTogglingAutoRenew) return;
-                handleAutoRenewToggle(
-                  context,
-                  currentValue: deviceLimitsState.autoRenew,
-                );
-              },
-            );
-          },
-        ),
+        if (isPostpaid)
+          const PostpaidCurrentPlan(showRenewButton: false)
+        else
+          const PrepaidActivePlanCardWithData(showRenewButton: false),
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(
           policy: fairUsePolicy,
