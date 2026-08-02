@@ -123,6 +123,7 @@ class _TopUpPrepaidNumberPostPaidView extends StatelessWidget {
                             const SizedBox(height: 16),
                             TopUpPrepaidNumberPostPaidConfirmNumberSection(
                               value: state.confirmNumber,
+                              hasMismatchError: state.hasConfirmMismatchError,
                               onChanged: (v) => bloc.add(
                                   TopUpPrepaidNumberPostPaidConfirmNumberChanged(
                                       v)),

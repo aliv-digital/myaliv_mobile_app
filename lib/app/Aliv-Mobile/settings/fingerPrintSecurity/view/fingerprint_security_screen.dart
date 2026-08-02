@@ -48,19 +48,12 @@ class _FingerPrintSecurityView extends StatelessWidget {
             backgroundColor: FingerPrintSecurityTheme.bg,
             body: Column(
               children: [
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: SizedBox(
-                    height: FingerPrintSecurityTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: 'fingerprint security',
-                      height: FingerPrintSecurityTheme.appBarHeight,
-                      backgroundColor: FingerPrintSecurityTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: false,
-                    ),
-                  ),
+                DefaultAppBar(
+                  title: 'fingerprint security',
+                  height: FingerPrintSecurityTheme.appBarHeight,
+                  backgroundColor: FingerPrintSecurityTheme.appBarBg,
+                  showBackArrow: true,
+                  showHome: false,
                 ),
                 Expanded(
                   child: SingleChildScrollView(

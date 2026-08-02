@@ -50,18 +50,11 @@ class _SettingsView extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    SafeArea(
-                      top: false,
-                      bottom: false,
-                      child: SizedBox(
-                        height: SettingsTheme.appBarHeight,
-                        child: DefaultAppBar(
-                          title: 'settings',
-                          height: SettingsTheme.appBarHeight,
-                          backgroundColor: SettingsTheme.appBarBg,
-                          showBackArrow: true,
-                        ),
-                      ),
+                    DefaultAppBar(
+                      title: 'settings',
+                      height: SettingsTheme.appBarHeight,
+                      backgroundColor: SettingsTheme.appBarBg,
+                      showBackArrow: true,
                     ),
                     Expanded(
                       child: SingleChildScrollView(

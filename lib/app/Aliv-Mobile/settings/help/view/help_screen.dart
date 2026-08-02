@@ -47,15 +47,12 @@ class _HelpView extends StatelessWidget {
             backgroundColor: HelpTheme.bg,
             body: Column(
               children: [
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: HelpAppBar(
-                    title: 'help',
-                    onHomeTap: () {
-                      context.read<HelpBloc>().add(const HelpHomePressed());
-                      context.go(AppRoutes.home);
-                    }),
+                HelpAppBar(
+                  title: 'help',
+                  onHomeTap: () {
+                    context.read<HelpBloc>().add(const HelpHomePressed());
+                    context.go(AppRoutes.home);
+                  },
                 ),
                 Expanded(
                   child: SingleChildScrollView(

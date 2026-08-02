@@ -186,35 +186,16 @@ class _FigmaToggle extends StatelessWidget {
           right: value ? 3 : 10,
         ),
         decoration: BoxDecoration(
-          color: value ? const Color(0xFF645D9C) : Colors.white,
+          color: value ? const Color(0xFF645D9C) : const Color(0xFF6B7280),
           borderRadius: BorderRadius.circular(35.71),
-          border: value
-              ? null
-              : Border.all(
-            width: 0.71,
-            color: const Color(0xFFE2E2E2),
-          ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: value
+              ? MainAxisAlignment.end
+              : MainAxisAlignment.spaceBetween,
           children: value
               ? [
-            /// ON TEXT
-            const SizedBox(
-              width: 12,
-              child: Text(
-                'On',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFFE4E0FF),
-                  fontSize: 8,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-
-            /// KNOB
+            /// KNOB (no "On" label per design)
             _knob(),
           ]
               : [
@@ -228,7 +209,7 @@ class _FigmaToggle extends StatelessWidget {
                 'Off',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF707070),
+                  color: Colors.white,
                   fontSize: 8,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w400,

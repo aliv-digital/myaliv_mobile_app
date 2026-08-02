@@ -49,19 +49,12 @@ class _FaceIdSecurityView extends StatelessWidget {
             backgroundColor: FaceIdSecurityTheme.bg,
             body: Column(
               children: [
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: SizedBox(
-                    height: FaceIdSecurityTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: 'face id Security',
-                      height: FaceIdSecurityTheme.appBarHeight,
-                      backgroundColor: FaceIdSecurityTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: false,
-                    ),
-                  ),
+                DefaultAppBar(
+                  title: 'face id Security',
+                  height: FaceIdSecurityTheme.appBarHeight,
+                  backgroundColor: FaceIdSecurityTheme.appBarBg,
+                  showBackArrow: true,
+                  showHome: false,
                 ),
                 Expanded(
                   child: SingleChildScrollView(

@@ -112,7 +112,7 @@ class _SupportView extends StatelessWidget {
     if (!launched && context.mounted) {
       AppToast.show(
         message: request.failureMessage.toString(),
-        type: ToastType.error
+        type: ToastType.error,
       );
       // ScaffoldMessenger.of(
       //   context,
@@ -226,7 +226,8 @@ class _SupportMenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool shouldShowFaqLoading = item.action == SupportMenuAction.faq && isFaqOpening;
+    final bool shouldShowFaqLoading =
+        item.action == SupportMenuAction.faq && isFaqOpening;
 
     return SupportTile(
       title: item.title,

@@ -14,16 +14,13 @@ class SecurityAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return DefaultAppBar(
+      title: title,
       height: SecurityTheme.appBarHeight,
-      child: DefaultAppBar(
-        title: title,
-        height: SecurityTheme.appBarHeight,
-        backgroundColor: SecurityTheme.appBarBg,
-        showBackArrow: true,
-        showHome: true,
-        onHomeTap: onHomeTap,
-      ),
+      backgroundColor: SecurityTheme.appBarBg,
+      showBackArrow: true,
+      showHome: true,
+      onHomeTap: onHomeTap,
     );
   }
 }

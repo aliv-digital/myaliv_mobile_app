@@ -29,11 +29,7 @@ class SupportRepository {
         title: 'whatsapp',
         action: SupportMenuAction.whatsapp,
       ),
-      SupportMenuItem(
-        id: 'faq',
-        title: 'FAQ',
-        action: SupportMenuAction.faq,
-      ),
+      SupportMenuItem(id: 'faq', title: 'FAQ', action: SupportMenuAction.faq),
     ];
   }
 
@@ -84,6 +80,8 @@ class SupportRepository {
       ),
     ];
   }
+
+  static final faqUri =  Uri.parse("https://www.bealiv.com/aliv-mobile-faqs/");
 
   Future<Uri> fetchFaqUri() async {
     const String endpoint =

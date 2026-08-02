@@ -48,28 +48,21 @@ class _PrivacyView extends StatelessWidget {
             backgroundColor: PrivacyTheme.bg,
             body: Column(
               children: [
-                SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: SizedBox(
-                    height: PrivacyTheme.appBarHeight,
-                    child: DefaultAppBar(
-                      title: 'privacy',
-                      onBack: () {
-                        context.pop();
-                      },
-                      height: PrivacyTheme.appBarHeight,
-                      backgroundColor: PrivacyTheme.appBarBg,
-                      showBackArrow: true,
-                      showHome: true,
-                      onHomeTap: () {
-                        context.read<PrivacyBloc>().add(
-                          const PrivacyHomePressed(),
-                        );
-                        context.go(AppRoutes.home);
-                      },
-                    ),
-                  ),
+                DefaultAppBar(
+                  title: 'privacy',
+                  onBack: () {
+                    context.pop();
+                  },
+                  height: PrivacyTheme.appBarHeight,
+                  backgroundColor: PrivacyTheme.appBarBg,
+                  showBackArrow: true,
+                  showHome: true,
+                  onHomeTap: () {
+                    context.read<PrivacyBloc>().add(
+                      const PrivacyHomePressed(),
+                    );
+                    context.go(AppRoutes.home);
+                  },
                 ),
                 Expanded(
                   child: _buildBody(state),
