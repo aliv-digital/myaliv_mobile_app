@@ -46,7 +46,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
           child: BlocConsumer<PayFromWalletCubit, PayFromWalletState>(
             listener: (context, state) {
               if (state.isSuccess) {
@@ -68,18 +68,18 @@ class _PayFromWalletSheetView extends StatelessWidget {
                   // ================= HEADER =================
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.arrow_back, size: 24),
-                      onPressed: isSubmitting
-                          ? null
-                          : () => Navigator.pop(context),
+                    child: Transform.translate(
+                      offset: const Offset(-18, 2),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(Icons.arrow_back, size: 24),
+                        onPressed: isSubmitting
+                            ? null
+                            : () => Navigator.pop(context),
+                      ),
                     ),
                   ),
-
-                  const SizedBox(height: 16),
-
                   const Text(
                     'pay from wallet',
                     style: TextStyle(
@@ -89,7 +89,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   // ================= WALLET ROW =================
                   Row(
@@ -176,7 +176,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
 
                   // ================= CONFIRM =================
                   SizedBox(
@@ -217,7 +217,6 @@ class _PayFromWalletSheetView extends StatelessWidget {
                             ),
                     ),
                   ),
-                  const SizedBox(height: 20),
                 ],
               );
             },

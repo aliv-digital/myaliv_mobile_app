@@ -267,11 +267,9 @@ class _MyNumberTabState extends State<_MyNumberTab> {
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+          padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
           child: Column(
             children: [
-              const SizedBox(height: 75),
-
               // Balance row
               Text(
                 'enter top-up amount',

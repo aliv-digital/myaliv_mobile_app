@@ -111,7 +111,7 @@ class _LoginOtpView extends StatelessWidget {
                       ),
                       OtpBottomActions(),
                       SizedBox(
-                        height: LoginOtpSizes.contentBottomGap,
+                        height:85 ,//LoginOtpSizes.contentBottomGap,
                       ),
                       _ChangePhoneNumberAction(),
                       SizedBox(height: 113),
