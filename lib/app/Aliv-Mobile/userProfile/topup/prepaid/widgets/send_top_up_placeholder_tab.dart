@@ -43,10 +43,12 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   String _confirmPhoneNumber = '';
   bool _hasPhoneFocus = false;
   bool _hasConfirmPhoneFocus = false;
-  bool _phoneFieldError = false;
-  bool _confirmPhoneFieldError = false;
-  bool _phoneNumbersDoNotMatch = false;
   bool _isChecking = false;
+
+  bool get _phoneNumbersDoNotMatch {
+    if (_confirmPhoneNumber.isEmpty) return false;
+    return _digitsOnly(_phoneNumber) != _digitsOnly(_confirmPhoneNumber);
+  }
   // 🔥 default amount (matches design)
 
   double get _amountValue {
@@ -98,13 +100,6 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     );
   }
 
-  bool _hasLivePhoneError(String value) {
-    return _phoneNumberHelper.hasLiveValidationError(
-      rawPhoneNumber: value,
-      selectedCountry: _selectedCountry,
-    );
-  }
-
   String _digitsOnly(String value) {
     return value.replaceAll(RegExp(r'[^0-9]'), '');
   }
@@ -119,17 +114,11 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     TextStyle? labelStyle,
     String? validationMessage,
   }) {
-    final showLiveValidationError = _hasLivePhoneError(value);
-    final showInlineError = forceError || showLiveValidationError;
-    final showBorderError = forceError || showLiveValidationError;
-    final phoneBorderColor = !hasFocus && showBorderError
+    final showInlineError = forceError;
+    final phoneBorderColor = !hasFocus && forceError
         ? AuthModuleColors.errorRed
         : AuthModuleColors.loginFieldBorderColor;
-    final phoneInputStyle = showLiveValidationError
-        ? AuthModuleTextStyles.fieldValue.copyWith(
-            color: AuthModuleColors.errorRed,
-          )
-        : AuthModuleTextStyles.fieldValue;
+    final phoneInputStyle = AuthModuleTextStyles.fieldValue;
     final phoneErrorLeftPadding = AuthModuleSizes.countryWidth +
         AuthModuleSizes.countryToPhoneGap +
         AuthModulePaddings.fieldHorizontal14.left;
@@ -219,15 +208,11 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 labelText: GuestTopUpTheme.activePrepaidLabel,
                 labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                 value: _phoneNumber,
-                forceError: _phoneFieldError,
+                forceError: false,
                 hasFocus: _hasPhoneFocus,
                 focusNode: _phoneFocusNode,
                 onChanged: (value) {
-                  setState(() {
-                    _phoneNumber = value;
-                    _phoneFieldError = false;
-                    _phoneNumbersDoNotMatch = false;
-                  });
+                  setState(() => _phoneNumber = value);
                 },
               ),
 
@@ -239,19 +224,14 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               _buildLoginStylePhoneField(
                 labelText: GuestTopUpTheme.confirmMobileLabel,
                 value: _confirmPhoneNumber,
-                forceError:
-                    _confirmPhoneFieldError || _phoneNumbersDoNotMatch,
+                forceError: _phoneNumbersDoNotMatch,
                 hasFocus: _hasConfirmPhoneFocus,
                 focusNode: _confirmPhoneFocusNode,
                 validationMessage: _phoneNumbersDoNotMatch
                     ? 'Phone number do not match'
                     : null,
                 onChanged: (value) {
-                  setState(() {
-                    _confirmPhoneNumber = value;
-                    _confirmPhoneFieldError = false;
-                    _phoneNumbersDoNotMatch = false;
-                  });
+                  setState(() => _confirmPhoneNumber = value);
                 },
               ),
               const SizedBox(height: 18),
@@ -283,39 +263,15 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 width: double.infinity,
                 height: 40,
                 child: ElevatedButton(
-                  onPressed: (_isChecking || _amountValue <= 0) ? null : () async {
-                    final phoneValidation = _validatePhone(_phoneNumber);
-                    final confirmPhoneValidation =
-                        _validatePhone(_confirmPhoneNumber);
-                    final hasPhoneError = !phoneValidation.isValid;
-                    final hasConfirmPhoneError =
-                        !confirmPhoneValidation.isValid;
-
-                    if (hasPhoneError || hasConfirmPhoneError) {
-                      setState(() {
-                        _phoneFieldError = hasPhoneError;
-                        _confirmPhoneFieldError = hasConfirmPhoneError;
-                        _phoneNumbersDoNotMatch = false;
-                      });
-                      final hasEmptyPhone = _digitsOnly(_phoneNumber).isEmpty ||
-                          _digitsOnly(_confirmPhoneNumber).isEmpty;
-                      AppToast.show(
-                        message: hasEmptyPhone
-                            ? 'please enter phone number'
-                            : LoginPhoneNumberHelper.invalidPhoneNumberMessage,
-                        type: ToastType.error,
-                      );
-                      return;
-                    }
+                  onPressed: (_isChecking ||
+                          _amountValue <= 0 ||
+                          _phoneNumbersDoNotMatch ||
+                          _confirmPhoneNumber.isEmpty)
+                      ? null
+                      : () async {
                     final recipientPhone =
-                        phoneValidation.phoneNumberForApi ?? '';
-                    final confirmPhone =
-                        confirmPhoneValidation.phoneNumberForApi ?? '';
-
-                    if (recipientPhone != confirmPhone) {
-                      setState(() => _phoneNumbersDoNotMatch = true);
-                      return;
-                    }
+                        _validatePhone(_phoneNumber).phoneNumberForApi ??
+                            _digitsOnly(_phoneNumber);
                     final walletBalance =
                         context.read<BalanceCubit>().state.walletBalance;
                     if (_amountValue > walletBalance) {

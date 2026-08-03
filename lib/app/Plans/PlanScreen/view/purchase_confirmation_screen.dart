@@ -416,7 +416,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   @override
   Widget build(BuildContext context) {
     final isSendTopUp = widget.topUpAmount != null;
-    final isMyNumberTopUp = isSendTopUp && widget.recipientPhone == null;
     final topUpAmountText = formatConfirmationCurrency(widget.topUpAmount ?? 0);
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
     final vat = _selectedPostpaidPlan?.vatAmount ?? 0.0;
@@ -473,7 +472,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   subTotalText: subTotalText,
                   vatText: formatConfirmationCurrency(vat),
                   totalText: totalText,
-                  promoValue: isMyNumberTopUp ? null : _promoCode,
+                  promoValue: isSendTopUp ? null : _promoCode,
                   promoEnabled:
                       _promoStatus != _ConfirmationPromoStatus.applying,
                   isPromoActionLoading:
