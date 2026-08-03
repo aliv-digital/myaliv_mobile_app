@@ -56,8 +56,7 @@ Future<bool> handleAutoRenewToggle(
 
   if (success) {
     AppToast.show(
-      message:
-          "We're working on it! Auto-renew takes a few minutes to update. Thank you for your patience.",
+      message: 'your account will not auto renew',
       type: ToastType.success,
     );
   } else {
