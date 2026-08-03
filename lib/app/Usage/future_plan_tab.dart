@@ -1,7 +1,8 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
@@ -194,17 +195,18 @@ class _StartPlanButtonState extends State<_StartPlanButton> {
     });
 
     try {
-      final account = context.read<AccountInfoCubit>().state.accountInfo;
-      if (account == null || account.idAcc <= 0) {
+      final deviceId =
+          instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId;
+      if (deviceId == null || deviceId <= 0) {
         AppToast.show(
-          message: 'Account information not available',
+          message: 'Device information not available',
           type: ToastType.error,
         );
         return;
       }
 
       final success = await _usageRepository.jumpStartFuturePlan(
-        deviceAccountId: account.idAcc,
+        deviceAccountId: deviceId,
       );
 
       if (!mounted) return;
