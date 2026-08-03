@@ -49,6 +49,13 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     if (_confirmPhoneNumber.isEmpty) return false;
     return _digitsOnly(_phoneNumber) != _digitsOnly(_confirmPhoneNumber);
   }
+
+  bool get _hasPhoneValidationError =>
+      _phoneNumberHelper.hasLiveValidationError(
+        rawPhoneNumber: _phoneNumber,
+        selectedCountry: _selectedCountry,
+      );
+
   // 🔥 default amount (matches design)
 
   double get _amountValue {
@@ -111,6 +118,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     required bool hasFocus,
     required FocusNode focusNode,
     required ValueChanged<String> onChanged,
+    bool highlightInvalidInput = false,
     TextStyle? labelStyle,
     String? validationMessage,
   }) {
@@ -118,8 +126,13 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     final phoneBorderColor = !hasFocus && forceError
         ? AuthModuleColors.errorRed
         : AuthModuleColors.loginFieldBorderColor;
-    final phoneInputStyle = AuthModuleTextStyles.fieldValue;
-    final phoneErrorLeftPadding = AuthModuleSizes.countryWidth +
+    final phoneInputStyle = highlightInvalidInput && forceError
+        ? AuthModuleTextStyles.fieldValue.copyWith(
+            color: AuthModuleColors.errorRed,
+          )
+        : AuthModuleTextStyles.fieldValue;
+    final phoneErrorLeftPadding =
+        AuthModuleSizes.countryWidth +
         AuthModuleSizes.countryToPhoneGap +
         AuthModulePaddings.fieldHorizontal14.left;
 
@@ -179,8 +192,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     return Scaffold(
       backgroundColor: TopUpPrepaidTheme.pageBg,
       body: SafeArea(
+        top: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 30, 24, 32),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -191,9 +205,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               BlocBuilder<BalanceCubit, BalanceState>(
                 builder: (context, balanceState) {
                   return _ReadOnlyField(
-                    'wallet ${BalanceCurrencyFormatterService.format(
-                      balanceState.walletBalance,
-                    )}',
+                    'wallet ${BalanceCurrencyFormatterService.format(balanceState.walletBalance)}',
                   );
                 },
               ),
@@ -208,9 +220,10 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 labelText: GuestTopUpTheme.activePrepaidLabel,
                 labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                 value: _phoneNumber,
-                forceError: false,
+                forceError: _hasPhoneValidationError,
                 hasFocus: _hasPhoneFocus,
                 focusNode: _phoneFocusNode,
+                highlightInvalidInput: true,
                 onChanged: (value) {
                   setState(() => _phoneNumber = value);
                 },
@@ -263,102 +276,109 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 width: double.infinity,
                 height: 40,
                 child: ElevatedButton(
-                  onPressed: (_isChecking ||
+                  onPressed:
+                      (_isChecking ||
+                          _hasPhoneValidationError ||
                           _amountValue <= 0 ||
                           _phoneNumbersDoNotMatch ||
                           _confirmPhoneNumber.isEmpty)
                       ? null
                       : () async {
-                    final recipientPhone =
-                        _validatePhone(_phoneNumber).phoneNumberForApi ??
-                            _digitsOnly(_phoneNumber);
-                    final walletBalance =
-                        context.read<BalanceCubit>().state.walletBalance;
-                    if (_amountValue > walletBalance) {
-                      AppToast.show(
-                        message: 'balance is not sufficient',
-                        type: ToastType.error,
-                      );
-                      return;
-                    }
-                    // Capture context-derived refs before awaits.
-                    final topUpRepo =
-                        context.read<TopUpPrepaidBloc>().repo;
-                    final router = GoRouter.of(context);
-                    final sendTopupRepo = instance<SendTopupRepository>();
+                          final recipientPhone =
+                              _validatePhone(_phoneNumber).phoneNumberForApi ??
+                              _digitsOnly(_phoneNumber);
+                          final walletBalance = context
+                              .read<BalanceCubit>()
+                              .state
+                              .walletBalance;
+                          if (_amountValue > walletBalance) {
+                            AppToast.show(
+                              message: 'balance is not sufficient',
+                              type: ToastType.error,
+                            );
+                            return;
+                          }
+                          // Capture context-derived refs before awaits.
+                          final topUpRepo = context
+                              .read<TopUpPrepaidBloc>()
+                              .repo;
+                          final router = GoRouter.of(context);
+                          final sendTopupRepo = instance<SendTopupRepository>();
 
-                    setState(() => _isChecking = true);
-                    try {
-                      // Gate 0: is this even an Aliv number?
-                      final existsResult = await sendTopupRepo
-                          .phoneNumberExists(recipientPhone);
-                      if (!mounted) return;
-                      if (existsResult ==
-                          PhoneExistsResult.invalidDevice) {
-                        AppToast.show(
-                          message:
-                              'this number is not registered on aliv. please verify the number.',
-                          type: ToastType.error,
-                        );
-                        return;
-                      }
-                      if (existsResult == PhoneExistsResult.unknown) {
-                        AppToast.show(
-                          message: SendTopupRepository.caseDMessage,
-                          type: ToastType.error,
-                        );
-                        return;
-                      }
+                          setState(() => _isChecking = true);
+                          try {
+                            // Gate 0: is this even an Aliv number?
+                            final existsResult = await sendTopupRepo
+                                .phoneNumberExists(recipientPhone);
+                            if (!mounted) return;
+                            if (existsResult ==
+                                PhoneExistsResult.invalidDevice) {
+                              AppToast.show(
+                                message:
+                                    'this number is not registered on aliv. please verify the number.',
+                                type: ToastType.error,
+                              );
+                              return;
+                            }
+                            if (existsResult == PhoneExistsResult.unknown) {
+                              AppToast.show(
+                                message: SendTopupRepository.caseDMessage,
+                                type: ToastType.error,
+                              );
+                              return;
+                            }
 
-                      // Gate 2: recipient transfer eligibility.
-                      final transferError = await sendTopupRepo
-                          .transferIsValid(recipientPhone);
-                      if (!mounted) return;
-                      if (transferError != null) {
-                        AppToast.show(
-                          message: transferError,
-                          type: ToastType.error,
-                        );
-                        return;
-                      }
+                            // Gate 2: recipient transfer eligibility.
+                            final transferError = await sendTopupRepo
+                                .transferIsValid(recipientPhone);
+                            if (!mounted) return;
+                            if (transferError != null) {
+                              AppToast.show(
+                                message: transferError,
+                                type: ToastType.error,
+                              );
+                              return;
+                            }
 
-                      // Gate 3: no concurrent order in flight.
-                      final orderResult =
-                          await topUpRepo.canSubmitOrder(amount: _amountValue);
-                      if (!mounted) return;
-                      if (!orderResult.canProceed) {
-                        AppToast.show(
-                          message: CanSubmitOrderResult.pendingOrdersMessage,
-                          type: ToastType.error,
-                        );
-                        return;
-                      }
-                    } on CanSubmitOrderException {
-                      if (!mounted) return;
-                      AppToast.show(
-                        message: SendTopupRepository.caseDMessage,
-                        type: ToastType.error,
-                      );
-                      return;
-                    } finally {
-                      if (mounted) setState(() => _isChecking = false);
-                    }
-                    if (!mounted) return;
+                            // Gate 3: no concurrent order in flight.
+                            final orderResult = await topUpRepo.canSubmitOrder(
+                              amount: _amountValue,
+                            );
+                            if (!mounted) return;
+                            if (!orderResult.canProceed) {
+                              AppToast.show(
+                                message:
+                                    CanSubmitOrderResult.pendingOrdersMessage,
+                                type: ToastType.error,
+                              );
+                              return;
+                            }
+                          } on CanSubmitOrderException {
+                            if (!mounted) return;
+                            AppToast.show(
+                              message: SendTopupRepository.caseDMessage,
+                              type: ToastType.error,
+                            );
+                            return;
+                          } finally {
+                            if (mounted) setState(() => _isChecking = false);
+                          }
+                          if (!mounted) return;
 
-                    AppSession.appRoute = 'sendTopUp';
-                    final amountParam = _amountValue.toStringAsFixed(2);
-                    final recipientParam = Uri.encodeQueryComponent(
-                      recipientPhone,
-                    );
-                    router.push(
-                      '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
-                    );
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(
-                    //     builder: (_) => const SendTopUpConfirmationScreen(),
-                    //   ),
-                    // );
-                  },
+                          AppSession.appRoute = 'sendTopUp';
+                          final amountParam = _amountValue.toStringAsFixed(2);
+                          final recipientParam = Uri.encodeQueryComponent(
+                            recipientPhone,
+                          );
+                          router.push(
+                            '${AppRoutes.confirmation}?amount=$amountParam&recipient=$recipientParam',
+                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (_) => const SendTopUpConfirmationScreen(),
+                          //   ),
+                          // );
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TopUpPrepaidTheme.purple,
                     elevation: 0,
@@ -372,8 +392,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Color(0xFFF1F1F8)),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFFF1F1F8),
+                            ),
                           ),
                         )
                       : const Text(
