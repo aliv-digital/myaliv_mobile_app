@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
 import '../theme/top_up_prepaid_theme.dart';
@@ -45,7 +46,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
           child: BlocConsumer<PayFromWalletCubit, PayFromWalletState>(
             listener: (context, state) {
               if (state.isSuccess) {
@@ -65,122 +66,117 @@ class _PayFromWalletSheetView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ================= HEADER =================
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(Icons.arrow_back, size: 24),
+                      onPressed: isSubmitting
+                          ? null
+                          : () => Navigator.pop(context),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    'pay from wallet',
+                    style: TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // ================= WALLET ROW =================
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: isSubmitting
-                            ? null
-                            : () => Navigator.pop(context),
+                      SvgPicture.asset(
+                        AssetConstant.walletIconSVG,
+                        width: 22,
+                        height: 22,
+                        colorFilter: const ColorFilter.mode(
+                          TopUpPrepaidTheme.purple,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       const Text(
-                        'pay from wallet',
+                        'Wallet balance',
                         style: TextStyle(
+                          color: Color(0xFF222222),
+                          fontSize: 14,
                           fontFamily: 'CircularPro',
-                          fontSize: 18,
                           fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: ShapeDecoration(
+                          color: const Color(0xFFF0EDF5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: BlocBuilder<BalanceCubit, BalanceState>(
+                          builder: (context, balanceState) {
+                            return Text(
+                              BalanceCurrencyFormatterService.format(
+                                balanceState.walletBalance,
+                              ),
+                              style: const TextStyle(
+                                color: Color(0xFF222222),
+                                fontSize: 14,
+                                fontFamily: 'CircularPro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
-
-                  // ================= WALLET ROW =================
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SvgPicture.asset('assets/icons/Title.svg'),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Wallet balance',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF222222),
-                            fontSize: 14,
-                            fontFamily: 'CircularPro',
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 72,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFF8F8FC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: BlocBuilder<BalanceCubit, BalanceState>(
-                            builder: (context, balanceState) {
-                              return FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  BalanceCurrencyFormatterService.format(
-                                    balanceState.walletBalance,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: Color(0xFF222222),
-                                    fontSize: 14,
-                                    fontFamily: 'CircularPro',
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
                   const SizedBox(height: 28),
 
                   // ================= AMOUNT =================
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
+                  const Text(
+                    'amount',
+                    style: TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  Container(
+                    height: 52,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: TopUpPrepaidTheme.lightBg,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Text(
-                      'amount',
-                      style: TextStyle(
+                      '\$ ${amount.toStringAsFixed(2)}',
+                      style: const TextStyle(
                         fontFamily: 'CircularPro',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: Container(
-                      height: 52,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: TopUpPrepaidTheme.lightBg,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '\$ ${amount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF707070),
-                        ),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF707070),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
                   // ================= CONFIRM =================
                   SizedBox(
@@ -214,8 +210,8 @@ class _PayFromWalletSheetView extends StatelessWidget {
                               'confirm payment',
                               style: TextStyle(
                                 fontFamily: 'CircularPro',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
                                 color: Colors.white,
                               ),
                             ),
