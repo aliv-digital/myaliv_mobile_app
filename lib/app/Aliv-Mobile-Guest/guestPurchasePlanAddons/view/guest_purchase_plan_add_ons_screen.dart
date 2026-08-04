@@ -79,6 +79,9 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
       primaryPlanPrice: primaryPlanPrice,
       flow: flow,
       selectedAddOns: selectedAddOns,
+      // Skipping add-ons must not turn an activate-now purchase into a future
+      // plan; add-on selection and activation timing are separate concerns.
+      forceNow: true,
     );
   }
 

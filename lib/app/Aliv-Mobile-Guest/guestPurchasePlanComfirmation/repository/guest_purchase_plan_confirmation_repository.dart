@@ -11,9 +11,7 @@ class GuestPurchasePlanConfirmationRepository {
         type: PurchaseLineType.primaryPlan,
         label: 'primary plan',
         title: args.primaryPlanName,
-        subtitle: args.flow == GuestPurchasePlanConfirmationEntryFlow.skip
-            ? 'begins 01-06-23'
-            : 'begins immediately',
+        subtitle: _planBeginsText(args),
         price: args.primaryPlanPrice,
       ),
     ];
@@ -45,4 +43,43 @@ class GuestPurchasePlanConfirmationRepository {
       totals: totals,
     );
   }
+
+  String _planBeginsText(GuestPurchasePlanConfirmationRouteArgs args) {
+    if (args.forceNow) {
+      return 'begins immediately';
+    }
+
+    final startDate = _formatPlanDate(args.futurePlanStartDate);
+    if (startDate != null) {
+      return 'begins $startDate';
+    }
+
+    return 'begins immediately';
+  }
+
+  String? _formatPlanDate(String rawDate) {
+    final trimmed = rawDate.trim();
+    if (trimmed.isEmpty) {
+      return null;
+    }
+
+    final parsedDate = DateTime.tryParse(trimmed);
+    if (parsedDate != null) {
+      return '${_twoDigits(parsedDate.day)}-'
+          '${_twoDigits(parsedDate.month)}-'
+          '${_twoDigits(parsedDate.year % 100)}';
+    }
+
+    final datePart = trimmed.split(' ').first;
+    final parts = datePart.split(RegExp(r'[-/]'));
+    if (parts.length >= 3 && parts.first.length == 4) {
+      return '${parts[2].padLeft(2, '0')}-'
+          '${parts[1].padLeft(2, '0')}-'
+          '${parts[0].substring(2)}';
+    }
+
+    return datePart;
+  }
+
+  String _twoDigits(int value) => value.toString().padLeft(2, '0');
 }

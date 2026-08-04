@@ -97,6 +97,23 @@ class _GuestPurchasePlanView extends StatelessWidget {
         .fold<double>(0, (sum, addOn) => sum + addOn.price);
   }
 
+  Map<String, Object?> _roamingConfirmationExtra(
+    PlanModel plan, {
+    required bool showDateField,
+    required DateTime beginDate,
+  }) {
+    return <String, Object?>{
+      'phoneNumber': phoneNumber,
+      'planId': plan.id,
+      'planName': plan.title,
+      'planDuration': plan.subtitle,
+      'planPrice': plan.price,
+      'beginDate': beginDate,
+      'showDateField': showDateField,
+      'forceNow': !showDateField,
+    };
+  }
+
   Widget _buildAddOnsTabContent(
     BuildContext context,
     GuestPurchasePlanState state,
@@ -160,42 +177,34 @@ class _GuestPurchasePlanView extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.45),
       isScrollControlled: true,
       builder: (sheetContext) {
-        // Roaming flow only: allow selecting activation date from calendar.
-        if (selectedTab == PlanTab.roaming) {
+        // Standalone plans share the same date-or-activate-now flow used by
+        // the real Plans integration.
+        if (selectedTab == PlanTab.roaming ||
+            selectedTab == PlanTab.roameasy ||
+            selectedTab == PlanTab.libertyGlobal) {
           return RoamBottomSheet(
             onBackPressed: () => Navigator.of(sheetContext).pop(),
-            onDateApplied: (_) {
-              
+            onDateApplied: (pickedDate) {
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.roamingPlanConfirmation, extra: {
-                'showDateField': true,
-              });
+              context.push(
+                AppRoutes.roamingPlanConfirmation,
+                extra: _roamingConfirmationExtra(
+                  plan,
+                  showDateField: true,
+                  beginDate: pickedDate,
+                ),
+              );
             },
             onActivateNowPressed: () {
-              
               Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.roamingPlanConfirmation, extra: {
-                'showDateField': false,
-              });
-            },
-          );
-        }
-        if (selectedTab == PlanTab.roameasy) {
-          return RoamBottomSheet(
-            onBackPressed: () => Navigator.of(sheetContext).pop(),
-            onDateApplied: (_) {
-             
-              Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.roamingPlanConfirmation, extra: {
-                'showDateField': true,
-              });
-            },
-            onActivateNowPressed: () {
-              
-              Navigator.of(sheetContext).pop();
-              context.push(AppRoutes.roamingPlanConfirmation, extra: {
-                'showDateField': false,
-              });
+              context.push(
+                AppRoutes.roamingPlanConfirmation,
+                extra: _roamingConfirmationExtra(
+                  plan,
+                  showDateField: false,
+                  beginDate: DateTime.now(),
+                ),
+              );
             },
           );
         }

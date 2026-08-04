@@ -113,7 +113,6 @@ class GuestPayBillState extends Equatable {
 
   bool get showConfirmMobileMismatchError {
     if (confirmMobileNumber.trim().isEmpty) return false;
-    if (showConfirmMobileInvalidError) return false;
     if (!isMobileNumberValid) return false;
     return _digitsOnly(mobileNumber) != _digitsOnly(confirmMobileNumber);
   }

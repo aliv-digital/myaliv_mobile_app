@@ -356,9 +356,9 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         Padding(
           padding: EdgeInsets.only(left: confirmErrorLeftPadding),
           child: Text(
-            state.showConfirmMobileInvalidError
-                ? GuestPayBillTheme.invalidPhoneErrorMessage
-                : GuestPayBillTheme.mobileMismatchErrorMessage,
+            state.showConfirmMobileMismatchError
+                ? GuestPayBillTheme.mobileMismatchErrorMessage
+                : GuestPayBillTheme.invalidPhoneErrorMessage,
             style: GuestPayBillTheme.inlineErrorTextStyle,
           ),
         ),
