@@ -4,6 +4,19 @@ import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../theme/theme.dart';
 
+Future<DateTime?> showGuestRoamCalendarPickerSheet(
+  BuildContext context, {
+  required DateTime initialDate,
+}) {
+  return showModalBottomSheet<DateTime>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.45),
+    isScrollControlled: true,
+    builder: (_) => _RoamCalendarPickerSheet(initialDate: initialDate),
+  );
+}
+
 class RoamBottomSheet extends StatefulWidget {
   const RoamBottomSheet({
     super.key,
@@ -221,16 +234,9 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
   }
 
   Future<void> _openCalendarPickerSheet() async {
-    final DateTime? pickedDate = await showModalBottomSheet<DateTime>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.45),
-      isScrollControlled: true,
-      builder: (calendarContext) {
-        return _RoamCalendarPickerSheet(
-          initialDate: _selectedDate,
-        );
-      },
+    final DateTime? pickedDate = await showGuestRoamCalendarPickerSheet(
+      context,
+      initialDate: _selectedDate,
     );
 
     if (pickedDate == null) return;
@@ -254,12 +260,16 @@ class _RoamCalendarPickerSheet extends StatefulWidget {
 }
 
 class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
+  late final DateTime _firstDate;
   late DateTime _draftSelectedDate;
 
   @override
   void initState() {
     super.initState();
-    _draftSelectedDate = widget.initialDate;
+    _firstDate = DateUtils.dateOnly(DateTime.now());
+    final initialDate = DateUtils.dateOnly(widget.initialDate);
+    _draftSelectedDate =
+        initialDate.isBefore(_firstDate) ? _firstDate : initialDate;
   }
 
   @override
@@ -303,6 +313,11 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                     dayStyle: GuestPurchasePlanTheme.roamCalendarDayTextStyle,
                     dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
+                        if (states.contains(WidgetState.disabled)) {
+                          return GuestPurchasePlanTheme
+                              .roamCalendarDayTextColor
+                              .withValues(alpha: 0.35);
+                        }
                         if (states.contains(WidgetState.selected)) {
                           return GuestPurchasePlanTheme
                               .roamCalendarSelectedDayTextColor;
@@ -334,7 +349,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                   height: GuestPurchasePlanTheme.roamCalendarPickerVisibleHeight,
                   child: CalendarDatePicker(
                     initialDate: _draftSelectedDate,
-                    firstDate: DateTime(2020, 1, 1),
+                    firstDate: _firstDate,
                     lastDate: DateTime(2035, 12, 31),
                     onDateChanged: (DateTime nextDate) {
                       setState(() {

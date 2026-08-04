@@ -17,6 +17,7 @@ import '../theme/roaming_plan_confirmation_theme.dart';
 import '../widgets/begins_on_card.dart';
 import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
+import '../../guestPurchasePlan/widgets/roam_bottom_sheet.dart';
 
 class RoamingPlanConfirmationScreen extends StatelessWidget {
   const RoamingPlanConfirmationScreen({
@@ -30,14 +31,21 @@ class RoamingPlanConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("showDateField: $showDateField");
+    final args = RoamingPlanConfirmationRouteArgs.fromExtra(
+      GoRouterState.of(context).extra,
+      fallbackPhoneNumber: phoneNumber,
+      fallbackShowDateField: showDateField,
+    );
+
     return RepositoryProvider(
       create: (_) => RoamingPlanConfirmationRepository(),
       child: BlocProvider(
         create: (ctx) => RoamingPlanConfirmationBloc(
           repository: ctx.read<RoamingPlanConfirmationRepository>(),
-        )..add(RoamingPlanConfirmationStarted(phoneNumber)),
-        child: _RoamingPlanConfirmationView(showDateField: showDateField),
+        )..add(RoamingPlanConfirmationStarted(args)),
+        child: _RoamingPlanConfirmationView(
+          showDateField: args.showDateField,
+        ),
       ),
     );
   }
@@ -49,6 +57,22 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
   });
 
   final bool showDateField;
+
+  Future<void> _openCalendarPickerSheet(
+    BuildContext context,
+    DateTime initialDate,
+  ) async {
+    final pickedDate = await showGuestRoamCalendarPickerSheet(
+      context,
+      initialDate: initialDate,
+    );
+
+    if (pickedDate == null || !context.mounted) return;
+
+    context.read<RoamingPlanConfirmationBloc>().add(
+      RoamingPlanConfirmationBeginDateChanged(pickedDate),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +149,8 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                     },
                   );
                 },
-                amountText: '\$ 75.00' //total.toString(),
+                amountText:
+                    '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
                 );
           },
         ),
@@ -136,6 +161,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
               RoamingPlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
+              final beginDate = state.routeArgs?.beginDate ?? DateTime.now();
 
               return Column(
                 children: [
@@ -201,6 +227,12 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         ),
                                         child: BeginsOnCard(
                                           dateText: data.beginsOnDateText,
+                                          onCalendarTap: () {
+                                            _openCalendarPickerSheet(
+                                              context,
+                                              beginDate,
+                                            );
+                                          },
                                         ),
                                       ),
                                     ),
@@ -259,17 +291,18 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',
-                                            value: '\$ 18.18',
-                                            // '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                            value:
+                                                '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value:'\$ 0.0' ,//'\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                            value:
+                                                '\$ ${data.totals.vat.toStringAsFixed(2)}',
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value: '\$ 20.00',
-                                            //    '\$ ${data.totals.total.toStringAsFixed(2)}',
+                                            value:
+                                                '\$ ${data.totals.total.toStringAsFixed(2)}',
                                           ),
                                         ],
                                       ),

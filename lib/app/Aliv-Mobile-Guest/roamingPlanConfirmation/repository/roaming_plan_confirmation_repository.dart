@@ -1,19 +1,21 @@
 import '../models/roaming_plan_confirmation_models.dart';
+import '../../../../resources/extentions/dateformatter.dart';
 
 class RoamingPlanConfirmationRepository {
   /// Future: call API, build the same data shape, return it.
   Future<RoamingPlanConfirmationData> load({
-    required String phoneNumber,
+    required RoamingPlanConfirmationRouteArgs args,
   }) async {
-    // Demo seed (তুমি পরে API বসাবে)
     final items = <PurchaseLineItem>[
-      const PurchaseLineItem(
-        id: 'standalone',
+      PurchaseLineItem(
+        id: args.planId,
         type: PurchaseLineType.primaryPlan,
         label: 'standalone',
-        title: 'roam20 - 7 days',
-        subtitle: 'begins immediately 06-08-25',
-        price: 20.00,
+        title: _planTitle(args),
+        subtitle: args.forceNow
+            ? 'begins immediately'
+            : 'begins ${_shortDate(args.beginDate)}',
+        price: args.planPrice,
       ),
     ];
 
@@ -23,11 +25,40 @@ class RoamingPlanConfirmationRepository {
     );
 
     return RoamingPlanConfirmationData(
-      phoneNumber: phoneNumber,
+      phoneNumber: args.phoneNumber,
       headerTitle: 'guest purchase a plan',
-      beginsOnDateText: 'Aug 6th, 2025',
+      beginsOnDateText: formatWithOrdinal(args.beginDate),
       items: items,
       totals: totals,
     );
+  }
+
+  RoamingPlanConfirmationData updateBeginDate({
+    required RoamingPlanConfirmationData data,
+    required DateTime beginDate,
+  }) {
+    final subtitle = 'begins ${_shortDate(beginDate)}';
+
+    return RoamingPlanConfirmationData(
+      phoneNumber: data.phoneNumber,
+      headerTitle: data.headerTitle,
+      beginsOnDateText: formatWithOrdinal(beginDate),
+      items: data.items
+          .map((item) => item.copyWith(subtitle: subtitle))
+          .toList(growable: false),
+      totals: data.totals,
+    );
+  }
+
+  String _planTitle(RoamingPlanConfirmationRouteArgs args) {
+    final duration = args.planDuration.trim();
+    return duration.isEmpty ? args.planName : '${args.planName} - $duration';
+  }
+
+  String _shortDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = (date.year % 100).toString().padLeft(2, '0');
+    return '$day-$month-$year';
   }
 }

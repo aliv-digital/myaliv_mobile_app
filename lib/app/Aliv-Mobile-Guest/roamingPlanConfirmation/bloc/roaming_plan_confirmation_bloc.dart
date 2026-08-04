@@ -12,6 +12,7 @@ class RoamingPlanConfirmationBloc
       : super(RoamingPlanConfirmationState.initial()) {
     on<RoamingPlanConfirmationStarted>(_onStarted);
     on<RoamingPlanConfirmationRemoveItemPressed>(_onRemoveItem);
+    on<RoamingPlanConfirmationBeginDateChanged>(_onBeginDateChanged);
     on<RoamingPlanConfirmationTermsPressed>(_onTerms);
     on<RoamingPlanConfirmationTermsCheckboxToggled>(
       _onTermsCheckboxToggled,
@@ -23,12 +24,16 @@ class RoamingPlanConfirmationBloc
     RoamingPlanConfirmationStarted event,
     Emitter<RoamingPlanConfirmationState> emit,
   ) async {
-    emit(state.copyWith(status: RoamingPlanConfirmationStatus.loading));
+    emit(state.copyWith(
+      status: RoamingPlanConfirmationStatus.loading,
+      routeArgs: event.args,
+    ));
 
     try {
-      final data = await repository.load(phoneNumber: event.phoneNumber);
+      final data = await repository.load(args: event.args);
       emit(state.copyWith(
         status: RoamingPlanConfirmationStatus.ready,
+        routeArgs: event.args,
         data: data,
       ));
     } catch (e) {
@@ -37,6 +42,23 @@ class RoamingPlanConfirmationBloc
         errorMessage: e.toString(),
       ));
     }
+  }
+
+  void _onBeginDateChanged(
+    RoamingPlanConfirmationBeginDateChanged event,
+    Emitter<RoamingPlanConfirmationState> emit,
+  ) {
+    final routeArgs = state.routeArgs;
+    final data = state.data;
+    if (routeArgs == null || data == null) return;
+
+    emit(state.copyWith(
+      routeArgs: routeArgs.copyWith(beginDate: event.beginDate),
+      data: repository.updateBeginDate(
+        data: data,
+        beginDate: event.beginDate,
+      ),
+    ));
   }
 
   void _onRemoveItem(

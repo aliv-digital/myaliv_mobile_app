@@ -24,8 +24,10 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
   final String accountHolderName;
   final String primaryPlanName;
   final double primaryPlanPrice;
+  final String futurePlanStartDate;
   final GuestPurchasePlanConfirmationEntryFlow flow;
   final List<GuestPurchasePlanConfirmationSelectedAddOn> selectedAddOns;
+  final bool forceNow;
 
   const GuestPurchasePlanConfirmationRouteArgs({
     required this.phoneNumber,
@@ -33,11 +35,17 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     required this.primaryPlanName,
     required this.primaryPlanPrice,
     required this.flow,
+    this.futurePlanStartDate = '',
     this.selectedAddOns = const <GuestPurchasePlanConfirmationSelectedAddOn>[],
+    this.forceNow = true,
   });
 
   bool get defaultTermsChecked =>
       flow == GuestPurchasePlanConfirmationEntryFlow.skip;
+
+  /// `true` when the plan should activate immediately and `false` when it was
+  /// explicitly scheduled as a future plan.
+  bool get isFuture => !forceNow;
 
   @override
   List<Object?> get props => [
@@ -45,8 +53,10 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
         accountHolderName,
         primaryPlanName,
         primaryPlanPrice,
+        futurePlanStartDate,
         flow,
         selectedAddOns,
+        forceNow,
       ];
 }
 
