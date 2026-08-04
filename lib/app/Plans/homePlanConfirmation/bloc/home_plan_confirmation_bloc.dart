@@ -69,7 +69,7 @@ class HomePlanConfirmationBloc
 
     final totals = PurchaseTotals(
       subTotal: updatedItems.fold<double>(0, (s, x) => s + x.price),
-      vat: data.totals.vat,
+      vat: updatedItems.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
     emit(
