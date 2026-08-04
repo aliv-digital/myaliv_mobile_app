@@ -165,6 +165,22 @@ class PlansState extends Equatable {
     return [optimistic, ...addOnsApiPrimaryPlans];
   }
 
+  /// Latest end-date across every known primary plan (active + any already-
+  /// purchased future primary). Used by the future-plan purchase flow so a
+  /// second future primary starts when the first future primary ends,
+  /// forming a chain: active → future#1 → future#2 → …
+  ///
+  /// Reads [effectivePrimaryPlans] so a just-purchased optimistic plan is
+  /// included immediately, without waiting for the /bundles refresh.
+  DateTime? get latestPrimaryPlanEndDate {
+    final ends = effectivePrimaryPlans
+        .map((p) => p.endDateTime)
+        .whereType<DateTime>()
+        .toList(growable: false);
+    if (ends.isEmpty) return null;
+    return ends.reduce((a, b) => a.isAfter(b) ? a : b);
+  }
+
   /// Secondary plans merged with any optimistic add-ons not yet confirmed by
   /// a real /bundles response. Used by [ActiveAddOnsChips] so purchased
   /// add-ons appear immediately in the Usage tab.

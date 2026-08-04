@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../../core/utils/app_session.dart';
@@ -30,8 +31,11 @@ Future<void> showHomePlanPurchaseBottomSheet({
 }) {
   final plansState = context.read<PlansCubit>().state;
   final hasActivePlan = plansState.earliestAddOnsPrimaryPlan != null;
-  final activePlanEndDate = plansState.earliestAddOnsPrimaryPlan?.endDateTime;
-  final futurePlanStartDate = activePlanEndDate?.toIso8601String() ?? '';
+  // Chain start: end of the *latest* known primary plan (active + any
+  // already-purchased future primary). Ensures future#2 starts when future#1
+  // ends, not when the currently-active plan ends.
+  final chainStartDate = plansState.latestPrimaryPlanEndDate;
+  final futurePlanStartDate = chainStartDate?.toIso8601String() ?? '';
   final selectedPlanExtra = _selectedPlanRouteExtra(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
@@ -77,8 +81,8 @@ Future<void> showHomePlanPurchaseBottomSheet({
       }
 
       if (hasActivePlan) {
-        final endDateText = activePlanEndDate != null
-            ? DateFormat('dd MMM yyyy').format(activePlanEndDate)
+        final endDateText = chainStartDate != null
+            ? DateFormat('dd MMM yyyy').format(chainStartDate)
             : 'the end of your current plan';
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
           warningText:
@@ -119,6 +123,19 @@ Future<void> showHomePlanPurchaseBottomSheet({
             );
           },
           onFuturePlanPressed: () {
+            // Option A guard: block back-to-back future purchases while the
+            // previous /bundles refresh is still in-flight. Without this,
+            // the optimistic single-slot would overwrite the pending
+            // future#1 before it lands in addOnsApiPrimaryPlans, causing
+            // future#1 to briefly disappear and the chain start date to
+            // fall back to the active plan's expiry.
+            if (context.read<PlansCubit>().state.isRefreshingBundles) {
+              AppToast.show(
+                message: 'updating your plans, please try again in a moment',
+                type: ToastType.error,
+              );
+              return;
+            }
             Navigator.of(sheetContext).pop();
             if (selectedTab == HomePlanTab.mifi) {
               debugPrint('MIFI: Future plan pressed');

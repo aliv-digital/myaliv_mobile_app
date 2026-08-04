@@ -48,7 +48,13 @@ class _StandAloneFuturePlans extends StatelessWidget {
   bool _startsInFuture(BasePlanModel plan) {
     final start = plan.startDateTime;
     if (start == null) return false;
-    return start.isAfter(DateTime.now());
+    // Date-only compare: a plan starting "today 00:00" should be treated as
+    // starting today, not "already started" once the wall clock passes midnight.
+    // Matches BestPlanModel.isExpired / isStarted convention.
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final startDay = DateTime(start.year, start.month, start.day);
+    return startDay.isAfter(today);
   }
 
   int? _earliestFuturePrimaryPlanIndex(List<BasePlanModel> plans) {
@@ -80,10 +86,11 @@ class _StandAloneFuturePlans extends StatelessWidget {
             previous.addOnsApiLastSyncedAt != current.addOnsApiLastSyncedAt;
       },
       builder: (context, state) {
+        final seenPlanIds = <String>{};
         final futurePlans = <BasePlanModel>[
           ...state.addOnsApiPrimaryPlans.where(_startsInFuture),
           ...state.standAlonePlans.where(_startsInFuture),
-        ];
+        ].where((p) => seenPlanIds.add(p.planId)).toList(growable: false);
         final startablePlanIndex =
             isPostpaid ? null : _earliestFuturePrimaryPlanIndex(futurePlans);
 

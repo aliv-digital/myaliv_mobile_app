@@ -317,8 +317,8 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: UpgradeCreditLimitScreen.purple,
-                disabledBackgroundColor:
-                    UpgradeCreditLimitScreen.purple.withValues(alpha: 0.5),
+                disabledBackgroundColor: UpgradeCreditLimitScreen.purple
+                    .withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),
