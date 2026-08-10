@@ -1,28 +1,11 @@
+import 'package:core/core.dart';
+
+/// Result of a successful 2fa/verify call: a JWT [TokenSession].
+///
+/// The 2fa/verify endpoint returns the same token-pair envelope as the
+/// login endpoint's no-2FA branch (access_token, refresh_token, expires_in,
+/// refresh_expires_in), so we just wrap a [TokenSession].
 class LoginOtpVerifyResponse {
-  final String? ticket;
-  final int? accountId;
-  final String? reason;
-
-  const LoginOtpVerifyResponse({
-    this.ticket,
-    this.accountId,
-    this.reason,
-  });
-
-  factory LoginOtpVerifyResponse.fromJson(Map<String, dynamic>? json) {
-    if (json == null) return const LoginOtpVerifyResponse();
-
-    final rawTicket = json['Ticket'] ?? json['ticket'];
-    final rawAccountId = json['AccountId'] ?? json['accountId'];
-    final rawReason =
-        json['Reason'] ?? json['reason'] ?? json['message'] ?? json['error'];
-
-    return LoginOtpVerifyResponse(
-      ticket: rawTicket?.toString(),
-      accountId: rawAccountId is int
-          ? rawAccountId
-          : int.tryParse(rawAccountId?.toString() ?? ''),
-      reason: rawReason?.toString(),
-    );
-  }
+  final TokenSession session;
+  const LoginOtpVerifyResponse({required this.session});
 }

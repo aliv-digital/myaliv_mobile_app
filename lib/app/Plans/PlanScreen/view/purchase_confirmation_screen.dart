@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/pay_from_wallet.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_promo_response_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
@@ -258,8 +259,10 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     });
 
     try {
-      final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
-      final deviceAccountId = accountInfo?.idAcc ?? 0;
+      // /device/{id}/promo-code-info needs the DEVICE id (from
+      // /Account/devices), not the account's id_acc.
+      final deviceAccountId =
+          instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
 
       if (deviceAccountId <= 0) {
         throw Exception('Device account ID not found.');

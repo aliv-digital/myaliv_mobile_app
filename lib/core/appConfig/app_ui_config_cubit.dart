@@ -8,15 +8,22 @@ import '../../app/Home/home/data/home_ui_config.dart';
 /// - router/screens/widgets should not each invent their own config
 /// - OTP/login flow can update this later from real API response
 class AppUiConfigCubit extends Cubit<HomeUiConfig> {
-  AppUiConfigCubit()
-    : super(
-        const HomeUiConfig(
-          userType: UserType.postpaid,
-          hasActivePlan: false,
-          isFuturePlan: false,
-          isCurrentPlan: false,
-        ),
-      );
+  AppUiConfigCubit({HomeUiConfig? initialConfig})
+      : super(initialConfig ?? _defaultConfig);
+
+  /// Sensible default for guest / first-run: prepaid (the more common
+  /// case, and the prepaid tabs render harmlessly for edge cases).
+  ///
+  /// For cold-start with an existing session, callers should pass an
+  /// [initialConfig] derived from the persisted `AccountInfoCubit`
+  /// state — otherwise a postpaid user briefly sees prepaid tabs (or
+  /// vice versa) until [setConfig] runs.
+  static const _defaultConfig = HomeUiConfig(
+    userType: UserType.prepaid,
+    hasActivePlan: false,
+    isFuturePlan: false,
+    isCurrentPlan: false,
+  );
 
   /// Replaces the whole config at once.
   void setConfig(HomeUiConfig config) {

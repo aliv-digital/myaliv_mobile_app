@@ -1,5 +1,5 @@
 import 'package:core/core.dart';
-import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
+import 'package:myaliv_mobile_app/core/auth/hard_logout.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/account_info_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/limited_offer_injection.dart';
@@ -32,11 +32,10 @@ class AppMainInjection {
   /// 1. Core dependencies (with auth loading)
   /// 2. App-specific dependencies (account info, plans, etc.)
   Future<void> initInjection() async {
-    // Initialize core with auth loading functions
+    // Initialize core with hard-logout callback (invoked by
+    // BearerAuthInterceptor when refresh fails / refresh token dies).
     await _coreInjection.initInjection(
-      getTicket: LocalStorage.getTicket,
-      getAccountID: LocalStorage.getAccountID,
-      username: userName,
+      onHardLogout: performHardLogout,
     );
 
     // Initialize account information feature

@@ -375,12 +375,12 @@ class _ActivePlanCardState extends State<_ActivePlanCard> {
     return PlanPurchasePlanRedImageCard(
       planLabel: 'plan',
       planName: _planNameFromApiOrFallback(selectedPlan?.planName),
-      activeLabel: 'active',
+      activeLabel: 'will active on',
       activeDate: _dateFromApiOrFallback(
         selectedPlan?.startDateTime,
         fallback: '--/--',
       ),
-      expireLabel: 'expire',
+      expireLabel: 'will expire on',
       expireDate: _dateFromApiOrFallback(
         selectedPlan?.endDateTime,
         fallback: '--/--',

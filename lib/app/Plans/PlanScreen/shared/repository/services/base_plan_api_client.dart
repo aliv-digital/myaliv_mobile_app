@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:core/core.dart';
+
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import '../base_plan_repository_exception.dart';
 
 /// Base API client with shared error handling logic.
@@ -63,13 +65,11 @@ abstract class BasePlanApiClient {
   /// Get auth manager instance (for subclass usage)
   AuthManager get authManager => _authManager;
 
-  /// Get current auth or throw if not authenticated
-  ///
-  /// Convenience method for subclasses to ensure authentication.
-  AuthContext requireAuth() {
-    final auth = _authManager.getCurrentAuth();
-
-    if (auth == null || !auth.isAuthenticated) {
+  /// Preflight authentication check — throws if there's no valid JWT
+  /// session. The bearer interceptor also enforces this on the wire, but
+  /// checking here lets subclasses fail fast before constructing URLs.
+  void requireAuth() {
+    if (_authManager.currentSession == null) {
       throw BasePlanRepositoryException(
         type: BasePlanRepositoryErrorType.unauthorized,
         serverMessage: 'Authentication required',
@@ -77,8 +77,30 @@ abstract class BasePlanApiClient {
         source: debugName,
       );
     }
+  }
 
-    return auth;
+  /// Fetch the primary device's `DeviceID` from [DeviceLimitsCubit].
+  ///
+  /// `/device/{id}/...` endpoints expect the DEVICE id (from
+  /// `/Account/devices`), not the account's `id_acc` from `/Account`
+  /// — those are different numbers. Passing `id_acc` returns 501
+  /// `InvalidDevice`.
+  ///
+  /// [AuthCompletionService] eagerly loads `DeviceLimitsCubit` right
+  /// after login, so the primary device is always available by the
+  /// time any authed feature request runs.
+  String requireDeviceAccountId() {
+    requireAuth();
+    final primary = instance<DeviceLimitsCubit>().state.deviceLimits;
+    if (primary == null) {
+      throw BasePlanRepositoryException(
+        type: BasePlanRepositoryErrorType.unauthorized,
+        serverMessage: 'Device account id unavailable',
+        statusCode: 401,
+        source: debugName,
+      );
+    }
+    return primary.deviceId.toString();
   }
 
   /// Map HTTP error to typed exception (shared logic)

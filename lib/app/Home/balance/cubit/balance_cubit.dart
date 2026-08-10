@@ -29,7 +29,7 @@ class BalanceCubit extends HydratedCubit<BalanceState> {
   }) async {
     // Guests / unauthenticated sessions never fetch. The rehydrated cache
     // (if any) is already gated in `fromJson`.
-    if (!globalState.isAuthenticated) {
+    if (instance<AuthManager>().currentSession == null) {
       return;
     }
 

@@ -18,7 +18,7 @@ class LoginState extends Equatable {
   final LoginStatus status;
   final LoginOutcome outcome;
   final String? errorMessage;
-  final String? twoFactorKey;
+  final String? mfaToken;
   final String? apiPhoneNumber;
   final LoginCountrySelection selectedCountry;
   final bool phoneFieldError;
@@ -31,7 +31,7 @@ class LoginState extends Equatable {
     this.status = LoginStatus.initial,
     this.outcome = LoginOutcome.none,
     this.errorMessage,
-    this.twoFactorKey,
+    this.mfaToken,
     this.apiPhoneNumber,
     this.selectedCountry = LoginCountrySelection.defaultBahamas,
     this.phoneFieldError = false,
@@ -45,7 +45,7 @@ class LoginState extends Equatable {
     LoginStatus? status,
     LoginOutcome? outcome,
     Object? errorMessage = _noChange,
-    Object? twoFactorKey = _noChange,
+    Object? mfaToken = _noChange,
     Object? apiPhoneNumber = _noChange,
     LoginCountrySelection? selectedCountry,
     bool? phoneFieldError,
@@ -60,9 +60,9 @@ class LoginState extends Equatable {
       errorMessage: identical(errorMessage, _noChange)
           ? this.errorMessage
           : errorMessage as String?,
-      twoFactorKey: identical(twoFactorKey, _noChange)
-          ? this.twoFactorKey
-          : twoFactorKey as String?,
+      mfaToken: identical(mfaToken, _noChange)
+          ? this.mfaToken
+          : mfaToken as String?,
       apiPhoneNumber: identical(apiPhoneNumber, _noChange)
           ? this.apiPhoneNumber
           : apiPhoneNumber as String?,
@@ -80,7 +80,7 @@ class LoginState extends Equatable {
         status,
         outcome,
         errorMessage,
-        twoFactorKey,
+        mfaToken,
         apiPhoneNumber,
         selectedCountry,
         phoneFieldError,

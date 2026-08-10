@@ -13,7 +13,8 @@ class OtpCodeFields extends StatefulWidget {
 }
 
 class _OtpCodeFieldsState extends State<OtpCodeFields> {
-  static const int _otpLength = 4;
+  /// 6-digit PIN dispatched by the JWT auth API's 2FA flow.
+  static const int _otpLength = 6;
   final _controllers =
       List.generate(_otpLength, (_) => TextEditingController(), growable: false);
   final _focusNodes =

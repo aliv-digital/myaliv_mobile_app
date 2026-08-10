@@ -14,17 +14,6 @@ class LocalStorage {
     await prefs.setInt(key, value);
   }
 
-  // ticket works as password
-  static Future<void> storeTicket({required String ticket}) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('ticket', ticket);
-  }
-
-  static Future<String?> getTicket() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('ticket');
-  }
-
   static Future<void> storeAccountID({required String accountID}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('accountID', accountID);
@@ -62,32 +51,6 @@ class LocalStorage {
   }) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, value);
-  }
-
-  static Future<void> storePassword({required String password}) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('password', password);
-  }
-
-  static Future<String?> getPassword() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('password');
-  }
-
-  static Future<void> storeAccessToken({required String accessToken}) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('accessToken', accessToken);
-  }
-
-  static Future<String?> getAccessToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('accessToken');
-  }
-
-  // Remove a specific key-value pair
-  static Future<void> deleteAccessToken() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('accessToken');
   }
 
   // Get a String value

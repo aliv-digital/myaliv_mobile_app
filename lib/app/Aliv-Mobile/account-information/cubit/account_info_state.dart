@@ -50,9 +50,6 @@ class AccountInfoState extends Equatable {
   /// Check if user is postpaid
   bool get isPostpaid => accountInfo?.paymentOption == "PostPay";
 
-  /// Get device account ID
-  String? get deviceAccountID => accountInfo?.idAcc.toString();
-
   /// Get user email
   String? get email => accountInfo?.email;
 

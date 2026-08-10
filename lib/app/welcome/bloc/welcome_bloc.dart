@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:core/core.dart';
-import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import '../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
@@ -67,8 +66,9 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
 
     appUiConfigCubit.setConfig(
       HomeUiConfig(
-        userType:
-            paymentOption == "PrePay" ? UserType.prepaid : UserType.postpaid,
+        userType: accountInfoCubit.state.isPostpaid
+            ? UserType.postpaid
+            : UserType.prepaid,
         // Defaults to false; home screen's PlansCubit listener flips this to
         // true once the bundles API confirms a primary plan exists.
         hasActivePlan: false,
@@ -79,15 +79,14 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
   }
 
   /// Resolves destination for "ALIV Mobile" button:
-  /// - If ticket exists in local storage -> go to Home
-  /// - If ticket is missing -> go to Login
+  /// - If a valid JWT session exists -> go to Home
+  /// - Otherwise -> go to Login
   Future<String> resolveAlivMobileRoute() async {
-    final savedTicket = (await LocalStorage.getTicket())?.trim() ?? '';
-    if (savedTicket.isEmpty) {
+    final session = instance<AuthManager>().currentSession;
+    if (session == null || session.refreshExpired) {
       return AppRoutes.logIn;
-    } else {
-      await _setLoggedInUserUiConfig();
-      return AppRoutes.home;
     }
+    await _setLoggedInUserUiConfig();
+    return AppRoutes.home;
   }
 }

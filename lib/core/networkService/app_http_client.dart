@@ -2,10 +2,43 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import '../model/apiResponseModel.dart';
 import 'api_error_message_resolver.dart';
+
+/// Default bearer-token provider used by [ApiService] when no explicit
+/// provider is supplied. Reads the current JWT access token from
+/// [AuthManager] via GetIt.
+///
+/// Proactively refreshes when the access token is expired. Without this,
+/// http-based repos would send a stale token and see spurious 401s that
+/// [BearerAuthInterceptor] (which only lives on Dio) would normally
+/// hide behind a single-flight refresh + retry. Refresh here is
+/// single-flight via [AuthManager.refreshIfNeeded], so N concurrent
+/// http calls still coalesce into ONE refresh.
+///
+/// Returns null when:
+///  - AuthManager isn't registered yet (very early boot)
+///  - the app has no session
+///  - refresh returned no session and there was no fallback
+Future<String?> _defaultBearerTokenProvider() async {
+  if (!GetIt.I.isRegistered<AuthManager>()) return null;
+  final authManager = GetIt.I<AuthManager>();
+  var session = authManager.currentSession;
+  if (session == null) return null;
+
+  // Transient refresh failure returns the current (possibly expired)
+  // session — sending it is still better than sending nothing, and the
+  // server's 401 will be surfaced as a bad response to the caller.
+  if (session.accessExpired && !session.refreshExpired) {
+    final refreshed = await authManager.refreshIfNeeded();
+    session = refreshed ?? session;
+  }
+  return session.accessToken;
+}
 
 /// A small, readable HTTP client wrapper for typical app needs.
 /// - Auto-injects Authorization token if `tokenProvider` is supplied
@@ -28,8 +61,9 @@ class ApiService {
   ApiService({
     http.Client? client,
     this.requestTimeout = const Duration(seconds: 300),
-    this.tokenProvider,
-  }) : _client = client ?? http.Client();
+    Future<String?> Function()? tokenProvider,
+  })  : _client = client ?? http.Client(),
+        tokenProvider = tokenProvider ?? _defaultBearerTokenProvider;
 
   /// Shared success check for API response status codes.
   static bool isSuccessStatusCode(int statusCode) {

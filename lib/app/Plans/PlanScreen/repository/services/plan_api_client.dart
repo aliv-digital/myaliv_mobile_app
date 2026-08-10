@@ -3,26 +3,17 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/shared/repository/service
 import '../../../../../../core/networkService/api_paths.dart';
 
 /// Handles API calls for prepaid plan data.
-///
-/// Extends BasePlanApiClient to inherit:
-/// - Authentication handling
-/// - Error mapping
-/// - Debug logging
 class PlanApiClient extends BasePlanApiClient {
   PlanApiClient({super.networkService, super.authManager})
-    : super(debugName: 'prepaid');
+      : super(debugName: 'prepaid');
 
-  /// Fetch raw plans JSON from API
-  ///
-  /// Returns the raw response body as a string.
-  /// Throws [BasePlanRepositoryException] on errors.
   Future<String> fetchRawPlansJson() async {
-    final auth = requireAuth(); // Throws if not authenticated
+    final deviceId = requireDeviceAccountId();
 
-    debugLog('Fetching plans for device=${auth.deviceAccountID}');
+    debugLog('Fetching plans for device=$deviceId');
 
     final response = await networkService.request<String>(
-      "${Api.getAllPlans}/${auth.deviceAccountID}/available-plans",
+      "${Api.getAllPlans}/$deviceId/available-plans",
       method: HttpMethod.get,
     );
 
@@ -36,17 +27,13 @@ class PlanApiClient extends BasePlanApiClient {
     return response.data ?? '';
   }
 
-  /// Fetch raw bundles JSON from API
-  ///
-  /// Returns the raw response body as a string.
-  /// Throws [BasePlanRepositoryException] on errors.
   Future<String> fetchRawBundlesJson() async {
-    final auth = requireAuth(); // Throws if not authenticated
+    final deviceId = requireDeviceAccountId();
 
-    debugLog('Fetching bundles for device=${auth.deviceAccountID}');
+    debugLog('Fetching bundles for device=$deviceId');
 
     final response = await networkService.request<String>(
-      "${Api.getBundles}/${auth.deviceAccountID}/bundles",
+      "${Api.getBundles}/$deviceId/bundles",
       method: HttpMethod.get,
     );
 

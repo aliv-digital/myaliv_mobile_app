@@ -1,50 +1,67 @@
-class AuthResponse {
-  final String? twoFactorKey;
-  final String? ticket;
-  final int? accountId;
-  final String? message;
+import 'package:core/core.dart';
 
-  const AuthResponse({
-    this.twoFactorKey,
-    this.ticket,
-    this.accountId,
-    this.message,
-  });
+/// Sealed result of a login (or 2FA verify) call.
+///
+/// One of two shapes:
+///   - [LoginSuccess]  — full JWT token pair returned; caller can save
+///     the session and treat the user as authenticated.
+///   - [LoginMfaChallenge] — server dispatched a 6-digit PIN and returned
+///     an mfa_token; caller must route to the OTP screen and finish the
+///     exchange via `/Auth/2fa/verify`.
+sealed class LoginResult {
+  const LoginResult();
+}
 
-  bool get hasTicket => (ticket?.trim().isNotEmpty ?? false) && accountId != null;
+class LoginSuccess extends LoginResult {
+  const LoginSuccess(this.session);
+  final TokenSession session;
+}
 
-  bool get hasTwoFactorKey => twoFactorKey?.trim().isNotEmpty ?? false;
+class LoginMfaChallenge extends LoginResult {
+  const LoginMfaChallenge({required this.mfaToken});
+  final String mfaToken;
+}
 
-  factory AuthResponse.fromJson(Map<String, dynamic>? json) {
-    if (json == null) return const AuthResponse();
+/// Defensive parser for the login/verify response body.
+///
+/// The exact MFA shape isn't fully documented — this reader accepts
+/// several plausible casings so we don't have to rev the code the first
+/// time we see a live response. `access_token` wins if both keys are
+/// present.
+class LoginResponseParser {
+  static LoginResult parse(Map<String, dynamic> json) {
+    final accessToken = _firstNonEmpty(json, const [
+      'access_token',
+      'accessToken',
+      'AccessToken',
+    ]);
+    if (accessToken != null) {
+      return LoginSuccess(TokenSession.fromLoginJson(json));
+    }
 
-    final rawTwoFactorKey =
-        json['TwoFactorKey'] ?? json['twoFactorKey'] ?? json['two_factor_key'];
-    final twoFactorKey = rawTwoFactorKey?.toString();
+    final mfaToken = _firstNonEmpty(json, const [
+      'mfa_token',
+      'mfaToken',
+      'MfaToken',
+      'MFAToken',
+      // Legacy fallback in case the backend still returns the old key.
+      'TwoFactorKey',
+      'twoFactorKey',
+    ]);
+    if (mfaToken != null) {
+      return LoginMfaChallenge(mfaToken: mfaToken);
+    }
 
-    final rawTicket = json['Ticket'] ?? json['ticket'];
-    final ticket = rawTicket?.toString();
-
-    final rawAccountId = json['AccountId'] ?? json['accountId'];
-    final accountId = rawAccountId is int
-        ? rawAccountId
-        : int.tryParse(rawAccountId?.toString() ?? '');
-
-    final rawMessage = json['message'] ?? json['error'] ?? json['detail'];
-    final message = rawMessage?.toString();
-
-    return AuthResponse(
-      twoFactorKey: twoFactorKey,
-      ticket: ticket,
-      accountId: accountId,
-      message: message,
+    throw const FormatException(
+      'Login response missing both access_token and mfa_token',
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        if (twoFactorKey != null) 'TwoFactorKey': twoFactorKey,
-        if (ticket != null) 'Ticket': ticket,
-        if (accountId != null) 'AccountId': accountId,
-        if (message != null) 'message': message,
-      };
+  static String? _firstNonEmpty(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      final v = json[key];
+      if (v is String && v.trim().isNotEmpty) return v;
+    }
+    return null;
+  }
 }

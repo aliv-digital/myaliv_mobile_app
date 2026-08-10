@@ -1,85 +1,64 @@
-import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 
 import 'analytics/analytics_service.dart';
+import 'app/di.dart';
+import 'auth/auth_manager.dart';
+import 'network/network_service.dart';
+import 'time/timezone_service.dart';
 
-/// Core package dependency injection
+/// Core package dependency injection.
 ///
-/// Initializes core services like NetworkService and AuthManager.
-/// This should be called by the main app's injection initialization.
+/// Registers, in order:
+///   1. TimezoneService
+///   2. AuthManager (JWT session owner)  →  loadSession() (secure storage)
+///   3. NetworkService                    →  init() (interceptor reads session lazily)
+///   4. AnalyticsService
+///
+/// The [onHardLogout] callback is invoked by [BearerAuthInterceptor] when a
+/// refresh token is dead or a refresh call fails. The app layer supplies the
+/// closure — it must clear cached state and navigate the user back to the
+/// login/welcome flow.
 class CoreInjection {
-  /// Initialize core dependencies with optional auth loading
-  ///
-  /// If auth loading functions are provided, this will:
-  /// 1. Create and register AuthManager
-  /// 2. Load stored credentials into GlobalState
-  /// 3. Create and register NetworkService
-  /// 4. Initialize NetworkService with auth (if available)
-  ///
-  /// If auth functions are not provided:
-  /// - NetworkService will be initialized without auth headers
-  /// - Auth can be set up later via AuthManager.saveAuth()
-  ///
-  /// Note: Account info is managed by AccountInfoCubit (HydratedBloc).
-  /// This method only loads authentication credentials (ticket and accountID).
-  ///
-  /// Parameters:
-  /// - [getTicket]: Function to retrieve stored ticket from SharedPreferences
-  /// - [getAccountID]: Function to retrieve stored account ID
-  /// - [username]: Username constant (from core/constants)
   Future<void> initInjection({
-    Future<String?> Function()? getTicket,
-    Future<String?> Function()? getAccountID,
-    String? username,
+    required Future<void> Function() onHardLogout,
   }) async {
     if (kDebugMode) {
       debugPrint('========== CoreInjection START ==========');
     }
 
-    // ========== 1. Register TimezoneService ==========
     if (!instance.isRegistered<TimezoneService>()) {
-      instance.registerSingleton<TimezoneService>(const DeviceTimezoneService());
+      instance
+          .registerSingleton<TimezoneService>(const DeviceTimezoneService());
     }
 
-    // ========== 2. Register AuthManager ==========
     final authManager = AuthManager();
     instance.registerSingleton<AuthManager>(authManager);
 
-    // ========== 2. Load Auth from Storage (if functions provided) ==========
-    if (getTicket != null && getAccountID != null && username != null) {
-      try {
-        await authManager.loadAuthFromStorage(
-          getTicket: getTicket,
-          getAccountID: getAccountID,
-          username: username,
-        );
-      } catch (e) {
-        if (kDebugMode) {
-          debugPrint('⚠️ CoreInjection: Failed to load auth - $e');
-        }
-      }
-    } else {
+    // Load persisted JWT session BEFORE NetworkService is used, so the
+    // first authed request finds a session in memory.
+    try {
+      await authManager.loadSession();
+    } catch (e) {
       if (kDebugMode) {
-        debugPrint(
-            '⚠️ CoreInjection: No auth loading functions provided, skipping auth load');
+        debugPrint('⚠️ CoreInjection: loadSession failed - $e');
       }
     }
 
-    // ========== 3. Register NetworkService ==========
-    final networkService = NetworkService();
+    final networkService = NetworkService(
+      authManager: authManager,
+      onHardLogout: onHardLogout,
+    );
     instance.registerSingleton<NetworkService>(networkService);
-
-    // ========== 4. Initialize NetworkService ==========
     await networkService.init();
 
-    // ========== 5. Register AnalyticsService ==========
     final analyticsService = AnalyticsService();
     instance.registerSingleton<AnalyticsService>(analyticsService);
     await analyticsService.init();
 
     if (kDebugMode) {
-      final hasAuth = globalState.isAuthenticated;
-      debugPrint('✅ CoreInjection COMPLETE (Auth: ${hasAuth ? "YES ✅" : "NO ⚠️"})');
+      final hasSession = authManager.currentSession != null;
+      debugPrint(
+          '✅ CoreInjection COMPLETE (session: ${hasSession ? "YES ✅" : "NO ⚠️"})');
       debugPrint('==========================================');
     }
   }

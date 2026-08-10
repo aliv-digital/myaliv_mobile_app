@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:core/core.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
@@ -47,19 +48,42 @@ void main() async {
 
   await AppMainInjection().initInjection();
 
-  runApp(MyApp(appRouter: appRouter));
+  // Seed AppUiConfigCubit from persisted AccountInfoCubit state so a cold
+  // start with a valid JWT session renders the correct prepaid/postpaid
+  // shell immediately, instead of flashing the default until a login/OTP/
+  // welcome path re-populates it.
+  final accountState = instance<AccountInfoCubit>().state;
+  final initialUiConfig = !accountState.hasAccount
+      ? null
+      : HomeUiConfig(
+          userType: accountState.isPostpaid
+              ? UserType.postpaid
+              : UserType.prepaid,
+          hasActivePlan: false,
+          isFuturePlan: false,
+          isCurrentPlan: false,
+        );
+
+  runApp(MyApp(appRouter: appRouter, initialUiConfig: initialUiConfig));
 }
 
 class MyApp extends StatelessWidget {
   final AppRouter appRouter;
+  final HomeUiConfig? initialUiConfig;
 
-  const MyApp({super.key, required this.appRouter});
+  const MyApp({
+    super.key,
+    required this.appRouter,
+    this.initialUiConfig,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AppUiConfigCubit()),
+        BlocProvider(
+          create: (_) => AppUiConfigCubit(initialConfig: initialUiConfig),
+        ),
         BlocProvider.value(value: instance<AccountInfoCubit>()),
         BlocProvider.value(value: instance<PlansCubit>()),
         BlocProvider.value(value: instance<LimitedOfferCubit>()),

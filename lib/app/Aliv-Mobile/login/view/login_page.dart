@@ -82,14 +82,14 @@ class _LoginView extends StatelessWidget {
                 return;
               }
 
-              // 2FA path: forward TwoFactorKey to the OTP screen.
+              // 2FA path: forward mfa_token to the OTP screen.
               AppToast.show(
                   message: 'OTP sent successfully', type: ToastType.success);
 
-              final String? twoFactorKey = state.twoFactorKey;
-              if (twoFactorKey == null || twoFactorKey.isEmpty) {
+              final String? mfaToken = state.mfaToken;
+              if (mfaToken == null || mfaToken.isEmpty) {
                 AppToast.show(
-                  message: 'Two-factor key is missing from login response.',
+                  message: 'MFA token is missing from login response.',
                   type: ToastType.error,
                 );
                 return;
@@ -107,7 +107,7 @@ class _LoginView extends StatelessWidget {
               context.push(
                 AppRoutes.loginOtp,
                 extra: LoginOtpRouteArgs(
-                  twoFactorKey: twoFactorKey,
+                  mfaToken: mfaToken,
                   phoneNumber: state.phone.trim(),
                   apiPhoneNumber: apiPhoneNumber,
                 ),

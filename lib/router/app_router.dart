@@ -703,13 +703,13 @@ class AppRouter {
           final args = extra is LoginOtpRouteArgs
               ? extra
               : const LoginOtpRouteArgs(
-                  twoFactorKey: '',
+                  mfaToken: '',
                   phoneNumber: '',
                   apiPhoneNumber: '',
                 );
 
           return LoginOtpScreen(
-            initialTwoFactorKey: args.twoFactorKey,
+            initialMfaToken: args.mfaToken,
             initialPhoneNumber: args.phoneNumber,
             initialApiPhoneNumber: args.apiPhoneNumber,
           );

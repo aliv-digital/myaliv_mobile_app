@@ -1,2 +1,5 @@
 const baseUrl = 'https://mockservice.newcomobile.com/NewCoRestApi';
-const String userName = '027BA54E-973F-45DD-897B-F635E6C3EEBC';
+
+/// Channel identifier required by the JWT auth API (login, 2fa/verify).
+/// Currently the mobile app is the SelfCare channel.
+const String kAuthChannel = 'SelfCare';

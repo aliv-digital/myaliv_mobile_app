@@ -1,17 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
-import 'package:myaliv_mobile_app/core/localStorage/localStorage.dart';
 import 'package:core/core.dart';
-import '../../../../core/appConfig/app_ui_config_cubit.dart';
-import '../../account-information/cubit/account_info_cubit.dart';
+
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+
+import '../repository/login_otp_repository.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
-import '../repository/login_otp_repository.dart';
 
 class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
-  static const int _otpLength = 4;
+  /// The Kansys JWT API dispatches 6-digit PINs (was 4 under the legacy
+  /// two-factor-auth endpoint).
+  static const int _otpLength = 6;
+
   final LoginOtpRepository repository;
   final AppUiConfigCubit appUiConfigCubit;
   final AuthCompletionService authCompletionService;
@@ -20,18 +24,18 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     required this.repository,
     required this.appUiConfigCubit,
     AuthCompletionService? authCompletionService,
-    String initialTwoFactorKey = '',
+    String initialMfaToken = '',
     String initialPhoneNumber = '',
     String initialApiPhoneNumber = '',
   })  : authCompletionService =
             authCompletionService ?? const AuthCompletionService(),
         super(
-         LoginOtpState(
-           twoFactorKey: initialTwoFactorKey,
-           phoneNumber: initialPhoneNumber,
-           apiPhoneNumber: initialApiPhoneNumber,
-         ),
-       ) {
+          LoginOtpState(
+            mfaToken: initialMfaToken,
+            phoneNumber: initialPhoneNumber,
+            apiPhoneNumber: initialApiPhoneNumber,
+          ),
+        ) {
     on<LoginOtpCodeChanged>((event, emit) {
       emit(
         state.copyWith(
@@ -54,10 +58,10 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     Emitter<LoginOtpState> emit,
   ) async {
     final apiPhoneNumber = state.apiPhoneNumber.trim();
-    final twoFactorKey = state.twoFactorKey.trim();
+    final mfaToken = state.mfaToken.trim();
     final enteredCode = state.code.trim();
 
-    if (apiPhoneNumber.isEmpty || twoFactorKey.isEmpty) {
+    if (apiPhoneNumber.isEmpty || mfaToken.isEmpty) {
       emit(
         state.copyWith(
           status: LoginOtpStatus.failure,
@@ -116,22 +120,18 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     );
 
     try {
-      debugPrint("OTP CODE : ${state.code}");
       final response = await repository.verifyCode(
         phoneNumber: apiPhoneNumber,
-        twoFactorKey: twoFactorKey,
-        pinCode: enteredCode,
+        mfaToken: mfaToken,
+        otpCode: enteredCode,
       );
-      debugPrint("Ticket : ${response.ticket}");
-      debugPrint("Account id : ${response.accountId}");
 
       await authCompletionService.complete(
-        ticket: response.ticket.toString(),
-        accountId: response.accountId.toString(),
+        session: response.session,
         appUiConfigCubit: appUiConfigCubit,
       );
 
-      await Future.delayed(Duration(milliseconds: 1500));
+      await Future.delayed(const Duration(milliseconds: 1500));
 
       await instance<AnalyticsService>().logLogin();
 
@@ -146,25 +146,17 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     } catch (e) {
       final message = _extractErrorMessage(e);
       final errorType = _mapErrorTypeFromMessage(message);
-      if (message.toString() == "Two Factor P I N Invalid") {
-        emit(
-          state.copyWith(
-            status: LoginOtpStatus.failure,
-            errorType: errorType,
-            codeFieldError: _isCodeInputRelatedError(errorType),
-            errorMessage: "Invalid OTP",
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: LoginOtpStatus.failure,
-            errorType: errorType,
-            codeFieldError: _isCodeInputRelatedError(errorType),
-            errorMessage: message,
-          ),
-        );
-      }
+      final normalized = message.toLowerCase();
+      final treatAsInvalidCode = normalized.contains('two factor') ||
+          normalized.contains('twofactor');
+      emit(
+        state.copyWith(
+          status: LoginOtpStatus.failure,
+          errorType: errorType,
+          codeFieldError: _isCodeInputRelatedError(errorType),
+          errorMessage: treatAsInvalidCode ? 'Invalid OTP' : message,
+        ),
+      );
     }
   }
 
@@ -173,28 +165,21 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     PrintStorage event,
     Emitter<LoginOtpState> emit,
   ) async {
-    // Get account info from AccountInfoCubit (HydratedBloc)
     final accountInfoCubit = instance<AccountInfoCubit>();
     final account = accountInfoCubit.state.accountInfo;
-    final ticket = await LocalStorage.getTicket();
+    final session = instance<AuthManager>().currentSession;
 
     if (account == null) {
       debugPrint("⚠️ No account info available");
       return;
     }
 
-    final userPhoneNumber = account.tNs;
-    final email = account.email;
-    final deviceAccountID = account.idAcc; // device account id
-    final accountStatus = account.accountStatus;
-    final accountType = account.accountType;
-    final paymentOption = account.paymentOption;
-    debugPrint("Email : $email");
-    debugPrint("Account Status : $accountStatus");
-    debugPrint("Account Type : $accountType");
-    debugPrint("Payment Option : $paymentOption");
-    debugPrint("Device Account ID : $deviceAccountID");
-    debugPrint("Ticket : $ticket"); // works as password
+    debugPrint("Email : ${account.email}");
+    debugPrint("Account Status : ${account.accountStatus}");
+    debugPrint("Account Type : ${account.accountType}");
+    debugPrint("Payment Option : ${account.paymentOption}");
+    debugPrint("Device Account ID : ${account.idAcc}");
+    debugPrint("Access token exp : ${session?.accessExpiresAt}");
   }
 
   Future<void> _onResendRequested(
@@ -202,9 +187,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     Emitter<LoginOtpState> emit,
   ) async {
     final apiPhoneNumber = state.apiPhoneNumber.trim();
-    final twoFactorKey = state.twoFactorKey.trim();
+    final mfaToken = state.mfaToken.trim();
 
-    if (apiPhoneNumber.isEmpty || twoFactorKey.isEmpty) {
+    if (apiPhoneNumber.isEmpty || mfaToken.isEmpty) {
       emit(
         state.copyWith(
           resendStatus: LoginOtpResendStatus.idle,
@@ -234,22 +219,20 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     try {
       final resendResponse = await repository.resendCode(
         phoneNumber: apiPhoneNumber,
-        twoFactorKey: twoFactorKey,
+        mfaToken: mfaToken,
       );
-      final updatedKey = resendResponse.key ?? twoFactorKey;
+      final updatedKey = resendResponse.mfaToken ?? mfaToken;
       emit(
         state.copyWith(
           resendStatus: LoginOtpResendStatus.done,
-          // Backend may rotate key on resend; keep state in sync.
-          twoFactorKey: updatedKey,
+          mfaToken: updatedKey,
           errorMessage: null,
         ),
       );
-      // Reset to idle so future status changes do not re-trigger resend success UI.
       emit(
         state.copyWith(
           resendStatus: LoginOtpResendStatus.idle,
-          twoFactorKey: updatedKey,
+          mfaToken: updatedKey,
           errorMessage: null,
         ),
       );
@@ -281,8 +264,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         lower.contains('incorrect') ||
         lower.contains('wrong') ||
         lower.contains('failedusernameorpassword') ||
-        lower.contains('pin code') ||
-        lower.contains('pincode')) {
+        lower.contains('two factor') ||
+        lower.contains('twofactor') ||
+        lower.contains('otp')) {
       return LoginOtpErrorType.invalidCode;
     }
     return LoginOtpErrorType.unknown;

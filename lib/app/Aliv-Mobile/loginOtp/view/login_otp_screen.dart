@@ -16,13 +16,14 @@ import '../widgets/otp_bottom_actions.dart';
 class LoginOtpScreen extends StatelessWidget {
   const LoginOtpScreen({
     super.key,
-    this.initialTwoFactorKey = '',
+    this.initialMfaToken = '',
     this.initialPhoneNumber = '',
     this.initialApiPhoneNumber = '',
   });
 
-  /// Two-factor key passed from login route.
-  final String initialTwoFactorKey;
+  /// mfa_token issued by the login endpoint; seeded into the bloc so the
+  /// verify request can reference it.
+  final String initialMfaToken;
 
   /// Phone number passed from login route.
   final String initialPhoneNumber;
@@ -33,11 +34,10 @@ class LoginOtpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // Seed OTP bloc state with route-provided twoFactorKey.
       create: (context) => LoginOtpBloc(
         repository: LoginOtpRepository(),
         appUiConfigCubit: context.read<AppUiConfigCubit>(),
-        initialTwoFactorKey: initialTwoFactorKey,
+        initialMfaToken: initialMfaToken,
         initialPhoneNumber: initialPhoneNumber,
         initialApiPhoneNumber: initialApiPhoneNumber,
       ),
@@ -52,7 +52,6 @@ class _LoginOtpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StripedScaffold(
-      // ✅ Default behavior back (keyboard উঠলে body resize হবে + auto scroll works)
       resizeToAvoidBottomInset: true,
 
       body: SafeArea(
@@ -111,7 +110,7 @@ class _LoginOtpView extends StatelessWidget {
                       ),
                       OtpBottomActions(),
                       SizedBox(
-                        height:85 ,//LoginOtpSizes.contentBottomGap,
+                        height: 85,
                       ),
                       _ChangePhoneNumberAction(),
                       SizedBox(height: 113),

@@ -13,6 +13,8 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'bearer_auth_interceptor.dart';
 import 'network_interceptors.dart';
 
 /// Main network service for making HTTP requests
@@ -20,50 +22,37 @@ import 'network_interceptors.dart';
 /// This is a singleton service that handles all network operations including:
 /// - HTTP requests (GET, POST, PUT, DELETE, PATCH)
 /// - Cookie management (session persistence)
-/// - Authentication token injection
-/// - Session expiration handling
+/// - JWT Bearer token injection + refresh via [BearerAuthInterceptor]
 /// - Request cancellation
 /// - Progress tracking
 /// - Error handling
 class NetworkService {
-  /// Clean constructor - init() must be called explicitly after AuthManager loads credentials
-  NetworkService();
+  NetworkService({
+    required this.authManager,
+    required this.onHardLogout,
+  });
+
+  final AuthManager authManager;
+  final Future<void> Function() onHardLogout;
 
   late Dio _dio;
   late PersistCookieJar _cookieJar;
   late NetworkConfig _config;
-  NetworkCallbacks? _callbacks;
   bool _initialized = false;
 
-  // Interceptor handlers
-  late NetworkInterceptorHandlers _interceptorHandlers;
-
-  // Cancel tokens for request cancellation
   final Map<String, CancelToken> _cancelTokens = {};
 
-  /// Initialize the network service
-  ///
-  /// ⚠️ IMPORTANT: Must be called AFTER AuthManager.loadAuthFromStorage()
-  /// This ensures credentials are available in GlobalState before initialization.
+  /// Initialize the network service.
   ///
   /// Call order in CoreInjection:
-  /// 1. AuthManager.loadAuthFromStorage() → loads auth to GlobalState
-  /// 2. NetworkService.init() → reads auth from GlobalState
-  ///
-  /// Example:
-  /// ```dart
-  /// final authManager = AuthManager();
-  /// await authManager.loadAuthFromStorage(...);
-  /// final networkService = NetworkService();
-  /// await networkService.init();
-  /// ```
+  /// 1. AuthManager.loadSession() — loads persisted tokens
+  /// 2. NetworkService.init() — reads session lazily via the interceptor
   Future<void> init() async {
     if (_initialized) {
       debugPrint('⚠️ NetworkService already initialized');
       return;
     }
 
-    // ========== 1. Initialize Cookie Jar (FIX: Was missing!) ==========
     final appDocDir = await getApplicationDocumentsDirectory();
     final cookiePath = '${appDocDir.path}/.cookies/';
     _cookieJar = PersistCookieJar(
@@ -71,140 +60,51 @@ class NetworkService {
       storage: FileStorage(cookiePath),
     );
 
-    // ========== 2. Build Config with Auth from GlobalState ==========
-    final authToken = globalState.basicAuthToken;
+    _config = const NetworkConfig(baseUrl: baseUrl);
 
-    _config = NetworkConfig(
-      baseUrl: baseUrl,
-      headers: authToken != null ? {'Authorization': 'Basic $authToken'} : {},
+    final baseOptions = BaseOptions(
+      baseUrl: _config.baseUrl,
+      connectTimeout: _config.connectTimeout,
+      receiveTimeout: _config.receiveTimeout,
+      contentType: 'application/json',
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
     );
 
-    if (kDebugMode) {
-      debugPrint(
-          'NetworkService: Auth headers ${authToken != null ? "SET ✅" : "NOT SET ⚠️"}');
-      debugPrint(
-          'NetworkService: Config - baseUrl=${_config.baseUrl}, enableLogging=${_config.enableLogging}');
-    }
+    _dio = Dio(baseOptions);
 
-    _interceptorHandlers = NetworkInterceptorHandlers();
+    // Retry Dio used ONLY by BearerAuthInterceptor to replay an original
+    // request after a reactive refresh. Must NOT share interceptors.
+    final retryDio = Dio(baseOptions);
 
-    // ========== 3. Configure Dio ==========
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: _config.baseUrl,
-        connectTimeout: _config.connectTimeout,
-        receiveTimeout: _config.receiveTimeout,
-        contentType: 'application/json',
-        headers: {
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-          ..._config.headers ?? {},
-        },
-      ),
-    );
-
-    // ========== 4. Add Interceptors ==========
-    _setupInterceptors();
+    _setupInterceptors(retryDio);
 
     _initialized = true;
     debugPrint('✅ NetworkService initialized');
   }
 
-  /// Update auth headers after login (without full re-init)
-  ///
-  /// Call this after AuthManager.saveAuth() to update NetworkService
-  /// with new credentials without reinitializing the entire service.
-  void updateAuthHeaders() {
-    if (!_initialized) {
-      debugPrint('⚠️ NetworkService not initialized, cannot update headers');
-      return;
-    }
-
-    final authToken = globalState.basicAuthToken;
-
-    if (authToken != null) {
-      _dio.options.headers['Authorization'] = 'Basic $authToken';
-      if (kDebugMode) {
-        debugPrint('✅ NetworkService: Auth headers updated');
-      }
-    } else {
-      _dio.options.headers.remove('Authorization');
-      if (kDebugMode) {
-        debugPrint(
-            '⚠️ NetworkService: Auth headers removed (no auth in GlobalState)');
-      }
-    }
-  }
-
-  /// Clear auth headers (logout)
-  ///
-  /// Call this during logout to remove authentication from NetworkService.
-  void clearAuthHeaders() {
-    if (!_initialized) return;
-
-    _dio.options.headers.remove('Authorization');
-    if (kDebugMode) {
-      debugPrint('🗑️ NetworkService: Auth headers cleared');
-    }
-  }
-
-  /// Setup all interceptors
-  void _setupInterceptors() {
-    // Cookie manager
+  /// Setup all interceptors. Order matters:
+  ///   CookieManager → BearerAuthInterceptor → Logging
+  void _setupInterceptors(Dio retryDio) {
     _dio.interceptors.add(CookieManager(_cookieJar));
 
-    // Auth and session interceptor
     _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: _interceptorHandlers.handleRequest,
-        onResponse: (response, handler) => _interceptorHandlers.handleResponse(
-          response,
-          handler,
-          _handleSessionExpired,
-        ),
-        onError: (error, handler) => _interceptorHandlers.handleError(
-          error,
-          handler,
-          _handleSessionExpired,
-        ),
+      BearerAuthInterceptor(
+        authManager: authManager,
+        onHardLogout: onHardLogout,
+        retryDio: retryDio,
       ),
     );
 
-    // Logging interceptor (debug mode only)
     if (_config.enableLogging && kDebugMode) {
       _dio.interceptors
           .add(NetworkLoggingInterceptor(config: _config.logConfig));
-      debugPrint('✅ NetworkService: Logging interceptor added');
-    } else {
-      debugPrint(
-          '⚠️ NetworkService: Logging DISABLED (enableLogging=${_config.enableLogging}, debugMode=$kDebugMode)');
     }
-  }
-
-  /// Handle session expiration
-  Future<void> _handleSessionExpired() async {
-    debugPrint('🔄 Clearing session data');
-
-    // Clear cookies
-    await clearCookies();
-
-    // Trigger app-specific logout callback
-    if (_callbacks?.onSessionExpired != null) {
-      await _callbacks!.onSessionExpired!();
-    }
-
-    debugPrint('✅ Session cleared');
   }
 
   /// Make HTTP request with automatic error handling
-  ///
-  /// Example:
-  /// ```dart
-  /// final response = await service.request(
-  ///   '/users',
-  ///   method: HttpMethod.get,
-  /// );
-  /// ```
   Future<Response<T>> request<T>(
     String path, {
     required HttpMethod method,
@@ -224,7 +124,6 @@ class NetworkService {
       debugPrint('🔵 NetworkService.request() called: [$method] $path');
     }
 
-    // Create or use existing cancel token
     final token =
         cancelToken ?? (requestId != null ? _getCancelToken(requestId) : null);
 
@@ -290,7 +189,6 @@ class NetworkService {
           break;
       }
 
-      // Clean up cancel token if using requestId
       if (requestId != null) {
         _cancelTokens.remove(requestId);
       }
@@ -304,16 +202,6 @@ class NetworkService {
   }
 
   /// Upload file with multipart/form-data
-  ///
-  /// Example:
-  /// ```dart
-  /// await service.upload(
-  ///   '/files',
-  ///   data: {'title': 'My File'},
-  ///   files: [MapEntry('file', multipartFile)],
-  ///   onProgress: (sent, total) => print('$sent/$total'),
-  /// );
-  /// ```
   Future<Response> upload(
     String path, {
     required Map<String, dynamic> data,
@@ -324,12 +212,10 @@ class NetworkService {
   }) async {
     final formData = FormData();
 
-    // Add fields
     data.forEach((key, value) {
       formData.fields.add(MapEntry(key, value.toString()));
     });
 
-    // Add files
     if (files != null) {
       formData.files.addAll(files);
     }
@@ -346,15 +232,6 @@ class NetworkService {
   }
 
   /// Download file
-  ///
-  /// Example:
-  /// ```dart
-  /// await service.download(
-  ///   '/files/123',
-  ///   '/path/to/save/file.pdf',
-  ///   onProgress: (received, total) => print('$received/$total'),
-  /// );
-  /// ```
   Future<Response> download(
     String urlPath,
     String savePath, {
@@ -383,17 +260,10 @@ class NetworkService {
     }
   }
 
-  /// Get or create cancel token for request
   CancelToken _getCancelToken(String requestId) {
     return _cancelTokens.putIfAbsent(requestId, () => CancelToken());
   }
 
-  /// Cancel request by ID
-  ///
-  /// Example:
-  /// ```dart
-  /// service.cancelRequest('upload-123');
-  /// ```
   void cancelRequest(String requestId, [String? reason]) {
     final token = _cancelTokens[requestId];
     if (token != null && !token.isCancelled) {
@@ -403,12 +273,6 @@ class NetworkService {
     }
   }
 
-  /// Cancel all pending requests
-  ///
-  /// Example:
-  /// ```dart
-  /// service.cancelAllRequests('User logged out');
-  /// ```
   void cancelAllRequests([String? reason]) {
     for (final entry in _cancelTokens.entries) {
       if (!entry.value.isCancelled) {
@@ -419,7 +283,6 @@ class NetworkService {
     debugPrint('🚫 All requests cancelled');
   }
 
-  /// Handle Dio exceptions and convert to NetworkException
   NetworkException _handleDioException(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
@@ -469,11 +332,9 @@ class NetworkService {
     }
   }
 
-  /// Extract error message from response data
   String _extractErrorMessage(dynamic data) {
     if (data == null) return 'An error occurred';
 
-    // If data is a JSON string, parse it first
     if (data is String) {
       try {
         final parsed = jsonDecode(data);
@@ -482,7 +343,6 @@ class NetworkService {
         }
         return data;
       } catch (_) {
-        // Not valid JSON, return as-is
         return data;
       }
     }
@@ -494,9 +354,7 @@ class NetworkService {
     return 'An error occurred';
   }
 
-  /// Extract message from a Map
   String _extractMessageFromMap(Map<dynamic, dynamic> data) {
-    // Try common error message keys (both uppercase and lowercase)
     final message = data['Message'] ??
         data['message'] ??
         data['Error'] ??
@@ -507,59 +365,13 @@ class NetworkService {
     return message?.toString() ?? 'An error occurred';
   }
 
-  /// Check if there's a valid session
-  ///
-  /// Example:
-  /// ```dart
-  /// final hasSession = await service.hasValidSession('https://api.example.com/auth/check');
-  /// ```
-  Future<bool> hasValidSession(String checkUrl) async {
-    if (!_initialized) {
-      debugPrint('⚠️ NetworkService not initialized - cannot check session');
-      return false;
-    }
-
-    final uri = Uri.parse(checkUrl);
-    final cookies = await _cookieJar.loadForRequest(uri);
-    final sessionCookie = cookies.firstWhere(
-      (cookie) => cookie.name == 'session_id',
-      orElse: () => Cookie('session_id', ''),
-    );
-
-    if (sessionCookie.value.isNotEmpty &&
-        sessionCookie.expires != null &&
-        !sessionCookie.expires!.isBefore(DateTime.now())) {
-      // Notify app of session cookie if callback provided
-      if (_callbacks?.onSessionCookie != null) {
-        await _callbacks!.onSessionCookie!(sessionCookie.value);
-      }
-
-      debugPrint('✅ Valid session found: ${sessionCookie.value}');
-      return true;
-    }
-
-    debugPrint('⚠️ No valid session found');
-    return false;
-  }
-
   /// Clear all cookies
-  ///
-  /// Example:
-  /// ```dart
-  /// await service.clearCookies();
-  /// ```
   Future<void> clearCookies() async {
-    if (!_initialized) {
-      debugPrint('⚠️ NetworkService not initialized - cannot clear cookies');
-      return;
-    }
+    if (!_initialized) return;
     await _cookieJar.deleteAll();
     debugPrint('🍪 All cookies cleared');
   }
 
-  /// Get Dio instance (for advanced usage)
-  ///
-  /// Use this only when you need direct access to Dio for custom operations.
   Dio get dio {
     if (!_initialized) {
       throw NetworkException(
@@ -568,9 +380,6 @@ class NetworkService {
     return _dio;
   }
 
-  /// Get cookie jar (for advanced usage)
-  ///
-  /// Use this only when you need direct access to cookies for custom operations.
   PersistCookieJar get cookieJar {
     if (!_initialized) {
       throw NetworkException(
@@ -579,6 +388,5 @@ class NetworkService {
     return _cookieJar;
   }
 
-  /// Check if service is initialized
   bool get isInitialized => _initialized;
 }

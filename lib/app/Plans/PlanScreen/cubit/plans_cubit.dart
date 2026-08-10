@@ -67,7 +67,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
       emit(state.copyWith(selectedTab: tab, expandedPlanIds: const {}));
     }
 
-    if (!globalState.isAuthenticated) return;
+    if (instance<AuthManager>().currentSession == null) return;
 
     if (!state.hasData) {
       await _fetchAllPlans();
@@ -376,7 +376,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
     bool forceRefresh = false,
     required UserType userType,
   }) async {
-    if (!globalState.isAuthenticated) {
+    if (instance<AuthManager>().currentSession == null) {
       if (kDebugMode) {
         debugPrint('⚠️ loadInitialPlans: Not authenticated, skipping');
       }

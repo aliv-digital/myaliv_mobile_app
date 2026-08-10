@@ -15,7 +15,7 @@ enum LoginOtpErrorType {
 
 class LoginOtpState extends Equatable {
   final String code;
-  final String twoFactorKey;
+  final String mfaToken;
   final String phoneNumber;
   final String apiPhoneNumber;
   final LoginOtpStatus status;
@@ -26,7 +26,7 @@ class LoginOtpState extends Equatable {
 
   const LoginOtpState({
     this.code = '',
-    this.twoFactorKey = '',
+    this.mfaToken = '',
     this.phoneNumber = '',
     this.apiPhoneNumber = '',
     this.status = LoginOtpStatus.initial,
@@ -38,7 +38,7 @@ class LoginOtpState extends Equatable {
 
   LoginOtpState copyWith({
     String? code,
-    String? twoFactorKey,
+    String? mfaToken,
     String? phoneNumber,
     String? apiPhoneNumber,
     LoginOtpStatus? status,
@@ -49,7 +49,7 @@ class LoginOtpState extends Equatable {
   }) {
     return LoginOtpState(
       code: code ?? this.code,
-      twoFactorKey: twoFactorKey ?? this.twoFactorKey,
+      mfaToken: mfaToken ?? this.mfaToken,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       apiPhoneNumber: apiPhoneNumber ?? this.apiPhoneNumber,
       status: status ?? this.status,
@@ -63,7 +63,7 @@ class LoginOtpState extends Equatable {
   @override
   List<Object?> get props => [
         code,
-        twoFactorKey,
+        mfaToken,
         phoneNumber,
         apiPhoneNumber,
         status,

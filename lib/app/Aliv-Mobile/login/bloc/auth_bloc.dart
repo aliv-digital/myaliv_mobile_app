@@ -1,8 +1,9 @@
-// lib/login/login_bloc.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+
+import '../model/auth_response_model.dart';
 import '../repository/auth_repository.dart';
 import '../services/auth_completion_service.dart';
 import '../utils/login_phone_number_helper.dart';
@@ -30,7 +31,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.initial,
         outcome: LoginOutcome.none,
         errorMessage: null,
-        twoFactorKey: null,
+        mfaToken: null,
         apiPhoneNumber: null,
         phoneFieldError: false,
       ));
@@ -42,7 +43,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.initial,
         outcome: LoginOutcome.none,
         errorMessage: null,
-        twoFactorKey: null,
+        mfaToken: null,
         apiPhoneNumber: null,
         passwordFieldError: false,
       ));
@@ -54,7 +55,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.initial,
         outcome: LoginOutcome.none,
         errorMessage: null,
-        twoFactorKey: null,
+        mfaToken: null,
         apiPhoneNumber: null,
         phoneFieldError: false,
       ));
@@ -80,7 +81,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         status: LoginStatus.failure,
         outcome: LoginOutcome.none,
         errorMessage: message,
-        twoFactorKey: null,
+        mfaToken: null,
         apiPhoneNumber: null,
         phoneFieldError: phoneFieldError,
         passwordFieldError: passwordFieldError,
@@ -144,51 +145,51 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       status: LoginStatus.loading,
       outcome: LoginOutcome.none,
       errorMessage: null,
-      twoFactorKey: null,
+      mfaToken: null,
       apiPhoneNumber: null,
       phoneFieldError: false,
       passwordFieldError: false,
     ));
 
     try {
-      final authResponse = await repository.login(
+      final result = await repository.login(
         username: phoneValidationResult.phoneNumberForApi!,
         password: state.password,
       );
 
-      // No-2FA path: ticket + accountId returned directly. Run the completion
-      // sequence here so LoginBloc reaches the same authenticated end-state
-      // that LoginOtpBloc reaches on the 2FA path.
-      if (authResponse.hasTicket) {
-        await authCompletionService.complete(
-          ticket: authResponse.ticket!,
-          accountId: authResponse.accountId!.toString(),
-          appUiConfigCubit: appUiConfigCubit,
-        );
+      switch (result) {
+        case LoginSuccess(:final session):
+          // No-2FA path: JWT session returned directly. Run the completion
+          // sequence so LoginBloc reaches the same authenticated end-state
+          // that LoginOtpBloc reaches on the 2FA path.
+          await authCompletionService.complete(
+            session: session,
+            appUiConfigCubit: appUiConfigCubit,
+          );
 
-        emit(state.copyWith(
-          status: LoginStatus.success,
-          outcome: LoginOutcome.authenticated,
-          errorMessage: null,
-          twoFactorKey: null,
-          apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
-          phoneFieldError: false,
-          passwordFieldError: false,
-        ));
-        return;
+          emit(state.copyWith(
+            status: LoginStatus.success,
+            outcome: LoginOutcome.authenticated,
+            errorMessage: null,
+            mfaToken: null,
+            apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
+            phoneFieldError: false,
+            passwordFieldError: false,
+          ));
+
+        case LoginMfaChallenge(:final mfaToken):
+          // 2FA path: server dispatched a 6-digit PIN and gave us an
+          // mfa_token. UI forwards these to the OTP screen.
+          emit(state.copyWith(
+            status: LoginStatus.success,
+            outcome: LoginOutcome.needsOtp,
+            errorMessage: null,
+            mfaToken: mfaToken,
+            apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
+            phoneFieldError: false,
+            passwordFieldError: false,
+          ));
       }
-
-      // 2FA path: server dispatched a PIN and gave us a TwoFactorKey. UI
-      // forwards these to the OTP screen.
-      emit(state.copyWith(
-        status: LoginStatus.success,
-        outcome: LoginOutcome.needsOtp,
-        errorMessage: null,
-        twoFactorKey: authResponse.twoFactorKey,
-        apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
-        phoneFieldError: false,
-        passwordFieldError: false,
-      ));
     } catch (e) {
       final message = _extractErrorMessage(e);
       debugPrint('Login error: $message, $e');
@@ -229,22 +230,3 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     return raw.trim().isEmpty ? 'invalid credentials!' : raw.trim();
   }
 }
-
-// trying with wrong credentials : FailedUsernameOrPassword | status code : 401
-
-// after trying with wrong credentials so many times ,
-// error message : FailedUsernameIsLocked | status code : 401
-
-/*
-if invalid phone number like "f*74#2@" or short digits then response :
- status Code : 400,
- body: {
-  "ErrorCode":95000,
-  "ErrorCodeName":"FailedSimpleValidation",
-  "Message":"Failed Simple Validation",
-  "Errors":
-    {
-      "request.Username":["Must be a 7 or 10 digit phone number."]},
-      "Detail":null
-    }
- */

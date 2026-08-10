@@ -49,7 +49,9 @@ Future<void> showTermsAndConditionsModal(
 }
 
 bool _shouldUsePostpaidTerms(BuildContext context, bool? guestIsPostpaid) {
-  if (!globalState.isAuthenticated) return guestIsPostpaid == true;
+  if (instance<AuthManager>().currentSession == null) {
+    return guestIsPostpaid == true;
+  }
 
   final accountState = instance<AccountInfoCubit>().state;
   if (accountState.isPostpaid) return true;

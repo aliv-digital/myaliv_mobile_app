@@ -1,106 +1,13 @@
-/// Network interceptors for request/response handling
+/// Network interceptors for logging.
 ///
-/// This file contains interceptor classes and handlers.
-/// Responsible for: Request/response interception, logging, and error handling.
+/// Auth/session interception was moved to [BearerAuthInterceptor] during
+/// the JWT migration. This file now only contains the logging interceptor.
 library;
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'network_config.dart';
-import 'network_exceptions.dart';
-
-/// Handles authentication, session, and error interception
-class NetworkInterceptorHandlers {
-  NetworkInterceptorHandlers();
-
-  /// Handle outgoing requests - inject auth token
-  Future<void> handleRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
-    return handler.next(options);
-  }
-
-  /// Handle incoming responses - check for session expiration
-  Future<void> handleResponse(
-    Response response,
-    ResponseInterceptorHandler handler,
-    Future<void> Function() onSessionExpired,
-  ) async {
-    // Check for session expiration in 200 responses (e.g., Odoo JSON-RPC)
-    if (response.statusCode == 200 && response.data is Map) {
-      final data = response.data as Map;
-
-      // Check JSON-RPC error format
-      if (data['jsonrpc'] != null && data['error'] != null) {
-        final errorData = data['error'];
-        if (errorData is Map && errorData['message'] != null) {
-          final message = errorData['message'].toString().toLowerCase();
-          if (message.contains('session expired') ||
-              message.contains('odoo session expired')) {
-            debugPrint('🔄 Session expired detected in 200 response');
-            await onSessionExpired();
-            return handler.reject(
-              DioException(
-                requestOptions: response.requestOptions,
-                response: response,
-                type: DioExceptionType.badResponse,
-                error: SessionExpiredException(),
-              ),
-            );
-          }
-        }
-      }
-    }
-
-    return handler.next(response);
-  }
-
-  /// Handle errors - check for 401 and session expiration
-  Future<void> handleError(
-    DioException error,
-    ErrorInterceptorHandler handler,
-    Future<void> Function() onSessionExpired,
-  ) async {
-    // Handle 401 unauthorized
-    if (error.response?.statusCode == 401) {
-      debugPrint('❌ 401 Unauthorized - Session expired');
-      await onSessionExpired();
-      return handler.next(error);
-    }
-
-    // Handle session expiration in error response
-    if (isSessionExpired(error)) {
-      debugPrint('🔄 Session expired detected in error');
-      await onSessionExpired();
-    }
-
-    return handler.next(error);
-  }
-
-  /// Check if error indicates session expiration
-  bool isSessionExpired(DioException error) {
-    // Default implementation
-    final errorData = error.response?.data;
-
-    if (errorData is String) {
-      return errorData.toLowerCase().contains('session expired') ||
-          errorData.toLowerCase().contains('odoo session expired');
-    }
-
-    if (errorData is Map) {
-      final message = errorData['message']?.toString() ?? '';
-      final errorMsg = errorData['error']?.toString() ?? '';
-      return message.toLowerCase().contains('session expired') ||
-          message.toLowerCase().contains('odoo session expired') ||
-          errorMsg.toLowerCase().contains('session expired') ||
-          errorMsg.toLowerCase().contains('odoo session expired');
-    }
-
-    return false;
-  }
-}
 
 /// Logging interceptor for debugging.
 ///
@@ -233,7 +140,6 @@ class NetworkLoggingInterceptor extends Interceptor {
     _printChunked('📥 Data', _formatBody(data));
   }
 
-  /// Extract error message from response data
   String _extractErrorMessage(dynamic data) {
     if (data == null) return 'An error occurred';
 
@@ -263,7 +169,6 @@ class NetworkLoggingInterceptor extends Interceptor {
     return message?.toString() ?? 'An error occurred';
   }
 
-  /// Format any body for logging according to [NetworkLogConfig].
   String _formatBody(dynamic data) {
     if (_config.bodyMode == NetworkLogBodyMode.off) return '<hidden>';
 
@@ -291,8 +196,6 @@ class NetworkLoggingInterceptor extends Interceptor {
     }
   }
 
-  /// Recursively trim long arrays to [max] items, appending a `... +N more`
-  /// sentinel so the original size is still visible.
   dynamic _trimArrays(dynamic node, int max) {
     if (node is List) {
       final trimmed = node.length > max
@@ -309,9 +212,6 @@ class NetworkLoggingInterceptor extends Interceptor {
     return node;
   }
 
-  /// Collapse the structure into a shape suitable for one-glance debugging:
-  /// arrays become `<List length=N, sample=...>`, maps keep keys but
-  /// summarize their values recursively.
   dynamic _summarize(dynamic node) {
     if (node is List) {
       if (node.isEmpty) return '<List length=0>';
@@ -329,10 +229,6 @@ class NetworkLoggingInterceptor extends Interceptor {
     return '${s.substring(0, max)}... [truncated, total=${s.length}]';
   }
 
-  /// Print [body] in ~800-char slices so Android logcat (which truncates
-  /// individual log lines around ~4 KB) doesn't drop the tail of large
-  /// payloads. The first slice carries [label] inline; continuation
-  /// slices are indented with `  …` so they read as one logical block.
   void _printChunked(String label, String body) {
     const chunk = 800;
     if (body.length <= chunk) {

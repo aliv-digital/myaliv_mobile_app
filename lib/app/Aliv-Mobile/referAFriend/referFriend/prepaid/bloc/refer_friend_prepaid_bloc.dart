@@ -1,8 +1,9 @@
+import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
-import '../../../../../Home/balance/balance_injection.dart';
 import '../../../../account-information/cubit/account_info_cubit.dart';
 import '../repository/refer_friend_prepaid_repository.dart';
 import '../utils/refer_friend_prepaid_email_helper.dart';
@@ -308,7 +309,12 @@ class ReferFriendPrepaidBloc
       throw Exception('Account information is not available.');
     }
 
-    final deviceAccountId = account.idAcc.toString().trim();
+    // Refer-a-friend body carries `ReferringDeviceAccountId` — that's
+    // the DEVICE id (from /Account/devices), not the account's id_acc.
+    final primaryDevice =
+        instance<DeviceLimitsCubit>().state.deviceLimits;
+    final deviceAccountId =
+        (primaryDevice?.deviceId ?? 0).toString();
     final phoneNumber = _firstNotEmpty([
       account.tNs.isNotEmpty ? account.tNs.first : '',
       account.primaryPhoneNumber,

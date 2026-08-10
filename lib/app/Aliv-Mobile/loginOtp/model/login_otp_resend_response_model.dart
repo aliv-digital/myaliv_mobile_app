@@ -1,21 +1,26 @@
+/// Result of a successful 2fa/resend call.
+///
+/// The backend may rotate the mfa token on resend — the response carries
+/// the (possibly new) token as `Key`. Callers must overwrite the mfa
+/// token they hold with [mfaToken] before the next verify attempt.
 class LoginOtpResendResponse {
-  final String? key;
+  final String? mfaToken;
   final String? reason;
 
   const LoginOtpResendResponse({
-    this.key,
+    this.mfaToken,
     this.reason,
   });
 
   factory LoginOtpResendResponse.fromJson(Map<String, dynamic>? json) {
     if (json == null) return const LoginOtpResendResponse();
 
-    final rawKey = json['Key'] ?? json['key'];
+    final rawKey = json['Key'] ?? json['key'] ?? json['mfa_token'];
     final rawReason =
         json['Reason'] ?? json['reason'] ?? json['message'] ?? json['error'];
 
     return LoginOtpResendResponse(
-      key: rawKey?.toString(),
+      mfaToken: rawKey?.toString(),
       reason: rawReason?.toString(),
     );
   }

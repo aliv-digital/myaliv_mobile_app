@@ -1,239 +1,114 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../app/global_state.dart';
-import 'auth_context.dart';
 
-/// Manages authentication state across persistence and memory layers
+import '../constants/constants.dart';
+import 'token_session.dart';
+import 'token_store.dart';
+
+/// Owns the JWT session: in-memory cache + secure persistence + refresh.
 ///
-/// This service acts as the bridge between:
-/// - SharedPreferences (disk storage) via LocalStorage
-/// - GlobalState (in-memory cache)
-///
-/// It ensures both layers stay in sync during login/logout operations.
+/// Single-flight refresh guarantees that N concurrent expired requests
+/// coalesce into exactly ONE `/Auth/refresh` network call.
 class AuthManager {
-  final GlobalState _globalState;
+  AuthManager({TokenStore? store, Dio? authDio})
+      : _store = store ?? TokenStore(),
+        _authDio = authDio ?? Dio(BaseOptions(baseUrl: baseUrl));
 
-  AuthManager({
-    GlobalState? globalState,
-  }) : _globalState = globalState ?? GlobalState.instance;
+  final TokenStore _store;
 
-  // ========== Load Auth (App Startup) ==========
+  /// Bare Dio with baseUrl only — no interceptors, no cookies. Used ONLY
+  /// for the refresh call so it can't recursively trip the auth interceptor.
+  final Dio _authDio;
 
-  /// Load credentials from SharedPreferences into GlobalState
-  ///
-  /// This method should be called during app initialization (before NetworkService.init()).
-  /// It reads stored credentials from disk and populates the in-memory GlobalState.
+  TokenSession? _session;
+  Future<TokenSession?>? _refreshInFlight;
+
+  TokenSession? get currentSession => _session;
+
+  /// Load persisted session into memory. Call once during app boot,
+  /// BEFORE NetworkService is used.
+  Future<TokenSession?> loadSession() async {
+    _session = await _store.load();
+    if (kDebugMode) {
+      debugPrint(_session == null
+          ? 'AuthManager: no persisted session'
+          : 'AuthManager: session loaded (access exp: ${_session!.accessExpiresAt})');
+    }
+    return _session;
+  }
+
+  /// Persist and cache a new session (called after login, OTP verify, or
+  /// refresh). Both tokens are replaced on rotation.
+  Future<void> saveSession(TokenSession session) async {
+    _session = session;
+    await _store.save(session);
+  }
+
+  /// Wipe everything. Called by the hard-logout path.
+  Future<void> clearSession() async {
+    _session = null;
+    await _store.clear();
+  }
+
+  /// Refresh the access token. Single-flight: concurrent callers share
+  /// one in-flight refresh future.
   ///
   /// Returns:
-  /// - AuthContext if valid credentials exist
-  /// - null if no credentials or invalid data
-  ///
-  /// Note: Account info is managed by AccountInfoCubit (HydratedBloc).
-  /// This method only loads authentication credentials (ticket and accountID).
-  Future<AuthContext?> loadAuthFromStorage({
-    required Future<String?> Function() getTicket,
-    required Future<String?> Function() getAccountID,
-    required String username,
-  }) async {
+  ///  - the new [TokenSession] on success
+  ///  - null on hard failure (4xx from the refresh endpoint, malformed
+  ///    body, or missing/expired local session) — caller should
+  ///    hard-logout
+  ///  - the existing (stale) session on transient failure (network down,
+  ///    5xx, timeout) — caller should surface a network error to the
+  ///    user but MUST NOT hard-logout; the refresh token is still valid
+  ///    and the next request will retry
+  Future<TokenSession?> refreshIfNeeded() {
+    return _refreshInFlight ??=
+        _doRefresh().whenComplete(() => _refreshInFlight = null);
+  }
+
+  Future<TokenSession?> _doRefresh() async {
+    final current = _session;
+    if (current == null || current.refreshExpired) return null;
     try {
-      // Read from SharedPreferences
-      final ticket = await getTicket();
-      final accountIdStr = await getAccountID();
-
-      // Validate data
-      if (ticket == null || ticket.trim().isEmpty) {
-        if (kDebugMode) debugPrint('⚠️ AuthManager: No ticket found');
-        return null;
+      final res = await _authDio.post<dynamic>(
+        '/v1/MyAliv/Auth/refresh',
+        data: {'refresh_token': current.refreshToken},
+      );
+      final data = res.data;
+      if (kDebugMode) {
+        // First-run debug aid: exact refresh body so the parser can be
+        // confirmed against the real backend without another rebuild.
+        // Kansys docs contradict themselves on the success shape.
+        debugPrint('REFRESH RAW BODY: $data');
       }
-
-      if (accountIdStr == null || accountIdStr.trim().isEmpty) {
-        if (kDebugMode) debugPrint('⚠️ AuthManager: No account ID found');
-        return null;
-      }
-
-      // Parse account ID
-      int? accountId;
-      try {
-        accountId = int.parse(accountIdStr);
-      } catch (e) {
+      if (data is! Map<String, dynamic>) {
         if (kDebugMode) {
-          debugPrint('⚠️ AuthManager: Could not parse account ID: $e');
+          debugPrint('AuthManager: refresh returned non-JSON body');
         }
         return null;
       }
-
-      if (accountId <= 0) {
-        if (kDebugMode) debugPrint('⚠️ AuthManager: Invalid account ID');
-        return null;
-      }
-
-      // Build auth context
-      final authContext = AuthContext.fromStorage(
-        username: username,
-        ticket: ticket,
-        accountId: accountId,
-      );
-
-      // Store in GlobalState (in-memory cache)
-      _globalState.setAuthContext(authContext);
-
+      final next = TokenSession.fromLoginJson(data);
+      await saveSession(next);
+      return next;
+    } on FormatException catch (e) {
+      // Malformed response body — treat as auth failure.
+      if (kDebugMode) debugPrint('AuthManager: refresh parse failed - $e');
+      return null;
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      // Transient: network/timeout/5xx → keep the current session so
+      // the next attempt can try again. Callers see a network error,
+      // NOT session expiry.
+      final isTransient = status == null || status >= 500;
       if (kDebugMode) {
         debugPrint(
-            '✅ AuthManager: Loaded auth for device: ${authContext.deviceAccountID}');
+            'AuthManager: refresh dio error status=$status transient=$isTransient');
       }
-
-      return authContext;
+      return isTransient ? current : null;
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ AuthManager: Failed to load auth - $e');
-      }
+      if (kDebugMode) debugPrint('AuthManager: refresh unexpected error - $e');
       return null;
     }
   }
-
-  // ========== Save Auth (After Login) ==========
-
-  /// Save credentials to both SharedPreferences and GlobalState
-  ///
-  /// This method should be called after successful login.
-  /// It persists credentials to disk and updates the in-memory cache.
-  ///
-  /// Note: Account info is managed by AccountInfoCubit (HydratedBloc).
-  /// This method only saves authentication credentials (ticket and accountID).
-  ///
-  /// The actual SharedPreferences write operations are delegated to the caller
-  /// via the provided functions to avoid coupling with the main app package.
-  Future<void> saveAuth({
-    required String username,
-    required String ticket,
-    required String deviceAccountID,
-    required Future<void> Function(String ticket) storeTicket,
-    required Future<void> Function(String accountID) storeAccountID,
-  }) async {
-    try {
-      // 1. Save to SharedPreferences (persistence)
-      await storeTicket(ticket);
-      await storeAccountID(deviceAccountID);
-
-      // 2. Build auth context
-      final authContext = AuthContext.fromCredentials(
-        username: username,
-        password: ticket,
-        deviceAccountID: deviceAccountID,
-      );
-
-      // 3. Store in GlobalState (in-memory)
-      _globalState.setAuthContext(authContext);
-
-      if (kDebugMode) {
-        debugPrint('✅ AuthManager: Saved auth for device: $deviceAccountID');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ AuthManager: Failed to save auth - $e');
-      }
-      rethrow;
-    }
-  }
-
-  // ========== Clear Auth (Logout) ==========
-
-  /// Clear credentials from both SharedPreferences and GlobalState
-  ///
-  /// This method should be called during logout.
-  /// It removes all stored credentials from disk and clears the in-memory cache.
-  Future<void> clearAuth({
-    required Future<void> Function() clearAllPreferences,
-  }) async {
-    try {
-      // 1. Clear SharedPreferences
-      await clearAllPreferences();
-
-      // 2. Clear GlobalState
-      _globalState.clearAuthContext();
-
-      if (kDebugMode) {
-        debugPrint('✅ AuthManager: Auth cleared (logout)');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('❌ AuthManager: Failed to clear auth - $e');
-      }
-      rethrow;
-    }
-  }
-
-  // ========== Get Stored Credentials ==========
-
-  /// Get stored credentials (username and ticket) from storage
-  ///
-  /// Returns null if:
-  /// - No auth exists in memory
-  /// - User is not authenticated
-  /// - Ticket is not found in storage
-  ///
-  /// This method is useful for API calls that require Basic Auth.
-  Future<AuthCredentials?> getStoredCredentials({
-    required Future<String?> Function() getTicket,
-  }) async {
-    final auth = getCurrentAuth();
-    if (auth == null || !auth.isAuthenticated) {
-      if (kDebugMode) {
-        debugPrint('⚠️ AuthManager: No valid auth context');
-      }
-      return null;
-    }
-
-    final ticket = await getTicket();
-    if (ticket == null || ticket.trim().isEmpty) {
-      if (kDebugMode) {
-        debugPrint('⚠️ AuthManager: No ticket found in storage');
-      }
-      return null;
-    }
-
-    return AuthCredentials(
-      username: auth.username,
-      ticket: ticket,
-    );
-  }
-
-  // ========== Utility Methods ==========
-
-  /// Check if valid auth exists in memory
-  bool hasValidAuth() {
-    final auth = _globalState.authContext;
-    return auth != null && auth.isAuthenticated && !auth.isExpired;
-  }
-
-  /// Get current auth context (may be null)
-  AuthContext? getCurrentAuth() => _globalState.authContext;
-
-  /// Require valid auth or throw
-  AuthContext requireAuth({String? operation}) {
-    final auth = getCurrentAuth();
-    if (auth == null || !auth.isAuthenticated) {
-      throw StateError(
-        operation != null
-            ? 'Authentication required for: $operation'
-            : 'User not authenticated',
-      );
-    }
-    if (auth.isExpired) {
-      throw StateError('Authentication expired. Please login again.');
-    }
-    return auth;
-  }
-}
-
-/// Credentials holder for Basic Auth
-///
-/// Contains username and ticket (password) for API authentication.
-class AuthCredentials {
-  final String username;
-  final String ticket;
-
-  const AuthCredentials({
-    required this.username,
-    required this.ticket,
-  });
 }

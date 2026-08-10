@@ -1,6 +1,8 @@
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import '../../../Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import '../models/home_roaming_confirmation_models.dart';
 import '../repository/home_roaming_confirmation_repository.dart';
 import 'home_roaming_confirmation_event.dart';
@@ -137,8 +139,11 @@ class HomeRoamingConfirmationBloc
     );
 
     try {
-      final accountInfo = accountInfoCubit.state.accountInfo;
-      final deviceAccountId = accountInfo?.idAcc ?? 0;
+      // /device/{id}/promo-code-info needs the DEVICE id (from
+      // /Account/devices), not the account's id_acc — server rejects
+      // the account id with 501 InvalidDevice.
+      final deviceAccountId =
+          instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
 
       if (deviceAccountId <= 0) {
         throw Exception('Device account ID not found.');
