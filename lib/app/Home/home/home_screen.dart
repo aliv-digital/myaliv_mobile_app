@@ -53,14 +53,16 @@ class _HomeScreenState extends State<HomeScreen> {
     AppSession.resetAppRoute();
 
     // Sync the correct toggle status whenever Home opens.
+    // PlansCubit.loadInitialPlans() runs inside _refreshToggleStatus after
+    // DeviceLimitsCubit resolves the DeviceID — the /bundles and
+    // /available-plans URLs both need it, and DeviceLimitsCubit isn't
+    // HydratedBloc so on a cold restart its state is empty until then.
     _refreshToggleStatus();
 
-    // Preload plans in background while user is on home screen
     final userType = context
         .read<AppUiConfigCubit>()
         .state
         .userType;
-    context.read<PlansCubit>().loadInitialPlans(userType: userType);
 
     // BlocListener fires only on state *changes* and misses the synchronous
     // restoration that HydratedCubit performs before the widget subscribes.
@@ -127,6 +129,12 @@ class _HomeScreenState extends State<HomeScreen> {
       final deviceLimitsCubit = instance<DeviceLimitsCubit>();
       await deviceLimitsCubit.loadDeviceLimits(forceRefresh: true);
 
+      // /bundles + /available-plans both build URLs from the DeviceID
+      // resolved above — fire the plans refresh now so its APIs actually go
+      // on the wire on cold restart. Fire-and-forget: PlansCubit updates
+      // BucketUsageSummaryCubit through the BlocListener in build().
+      instance<PlansCubit>().loadInitialPlans(userType: userType);
+
       final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId;
       if (deviceId != null && deviceId > 0) {
         await instance<BalanceCubit>().loadBalances(
@@ -144,8 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
           forceRefresh: true,
         );
 
-        final config = context.read<AppUiConfigCubit>().state;
-        if (config.userType.isPostpaid) {
+        if (userType.isPostpaid) {
           instance<ConsumptionLimitCubit>().loadLimits(
             deviceAccountId: deviceId,
             forceRefresh: true,
