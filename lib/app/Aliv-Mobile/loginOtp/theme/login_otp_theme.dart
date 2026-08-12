@@ -54,13 +54,11 @@ class LoginOtpSizes {
   static const double otpBoxRadius = 6;
   static const double otpBoxBorderWidth = 1;
 
-  // Inner content padding for OTP digit alignment.
-  static const EdgeInsets otpBoxContentPadding = EdgeInsets.only(
-    left: 15,
-    right: 15,
-    top: 10,
-    bottom: 15,
-  );
+  // Inner content padding for OTP digit alignment. Kept at zero so the
+  // 20px glyph fits inside the 42px inner area (44 box - 1px border each
+  // side) and textAlignVertical.center can position it. Any vertical
+  // padding here clips the digit because isCollapsed reserves this space.
+  static const EdgeInsets otpBoxContentPadding = EdgeInsets.zero;
 
   // Gap between verify button and resend row.
   static const double verifyToResendGap = 20;
