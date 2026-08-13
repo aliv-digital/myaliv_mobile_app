@@ -220,7 +220,9 @@ class _PlanPurchaseBottomBar extends StatelessWidget {
           isVatExclusive: false,
           buttonText: 'proceed',
           amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
-          isButtonEnabled: state.selectedAddOnIds.isNotEmpty,
+          // Add-ons are optional; proceeding with no selection purchases only
+          // the primary plan and sends an empty add-ons list to confirmation.
+          isButtonEnabled: true,
           onPayNow: () => context.read<PlanPurchasePlanAddOnsBloc>().add(
             const PlanPurchasePlanAddOnsProceedPressed(),
           ),
@@ -373,7 +375,7 @@ class _ActivePlanCardState extends State<_ActivePlanCard> {
     }
 
     return PlanPurchasePlanRedImageCard(
-      planLabel: 'plan',
+      planLabel: 'active plan will be',
       planName: _planNameFromApiOrFallback(selectedPlan?.planName),
       activeLabel: 'will active on',
       activeDate: _dateFromApiOrFallback(

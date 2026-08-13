@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widget
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/monthly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roameasy_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roaming_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/model/add_on_models.dart'
     as add_ons_models;
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/add_on_tile.dart';
@@ -112,6 +113,17 @@ class _GuestPurchasePlanView extends StatelessWidget {
       'showDateField': showDateField,
       'forceNow': !showDateField,
     };
+  }
+
+  GuestPurchasePlanConfirmationRouteArgs _mifiConfirmationArgs(PlanModel plan) {
+    return GuestPurchasePlanConfirmationRouteArgs(
+      phoneNumber: phoneNumber,
+      accountHolderName: 'guest purchase a plan',
+      primaryPlanName: plan.title,
+      primaryPlanPrice: plan.price,
+      flow: GuestPurchasePlanConfirmationEntryFlow.skip,
+      forceNow: true,
+    );
   }
 
   Widget _buildAddOnsTabContent(
@@ -254,6 +266,17 @@ class _GuestPurchasePlanView extends StatelessWidget {
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
+
+            // MiFi plans do not support add-ons, so their purchase flow goes
+            // straight to confirmation with the selected plan details.
+            if (selectedTab == PlanTab.mifi) {
+              context.push(
+                AppRoutes.guestPurchasePlanConfirmation,
+                extra: _mifiConfirmationArgs(plan),
+              );
+              return;
+            }
+
             context.push(
               AppRoutes.guestPurchasePlanAddOns,
               extra: {'phoneNumber': phoneNumber},
