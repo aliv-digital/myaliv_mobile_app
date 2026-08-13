@@ -209,6 +209,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           passwordFieldError: false,
           showToast: true,
         );
+      } else if (message.toString() == "FailedUsernameOrPassword") {
+        _emitFailure(
+          emit,
+          message: 'Invalid Credentials',
+          phoneFieldError: false,
+          passwordFieldError: false,
+          showToast: true,
+        );
       } else {
         _emitFailure(
           emit,

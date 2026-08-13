@@ -295,6 +295,17 @@ class NetworkService {
         final message = _extractErrorMessage(error.response?.data);
 
         if (statusCode == 401) {
+          // Auth endpoints (login, refresh) set skipAuth: true. A 401 there
+          // is bad credentials, not session expiry — preserve the body so
+          // the caller can surface the real backend error code.
+          final skipAuth = error.requestOptions.extra['skipAuth'] == true;
+          if (skipAuth) {
+            return NetworkException(
+              message,
+              statusCode: statusCode,
+              data: error.response?.data,
+            );
+          }
           return SessionExpiredException();
         } else if (statusCode != null && statusCode >= 500) {
           return ServerException(
