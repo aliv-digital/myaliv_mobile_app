@@ -85,10 +85,14 @@ import '../app/Aliv-Mobile/userProfile/receipt/view/user_profile_receipt_screen.
 import '../app/Aliv-Mobile/userProfile/topUpPayment/prepaid/view/top_up_payment_screen.dart';
 import '../app/Aliv-Mobile/userProfile/topup/postpaid/view/top_up_prepaid_number_postpaid_screen.dart';
 import '../app/Aliv-Mobile/userProfile/topup/prepaid/view/top_up_prepaid_screen.dart';
+import 'package:core/core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import '../app/Home/home/all_best_plan_screen.dart';
 import '../app/Home/home/home_screen.dart';
 import '../app/Home/widgets/bottom_shell.dart';
 import '../app/Notifications/notification_screen.dart';
+
 //import '../app/Plans/view/home_plan_screen.dart';
 //import '../app/Plans/view/plans_entry_screen.dart';
 //import '../app/Plans/view/purchase_confirmation_screen.dart';
@@ -110,7 +114,14 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    initialLocation: AppRoutes.splash, //autoRenewPrepaidScreen,
+    initialLocation: AppRoutes.splash,
+    redirect: (context, state) {
+      if (state.matchedLocation != AppRoutes.home) return null;
+      final cubit = instance<FingerFaceSecurityCubit>();
+      if (cubit.state.isSessionAuthenticated) return null;
+      if (cubit.state.data?.isAnyBiometricAvailable != true) return null;
+      return AppRoutes.biometricLock;
+    },
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -182,9 +193,9 @@ class AppRouter {
           final extra = state.extra;
           HomeRoamingConfirmationRouteArgs args =
               const HomeRoamingConfirmationRouteArgs(
-            phoneNumber: '242-801-1616',
-            showDateField: true,
-          );
+                phoneNumber: '242-801-1616',
+                showDateField: true,
+              );
 
           if (extra is HomeRoamingConfirmationRouteArgs) {
             args = extra;
@@ -323,9 +334,13 @@ class AppRouter {
         builder: (context, state) {
           final amountString = state.uri.queryParameters['amount'];
           final recipientPhone = state.uri.queryParameters['recipientPhone'];
-          final amount =
-              amountString == null ? null : double.tryParse(amountString);
-          return TopUpPaymentScreen(amount: amount,recipientPhone: recipientPhone);
+          final amount = amountString == null
+              ? null
+              : double.tryParse(amountString);
+          return TopUpPaymentScreen(
+            amount: amount,
+            recipientPhone: recipientPhone,
+          );
         },
       ),
       GoRoute(
@@ -444,7 +459,9 @@ class AppRouter {
             planName = extra['planName'] as String?;
             final rawAddOns = extra['addOnNames'];
             if (rawAddOns is List) {
-              addOnNames = rawAddOns.whereType<String>().toList(growable: false);
+              addOnNames = rawAddOns.whereType<String>().toList(
+                growable: false,
+              );
             }
             emailAddress = (extra['emailAddress'] as String?) ?? emailAddress;
             paymentMethod =
@@ -607,8 +624,9 @@ class AppRouter {
         path: AppRoutes.homePurchasePlanAddOns,
         builder: (context, state) {
           final extra = state.extra;
-          final routeArgs =
-              extra is PlanPurchasePlanAddOnsRouteArgs ? extra : null;
+          final routeArgs = extra is PlanPurchasePlanAddOnsRouteArgs
+              ? extra
+              : null;
 
           return PlanPurchasePlanAddOnsScreen(routeArgs: routeArgs);
         },
@@ -761,6 +779,21 @@ class AppRouter {
         },
       ),
 
+      GoRoute(
+        path: AppRoutes.biometricLock,
+        builder: (context, state) => BlocProvider.value(
+          value: instance<FingerFaceSecurityCubit>(),
+          child: BiometricLockScreen(
+            appName: 'MyAliv',
+            lockSubtitle: 'Verify your identity to continue',
+            onAuthSuccess: () {
+              instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
+              router.go(AppRoutes.home);
+            },
+          ),
+        ),
+      ),
+
       ShellRoute(
         builder: (context, state, child) {
           return BottomShell(child: child);
@@ -889,9 +922,12 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.confirmation,
         pageBuilder: (context, state) {
-          final showBeginOn = state.uri.queryParameters['showBeginOn'] == 'true';
+          final showBeginOn =
+              state.uri.queryParameters['showBeginOn'] == 'true';
           final extra = state.extra;
-          final postpaidPlan = extra is HomePlansPostPaidPlanModel ? extra : null;
+          final postpaidPlan = extra is HomePlansPostPaidPlanModel
+              ? extra
+              : null;
 
           final beginDateString = state.uri.queryParameters['beginDate'];
 
@@ -901,7 +937,9 @@ class AppRouter {
           }
 
           final amountString = state.uri.queryParameters['amount'];
-          final topUpAmount = amountString == null ? null : double.tryParse(amountString);
+          final topUpAmount = amountString == null
+              ? null
+              : double.tryParse(amountString);
 
           final recipientPhone = state.uri.queryParameters['recipient'];
 
