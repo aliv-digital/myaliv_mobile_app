@@ -50,7 +50,7 @@ class LoginOtpApiClient {
   }) async {
     final payload = <String, dynamic>{
       'PhoneNumber': phoneNumber,
-      'Key': mfaToken,
+      'mfa_token': mfaToken,
     };
 
     try {
