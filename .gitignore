@@ -12,6 +12,7 @@
 .swiftpm/
 migrate_working_dir/
 notes/
+/TRELLO_TASK_*.txt
 
 # IntelliJ related
 *.iml

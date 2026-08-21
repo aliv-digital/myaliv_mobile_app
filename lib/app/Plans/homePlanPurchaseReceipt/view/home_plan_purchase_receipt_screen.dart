@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -259,26 +260,32 @@ class _PaymentFailedReceiptView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = instance<AuthManager>().currentSession != null;
+
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
         top: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: DefaultAppBar(
-                showBackArrow: false,
-                title: 'my receipt',
-                onBack: () {},
-              ),
+        child: Column(
+          children: [
+            DefaultAppBar(
+              showBackArrow: false,
+              title: 'my receipt',
+              onBack: () {},
             ),
-            SliverToBoxAdapter(
+            Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 29),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
                 child: HomePlanPurchaseReceiptPaymentFailedTicket(
+                  buttonText: isLoggedIn
+                      ? 'back to home page'
+                      : 'back to login page',
                   onPressed: () {
                     AppSession.resetAppRoute();
-                    context.go(AppRoutes.home);
+                    context.go(isLoggedIn ? AppRoutes.home : AppRoutes.logIn);
                   },
                 ),
               ),
