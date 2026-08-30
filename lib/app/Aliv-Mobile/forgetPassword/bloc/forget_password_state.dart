@@ -1,21 +1,20 @@
-// lib/login/login_state.dart
 import 'package:equatable/equatable.dart';
 
 enum ForgetPasswordStatus { initial, loading, success, failure }
 
 class ForgetPasswordState extends Equatable {
   final String phone;
-  final String password;
+  final String mfaToken;
+  final String apiPhoneNumber;
   final ForgetPasswordStatus status;
   final String? errorMessage;
-
-  // 🔹 new fields
   final bool isTermsLoading;
   final bool isPrivacyLoading;
 
   const ForgetPasswordState({
     this.phone = '',
-    this.password = '',
+    this.mfaToken = '',
+    this.apiPhoneNumber = '',
     this.status = ForgetPasswordStatus.initial,
     this.errorMessage,
     this.isTermsLoading = false,
@@ -24,7 +23,8 @@ class ForgetPasswordState extends Equatable {
 
   ForgetPasswordState copyWith({
     String? phone,
-    String? password,
+    String? mfaToken,
+    String? apiPhoneNumber,
     ForgetPasswordStatus? status,
     String? errorMessage,
     bool? isTermsLoading,
@@ -32,9 +32,9 @@ class ForgetPasswordState extends Equatable {
   }) {
     return ForgetPasswordState(
       phone: phone ?? this.phone,
-      password: password ?? this.password,
+      mfaToken: mfaToken ?? this.mfaToken,
+      apiPhoneNumber: apiPhoneNumber ?? this.apiPhoneNumber,
       status: status ?? this.status,
-      // same behaviour as before: override even with null if given
       errorMessage: errorMessage,
       isTermsLoading: isTermsLoading ?? this.isTermsLoading,
       isPrivacyLoading: isPrivacyLoading ?? this.isPrivacyLoading,
@@ -43,11 +43,12 @@ class ForgetPasswordState extends Equatable {
 
   @override
   List<Object?> get props => [
-    phone,
-    password,
-    status,
-    errorMessage,
-    isTermsLoading,
-    isPrivacyLoading,
-  ];
+        phone,
+        mfaToken,
+        apiPhoneNumber,
+        status,
+        errorMessage,
+        isTermsLoading,
+        isPrivacyLoading,
+      ];
 }

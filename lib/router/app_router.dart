@@ -56,7 +56,6 @@ import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepa
 import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/otp/prepaid/view/otp_prepaid_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
-import '../app/Aliv-Mobile/forgetPassOtp/view/forget_password_otp_screen.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
@@ -721,7 +720,25 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.forgetPasswordOtp,
-        builder: (context, state) => const ForgetPasswordOtpScreen(),
+        builder: (context, state) {
+          final args = state.extra is LoginOtpRouteArgs
+              ? state.extra as LoginOtpRouteArgs
+              : const LoginOtpRouteArgs(
+                  mfaToken: '',
+                  phoneNumber: '',
+                  apiPhoneNumber: '',
+                );
+          return LoginOtpScreen(
+            initialMfaToken: args.mfaToken,
+            initialPhoneNumber: args.phoneNumber,
+            initialApiPhoneNumber: args.apiPhoneNumber,
+            successMessage: 'Code verified.',
+            onSuccess: (ctx) {
+              ctx.go(AppRoutes.home);
+              ctx.push(AppRoutes.createPassword);
+            },
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.createPassword,

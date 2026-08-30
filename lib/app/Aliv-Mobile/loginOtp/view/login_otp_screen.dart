@@ -19,6 +19,8 @@ class LoginOtpScreen extends StatelessWidget {
     this.initialMfaToken = '',
     this.initialPhoneNumber = '',
     this.initialApiPhoneNumber = '',
+    this.onSuccess,
+    this.successMessage,
   });
 
   /// mfa_token issued by the login endpoint; seeded into the bloc so the
@@ -31,6 +33,12 @@ class LoginOtpScreen extends StatelessWidget {
   /// API-formatted phone number used for OTP verify/resend requests.
   final String initialApiPhoneNumber;
 
+  /// Optional override called on success instead of the default home navigation.
+  final void Function(BuildContext context)? onSuccess;
+
+  /// Optional toast message shown on success. Defaults to 'Logged in successfully'.
+  final String? successMessage;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -41,13 +49,19 @@ class LoginOtpScreen extends StatelessWidget {
         initialPhoneNumber: initialPhoneNumber,
         initialApiPhoneNumber: initialApiPhoneNumber,
       ),
-      child: const _LoginOtpView(),
+      child: _LoginOtpView(
+        onSuccess: onSuccess,
+        successMessage: successMessage,
+      ),
     );
   }
 }
 
 class _LoginOtpView extends StatelessWidget {
-  const _LoginOtpView();
+  const _LoginOtpView({this.onSuccess, this.successMessage});
+
+  final void Function(BuildContext context)? onSuccess;
+  final String? successMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +77,15 @@ class _LoginOtpView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
-              AppToast.show(message: 'Logged in successfully', type: ToastType.success);
-              context.go(AppRoutes.home);
+              AppToast.show(
+                message: successMessage ?? 'Logged in successfully',
+                type: ToastType.success,
+              );
+              if (onSuccess != null) {
+                onSuccess!(context);
+              } else {
+                context.go(AppRoutes.home);
+              }
             }
 
             if (state.status == LoginOtpStatus.failure &&

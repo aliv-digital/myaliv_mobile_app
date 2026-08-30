@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../bloc/create_password_bloc.dart';
 import '../bloc/create_password_event.dart';
@@ -12,43 +15,76 @@ import '../widgets/create_password_header.dart';
 import '../widgets/password_input.dart';
 
 class CreatePasswordScreen extends StatelessWidget {
-  const CreatePasswordScreen({super.key});
+  const CreatePasswordScreen({
+    super.key,
+    this.title = 'create password',
+    this.subtitle =
+        'Set the new password for your account so you can login and access myaliv app',
+    this.buttonLabel = 'continue',
+  });
+
+  final String title;
+  final String subtitle;
+  final String buttonLabel;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => CreatePasswordBloc(repository: CreatePasswordRepository()),
-      child: const _CreatePasswordView(),
+      child: _CreatePasswordView(
+        title: title,
+        subtitle: subtitle,
+        buttonLabel: buttonLabel,
+      ),
     );
   }
 }
 
 class _CreatePasswordView extends StatelessWidget {
-  const _CreatePasswordView();
+  const _CreatePasswordView({
+    required this.title,
+    required this.subtitle,
+    required this.buttonLabel,
+  });
+
+  final String title;
+  final String subtitle;
+  final String buttonLabel;
 
   @override
   Widget build(BuildContext context) {
     return StripedScaffold(
-      // ✅ keep default keyboard behavior (auto resize + auto scroll)
       resizeToAvoidBottomInset: true,
-
       body: SafeArea(
         child: BlocListener<CreatePasswordBloc, CreatePasswordState>(
           listenWhen: (p, c) =>
-          p.status != c.status || p.errorMessage != c.errorMessage,
+              p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == CreatePasswordStatus.success) {
-              // success action
+              AppToast.show(
+                message: 'Password updated successfully.',
+                type: ToastType.success,
+              );
+              context.go(AppRoutes.home);
             }
-            // snackbar logic (invalid/failure/success)
+            if (state.status == CreatePasswordStatus.failure &&
+                state.errorMessage != null) {
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
+            }
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             keyboardDismissBehavior:
-            ScrollViewKeyboardDismissBehavior.onDrag,
+                ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
-              const SliverToBoxAdapter(
-                child: CreatePasswordHeader(),
+              SliverToBoxAdapter(
+                child: CreatePasswordHeader(
+                  title: title,
+                  subtitle: subtitle,
+                ),
               ),
               SliverPadding(
                 padding: const EdgeInsets.only(right: 42, left: 42),
@@ -58,10 +94,9 @@ class _CreatePasswordView extends StatelessWidget {
                     children: [
                       const SizedBox(height: 39),
 
-                      // password
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) =>
-                        p.obscurePassword != c.obscurePassword ||
+                            p.obscurePassword != c.obscurePassword ||
                             p.password != c.password,
                         builder: (context, state) {
                           return PasswordInput(
@@ -70,21 +105,18 @@ class _CreatePasswordView extends StatelessWidget {
                             onChanged: (v) => context
                                 .read<CreatePasswordBloc>()
                                 .add(PasswordChanged(v)),
-                            onToggle: () {
-                              context.read<CreatePasswordBloc>().add(
-                                const TogglePasswordVisibility(),
-                              );
-                            },
+                            onToggle: () => context
+                                .read<CreatePasswordBloc>()
+                                .add(const TogglePasswordVisibility()),
                           );
                         },
                       ),
 
                       const SizedBox(height: 15),
 
-                      // confirm
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) =>
-                        p.obscureConfirm != c.obscureConfirm ||
+                            p.obscureConfirm != c.obscureConfirm ||
                             p.confirmPassword != c.confirmPassword,
                         builder: (context, state) {
                           return PasswordInput(
@@ -93,11 +125,9 @@ class _CreatePasswordView extends StatelessWidget {
                             onChanged: (v) => context
                                 .read<CreatePasswordBloc>()
                                 .add(ConfirmPasswordChanged(v)),
-                            onToggle: () {
-                              context.read<CreatePasswordBloc>().add(
-                                const ToggleConfirmPasswordVisibility(),
-                              );
-                            },
+                            onToggle: () => context
+                                .read<CreatePasswordBloc>()
+                                .add(const ToggleConfirmPasswordVisibility()),
                           );
                         },
                       ),
@@ -106,28 +136,23 @@ class _CreatePasswordView extends StatelessWidget {
 
                       Text(
                         'your password should contain letters and/or\n'
-                            'numbers and be at least 4 characters long.',
+                        'numbers and be between 8 and 64 characters long.',
                         textAlign: TextAlign.center,
                         style: CreatePasswordTheme.helperText,
                       ),
 
                       const SizedBox(height: 30),
 
-                      // button
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) => p.status != c.status,
                         builder: (context, state) {
-                          final isLoading =
-                              state.status == CreatePasswordStatus.submitting;
-
                           return DefaultButton(
-                            label: 'continue',
-                            isLoading: isLoading,
-                            onPressed: () {
-                              context.read<CreatePasswordBloc>().add(
-                                const SubmitCreatePassword(),
-                              );
-                            },
+                            label: buttonLabel,
+                            isLoading: state.status ==
+                                CreatePasswordStatus.submitting,
+                            onPressed: () => context
+                                .read<CreatePasswordBloc>()
+                                .add(const SubmitCreatePassword()),
                           );
                         },
                       ),

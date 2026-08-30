@@ -1,6 +1,8 @@
 class Api {
   static const baseUrl = 'https://mockservice.newcomobile.com/NewCoRestApi';
   static const loginUrl = '$baseUrl/v1/MyAliv/Auth/login';
+  static const forgotPasswordUrl = '$baseUrl/v1/MyAliv/Auth/forgot';
+  static const updatePasswordUrl = '$baseUrl/v1/MyAliv/Auth/update-password';
   static const verifyOtpUrl = '$baseUrl/v1/MyAliv/Auth/2fa/verify';
   static const resendOtpUrl = '$baseUrl/v1/MyAliv/Auth/2fa/resend';
   static const refreshUrl = '$baseUrl/v1/MyAliv/Auth/refresh';

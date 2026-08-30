@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import '../../../../resources/widgets/defaultBackButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultBackButton.dart';
 import '../theme/forget_password_theme.dart';
 
 class ForgetPasswordHeader extends StatelessWidget {
@@ -10,11 +10,6 @@ class ForgetPasswordHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.viewPaddingOf(context).top;
-    final backTop = (ForgetPasswordSizes.backTopFromScreen - topInset).clamp(0.0, double.infinity).toDouble();
-    final logoTopInSafeArea = (ForgetPasswordSizes.logoTopFromScreen - topInset).clamp(0.0, double.infinity).toDouble();
-    final headerToLogoGap = (logoTopInSafeArea - (backTop + ForgetPasswordSizes.backIconHeight)).clamp(0.0, double.infinity).toDouble();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

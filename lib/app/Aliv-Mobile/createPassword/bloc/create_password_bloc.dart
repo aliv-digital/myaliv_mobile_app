@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import '../repository/create_password_repository.dart';
@@ -40,26 +39,30 @@ class CreatePasswordBloc extends Bloc<CreatePasswordEvent, CreatePasswordState> 
   Future<void> _onSubmit(SubmitCreatePassword event,Emitter<CreatePasswordState> emit) async {
     final pass = state.password.trim();
     final confirm = state.confirmPassword.trim();
-    debugPrint("1");
-    if (pass.length < 4) {
-      AppUtils.showWarningToast('Password must be at least 4 characters.');
+    if (pass.length < 8) {
+      AppUtils.showWarningToast('Password must be at least 8 characters.');
       return;
     }
-    debugPrint("2");
+    if (pass.length > 64) {
+      AppUtils.showWarningToast('Password must be 64 characters or fewer.');
+      return;
+    }
     if (pass != confirm) {
       AppUtils.showWarningToast('Passwords do not match.');
       return;
     }
-    debugPrint("3");
     emit(state.copyWith(status: CreatePasswordStatus.submitting, errorMessage: null));
 
     try {
       await repository.createPassword(password: pass);
       emit(state.copyWith(status: CreatePasswordStatus.success));
-    } catch (_) {
+    } catch (e) {
+      final message = e is Exception
+          ? e.toString().replaceFirst('Exception: ', '')
+          : 'Something went wrong. Please try again.';
       emit(state.copyWith(
         status: CreatePasswordStatus.failure,
-        errorMessage: 'Something went wrong. Please try again.',
+        errorMessage: message,
       ));
     }
   }

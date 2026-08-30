@@ -1,4 +1,3 @@
-// lib/login/login_event.dart
 import 'package:equatable/equatable.dart';
 
 abstract class ForgetPasswordEvent extends Equatable {
@@ -14,14 +13,6 @@ class ForgetPasswordPhoneChanged extends ForgetPasswordEvent {
 
   @override
   List<Object?> get props => [phone];
-}
-
-class ForgetPasswordPasswordChanged extends ForgetPasswordEvent {
-  final String password;
-  const ForgetPasswordPasswordChanged(this.password);
-
-  @override
-  List<Object?> get props => [password];
 }
 
 class ForgetPasswordSubmitted extends ForgetPasswordEvent {

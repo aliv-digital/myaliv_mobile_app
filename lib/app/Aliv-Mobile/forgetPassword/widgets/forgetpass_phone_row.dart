@@ -1,6 +1,7 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import '../theme/forget_password_theme.dart';
 import '../bloc/forget_password_bloc.dart';
@@ -53,6 +54,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
       dialCode: _dialCode,
       countryIsoCode: _selectedCountry?.countryCode ?? 'BS',
       enableCountryPicker: false,
+      inputFormatters: const [BahamasPhoneInputFormatter()],
       onChanged: (value) => context
           .read<ForgetPasswordBloc>()
           .add(ForgetPasswordPhoneChanged(value)),

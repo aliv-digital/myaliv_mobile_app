@@ -19,7 +19,7 @@ class CreatePasswordState extends Equatable {
   final CreatePasswordStatus status;
   final String? errorMessage;
 
-  bool get isMinValid => password.trim().length >= 4;
+  bool get isMinValid => password.trim().length >= 8;
   bool get isMatch => password.trim() == confirmPassword.trim();
   bool get canSubmit => isMinValid && isMatch;
 
