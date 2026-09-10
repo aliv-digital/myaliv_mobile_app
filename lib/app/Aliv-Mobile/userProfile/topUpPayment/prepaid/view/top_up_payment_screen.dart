@@ -173,6 +173,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
               title: 'payment',
               backgroundColor: TopUpPaymentPrepaidTheme.primary,
               showHome: true,
+              onHomeTap: () => router.go(AppRoutes.home),
             ),
           ),
           request: PaymentRequest(
