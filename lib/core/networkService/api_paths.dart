@@ -162,6 +162,7 @@ class Api {
   static String mifiAltNumber(String number) =>
       '$baseUrl/v1/MyAliv/AltNumber/opt-in/${Uri.encodeComponent(number.trim())}';
   static const addCreditCard = "$baseUrl/v1/MyAliv/CreditCard/add";
+  static const saveNewCardUrl = '$baseUrl/v1/MyAliv/CreditCard/savenew';
 
   /// Guest top-up (no auth required).
   /// POST /v1/MyAliv/Guest/top-up

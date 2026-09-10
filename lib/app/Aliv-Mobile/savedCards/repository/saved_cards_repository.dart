@@ -21,6 +21,9 @@ abstract class SavedCardsRepository {
 
   /// Fetches the prepaid auto-renew card token. Returns `null` when unset.
   Future<String?> fetchAutoRenewToken();
+
+  /// Saves a card linked to a completed 3DS order. Throws on failure.
+  Future<void> saveNewCard({required int orderId, required String expirationDate});
 }
 
 /// Implementation of [SavedCardsRepository].
@@ -72,6 +75,12 @@ class SavedCardsRepositoryImpl implements SavedCardsRepository {
 
   @override
   Future<String?> fetchAutoRenewToken() => _apiClient.fetchAutoRenewToken();
+
+  @override
+  Future<void> saveNewCard({
+    required int orderId,
+    required String expirationDate,
+  }) => _apiClient.saveNewCard(orderId: orderId, expirationDate: expirationDate);
 
   /// Parses the raw JSON response into a list of [SavedCardModel].
   ///

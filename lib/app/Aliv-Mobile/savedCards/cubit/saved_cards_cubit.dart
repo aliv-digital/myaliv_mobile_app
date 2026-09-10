@@ -232,6 +232,38 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
     }
   }
 
+  /// Saves a card linked to a completed 3DS order via `CreditCard/savenew`.
+  ///
+  /// [orderId] comes from [PaymentSuccess.orderId]; [expirationDate] is "MMYY"
+  /// (e.g. "1030" for October 2030) entered by the user on the receipt screen.
+  /// Reuses [isAddingCard] for loading state and force-refreshes the card list
+  /// on success.  Returns `true` only when both operations succeed.
+  Future<bool> saveNewCard({
+    required int orderId,
+    required String expirationDate,
+  }) async {
+    if (state.isAddingCard) return false;
+
+    _safeEmit(state.copyWith(isAddingCard: true, clearError: true));
+
+    try {
+      await _repository.saveNewCard(orderId: orderId, expirationDate: expirationDate);
+      await fetchSavedCards(forceRefresh: true);
+
+      _safeEmit(state.copyWith(isAddingCard: false, clearError: true));
+      return true;
+    } catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+
+      if (kDebugMode) {
+        debugPrint('SavedCardsCubit: Failed to save new card - $errorMessage');
+      }
+
+      _safeEmit(state.copyWith(isAddingCard: false, errorMessage: errorMessage));
+      return false;
+    }
+  }
+
   /// Clears the saved cards state.
   /// Call this on logout.
   void clearCards() {

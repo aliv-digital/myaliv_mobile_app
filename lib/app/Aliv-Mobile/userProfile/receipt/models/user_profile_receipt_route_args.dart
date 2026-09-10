@@ -24,6 +24,11 @@ class UserProfileReceiptRouteArgs extends Equatable {
   /// payments where there is nothing new to save.
   final NewCardDetails? cardToSave;
 
+  /// Order ID from a completed 3DS payment ([PaymentSuccess.orderId]).
+  /// When set, the receipt shows the "save credit card" bottom sheet that
+  /// calls `CreditCard/savenew` instead of the direct [cardToSave] path.
+  final String? orderId;
+
   const UserProfileReceiptRouteArgs({
     required this.amount,
     this.phoneNumber,
@@ -35,6 +40,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
     this.recipientPhone,
     this.variant = UserProfileReceiptVariant.standard,
     this.cardToSave,
+    this.orderId,
   });
 
   bool get isPostpaidPayment => topUpType.trim().toLowerCase() == 'postpaid';

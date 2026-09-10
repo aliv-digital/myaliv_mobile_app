@@ -13,7 +13,7 @@ import '../saved_cards_exception.dart';
 /// - Uses NetworkService which automatically handles Basic Auth from GlobalState
 class SavedCardsApiClient {
   SavedCardsApiClient({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -33,7 +33,7 @@ class SavedCardsApiClient {
       final responseMap = _decodeMap(response.data);
       final token =
           (responseMap['Token'] ?? responseMap['token'])?.toString().trim() ??
-              '';
+          '';
       if (token.isEmpty) {
         throw const SavedCardsException(
           type: SavedCardsErrorType.invalidResponse,
@@ -100,18 +100,16 @@ class SavedCardsApiClient {
   /// Fetches the currently selected auto-pay (postpaid) card token.
   ///
   /// Returns `null` when no card is configured (404 or empty token).
-  Future<String?> fetchAutoPayToken() => _fetchSelectedToken(
-        url: Api.creditCardAutoRenew,
-        debugLabel: 'auto-pay',
-      );
+  Future<String?> fetchAutoPayToken() =>
+      _fetchSelectedToken(url: Api.creditCardAutoRenew, debugLabel: 'auto-pay');
 
   /// Fetches the currently selected auto-renew (prepaid) card token.
   ///
   /// Returns `null` when no card is configured (404 or empty token).
   Future<String?> fetchAutoRenewToken() => _fetchSelectedToken(
-        url: Api.creditCardAutoRenew,
-        debugLabel: 'auto-renew',
-      );
+    url: Api.creditCardAutoRenew,
+    debugLabel: 'auto-renew',
+  );
 
   Future<String?> _fetchSelectedToken({
     required String url,
@@ -199,12 +197,62 @@ class SavedCardsApiClient {
     }
   }
 
+  /// Saves a card via the post-3DS order link endpoint.
+  ///
+  /// POST [Api.saveNewCardUrl] with body
+  /// `{ "Branch": "branch", "OrderID": orderId, "ExpirationDate": "MMYY" }`.
+  /// Treats HTTP 200 as success; throws [SavedCardsException] otherwise.
+  Future<void> saveNewCard({
+    required int orderId,
+    required String expirationDate,
+  }) async {
+    if (kDebugMode) {
+      debugPrint('SavedCardsApiClient: Saving new card for orderId=$orderId');
+    }
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.saveNewCardUrl,
+        method: HttpMethod.post,
+        data: {
+          'Branch': 'branch',
+          'OrderID': orderId,
+          'ExpirationDate': expirationDate,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw SavedCardsException(
+          type: SavedCardsErrorType.badResponse,
+          statusCode: response.statusCode ?? 0,
+          serverMessage: 'Unexpected status ${response.statusCode}',
+        );
+      }
+
+      if (kDebugMode) {
+        debugPrint('SavedCardsApiClient: saveNewCard status=200');
+      }
+    } on NetworkException catch (e) {
+      throw _mapNetworkExceptionToSavedCardsException(e);
+    } on SavedCardsException {
+      rethrow;
+    } catch (e) {
+      throw SavedCardsException(
+        type: SavedCardsErrorType.unknown,
+        statusCode: 0,
+        serverMessage: e.toString(),
+      );
+    }
+  }
+
   Map<String, dynamic> _addCardPayload(NewCardDetails details) {
     final expirationParts = details.cardExpiration.split('-');
-    final expirationYear =
-        expirationParts.length == 2 ? int.tryParse(expirationParts[0]) : null;
-    final expirationMonth =
-        expirationParts.length == 2 ? int.tryParse(expirationParts[1]) : null;
+    final expirationYear = expirationParts.length == 2
+        ? int.tryParse(expirationParts[0])
+        : null;
+    final expirationMonth = expirationParts.length == 2
+        ? int.tryParse(expirationParts[1])
+        : null;
 
     if (expirationYear == null ||
         expirationMonth == null ||

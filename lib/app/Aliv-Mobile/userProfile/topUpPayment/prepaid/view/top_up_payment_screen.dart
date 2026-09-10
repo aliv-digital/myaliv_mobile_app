@@ -183,13 +183,14 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
             requiresAuth: true,
             orderVerificationUrl: Api.orderVerificationUrl,
           ),
-          onSuccess: (_) => router.push(
+          onSuccess: (success) => router.push(
             AppRoutes.userProfileReceiptScreen,
             extra: UserProfileReceiptRouteArgs(
               amount: amount,
               recipientPhone: receiptPhone,
               paymentMethod: paymentMethod,
               cardToSave: cardToSave,
+              orderId: success.orderId,
             ),
           ),
           onFailure: (msg) =>
