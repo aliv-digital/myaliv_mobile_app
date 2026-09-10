@@ -121,44 +121,6 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     );
   }
 
-  /* PARKED: country picker disabled to match Login screen behavior.
-     Keep this opener around for an easy revert if multi-country
-     support is restored later.
-
-  void _pickCountry() {
-    showCountryPicker(
-      context: context,
-      showPhoneCode: true,
-      customFlagBuilder: (Country country) {
-        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
-            ? 'sh'
-            : country.countryCode.toLowerCase();
-
-        return Image.asset(
-          'assets/$assetIsoCode.png',
-          package: 'country_pickers',
-          width: 26,
-          height: 20,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Text(country.flagEmoji,
-                style: const TextStyle(fontSize: 18));
-          },
-        );
-      },
-      onSelect: (Country country) {
-        setState(() {
-          _selectedCountry = CountryInfo(
-            flagEmoji: country.flagEmoji,
-            dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
-            isoCode: country.countryCode,
-          );
-        });
-      },
-    );
-  }
-  */
-
   Widget _buildPhoneField({
     required String labelText,
     required String value,

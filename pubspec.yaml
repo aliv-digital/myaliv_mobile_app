@@ -38,6 +38,9 @@ dependencies:
   dio: ^5.4.0
   core:
     path: packages/core
+  payment_iframe:
+    path: packages/feartures/payment_iframe
+  webview_flutter: ^4.10.0
   flutter_html: ^3.0.0
   open_filex: ^4.5.0
   share_plus: ^10.0.0

@@ -31,6 +31,17 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!-- Deep link handler for payment gateway callbacks.
+                 PowerTranz redirects to myaliv://payment-callback?OrderID=...&status=...
+                 after the 3DS challenge completes. The WebView intercepts this internally,
+                 but this filter is the fallback if the challenge runs in an external browser. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="myaliv"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

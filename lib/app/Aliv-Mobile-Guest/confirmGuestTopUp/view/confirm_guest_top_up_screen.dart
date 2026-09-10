@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
@@ -9,6 +11,7 @@ import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:payment_iframe/payment_iframe.dart';
 
 import '../bloc/confirm_topup_bloc.dart';
 import '../bloc/confirm_topup_event.dart';
@@ -133,12 +136,49 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
               buttonColor: TopUpConfirmTheme.payBarButtonColor,
               onPayNow: () {
-                // If payment should be done by BLoC flow, use:
-                // final bloc = context.read<GuestConfirmTopUpBloc>();
-                // bloc.add(
-                //   const GuestConfirmTopUpPayNowPressed(),
-                // );
-                context.push(AppRoutes.guestTopUpReceipt);
+                final router = GoRouter.of(context);
+                final phoneNumber = state.phoneNumber;
+                final total = state.total;
+
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => PaymentIFrameScreen(
+                      appBar: PreferredSize(
+                        preferredSize: const Size.fromHeight(64),
+                        child: DefaultAppBar(
+                          title: 'complete top-up',
+                          backgroundColor: TopUpConfirmTheme.appBarColor,
+                        ),
+                      ),
+                      request: PaymentRequest(
+                        endpoint: Api.guestTopupUrl,
+                        body: {
+                          'Amount': total,
+                          'PhoneNumber': phoneNumber.replaceAll(RegExp(r'\D'), ''),
+                          'RedirectURL': 'myaliv://topup-callback',
+                          'Branch': 'branch',
+                          'ChannelType': 'selfCare',
+                        },
+                        redirectScheme: 'myaliv',
+                        orderVerificationUrl: Api.orderVerificationUrl,
+                      ),
+                      onSuccess: (result) {
+                        final now = DateTime.now();
+                        router.go(
+                          AppRoutes.guestTopUpReceipt,
+                          extra: {
+                            'phoneNumber': phoneNumber,
+                            'amount': total,
+                            'dateText': DateFormat('MMM dd, yyyy').format(now),
+                            'timeText': DateFormat('h:mm a').format(now),
+                          },
+                        );
+                      },
+                      // _ErrorView's "Go Back" button handles failure UX
+                      onFailure: (_) {},
+                    ),
+                  ),
+                );
               },
             );
           },

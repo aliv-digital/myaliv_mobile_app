@@ -1,0 +1,37 @@
+name: payment_iframe
+description: Reusable iframe payment gateway package for handling HTML-based 3DS payment flows (guest top-up, guest billpay, change bundle, etc.)
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.8
+
+  # HTTP
+  dio: ^5.4.0
+
+  # Shimmer loading skeleton
+  shimmer: ^3.0.0
+
+  # WebView
+  webview_flutter: ^4.10.0
+
+  # Core package (NetworkService, GetIt instance, NetworkException types)
+  core:
+    path: ../../core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

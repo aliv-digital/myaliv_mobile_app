@@ -97,6 +97,11 @@ class Api {
 
   static const payFromWalletUrl = "$baseUrl/v1/MyAliv/Order/change-bundle";
 
+  /// Order status verification: GET /Order?orderId={orderId}
+  /// Pass as [PaymentRequest.orderVerificationUrl] to enable server-side
+  /// outcome check after the payment redirect (`OrderStatus == "Completed"`).
+  static const orderVerificationUrl = '$baseUrl/v1/MyAliv/Order';
+
   /// Top-up 24h rolling limit remaining:
   /// GET /Account/top-up-limit-left
   /// Response: `{ "TopUp24HourLimitLeft": <number>, "EarliestTopUpDate": "YYYY-MM-DD HH:mm:ss" (UTC) }`
@@ -152,4 +157,12 @@ class Api {
   static String mifiAltNumber(String number) =>
       '$baseUrl/v1/MyAliv/AltNumber/opt-in/${Uri.encodeComponent(number.trim())}';
   static const addCreditCard = "$baseUrl/v1/MyAliv/CreditCard/add";
+
+  /// Guest top-up (no auth required).
+  /// POST /v1/MyAliv/Guest/top-up
+  /// Body: `{ "Amount": double, "PhoneNumber": "digits",
+  ///          "RedirectURL": "myaliv://topup-callback",
+  ///          "Branch": "BRANCH_MAIN", "ChannelType": "SelfCare" }`
+  /// Response: `{ "html": "full HTML document" }`
+  static const guestTopupUrl = '$baseUrl/v1/MyAliv/Guest/top-up';
 }

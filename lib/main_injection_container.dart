@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/saved_cards_injecti
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/send_topup_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/mifi_alt_contact_injection.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/payments_injection.dart';
+import 'package:payment_iframe/payment_iframe.dart';
 
 /// Main app dependency injection
 ///
@@ -82,5 +83,8 @@ class AppMainInjection {
 
     // Initialize shared payments service (change-bundle API)
     await setupPaymentsInjection();
+
+    // Initialize iframe payment gateway (guest top-up, guest billpay, 3DS, etc.)
+    await setupPaymentIFrameInjection();
   }
 }

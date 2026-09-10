@@ -24,9 +24,28 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<!-- Schemes this app can open (outgoing queries, e.g. tel: links) -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>tel</string>
+	</array>
+
+	<!-- Schemes this app owns (incoming deep links).
+	     PowerTranz redirects to myaliv://payment-callback?OrderID=...&status=...
+	     after the 3DS challenge. The WebView intercepts this internally,
+	     but this entry is the fallback if the challenge runs in Safari. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.example.myaliv</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>myaliv</string>
+			</array>
+		</dict>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
