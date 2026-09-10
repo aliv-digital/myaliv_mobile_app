@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 sealed class TopUpPaymentPrepaidEvent extends Equatable {
   const TopUpPaymentPrepaidEvent();
@@ -40,17 +39,6 @@ final class PaySavedCardConfirmed extends TopUpPaymentPrepaidEvent {
 /// A postpaid user selected a saved card to top up another prepaid number.
 final class PayPostpaidSavedCard extends TopUpPaymentPrepaidEvent {
   const PayPostpaidSavedCard();
-}
-
-/// User submitted the Checkout sheet — hit the top-up API with fresh card
-/// details.
-final class PayWithCardConfirmed extends TopUpPaymentPrepaidEvent {
-  final NewCardDetails details;
-
-  const PayWithCardConfirmed(this.details);
-
-  @override
-  List<Object?> get props => [details];
 }
 
 /// View acknowledges it has pushed the receipt route, clears [navTarget].

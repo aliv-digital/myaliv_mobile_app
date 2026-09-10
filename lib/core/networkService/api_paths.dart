@@ -140,6 +140,11 @@ class Api {
   static String topUpUrl(String primaryPhoneNumber) =>
       '$baseUrl/v1/MyAliv/Order/top-up/${Uri.encodeComponent(primaryPhoneNumber.trim())}';
 
+  /// 3DS top-up initiation: POST /Order/3ds/top-up/{PrimaryPhoneNumber}
+  /// Same body shape as [topUpUrl]. Returns `{"html": "..."}` for the iframe.
+  static String topUp3dsUrl(String primaryPhoneNumber) =>
+      '$baseUrl/v1/MyAliv/Order/top-up/3ds/${Uri.encodeComponent(primaryPhoneNumber.trim())}';
+
   /// Postpaid make-payment endpoint. Same envelope shape as top-up (no
   /// `Bundle` block); account is inferred from the auth context.
   /// POST /Order/payment

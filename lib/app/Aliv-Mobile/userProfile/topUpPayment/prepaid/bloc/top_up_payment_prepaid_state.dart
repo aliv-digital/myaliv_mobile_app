@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/models/payment_summary.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 enum TopUpPaymentStatus { initial, loading, ready, paying, success, failure }
 
@@ -18,11 +17,6 @@ class TopUpPaymentPrepaidState extends Equatable {
   final String? errorMessage;
   final TopUpPaymentNavTarget navTarget;
 
-  /// Last new-card details submitted via [PayWithCardConfirmed]. Forwarded
-  /// to the receipt as `cardToSave` for the post-payment save-card button.
-  /// Null for saved-card payments.
-  final NewCardDetails? lastNewCardDetails;
-
   const TopUpPaymentPrepaidState({
     required this.status,
     required this.paymentMode,
@@ -30,7 +24,6 @@ class TopUpPaymentPrepaidState extends Equatable {
     required this.summary,
     required this.errorMessage,
     required this.navTarget,
-    this.lastNewCardDetails,
   });
 
   factory TopUpPaymentPrepaidState.initial() => const TopUpPaymentPrepaidState(
@@ -57,10 +50,8 @@ class TopUpPaymentPrepaidState extends Equatable {
     PaymentSummary? summary,
     String? errorMessage,
     TopUpPaymentNavTarget? navTarget,
-    NewCardDetails? lastNewCardDetails,
     bool clearSelection = false,
     bool clearErrorMessage = false,
-    bool clearLastNewCardDetails = false,
   }) {
     return TopUpPaymentPrepaidState(
       status: status ?? this.status,
@@ -71,9 +62,6 @@ class TopUpPaymentPrepaidState extends Equatable {
       summary: summary ?? this.summary,
       errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
       navTarget: navTarget ?? this.navTarget,
-      lastNewCardDetails: clearLastNewCardDetails
-          ? null
-          : (lastNewCardDetails ?? this.lastNewCardDetails),
     );
   }
 
@@ -85,6 +73,5 @@ class TopUpPaymentPrepaidState extends Equatable {
     summary,
     errorMessage,
     navTarget,
-    lastNewCardDetails,
   ];
 }

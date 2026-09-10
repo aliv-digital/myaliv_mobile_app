@@ -1,25 +1,25 @@
-import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/bloc/top_up_payment_prepaid_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/bloc/top_up_payment_prepaid_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/models/payment_summary.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topUpPayment/prepaid/repository/top_up_payment_prepaid_repository.dart';
+import 'package:core/core.dart';
 
 class TopUpPaymentPrepaidBloc
     extends Bloc<TopUpPaymentPrepaidEvent, TopUpPaymentPrepaidState> {
-  final TopUpPaymentPrepaidRepository repository;
-
-  TopUpPaymentPrepaidBloc(this.repository)
-    : super(TopUpPaymentPrepaidState.initial()) {
+  TopUpPaymentPrepaidBloc({TopUpPaymentPrepaidRepository? repository})
+    : _repository = repository ?? TopUpPaymentPrepaidRepositoryImpl(),
+      super(TopUpPaymentPrepaidState.initial()) {
     on<TopUpPaymentStarted>(_onStarted);
     on<PaymentMethodSelected>(_onSelected);
     on<PayWithCardPressed>(_onPayWithCard);
     on<PaySavedCardConfirmed>(_onPaySavedCardConfirmed);
     on<PayPostpaidSavedCard>(_onPayPostpaidSavedCard);
-    on<PayWithCardConfirmed>(_onPayWithCardConfirmed);
     on<PaymentNavConsumed>(_onNavConsumed);
   }
+
+  final TopUpPaymentPrepaidRepository _repository;
 
   void _onStarted(
     TopUpPaymentStarted event,
@@ -62,83 +62,41 @@ class TopUpPaymentPrepaidBloc
     Emitter<TopUpPaymentPrepaidState> emit,
   ) async {
     final token = state.selectedMethodId?.trim() ?? '';
-    if (token.isEmpty) {
-      emit(
-        state.copyWith(
-          status: TopUpPaymentStatus.failure,
-          errorMessage: 'Please select a saved card first.',
-        ),
-      );
-      return;
-    }
-
-    final phone = _accountPrimaryPhone();
-    if (phone.isEmpty) {
-      emit(
-        state.copyWith(
-          status: TopUpPaymentStatus.failure,
-          errorMessage: 'Account phone number unavailable. Please try again.',
-        ),
-      );
-      return;
-    }
-
+    if (token.isEmpty) return;
     await _submit(
-      emit,
-      () => repository.payWithSavedCard(
-        amount: state.summary.total,
-        primaryPhoneNumber: phone,
-        cardToken: token,
-      ),
-      'Top-up failed. Try again.',
+      emit: emit,
+      phone: _accountPrimaryPhone(),
+      cardToken: token,
     );
   }
 
-  Future<void> _onPayPostpaidSavedCard(PayPostpaidSavedCard event,Emitter<TopUpPaymentPrepaidState> emit) async {
-
-    final token = state.selectedMethodId?.trim() ?? '';
-    if (token.isEmpty) {
-      emit(
-        state.copyWith(
-          status: TopUpPaymentStatus.failure,
-          errorMessage: 'Please select a saved card first.',
-        ),
-      );
-      return;
-    }
-
-    final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
-    if (recipientPhone.isEmpty) {
-      emit(
-        state.copyWith(
-          status: TopUpPaymentStatus.failure,
-          errorMessage: 'Recipient phone number unavailable. Please try again.',
-        ),
-      );
-      return;
-    }
-
-    // For a postpaid user, the top-up API path must contain the prepaid
-    // recipient number received from the previous screen.
-    await _submit(emit, () => repository.payWithSavedCard(
-        amount: state.summary.total,
-        primaryPhoneNumber: recipientPhone,
-        cardToken: token,
-      ),
-      'Top-up failed. Try again.',
-    );
-  }
-
-  Future<void> _onPayWithCardConfirmed(
-    PayWithCardConfirmed event,
+  Future<void> _onPayPostpaidSavedCard(
+    PayPostpaidSavedCard event,
     Emitter<TopUpPaymentPrepaidState> emit,
   ) async {
-    // For postpaid topping up another prepaid number the API path must use the
-    // recipient's number, not the logged-in account holder's number.
-    final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
-    final phone =
-        recipientPhone.isNotEmpty ? recipientPhone : _accountPrimaryPhone();
+    final token = state.selectedMethodId?.trim() ?? '';
+    if (token.isEmpty) return;
+    final recipient = state.summary.recipientPhone?.trim() ?? '';
+    if (recipient.isEmpty) return;
+    await _submit(
+      emit: emit,
+      phone: recipient,
+      cardToken: token,
+    );
+  }
 
+  void _onNavConsumed(
+    PaymentNavConsumed event,
+    Emitter<TopUpPaymentPrepaidState> emit,
+  ) {
+    emit(state.copyWith(navTarget: TopUpPaymentNavTarget.none));
+  }
+
+  Future<void> _submit({
+    required Emitter<TopUpPaymentPrepaidState> emit,
+    required String phone,
+    required String cardToken,
+  }) async {
     if (phone.isEmpty) {
       emit(
         state.copyWith(
@@ -149,41 +107,6 @@ class TopUpPaymentPrepaidBloc
       return;
     }
 
-    // Stash the details so the receipt navigation can forward them as
-    // `cardToSave` for the save-card affordance.
-    emit(state.copyWith(lastNewCardDetails: event.details));
-
-    await _submit(
-      emit,
-      () => repository.payWithNewCard(
-        amount: state.summary.total,
-        primaryPhoneNumber: phone,
-        details: event.details,
-      ),
-      'Top-up failed. Try again.',
-    );
-  }
-
-  /// Top-up URL requires the account holder's primary phone number, which is
-  /// owned by [AccountInfoCubit]. The `recipientPhone` on state.summary is
-  /// display metadata only and is not appropriate for the API path.
-  String _accountPrimaryPhone() {
-    final account = instance<AccountInfoCubit>().state.accountInfo;
-    final primary = account?.primaryPhoneNumber.trim() ?? '';
-    if (primary.isNotEmpty) return primary;
-    return account?.phoneNumber.trim() ?? '';
-  }
-
-  /// Shared submit → success/failure transition for both funding paths.
-  /// Guards against double-submits, maps exceptions onto `errorMessage`, and
-  /// arms the nav target on success so the view can push the receipt route.
-  Future<void> _submit(
-    Emitter<TopUpPaymentPrepaidState> emit,
-    Future<bool> Function() invoke,
-    String failureFallback,
-  ) async {
-    if (state.status == TopUpPaymentStatus.paying) return;
-
     emit(
       state.copyWith(
         status: TopUpPaymentStatus.paying,
@@ -192,38 +115,39 @@ class TopUpPaymentPrepaidBloc
     );
 
     try {
-      final ok = await invoke();
+      await _repository.payWithSavedCard(
+        amount: state.summary.total,
+        primaryPhoneNumber: phone,
+        cardToken: cardToken,
+      );
       emit(
         state.copyWith(
-          status: ok
-              ? TopUpPaymentStatus.success
-              : TopUpPaymentStatus.failure,
-          navTarget: ok
-              ? TopUpPaymentNavTarget.paid
-              : TopUpPaymentNavTarget.none,
-          errorMessage: ok ? null : failureFallback,
-          clearErrorMessage: ok,
+          status: TopUpPaymentStatus.success,
+          navTarget: TopUpPaymentNavTarget.paid,
         ),
       );
-    } catch (error) {
-      emit(
-        state.copyWith(
-          status: TopUpPaymentStatus.failure,
-          errorMessage: _cleanErrorMessage(error, fallback: failureFallback),
-        ),
-      );
+    } catch (e) {
+      _cleanErrorMessage(emit, e.toString());
     }
   }
 
-  String _cleanErrorMessage(Object error, {required String fallback}) {
-    final message = error.toString().replaceFirst('Exception: ', '').trim();
-    return message.isEmpty ? fallback : message;
+  void _cleanErrorMessage(
+    Emitter<TopUpPaymentPrepaidState> emit,
+    String raw,
+  ) {
+    final msg = raw.replaceFirst('Exception: ', '');
+    emit(
+      state.copyWith(
+        status: TopUpPaymentStatus.failure,
+        errorMessage: msg,
+      ),
+    );
   }
 
-  void _onNavConsumed(
-    PaymentNavConsumed event,
-    Emitter<TopUpPaymentPrepaidState> emit,
-  ) {
-    emit(state.copyWith(navTarget: TopUpPaymentNavTarget.none));
+  String _accountPrimaryPhone() {
+    final account = instance<AccountInfoCubit>().state.accountInfo;
+    final primary = account?.primaryPhoneNumber.trim() ?? '';
+    if (primary.isNotEmpty) return primary;
+    return account?.phoneNumber.trim() ?? '';
   }
 }
