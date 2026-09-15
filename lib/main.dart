@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
@@ -47,6 +48,9 @@ void main() async {
   final appRouter = AppRouter();
 
   await AppMainInjection().initInjection();
+
+  // Load biometric status so the GoRouter redirect can read it synchronously
+  await instance<FingerFaceSecurityCubit>().loadBiometricStatus();
 
   // Seed AppUiConfigCubit from persisted AccountInfoCubit state so a cold
   // start with a valid JWT session renders the correct prepaid/postpaid

@@ -15,6 +15,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/saved_cards_injecti
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/send_topup_injection.dart';
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/mifi_alt_contact_injection.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/payments_injection.dart';
+import 'package:myaliv_mobile_app/app/Security/finger_face_security_injection.dart';
 
 /// Main app dependency injection
 ///
@@ -82,5 +83,8 @@ class AppMainInjection {
 
     // Initialize shared payments service (change-bundle API)
     await setupPaymentsInjection();
+
+    // Initialize finger/face biometric security feature
+    await setupFingerFaceSecurityInjection();
   }
 }

@@ -38,6 +38,8 @@ dependencies:
   dio: ^5.4.0
   core:
     path: packages/core
+  finger_face_security:
+    path: packages/feartures/finger_face_security
   flutter_html: ^3.0.0
   open_filex: ^4.5.0
   share_plus: ^10.0.0
