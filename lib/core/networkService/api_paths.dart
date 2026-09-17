@@ -13,15 +13,24 @@ class Api {
 
   static const getAllPlans = '$baseUrl/v1/MyAliv/device';
   static const getBundles = '$baseUrl/v1/MyAliv/device';
-  static const adsTimer = 'https://myalivappuat-api.bealiv.com/api/ads-timer/active';
-  static const bestPlans = 'https://myalivappuat-api.bealiv.com/api/plans/active';
-  static const balances = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/balances
-  static const consumptionLimits = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/query-consumption-limi
-  static const devices = '$baseUrl/v1/MyAliv/Account/devices'; // Get device limits for credit limit update
-  static const deviceLimits = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/limits - PUT to update limits
-  static const usages = '$baseUrl/v1/MyAliv/Account/usages'; // GET with ?startDate=&endDate= (ISO 8601)
-  static const transactions = '$baseUrl/v1/MyAliv/Account/transactions'; // GET with ?startDate=&endDate= (ISO 8601)
-  static const rewards = '$baseUrl/v1/MyAliv/Info/rewards'; // GET - fetch all rewards
+  static const adsTimer =
+      'https://myalivappuat-api.bealiv.com/api/ads-timer/active';
+  static const bestPlans =
+      'https://myalivappuat-api.bealiv.com/api/plans/active';
+  static const balances =
+      '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/balances
+  static const consumptionLimits =
+      '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/query-consumption-limi
+  static const devices =
+      '$baseUrl/v1/MyAliv/Account/devices'; // Get device limits for credit limit update
+  static const deviceLimits =
+      '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/limits - PUT to update limits
+  static const usages =
+      '$baseUrl/v1/MyAliv/Account/usages'; // GET with ?startDate=&endDate= (ISO 8601)
+  static const transactions =
+      '$baseUrl/v1/MyAliv/Account/transactions'; // GET with ?startDate=&endDate= (ISO 8601)
+  static const rewards =
+      '$baseUrl/v1/MyAliv/Info/rewards'; // GET - fetch all rewards
 
   // Auto-renew endpoints
   /// Auto-renew from wallet: PUT /device/{deviceAccountId}/auto-renew?autoRenew={true|false}
@@ -49,9 +58,12 @@ class Api {
   static String balanceThresholdSettings(int deviceAccountId) =>
       '$baseUrl/v1/MyAliv/device/$deviceAccountId/balance-threshold-settings';
 
-  static const faq = 'https://myalivappuat-api.bealiv.com/api/app-settings/faqs';
-  static const privacyPolicy = 'https://myalivappuat-api.bealiv.com/api/app-settings/privacy-policy';
-  static const security = 'https://myalivappuat-api.bealiv.com/api/app-settings/security';
+  static const faq =
+      'https://myalivappuat-api.bealiv.com/api/app-settings/faqs';
+  static const privacyPolicy =
+      'https://myalivappuat-api.bealiv.com/api/app-settings/privacy-policy';
+  static const security =
+      'https://myalivappuat-api.bealiv.com/api/app-settings/security';
   static const isReferralValid = '$baseUrl/v1/MyAliv/Referral';
   static const referAFriend = '$baseUrl/v1/MyAliv/Referral/refer';
 
@@ -65,16 +77,23 @@ class Api {
   static String invoicePdf(int invoiceId, String filename) =>
       '$baseUrl/v1/MyAliv/Account/invoice/$invoiceId?filename=${Uri.encodeComponent(filename)}';
 
-  static const referAFriendText = 'https://myalivappuat-api.bealiv.com/api/app-settings/refer-a-friend';
-  static const redeemReferralText = "https://myalivappuat-api.bealiv.com/api/app-settings/redeem-referral";
+  static const referAFriendText =
+      'https://myalivappuat-api.bealiv.com/api/app-settings/refer-a-friend';
+  static const redeemReferralText =
+      "https://myalivappuat-api.bealiv.com/api/app-settings/redeem-referral";
 
-  static const startFuturePlan = '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/future-plan - POST to start future plan
+  static const startFuturePlan =
+      '$baseUrl/v1/MyAliv/device'; // Append /{deviceAccountId}/future-plan - POST to start future plan
 
-  static const guestPageMobileImage = 'https://myalivappuat-api.bealiv.com/api/app-settings/guest-page-mobile-image';
-  static const welcomePageMobileImage = 'https://myalivappuat-api.bealiv.com/api/app-settings/login-page-mobile-image';
+  static const guestPageMobileImage =
+      'https://myalivappuat-api.bealiv.com/api/app-settings/guest-page-mobile-image';
+  static const welcomePageMobileImage =
+      'https://myalivappuat-api.bealiv.com/api/app-settings/login-page-mobile-image';
 
-  static const prepaidTermsConditions = "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-prepaid";
-  static const postPaidTermsConditions = "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-postpaid";
+  static const prepaidTermsConditions =
+      "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-prepaid";
+  static const postPaidTermsConditions =
+      "https://myalivappuat-api.bealiv.com/api/app-settings/terms-and-conditions-postpaid";
 
   // {{baseUrl}}/v1/MyAliv/device/{{deviceAccountId}}/promo-code-info?promoCode=12345
   static String applyPromoCodeUrl({
@@ -145,7 +164,8 @@ class Api {
   /// Body: `{ "ToNumber": "<digits>", "Amount": <number> }`
   static const orderTransferUrl = '$baseUrl/v1/MyAliv/Order/transfer';
   //{{baseUrl}}/v1/MyAliv/device/:deviceAccountId/bucket-usage-summary
-  static String bucketUsageSummary(int deviceAccountId) => '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
+  static String bucketUsageSummary(int deviceAccountId) =>
+      '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
 
   /// Alternate-contact marketing preference: POST /AltNumber/opt-in/{number}
   /// Body: `{ "DeviceAccountId": <int>, "IsOptedIn": <bool> }`

@@ -23,10 +23,7 @@ class MifiMarketingRadioRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                label,
-                style: MifiAltContactStyles.radioLabel,
-              ),
+              child: Text(label, style: MifiAltContactStyles.radioLabel),
             ),
             _RadioDot(selected: selected),
           ],

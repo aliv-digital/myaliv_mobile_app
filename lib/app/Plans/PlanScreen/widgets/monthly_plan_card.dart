@@ -93,10 +93,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(
-                price: plan.planAmount,
-                vatAmount: plan.vatAmount,
-              ),
+              _PricePill(price: plan.planAmount, vatAmount: plan.vatAmount),
             ],
           ),
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
@@ -104,8 +101,9 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
           const SizedBox(height: HomePlanTheme.planCardSectionSpacing),
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(
@@ -168,38 +166,39 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
     );
   }
 }
+
 String _durationText(BasePlanModel plan) {
-  if(plan.frequency == 'W'){
+  if (plan.frequency == 'W') {
     return '7 days';
   }
-  if(plan.frequency == 'M'){
+  if (plan.frequency == 'M') {
     return '30 days';
   }
-  if(plan.frequency == 'D'){
+  if (plan.frequency == 'D') {
     return '1 day';
   }
-  if(plan.frequency == 'H'){
+  if (plan.frequency == 'H') {
     return '15 days';
   }
-  if(plan.frequency == 'T'){
+  if (plan.frequency == 'T') {
     return '10 days';
   }
-  if(plan.frequency == 'S'){
+  if (plan.frequency == 'S') {
     return '60 days';
   }
-  if(plan.frequency == 'N'){
+  if (plan.frequency == 'N') {
     return '90 days';
   }
-  if(plan.frequency == 'B'){
+  if (plan.frequency == 'B') {
     return '15 days';
   }
-  if(plan.frequency == '3'){
+  if (plan.frequency == '3') {
     return '3 days';
   }
-  if(plan.frequency == '5'){
+  if (plan.frequency == '5') {
     return '5 days';
   }
-  if(plan.frequency == 'A'){
+  if (plan.frequency == 'A') {
     return '1 year';
   }
 
@@ -257,10 +256,7 @@ class _PricePill extends StatelessWidget {
   final double price;
   final double vatAmount;
 
-  const _PricePill({
-    required this.price,
-    required this.vatAmount,
-  });
+  const _PricePill({required this.price, required this.vatAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -324,8 +320,7 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: List.generate(widget.benefits.length, (i) {
-                          final BasePlanBucketModel item =
-                              widget.benefits[i];
+                          final BasePlanBucketModel item = widget.benefits[i];
                           Color labelColor;
                           BucketItemType itemType = BucketItemType.whatsApp;
 
@@ -480,8 +475,10 @@ class _ScrollIndicator extends StatelessWidget {
               return const SizedBox.shrink();
             }
 
-            final double progress =
-                (position.pixels / maxScroll).clamp(0.0, 1.0);
+            final double progress = (position.pixels / maxScroll).clamp(
+              0.0,
+              1.0,
+            );
             final double maxThumbTravel = (trackW - thumbW).clamp(0.0, trackW);
             final double left = progress * maxThumbTravel;
 
@@ -493,7 +490,11 @@ class _ScrollIndicator extends StatelessWidget {
   }
 
   Widget _indicatorUI(
-      double trackW, double trackH, double thumbW, double left) {
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: HomePlanTheme.scrollBarRenderBoxHeight,
@@ -582,7 +583,8 @@ class _BucketItem extends StatelessWidget {
   // meaningless trailing zero decimals like `3.000000` while preserving
   // real fractional values such as `0.34` or `4.052`.
   String _formatAmount(double amount) {
-    final bool hasOnlyZeroFraction = (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    final bool hasOnlyZeroFraction =
+        (amount - amount.truncateToDouble()).abs() < 0.0000001;
     if (hasOnlyZeroFraction) {
       return amount.toStringAsFixed(0);
     }
@@ -633,19 +635,21 @@ class _BucketItem extends StatelessWidget {
       benefit.unlimited ? 'unlimited' : _formatAmount(benefit.amount),
       valueStyle,
     );
-    final double subW =
-        _measureTextWidth(context, benefit.unit.toLowerCase(), subStyle);
-    final double line1W = iconSize + iconGap + labelW;
-    final double contentW = [line1W, valueW, subW].reduce(
-      (a, b) => a > b ? a : b,
+    final double subW = _measureTextWidth(
+      context,
+      benefit.unit.toLowerCase(),
+      subStyle,
     );
+    final double line1W = iconSize + iconGap + labelW;
+    final double contentW = [
+      line1W,
+      valueW,
+      subW,
+    ].reduce((a, b) => a > b ? a : b);
     final double dynamicW = contentW + 16;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: 72,
-        maxWidth: 160,
-      ),
+      constraints: const BoxConstraints(minWidth: 72, maxWidth: 160),
       child: SizedBox(
         width: dynamicW.clamp(72, 160),
         height: 50,

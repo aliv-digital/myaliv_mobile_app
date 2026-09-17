@@ -20,16 +20,12 @@ Future<void> setupAccountInfoInjection() async {
 
   // Register repository
   instance.registerLazySingleton<AccountInfoRepository>(
-    () => AccountInfoRepository(
-      apiClient: instance<AccountInfoApiClient>(),
-    ),
+    () => AccountInfoRepository(apiClient: instance<AccountInfoApiClient>()),
   );
 
   // Register hydrated cubit as singleton
   // This ensures the same cubit instance is used throughout the app
   instance.registerLazySingleton<AccountInfoCubit>(
-    () => AccountInfoCubit(
-      repository: instance<AccountInfoRepository>(),
-    ),
+    () => AccountInfoCubit(repository: instance<AccountInfoRepository>()),
   );
 }

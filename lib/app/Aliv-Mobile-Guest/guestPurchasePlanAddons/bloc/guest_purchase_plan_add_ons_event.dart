@@ -7,11 +7,13 @@ sealed class GuestPurchasePlanAddOnsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class GuestPurchasePlanAddOnsStarted extends GuestPurchasePlanAddOnsEvent {
+final class GuestPurchasePlanAddOnsStarted
+    extends GuestPurchasePlanAddOnsEvent {
   const GuestPurchasePlanAddOnsStarted();
 }
 
-final class GuestPurchasePlanAddOnsAutoRenewToggled extends GuestPurchasePlanAddOnsEvent {
+final class GuestPurchasePlanAddOnsAutoRenewToggled
+    extends GuestPurchasePlanAddOnsEvent {
   final bool value;
   const GuestPurchasePlanAddOnsAutoRenewToggled(this.value);
 
@@ -19,7 +21,8 @@ final class GuestPurchasePlanAddOnsAutoRenewToggled extends GuestPurchasePlanAdd
   List<Object?> get props => [value];
 }
 
-final class GuestPurchasePlanAddOnsSelectionToggled extends GuestPurchasePlanAddOnsEvent {
+final class GuestPurchasePlanAddOnsSelectionToggled
+    extends GuestPurchasePlanAddOnsEvent {
   final String addOnId;
   final bool selected;
   const GuestPurchasePlanAddOnsSelectionToggled({
@@ -31,10 +34,12 @@ final class GuestPurchasePlanAddOnsSelectionToggled extends GuestPurchasePlanAdd
   List<Object?> get props => [addOnId, selected];
 }
 
-final class GuestPurchasePlanAddOnsSkipPressed extends GuestPurchasePlanAddOnsEvent {
+final class GuestPurchasePlanAddOnsSkipPressed
+    extends GuestPurchasePlanAddOnsEvent {
   const GuestPurchasePlanAddOnsSkipPressed();
 }
 
-final class GuestPurchasePlanAddOnsProceedPressed extends GuestPurchasePlanAddOnsEvent {
+final class GuestPurchasePlanAddOnsProceedPressed
+    extends GuestPurchasePlanAddOnsEvent {
   const GuestPurchasePlanAddOnsProceedPressed();
 }

@@ -37,11 +37,11 @@ class _FakeInternetConnection extends Fake implements InternetConnection {
 }
 
 TokenSession _fakeSession() => TokenSession(
-      accessToken: 'access',
-      refreshToken: 'refresh',
-      accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
-      refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
-    );
+  accessToken: 'access',
+  refreshToken: 'refresh',
+  accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
+  refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
+);
 
 LoginOtpBloc _buildBloc({
   required MockOtpRepository repository,
@@ -91,11 +91,8 @@ void main() {
         initialMfaToken: '',
         initialApiPhoneNumber: '',
       ),
-      seed: () => const LoginOtpState(
-        code: '123456',
-        mfaToken: '',
-        apiPhoneNumber: '',
-      ),
+      seed: () =>
+          const LoginOtpState(code: '123456', mfaToken: '', apiPhoneNumber: ''),
       act: (bloc) => bloc.add(const LoginOtpSubmitted()),
       expect: () => [
         isA<LoginOtpState>()
@@ -120,7 +117,11 @@ void main() {
       expect: () => [
         isA<LoginOtpState>()
             .having((s) => s.status, 'status', LoginOtpStatus.failure)
-            .having((s) => s.errorType, 'errorType', LoginOtpErrorType.emptyCode)
+            .having(
+              (s) => s.errorType,
+              'errorType',
+              LoginOtpErrorType.emptyCode,
+            )
             .having((s) => s.codeFieldError, 'codeFieldError', true),
       ],
     );
@@ -155,11 +156,13 @@ void main() {
         apiPhoneNumber: '2427654321',
       ),
       act: (bloc) => bloc.add(const LoginOtpSubmitted()),
-      verify: (_) => verifyNever(() => repository.verifyCode(
-            phoneNumber: any(named: 'phoneNumber'),
-            mfaToken: any(named: 'mfaToken'),
-            otpCode: any(named: 'otpCode'),
-          )),
+      verify: (_) => verifyNever(
+        () => repository.verifyCode(
+          phoneNumber: any(named: 'phoneNumber'),
+          mfaToken: any(named: 'mfaToken'),
+          otpCode: any(named: 'otpCode'),
+        ),
+      ),
     );
   });
 
@@ -187,11 +190,13 @@ void main() {
     blocTest<LoginOtpBloc, LoginOtpState>(
       'emits [loading, success] on valid OTP',
       build: () {
-        when(() => repository.verifyCode(
-              phoneNumber: any(named: 'phoneNumber'),
-              mfaToken: any(named: 'mfaToken'),
-              otpCode: any(named: 'otpCode'),
-            )).thenAnswer(
+        when(
+          () => repository.verifyCode(
+            phoneNumber: any(named: 'phoneNumber'),
+            mfaToken: any(named: 'mfaToken'),
+            otpCode: any(named: 'otpCode'),
+          ),
+        ).thenAnswer(
           (_) async => LoginOtpVerifyResponse(session: _fakeSession()),
         );
         return _buildBloc(repository: repository);
@@ -204,19 +209,29 @@ void main() {
       act: (bloc) => bloc.add(const LoginOtpSubmitted()),
       wait: const Duration(milliseconds: 2000),
       expect: () => [
-        isA<LoginOtpState>().having((s) => s.status, 'status', LoginOtpStatus.loading),
-        isA<LoginOtpState>().having((s) => s.status, 'status', LoginOtpStatus.success),
+        isA<LoginOtpState>().having(
+          (s) => s.status,
+          'status',
+          LoginOtpStatus.loading,
+        ),
+        isA<LoginOtpState>().having(
+          (s) => s.status,
+          'status',
+          LoginOtpStatus.success,
+        ),
       ],
     );
 
     blocTest<LoginOtpBloc, LoginOtpState>(
       'emits [loading, failure(invalidCode)] on wrong OTP',
       build: () {
-        when(() => repository.verifyCode(
-              phoneNumber: any(named: 'phoneNumber'),
-              mfaToken: any(named: 'mfaToken'),
-              otpCode: any(named: 'otpCode'),
-            )).thenThrow(Exception('Invalid OTP code'));
+        when(
+          () => repository.verifyCode(
+            phoneNumber: any(named: 'phoneNumber'),
+            mfaToken: any(named: 'mfaToken'),
+            otpCode: any(named: 'otpCode'),
+          ),
+        ).thenThrow(Exception('Invalid OTP code'));
         return _buildBloc(repository: repository);
       },
       seed: () => const LoginOtpState(
@@ -226,10 +241,18 @@ void main() {
       ),
       act: (bloc) => bloc.add(const LoginOtpSubmitted()),
       expect: () => [
-        isA<LoginOtpState>().having((s) => s.status, 'status', LoginOtpStatus.loading),
+        isA<LoginOtpState>().having(
+          (s) => s.status,
+          'status',
+          LoginOtpStatus.loading,
+        ),
         isA<LoginOtpState>()
             .having((s) => s.status, 'status', LoginOtpStatus.failure)
-            .having((s) => s.errorType, 'errorType', LoginOtpErrorType.invalidCode)
+            .having(
+              (s) => s.errorType,
+              'errorType',
+              LoginOtpErrorType.invalidCode,
+            )
             .having((s) => s.codeFieldError, 'codeFieldError', true),
       ],
     );
@@ -237,11 +260,13 @@ void main() {
     blocTest<LoginOtpBloc, LoginOtpState>(
       'emits [loading, failure] on two-factor related error message',
       build: () {
-        when(() => repository.verifyCode(
-              phoneNumber: any(named: 'phoneNumber'),
-              mfaToken: any(named: 'mfaToken'),
-              otpCode: any(named: 'otpCode'),
-            )).thenThrow(Exception('two factor verification failed'));
+        when(
+          () => repository.verifyCode(
+            phoneNumber: any(named: 'phoneNumber'),
+            mfaToken: any(named: 'mfaToken'),
+            otpCode: any(named: 'otpCode'),
+          ),
+        ).thenThrow(Exception('two factor verification failed'));
         return _buildBloc(repository: repository);
       },
       seed: () => const LoginOtpState(
@@ -251,14 +276,14 @@ void main() {
       ),
       act: (bloc) => bloc.add(const LoginOtpSubmitted()),
       expect: () => [
-        isA<LoginOtpState>().having((s) => s.status, 'status', LoginOtpStatus.loading),
+        isA<LoginOtpState>().having(
+          (s) => s.status,
+          'status',
+          LoginOtpStatus.loading,
+        ),
         isA<LoginOtpState>()
             .having((s) => s.status, 'status', LoginOtpStatus.failure)
-            .having(
-              (s) => s.errorMessage,
-              'errorMessage',
-              'Invalid OTP',
-            ),
+            .having((s) => s.errorMessage, 'errorMessage', 'Invalid OTP'),
       ],
     );
   });
@@ -267,10 +292,12 @@ void main() {
     blocTest<LoginOtpBloc, LoginOtpState>(
       'emits [resendLoading, resendDone, resendIdle] on success',
       build: () {
-        when(() => repository.resendCode(
-              phoneNumber: any(named: 'phoneNumber'),
-              mfaToken: any(named: 'mfaToken'),
-            )).thenAnswer(
+        when(
+          () => repository.resendCode(
+            phoneNumber: any(named: 'phoneNumber'),
+            mfaToken: any(named: 'mfaToken'),
+          ),
+        ).thenAnswer(
           (_) async => const LoginOtpResendResponse(mfaToken: 'new_mfa_token'),
         );
         return _buildBloc(repository: repository);
@@ -287,10 +314,18 @@ void main() {
           LoginOtpResendStatus.loading,
         ),
         isA<LoginOtpState>()
-            .having((s) => s.resendStatus, 'resendStatus', LoginOtpResendStatus.done)
+            .having(
+              (s) => s.resendStatus,
+              'resendStatus',
+              LoginOtpResendStatus.done,
+            )
             .having((s) => s.mfaToken, 'mfaToken', 'new_mfa_token'),
         isA<LoginOtpState>()
-            .having((s) => s.resendStatus, 'resendStatus', LoginOtpResendStatus.idle)
+            .having(
+              (s) => s.resendStatus,
+              'resendStatus',
+              LoginOtpResendStatus.idle,
+            )
             .having((s) => s.mfaToken, 'mfaToken', 'new_mfa_token'),
       ],
     );
@@ -298,16 +333,16 @@ void main() {
     blocTest<LoginOtpBloc, LoginOtpState>(
       'emits idle with error message on resend failure',
       build: () {
-        when(() => repository.resendCode(
-              phoneNumber: any(named: 'phoneNumber'),
-              mfaToken: any(named: 'mfaToken'),
-            )).thenThrow(Exception('Resend failed'));
+        when(
+          () => repository.resendCode(
+            phoneNumber: any(named: 'phoneNumber'),
+            mfaToken: any(named: 'mfaToken'),
+          ),
+        ).thenThrow(Exception('Resend failed'));
         return _buildBloc(repository: repository);
       },
-      seed: () => const LoginOtpState(
-        mfaToken: 'tok',
-        apiPhoneNumber: '2427654321',
-      ),
+      seed: () =>
+          const LoginOtpState(mfaToken: 'tok', apiPhoneNumber: '2427654321'),
       act: (bloc) => bloc.add(const LoginOtpResendRequested()),
       expect: () => [
         isA<LoginOtpState>().having(
@@ -316,7 +351,11 @@ void main() {
           LoginOtpResendStatus.loading,
         ),
         isA<LoginOtpState>()
-            .having((s) => s.resendStatus, 'resendStatus', LoginOtpResendStatus.idle)
+            .having(
+              (s) => s.resendStatus,
+              'resendStatus',
+              LoginOtpResendStatus.idle,
+            )
             .having(
               (s) => s.errorMessage,
               'errorMessage',
@@ -336,7 +375,11 @@ void main() {
       act: (bloc) => bloc.add(const LoginOtpResendRequested()),
       expect: () => [
         isA<LoginOtpState>()
-            .having((s) => s.resendStatus, 'resendStatus', LoginOtpResendStatus.idle)
+            .having(
+              (s) => s.resendStatus,
+              'resendStatus',
+              LoginOtpResendStatus.idle,
+            )
             .having((s) => s.errorMessage, 'errorMessage', isNotNull),
       ],
     );

@@ -15,18 +15,16 @@ class CheckoutCardBottomSheet extends StatelessWidget {
   final String title;
   final String submitLabel;
 
-  const CheckoutCardBottomSheet({
-    super.key,
-    required this.amountText,
-  })  : showAmount = true,
-        title = 'Checkout',
-        submitLabel = 'confirm payment';
+  const CheckoutCardBottomSheet({super.key, required this.amountText})
+    : showAmount = true,
+      title = 'Checkout',
+      submitLabel = 'confirm payment';
 
   const CheckoutCardBottomSheet.forAddCard({super.key})
-      : amountText = '',
-        showAmount = false,
-        title = 'Add card',
-        submitLabel = 'save card';
+    : amountText = '',
+      showAmount = false,
+      title = 'Add card',
+      submitLabel = 'save card';
 
   static Future<NewCardDetails?> show(
     BuildContext context, {
@@ -56,12 +54,7 @@ class CheckoutCardBottomSheet extends StatelessWidget {
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        24,
-        16,
-        24 + keyboardInset,
-      ),
+      padding: EdgeInsets.fromLTRB(16, 24, 16, 24 + keyboardInset),
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
@@ -69,9 +62,7 @@ class CheckoutCardBottomSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _Header(
-                onClose: () => Navigator.of(context).pop(),
-              ),
+              _Header(onClose: () => Navigator.of(context).pop()),
               if (showAmount) ...[
                 const SizedBox(height: 20),
                 _AmountRow(amountText: amountText),
@@ -156,26 +147,15 @@ class _AmountRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        const Text(
-          'amount',
-          style: _CheckoutSheetStyles.label,
-        ),
+        const Text('amount', style: _CheckoutSheetStyles.label),
         const Spacer(),
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 4,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: const BoxDecoration(
             color: Color(0xFFECECEF),
-            borderRadius: BorderRadius.all(
-              Radius.circular(100),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(100)),
           ),
-          child: Text(
-            amountText,
-            style: _CheckoutSheetStyles.amount,
-          ),
+          child: Text(amountText, style: _CheckoutSheetStyles.amount),
         ),
       ],
     );

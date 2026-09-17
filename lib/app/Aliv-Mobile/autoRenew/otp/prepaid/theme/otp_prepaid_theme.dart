@@ -44,8 +44,10 @@ class OtpAutoRenewPrepaidTheme {
   static const int otpLength = 5;
 
   // Used for top header back button placement in otp_prepaid_header.dart.
-  static const EdgeInsets headerBackButtonPadding =
-      EdgeInsets.only(left: 24, top: 53);
+  static const EdgeInsets headerBackButtonPadding = EdgeInsets.only(
+    left: 24,
+    top: 53,
+  );
 
   // Used for OTP illustration sizing in otp_prepaid_header.dart.
   static const double headerIllustrationWidth = 162.0;
@@ -62,12 +64,18 @@ class OtpAutoRenewPrepaidTheme {
   static const double otpBoxBorderWidth = 1.0;
 
   // Used for OTP input content padding in otp_prepaid_code_fields.dart.
-  static const EdgeInsets otpFieldContentPadding =
-      EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15);
+  static const EdgeInsets otpFieldContentPadding = EdgeInsets.only(
+    left: 15,
+    right: 15,
+    top: 10,
+    bottom: 15,
+  );
 
   // Used for main OTP content horizontal padding in otp_prepaid_screen.dart.
-  static const EdgeInsets contentHorizontalPadding =
-      EdgeInsets.only(left: 41, right: 41);
+  static const EdgeInsets contentHorizontalPadding = EdgeInsets.only(
+    left: 41,
+    right: 41,
+  );
 
   // Used for spacing between OTP content sections in otp_prepaid_screen.dart.
   static const double topGapBeforeOtpBoxes = 24.0;
@@ -85,8 +93,9 @@ class OtpAutoRenewPrepaidTheme {
   static const double resendRowToBottomGap = 113.0;
 
   // Used for keyboard-aware stripes animation in otp_prepaid_screen.dart.
-  static const Duration bottomStripeAnimationDuration =
-      Duration(milliseconds: 180);
+  static const Duration bottomStripeAnimationDuration = Duration(
+    milliseconds: 180,
+  );
 
   // ==================== Text Styles ====================
   // Used in otp_prepaid_header.dart for "verification code".
@@ -99,12 +108,12 @@ class OtpAutoRenewPrepaidTheme {
 
   // Used in otp_prepaid_header.dart for the OTP instruction subtitle.
   static TextStyle verificationSubtitleTextStyle() => TextStyle(
-        fontSize: 15,
-        color: headerSubtitleColor,
-        height: 1.4,
-        fontWeight: FontWeight.w400,
-        fontFamily: fontFamily,
-      );
+    fontSize: 15,
+    color: headerSubtitleColor,
+    height: 1.4,
+    fontWeight: FontWeight.w400,
+    fontFamily: fontFamily,
+  );
 
   // Used in otp_prepaid_code_fields.dart for OTP digit text.
   static const TextStyle otpDigitTextStyle = TextStyle(
@@ -144,8 +153,9 @@ class OtpAutoRenewPrepaidTheme {
   );
 
   // Used in otp_prepaid_bottom_action.dart for verify button shape.
-  static const BorderRadius verifyButtonBorderRadius =
-      BorderRadius.all(Radius.circular(verifyButtonRadius));
+  static const BorderRadius verifyButtonBorderRadius = BorderRadius.all(
+    Radius.circular(verifyButtonRadius),
+  );
 
   // Used in otp_prepaid_bottom_action.dart for verify button color.
   static const Color verifyButtonBackgroundColor = Color(0xFF645D9C);

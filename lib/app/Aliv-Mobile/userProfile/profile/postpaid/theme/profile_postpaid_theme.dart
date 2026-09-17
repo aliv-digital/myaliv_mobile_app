@@ -10,11 +10,11 @@ class ProfilePostpaidTheme {
   static const chevron = Color(0xFFB7B7C2);
 
   static TextStyle t(
-      double size, {
-        FontWeight weight = FontWeight.w400,
-        Color color = textBlack,
-        double height = 1.25,
-      }) {
+    double size, {
+    FontWeight weight = FontWeight.w400,
+    Color color = textBlack,
+    double height = 1.25,
+  }) {
     return TextStyle(
       fontFamily: 'CircularPro',
       fontSize: size,

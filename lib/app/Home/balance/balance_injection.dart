@@ -19,9 +19,7 @@ final instance = GetIt.instance;
 Future<void> setupBalanceInjection() async {
   // API Service (uses NetworkService from core package)
   instance.registerLazySingleton<BalanceApiService>(
-    () => BalanceApiService(
-      networkService: instance<NetworkService>(),
-    ),
+    () => BalanceApiService(networkService: instance<NetworkService>()),
   );
 
   // Parser Service

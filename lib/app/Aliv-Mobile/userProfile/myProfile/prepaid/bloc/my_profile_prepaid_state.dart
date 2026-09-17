@@ -3,13 +3,7 @@ import '../model/my_profile_prepaid_model.dart';
 
 enum MyProfilePrepaidStatus { initial, loading, success, failure }
 
-enum MyProfilePrepaidNavAction {
-  none,
-  back,
-  home,
-  editEmail,
-  changePassword,
-}
+enum MyProfilePrepaidNavAction { none, back, home, editEmail, changePassword }
 
 class MyProfilePrepaidState extends Equatable {
   final MyProfilePrepaidStatus status;
@@ -21,7 +15,7 @@ class MyProfilePrepaidState extends Equatable {
   final int navRequestId;
 
   const MyProfilePrepaidState({
-    required this. status,
+    required this.status,
     required this.data,
     required this.errorMessage,
     required this.navAction,

@@ -41,10 +41,7 @@ class GuestConfirmTopUpScreen extends StatelessWidget {
 
           // Seed initial values for this screen from route arguments.
           bloc.add(
-            GuestConfirmTopUpStarted(
-              phoneNumber: phoneNumber,
-              amount: amount,
-            ),
+            GuestConfirmTopUpStarted(phoneNumber: phoneNumber, amount: amount),
           );
 
           return bloc;
@@ -106,43 +103,45 @@ class _GuestConfirmTopUpView extends StatelessWidget {
         backgroundColor: TopUpConfirmTheme.screenBackgroundColor,
         bottomNavigationBar:
             BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
-          buildWhen: (previousState, currentState) {
-            // Bottom pay bar depends on total amount, loading status,
-            // and whether the terms checkbox is checked (gates the button).
-            final hasTotalChanged = previousState.total != currentState.total;
-            final hasStatusChanged =
-                previousState.status != currentState.status;
-            final hasTermsCheckedChanged =
-                previousState.isTermsChecked != currentState.isTermsChecked;
+              buildWhen: (previousState, currentState) {
+                // Bottom pay bar depends on total amount, loading status,
+                // and whether the terms checkbox is checked (gates the button).
+                final hasTotalChanged =
+                    previousState.total != currentState.total;
+                final hasStatusChanged =
+                    previousState.status != currentState.status;
+                final hasTermsCheckedChanged =
+                    previousState.isTermsChecked != currentState.isTermsChecked;
 
-            return hasTotalChanged ||
-                hasStatusChanged ||
-                hasTermsCheckedChanged;
-          },
-          builder: (context, state) {
-            final amountText = _formatCurrency(state.total);
-            final isLoading = state.status == GuestConfirmTopUpStatus.loading;
-
-            return DefaultBottomPayBar(
-              amountText: amountText,
-
-              isLoading: isLoading,
-              isButtonEnabled: state.isTermsChecked,
-              buttonText: TopUpConfirmTheme.payNowLabel,
-              isVatExclusive: true,
-              backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
-              buttonColor: TopUpConfirmTheme.payBarButtonColor,
-              onPayNow: () {
-                // If payment should be done by BLoC flow, use:
-                // final bloc = context.read<GuestConfirmTopUpBloc>();
-                // bloc.add(
-                //   const GuestConfirmTopUpPayNowPressed(),
-                // );
-                context.push(AppRoutes.guestTopUpReceipt);
+                return hasTotalChanged ||
+                    hasStatusChanged ||
+                    hasTermsCheckedChanged;
               },
-            );
-          },
-        ),
+              builder: (context, state) {
+                final amountText = _formatCurrency(state.total);
+                final isLoading =
+                    state.status == GuestConfirmTopUpStatus.loading;
+
+                return DefaultBottomPayBar(
+                  amountText: amountText,
+
+                  isLoading: isLoading,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonText: TopUpConfirmTheme.payNowLabel,
+                  isVatExclusive: true,
+                  backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
+                  buttonColor: TopUpConfirmTheme.payBarButtonColor,
+                  onPayNow: () {
+                    // If payment should be done by BLoC flow, use:
+                    // final bloc = context.read<GuestConfirmTopUpBloc>();
+                    // bloc.add(
+                    //   const GuestConfirmTopUpPayNowPressed(),
+                    // );
+                    context.push(AppRoutes.guestTopUpReceipt);
+                  },
+                );
+              },
+            ),
         body: SafeArea(
           top: false,
           child: CustomScrollView(
@@ -154,8 +153,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   onBack: () {
                     context.pop();
                   },
-                    onHomeTap: () => context.go(AppRoutes.home)
-
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
               ),
 
@@ -166,8 +164,10 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
                     buildWhen: (previousState, currentState) {
                       // Rebuild only when the values shown in TopUpSummaryCard change.
-                      final hasPhoneNumberChanged = previousState.phoneNumber != currentState.phoneNumber;
-                      final hasAmountChanged = previousState.total != currentState.total;
+                      final hasPhoneNumberChanged =
+                          previousState.phoneNumber != currentState.phoneNumber;
+                      final hasAmountChanged =
+                          previousState.total != currentState.total;
 
                       return hasPhoneNumberChanged || hasAmountChanged;
                     },
@@ -185,20 +185,27 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: TopUpConfirmTheme.termsWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
-                    builder: (context, state) {
-                      return TermsAndConditionsText(
-                        isChecked: state.isTermsChecked,
-                        onToggleChecked: () {
-                          final bloc = context.read<GuestConfirmTopUpBloc>();
-                          bloc.add(const GuestConfirmTopUpTermsCheckboxToggled());
+                  child:
+                      BlocBuilder<
+                        GuestConfirmTopUpBloc,
+                        GuestConfirmTopUpState
+                      >(
+                        builder: (context, state) {
+                          return TermsAndConditionsText(
+                            isChecked: state.isTermsChecked,
+                            onToggleChecked: () {
+                              final bloc = context
+                                  .read<GuestConfirmTopUpBloc>();
+                              bloc.add(
+                                const GuestConfirmTopUpTermsCheckboxToggled(),
+                              );
+                            },
+                            onTapTerms: () async {
+                              await showTermsAndConditionsModal(context);
+                            },
+                          );
                         },
-                        onTapTerms: () async {
-                          await showTermsAndConditionsModal(context);
-                        },
-                      );
-                    },
-                  ),
+                      ),
                 ),
               ),
 
@@ -206,63 +213,71 @@ class _GuestConfirmTopUpView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: TopUpConfirmTheme.breakdownWrapperPadding,
-                  child: BlocBuilder<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
-                    buildWhen: (previousState, currentState) {
-                      final hasSubTotalChanged = previousState.subTotal != currentState.subTotal;
-                      final hasVatChanged = previousState.vat != currentState.vat;
-                      final hasTotalChanged = previousState.total != currentState.total;
+                  child:
+                      BlocBuilder<
+                        GuestConfirmTopUpBloc,
+                        GuestConfirmTopUpState
+                      >(
+                        buildWhen: (previousState, currentState) {
+                          final hasSubTotalChanged =
+                              previousState.subTotal != currentState.subTotal;
+                          final hasVatChanged =
+                              previousState.vat != currentState.vat;
+                          final hasTotalChanged =
+                              previousState.total != currentState.total;
 
-                      return hasSubTotalChanged || hasVatChanged || hasTotalChanged;
-                    },
-                    builder: (context, state) {
-                      // Local card kept for reference:
-                      // return PaymentBreakdownCard(
-                      //   subTotal: state.subTotal,
-                      //   vat: state.vat,
-                      //   total: state.total,
-                      // );
-                      final items = <CustomPaymentBreakdownLineItem>[
-                        CustomPaymentBreakdownLineItem(
-                          
-                          textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: AppConstants.defaultFontFamily,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          label: 'sub total',
-                          value: _formatCurrency(state.subTotal),
-                        ),
-                        CustomPaymentBreakdownLineItem(
-                          label: 'vat',
-                          value: _formatCurrency(state.vat),
-                          textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: AppConstants.defaultFontFamily,
-                            fontWeight: FontWeight.w500,
-                          )
-                        ),
-                        CustomPaymentBreakdownLineItem(
-                          label: 'total',
-                          value: _formatCurrency(state.total),
-                          textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: AppConstants.defaultFontFamily,
-                            fontWeight: FontWeight.w500,
-                          )
-                        ),
-                      ];
+                          return hasSubTotalChanged ||
+                              hasVatChanged ||
+                              hasTotalChanged;
+                        },
+                        builder: (context, state) {
+                          // Local card kept for reference:
+                          // return PaymentBreakdownCard(
+                          //   subTotal: state.subTotal,
+                          //   vat: state.vat,
+                          //   total: state.total,
+                          // );
+                          final items = <CustomPaymentBreakdownLineItem>[
+                            CustomPaymentBreakdownLineItem(
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontFamily: AppConstants.defaultFontFamily,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              label: 'sub total',
+                              value: _formatCurrency(state.subTotal),
+                            ),
+                            CustomPaymentBreakdownLineItem(
+                              label: 'vat',
+                              value: _formatCurrency(state.vat),
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontFamily: AppConstants.defaultFontFamily,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            CustomPaymentBreakdownLineItem(
+                              label: 'total',
+                              value: _formatCurrency(state.total),
+                              textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontFamily: AppConstants.defaultFontFamily,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ];
 
-                      return CustomPaymentBreakDownCard(
-                        gapAfterDivider: 24,
-                        gapBeforeDivider: 24,
-                          backgroundColor: HexColor.fromHex('#645D9C'),
-                          items: items
-                      );
-                    },
-                  ),
+                          return CustomPaymentBreakDownCard(
+                            gapAfterDivider: 24,
+                            gapBeforeDivider: 24,
+                            backgroundColor: HexColor.fromHex('#645D9C'),
+                            items: items,
+                          );
+                        },
+                      ),
                 ),
               ),
 

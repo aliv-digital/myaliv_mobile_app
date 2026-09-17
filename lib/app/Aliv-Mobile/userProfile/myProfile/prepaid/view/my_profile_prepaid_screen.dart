@@ -67,112 +67,107 @@ class _MyProfilePrepaidView extends StatelessWidget {
             }
           },
           child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    // Appbar (already done)
-                    SliverToBoxAdapter(
-                      child: DefaultAppBar(
-                        onBack: () {
-                          context.pop();
-                        },
-                        title: 'my profile',
-                        showHome: true,
-                        onHomeTap: () {
-                          // context.read<MyProfilePrepaidBloc>().add(const MyProfilePrepaidHomePressed());
-                          context.go(AppRoutes.home);
-                        },
+            physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              // Appbar (already done)
+              SliverToBoxAdapter(
+                child: DefaultAppBar(
+                  onBack: () {
+                    context.pop();
+                  },
+                  title: 'my profile',
+                  showHome: true,
+                  onHomeTap: () {
+                    // context.read<MyProfilePrepaidBloc>().add(const MyProfilePrepaidHomePressed());
+                    context.go(AppRoutes.home);
+                  },
+                ),
+              ),
+
+              BlocBuilder<MyProfilePrepaidBloc, MyProfilePrepaidState>(
+                builder: (context, state) {
+                  if (state.status == MyProfilePrepaidStatus.loading ||
+                      state.status == MyProfilePrepaidStatus.initial) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  if (state.status == MyProfilePrepaidStatus.failure) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Text(
+                          'Something went wrong',
+                          style: MyProfilePrepaidTheme.textBodyBold,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final data = state.data!;
+
+                  return SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(28, 18, 28, 18),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 420),
+                          child: Column(
+                            children: [
+                              // ✅ Header (avatar + name + status pill)
+                              MyProfilePrepaidHeader(
+                                avatarLetter: data.avatarLetter,
+                                fullName: data.fullName,
+                                statusLabel: data.statusLabel,
+                              ),
+                              const SizedBox(height: 24),
+
+                              MyProfilePrepaidInfoCard(
+                                phone: data.phone,
+                                activeOn: data.activeOn,
+                                email: data.email,
+                              ),
+                              //const SizedBox(height: 16),
+
+                              // MyProfilePrepaidDeviceCard(
+                              //   title: data.deviceTitle,
+                              //   deviceModel: data.deviceModel,
+                              // ),
+                              const SizedBox(height: 16),
+
+                              MyProfilePrepaidActionTile(
+                                iconPath: AssetConstant.emailIconSVG,
+                                title: 'edit email',
+                                onTap: () =>
+                                    context.read<MyProfilePrepaidBloc>().add(
+                                      const MyProfilePrepaidEditEmailPressed(),
+                                    ),
+                              ),
+                              const SizedBox(height: 16),
+
+                              MyProfilePrepaidActionTile(
+                                iconPath: AssetConstant.passwordIconSVG,
+                                title: 'change password',
+                                onTap: () =>
+                                    context.read<MyProfilePrepaidBloc>().add(
+                                      const MyProfilePrepaidChangePasswordPressed(),
+                                    ),
+                              ),
+
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-
-                    BlocBuilder<MyProfilePrepaidBloc, MyProfilePrepaidState>(
-                      builder: (context, state) {
-                        if (state.status == MyProfilePrepaidStatus.loading ||
-                            state.status == MyProfilePrepaidStatus.initial) {
-                          return const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-
-                        if (state.status == MyProfilePrepaidStatus.failure) {
-                          return SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(
-                              child: Text(
-                                'Something went wrong',
-                                style: MyProfilePrepaidTheme.textBodyBold,
-                              ),
-                            ),
-                          );
-                        }
-
-                        final data = state.data!;
-
-                        return SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(28, 18, 28, 18),
-                          sliver: SliverToBoxAdapter(
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 420,
-                                ),
-                                child: Column(
-                                  children: [
-                                    // ✅ Header (avatar + name + status pill)
-                                    MyProfilePrepaidHeader(
-                                      avatarLetter: data.avatarLetter,
-                                      fullName: data.fullName,
-                                      statusLabel: data.statusLabel,
-                                    ),
-                                    const SizedBox(height: 24),
-
-                                    MyProfilePrepaidInfoCard(
-                                      phone: data.phone,
-                                      activeOn: data.activeOn,
-                                      email: data.email,
-                                    ),
-                                    //const SizedBox(height: 16),
-
-                                    // MyProfilePrepaidDeviceCard(
-                                    //   title: data.deviceTitle,
-                                    //   deviceModel: data.deviceModel,
-                                    // ),
-                                    const SizedBox(height: 16),
-
-                                    MyProfilePrepaidActionTile(
-                                      iconPath: AssetConstant.emailIconSVG,
-                                      title: 'edit email',
-                                      onTap: () => context
-                                          .read<MyProfilePrepaidBloc>()
-                                          .add(
-                                            const MyProfilePrepaidEditEmailPressed(),
-                                          ),
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    MyProfilePrepaidActionTile(
-                                      iconPath: AssetConstant.passwordIconSVG,
-                                      title: 'change password',
-                                      onTap: () => context
-                                          .read<MyProfilePrepaidBloc>()
-                                          .add(
-                                            const MyProfilePrepaidChangePasswordPressed(),
-                                          ),
-                                    ),
-
-                                    const SizedBox(height: 24),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

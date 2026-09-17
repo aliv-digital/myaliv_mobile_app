@@ -59,7 +59,7 @@ class DefaultBottomPayBar extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                       isVatExclusive ? 'no vat applied' : 'vat inclusive',
+                        isVatExclusive ? 'no vat applied' : 'vat inclusive',
                         style: const TextStyle(
                           fontSize: 12,
                           fontFamily: 'CircularPro',
@@ -79,10 +79,13 @@ class DefaultBottomPayBar extends StatelessWidget {
                   height: 40,
                   width: 169,
                   child: ElevatedButton(
-                    onPressed: (isLoading || !isButtonEnabled) ? null : onPayNow,
+                    onPressed: (isLoading || !isButtonEnabled)
+                        ? null
+                        : onPayNow,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
-                      disabledBackgroundColor: disabledButtonColor ??
+                      disabledBackgroundColor:
+                          disabledButtonColor ??
                           buttonColor.withValues(alpha: 0.45),
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 10),

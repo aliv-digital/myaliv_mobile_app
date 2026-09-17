@@ -151,7 +151,10 @@ class HomePlansPaymentMethodBloc
     );
   }
 
-  Future<void> _onChargeToAccountRequested(HomePlansChargeToAccountRequested event, Emitter<HomePlansPaymentMethodState> emit) async {
+  Future<void> _onChargeToAccountRequested(
+    HomePlansChargeToAccountRequested event,
+    Emitter<HomePlansPaymentMethodState> emit,
+  ) async {
     // Postpaid charges do not depend on wallet balance. The shared service
     // automatically sends postpaid plan orders to /Order/payment.
     await _submitChangeBundle(

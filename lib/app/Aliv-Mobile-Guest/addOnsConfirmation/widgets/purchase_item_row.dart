@@ -32,8 +32,7 @@ class PurchaseItemRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height:
-                    AddOnsConfirmationTheme.purchaseItemLabelToTitleGap,
+                height: AddOnsConfirmationTheme.purchaseItemLabelToTitleGap,
               ),
               Text(
                 item.title,
@@ -44,13 +43,11 @@ class PurchaseItemRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height:
-                    AddOnsConfirmationTheme.purchaseItemTitleToSubtitleGap,
+                height: AddOnsConfirmationTheme.purchaseItemTitleToSubtitleGap,
               ),
               Text(
                 item.subtitle,
-                style:
-                    AddOnsConfirmationTheme.purchaseItemSubtitleTextStyle,
+                style: AddOnsConfirmationTheme.purchaseItemSubtitleTextStyle,
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,
                   applyHeightToLastDescent: false,

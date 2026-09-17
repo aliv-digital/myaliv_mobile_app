@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/repository/services/transactions
 /// Handles data fetching and parsing from API.
 class TransactionsRepository {
   TransactionsRepository({TransactionsApiClient? apiClient})
-      : _apiClient = apiClient ?? TransactionsApiClient();
+    : _apiClient = apiClient ?? TransactionsApiClient();
 
   final TransactionsApiClient _apiClient;
 
@@ -35,7 +35,8 @@ class TransactionsRepository {
 
     if (kDebugMode) {
       debugPrint(
-          'TransactionsRepository: Parsed ${transactions.length} transactions');
+        'TransactionsRepository: Parsed ${transactions.length} transactions',
+      );
     }
 
     return transactions;
@@ -47,7 +48,9 @@ class TransactionsRepository {
 
     if (decoded is List) {
       final transactions = decoded
-          .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => TransactionModel.fromJson(item as Map<String, dynamic>),
+          )
           .toList();
       // Sort by date descending (newest first)
       transactions.sort((a, b) => b.date.compareTo(a.date));

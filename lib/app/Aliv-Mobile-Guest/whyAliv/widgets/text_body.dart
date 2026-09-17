@@ -8,9 +8,6 @@ class TextBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: WhyAlivTheme.body,
-    );
+    return Text(text, style: WhyAlivTheme.body);
   }
 }

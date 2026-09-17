@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/re
 /// Handles data fetching and parsing from API.
 class RewardPrepaidRepository {
   RewardPrepaidRepository({RewardsApiClient? apiClient})
-      : _apiClient = apiClient ?? RewardsApiClient();
+    : _apiClient = apiClient ?? RewardsApiClient();
 
   final RewardsApiClient _apiClient;
 

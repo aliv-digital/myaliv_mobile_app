@@ -22,8 +22,9 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final normalizedServiceName = args.serviceName.trim().toUpperCase();
-    final identifierLabelForReceipt =
-        normalizedServiceName == 'REV' ? 'account no.' : args.identifierLabel;
+    final identifierLabelForReceipt = normalizedServiceName == 'REV'
+        ? 'account no.'
+        : args.identifierLabel;
 
     final receiptData = GuestPayBillReceiptData(
       leftType: 'service',
@@ -53,8 +54,8 @@ class _GuestPayBillReceiptView extends StatelessWidget {
 
   void _onBackHomePressed(BuildContext context) {
     context.read<GuestPayBillReceiptBloc>().add(
-          const GuestPayBillReceiptBackToHomePressed(),
-        );
+      const GuestPayBillReceiptBackToHomePressed(),
+    );
   }
 
   GuestPurchasePlanReceiptData _toDefaultReceiptData(
@@ -82,16 +83,15 @@ class _GuestPayBillReceiptView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
       listenWhen: (previousState, currentState) {
-        return previousState.backHomeRequestId != currentState.backHomeRequestId;
+        return previousState.backHomeRequestId !=
+            currentState.backHomeRequestId;
       },
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
-          if(AppSession.appRoute == 'postpaidPayment'){
+          if (AppSession.appRoute == 'postpaidPayment') {
             AppSession.resetAppRoute();
             context.go(AppRoutes.home);
-
-          }
-          else{
+          } else {
             context.go(AppRoutes.logIn);
           }
         }
@@ -109,8 +109,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                   showBackArrow: false,
                   title: 'my receipt',
                   onBack: () {},
-                    onHomeTap: () => context.go(AppRoutes.home)
-
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
               ),
 
@@ -118,22 +117,27 @@ class _GuestPayBillReceiptView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: GuestPayBillReceiptTheme.contentPadding,
-                  child: BlocBuilder<GuestPayBillReceiptBloc,
-                      GuestPayBillReceiptState>(
-                    builder: (context, state) {
-                      final data = state.data;
-                      if (data == null) return const SizedBox.shrink();
+                  child:
+                      BlocBuilder<
+                        GuestPayBillReceiptBloc,
+                        GuestPayBillReceiptState
+                      >(
+                        builder: (context, state) {
+                          final data = state.data;
+                          if (data == null) return const SizedBox.shrink();
 
-                      return DefaultReceiptSuccessCard(
-                        data: _toDefaultReceiptData(data),
-                        pageBackground: GuestPayBillReceiptTheme.screenBackground,
-                        statusMessage:'It will take a few moments for the payment to appear on the account.',
-                        onBackHome: () {
-                          _onBackHomePressed(context);
+                          return DefaultReceiptSuccessCard(
+                            data: _toDefaultReceiptData(data),
+                            pageBackground:
+                                GuestPayBillReceiptTheme.screenBackground,
+                            statusMessage:
+                                'It will take a few moments for the payment to appear on the account.',
+                            onBackHome: () {
+                              _onBackHomePressed(context);
+                            },
+                          );
                         },
-                      );
-                    },
-                  ),
+                      ),
                 ),
               ),
             ],

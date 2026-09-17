@@ -3,19 +3,21 @@ import '../repository/profile_prepaid_repository.dart';
 import 'profile_prepaid_event.dart';
 import 'profile_prepaid_state.dart';
 
-class ProfilePrepaidBloc extends Bloc<ProfilePrepaidEvent, ProfilePrepaidState> {
+class ProfilePrepaidBloc
+    extends Bloc<ProfilePrepaidEvent, ProfilePrepaidState> {
   final ProfilePrepaidRepository repository;
 
-  ProfilePrepaidBloc({required this.repository}) : super(ProfilePrepaidState.initial()) {
+  ProfilePrepaidBloc({required this.repository})
+    : super(ProfilePrepaidState.initial()) {
     on<ProfilePrepaidStarted>(_onStarted);
     on<ProfilePrepaidBackPressed>(_onBackPressed);
     on<ProfilePrepaidItemPressed>(_onItemPressed);
   }
 
   Future<void> _onStarted(
-      ProfilePrepaidStarted event,
-      Emitter<ProfilePrepaidState> emit,
-      ) async {
+    ProfilePrepaidStarted event,
+    Emitter<ProfilePrepaidState> emit,
+  ) async {
     emit(state.copyWith(status: ProfilePrepaidStatus.loading));
 
     try {
@@ -27,16 +29,16 @@ class ProfilePrepaidBloc extends Bloc<ProfilePrepaidEvent, ProfilePrepaidState> 
   }
 
   void _onBackPressed(
-      ProfilePrepaidBackPressed event,
-      Emitter<ProfilePrepaidState> emit,
-      ) {
+    ProfilePrepaidBackPressed event,
+    Emitter<ProfilePrepaidState> emit,
+  ) {
     emit(state.copyWith(backRequestId: state.backRequestId + 1));
   }
 
   void _onItemPressed(
-      ProfilePrepaidItemPressed event,
-      Emitter<ProfilePrepaidState> emit,
-      ) {
+    ProfilePrepaidItemPressed event,
+    Emitter<ProfilePrepaidState> emit,
+  ) {
     if (!event.item.enabled) return;
 
     // route future e add korba, ekhon null thakle just ignore

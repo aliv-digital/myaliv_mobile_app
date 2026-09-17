@@ -20,20 +20,21 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomePlansPaymentMethodBloc>(
-      create: (_) => HomePlansPaymentMethodBloc(
-        repository: HomePlansPaymentMethodRepositoryImpl(),
-      )..add(
-          HomePlansPaymentMethodStarted(
-            subscriberType: args.subscriberType,
-            amount: args.amount,
-            vatNote: args.vatNote,
-            phoneNumber: args.phoneNumber,
-            selectedItems: args.selectedItems,
-            promoCodes: args.promoCodes,
-            forceNow: args.forceNow,
-            selectedBeginDate: args.selectedBeginDate,
+      create: (_) =>
+          HomePlansPaymentMethodBloc(
+            repository: HomePlansPaymentMethodRepositoryImpl(),
+          )..add(
+            HomePlansPaymentMethodStarted(
+              subscriberType: args.subscriberType,
+              amount: args.amount,
+              vatNote: args.vatNote,
+              phoneNumber: args.phoneNumber,
+              selectedItems: args.selectedItems,
+              promoCodes: args.promoCodes,
+              forceNow: args.forceNow,
+              selectedBeginDate: args.selectedBeginDate,
+            ),
           ),
-        ),
       child: const HomePlansPaymentMethodView(),
     );
   }

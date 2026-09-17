@@ -18,7 +18,8 @@ class PurchaseAddOnButton extends StatelessWidget {
           a.status != b.status ||
           a.earliestAddOnsPrimaryPlan != b.earliestAddOnsPrimaryPlan,
       builder: (context, state) {
-        final resolving = state.status == PlansStatus.initial ||
+        final resolving =
+            state.status == PlansStatus.initial ||
             state.status == PlansStatus.loading;
         if (resolving || state.earliestAddOnsPrimaryPlan == null) {
           return const SizedBox.shrink();

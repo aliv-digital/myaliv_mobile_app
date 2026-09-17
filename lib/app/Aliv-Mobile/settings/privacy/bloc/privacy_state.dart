@@ -41,10 +41,5 @@ class PrivacyState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    status,
-    content,
-    errorMessage,
-    navTarget,
-  ];
+  List<Object?> get props => [status, content, errorMessage, navTarget];
 }

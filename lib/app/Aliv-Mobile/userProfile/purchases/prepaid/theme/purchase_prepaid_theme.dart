@@ -16,6 +16,6 @@ class PurchasePrepaidTheme {
     fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 1.2,
-    letterSpacing: -0.26
+    letterSpacing: -0.26,
   );
 }

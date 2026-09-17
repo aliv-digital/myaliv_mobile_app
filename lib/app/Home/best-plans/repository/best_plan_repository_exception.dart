@@ -46,10 +46,7 @@ class BestPlanParseException implements Exception {
   final String message;
   final dynamic originalError;
 
-  const BestPlanParseException(
-    this.message, {
-    this.originalError,
-  });
+  const BestPlanParseException(this.message, {this.originalError});
 
   @override
   String toString() {

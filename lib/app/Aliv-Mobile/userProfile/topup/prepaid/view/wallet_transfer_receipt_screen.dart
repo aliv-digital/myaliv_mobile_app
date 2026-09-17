@@ -15,7 +15,9 @@ class WalletTransferReceiptScreen extends StatelessWidget {
       appBar: AppBar(
         toolbarHeight: 64,
         backgroundColor: const Color(0xFF645D9C),
-        elevation: 0,leading: SizedBox(),leadingWidth: 24,
+        elevation: 0,
+        leading: SizedBox(),
+        leadingWidth: 24,
         title: const Text(
           'my receipt',
           style: TextStyle(

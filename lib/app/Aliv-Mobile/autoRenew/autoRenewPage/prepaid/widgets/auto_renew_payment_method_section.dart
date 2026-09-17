@@ -35,28 +35,29 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
     this.onNoAutoRenewSelected,
     this.onPayWithCardSelected,
     this.payWithCardSelected = false,
-  })  : assert(
-          !showWalletRow ||
-              (walletBalanceText != null && onPayFromWallet != null),
-          'walletBalanceText and onPayFromWallet are required when showWalletRow is true',
-        ),
-        assert(
-          !(showWalletRow || showNoAutoRenewRow) ||
-              onNoAutoRenewSelected != null,
-          'onNoAutoRenewSelected is required when the no-auto-renew row is shown',
-        ),
-        assert(
-          !showPayWithCardRow || onPayWithCardSelected != null,
-          'onPayWithCardSelected is required when showPayWithCardRow is true',
-        );
+  }) : assert(
+         !showWalletRow ||
+             (walletBalanceText != null && onPayFromWallet != null),
+         'walletBalanceText and onPayFromWallet are required when showWalletRow is true',
+       ),
+       assert(
+         !(showWalletRow || showNoAutoRenewRow) ||
+             onNoAutoRenewSelected != null,
+         'onNoAutoRenewSelected is required when the no-auto-renew row is shown',
+       ),
+       assert(
+         !showPayWithCardRow || onPayWithCardSelected != null,
+         'onPayWithCardSelected is required when showPayWithCardRow is true',
+       );
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: AutoRenewPrepaidTheme.cardBg,
-        borderRadius:
-            BorderRadius.circular(AutoRenewPrepaidTheme.sectionRadius),
+        borderRadius: BorderRadius.circular(
+          AutoRenewPrepaidTheme.sectionRadius,
+        ),
       ),
       padding: AutoRenewPrepaidTheme.sectionPadding,
       child: Column(
@@ -83,9 +84,7 @@ class AutoRenewPaymentMethodSection extends StatelessWidget {
             if (showNoAutoRenewRow)
               const SizedBox(height: AutoRenewPrepaidTheme.sectionItemGap),
           ],
-          if (showNoAutoRenewRow) ...[
-            _buildNoAutoRenewRow(),
-          ],
+          if (showNoAutoRenewRow) ...[_buildNoAutoRenewRow()],
         ],
       ),
     );
@@ -206,12 +205,7 @@ class _StaticPaymentOptionTile extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible(
-                        child: Text(
-                          title,
-                          style: _titleStyle,
-                        ),
-                      ),
+                      Flexible(child: Text(title, style: _titleStyle)),
                       if (titleTrailing != null) ...[
                         const SizedBox(width: 10),
                         titleTrailing!,
@@ -230,12 +224,12 @@ class _StaticPaymentOptionTile extends StatelessWidget {
   }
 
   TextStyle get _titleStyle => TextStyle(
-        color: selected ? _selectedTextColor : AutoRenewPrepaidTheme.primary,
-        fontSize: 16,
-        fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w700,
-        height: 1.25,
-      );
+    color: selected ? _selectedTextColor : AutoRenewPrepaidTheme.primary,
+    fontSize: 16,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+  );
 }
 
 class _SelectionIndicator extends StatelessWidget {

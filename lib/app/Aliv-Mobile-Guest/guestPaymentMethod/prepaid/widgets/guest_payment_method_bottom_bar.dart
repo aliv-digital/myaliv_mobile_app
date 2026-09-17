@@ -34,11 +34,15 @@ class GuestPaymentMethodBottomBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(amountText,
-                          style: GuestPaymentMethodPrepaidTheme.bottomAmount),
+                      Text(
+                        amountText,
+                        style: GuestPaymentMethodPrepaidTheme.bottomAmount,
+                      ),
                       const SizedBox(height: 4),
-                      Text(vatNote,
-                          style: GuestPaymentMethodPrepaidTheme.bottomVat),
+                      Text(
+                        vatNote,
+                        style: GuestPaymentMethodPrepaidTheme.bottomVat,
+                      ),
                     ],
                   ),
                 ),
@@ -64,8 +68,10 @@ class GuestPaymentMethodBottomBar extends StatelessWidget {
                               color: Colors.white,
                             ),
                           )
-                        : Text('pay now',
-                            style: GuestPaymentMethodPrepaidTheme.payNow),
+                        : Text(
+                            'pay now',
+                            style: GuestPaymentMethodPrepaidTheme.payNow,
+                          ),
                   ),
                 ),
               ],

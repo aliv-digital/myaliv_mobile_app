@@ -7,8 +7,8 @@ class TopUpPrepaidNumberPostPaidRepository {
   TopUpPrepaidNumberPostPaidRepository({
     SendTopupRepository? sendTopupRepo,
     TopUpPrepaidRepository? topUpRepo,
-  })  : _sendTopupRepo = sendTopupRepo ?? instance<SendTopupRepository>(),
-        _topUpRepo = topUpRepo ?? TopUpPrepaidRepository();
+  }) : _sendTopupRepo = sendTopupRepo ?? instance<SendTopupRepository>(),
+       _topUpRepo = topUpRepo ?? TopUpPrepaidRepository();
 
   final SendTopupRepository _sendTopupRepo;
   final TopUpPrepaidRepository _topUpRepo;

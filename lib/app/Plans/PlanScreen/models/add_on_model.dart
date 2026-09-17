@@ -32,12 +32,12 @@ class HomePlanAddOnModel {
   }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'title': title,
-        'label': label,
-        'value': value,
-        'price': price,
-        'vatAmount': vatAmount,
-        'planTypeCode': planTypeCode,
-      };
+    'id': id,
+    'title': title,
+    'label': label,
+    'value': value,
+    'price': price,
+    'vatAmount': vatAmount,
+    'planTypeCode': planTypeCode,
+  };
 }

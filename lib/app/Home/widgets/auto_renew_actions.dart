@@ -42,17 +42,16 @@ Future<bool> handleAutoRenewToggle(
   );
   if (confirmed != true) return false;
 
-  final deviceId = instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+  final deviceId =
+      instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
   if (deviceId <= 0) {
-    AppToast.show(
-      message: 'Device info not available',
-      type: ToastType.error,
-    );
+    AppToast.show(message: 'Device info not available', type: ToastType.error);
     return false;
   }
 
-  final success =
-      await instance<DeviceLimitsCubit>().disableAutoRenew(deviceId);
+  final success = await instance<DeviceLimitsCubit>().disableAutoRenew(
+    deviceId,
+  );
 
   if (success) {
     AppToast.show(

@@ -33,10 +33,10 @@ class MifiAltContactRouteArgs extends Equatable {
 
   @override
   List<Object?> get props => [
-        selectedApiPlan,
-        fallbackPlan,
-        forceNow,
-        futurePlanStartDate,
-        prefilledAltNumber,
-      ];
+    selectedApiPlan,
+    fallbackPlan,
+    forceNow,
+    futurePlanStartDate,
+    prefilledAltNumber,
+  ];
 }

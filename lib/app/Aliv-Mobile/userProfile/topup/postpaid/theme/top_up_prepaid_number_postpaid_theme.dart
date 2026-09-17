@@ -36,17 +36,21 @@ class TopUpPrepaidNumberPostPaidTheme {
     color: textMuted,
   );
 
-  static InputDecoration fieldDecoration({required String hintText}) => InputDecoration(
-    hintText: hintText,
-    hintStyle: hint(),
-    filled: true,
-    fillColor: fieldBg,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(radius),
-      borderSide: BorderSide.none,
-    ),
-    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-  );
+  static InputDecoration fieldDecoration({required String hintText}) =>
+      InputDecoration(
+        hintText: hintText,
+        hintStyle: hint(),
+        filled: true,
+        fillColor: fieldBg,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radius),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
+      );
 
   static TextStyle amountText() => const TextStyle(
     fontFamily: fontFamily,

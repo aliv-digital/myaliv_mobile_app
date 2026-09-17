@@ -219,7 +219,7 @@ class _ReferralCodeBox extends StatelessWidget {
               borderRadius: BorderRadius.circular(100),
               onTap: () {
                 Clipboard.setData(ClipboardData(text: code));
-                AppToast.show(message: 'Copied',type: ToastType.success);
+                AppToast.show(message: 'Copied', type: ToastType.success);
                 // ScaffoldMessenger.of(
                 //   context,
                 // ).showSnackBar(const SnackBar(content: Text('Copied')));

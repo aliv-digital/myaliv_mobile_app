@@ -16,7 +16,6 @@ class ReceiptFailureCard extends StatelessWidget {
   final VoidCallback onBackHome;
   final Color pageBackground;
 
-
   @override
   Widget build(BuildContext context) {
     // Constants for card layout
@@ -29,7 +28,13 @@ class ReceiptFailureCard extends StatelessWidget {
     const double dividerH = 22;
     const double notchRadius = 10;
 
-    final double notchCenterY = cardPad + iconSize + gapAfterIcon + titleBoxH + gapAfterTitle + (dividerH / 2);
+    final double notchCenterY =
+        cardPad +
+        iconSize +
+        gapAfterIcon +
+        titleBoxH +
+        gapAfterTitle +
+        (dividerH / 2);
 
     return PhysicalShape(
       clipper: _TicketSideNotchClipper(
@@ -52,7 +57,7 @@ class ReceiptFailureCard extends StatelessWidget {
               height: iconSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                //  color: ReceiptTheme.circleBackground, // light red circle
+                  //  color: ReceiptTheme.circleBackground, // light red circle
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -78,21 +83,17 @@ class ReceiptFailureCard extends StatelessWidget {
             SizedBox(
               height: titleBoxH,
               child: Center(
-                child: Text(
-                  'Payment Failed',
-                  style: ReceiptTheme.failureTitle,
-                ),
+                child: Text('Payment Failed', style: ReceiptTheme.failureTitle),
               ),
             ),
 
             const SizedBox(height: gapAfterTitle),
 
             // Dashed line divider (no notch for the bottom line)
-           // const Padding(
-           //   padding: EdgeInsets.symmetric(horizontal: 6),
-           //   child: ReceiptTicketDivider(height: dividerH),
-           // ),
-
+            // const Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 6),
+            //   child: ReceiptTicketDivider(height: dividerH),
+            // ),
             const SizedBox(height: 10),
             Text(
               'There was a problem processing \nyour order.',
@@ -113,13 +114,13 @@ class ReceiptFailureCard extends StatelessWidget {
               textAlign: TextAlign.center,
               style: ReceiptTheme.failurePhone,
             ),
+
             // Details section (same as success card)
             //ReceiptDetailRow(label: 'top up', value: data.rightType, valueBold: true),
             //ReceiptDetailRow(label: 'date', value: data.dateText, valueBold: true),
             //ReceiptDetailRow(label: 'time', value: data.timeText, valueBold: true),
             //ReceiptDetailRow(label: 'phone no.', value: data.phoneNumber, valueBold: true),
             //ReceiptDetailRow(label: 'payment method', value: data.paymentMethod, valueBold: true),
-
             const SizedBox(height: 32),
 
             // Dashed line (no notches) at the bottom
@@ -131,17 +132,14 @@ class ReceiptFailureCard extends StatelessWidget {
               ),
             ),
 
-           // const SizedBox(height: 6),
-
-
+            // const SizedBox(height: 6),
 
             //const SizedBox(height: 10),
-
             const SizedBox(height: 32),
 
             // Back button to home
             ReceiptBackButton(onTap: onBackHome),
-            const SizedBox(height: 250)
+            const SizedBox(height: 250),
           ],
         ),
       ),
@@ -173,10 +171,7 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
 
     final holes = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: Offset(0, notchCenterY),
-          radius: notchRadius,
-        ),
+        Rect.fromCircle(center: Offset(0, notchCenterY), radius: notchRadius),
       )
       ..addOval(
         Rect.fromCircle(
@@ -195,4 +190,3 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
         oldClipper.notchCenterY != notchCenterY;
   }
 }
-

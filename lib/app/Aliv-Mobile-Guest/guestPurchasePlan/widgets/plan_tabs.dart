@@ -6,11 +6,7 @@ class PlanTabs extends StatelessWidget {
   final PlanTab selected;
   final ValueChanged<PlanTab> onChanged;
 
-  const PlanTabs({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
+  const PlanTabs({super.key, required this.selected, required this.onChanged});
 
   static const _tabs = <PlanTab, String>{
     PlanTab.daily: 'daily',
@@ -20,7 +16,7 @@ class PlanTabs extends StatelessWidget {
     PlanTab.roameasy: 'roameasy',
     PlanTab.addOns: 'add ons',
     PlanTab.mifi: 'mifi',
-    PlanTab.libertyGlobal: 'liberty global'
+    PlanTab.libertyGlobal: 'liberty global',
   };
 
   double _indicatorWidth(String label) {
@@ -70,9 +66,9 @@ class PlanTabs extends StatelessWidget {
                       SizedBox(
                         height: isActive
                             ? GuestPurchasePlanTheme
-                                .tabSelectedLabelToIndicatorGap
+                                  .tabSelectedLabelToIndicatorGap
                             : GuestPurchasePlanTheme
-                                .tabUnselectedLabelBottomGap,
+                                  .tabUnselectedLabelBottomGap,
                       ),
 
                       // ✅ purple indicator

@@ -10,11 +10,7 @@ class EnterPasswordPostpaidOrDivider extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(left: 38.0),
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: Color(0xFFE6E6EC),
-            ),
+            child: Divider(height: 1, thickness: 1, color: Color(0xFFE6E6EC)),
           ),
         ),
         SizedBox(width: 10),
@@ -31,11 +27,7 @@ class EnterPasswordPostpaidOrDivider extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: EdgeInsets.only(right: 38.0),
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: Color(0xFFE6E6EC),
-            ),
+            child: Divider(height: 1, thickness: 1, color: Color(0xFFE6E6EC)),
           ),
         ),
       ],

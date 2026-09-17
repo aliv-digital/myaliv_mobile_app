@@ -194,10 +194,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
     bloc.add(const GuestPayBillSubmitPressed());
 
     final confirmArgs = _buildConfirmArgs(state);
-    context.push(
-      AppRoutes.guestPayBillConfirm,
-      extra: confirmArgs,
-    );
+    context.push(AppRoutes.guestPayBillConfirm, extra: confirmArgs);
   }
 
   String _money(double amount) {
@@ -227,12 +224,15 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
     GuestPayBillState state,
   ) {
     final bool isBahamas = state.selectedCountry.isoCode == 'BS';
-    final List<TextInputFormatter>? phoneFormatters =
-        isBahamas ? const [BahamasPhoneInputFormatter()] : null;
-    final double mobileErrorLeftPadding = 60 +
+    final List<TextInputFormatter>? phoneFormatters = isBahamas
+        ? const [BahamasPhoneInputFormatter()]
+        : null;
+    final double mobileErrorLeftPadding =
+        60 +
         GuestPayBillTheme.countryPickerToInputGap +
         14; // picker width + gap + first-field input padding
-    final double confirmErrorLeftPadding = 60 +
+    final double confirmErrorLeftPadding =
+        60 +
         GuestPayBillTheme.countryPickerToInputGap +
         16; // picker width + gap + submit-row input container + input padding
 
@@ -245,12 +245,14 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         ? GuestPayBillTheme.errorText
         : GuestPayBillTheme.unfocusedInputBorderColor;
     final TextStyle mobileInputStyle = state.showMobileInvalidError
-        ? GuestPayBillTheme.inputTextStyle
-            .copyWith(color: GuestPayBillTheme.errorText)
+        ? GuestPayBillTheme.inputTextStyle.copyWith(
+            color: GuestPayBillTheme.errorText,
+          )
         : GuestPayBillTheme.inputTextStyle;
 
     // Same treatment for the confirm field, including mismatch state.
-    final bool confirmHasError = state.showConfirmMobileInvalidError ||
+    final bool confirmHasError =
+        state.showConfirmMobileInvalidError ||
         state.showConfirmMobileMismatchError;
     final bool showConfirmBorderError =
         !_hasConfirmMobileFocus && confirmHasError;
@@ -258,8 +260,9 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         ? GuestPayBillTheme.errorText
         : GuestPayBillTheme.unfocusedInputBorderColor;
     final TextStyle confirmInputStyle = confirmHasError
-        ? GuestPayBillTheme.inputTextStyle
-            .copyWith(color: GuestPayBillTheme.errorText)
+        ? GuestPayBillTheme.inputTextStyle.copyWith(
+            color: GuestPayBillTheme.errorText,
+          )
         : GuestPayBillTheme.inputTextStyle;
 
     return <Widget>[
@@ -293,10 +296,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         phoneInputStyle: mobileInputStyle,
         phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
         dialCodeStyle: GuestPayBillTheme.inputTextStyle,
-        flagStyle: const TextStyle(
-          fontSize: 18,
-          fontFamily: 'CircularPro',
-        ),
+        flagStyle: const TextStyle(fontSize: 18, fontFamily: 'CircularPro'),
       ),
       if (state.showMobileInvalidError) ...[
         const SizedBox(height: 6),
@@ -371,24 +371,19 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
     GuestPayBillState state,
   ) {
     return <Widget>[
-      Text(
-        state.accountIdentifierLabel,
-        style: GuestPayBillTheme.labelStyle(),
-      ),
+      Text(state.accountIdentifierLabel, style: GuestPayBillTheme.labelStyle()),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       GuestPayBillFocusedTextField(
         hint: state.accountIdentifierHint,
-        keyboardType:
-            state.isAlivFibr ? TextInputType.text : TextInputType.number,
+        keyboardType: state.isAlivFibr
+            ? TextInputType.text
+            : TextInputType.number,
         onChanged: (value) {
           _onAccountNumberChanged(context, value);
         },
       ),
       const SizedBox(height: GuestPayBillTheme.sectionGap),
-      Text(
-        GuestPayBillTheme.nameLabel,
-        style: GuestPayBillTheme.labelStyle(),
-      ),
+      Text(GuestPayBillTheme.nameLabel, style: GuestPayBillTheme.labelStyle()),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
       GuestPayBillInlineVerifyField(
         hint: GuestPayBillTheme.nameHintText,
@@ -430,12 +425,13 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
           child: Column(
             children: <Widget>[
               DefaultAppBar(
-                  title: GuestPayBillTheme.appBarTitle,
-                  backgroundColor: GuestPayBillTheme.primary,
-                  onBack: () {
-                    context.pop();
-                  },
-                  onHomeTap: () => context.go(AppRoutes.logIn)),
+                title: GuestPayBillTheme.appBarTitle,
+                backgroundColor: GuestPayBillTheme.primary,
+                onBack: () {
+                  context.pop();
+                },
+                onHomeTap: () => context.go(AppRoutes.logIn),
+              ),
               Expanded(
                 child: BlocBuilder<GuestPayBillBloc, GuestPayBillState>(
                   builder: (context, state) {
@@ -458,7 +454,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                             text: GuestPayBillTheme.selectServiceLabel,
                           ),
                           const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
+                            height: GuestPayBillTheme.labelToFieldGap,
+                          ),
                           GuestPayBillServiceDropdown(
                             services: state.services,
                             selected: state.selectedService,
@@ -467,7 +464,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                             },
                           ),
                           const SizedBox(
-                              height: GuestPayBillTheme.labelToFieldGap),
+                            height: GuestPayBillTheme.labelToFieldGap,
+                          ),
                           Text(
                             GuestPayBillTheme.selectServiceHelperText,
                             style: GuestPayBillTheme.helperStyle(),
@@ -487,25 +485,30 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                             else
                               ..._buildNonPostpaidFields(context, state),
                             const SizedBox(
-                                height: GuestPayBillTheme.sectionGap),
+                              height: GuestPayBillTheme.sectionGap,
+                            ),
                             Text(
                               GuestPayBillTheme.accountStatusLabel,
                               style: GuestPayBillTheme.labelStyle(),
                             ),
                             const SizedBox(
-                                height: GuestPayBillTheme.labelToFieldGap),
+                              height: GuestPayBillTheme.labelToFieldGap,
+                            ),
                             GuestPayBillReadOnlyBox(
-                              text: state.accountInfo?.status ??
+                              text:
+                                  state.accountInfo?.status ??
                                   GuestPayBillTheme.statusPlaceholderText,
                             ),
                             const SizedBox(
-                                height: GuestPayBillTheme.sectionGap),
+                              height: GuestPayBillTheme.sectionGap,
+                            ),
                             Text(
                               GuestPayBillTheme.accountBalanceLabel,
                               style: GuestPayBillTheme.labelStyle(),
                             ),
                             const SizedBox(
-                                height: GuestPayBillTheme.labelToFieldGap),
+                              height: GuestPayBillTheme.labelToFieldGap,
+                            ),
                             Text(
                               state.accountInfo?.balance == null
                                   ? GuestPayBillTheme.statusPlaceholderText
@@ -513,19 +516,21 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               style: GuestPayBillTheme.accountBalanceValueStyle,
                             ),
                             const SizedBox(
-                                height: GuestPayBillTheme.sectionGap),
+                              height: GuestPayBillTheme.sectionGap,
+                            ),
                             Text(
                               GuestPayBillTheme.customAmountLabel,
                               style: GuestPayBillTheme.labelStyle(),
                             ),
                             const SizedBox(
-                                height: GuestPayBillTheme.labelToFieldGap),
+                              height: GuestPayBillTheme.labelToFieldGap,
+                            ),
                             GuestPayBillFocusedTextField(
                               hint: GuestPayBillTheme.amountHintText,
                               keyboardType:
                                   const TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
+                                    decimal: true,
+                                  ),
                               prefix: state.amountText.isEmpty
                                   ? null
                                   : Padding(
@@ -537,8 +542,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                                       ),
                                       child: Text(
                                         r'$',
-                                        style: GuestPayBillTheme
-                                            .amountPrefixStyle,
+                                        style:
+                                            GuestPayBillTheme.amountPrefixStyle,
                                       ),
                                     ),
                               onChanged: (value) {
@@ -546,10 +551,12 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               },
                             ),
                             const SizedBox(
-                                height: GuestPayBillTheme.submitTopGap),
+                              height: GuestPayBillTheme.submitTopGap,
+                            ),
                             GuestPayBillPrimarySubmitButton(
                               enabled: state.canSubmit,
-                              loading: state.submitStatus ==
+                              loading:
+                                  state.submitStatus ==
                                   GuestPayBillSubmitStatus.loading,
                               onTap: () {
                                 _onSubmitPressed(context, state);

@@ -8,28 +8,35 @@ class PurchasePrepaidBloc
   final PurchasePrepaidRepository repo;
 
   PurchasePrepaidBloc({required this.repo})
-      : super(PurchasePrepaidState.initial()) {
+    : super(PurchasePrepaidState.initial()) {
     on<PurchasePrepaidStarted>(_onStarted);
     on<PurchasePrepaidItemTapped>(_onItemTapped);
     on<PurchasePrepaidNavigationConsumed>(_onNavConsumed);
   }
 
   Future<void> _onStarted(
-      PurchasePrepaidStarted event, Emitter<PurchasePrepaidState> emit) async {
-    emit(state.copyWith(
-        status: PurchasePrepaidLoadStatus.loading, clearError: true));
+    PurchasePrepaidStarted event,
+    Emitter<PurchasePrepaidState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: PurchasePrepaidLoadStatus.loading,
+        clearError: true,
+      ),
+    );
 
     try {
       final items = await repo.fetchMenuItems(isPrepaid: event.isPrepaid);
-      emit(state.copyWith(
-        status: PurchasePrepaidLoadStatus.ready,
-        items: items,
-      ));
+      emit(
+        state.copyWith(status: PurchasePrepaidLoadStatus.ready, items: items),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: PurchasePrepaidLoadStatus.failure,
-        errorMessage: 'Failed to load purchases menu',
-      ));
+      emit(
+        state.copyWith(
+          status: PurchasePrepaidLoadStatus.failure,
+          errorMessage: 'Failed to load purchases menu',
+        ),
+      );
     }
   }
 
@@ -41,8 +48,10 @@ class PurchasePrepaidBloc
     emit(state.copyWith(navigateTo: event.action));
   }
 
-  void _onNavConsumed(PurchasePrepaidNavigationConsumed event,
-      Emitter<PurchasePrepaidState> emit) {
+  void _onNavConsumed(
+    PurchasePrepaidNavigationConsumed event,
+    Emitter<PurchasePrepaidState> emit,
+  ) {
     emit(state.copyWith(clearNavigation: true));
   }
 }

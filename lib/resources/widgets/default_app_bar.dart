@@ -130,49 +130,50 @@ class DefaultAppBar extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: overlay,
       child: Material(
-      color: resolvedBackground,
-      elevation: elevationShadow ? 6 : 0,
-      child: Padding(
-        padding: EdgeInsets.only(top: topInset),
-        child: Container(
-        height: height,
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  _buildLeading(context),
-                  if (_hasVisibleLeading)
-                    SizedBox(width: leadingToTitleSpacing),
-                  Expanded(
-                    child: Align(
-                      alignment: _titleAlign(),
-                      child: Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: titleStyle,
-                        textAlign:
-                            centerTitle ? TextAlign.left : TextAlign.left,
+        color: resolvedBackground,
+        elevation: elevationShadow ? 6 : 0,
+        child: Padding(
+          padding: EdgeInsets.only(top: topInset),
+          child: Container(
+            height: height,
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      _buildLeading(context),
+                      if (_hasVisibleLeading)
+                        SizedBox(width: leadingToTitleSpacing),
+                      Expanded(
+                        child: Align(
+                          alignment: _titleAlign(),
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: titleStyle,
+                            textAlign: centerTitle
+                                ? TextAlign.left
+                                : TextAlign.left,
+                          ),
+                        ),
                       ),
-                    ),
+                      _buildTrailing(context),
+                    ],
                   ),
-                  _buildTrailing(context),
-                ],
-              ),
+                ),
+                if (showBottomDivider)
+                  Container(
+                    height: 1,
+                    width: double.infinity,
+                    color: bottomDividerColor,
+                  ),
+              ],
             ),
-            if (showBottomDivider)
-              Container(
-                height: 1,
-                width: double.infinity,
-                color: bottomDividerColor,
-              ),
-          ],
+          ),
         ),
-      ),
-      ),
       ),
     );
   }
@@ -224,10 +225,7 @@ class DefaultAppBar extends StatelessWidget {
     if (trailing != null) {
       return SizedBox(
         width: 88,
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: trailing,
-        ),
+        child: Align(alignment: Alignment.centerRight, child: trailing),
       );
     }
 
@@ -235,21 +233,21 @@ class DefaultAppBar extends StatelessWidget {
 
     // ✅ Home (notification এর মতো)
     if (showHome) {
-      actions.add(_HomeButton(
-        icon: homeIcon,
-        count: homeCount,
-        onTap: onHomeTap,
-      ));
+      actions.add(
+        _HomeButton(icon: homeIcon, count: homeCount, onTap: onHomeTap),
+      );
     }
 
     // Notification
     if (showNotification) {
-      actions.add(_NotificationButton(
-        icon: notificationIcon,
-        count: notificationCount,
-        onTap: onNotificationTap,
-        showDotWhenZero: showNotificationDotWhenZero,
-      ));
+      actions.add(
+        _NotificationButton(
+          icon: notificationIcon,
+          count: notificationCount,
+          onTap: onNotificationTap,
+          showDotWhenZero: showNotificationDotWhenZero,
+        ),
+      );
     }
 
     // Text action (e.g., "skip")
@@ -262,7 +260,8 @@ class DefaultAppBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             child: Text(
               actionText!,
-              style: actionTextStyle ??
+              style:
+                  actionTextStyle ??
                   const TextStyle(
                     fontFamily: AppConstants.defaultFontFamily,
                     fontSize: 16,
@@ -286,10 +285,7 @@ class DefaultAppBar extends StatelessWidget {
       width: 88,
       child: Align(
         alignment: Alignment.centerRight,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: actions,
-        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: actions),
       ),
     );
   }
@@ -339,8 +335,10 @@ class _HomeButton extends StatelessWidget {
                 right: -2,
                 top: -2,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
                     borderRadius: BorderRadius.circular(999),
@@ -412,8 +410,10 @@ class _NotificationButton extends StatelessWidget {
                 right: -2,
                 top: -2,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE62B2F),
                     borderRadius: BorderRadius.circular(999),

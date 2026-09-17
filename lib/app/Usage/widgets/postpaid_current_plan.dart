@@ -10,10 +10,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 class PostpaidCurrentPlan extends StatelessWidget {
   final bool showRenewButton;
 
-  const PostpaidCurrentPlan({
-    super.key,
-    this.showRenewButton = true,
-  });
+  const PostpaidCurrentPlan({super.key, this.showRenewButton = true});
 
   static const Color red = Color(0xFFD94B4B);
   static const Color redDark = Color(0xFFCC3F3F);

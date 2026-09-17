@@ -43,11 +43,11 @@ class BalanceThresholdSettingsRequest {
   }
 
   Map<String, dynamic> toJson() => {
-        'RoamingLowBalanceThreshold': roamingLowBalanceThreshold,
-        'BalanceThreshold': balanceThreshold,
-        'RoamingTopUpAmount': roamingTopUpAmount,
-        'AutoTopUpAmount': autoTopUpAmount,
-        'AutoTopUp': autoTopUp,
-        'token': token,
-      };
+    'RoamingLowBalanceThreshold': roamingLowBalanceThreshold,
+    'BalanceThreshold': balanceThreshold,
+    'RoamingTopUpAmount': roamingTopUpAmount,
+    'AutoTopUpAmount': autoTopUpAmount,
+    'AutoTopUp': autoTopUp,
+    'token': token,
+  };
 }

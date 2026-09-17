@@ -43,8 +43,9 @@ class StripedScaffold extends StatelessWidget {
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     final showStripes = !keyboardOpen;
 
-    final reservedBottom =
-        (stripesReserveSpace && showStripes) ? BottomStripes.kHeight : 0.0;
+    final reservedBottom = (stripesReserveSpace && showStripes)
+        ? BottomStripes.kHeight
+        : 0.0;
 
     return Scaffold(
       backgroundColor: backgroundColor,

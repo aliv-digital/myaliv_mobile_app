@@ -50,8 +50,8 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
         //  optional: show error if user presses continue without accepting terms
         if (state.showTermsError == true) {
           AppToast.show(
-              message: 'Please accept Terms & Conditions',
-              type: ToastType.error
+            message: 'Please accept Terms & Conditions',
+            type: ToastType.error,
           );
           // ScaffoldMessenger.of(context).showSnackBar(
           //   const SnackBar(content: Text()),

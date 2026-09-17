@@ -27,21 +27,24 @@ class ExpiryDropdown extends StatelessWidget {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down, color: AddOrEditCardsPrepaidTheme.textDark),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: AddOrEditCardsPrepaidTheme.textDark,
+          ),
           items: items
               .map(
                 (e) => DropdownMenuItem<String>(
-              value: e,
-              child: Text(
-                e,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AddOrEditCardsPrepaidTheme.textDark,
+                  value: e,
+                  child: Text(
+                    e,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AddOrEditCardsPrepaidTheme.textDark,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
+              )
               .toList(),
           onChanged: (v) {
             if (v != null) onChanged(v);

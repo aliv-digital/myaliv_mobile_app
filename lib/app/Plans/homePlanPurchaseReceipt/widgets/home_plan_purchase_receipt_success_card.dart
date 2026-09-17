@@ -44,7 +44,8 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
     const double notchRadius = 10;
 
     // Notch should align with the FIRST divider center (after Payment Success!)
-    final double notchCenterY = cardPad +
+    final double notchCenterY =
+        cardPad +
         iconSize +
         gapAfterIcon +
         titleBoxH +
@@ -82,8 +83,11 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
                       color: Color(0xFF23A26D),
                       shape: BoxShape.circle,
                     ),
-                    child:
-                        const Icon(Icons.check, color: Colors.white, size: 18),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
               ),
@@ -197,10 +201,7 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
     // notch circles centered on the side edges (x=0, x=width) so they cut inward
     final holes = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: Offset(0, notchCenterY),
-          radius: notchRadius,
-        ),
+        Rect.fromCircle(center: Offset(0, notchCenterY), radius: notchRadius),
       )
       ..addOval(
         Rect.fromCircle(

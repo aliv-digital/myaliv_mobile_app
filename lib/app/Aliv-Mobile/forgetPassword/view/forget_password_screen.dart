@@ -63,7 +63,10 @@ class _ForgetPasswordScreenView extends StatelessWidget {
 
             if (state.status == ForgetPasswordStatus.failure &&
                 state.errorMessage != null) {
-              AppToast.show(message: state.errorMessage!, type: ToastType.error);
+              AppToast.show(
+                message: state.errorMessage!,
+                type: ToastType.error,
+              );
             }
           },
           child: CustomScrollView(
@@ -78,25 +81,30 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const ForgetPasswordPhoneRow(),
-                      const SizedBox(height: ForgetPasswordSizes.phoneToSendGap),
+                      const SizedBox(
+                        height: ForgetPasswordSizes.phoneToSendGap,
+                      ),
 
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) => prev.status != curr.status,
                         builder: (context, state) {
                           return DefaultButton(
                             label: 'send',
-                            isLoading: state.status == ForgetPasswordStatus.loading,
+                            isLoading:
+                                state.status == ForgetPasswordStatus.loading,
                             textStyle: ForgetPasswordTheme.sendButton,
                             onPressed: () {
-                              context
-                                  .read<ForgetPasswordBloc>()
-                                  .add(const ForgetPasswordSubmitted());
+                              context.read<ForgetPasswordBloc>().add(
+                                const ForgetPasswordSubmitted(),
+                              );
                             },
                           );
                         },
                       ),
 
-                      const SizedBox(height: ForgetPasswordSizes.sendToTermsGap),
+                      const SizedBox(
+                        height: ForgetPasswordSizes.sendToTermsGap,
+                      ),
 
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) =>
@@ -110,9 +118,16 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                               await showTermsAndConditionsModal(context);
                             },
                             onPrivacyTap: () async {
-                              final uri = Uri.parse('https://www.bealiv.com/privacy-policy/');
-                              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-                                throw Exception('Could not open privacy policy');
+                              final uri = Uri.parse(
+                                'https://www.bealiv.com/privacy-policy/',
+                              );
+                              if (!await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              )) {
+                                throw Exception(
+                                  'Could not open privacy policy',
+                                );
                               }
                             },
                           );

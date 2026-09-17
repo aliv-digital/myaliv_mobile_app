@@ -8,10 +8,12 @@ Parameter:
 */
 class GradientText extends StatelessWidget {
   const GradientText(
-      this.text, {super.key,
-        required this.gradient,
-        this.style,  this.textAlignment,
-      });
+    this.text, {
+    super.key,
+    required this.gradient,
+    this.style,
+    this.textAlignment,
+  });
 
   final String text;
   final TextStyle? style;
@@ -25,7 +27,11 @@ class GradientText extends StatelessWidget {
       shaderCallback: (bounds) => gradient.createShader(
         Rect.fromLTWH(0, 0, bounds.width, bounds.height),
       ),
-      child: Text(text, style: style,textAlign:textAlignment ?? TextAlign.left,),
+      child: Text(
+        text,
+        style: style,
+        textAlign: textAlignment ?? TextAlign.left,
+      ),
     );
   }
 }

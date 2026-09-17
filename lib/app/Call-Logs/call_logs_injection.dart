@@ -45,7 +45,8 @@ Future<void> setupCallLogsInjection() async {
   // Register Transactions repository
   if (!instance.isRegistered<TransactionsRepository>()) {
     instance.registerLazySingleton<TransactionsRepository>(
-      () => TransactionsRepository(apiClient: instance<TransactionsApiClient>()),
+      () =>
+          TransactionsRepository(apiClient: instance<TransactionsApiClient>()),
     );
   }
 

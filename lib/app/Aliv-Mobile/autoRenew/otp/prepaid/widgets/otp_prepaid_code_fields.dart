@@ -44,8 +44,9 @@ class _OtpAutoRenewPrepaidCodeFieldsState
     if (value.length > 1) {
       value = value.characters.last;
       _controllers[index].text = value;
-      _controllers[index].selection =
-          TextSelection.collapsed(offset: value.length);
+      _controllers[index].selection = TextSelection.collapsed(
+        offset: value.length,
+      );
     }
 
     if (value.isNotEmpty && index < lastFieldIndex) {
@@ -55,9 +56,9 @@ class _OtpAutoRenewPrepaidCodeFieldsState
     }
 
     final code = _controllers.map((c) => c.text).join();
-    context
-        .read<OtpAutoRenewPrepaidBloc>()
-        .add(OtpAutoRenewPrepaidCodeChanged(code));
+    context.read<OtpAutoRenewPrepaidBloc>().add(
+      OtpAutoRenewPrepaidCodeChanged(code),
+    );
   }
 
   @override
@@ -124,7 +125,8 @@ class _OtpBox extends StatelessWidget {
               ),
             ),
             padding: const EdgeInsets.all(
-                OtpAutoRenewPrepaidTheme.otpBoxBorderWidth),
+              OtpAutoRenewPrepaidTheme.otpBoxBorderWidth,
+            ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(innerRadius),
               child: ColoredBox(

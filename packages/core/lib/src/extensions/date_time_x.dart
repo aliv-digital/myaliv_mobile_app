@@ -17,9 +17,8 @@ extension DateTimeX on DateTime {
   String formatDdMmmYyyyHm() =>
       DateFormat('dd MMM yyyy, hh:mm a').format(toDeviceLocal());
 
-/// `dd MMM yyyy`, rendered in the device timezone.
-String formatDdMmmYyyy() =>
-    DateFormat('dd MMM yyyy').format(toDeviceLocal());
+  /// `dd MMM yyyy`, rendered in the device timezone.
+  String formatDdMmmYyyy() => DateFormat('dd MMM yyyy').format(toDeviceLocal());
 }
 
 extension NullableDateTimeX on DateTime? {

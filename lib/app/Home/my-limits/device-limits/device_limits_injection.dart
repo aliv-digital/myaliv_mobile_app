@@ -15,17 +15,14 @@ Future<void> setupDeviceLimitsInjection() async {
   // ========== Services Layer ==========
 
   instance.registerLazySingleton<DeviceLimitsApiService>(
-    () => DeviceLimitsApiService(
-      networkService: instance<NetworkService>(),
-    ),
+    () => DeviceLimitsApiService(networkService: instance<NetworkService>()),
   );
 
   // ========== Repository Layer ==========
 
   instance.registerLazySingleton<DeviceLimitsRepository>(
-    () => DeviceLimitsRepository(
-      apiService: instance<DeviceLimitsApiService>(),
-    ),
+    () =>
+        DeviceLimitsRepository(apiService: instance<DeviceLimitsApiService>()),
   );
 
   // ========== State Management Layer ==========

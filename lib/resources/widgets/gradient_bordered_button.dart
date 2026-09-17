@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class MyOutlinedButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
@@ -17,8 +18,6 @@ class MyOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-        decoration: BoxDecoration(gradient: gradient));
-
+    return DecoratedBox(decoration: BoxDecoration(gradient: gradient));
   }
 }

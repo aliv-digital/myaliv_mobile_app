@@ -5,7 +5,7 @@ import 'services/alt_number_validation_api_client.dart';
 
 class AltNumberValidationRepository {
   AltNumberValidationRepository({AltNumberValidationApiClient? apiClient})
-      : _apiClient = apiClient ?? AltNumberValidationApiClient();
+    : _apiClient = apiClient ?? AltNumberValidationApiClient();
 
   final AltNumberValidationApiClient _apiClient;
 
@@ -16,9 +16,7 @@ class AltNumberValidationRepository {
   Future<bool> validate(String altNumber) async {
     final trimmed = altNumber.trim();
     if (trimmed.isEmpty) {
-      throw const AltNumberValidationException(
-        'please enter a mobile number.',
-      );
+      throw const AltNumberValidationException('please enter a mobile number.');
     }
 
     try {
@@ -46,9 +44,7 @@ class AltNumberValidationRepository {
   Future<bool> updateAltNumber(String altNumber) async {
     final trimmed = altNumber.trim();
     if (trimmed.isEmpty) {
-      throw const AltNumberValidationException(
-        'please enter a mobile number.',
-      );
+      throw const AltNumberValidationException('please enter a mobile number.');
     }
 
     try {
@@ -81,9 +77,7 @@ class AltNumberValidationRepository {
   }) async {
     final trimmed = altNumber.trim();
     if (trimmed.isEmpty) {
-      throw const AltNumberValidationException(
-        'please enter a mobile number.',
-      );
+      throw const AltNumberValidationException('please enter a mobile number.');
     }
     if (deviceAccountId <= 0) {
       throw const AltNumberValidationException(
@@ -107,9 +101,7 @@ class AltNumberValidationRepository {
       throw AltNumberValidationException(_optInErrorMessage(e));
     } catch (e) {
       if (kDebugMode) {
-        debugPrint(
-          'AltNumberValidationRepository.setMarketingOptIn: error $e',
-        );
+        debugPrint('AltNumberValidationRepository.setMarketingOptIn: error $e');
       }
       throw const AltNumberValidationException(
         'could not save your offers preference. please try again.',

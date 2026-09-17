@@ -35,5 +35,11 @@ class GuestTopUpState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, amount, phoneNumber, confirmPhoneNumber];
+  List<Object?> get props => [
+    status,
+    errorMessage,
+    amount,
+    phoneNumber,
+    confirmPhoneNumber,
+  ];
 }

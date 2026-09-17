@@ -60,12 +60,12 @@ class RoamingPlanConfirmationState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        routeArgs,
-        data,
-        errorMessage,
-        openTermsRequestId,
-        payNowRequestId,
-        isTermsChecked,
-      ];
+    status,
+    routeArgs,
+    data,
+    errorMessage,
+    openTermsRequestId,
+    payNowRequestId,
+    isTermsChecked,
+  ];
 }

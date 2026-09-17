@@ -53,15 +53,16 @@ class DefaultButton extends StatelessWidget {
     final Color bgColor = backgroundColor ?? ColorManager.defaultButtonColor;
     final Color resolvedTextColor =
         textColor ?? textStyle?.color ?? Colors.white;
-    final TextStyle resolvedTextStyle = (textStyle ??
-            TextStyle(
-              fontSize: fontSize,
-              fontFamily: 'CircularPro',
-              fontWeight: fontWeight,
+    final TextStyle resolvedTextStyle =
+        (textStyle ??
+                TextStyle(
+                  fontSize: fontSize,
+                  fontFamily: 'CircularPro',
+                  fontWeight: fontWeight,
 
-              height: 1.80,
-            ))
-        .copyWith(color: resolvedTextColor);
+                  height: 1.80,
+                ))
+            .copyWith(color: resolvedTextColor);
 
     return SizedBox(
       height: height,
@@ -94,10 +95,7 @@ class DefaultButton extends StatelessWidget {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : Text(
-                label,
-                style: resolvedTextStyle,
-              ),
+            : Text(label, style: resolvedTextStyle),
       ),
     );
   }

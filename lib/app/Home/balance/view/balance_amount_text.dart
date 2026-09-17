@@ -13,11 +13,7 @@ class BalanceAmountText extends StatelessWidget {
   final BalanceType type;
   final TextStyle? style;
 
-  const BalanceAmountText({
-    super.key,
-    required this.type,
-    this.style,
-  });
+  const BalanceAmountText({super.key, required this.type, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +25,8 @@ class BalanceAmountText extends StatelessWidget {
 
         return Text(
           BalanceCurrencyFormatterService.format(balance),
-          style: style ??
+          style:
+              style ??
               const TextStyle(
                 color: Color(0xFF5045A7),
                 fontSize: 24,

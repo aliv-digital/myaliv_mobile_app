@@ -32,11 +32,11 @@ class BalanceModel {
 
   /// Serialize for HydratedBloc persistence.
   Map<String, dynamic> toJson() => {
-        'walletBalance': walletBalance,
-        'bonusBalance': bonusBalance,
-        'bonusDetails': bonusDetails.map((b) => b.toJson()).toList(),
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'walletBalance': walletBalance,
+    'bonusBalance': bonusBalance,
+    'bonusDetails': bonusDetails.map((b) => b.toJson()).toList(),
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
   /// Rehydrate from disk. Null-safe on missing keys so older payloads
   /// don't crash when the model gains fields later.
@@ -44,18 +44,19 @@ class BalanceModel {
     final rawBonusList = json['bonusDetails'];
     final bonusList = rawBonusList is List
         ? rawBonusList
-            .whereType<Map>()
-            .map((e) => BonusDetail.fromStoredJson(
-                  Map<String, dynamic>.from(e),
-                ))
-            .toList()
+              .whereType<Map>()
+              .map(
+                (e) => BonusDetail.fromStoredJson(Map<String, dynamic>.from(e)),
+              )
+              .toList()
         : const <BonusDetail>[];
 
     return BalanceModel(
       walletBalance: (json['walletBalance'] as num?)?.toDouble() ?? 0.0,
       bonusBalance: (json['bonusBalance'] as num?)?.toDouble() ?? 0.0,
       bonusDetails: bonusList,
-      fetchedAt: DateTime.tryParse(json['fetchedAt'] as String? ?? '') ??
+      fetchedAt:
+          DateTime.tryParse(json['fetchedAt'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
     );
   }
@@ -134,14 +135,14 @@ class BonusDetail {
 
   /// Serialize for HydratedBloc persistence. Keys mirror API for consistency.
   Map<String, dynamic> toJson() => {
-        'BalanceNameID': balanceNameId,
-        'BalanceAmount': balanceAmount,
-        'BalanceType': balanceType,
-        'BalanceDisplayName': displayName,
-        'BalanceDescription': description,
-        'DaysToExpiration': daysToExpiration,
-        'IsActive': isActive,
-      };
+    'BalanceNameID': balanceNameId,
+    'BalanceAmount': balanceAmount,
+    'BalanceType': balanceType,
+    'BalanceDisplayName': displayName,
+    'BalanceDescription': description,
+    'DaysToExpiration': daysToExpiration,
+    'IsActive': isActive,
+  };
 
   /// Rehydrate from disk (null-safe on missing keys).
   factory BonusDetail.fromStoredJson(Map<String, dynamic> json) {

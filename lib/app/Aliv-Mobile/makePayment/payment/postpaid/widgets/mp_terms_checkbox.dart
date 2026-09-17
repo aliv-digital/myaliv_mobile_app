@@ -47,9 +47,7 @@ class MpTermsCheckbox extends StatelessWidget {
               text: TextSpan(
                 style: MakePaymentPostPaidTheme.termsText,
                 children: [
-                  const TextSpan(
-                    text: 'By checking this box, I agree to the ',
-                  ),
+                  const TextSpan(text: 'By checking this box, I agree to the '),
                   TextSpan(
                     text: 'Terms & Conditions.',
                     style: MakePaymentPostPaidTheme.termsLink,

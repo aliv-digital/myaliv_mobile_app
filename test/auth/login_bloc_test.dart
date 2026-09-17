@@ -44,11 +44,11 @@ LoginBloc _buildBloc({
 }
 
 TokenSession _fakeSession() => TokenSession(
-      accessToken: 'access',
-      refreshToken: 'refresh',
-      accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
-      refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
-    );
+  accessToken: 'access',
+  refreshToken: 'refresh',
+  accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
+  refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
+);
 
 void main() {
   late MockLoginRepository repository;
@@ -126,10 +126,12 @@ void main() {
       build: () => _buildBloc(repository: repository),
       seed: () => const LoginState(phone: '', password: ''),
       act: (bloc) => bloc.add(const LoginSubmitted()),
-      verify: (_) => verifyNever(() => repository.login(
-            username: any(named: 'username'),
-            password: any(named: 'password'),
-          )),
+      verify: (_) => verifyNever(
+        () => repository.login(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+        ),
+      ),
     );
   });
 
@@ -157,16 +159,22 @@ void main() {
     blocTest<LoginBloc, LoginState>(
       'emits [loading, success(needsOtp)] on MFA challenge',
       build: () {
-        when(() => repository.login(
-              username: any(named: 'username'),
-              password: any(named: 'password'),
-            )).thenAnswer((_) async => const LoginMfaChallenge(mfaToken: 'mfa123'));
+        when(
+          () => repository.login(
+            username: any(named: 'username'),
+            password: any(named: 'password'),
+          ),
+        ).thenAnswer((_) async => const LoginMfaChallenge(mfaToken: 'mfa123'));
         return _buildBloc(repository: repository);
       },
       seed: () => const LoginState(phone: validPhone, password: password),
       act: (bloc) => bloc.add(const LoginSubmitted()),
       expect: () => [
-        isA<LoginState>().having((s) => s.status, 'status', LoginStatus.loading),
+        isA<LoginState>().having(
+          (s) => s.status,
+          'status',
+          LoginStatus.loading,
+        ),
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.success)
             .having((s) => s.outcome, 'outcome', LoginOutcome.needsOtp)
@@ -177,16 +185,22 @@ void main() {
     blocTest<LoginBloc, LoginState>(
       'emits [loading, success(authenticated)] on direct login',
       build: () {
-        when(() => repository.login(
-              username: any(named: 'username'),
-              password: any(named: 'password'),
-            )).thenAnswer((_) async => LoginSuccess(_fakeSession()));
+        when(
+          () => repository.login(
+            username: any(named: 'username'),
+            password: any(named: 'password'),
+          ),
+        ).thenAnswer((_) async => LoginSuccess(_fakeSession()));
         return _buildBloc(repository: repository);
       },
       seed: () => const LoginState(phone: validPhone, password: password),
       act: (bloc) => bloc.add(const LoginSubmitted()),
       expect: () => [
-        isA<LoginState>().having((s) => s.status, 'status', LoginStatus.loading),
+        isA<LoginState>().having(
+          (s) => s.status,
+          'status',
+          LoginStatus.loading,
+        ),
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.success)
             .having((s) => s.outcome, 'outcome', LoginOutcome.authenticated),
@@ -196,16 +210,22 @@ void main() {
     blocTest<LoginBloc, LoginState>(
       'emits [loading, failure] with "Invalid Credentials" on FailedUsernameOrPassword',
       build: () {
-        when(() => repository.login(
-              username: any(named: 'username'),
-              password: any(named: 'password'),
-            )).thenThrow(Exception('FailedUsernameOrPassword'));
+        when(
+          () => repository.login(
+            username: any(named: 'username'),
+            password: any(named: 'password'),
+          ),
+        ).thenThrow(Exception('FailedUsernameOrPassword'));
         return _buildBloc(repository: repository);
       },
       seed: () => const LoginState(phone: validPhone, password: password),
       act: (bloc) => bloc.add(const LoginSubmitted()),
       expect: () => [
-        isA<LoginState>().having((s) => s.status, 'status', LoginStatus.loading),
+        isA<LoginState>().having(
+          (s) => s.status,
+          'status',
+          LoginStatus.loading,
+        ),
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.failure)
             .having(
@@ -219,23 +239,25 @@ void main() {
     blocTest<LoginBloc, LoginState>(
       'emits [loading, failure] with lockout message on FailedUsernameIsLocked',
       build: () {
-        when(() => repository.login(
-              username: any(named: 'username'),
-              password: any(named: 'password'),
-            )).thenThrow(Exception('FailedUsernameIsLocked'));
+        when(
+          () => repository.login(
+            username: any(named: 'username'),
+            password: any(named: 'password'),
+          ),
+        ).thenThrow(Exception('FailedUsernameIsLocked'));
         return _buildBloc(repository: repository);
       },
       seed: () => const LoginState(phone: validPhone, password: password),
       act: (bloc) => bloc.add(const LoginSubmitted()),
       expect: () => [
-        isA<LoginState>().having((s) => s.status, 'status', LoginStatus.loading),
+        isA<LoginState>().having(
+          (s) => s.status,
+          'status',
+          LoginStatus.loading,
+        ),
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.failure)
-            .having(
-              (s) => s.errorMessage,
-              'errorMessage',
-              contains('locked'),
-            ),
+            .having((s) => s.errorMessage, 'errorMessage', contains('locked')),
       ],
     );
   });

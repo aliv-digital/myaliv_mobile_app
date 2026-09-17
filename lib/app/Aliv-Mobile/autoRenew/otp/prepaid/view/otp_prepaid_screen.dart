@@ -15,9 +15,8 @@ class OtpAutoRenewPrepaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => OtpAutoRenewPrepaidBloc(
-        repository: OtpAutoRenewPrepaidRepository(),
-      ),
+      create: (_) =>
+          OtpAutoRenewPrepaidBloc(repository: OtpAutoRenewPrepaidRepository()),
       child: const _OtpAutoRenewPrepaidView(),
     );
   }
@@ -48,40 +47,35 @@ class _OtpAutoRenewPrepaidView extends StatelessWidget {
             // if (state.status == OtpAutoRenewPrepaidStatus.success) { ... }
           },
           child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    const SliverToBoxAdapter(
-                      child: OtpAutoRenewPrepaidHeader(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding:
-                            OtpAutoRenewPrepaidTheme.contentHorizontalPadding,
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(
-                              height:
-                                  OtpAutoRenewPrepaidTheme.topGapBeforeOtpBoxes,
-                            ),
-                            OtpAutoRenewPrepaidCodeFields(),
-                            SizedBox(
-                              height: OtpAutoRenewPrepaidTheme
-                                  .otpBoxesToBottomActionsGap,
-                            ),
-                            OtpAutoRenewPrepaidBottomActions(),
-                            SizedBox(
-                              height: OtpAutoRenewPrepaidTheme
-                                  .bottomActionsToScrollEndGap,
-                            ),
-                          ],
-                        ),
+            physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              const SliverToBoxAdapter(child: OtpAutoRenewPrepaidHeader()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: OtpAutoRenewPrepaidTheme.contentHorizontalPadding,
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        height: OtpAutoRenewPrepaidTheme.topGapBeforeOtpBoxes,
                       ),
-                    ),
-                  ],
+                      OtpAutoRenewPrepaidCodeFields(),
+                      SizedBox(
+                        height:
+                            OtpAutoRenewPrepaidTheme.otpBoxesToBottomActionsGap,
+                      ),
+                      OtpAutoRenewPrepaidBottomActions(),
+                      SizedBox(
+                        height: OtpAutoRenewPrepaidTheme
+                            .bottomActionsToScrollEndGap,
+                      ),
+                    ],
+                  ),
                 ),
+              ),
+            ],
+          ),
         ),
       ),
     );

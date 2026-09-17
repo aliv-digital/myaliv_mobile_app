@@ -23,7 +23,6 @@ class LoginBottomTexts extends StatelessWidget {
           style: AuthModuleButtonStyles.inlineTextLink,
           onPressed: () {
             context.push(AppRoutes.forgetPassword);
-
           },
           child: const Text(
             'manage my password',

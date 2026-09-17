@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 /// `GET v1/MyAliv/AltNumber/validate/{altNumber}` → `{ "IsValid": true|false }`.
 class AltNumberValidationApiClient {
   AltNumberValidationApiClient({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 

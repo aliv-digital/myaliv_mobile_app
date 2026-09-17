@@ -79,7 +79,10 @@ class _LoginOtpView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
-              AppToast.show(message: successMessage ?? 'Logged in successfully', type: ToastType.success);
+              AppToast.show(
+                message: successMessage ?? 'Logged in successfully',
+                type: ToastType.success,
+              );
               instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
               if (onSuccess != null) {
                 onSuccess!(context);
@@ -114,8 +117,7 @@ class _LoginOtpView extends StatelessWidget {
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            keyboardDismissBehavior:
-                ScrollViewKeyboardDismissBehavior.onDrag,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
               const SliverToBoxAdapter(child: OtpHeader()),
               SliverToBoxAdapter(
@@ -126,13 +128,9 @@ class _LoginOtpView extends StatelessWidget {
                     children: [
                       SizedBox(height: LoginOtpSizes.contentTopGap),
                       OtpCodeFields(),
-                      SizedBox(
-                        height: LoginOtpSizes.otpToBottomActionsGap,
-                      ),
+                      SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
                       OtpBottomActions(),
-                      SizedBox(
-                        height: 85,
-                      ),
+                      SizedBox(height: 85),
                       _ChangePhoneNumberAction(),
                       SizedBox(height: 113),
                     ],

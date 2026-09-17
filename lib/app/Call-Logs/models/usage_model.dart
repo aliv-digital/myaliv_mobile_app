@@ -90,20 +90,20 @@ class UsageModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        date,
-        usageType,
-        callType,
-        numberDialed,
-        callingParty,
-        duration,
-        amount,
-        tax,
-        serviceFlow,
-        rateMeasure,
-        actualUsage,
-        ratedUsage,
-        wallet,
-        callDesc,
-        bytes,
-      ];
+    date,
+    usageType,
+    callType,
+    numberDialed,
+    callingParty,
+    duration,
+    amount,
+    tax,
+    serviceFlow,
+    rateMeasure,
+    actualUsage,
+    ratedUsage,
+    wallet,
+    callDesc,
+    bytes,
+  ];
 }

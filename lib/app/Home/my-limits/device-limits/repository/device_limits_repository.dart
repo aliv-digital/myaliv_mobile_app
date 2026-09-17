@@ -11,7 +11,7 @@ class DeviceLimitsRepository {
   final DeviceLimitsApiService _apiService;
 
   DeviceLimitsRepository({required DeviceLimitsApiService apiService})
-      : _apiService = apiService;
+    : _apiService = apiService;
 
   /// Fetch and parse all device limits
   ///
@@ -32,8 +32,10 @@ class DeviceLimitsRepository {
       if (jsonData is List && jsonData.isNotEmpty) {
         // Array response - parse all devices
         return jsonData
-            .map((item) =>
-                DeviceLimitsModel.fromJson(item as Map<String, dynamic>))
+            .map(
+              (item) =>
+                  DeviceLimitsModel.fromJson(item as Map<String, dynamic>),
+            )
             .toList();
       } else if (jsonData is Map<String, dynamic>) {
         // Single object response - wrap in list

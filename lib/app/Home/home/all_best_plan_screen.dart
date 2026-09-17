@@ -79,13 +79,22 @@ class AllBestPlansScreen extends StatelessWidget {
                         onPressed: () {
                           // Retry loading
                           final userType =
-                              context.read<BestPlanCubit>().state.plans.isNotEmpty
-                                  ? context.read<BestPlanCubit>().state.plans.first.type
-                                  : 'prepaid';
+                              context
+                                  .read<BestPlanCubit>()
+                                  .state
+                                  .plans
+                                  .isNotEmpty
+                              ? context
+                                    .read<BestPlanCubit>()
+                                    .state
+                                    .plans
+                                    .first
+                                    .type
+                              : 'prepaid';
                           context.read<BestPlanCubit>().loadPlans(
-                                userType: userType,
-                                forceRefresh: true,
-                              );
+                            userType: userType,
+                            forceRefresh: true,
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: purple,
@@ -171,10 +180,7 @@ class _PlanCard extends StatelessWidget {
   final BestPlanModel plan;
   final VoidCallback? onTap;
 
-  const _PlanCard({
-    required this.plan,
-    this.onTap,
-  });
+  const _PlanCard({required this.plan, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -201,8 +207,11 @@ class _PlanCard extends StatelessWidget {
                     errorWidget: (context, url, error) => Container(
                       color: const Color(0xFF645D9C),
                       child: const Center(
-                        child: Icon(Icons.image_not_supported,
-                            color: Colors.white54, size: 48),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.white54,
+                          size: 48,
+                        ),
                       ),
                     ),
                   ),

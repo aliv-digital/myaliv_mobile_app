@@ -101,9 +101,16 @@ class AuthModulePaddings {
   static const EdgeInsets zero = EdgeInsets.zero;
 
   // Shared internal paddings for input controls.
-  static const EdgeInsets fieldHorizontal14 = EdgeInsets.symmetric(horizontal: 14);
-  static const EdgeInsets countryHorizontal8 = EdgeInsets.symmetric(horizontal: 8);
-  static const EdgeInsets genericInputContent = EdgeInsets.symmetric(vertical: 10, horizontal: 12);
+  static const EdgeInsets fieldHorizontal14 = EdgeInsets.symmetric(
+    horizontal: 14,
+  );
+  static const EdgeInsets countryHorizontal8 = EdgeInsets.symmetric(
+    horizontal: 8,
+  );
+  static const EdgeInsets genericInputContent = EdgeInsets.symmetric(
+    vertical: 10,
+    horizontal: 12,
+  );
 
   // Login content wrapper padding.
   static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
@@ -229,7 +236,7 @@ class AuthModuleTextStyles {
   );
 
   // Password hint uses increased bullet spacing.
-  static  TextStyle passwordHint = TextStyle(
+  static TextStyle passwordHint = TextStyle(
     //color: Color(0xFF667085) /* Colors-Text-text-placeholder */,
     fontSize: 14,
     fontWeight: FontWeight.w500,

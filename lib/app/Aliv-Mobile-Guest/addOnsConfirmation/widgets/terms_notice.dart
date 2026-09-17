@@ -60,12 +60,11 @@ class _TermsNoticeState extends State<TermsNotice> {
               decoration: BoxDecoration(
                 color: widget.isChecked
                     ? AddOnsConfirmationTheme
-                        .termsNoticeCheckboxCheckedFillColor
+                          .termsNoticeCheckboxCheckedFillColor
                     : Colors.transparent,
                 border: Border.all(
                   width: 1,
-                  color: AddOnsConfirmationTheme
-                      .termsNoticeCheckboxBorderColor,
+                  color: AddOnsConfirmationTheme.termsNoticeCheckboxBorderColor,
                 ),
                 borderRadius: BorderRadius.circular(
                   AddOnsConfirmationTheme.termsNoticeCheckboxRadius,
@@ -75,8 +74,7 @@ class _TermsNoticeState extends State<TermsNotice> {
                   ? const Icon(
                       Icons.check_rounded,
                       color: Colors.white,
-                      size: AddOnsConfirmationTheme
-                          .termsNoticeCheckboxIconSize,
+                      size: AddOnsConfirmationTheme.termsNoticeCheckboxIconSize,
                     )
                   : null,
             ),
@@ -95,13 +93,11 @@ class _TermsNoticeState extends State<TermsNotice> {
                 children: [
                   TextSpan(
                     text: 'By checking this box, I agree to the ',
-                    style:
-                        AddOnsConfirmationTheme.termsNoticeBodyTextStyle,
+                    style: AddOnsConfirmationTheme.termsNoticeBodyTextStyle,
                   ),
                   TextSpan(
                     text: 'Terms & Conditions.',
-                    style:
-                        AddOnsConfirmationTheme.termsNoticeLinkTextStyle,
+                    style: AddOnsConfirmationTheme.termsNoticeLinkTextStyle,
                     recognizer: _termsTapRecognizer,
                   ),
                 ],

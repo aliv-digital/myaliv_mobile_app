@@ -47,12 +47,12 @@ class PlanRedImageCard extends StatelessWidget {
                 Image.asset(
                   AssetConstant.planRedCardPNG,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: GuestPurchasePlanAddOnsTheme.planRed,
-                  ),
+                  errorBuilder: (context, error, stackTrace) =>
+                      Container(color: GuestPurchasePlanAddOnsTheme.planRed),
                 ),
                 Padding(
-                  padding: GuestPurchasePlanAddOnsTheme.planRedCardContentPadding,
+                  padding:
+                      GuestPurchasePlanAddOnsTheme.planRedCardContentPadding,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -84,14 +84,16 @@ class PlanRedImageCard extends StatelessWidget {
                       Row(
                         children: [
                           _DateBlock(
-                              label: activeLabel,
-                              value: activeDate,
-                              alignEnd: false),
+                            label: activeLabel,
+                            value: activeDate,
+                            alignEnd: false,
+                          ),
                           const Spacer(),
                           _DateBlock(
-                              label: expireLabel,
-                              value: expireDate,
-                              alignEnd: true),
+                            label: expireLabel,
+                            value: expireDate,
+                            alignEnd: true,
+                          ),
                         ],
                       ),
                     ],
@@ -120,8 +122,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(

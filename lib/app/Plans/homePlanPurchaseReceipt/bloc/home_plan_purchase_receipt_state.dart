@@ -43,15 +43,15 @@ class HomePlanPurchaseReceiptData extends Equatable {
 
   @override
   List<Object?> get props => [
-        leftType,
-        rightType,
-        dateText,
-        timeText,
-        phoneNumber,
-        paymentMethod,
-        amount,
-        details,
-      ];
+    leftType,
+    rightType,
+    dateText,
+    timeText,
+    phoneNumber,
+    paymentMethod,
+    amount,
+    details,
+  ];
 }
 
 class HomePlanPurchaseReceiptState extends Equatable {

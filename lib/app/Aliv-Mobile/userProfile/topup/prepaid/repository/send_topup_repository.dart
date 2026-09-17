@@ -5,7 +5,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 class SendTopupRepository {
   SendTopupRepository({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -27,10 +27,7 @@ class SendTopupRepository {
       await _networkService.request<dynamic>(
         Api.orderTransferUrl,
         method: HttpMethod.post,
-        data: <String, dynamic>{
-          'ToNumber': sanitizedNumber,
-          'Amount': amount,
-        },
+        data: <String, dynamic>{'ToNumber': sanitizedNumber, 'Amount': amount},
       );
     } on NetworkException catch (error) {
       throw SendTopupException(_errorMessage(error));

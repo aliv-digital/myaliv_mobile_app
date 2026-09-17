@@ -6,10 +6,12 @@ import '../repository/my_profile_prepaid_repository.dart';
 import 'my_profile_prepaid_event.dart';
 import 'my_profile_prepaid_state.dart';
 
-class MyProfilePrepaidBloc extends Bloc<MyProfilePrepaidEvent, MyProfilePrepaidState> {
+class MyProfilePrepaidBloc
+    extends Bloc<MyProfilePrepaidEvent, MyProfilePrepaidState> {
   final MyProfilePrepaidRepository repository;
 
-  MyProfilePrepaidBloc(this.repository) : super(MyProfilePrepaidState.initial()) {
+  MyProfilePrepaidBloc(this.repository)
+    : super(MyProfilePrepaidState.initial()) {
     on<MyProfilePrepaidStarted>(_onStarted);
 
     on<MyProfilePrepaidBackPressed>(_onBack);
@@ -19,11 +21,16 @@ class MyProfilePrepaidBloc extends Bloc<MyProfilePrepaidEvent, MyProfilePrepaidS
   }
 
   Future<void> _onStarted(
-      MyProfilePrepaidStarted event,
-      Emitter<MyProfilePrepaidState> emit,
-      ) async {
+    MyProfilePrepaidStarted event,
+    Emitter<MyProfilePrepaidState> emit,
+  ) async {
     try {
-      emit(state.copyWith(status: MyProfilePrepaidStatus.loading, errorMessage: null));
+      emit(
+        state.copyWith(
+          status: MyProfilePrepaidStatus.loading,
+          errorMessage: null,
+        ),
+      );
 
       // Ensure device limits are loaded
       final deviceLimitsCubit = instance<DeviceLimitsCubit>();
@@ -34,41 +41,60 @@ class MyProfilePrepaidBloc extends Bloc<MyProfilePrepaidEvent, MyProfilePrepaidS
       final data = await repository.fetchProfile();
       emit(state.copyWith(status: MyProfilePrepaidStatus.success, data: data));
     } catch (e) {
-      emit(state.copyWith(
-        status: MyProfilePrepaidStatus.failure,
-        errorMessage: 'Failed to load profile',
-      ));
+      emit(
+        state.copyWith(
+          status: MyProfilePrepaidStatus.failure,
+          errorMessage: 'Failed to load profile',
+        ),
+      );
     }
   }
 
-  void _onBack(MyProfilePrepaidBackPressed event, Emitter<MyProfilePrepaidState> emit) {
-    emit(state.copyWith(
-      navAction: MyProfilePrepaidNavAction.back,
-      navRequestId: state.navRequestId + 1,
-    ));
+  void _onBack(
+    MyProfilePrepaidBackPressed event,
+    Emitter<MyProfilePrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        navAction: MyProfilePrepaidNavAction.back,
+        navRequestId: state.navRequestId + 1,
+      ),
+    );
   }
 
-  void _onHome(MyProfilePrepaidHomePressed event, Emitter<MyProfilePrepaidState> emit) {
-    emit(state.copyWith(
-      navAction: MyProfilePrepaidNavAction.home,
-      navRequestId: state.navRequestId + 1,
-    ));
+  void _onHome(
+    MyProfilePrepaidHomePressed event,
+    Emitter<MyProfilePrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        navAction: MyProfilePrepaidNavAction.home,
+        navRequestId: state.navRequestId + 1,
+      ),
+    );
   }
 
-  void _onEditEmail(MyProfilePrepaidEditEmailPressed event, Emitter<MyProfilePrepaidState> emit) {
-    emit(state.copyWith(
-      navAction: MyProfilePrepaidNavAction.editEmail,
-      navRequestId: state.navRequestId + 1,
-    ));
+  void _onEditEmail(
+    MyProfilePrepaidEditEmailPressed event,
+    Emitter<MyProfilePrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        navAction: MyProfilePrepaidNavAction.editEmail,
+        navRequestId: state.navRequestId + 1,
+      ),
+    );
   }
 
   void _onChangePassword(
-      MyProfilePrepaidChangePasswordPressed event,
-      Emitter<MyProfilePrepaidState> emit,
-      ) {
-    emit(state.copyWith(
-      navAction: MyProfilePrepaidNavAction.changePassword,
-      navRequestId: state.navRequestId + 1,
-    ));
+    MyProfilePrepaidChangePasswordPressed event,
+    Emitter<MyProfilePrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        navAction: MyProfilePrepaidNavAction.changePassword,
+        navRequestId: state.navRequestId + 1,
+      ),
+    );
   }
 }

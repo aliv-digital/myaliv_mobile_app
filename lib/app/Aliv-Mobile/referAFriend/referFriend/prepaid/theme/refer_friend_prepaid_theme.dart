@@ -101,10 +101,7 @@ class ReferFriendPrepaidTheme {
     color: Color(0xFF344054),
   );
 
-  static const countryFlag = TextStyle(
-    fontSize: 20,
-    fontFamily: 'CircularPro',
-  );
+  static const countryFlag = TextStyle(fontSize: 20, fontFamily: 'CircularPro');
 
   static const countryCode = TextStyle(
     fontSize: 14,

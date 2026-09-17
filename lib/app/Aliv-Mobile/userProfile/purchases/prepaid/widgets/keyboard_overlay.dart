@@ -21,9 +21,7 @@ class KeyboardDoneOverlay {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: const BoxDecoration(
               color: Color(0xFFF2F2F2),
-              border: Border(
-                top: BorderSide(color: Color(0xFFD0D0D0)),
-              ),
+              border: Border(top: BorderSide(color: Color(0xFFD0D0D0))),
             ),
             child: Row(
               children: [
@@ -35,10 +33,7 @@ class KeyboardDoneOverlay {
                   },
                   child: const Text(
                     'Done',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ],

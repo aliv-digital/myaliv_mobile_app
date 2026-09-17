@@ -15,9 +15,13 @@ class OtpProfilePrepaidCodeFields extends StatefulWidget {
       _OtpProfilePrepaidCodeFieldsState();
 }
 
-class _OtpProfilePrepaidCodeFieldsState extends State<OtpProfilePrepaidCodeFields> {
-  final _controllers =
-  List.generate(5, (_) => TextEditingController(), growable: false);
+class _OtpProfilePrepaidCodeFieldsState
+    extends State<OtpProfilePrepaidCodeFields> {
+  final _controllers = List.generate(
+    5,
+    (_) => TextEditingController(),
+    growable: false,
+  );
   final _focusNodes = List.generate(5, (_) => FocusNode(), growable: false);
 
   @override
@@ -35,8 +39,9 @@ class _OtpProfilePrepaidCodeFieldsState extends State<OtpProfilePrepaidCodeField
     if (value.length > 1) {
       value = value.characters.last;
       _controllers[index].text = value;
-      _controllers[index].selection =
-          TextSelection.collapsed(offset: value.length);
+      _controllers[index].selection = TextSelection.collapsed(
+        offset: value.length,
+      );
     }
 
     if (value.isNotEmpty && index < 4) {
@@ -46,14 +51,16 @@ class _OtpProfilePrepaidCodeFieldsState extends State<OtpProfilePrepaidCodeField
     }
 
     final code = _controllers.map((c) => c.text).join();
-    context.read<OtpProfilePrepaidBloc>().add(OtpProfilePrepaidCodeChanged(code));
+    context.read<OtpProfilePrepaidBloc>().add(
+      OtpProfilePrepaidCodeChanged(code),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<OtpProfilePrepaidBloc, OtpProfilePrepaidState>(
       listenWhen: (p, c) =>
-      p.status != c.status && c.status == OtpProfilePrepaidStatus.failure,
+          p.status != c.status && c.status == OtpProfilePrepaidStatus.failure,
       listener: (context, state) {
         // চাইলে error হলে সব clear করতে পারো
         // for (final c in _controllers) c.clear();
@@ -113,8 +120,12 @@ class _OtpBox extends StatelessWidget {
                 ),
                 decoration: const InputDecoration(
                   isCollapsed: true,
-                  contentPadding:
-                      EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),
+                  contentPadding: EdgeInsets.only(
+                    left: 15,
+                    right: 15,
+                    top: 10,
+                    bottom: 15,
+                  ),
                   counterText: '',
                   border: InputBorder.none,
                 ),

@@ -26,7 +26,7 @@ class PostpaidUsageSection extends StatelessWidget {
                 subtitle: u.isUnlimited
                     ? 'unlimited'
                     : '${formatBucketAmount(u.remaining, u.unitLabel)}'
-                        ' of ${formatBucketAmount(u.initial, u.unitLabel)}',
+                          ' of ${formatBucketAmount(u.initial, u.unitLabel)}',
                 trailingText: u.isUnlimited
                     ? 'unlimited'
                     : '${(u.progress * 100).round()}% used',

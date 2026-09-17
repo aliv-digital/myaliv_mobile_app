@@ -34,7 +34,10 @@ class RewardDetailsBody extends StatelessWidget {
             children: [
               RewardDetailsSection(label: 'group name', value: d.groupName),
               const SizedBox(height: 18),
-              RewardDetailsSection(label: 'promo start date', value: d.promoStartDate),
+              RewardDetailsSection(
+                label: 'promo start date',
+                value: d.promoStartDate,
+              ),
               const SizedBox(height: 18),
               RewardDetailsSection(label: 'duration', value: d.duration),
               const SizedBox(height: 18),

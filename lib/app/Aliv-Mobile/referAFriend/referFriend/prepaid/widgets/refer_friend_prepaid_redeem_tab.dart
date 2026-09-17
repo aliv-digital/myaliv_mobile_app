@@ -29,7 +29,8 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
                 p.redeemCode != c.redeemCode ||
                 p.redeemStatus != c.redeemStatus,
             builder: (context, state) {
-              final loading = state.redeemStatus ==
+              final loading =
+                  state.redeemStatus ==
                   ReferFriendPrepaidSubmitStatus.submitting;
 
               return Column(
@@ -48,9 +49,9 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
                     label: 'redeem',
                     enabled: state.canRedeem && !loading,
                     isLoading: loading,
-                    onTap: () => context
-                        .read<ReferFriendPrepaidBloc>()
-                        .add(const ReferFriendPrepaidRedeemPressed()),
+                    onTap: () => context.read<ReferFriendPrepaidBloc>().add(
+                      const ReferFriendPrepaidRedeemPressed(),
+                    ),
                   ),
                 ],
               );

@@ -48,8 +48,9 @@ class _ReferFriendPrepaidLabeledFieldState
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
-      _controller.selection =
-          TextSelection.collapsed(offset: widget.value.length);
+      _controller.selection = TextSelection.collapsed(
+        offset: widget.value.length,
+      );
     }
   }
 
@@ -71,9 +72,10 @@ class _ReferFriendPrepaidLabeledFieldState
 
   @override
   Widget build(BuildContext context) {
-    final innerRadius = (ReferFriendPrepaidTheme.fieldRadius -
-            ReferFriendPrepaidTheme.fieldBorderWidth)
-        .clamp(0.0, ReferFriendPrepaidTheme.fieldRadius);
+    final innerRadius =
+        (ReferFriendPrepaidTheme.fieldRadius -
+                ReferFriendPrepaidTheme.fieldBorderWidth)
+            .clamp(0.0, ReferFriendPrepaidTheme.fieldRadius);
     final bool showNeutralBorder =
         widget.showUnfocusedBorder || widget.showError;
     final Color unfocusedBorderColor = widget.showError
@@ -101,11 +103,13 @@ class _ReferFriendPrepaidLabeledFieldState
                     color: unfocusedBorderColor,
                     width: ReferFriendPrepaidTheme.fieldBorderWidth,
                   ),
-            borderRadius:
-                BorderRadius.circular(ReferFriendPrepaidTheme.fieldRadius),
+            borderRadius: BorderRadius.circular(
+              ReferFriendPrepaidTheme.fieldRadius,
+            ),
           ),
-          padding:
-              const EdgeInsets.all(ReferFriendPrepaidTheme.fieldBorderWidth),
+          padding: const EdgeInsets.all(
+            ReferFriendPrepaidTheme.fieldBorderWidth,
+          ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(innerRadius),
             child: Container(
@@ -130,10 +134,7 @@ class _ReferFriendPrepaidLabeledFieldState
         ),
         if (widget.showError && (widget.errorText ?? '').isNotEmpty) ...[
           const SizedBox(height: 6),
-          Text(
-            widget.errorText!,
-            style: ReferFriendPrepaidTheme.fieldError,
-          ),
+          Text(widget.errorText!, style: ReferFriendPrepaidTheme.fieldError),
         ],
       ],
     );

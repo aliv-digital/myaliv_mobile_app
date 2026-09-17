@@ -18,10 +18,7 @@ import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
 
 class AddOnsConfirmationScreen extends StatelessWidget {
-  const AddOnsConfirmationScreen({
-    super.key,
-    required this.phoneNumber,
-  });
+  const AddOnsConfirmationScreen({super.key, required this.phoneNumber});
 
   final String phoneNumber;
 
@@ -44,8 +41,7 @@ class _AddOnsConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AddOnsConfirmationBloc,
-        AddOnsConfirmationState>(
+    return BlocListener<AddOnsConfirmationBloc, AddOnsConfirmationState>(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
           p.payNowRequestId != c.payNowRequestId,
@@ -66,66 +62,67 @@ class _AddOnsConfirmationView extends StatelessWidget {
         backgroundColor: AddOnsConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<AddOnsConfirmationBloc,
-            AddOnsConfirmationState>(
-          builder: (context, state) {
-            if (state.status != AddOnsConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+        bottomNavigationBar:
+            BlocBuilder<AddOnsConfirmationBloc, AddOnsConfirmationState>(
+              builder: (context, state) {
+                if (state.status != AddOnsConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-                buttonText: 'continue',
-                isVatExclusive: true,
-                isButtonEnabled: state.isTermsChecked,
-                buttonColor: const Color(0xFF645D9C),
-                onPayNow: () {
-                  context.read<AddOnsConfirmationBloc>().add(
-                    const AddOnsConfirmationPayNowPressed(),
-                  );
-                  final data = state.data!;
-                  final primaryPlanName = data.items
-                      .firstWhere(
-                        (item) =>
-                            item.type == PurchaseLineType.primaryPlan,
-                        orElse: () => const PurchaseLineItem(
-                          id: '',
-                          type: PurchaseLineType.primaryPlan,
-                          label: '',
-                          title: '',
-                          subtitle: '',
-                          price: 0,
-                        ),
-                      )
-                      .title;
-                  final addOnNames = data.items
-                      .where((item) => item.type == PurchaseLineType.addOn)
-                      .map((item) => item.title)
-                      .toList(growable: false);
-                  final now = DateTime.now();
-                  context.push(
-                    AppRoutes.guestPurchasePlanReceipt,
-                    extra: <String, Object?>{
-                      'phoneNumber': data.phoneNumber,
-                      'amount': data.totals.total,
-                      'planName':
-                          primaryPlanName.isEmpty ? null : primaryPlanName,
-                      'addOnNames': addOnNames,
-                      'dateText': DateFormat('MMM d, yyyy').format(now),
-                      'timeText':
-                          DateFormat('h:mm a').format(now).toLowerCase(),
-                    },
-                  );
-                },
-                amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
-            );
-          },
-        ),
+                return DefaultBottomPayBar(
+                  buttonText: 'continue',
+                  isVatExclusive: true,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    context.read<AddOnsConfirmationBloc>().add(
+                      const AddOnsConfirmationPayNowPressed(),
+                    );
+                    final data = state.data!;
+                    final primaryPlanName = data.items
+                        .firstWhere(
+                          (item) => item.type == PurchaseLineType.primaryPlan,
+                          orElse: () => const PurchaseLineItem(
+                            id: '',
+                            type: PurchaseLineType.primaryPlan,
+                            label: '',
+                            title: '',
+                            subtitle: '',
+                            price: 0,
+                          ),
+                        )
+                        .title;
+                    final addOnNames = data.items
+                        .where((item) => item.type == PurchaseLineType.addOn)
+                        .map((item) => item.title)
+                        .toList(growable: false);
+                    final now = DateTime.now();
+                    context.push(
+                      AppRoutes.guestPurchasePlanReceipt,
+                      extra: <String, Object?>{
+                        'phoneNumber': data.phoneNumber,
+                        'amount': data.totals.total,
+                        'planName': primaryPlanName.isEmpty
+                            ? null
+                            : primaryPlanName,
+                        'addOnNames': addOnNames,
+                        'dateText': DateFormat('MMM d, yyyy').format(now),
+                        'timeText': DateFormat(
+                          'h:mm a',
+                        ).format(now).toLowerCase(),
+                      },
+                    );
+                  },
+                  amountText:
+                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                );
+              },
+            ),
 
         body: SafeArea(
           top: false,
-          child: BlocBuilder<AddOnsConfirmationBloc,
-              AddOnsConfirmationState>(
+          child: BlocBuilder<AddOnsConfirmationBloc, AddOnsConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -134,7 +131,7 @@ class _AddOnsConfirmationView extends StatelessWidget {
                   /// Top app bar (fixed)
                   DefaultAppBar(
                     showHome: true,
-                    onHomeTap: (){
+                    onHomeTap: () {
                       context.go(AppRoutes.logIn);
                     },
                     title: 'confirmation and payment',
@@ -171,8 +168,10 @@ class _AddOnsConfirmationView extends StatelessWidget {
                                         onRemoveItem: (id) => context
                                             .read<AddOnsConfirmationBloc>()
                                             .add(
-                                                AddOnsConfirmationRemoveItemPressed(
-                                                    id)),
+                                              AddOnsConfirmationRemoveItemPressed(
+                                                id,
+                                              ),
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -220,14 +219,15 @@ class _AddOnsConfirmationView extends StatelessWidget {
                                         0,
                                       ),
                                       child: CustomPaymentBreakDownCard(
-                                        backgroundColor:
-                                            HexColor.fromHex('#645D9C'),
+                                        backgroundColor: HexColor.fromHex(
+                                          '#645D9C',
+                                        ),
                                         input:
                                             const CustomPaymentBreakdownInputConfig(
-                                          value: '',
-                                          hintText: 'promo code',
-                                          actionText: 'apply',
-                                        ),
+                                              value: '',
+                                              hintText: 'promo code',
+                                              actionText: 'apply',
+                                            ),
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',

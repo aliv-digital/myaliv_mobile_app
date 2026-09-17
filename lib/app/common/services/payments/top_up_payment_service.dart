@@ -10,7 +10,8 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 /// differences are the URL (phone in path) and the envelope (no `Bundle`).
 class TopUpPaymentService {
   TopUpPaymentService({CardPaymentService? cardPaymentService})
-    : _cardPaymentService = cardPaymentService ?? instance<CardPaymentService>();
+    : _cardPaymentService =
+          cardPaymentService ?? instance<CardPaymentService>();
 
   final CardPaymentService _cardPaymentService;
 

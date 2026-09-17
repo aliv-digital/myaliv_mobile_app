@@ -25,17 +25,16 @@ class _AutoRenewToggleState extends State<AutoRenewToggle> {
   void _toggle() {
     setState(() => isOn = !isOn);
     widget.onChanged?.call(isOn);
-    if(isOn){
+    if (isOn) {
       showModalBottomSheet(
         context: context,
-        isScrollControlled: true,isDismissible: true,
+        isScrollControlled: true,
+        isDismissible: true,
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black.withOpacity(0.5),
         builder: (_) => const AutoRenewBottomSheet(),
       );
-
     }
-
   }
 
   @override

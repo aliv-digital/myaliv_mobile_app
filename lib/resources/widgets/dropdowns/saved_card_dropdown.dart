@@ -44,7 +44,9 @@ class _SavedCardDropdownState extends State<SavedCardDropdown> {
         return CompositedTransformTarget(
           link: _layerLink,
           child: GestureDetector(
-            onTap: state.hasCards ? _toggleDropdown : _getEmptyTapHandler(state),
+            onTap: state.hasCards
+                ? _toggleDropdown
+                : _getEmptyTapHandler(state),
             child: DropdownContainer(
               child: Row(
                 children: [

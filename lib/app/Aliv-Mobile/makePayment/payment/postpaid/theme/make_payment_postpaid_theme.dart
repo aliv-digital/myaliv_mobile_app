@@ -54,32 +54,44 @@ class MakePaymentPostPaidTheme {
   static const Color paymentMethodBorder = Color(0xFFE5E7EB);
   static const Color paymentMethodSelectedBorder = Color(0xFF8B84C8);
   static const Color paymentMethodSelectedCardBg = Color(0xFFF2F1F9);
-  static const Color paymentMethodSelectedIndicatorBorderColor =
-      Color(0xFF7F56D9);
-  static const Color paymentMethodSelectedIndicatorFillColor =
-      Color(0xFF645D9C);
+  static const Color paymentMethodSelectedIndicatorBorderColor = Color(
+    0xFF7F56D9,
+  );
+  static const Color paymentMethodSelectedIndicatorFillColor = Color(
+    0xFF645D9C,
+  );
   static const Color paymentMethodUnselectedIndicatorColor = Color(0xFFE0E0E0);
-  static const Color paymentMethodUnselectedIndicatorBorderColor =
-      Color(0xFFCACACA);
+  static const Color paymentMethodUnselectedIndicatorBorderColor = Color(
+    0xFFCACACA,
+  );
   static const Color paymentMethodAccent = Color(0xFF645D9C);
 
   static const double appBarHeight = 56;
 
   // Payment due card spacing (Figma-aligned).
-  static const EdgeInsets paymentDueCardPadding =
-      EdgeInsets.fromLTRB(16, 20, 16, 20);
+  static const EdgeInsets paymentDueCardPadding = EdgeInsets.fromLTRB(
+    16,
+    20,
+    16,
+    20,
+  );
   static const double paymentDueTitleToAmountGap = 16;
   static const double paymentDueAmountToOptionsGap = 16;
   static const double paymentDueOptionsBetweenGap = 8;
-  static const EdgeInsets paymentDueAmountFieldPadding =
-      EdgeInsets.symmetric(horizontal: 16);
+  static const EdgeInsets paymentDueAmountFieldPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+  );
   static const double paymentDueAmountValueHorizontalPadding = 8;
   static const double paymentDueCurrencyToValueGap = 8;
   static const EdgeInsets paymentDueOptionTilePadding = EdgeInsets.all(16);
   static const double paymentDueOptionTextToIndicatorGap = 12;
 
-  static const EdgeInsets paymentMethodSectionPadding =
-      EdgeInsets.fromLTRB(12, 12, 12, 12);
+  static const EdgeInsets paymentMethodSectionPadding = EdgeInsets.fromLTRB(
+    12,
+    12,
+    12,
+    12,
+  );
   static const double paymentMethodSectionTitleToFirstCardGap = 16;
   static const double paymentMethodBetweenCardsGap = 8;
   static const double paymentMethodLastCardToPayWithCardGap = 16;
@@ -99,155 +111,155 @@ class MakePaymentPostPaidTheme {
   static const double paymentMethodIndicatorCheckSize = 12;
 
   static TextStyle get title => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 17,
-        height: 1.25,
-        fontWeight: FontWeight.w600,
-        color: Colors.white,
-      );
+    fontFamily: fontFamily,
+    fontSize: 17,
+    height: 1.25,
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+  );
 
   static TextStyle get sectionLabel => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w700,
-        color: Color(0xFF1C1C1C),
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
+    color: Color(0xFF1C1C1C),
+  );
 
   static TextStyle get amountText => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
-        color: Color(0xFF101828),
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+    color: Color(0xFF101828),
+  );
 
   static TextStyle get optionText => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w700,
-        color: Color(0xFF222222),
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
+    color: Color(0xFF222222),
+  );
 
   static TextStyle get optionTextSelected => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w700,
-        color: Color(0xFF645D9C),
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
+    color: Color(0xFF645D9C),
+  );
 
   static TextStyle get helperLabel => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
-      );
+    fontFamily: fontFamily,
+    fontSize: 12,
+    height: 1.2,
+    fontWeight: FontWeight.w600,
+    color: textPrimary,
+  );
 
   static TextStyle get customAmountText => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 13,
-        height: 1.2,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
-      );
+    fontFamily: fontFamily,
+    fontSize: 13,
+    height: 1.2,
+    fontWeight: FontWeight.w600,
+    color: textPrimary,
+  );
 
   static TextStyle get customAmountHint => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 13,
-        height: 1.2,
-        fontWeight: FontWeight.w500,
-        color: textMuted,
-      );
+    fontFamily: fontFamily,
+    fontSize: 13,
+    height: 1.2,
+    fontWeight: FontWeight.w500,
+    color: textMuted,
+  );
 
   static TextStyle get termsText => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
-        color: Colors.black,
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+    color: Colors.black,
+  );
 
   static TextStyle get termsLink => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w700,
-        color: Color(0xFF645D9C),
-        decoration: TextDecoration.underline,
-        decorationColor: Color(0xFF645D9C),
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
+    color: Color(0xFF645D9C),
+    decoration: TextDecoration.underline,
+    decorationColor: Color(0xFF645D9C),
+  );
 
   static TextStyle get paymentMethodSectionTitle => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 13,
-        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
-        color: Colors.black,
-      );
+    fontFamily: fontFamily,
+    fontSize: 13,
+    fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+    color: Colors.black,
+  );
 
   static TextStyle get paymentMethodName => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: textPrimary,
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: textPrimary,
+  );
 
   static TextStyle get paymentMethodSelectedName => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w700,
-        color: paymentMethodAccent,
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w700,
+    color: paymentMethodAccent,
+  );
 
   static TextStyle get paymentMethodExpiry => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.2,
-        fontWeight: FontWeight.w500,
-        color: textMuted,
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.2,
+    fontWeight: FontWeight.w500,
+    color: textMuted,
+  );
 
   static TextStyle get paymentMethodSelectedExpiry => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        height: 1.43,
-        fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
-        color: Color(0xCC5146A8),
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    height: 1.43,
+    fontWeight: FontWeight.w400, // Closest supported weight to Figma w450.
+    color: Color(0xCC5146A8),
+  );
 
   static TextStyle get addCard => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
-        fontWeight: FontWeight.w600,
-        color: paymentMethodAccent,
-      );
+    fontFamily: fontFamily,
+    fontSize: 12,
+    height: 1.2,
+    fontWeight: FontWeight.w600,
+    color: paymentMethodAccent,
+  );
 
   static TextStyle get bottomAmount => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 18,
-        height: 1.2,
-        fontWeight: FontWeight.w800,
-        color: textPrimary,
-      );
+    fontFamily: fontFamily,
+    fontSize: 18,
+    height: 1.2,
+    fontWeight: FontWeight.w800,
+    color: textPrimary,
+  );
 
   static TextStyle get bottomSubtitle => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12,
-        height: 1.2,
-        fontWeight: FontWeight.w500,
-        color: textMuted,
-      );
+    fontFamily: fontFamily,
+    fontSize: 12,
+    height: 1.2,
+    fontWeight: FontWeight.w500,
+    color: textMuted,
+  );
 
   static TextStyle get payNow => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 13,
-        height: 1.2,
-        fontWeight: FontWeight.w700,
-        color: Colors.white,
-      );
+    fontFamily: fontFamily,
+    fontSize: 13,
+    height: 1.2,
+    fontWeight: FontWeight.w700,
+    color: Colors.white,
+  );
 }

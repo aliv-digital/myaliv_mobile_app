@@ -14,13 +14,9 @@ class LoginSocialButtons extends StatelessWidget {
         // social buttons ------------------
         Row(
           children: [
-            Expanded(
-              child: _SocialButton(label: 'face id'),
-            ),
+            Expanded(child: _SocialButton(label: 'face id')),
             const SizedBox(width: AuthModuleSizes.socialButtonsGap),
-            Expanded(
-              child: _SocialButton(label: 'fingerprint'),
-            ),
+            Expanded(child: _SocialButton(label: 'fingerprint')),
           ],
         ),
       ],

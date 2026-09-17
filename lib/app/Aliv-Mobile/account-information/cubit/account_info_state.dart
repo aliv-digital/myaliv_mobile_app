@@ -148,10 +148,10 @@ class AccountInfoState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        accountInfo,
-        lastFetchedAt,
-        errorMessage,
-        isTogglingAutoPayInvoice,
-      ];
+    status,
+    accountInfo,
+    lastFetchedAt,
+    errorMessage,
+    isTogglingAutoPayInvoice,
+  ];
 }

@@ -75,7 +75,9 @@ void main() {
 
     test('resendStatus transitions are reflected', () {
       const state = LoginOtpState();
-      final loading = state.copyWith(resendStatus: LoginOtpResendStatus.loading);
+      final loading = state.copyWith(
+        resendStatus: LoginOtpResendStatus.loading,
+      );
       expect(loading.resendStatus, LoginOtpResendStatus.loading);
 
       final done = loading.copyWith(resendStatus: LoginOtpResendStatus.done);

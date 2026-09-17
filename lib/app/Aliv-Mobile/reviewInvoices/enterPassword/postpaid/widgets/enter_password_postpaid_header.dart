@@ -29,7 +29,7 @@ class EnterPasswordPostpaidHeader extends StatelessWidget {
             fontWeight: FontWeight.w500,
             height: 1.47,
           ),
-        )
+        ),
       ],
     );
   }

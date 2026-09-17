@@ -31,10 +31,7 @@ class LimitedOfferApiException implements Exception {
   final int? statusCode;
   final String message;
 
-  const LimitedOfferApiException({
-    this.statusCode,
-    required this.message,
-  });
+  const LimitedOfferApiException({this.statusCode, required this.message});
 
   @override
   String toString() {
@@ -47,10 +44,7 @@ class LimitedOfferParseException implements Exception {
   final String message;
   final dynamic originalError;
 
-  const LimitedOfferParseException(
-    this.message, {
-    this.originalError,
-  });
+  const LimitedOfferParseException(this.message, {this.originalError});
 
   @override
   String toString() {

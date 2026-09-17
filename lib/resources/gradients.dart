@@ -6,13 +6,12 @@ class MyGradients {
   static Gradient grey = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
-    colors: [ColorManager.greyB9B9B9,ColorManager.greyB9B9B9],
+    colors: [ColorManager.greyB9B9B9, ColorManager.greyB9B9B9],
   );
 
-  static Gradient defaultGradient = LinearGradient(colors: [
-    ColorManager.semiGray,
-    ColorManager.primaryRedED3284
-  ]);
+  static Gradient defaultGradient = LinearGradient(
+    colors: [ColorManager.semiGray, ColorManager.primaryRedED3284],
+  );
   static Gradient homeGridItemGradient = const LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
@@ -37,7 +36,6 @@ class MyGradients {
   static Gradient containerButtonGradient = LinearGradient(
     begin: const Alignment(1.00, 0.00),
     end: const Alignment(-1, 0),
-    colors: [ColorManager.semiGray,ColorManager.primaryPurpleED3284 ],
+    colors: [ColorManager.semiGray, ColorManager.primaryPurpleED3284],
   );
-
 }

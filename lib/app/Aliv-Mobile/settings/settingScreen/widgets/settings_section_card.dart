@@ -20,9 +20,7 @@ class SettingsSectionCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: _withDividers(children),
-        ),
+        child: Column(children: _withDividers(children)),
       ),
     );
   }
@@ -33,16 +31,18 @@ class SettingsSectionCard extends StatelessWidget {
 
     for (int i = 0; i < items.length; i++) {
       result.add(items[i]);
-      if(printLine == true){
+      if (printLine == true) {
         if (i != items.length - 1) {
           result.add(
-            const Divider(height: 1, thickness: 1, color: SettingsTheme.divider),
+            const Divider(
+              height: 1,
+              thickness: 1,
+              color: SettingsTheme.divider,
+            ),
           );
         }
-      }else{
-        result.add(
-          const SizedBox(height: 5)
-        );
+      } else {
+        result.add(const SizedBox(height: 5));
       }
     }
     return result;

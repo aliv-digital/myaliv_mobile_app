@@ -59,23 +59,16 @@ class _HomeScreenState extends State<HomeScreen> {
     // HydratedBloc so on a cold restart its state is empty until then.
     _refreshToggleStatus();
 
-    final userType = context
-        .read<AppUiConfigCubit>()
-        .state
-        .userType;
+    final userType = context.read<AppUiConfigCubit>().state.userType;
 
     // BlocListener fires only on state *changes* and misses the synchronous
     // restoration that HydratedCubit performs before the widget subscribes.
     // Sync AppUiConfigCubit here so ActivePlanUsageSection is visible
     // immediately when the cache is warm (success) or stale (refreshing).
-    final cachedPlansState = context
-        .read<PlansCubit>()
-        .state;
+    final cachedPlansState = context.read<PlansCubit>().state;
     if (cachedPlansState.status == PlansStatus.success ||
         cachedPlansState.status == PlansStatus.refreshing) {
-      context
-          .read<AppUiConfigCubit>()
-          .setHasActivePlan(
+      context.read<AppUiConfigCubit>().setHasActivePlan(
         cachedPlansState.earliestAddOnsPrimaryPlan != null,
       );
     }
@@ -96,10 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _isRefreshingToggleStatus = true;
     try {
-      final userType = context
-          .read<AppUiConfigCubit>()
-          .state
-          .userType;
+      final userType = context.read<AppUiConfigCubit>().state.userType;
 
       if (userType.isPostpaid) {
         // Postpaid Auto Pay comes from the Account API.
@@ -166,13 +156,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final HomeUiConfig config = context
-        .watch<AppUiConfigCubit>()
-        .state;
+    final HomeUiConfig config = context.watch<AppUiConfigCubit>().state;
 
     return BlocListener<PlansCubit, PlansState>(
       listenWhen: (previous, current) =>
-      previous.status != current.status ||
+          previous.status != current.status ||
           previous.addOnsApiPrimaryPlans != current.addOnsApiPrimaryPlans ||
           previous.optimisticActivePlan != current.optimisticActivePlan ||
           previous.secondaryPlans != current.secondaryPlans ||
@@ -200,129 +188,140 @@ class _HomeScreenState extends State<HomeScreen> {
             statusBarBrightness: Brightness.dark,
           ),
           child: Stack(
-          children: [
-            _headerBackground(),
-            SafeArea(
-              child: RefreshIndicator(
-                // Pulling down syncs Auto Pay or Auto Renew for the user type.
-                onRefresh: _refreshToggleStatus,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 24),
-                  child: Column(
-                    children: [
-                      HomeHeader(config: config),
-                      const SizedBox(height: 16),
+            children: [
+              _headerBackground(),
+              SafeArea(
+                child: RefreshIndicator(
+                  // Pulling down syncs Auto Pay or Auto Renew for the user type.
+                  onRefresh: _refreshToggleStatus,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: Column(
+                      children: [
+                        HomeHeader(config: config),
+                        const SizedBox(height: 16),
 
-                      ///  DIFFERENT CARD BASED ON USER TYPE
-                      config.isPrepaid
-                          ? const PrepaidBalanceCard()
-                          : const PostpaidBillingCard(),
+                        ///  DIFFERENT CARD BASED ON USER TYPE
+                        config.isPrepaid
+                            ? const PrepaidBalanceCard()
+                            : const PostpaidBillingCard(),
 
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                      BlocBuilder<PlansCubit, PlansState>(
-                        buildWhen: (previous, current) =>
-                        previous.status != current.status ||
-                            previous.addOnsApiPrimaryPlans !=
-                                current.addOnsApiPrimaryPlans ||
-                            previous.optimisticActivePlan !=
-                                current.optimisticActivePlan,
-                        builder: (context, plansState) {
-                          // While plans are still being fetched, show the active
-                          // plan card so its internal skeleton renders. Once the
-                          // API resolves, decide from real data instead of the
-                          // stale `hasActivePlan` flag.
-                          final isResolving =
-                              plansState.status == PlansStatus.initial ||
-                                  plansState.status == PlansStatus.loading;
-                          final showActiveCard =
-                              isResolving ||
-                                  plansState.earliestAddOnsPrimaryPlan != null;
+                        BlocBuilder<PlansCubit, PlansState>(
+                          buildWhen: (previous, current) =>
+                              previous.status != current.status ||
+                              previous.addOnsApiPrimaryPlans !=
+                                  current.addOnsApiPrimaryPlans ||
+                              previous.optimisticActivePlan !=
+                                  current.optimisticActivePlan,
+                          builder: (context, plansState) {
+                            // While plans are still being fetched, show the active
+                            // plan card so its internal skeleton renders. Once the
+                            // API resolves, decide from real data instead of the
+                            // stale `hasActivePlan` flag.
+                            final isResolving =
+                                plansState.status == PlansStatus.initial ||
+                                plansState.status == PlansStatus.loading;
+                            final showActiveCard =
+                                isResolving ||
+                                plansState.earliestAddOnsPrimaryPlan != null;
 
-                          if (!showActiveCard) {
-                            return const NoActivePlanCard();
-                          }
+                            if (!showActiveCard) {
+                              return const NoActivePlanCard();
+                            }
 
-                          return config.userType == UserType.prepaid
-                              ? const PrepaidActivePlanCardWithData(
-                            isFromHome: true,
-                          ) // TODO
-                              : PostpaidActivePlanCard(config: config);
-                        },
-                      ),
-
-                      config.userType == UserType.prepaid
-                          ? const SizedBox(height: 40)
-                          : const SizedBox(height: 20),
-
-                      if (config.hasActivePlan)
-                        BlocBuilder<BucketUsageSummaryCubit,
-                            BucketUsageSummaryState>(
-                          buildWhen: (a, b) =>
-                          a.status != b.status ||
-                              a.activePlans != b.activePlans ||
-                              a.summary != b.summary,
-                          builder: (context, state) {
-                            final isLoading =
-                                state.status ==
-                                    BucketUsageSummaryStatus.initial ||
-                                    state.status ==
-                                        BucketUsageSummaryStatus.loading;
-                            final isEmpty = !isLoading &&
-                                state.activePlanBucketUsage.isEmpty;
-
-                            if (isEmpty) return const SizedBox.shrink();
-
-                            return Container(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFF1F7FA),
-                              ),
-                              child: const ActivePlanUsageSection(),
-                            );
+                            return config.userType == UserType.prepaid
+                                ? const PrepaidActivePlanCardWithData(
+                                    isFromHome: true,
+                                  ) // TODO
+                                : PostpaidActivePlanCard(config: config);
                           },
                         ),
 
-                      BlocBuilder<BucketUsageSummaryCubit,
-                          BucketUsageSummaryState>(
-                        buildWhen: (a, b) =>
-                        a.status != b.status ||
-                            a.activePlans != b.activePlans ||
-                            a.summary != b.summary,
-                        builder: (context, state) {
-                          final isEmpty =
-                              state.status == BucketUsageSummaryStatus.loaded &&
+                        config.userType == UserType.prepaid
+                            ? const SizedBox(height: 40)
+                            : const SizedBox(height: 20),
+
+                        if (config.hasActivePlan)
+                          BlocBuilder<
+                            BucketUsageSummaryCubit,
+                            BucketUsageSummaryState
+                          >(
+                            buildWhen: (a, b) =>
+                                a.status != b.status ||
+                                a.activePlans != b.activePlans ||
+                                a.summary != b.summary,
+                            builder: (context, state) {
+                              final isLoading =
+                                  state.status ==
+                                      BucketUsageSummaryStatus.initial ||
+                                  state.status ==
+                                      BucketUsageSummaryStatus.loading;
+                              final isEmpty =
+                                  !isLoading &&
                                   state.activePlanBucketUsage.isEmpty;
-                          return SizedBox(height: isEmpty ? 0 : 20);
-                        },
-                      ),
-                      // my limits — postpaid only, independent of bucket usage
-                      if (config.userType.isPostpaid)
-                        _myLimitsSection(context),
 
-                      // our best plans
-                      _bestPlans(context),
+                              if (isEmpty) return const SizedBox.shrink();
 
-                      // const SizedBox(height: 16),
-                      // quick actions
-                      Container(
-                        padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F7FA),
+                              return Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                  0,
+                                  10,
+                                  0,
+                                  20,
+                                ),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFF1F7FA),
+                                ),
+                                child: const ActivePlanUsageSection(),
+                              );
+                            },
+                          ),
+
+                        BlocBuilder<
+                          BucketUsageSummaryCubit,
+                          BucketUsageSummaryState
+                        >(
+                          buildWhen: (a, b) =>
+                              a.status != b.status ||
+                              a.activePlans != b.activePlans ||
+                              a.summary != b.summary,
+                          builder: (context, state) {
+                            final isEmpty =
+                                state.status ==
+                                    BucketUsageSummaryStatus.loaded &&
+                                state.activePlanBucketUsage.isEmpty;
+                            return SizedBox(height: isEmpty ? 0 : 20);
+                          },
                         ),
-                        child: _quickActions(context, config),
-                      ),
-                      const SizedBox(height: 24),
-                      //count down , yellow limited offers
-                      const LimitedOfferView(),
-                    ],
+                        // my limits — postpaid only, independent of bucket usage
+                        if (config.userType.isPostpaid)
+                          _myLimitsSection(context),
+
+                        // our best plans
+                        _bestPlans(context),
+
+                        // const SizedBox(height: 16),
+                        // quick actions
+                        Container(
+                          padding: EdgeInsets.fromLTRB(0, 10, 0, 20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F7FA),
+                          ),
+                          child: _quickActions(context, config),
+                        ),
+                        const SizedBox(height: 24),
+                        //count down , yellow limited offers
+                        const LimitedOfferView(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
         ),
       ),
     );
@@ -444,25 +443,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             config.userType == UserType.postpaid
                 ? GestureDetector(
-              onTap: () {
-                context.read<AppUiConfigCubit>().showMyLimitsView();
-                context.go(AppRoutes.usage);
-              },
-              child: const ActionTile(
-                'assets/icons/SortDescending.svg',
-                'update\ncredit limit',
-              ),
-            )
+                    onTap: () {
+                      context.read<AppUiConfigCubit>().showMyLimitsView();
+                      context.go(AppRoutes.usage);
+                    },
+                    child: const ActionTile(
+                      'assets/icons/SortDescending.svg',
+                      'update\ncredit limit',
+                    ),
+                  )
                 : GestureDetector(
-              onTap: () {
-                context.read<AppUiConfigCubit>().showFuturePlansView();
-                context.go(AppRoutes.usage);
-              },
-              child: const ActionTile(
-                'assets/icons/ListHeart.svg',
-                'my\nfuture plans',
-              ),
-            ),
+                    onTap: () {
+                      context.read<AppUiConfigCubit>().showFuturePlansView();
+                      context.go(AppRoutes.usage);
+                    },
+                    child: const ActionTile(
+                      'assets/icons/ListHeart.svg',
+                      'my\nfuture plans',
+                    ),
+                  ),
             GestureDetector(
               onTap: () {
                 context.push(AppRoutes.myProfilePrepaidScreen);

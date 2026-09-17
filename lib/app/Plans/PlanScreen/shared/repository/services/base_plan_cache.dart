@@ -89,7 +89,8 @@ abstract class BasePlanCache {
   final CacheEntry<List<Map<String, dynamic>>> _rawPlansCache = CacheEntry();
 
   /// Store raw plans from API
-  void setRawPlans(List<Map<String, dynamic>> plans) => _rawPlansCache.set(plans);
+  void setRawPlans(List<Map<String, dynamic>> plans) =>
+      _rawPlansCache.set(plans);
 
   /// Retrieve raw plans
   List<Map<String, dynamic>> getRawPlans() => _rawPlansCache.get() ?? [];

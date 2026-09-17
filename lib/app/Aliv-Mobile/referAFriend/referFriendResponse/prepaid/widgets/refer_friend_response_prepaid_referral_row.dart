@@ -55,7 +55,11 @@ class ReferFriendResponsePrepaidReferralRow extends StatelessWidget {
             ),
             child: Row(
               children: const [
-                Icon(Icons.copy, size: 16, color: ReferFriendResponsePrepaidTheme.brand),
+                Icon(
+                  Icons.copy,
+                  size: 16,
+                  color: ReferFriendResponsePrepaidTheme.brand,
+                ),
                 SizedBox(width: 6),
                 Text(
                   'copy',

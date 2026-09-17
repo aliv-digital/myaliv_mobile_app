@@ -1,7 +1,7 @@
-
 enum ApiRequestMethod {
   getRequest,
   postRequest,
   putRequest,
-  deleteRequest, patchRequest
+  deleteRequest,
+  patchRequest,
 }

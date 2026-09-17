@@ -23,7 +23,9 @@ class CreatePasswordTheme {
   static const double inputHeight = 50;
   static const double inputRadius = 6;
   static const double inputBorderWidth = 1;
-  static const EdgeInsets inputHorizontalPadding = EdgeInsets.symmetric(horizontal: 20);
+  static const EdgeInsets inputHorizontalPadding = EdgeInsets.symmetric(
+    horizontal: 20,
+  );
   static const double inputIconSize = 18;
   static const double iconToFieldGap = 10;
   static const double suffixIconTapSize = 24;

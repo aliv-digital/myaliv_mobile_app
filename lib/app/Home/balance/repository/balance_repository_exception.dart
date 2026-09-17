@@ -49,10 +49,7 @@ class BalanceParseException implements Exception {
   final String message;
   final dynamic originalError;
 
-  const BalanceParseException(
-    this.message, {
-    this.originalError,
-  });
+  const BalanceParseException(this.message, {this.originalError});
 
   @override
   String toString() {

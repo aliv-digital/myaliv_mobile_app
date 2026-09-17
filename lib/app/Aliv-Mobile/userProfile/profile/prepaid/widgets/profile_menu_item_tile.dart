@@ -17,8 +17,12 @@ class ProfileMenuItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleColor = enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
-    final chevronColor = enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
+    final titleColor = enabled
+        ? ProfilePrepaidTheme.textBlack
+        : ProfilePrepaidTheme.textGrey;
+    final chevronColor = enabled
+        ? ProfilePrepaidTheme.textBlack
+        : ProfilePrepaidTheme.textGrey;
 
     return Column(
       children: [
@@ -33,7 +37,9 @@ class ProfileMenuItemTile extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: ProfilePrepaidTheme.menuItemText.copyWith(color: titleColor),
+                    style: ProfilePrepaidTheme.menuItemText.copyWith(
+                      color: titleColor,
+                    ),
                   ),
                 ),
                 Icon(Icons.chevron_right, size: 22, color: chevronColor),

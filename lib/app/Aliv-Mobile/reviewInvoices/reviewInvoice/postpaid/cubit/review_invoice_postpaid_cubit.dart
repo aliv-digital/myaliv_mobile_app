@@ -71,10 +71,12 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
       if (kDebugMode) {
         debugPrint('Error downloading PDF: $e');
       }
-      emit(state.copyWith(
-        clearDownloadingId: true,
-        downloadError: 'Failed to download invoice',
-      ));
+      emit(
+        state.copyWith(
+          clearDownloadingId: true,
+          downloadError: 'Failed to download invoice',
+        ),
+      );
     }
   }
 
@@ -104,10 +106,12 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
       if (kDebugMode) {
         debugPrint('Error sharing PDF: $e');
       }
-      emit(state.copyWith(
-        clearDownloadingId: true,
-        downloadError: 'Failed to share invoice',
-      ));
+      emit(
+        state.copyWith(
+          clearDownloadingId: true,
+          downloadError: 'Failed to share invoice',
+        ),
+      );
     }
   }
 
@@ -149,10 +153,12 @@ class ReviewInvoicePostpaidCubit extends Cubit<ReviewInvoicePostpaidState> {
       if (kDebugMode) {
         debugPrint('Error saving PDF: $e');
       }
-      emit(state.copyWith(
-        clearDownloadingId: true,
-        downloadError: 'Failed to save invoice',
-      ));
+      emit(
+        state.copyWith(
+          clearDownloadingId: true,
+          downloadError: 'Failed to save invoice',
+        ),
+      );
     }
   }
 

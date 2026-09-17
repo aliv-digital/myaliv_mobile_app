@@ -10,12 +10,12 @@ class ProfilePrepaidTheme {
   static const chevron = Color(0xFFB7B7C2);
 
   static TextStyle t(
-      double size, {
-        FontWeight weight = FontWeight.w400,
-        Color color = textBlack,
-        double height = 1.25,
-        double letterSpacing = 0,
-      }) {
+    double size, {
+    FontWeight weight = FontWeight.w400,
+    Color color = textBlack,
+    double height = 1.25,
+    double letterSpacing = 0,
+  }) {
     return TextStyle(
       fontFamily: 'CircularPro',
       fontSize: size,

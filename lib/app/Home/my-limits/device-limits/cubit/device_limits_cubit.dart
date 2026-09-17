@@ -377,27 +377,33 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
         await loadDeviceLimits(forceRefresh: true);
         return true;
       } else {
-        emit(state.copyWith(
-          status: DeviceLimitsStatus.failure,
-          errorMessage: 'Failed to update settings',
-        ));
+        emit(
+          state.copyWith(
+            status: DeviceLimitsStatus.failure,
+            errorMessage: 'Failed to update settings',
+          ),
+        );
         return false;
       }
     } on DeviceLimitsException catch (e) {
       final friendlyMessage = _getFriendlyErrorMessage(e);
-      emit(state.copyWith(
-        status: DeviceLimitsStatus.failure,
-        errorMessage: friendlyMessage,
-      ));
+      emit(
+        state.copyWith(
+          status: DeviceLimitsStatus.failure,
+          errorMessage: friendlyMessage,
+        ),
+      );
       if (kDebugMode) {
         debugPrint('❌ DeviceLimitsCubit: $friendlyMessage');
       }
       return false;
     } catch (e) {
-      emit(state.copyWith(
-        status: DeviceLimitsStatus.failure,
-        errorMessage: 'Failed to update settings',
-      ));
+      emit(
+        state.copyWith(
+          status: DeviceLimitsStatus.failure,
+          errorMessage: 'Failed to update settings',
+        ),
+      );
       if (kDebugMode) {
         debugPrint('❌ DeviceLimitsCubit: Unexpected error: $e');
       }

@@ -37,8 +37,7 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
           focusedDay: _focusedDay,
           currentDay: DateTime.now(),
 
-          selectedDayPredicate: (day) =>
-              isSameDay(_selectedDay, day),
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
 
           onDaySelected: (selectedDay, focusedDay) {
             setState(() {
@@ -80,9 +79,7 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
               color: Color(0xFF2E3A59),
             ),
 
-            outsideTextStyle: const TextStyle(
-              color: Color(0xFFB0B7C3),
-            ),
+            outsideTextStyle: const TextStyle(color: Color(0xFFB0B7C3)),
 
             selectedDecoration: const BoxDecoration(
               color: Color(0xFF645D9C),

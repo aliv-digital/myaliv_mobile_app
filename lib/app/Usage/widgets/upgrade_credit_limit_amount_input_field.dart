@@ -60,7 +60,7 @@ class _AmountInputFieldState extends State<AmountInputField> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,//RevPrepaidTheme.inputFieldHeight,
+      height: 48, //RevPrepaidTheme.inputFieldHeight,
       child: FocusedInputBorderWrapper(
         isFocused: _hasFocus,
         unfocusedBorderColor: RevPrepaidTheme.inputFieldBorderColor,
@@ -94,7 +94,9 @@ class _AmountInputFieldState extends State<AmountInputField> {
               //     height: 1.25,
               //   ),
               // ),
-              prefixText: _hasFocus  || _controller.text.isNotEmpty ? '\$ ':null,
+              prefixText: _hasFocus || _controller.text.isNotEmpty
+                  ? '\$ '
+                  : null,
               prefixStyle: const TextStyle(
                 color: Color(0xFF344054),
                 fontSize: 14,
@@ -103,7 +105,7 @@ class _AmountInputFieldState extends State<AmountInputField> {
               ),
               isDense: true,
               border: InputBorder.none,
-              hintText: _hasFocus ? ' 0.00':'\$ 0.00',
+              hintText: _hasFocus ? ' 0.00' : '\$ 0.00',
               hintStyle: RevPrepaidTheme.hintText,
             ),
           ),

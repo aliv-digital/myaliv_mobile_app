@@ -6,10 +6,7 @@ import '../theme/security_theme.dart';
 class SecuritySection extends StatelessWidget {
   final String htmlContent;
 
-  const SecuritySection({
-    super.key,
-    required this.htmlContent,
-  });
+  const SecuritySection({super.key, required this.htmlContent});
 
   @override
   Widget build(BuildContext context) {

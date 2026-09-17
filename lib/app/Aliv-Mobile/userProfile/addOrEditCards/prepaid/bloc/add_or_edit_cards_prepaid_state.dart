@@ -26,14 +26,15 @@ class AddOrEditCardsPrepaidState extends Equatable {
     required this.navTarget,
   });
 
-  factory AddOrEditCardsPrepaidState.initial() => const AddOrEditCardsPrepaidState(
-    loadStatus: AddOrEditCardsPrepaidLoadStatus.initial,
-    cards: [],
-    deletingIds: {},
-    savingNewCard: false,
-    errorMessage: null,
-    navTarget: AddOrEditCardsPrepaidNavTarget.none,
-  );
+  factory AddOrEditCardsPrepaidState.initial() =>
+      const AddOrEditCardsPrepaidState(
+        loadStatus: AddOrEditCardsPrepaidLoadStatus.initial,
+        cards: [],
+        deletingIds: {},
+        savingNewCard: false,
+        errorMessage: null,
+        navTarget: AddOrEditCardsPrepaidNavTarget.none,
+      );
 
   AddOrEditCardsPrepaidState copyWith({
     AddOrEditCardsPrepaidLoadStatus? loadStatus,

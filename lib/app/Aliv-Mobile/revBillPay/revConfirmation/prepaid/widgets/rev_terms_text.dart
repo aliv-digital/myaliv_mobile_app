@@ -59,9 +59,7 @@ class RevTermsCheckbox extends StatelessWidget {
             text: TextSpan(
               style: RevConfirmationPrepaidTheme.terms,
               children: [
-                const TextSpan(
-                  text: 'By checking this box, I agree to the ',
-                ),
+                const TextSpan(text: 'By checking this box, I agree to the '),
                 TextSpan(
                   text: 'Terms & Conditions.',
                   style: RevConfirmationPrepaidTheme.link,

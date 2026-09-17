@@ -16,9 +16,7 @@ class HomePlanPurchaseReceiptTicketDivider extends StatelessWidget {
     return SizedBox(
       height: height,
       width: double.infinity,
-      child: CustomPaint(
-        painter: _DashedLinePainter(color: dashColor),
-      ),
+      child: CustomPaint(painter: _DashedLinePainter(color: dashColor)),
     );
   }
 }

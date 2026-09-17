@@ -59,13 +59,13 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
 
     final next =
         (number != null && expiry != null && cvv != null && name != null)
-            ? NewCardDetails(
-                cardNumber: number,
-                cardExpiration: expiry,
-                cardSecurityCode: cvv,
-                cardHolderName: name,
-              )
-            : null;
+        ? NewCardDetails(
+            cardNumber: number,
+            cardExpiration: expiry,
+            cardSecurityCode: cvv,
+            cardHolderName: name,
+          )
+        : null;
 
     if (next != _details) setState(() => _details = next);
   }
@@ -133,8 +133,9 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
-            onPressed:
-                _details == null ? null : () => widget.onSubmit(_details!),
+            onPressed: _details == null
+                ? null
+                : () => widget.onSubmit(_details!),
             style: ElevatedButton.styleFrom(
               elevation: 0,
               shadowColor: Colors.transparent,
@@ -191,8 +192,10 @@ class _CheckoutCardFormState extends State<CheckoutCardForm> {
         constraints: const BoxConstraints.tightFor(height: 48),
         // The fill container is sized by contentPadding + the 20px text
         // line, not by `constraints`: 14 + 20 + 14 = the full 48px height.
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 14,
+        ),
         prefixIcon: prefix,
         // The prefix sizes itself (12 + 34 + 8); the decorator centers it
         // vertically within the 48px field.
@@ -227,10 +230,7 @@ class _VisaPrefix extends StatelessWidget {
       child: SizedBox(
         width: 34,
         height: 24,
-        child: SvgPicture.asset(
-          AssetConstant.visaCardSVG,
-          fit: BoxFit.fill,
-        ),
+        child: SvgPicture.asset(AssetConstant.visaCardSVG, fit: BoxFit.fill),
       ),
     );
   }

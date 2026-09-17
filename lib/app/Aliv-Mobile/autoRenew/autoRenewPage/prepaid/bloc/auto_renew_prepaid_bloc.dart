@@ -10,7 +10,7 @@ class AutoRenewPrepaidBloc
   final AutoRenewPrepaidRepository repository;
 
   AutoRenewPrepaidBloc({required this.repository})
-      : super(AutoRenewPrepaidState.initial()) {
+    : super(AutoRenewPrepaidState.initial()) {
     on<AutoRenewPrepaidStarted>(_onStarted);
     on<AutoRenewMethodSelected>(_onSelected);
     on<AutoRenewSavedCardSelected>(_onSavedCardSelected);
@@ -27,10 +27,7 @@ class AutoRenewPrepaidBloc
     Emitter<AutoRenewPrepaidState> emit,
   ) async {
     emit(
-      state.copyWith(
-        loadStatus: AutoRenewLoadStatus.loading,
-        clearError: true,
-      ),
+      state.copyWith(loadStatus: AutoRenewLoadStatus.loading, clearError: true),
     );
 
     try {
@@ -65,7 +62,8 @@ class AutoRenewPrepaidBloc
     AutoRenewMethodSelected event,
     Emitter<AutoRenewPrepaidState> emit,
   ) async {
-    final isStaticMethod = event.methodId == AutoRenewPaymentMethod.wallet.id ||
+    final isStaticMethod =
+        event.methodId == AutoRenewPaymentMethod.wallet.id ||
         event.methodId == AutoRenewPaymentMethod.none.id ||
         event.methodId == AutoRenewPaymentMethod.payWithCard.id;
 
@@ -84,12 +82,7 @@ class AutoRenewPrepaidBloc
   ) {
     final card = event.card;
     if (card == null) {
-      emit(
-        state.copyWith(
-          clearSelectedCard: true,
-          clearError: true,
-        ),
-      );
+      emit(state.copyWith(clearSelectedCard: true, clearError: true));
       return;
     }
     emit(
@@ -113,20 +106,17 @@ class AutoRenewPrepaidBloc
     Emitter<AutoRenewPrepaidState> emit,
   ) async {
     try {
-      final card =
-          await repository.saveNewCard(month: event.month, year: event.year);
+      final card = await repository.saveNewCard(
+        month: event.month,
+        year: event.year,
+      );
 
       final newMethods = <AutoRenewPaymentMethod>[
         AutoRenewPaymentMethod.card(card),
         ...state.methods.where((m) => m.id != card.id),
       ];
 
-      emit(
-        state.copyWith(
-          methods: newMethods,
-          selectedMethodId: card.id,
-        ),
-      );
+      emit(state.copyWith(methods: newMethods, selectedMethodId: card.id));
     } catch (_) {
       emit(state.copyWith(errorMessage: 'Failed to save card.'));
     }

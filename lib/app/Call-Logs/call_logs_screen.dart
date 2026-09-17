@@ -13,14 +13,19 @@ enum CallLogsTabType { transactions, callLogs }
 class CallLogsScreen extends StatelessWidget {
   final CallLogsTabType initialTab;
 
-  const CallLogsScreen({super.key, this.initialTab = CallLogsTabType.transactions});
+  const CallLogsScreen({
+    super.key,
+    this.initialTab = CallLogsTabType.transactions,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<CallLogsCubit>()..fetchUsages()),
-        BlocProvider(create: (_) => instance<TransactionsCubit>()..fetchTransactions()),
+        BlocProvider(
+          create: (_) => instance<TransactionsCubit>()..fetchTransactions(),
+        ),
       ],
       child: _CallLogsView(initialTab: initialTab),
     );
@@ -46,8 +51,14 @@ class _CallLogsViewState extends State<_CallLogsView>
   @override
   void initState() {
     super.initState();
-    final initialIndex = widget.initialTab == CallLogsTabType.transactions ? 0 : 1;
-    _tabController = TabController(length: 2, vsync: this, initialIndex: initialIndex);
+    final initialIndex = widget.initialTab == CallLogsTabType.transactions
+        ? 0
+        : 1;
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
   }
 
   @override
@@ -134,7 +145,10 @@ class _CallLogsTabBar extends StatelessWidget {
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
-        tabs: const [Tab(text: 'transactions'), Tab(text: 'call logs')],
+        tabs: const [
+          Tab(text: 'transactions'),
+          Tab(text: 'call logs'),
+        ],
       ),
     );
   }

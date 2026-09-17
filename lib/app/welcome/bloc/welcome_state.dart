@@ -7,8 +7,5 @@ class WelcomeLoadedState extends WelcomeState {
   final bool isLoaded;
   final String? mobileImageUrl;
 
-  WelcomeLoadedState({
-    required this.isLoaded,
-    this.mobileImageUrl,
-  });
+  WelcomeLoadedState({required this.isLoaded, this.mobileImageUrl});
 }

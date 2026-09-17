@@ -4,7 +4,8 @@ import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 
 class GuestTopUpTheme {
   // Screen copy for guest top-up form.
-  static const String activePrepaidLabel = 'please enter an active prepaid number to top-up';
+  static const String activePrepaidLabel =
+      'please enter an active prepaid number to top-up';
   static const String confirmMobileLabel = 'confirm mobile number';
   static const String amountLabel = 'enter top-up amount';
   static const String phoneHintText = 'eg: 242-899-9999';
@@ -60,13 +61,7 @@ class GuestTopUpTheme {
   static final LinearGradient focusedInputBorderGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
-    colors: <Color>[
-      yellow,
-      blue,
-      purple,
-      lightPink,
-      orange,
-    ],
+    colors: <Color>[yellow, blue, purple, lightPink, orange],
   );
 
   // Amount input field dimensions from design.

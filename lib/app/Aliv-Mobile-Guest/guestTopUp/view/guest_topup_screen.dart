@@ -58,10 +58,10 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   final LoginPhoneNumberHelper _phoneHelper = const LoginPhoneNumberHelper();
 
   LoginCountrySelection get _loginCountry => LoginCountrySelection(
-        isoCode: _selectedCountry.isoCode ?? 'BS',
-        dialCode: _selectedCountry.dialCode,
-        flagEmoji: _selectedCountry.flagEmoji,
-      );
+    isoCode: _selectedCountry.isoCode ?? 'BS',
+    dialCode: _selectedCountry.dialCode,
+    flagEmoji: _selectedCountry.flagEmoji,
+  );
 
   bool get _isBahamas => (_selectedCountry.isoCode ?? '') == 'BS';
 
@@ -80,14 +80,18 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
   }
 
   void _showErrorSnackBar(String? errorMessage) {
-    final resolvedMessage = errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
+    final resolvedMessage =
+        errorMessage ?? GuestTopUpTheme.fallbackErrorMessage;
 
     AppToast.show(message: resolvedMessage.toString(), type: ToastType.error);
   }
 
   void _handleNextPressed(GuestTopUpState state) {
     final bool phoneInvalid = _isPhoneInvalid(state.phoneNumber);
-    final bool mismatch = _isMismatch(state.phoneNumber, state.confirmPhoneNumber);
+    final bool mismatch = _isMismatch(
+      state.phoneNumber,
+      state.confirmPhoneNumber,
+    );
     final bool confirmEmpty = state.confirmPhoneNumber.isEmpty;
 
     if (state.phoneNumber.isEmpty || phoneInvalid) {
@@ -106,10 +110,8 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       return;
     }
 
-    final double parsedAmount = double.tryParse(
-          state.amount.replaceAll(RegExp(r'[^0-9.]'), ''),
-        ) ??
-        0;
+    final double parsedAmount =
+        double.tryParse(state.amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
     if (parsedAmount <= 0) return;
 
     context.push(
@@ -168,8 +170,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     TextStyle? labelStyle,
     bool showCountryArrow = false,
   }) {
-    final Color borderColor =
-        showError ? GuestTopUpTheme.errorRed : GuestTopUpTheme.inputFieldBorderColor;
+    final Color borderColor = showError
+        ? GuestTopUpTheme.errorRed
+        : GuestTopUpTheme.inputFieldBorderColor;
     final TextStyle inputStyle = showError
         ? GuestTopUpTheme.phoneInput.copyWith(color: GuestTopUpTheme.errorRed)
         : GuestTopUpTheme.phoneInput;
@@ -188,8 +191,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
           countryIsoCode: _selectedCountry.isoCode,
           enableCountryPicker: false,
           showCountryArrow: showCountryArrow,
-          inputFormatters:
-              _isBahamas ? const [BahamasPhoneInputFormatter()] : null,
+          inputFormatters: _isBahamas
+              ? const [BahamasPhoneInputFormatter()]
+              : null,
           unfocusedBorderColor: borderColor,
           phoneInputStyle: inputStyle,
           onChanged: onChanged,
@@ -198,10 +202,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: errorLeftPadding),
-            child: Text(
-              errorText!,
-              style: GuestTopUpTheme.inlineError,
-            ),
+            child: Text(errorText!, style: GuestTopUpTheme.inlineError),
           ),
         ],
       ],
@@ -250,8 +251,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                           buildWhen: (previous, current) =>
                               previous.phoneNumber != current.phoneNumber,
                           builder: (context, state) {
-                            final bool showError =
-                                _isPhoneInvalid(state.phoneNumber);
+                            final bool showError = _isPhoneInvalid(
+                              state.phoneNumber,
+                            );
                             return _buildPhoneField(
                               labelText: GuestTopUpTheme.activePrepaidLabel,
                               labelStyle: GuestTopUpTheme.activePrepaidPrompt,
@@ -290,10 +292,10 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               value: state.confirmPhoneNumber,
                               showError: showError,
                               errorText: GuestTopUpTheme.phoneMismatchMessage,
-                              onChanged: (value) => context
-                                  .read<GuestTopUpBloc>()
-                                  .add(GuestActivePrepaidNumberConfirmEvent(
-                                      value)),
+                              onChanged: (value) =>
+                                  context.read<GuestTopUpBloc>().add(
+                                    GuestActivePrepaidNumberConfirmEvent(value),
+                                  ),
                             );
                           },
                         ),

@@ -8,7 +8,6 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../../../../../../resources/widgets/defaultBackButton.dart';
 import '../../../../login/theme/login_theme.dart';
 
-
 class OtpProfilePrepaidHeader extends StatelessWidget {
   const OtpProfilePrepaidHeader({super.key});
 
@@ -28,11 +27,7 @@ class OtpProfilePrepaidHeader extends StatelessWidget {
           },
         ),
         const SizedBox(height: 56),
-        SvgPicture.asset(
-          AssetConstant.otpPhoneSVG,
-          width: 162,
-          height: 170,
-        ),
+        SvgPicture.asset(AssetConstant.otpPhoneSVG, width: 162, height: 170),
         const SizedBox(height: 21),
         const Text(
           'verification code',

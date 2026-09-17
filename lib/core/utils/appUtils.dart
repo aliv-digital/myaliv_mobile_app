@@ -4,8 +4,11 @@ import 'package:intl/intl.dart';
 import '../../resources/color_manager.dart';
 
 class AppUtils {
-
-  static void fieldFocusChange(BuildContext context, FocusNode current, FocusNode nextFocus) {
+  static void fieldFocusChange(
+    BuildContext context,
+    FocusNode current,
+    FocusNode nextFocus,
+  ) {
     current.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }

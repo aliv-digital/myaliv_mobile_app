@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum OTPPostpaidStatus { initial, loading, success, failure }
+
 enum OTPPostpaidResendStatus { idle, loading, done }
 
 class OTPPostpaidState extends Equatable {

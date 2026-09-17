@@ -34,7 +34,8 @@ class OtpBottomActions extends StatelessWidget {
         // didn't receive / resend
         BlocBuilder<LoginOtpBloc, LoginOtpState>(
           builder: (context, state) {
-            final resendLoading = state.resendStatus == LoginOtpResendStatus.loading;
+            final resendLoading =
+                state.resendStatus == LoginOtpResendStatus.loading;
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -44,7 +45,11 @@ class OtpBottomActions extends StatelessWidget {
                   style: LoginOtpTheme.helperText,
                 ),
                 GestureDetector(
-                  onTap: resendLoading ? null : () => context.read<LoginOtpBloc>().add(const LoginOtpResendRequested()),
+                  onTap: resendLoading
+                      ? null
+                      : () => context.read<LoginOtpBloc>().add(
+                          const LoginOtpResendRequested(),
+                        ),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: LoginOtpTheme.resendText,
@@ -54,7 +59,6 @@ class OtpBottomActions extends StatelessWidget {
             );
           },
         ),
-
       ],
     );
   }

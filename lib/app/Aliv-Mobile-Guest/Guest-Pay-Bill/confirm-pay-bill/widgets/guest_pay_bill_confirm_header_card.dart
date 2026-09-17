@@ -22,8 +22,9 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
       padding: GuestPayBillConfirmTheme.headerCardPadding,
       decoration: BoxDecoration(
         color: GuestPayBillConfirmTheme.cardWhite,
-        borderRadius:
-            BorderRadius.circular(GuestPayBillConfirmTheme.headerCardRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPayBillConfirmTheme.headerCardRadius,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -42,7 +43,8 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                    height: GuestPayBillConfirmTheme.headerToSubtitleGap),
+                  height: GuestPayBillConfirmTheme.headerToSubtitleGap,
+                ),
                 Text(
                   '$identifierLabel $identifierValue',
                   style: GuestPayBillConfirmTheme.headerSub,
@@ -55,7 +57,8 @@ class GuestPayBillConfirmHeaderCard extends StatelessWidget {
             ),
           ),
           const SizedBox(
-              width: GuestPayBillConfirmTheme.headerTextToAmountPillGap),
+            width: GuestPayBillConfirmTheme.headerTextToAmountPillGap,
+          ),
           _AmountPill(amount: amount),
         ],
       ),
@@ -73,8 +76,9 @@ class _AmountPill extends StatelessWidget {
       padding: GuestPayBillConfirmTheme.amountPillPadding,
       decoration: BoxDecoration(
         color: GuestPayBillConfirmTheme.amountBackground,
-        borderRadius:
-            BorderRadius.circular(GuestPayBillConfirmTheme.amountPillRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPayBillConfirmTheme.amountPillRadius,
+        ),
       ),
       child: Text(
         _money(amount),

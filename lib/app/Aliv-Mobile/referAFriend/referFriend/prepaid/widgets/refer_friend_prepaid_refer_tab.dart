@@ -40,11 +40,13 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
-            buildWhen: (p, c) => p.friendEmail != c.friendEmail || p.friendEmailFieldError != c.friendEmailFieldError,
+            buildWhen: (p, c) =>
+                p.friendEmail != c.friendEmail ||
+                p.friendEmailFieldError != c.friendEmailFieldError,
             builder: (context, state) {
               const emailHelper = ReferFriendPrepaidEmailHelper();
-              final showLiveEmailValidationError =
-                  emailHelper.hasLiveValidationError(state.friendEmail);
+              final showLiveEmailValidationError = emailHelper
+                  .hasLiveValidationError(state.friendEmail);
               final showEmailError =
                   state.friendEmailFieldError || showLiveEmailValidationError;
 
@@ -68,11 +70,15 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                         .add(ReferFriendPrepaidFriendEmailChanged(v)),
                   ),
                   const SizedBox(height: 40),
-                  BlocSelector<ReferFriendPrepaidBloc, ReferFriendPrepaidState,
-                      ({bool canShare, bool loading})>(
+                  BlocSelector<
+                    ReferFriendPrepaidBloc,
+                    ReferFriendPrepaidState,
+                    ({bool canShare, bool loading})
+                  >(
                     selector: (state) => (
                       canShare: state.canShare,
-                      loading: state.shareStatus ==
+                      loading:
+                          state.shareStatus ==
                           ReferFriendPrepaidSubmitStatus.submitting,
                     ),
                     builder: (context, buttonState) {
@@ -80,9 +86,9 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                         label: 'share',
                         enabled: buttonState.canShare && !buttonState.loading,
                         isLoading: buttonState.loading,
-                        onTap: () => context
-                            .read<ReferFriendPrepaidBloc>()
-                            .add(const ReferFriendPrepaidSharePressed()),
+                        onTap: () => context.read<ReferFriendPrepaidBloc>().add(
+                          const ReferFriendPrepaidSharePressed(),
+                        ),
                       );
                     },
                   ),

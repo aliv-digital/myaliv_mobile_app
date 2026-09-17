@@ -89,7 +89,8 @@ class _HomePlansPaymentMethodSectionState
           _buildPayWithCardRow(),
           if (widget.showPayFromWallet) ...[
             const SizedBox(
-              height: HomePlansPaymentMethodTheme.firstToSecondCardGap, //payWithCardToWalletGap,
+              height: HomePlansPaymentMethodTheme
+                  .firstToSecondCardGap, //payWithCardToWalletGap,
             ),
             _buildPayFromWalletRow(),
           ],
@@ -99,7 +100,9 @@ class _HomePlansPaymentMethodSectionState
   }
 
   Widget _buildPaymentMethodList() {
-    final chargeToAccountMethods = widget.methods.where((HomePlansSavedPaymentMethod m) => m.isChargeToMyAccount).toList(growable: false);
+    final chargeToAccountMethods = widget.methods
+        .where((HomePlansSavedPaymentMethod m) => m.isChargeToMyAccount)
+        .toList(growable: false);
 
     return BlocBuilder<SavedCardsCubit, SavedCardsState>(
       bloc: instance<SavedCardsCubit>(),

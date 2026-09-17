@@ -34,18 +34,11 @@ class MyProfilePrepaidActionTile extends StatelessWidget {
                   color: MyProfilePrepaidTheme.actionIconBg,
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: SvgPicture.asset(
-                    iconPath,
-                    width: 25,
-                    height: 25,
-                ),
+                child: SvgPicture.asset(iconPath, width: 25, height: 25),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  title,
-                  style: MyProfilePrepaidTheme.actionTitle,
-                ),
+                child: Text(title, style: MyProfilePrepaidTheme.actionTitle),
               ),
               const SizedBox(width: 12),
               const Icon(Icons.chevron_right, color: Colors.black, size: 22),

@@ -24,7 +24,7 @@ class TopUpPaymentPrepaidTheme {
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: textPrimary,
-    height: 1.43
+    height: 1.43,
   );
 
   static TextStyle bodySm(BuildContext context) => const TextStyle(
@@ -32,7 +32,7 @@ class TopUpPaymentPrepaidTheme {
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: textSecondary,
-    height: 1.43
+    height: 1.43,
   );
 
   static TextStyle labelSm(BuildContext context) => const TextStyle(
@@ -43,10 +43,10 @@ class TopUpPaymentPrepaidTheme {
   );
 
   static TextStyle bottomPrice(BuildContext context) => const TextStyle(
-      color: const Color(0xFF222222),
-      fontSize: 22,
-      fontFamily: 'CircularPro',
-      fontWeight: FontWeight.w700,
+    color: const Color(0xFF222222),
+    fontSize: 22,
+    fontFamily: 'CircularPro',
+    fontWeight: FontWeight.w700,
   );
 
   static TextStyle buttonText(BuildContext context) => const TextStyle(

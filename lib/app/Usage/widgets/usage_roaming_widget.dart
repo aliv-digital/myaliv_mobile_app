@@ -78,7 +78,6 @@ class UsageRoamingPlanCard extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _DateColumn extends StatelessWidget {
@@ -95,8 +94,9 @@ class _DateColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           title,

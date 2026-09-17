@@ -58,12 +58,10 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _slideController, curve: Curves.elasticOut),
-    );
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.elasticOut),
+        );
 
     _pulseController.repeat(reverse: true);
     _slideController.forward();
@@ -89,17 +87,17 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
   }
 
   String _getStatusMessage(String type) => switch (type.toLowerCase()) {
-        'fingerprint' => 'Place any registered finger on the sensor',
-        'face id' => 'Look directly at the front camera',
-        'iris' => 'Look at the camera for iris scan',
-        _ => 'Use your registered biometric',
-      };
+    'fingerprint' => 'Place any registered finger on the sensor',
+    'face id' => 'Look directly at the front camera',
+    'iris' => 'Look at the camera for iris scan',
+    _ => 'Use your registered biometric',
+  };
 
   IconData _getBiometricIcon(String type) => switch (type.toLowerCase()) {
-        'fingerprint' => Icons.fingerprint_rounded,
-        'face id' => Icons.face_rounded,
-        _ => Icons.security_rounded,
-      };
+    'fingerprint' => Icons.fingerprint_rounded,
+    'face id' => Icons.face_rounded,
+    _ => Icons.security_rounded,
+  };
 
   void _handleState(BuildContext context, FingerFaceSecurityState state) {
     switch (state.status) {
@@ -121,10 +119,12 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
         HapticFeedback.heavyImpact();
         setState(() {
           _isAuthenticating = false;
-          _statusMessage = state.errorMessage ?? 'Authentication failed. Please try again.';
+          _statusMessage =
+              state.errorMessage ?? 'Authentication failed. Please try again.';
         });
         if (state.lastAuthResult == BiometricAuthResult.deviceNotSupported ||
-            state.lastAuthResult == BiometricAuthResult.biometricsNotAvailable) {
+            state.lastAuthResult ==
+                BiometricAuthResult.biometricsNotAvailable) {
           widget.onAuthError?.call();
         }
       default:
@@ -179,7 +179,8 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                           ),
                         ],
                       ),
-                      child: widget.appIcon ??
+                      child:
+                          widget.appIcon ??
                           Icon(
                             Icons.lock_rounded,
                             size: 48,
@@ -202,7 +203,9 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                     Text(
                       widget.lockSubtitle ?? 'Your app is locked',
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
 
@@ -221,12 +224,14 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                                 width: 160,
                                 height: 160,
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.05),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.05,
+                                  ),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: 0.1),
+                                    color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -237,12 +242,14 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                                 width: 140,
                                 height: 140,
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.08),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.08,
+                                  ),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: 0.2),
+                                    color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -251,18 +258,21 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                               width: 120,
                               height: 120,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primary
-                                    .withValues(alpha: 0.12),
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.12,
+                                ),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.3),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: 0.2),
+                                    color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     blurRadius: 20,
                                     spreadRadius: 2,
                                   ),
@@ -299,7 +309,9 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                         !_isAuthenticating)
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(20),
@@ -307,8 +319,9 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
                         child: Text(
                           'Try any of your registered fingers',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.7),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
                       ),

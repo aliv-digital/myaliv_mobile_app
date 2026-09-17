@@ -75,11 +75,7 @@ class MyApp extends StatelessWidget {
   final AppRouter appRouter;
   final HomeUiConfig? initialUiConfig;
 
-  const MyApp({
-    super.key,
-    required this.appRouter,
-    this.initialUiConfig,
-  });
+  const MyApp({super.key, required this.appRouter, this.initialUiConfig});
 
   @override
   Widget build(BuildContext context) {
@@ -131,4 +127,3 @@ I/flutter ( 8948): Account info request initiated for user: 027BA54E-973F-45DD-8
  580468973
 {"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366WyBVH/lKbWfRXHkj1R8UhKVaJHKzRp/Q8l9Z58FywJg93yYCogpWko0ltE/KloKX/6wv0q+cMZwa5QfY0urdZw==","AccountId":1259947673}
  */
-

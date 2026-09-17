@@ -43,11 +43,11 @@ class RewardPrepaidState extends Equatable {
   });
 
   factory RewardPrepaidState.initial() => const RewardPrepaidState(
-        status: RewardPrepaidStatus.initial,
-        rewards: [],
-        errorMessage: null,
-        action: null,
-      );
+    status: RewardPrepaidStatus.initial,
+    rewards: [],
+    errorMessage: null,
+    action: null,
+  );
 
   @override
   List<Object?> get props => [status, rewards, errorMessage, action];

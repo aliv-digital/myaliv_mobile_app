@@ -35,10 +35,7 @@ class SettingsToggleTile extends StatelessWidget {
                 ),
               ),
             ),
-            _FigmaToggle(
-              value: value,
-              onChanged: onChanged,
-            ),
+            _FigmaToggle(value: value, onChanged: onChanged),
           ],
         ),
       ),
@@ -158,16 +155,11 @@ class _IconCircle extends StatelessWidget {
 //   }
 // }
 
-
 class _FigmaToggle extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _FigmaToggle({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
+  const _FigmaToggle({super.key, required this.value, required this.onChanged});
 
   static const double _width = 55;
   static const double _height = 28;
@@ -181,10 +173,7 @@ class _FigmaToggle extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         width: _width,
         height: _height,
-        padding: EdgeInsets.only(
-          left: value ? 10 : 3,
-          right: value ? 3 : 10,
-        ),
+        padding: EdgeInsets.only(left: value ? 10 : 3, right: value ? 3 : 10),
         decoration: BoxDecoration(
           color: value ? const Color(0xFF645D9C) : const Color(0xFF6B7280),
           borderRadius: BorderRadius.circular(35.71),
@@ -195,28 +184,28 @@ class _FigmaToggle extends StatelessWidget {
               : MainAxisAlignment.spaceBetween,
           children: value
               ? [
-            /// KNOB (no "On" label per design)
-            _knob(),
-          ]
+                  /// KNOB (no "On" label per design)
+                  _knob(),
+                ]
               : [
-            /// KNOB
-            _knob(withShadow: true),
+                  /// KNOB
+                  _knob(withShadow: true),
 
-            /// OFF TEXT
-            const SizedBox(
-              width: 14,
-              child: Text(
-                'Off',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 8,
-                  fontFamily: 'CircularPro',
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-          ],
+                  /// OFF TEXT
+                  const SizedBox(
+                    width: 14,
+                    child: Text(
+                      'Off',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontFamily: 'CircularPro',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ],
         ),
       ),
     );
@@ -231,15 +220,14 @@ class _FigmaToggle extends StatelessWidget {
         borderRadius: BorderRadius.circular(50),
         boxShadow: withShadow
             ? [
-          const BoxShadow(
-            color: Color(0x25000000),
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          )
-        ]
+                const BoxShadow(
+                  color: Color(0x25000000),
+                  blurRadius: 8,
+                  offset: Offset(0, 3),
+                ),
+              ]
             : null,
       ),
     );
   }
 }
-

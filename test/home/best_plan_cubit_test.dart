@@ -30,10 +30,10 @@ BestPlanModel _plan({
 }
 
 List<BestPlanModel> _prepaidPlans() => [
-      _plan(id: 1, type: 'prepaid'),
-      _plan(id: 2, type: 'prepaid'),
-      _plan(id: 3, type: 'prepaid'),
-    ];
+  _plan(id: 1, type: 'prepaid'),
+  _plan(id: 2, type: 'prepaid'),
+  _plan(id: 3, type: 'prepaid'),
+];
 
 void main() {
   late MockBestPlanRepository repository;
@@ -56,8 +56,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'emits [loading, loaded] when prepaid plans are returned',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenAnswer((_) async => _prepaidPlans());
+        when(
+          () => repository.fetchActivePlans(userType: 'prepaid'),
+        ).thenAnswer((_) async => _prepaidPlans());
         return BestPlanCubit(repository);
       },
       act: (cubit) => cubit.loadPlans(userType: 'prepaid'),
@@ -73,8 +74,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'emits [loading, empty] when repository returns empty list',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenAnswer((_) async => []);
+        when(
+          () => repository.fetchActivePlans(userType: 'prepaid'),
+        ).thenAnswer((_) async => []);
         return BestPlanCubit(repository);
       },
       act: (cubit) => cubit.loadPlans(userType: 'prepaid'),
@@ -87,8 +89,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'passes userType to repository',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'postpaid'))
-            .thenAnswer((_) async => [_plan(type: 'postpaid')]);
+        when(
+          () => repository.fetchActivePlans(userType: 'postpaid'),
+        ).thenAnswer((_) async => [_plan(type: 'postpaid')]);
         return BestPlanCubit(repository);
       },
       act: (cubit) => cubit.loadPlans(userType: 'postpaid'),
@@ -150,8 +153,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'emits [loading, failure] on unexpected exception',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenThrow(Exception('Unexpected'));
+        when(
+          () => repository.fetchActivePlans(userType: 'prepaid'),
+        ).thenThrow(Exception('Unexpected'));
         return BestPlanCubit(repository);
       },
       act: (cubit) => cubit.loadPlans(userType: 'prepaid'),
@@ -172,8 +176,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'second call within 5-min TTL skips fetch',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenAnswer((_) async => _prepaidPlans());
+        when(
+          () => repository.fetchActivePlans(userType: 'prepaid'),
+        ).thenAnswer((_) async => _prepaidPlans());
         return BestPlanCubit(repository);
       },
       act: (cubit) async {
@@ -188,8 +193,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'forceRefresh: true bypasses valid cache',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenAnswer((_) async => _prepaidPlans());
+        when(
+          () => repository.fetchActivePlans(userType: 'prepaid'),
+        ).thenAnswer((_) async => _prepaidPlans());
         return BestPlanCubit(repository);
       },
       act: (cubit) async {
@@ -206,11 +212,12 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'second loadPlans while loading is ignored',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenAnswer((_) async {
-          await Future.delayed(const Duration(milliseconds: 50));
-          return _prepaidPlans();
-        });
+        when(() => repository.fetchActivePlans(userType: 'prepaid')).thenAnswer(
+          (_) async {
+            await Future.delayed(const Duration(milliseconds: 50));
+            return _prepaidPlans();
+          },
+        );
         return BestPlanCubit(repository);
       },
       act: (cubit) async {
@@ -228,8 +235,9 @@ void main() {
     blocTest<BestPlanCubit, BestPlanState>(
       'reset returns to initial state',
       build: () {
-        when(() => repository.fetchActivePlans(userType: 'prepaid'))
-            .thenAnswer((_) async => _prepaidPlans());
+        when(
+          () => repository.fetchActivePlans(userType: 'prepaid'),
+        ).thenAnswer((_) async => _prepaidPlans());
         return BestPlanCubit(repository);
       },
       act: (cubit) async {
@@ -239,7 +247,11 @@ void main() {
       expect: () => [
         isA<BestPlanState>().having((s) => s.isLoading, 'isLoading', true),
         isA<BestPlanState>().having((s) => s.isLoaded, 'isLoaded', true),
-        isA<BestPlanState>().having((s) => s.status, 'status', BestPlanStatus.initial),
+        isA<BestPlanState>().having(
+          (s) => s.status,
+          'status',
+          BestPlanStatus.initial,
+        ),
       ],
     );
   });

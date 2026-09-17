@@ -72,9 +72,7 @@ class _HomePlanTabsState extends State<HomePlanTabs> {
         widget.tabs ?? HomePlanTabs.tabLabels.keys.toList(growable: false);
     return Container(
       color: HomePlanTheme.tabBarBackground,
-      padding: const EdgeInsets.only(
-        top: HomePlanTheme.tabTopGapFromAppBar,
-      ),
+      padding: const EdgeInsets.only(top: HomePlanTheme.tabTopGapFromAppBar),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

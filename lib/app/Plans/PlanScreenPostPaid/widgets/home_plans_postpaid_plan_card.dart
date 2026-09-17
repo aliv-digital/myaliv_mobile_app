@@ -87,7 +87,8 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
             Row(
               children: <Widget>[
                 SvgPicture.asset(
-                    AssetConstant.wifiIconSVG), //'assets/icons/Rss.svg'
+                  AssetConstant.wifiIconSVG,
+                ), //'assets/icons/Rss.svg'
                 const SizedBox(width: 4),
                 Text(
                   plan.primaryDataLabel,

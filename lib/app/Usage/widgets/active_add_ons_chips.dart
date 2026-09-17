@@ -16,7 +16,8 @@ class ActiveAddOnsChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlansCubit, PlansState>(
-      buildWhen: (a, b) => a.effectiveSecondaryPlans != b.effectiveSecondaryPlans,
+      buildWhen: (a, b) =>
+          a.effectiveSecondaryPlans != b.effectiveSecondaryPlans,
       builder: (context, state) {
         final labels = state.effectiveSecondaryPlans
             .map((p) => p.planName.trim())
@@ -41,9 +42,7 @@ class ActiveAddOnsChips extends StatelessWidget {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: [
-                for (final label in labels) _Chip(label),
-              ],
+              children: [for (final label in labels) _Chip(label)],
             ),
           ],
         );
@@ -63,9 +62,7 @@ class _Chip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: ShapeDecoration(
         color: const Color(0xFFF4F4F6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Text(
         label,

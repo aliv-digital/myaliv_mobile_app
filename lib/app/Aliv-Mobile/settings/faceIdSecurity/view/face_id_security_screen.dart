@@ -16,9 +16,9 @@ class FaceIdSecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => FaceIdSecurityBloc(
-        repository: FaceIdSecurityRepositoryImpl(),
-      )..add(const FaceIdSecurityStarted()),
+      create: (_) =>
+          FaceIdSecurityBloc(repository: FaceIdSecurityRepositoryImpl())
+            ..add(const FaceIdSecurityStarted()),
       child: const _FaceIdSecurityView(),
     );
   }
@@ -34,17 +34,18 @@ class _FaceIdSecurityView extends StatelessWidget {
       listener: (context, state) {
         if (state.navTarget == FaceIdSecurityNavTarget.back) {
           Navigator.of(context).maybePop();
-          context
-              .read<FaceIdSecurityBloc>()
-              .add(const FaceIdSecurityNavConsumed());
+          context.read<FaceIdSecurityBloc>().add(
+            const FaceIdSecurityNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
         final content = state.content;
 
         return MediaQuery(
-          data:
-              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: FaceIdSecurityTheme.bg,
             body: Column(

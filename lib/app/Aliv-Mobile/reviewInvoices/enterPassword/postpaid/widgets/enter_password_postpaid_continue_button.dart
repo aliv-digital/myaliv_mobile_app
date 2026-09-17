@@ -22,8 +22,9 @@ class EnterPasswordPostpaidContinueButton extends StatelessWidget {
         onPressed: enabled ? onTap : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: EnterPasswordPostpaidTheme.brand,
-          disabledBackgroundColor:
-          EnterPasswordPostpaidTheme.brand.withValues(alpha: 0.35),
+          disabledBackgroundColor: EnterPasswordPostpaidTheme.brand.withValues(
+            alpha: 0.35,
+          ),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
@@ -31,24 +32,24 @@ class EnterPasswordPostpaidContinueButton extends StatelessWidget {
         ),
         child: isLoading
             ? const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: Colors.white,
-          ),
-        )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : Text(
-          'Continue',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 17,
-            fontFamily: 'CircularPro',
-            fontWeight: FontWeight.w700,
-            height: 1.80,
-          ),
-        ),
+                'Continue',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w700,
+                  height: 1.80,
+                ),
+              ),
       ),
     );
   }

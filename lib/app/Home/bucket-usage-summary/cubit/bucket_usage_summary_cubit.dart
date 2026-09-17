@@ -40,10 +40,12 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
       // Still adopt the latest plan references even when a fetch is in flight.
       if (!_plansEqual(activePlans, state.activePlans) ||
           !_plansEqual(standAlonePlans, state.standAlonePlans)) {
-        emit(state.copyWith(
-          activePlans: activePlans,
-          standAlonePlans: standAlonePlans,
-        ));
+        emit(
+          state.copyWith(
+            activePlans: activePlans,
+            standAlonePlans: standAlonePlans,
+          ),
+        );
       }
       return;
     }
@@ -53,10 +55,12 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
         state.isCacheValidFor(deviceAccountId)) {
       if (!_plansEqual(activePlans, state.activePlans) ||
           !_plansEqual(standAlonePlans, state.standAlonePlans)) {
-        emit(state.copyWith(
-          activePlans: activePlans,
-          standAlonePlans: standAlonePlans,
-        ));
+        emit(
+          state.copyWith(
+            activePlans: activePlans,
+            standAlonePlans: standAlonePlans,
+          ),
+        );
       }
       return;
     }
@@ -113,8 +117,10 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
     List<BasePlanModel> standAlonePlans = const <BasePlanModel>[],
   }) {
     final activeUnchanged = _plansEqual(activePlans, state.activePlans);
-    final standAloneUnchanged =
-        _plansEqual(standAlonePlans, state.standAlonePlans);
+    final standAloneUnchanged = _plansEqual(
+      standAlonePlans,
+      state.standAlonePlans,
+    );
     if (activeUnchanged && standAloneUnchanged) {
       return;
     }
@@ -122,10 +128,12 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
     if (activePlans.isEmpty && standAlonePlans.isEmpty) {
       emit(state.copyWith(clearActivePlans: true));
     } else {
-      emit(state.copyWith(
-        activePlans: activePlans,
-        standAlonePlans: standAlonePlans,
-      ));
+      emit(
+        state.copyWith(
+          activePlans: activePlans,
+          standAlonePlans: standAlonePlans,
+        ),
+      );
     }
   }
 

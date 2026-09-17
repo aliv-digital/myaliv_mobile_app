@@ -85,7 +85,9 @@ class BalanceParserService {
         if (groupName == 'Wallet') {
           walletBalance = double.tryParse(balanceValue ?? '0') ?? 0.0;
           if (kDebugMode) {
-            debugPrint('  ✓ Wallet balance: \$${walletBalance.toStringAsFixed(2)}');
+            debugPrint(
+              '  ✓ Wallet balance: \$${walletBalance.toStringAsFixed(2)}',
+            );
           }
         }
 

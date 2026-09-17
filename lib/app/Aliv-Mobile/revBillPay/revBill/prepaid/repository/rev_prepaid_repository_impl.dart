@@ -9,9 +9,6 @@ class RevPrepaidRepositoryImpl implements RevPrepaidRepository {
     // Mock (API later replace)
     await Future.delayed(const Duration(milliseconds: 500));
 
-    return const RevAccountInfo(
-      status: 'Active',
-      balance: 200.00,
-    );
+    return const RevAccountInfo(status: 'Active', balance: 200.00);
   }
 }

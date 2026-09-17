@@ -43,7 +43,8 @@ class PurchaseItemRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: HomePlanConfirmationTheme.purchaseItemTitleToSubtitleGap,
+                height:
+                    HomePlanConfirmationTheme.purchaseItemTitleToSubtitleGap,
               ),
               Text(
                 item.subtitle, // this is date

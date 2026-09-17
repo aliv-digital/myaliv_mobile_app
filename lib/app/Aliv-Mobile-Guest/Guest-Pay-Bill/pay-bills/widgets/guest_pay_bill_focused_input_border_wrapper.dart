@@ -20,8 +20,9 @@ class GuestPayBillFocusedInputBorderWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient:
-            isFocused ? GuestPayBillTheme.focusedInputBorderGradient : null,
+        gradient: isFocused
+            ? GuestPayBillTheme.focusedInputBorderGradient
+            : null,
         borderRadius: BorderRadius.circular(radius),
       ),
       padding: EdgeInsets.all(borderWidth),

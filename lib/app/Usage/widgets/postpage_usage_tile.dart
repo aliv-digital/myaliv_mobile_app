@@ -67,8 +67,7 @@ class PostpaidUsageTile extends StatelessWidget {
               ),
             ],
           ),
-          Divider(color: Color(0xFFDBDBDB),)
-
+          Divider(color: Color(0xFFDBDBDB)),
         ],
       ),
     );

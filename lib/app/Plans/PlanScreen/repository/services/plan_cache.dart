@@ -8,7 +8,6 @@ import '../../../PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 /// Adds caching for typed plan models using unified BasePlanModel
 /// (Daily, Weekly, Monthly, Roaming, RoamEasy, MiFi, Liberty Global)
 class PlanCache extends BasePlanCache {
-
   // Typed plans cache using CacheEntry
   // All prepaid plan types now use BasePlanModel
   final CacheEntry<List<BasePlanModel>> _dailyPlansCache = CacheEntry();
@@ -18,7 +17,8 @@ class PlanCache extends BasePlanCache {
   final CacheEntry<List<BasePlanModel>> _roamEasyPlansCache = CacheEntry();
   final CacheEntry<List<BasePlanModel>> _mifiPlansCache = CacheEntry();
   final CacheEntry<List<BasePlanModel>> _libertyGlobalPlansCache = CacheEntry();
-  final CacheEntry<List<HomePlansPostPaidPlanModel>> _postpaidRoamingPlansCache = CacheEntry();
+  final CacheEntry<List<HomePlansPostPaidPlanModel>>
+  _postpaidRoamingPlansCache = CacheEntry();
   final CacheEntry<Map<String, dynamic>> _bundlesResponseCache = CacheEntry();
   final CacheEntry<List<BasePlanModel>> _addOnsPrimaryPlansCache = CacheEntry();
 
@@ -32,7 +32,8 @@ class PlanCache extends BasePlanCache {
 
   // ========== Weekly Plans ==========
 
-  void setWeeklyPlans(List<BasePlanModel> plans) => _weeklyPlansCache.set(plans);
+  void setWeeklyPlans(List<BasePlanModel> plans) =>
+      _weeklyPlansCache.set(plans);
 
   List<BasePlanModel> getWeeklyPlans() => _weeklyPlansCache.get() ?? [];
 
@@ -40,7 +41,8 @@ class PlanCache extends BasePlanCache {
 
   // ========== Monthly Plans ==========
 
-  void setMonthlyPlans(List<BasePlanModel> plans) => _monthlyPlansCache.set(plans);
+  void setMonthlyPlans(List<BasePlanModel> plans) =>
+      _monthlyPlansCache.set(plans);
 
   List<BasePlanModel> getMonthlyPlans() => _monthlyPlansCache.get() ?? [];
 
@@ -48,7 +50,8 @@ class PlanCache extends BasePlanCache {
 
   // ========== Roaming Plans ==========
 
-  void setRoamingPlans(List<BasePlanModel> plans) => _roamingPlansCache.set(plans);
+  void setRoamingPlans(List<BasePlanModel> plans) =>
+      _roamingPlansCache.set(plans);
 
   List<BasePlanModel> getRoamingPlans() => _roamingPlansCache.get() ?? [];
 
@@ -56,7 +59,8 @@ class PlanCache extends BasePlanCache {
 
   // ========== RoamEasy Plans ==========
 
-  void setRoamEasyPlans(List<BasePlanModel> plans) => _roamEasyPlansCache.set(plans);
+  void setRoamEasyPlans(List<BasePlanModel> plans) =>
+      _roamEasyPlansCache.set(plans);
 
   List<BasePlanModel> getRoamEasyPlans() => _roamEasyPlansCache.get() ?? [];
 

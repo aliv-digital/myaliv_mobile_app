@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum TopUpPrepaidLoadStatus { initial, loading, ready, failure }
+
 enum TopUpPrepaidSubmitStatus { idle, loading, success, failure }
 
 class TopUpPrepaidState extends Equatable {
@@ -48,7 +49,8 @@ class TopUpPrepaidState extends Equatable {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-  bool get canSubmit => amountValue > 0 && submitStatus != TopUpPrepaidSubmitStatus.loading;
+  bool get canSubmit =>
+      amountValue > 0 && submitStatus != TopUpPrepaidSubmitStatus.loading;
 
   TopUpPrepaidState copyWith({
     TopUpPrepaidLoadStatus? loadStatus,
@@ -70,7 +72,8 @@ class TopUpPrepaidState extends Equatable {
       amountText: amountText ?? this.amountText,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       limitLeft: limitLeft ?? this.limitLeft,
-      earliestTopUpDateLocal: earliestTopUpDateLocal ?? this.earliestTopUpDateLocal,
+      earliestTopUpDateLocal:
+          earliestTopUpDateLocal ?? this.earliestTopUpDateLocal,
       limitFetchFailed: limitFetchFailed ?? this.limitFetchFailed,
     );
   }

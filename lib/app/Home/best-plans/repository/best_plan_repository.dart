@@ -25,8 +25,8 @@ class BestPlanRepositoryImpl implements BestPlanRepository {
   BestPlanRepositoryImpl({
     required BestPlanApiService apiService,
     required BestPlanParserService parserService,
-  })  : _apiService = apiService,
-        _parserService = parserService;
+  }) : _apiService = apiService,
+       _parserService = parserService;
 
   @override
   Future<List<BestPlanModel>> fetchActivePlans({
@@ -50,8 +50,7 @@ class BestPlanRepositoryImpl implements BestPlanRepository {
       final allPlans = _parserService.parsePlans(rawJson);
 
       if (kDebugMode) {
-        debugPrint(
-            '✓ Parsing complete: ${allPlans.length} total plans parsed');
+        debugPrint('✓ Parsing complete: ${allPlans.length} total plans parsed');
       }
 
       // Step 3: Filter by user type
@@ -62,7 +61,8 @@ class BestPlanRepositoryImpl implements BestPlanRepository {
 
       if (kDebugMode) {
         debugPrint(
-            '✓ Filtered by user type "$userType": ${filteredPlans.length} plans');
+          '✓ Filtered by user type "$userType": ${filteredPlans.length} plans',
+        );
         debugPrint('');
       }
 

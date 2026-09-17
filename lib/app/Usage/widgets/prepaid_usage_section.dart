@@ -34,7 +34,7 @@ class PrepaidUsageSection extends StatelessWidget {
                 subtitle: rows[i].isUnlimited
                     ? 'unlimited'
                     : '${formatBucketAmount(rows[i].remaining, rows[i].unitLabel)}'
-                        ' of ${formatBucketAmount(rows[i].initial, rows[i].unitLabel)}',
+                          ' of ${formatBucketAmount(rows[i].initial, rows[i].unitLabel)}',
                 percentUsed: rows[i].progress,
                 isUnlimited: rows[i].isUnlimited,
               ),

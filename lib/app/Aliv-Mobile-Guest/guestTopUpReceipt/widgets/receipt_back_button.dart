@@ -34,8 +34,9 @@ class ReceiptBackButton extends StatelessWidget {
               color: ReceiptTheme.backButtonBorderColor,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(ReceiptTheme.backButtonRadius),
+              borderRadius: BorderRadius.circular(
+                ReceiptTheme.backButtonRadius,
+              ),
             ),
           ),
           child: Text(

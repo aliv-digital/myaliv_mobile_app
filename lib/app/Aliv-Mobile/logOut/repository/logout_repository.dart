@@ -7,7 +7,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 class LogoutRepository {
   LogoutRepository({NetworkService? networkService})
-      : _network = networkService ?? instance<NetworkService>();
+    : _network = networkService ?? instance<NetworkService>();
 
   final NetworkService _network;
 

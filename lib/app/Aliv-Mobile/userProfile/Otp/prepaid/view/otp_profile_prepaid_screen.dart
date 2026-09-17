@@ -35,13 +35,14 @@ class _OtpProfilePrepaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<OtpProfilePrepaidBloc, OtpProfilePrepaidState>(
           listener: (context, state) {
-            if (state.status == OtpProfilePrepaidStatus.failure && state.errorMessage != null) {
+            if (state.status == OtpProfilePrepaidStatus.failure &&
+                state.errorMessage != null) {
               // ScaffoldMessenger.of(context).showSnackBar(
               //   SnackBar(content: Text(state.errorMessage!)),
               // );
               AppToast.show(
                 message: state.errorMessage.toString(),
-                type: ToastType.error
+                type: ToastType.error,
               );
             }
 
@@ -49,33 +50,30 @@ class _OtpProfilePrepaidView extends StatelessWidget {
             // if (state.status == OtpProfilePrepaidStatus.success) { ... }
           },
           child: Padding(
-                  padding: const EdgeInsets.only(),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    slivers: [
-                      const SliverToBoxAdapter(
-                        child: OtpProfilePrepaidHeader(),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 41, right: 41),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: const [
-                              SizedBox(height: 24),
-                              OtpProfilePrepaidCodeFields(),
-                              SizedBox(height: 54),
-                              OtpProfilePrepaidBottomActions(),
-                              SizedBox(height: 24),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+            padding: const EdgeInsets.only(),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                const SliverToBoxAdapter(child: OtpProfilePrepaidHeader()),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 41, right: 41),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: const [
+                        SizedBox(height: 24),
+                        OtpProfilePrepaidCodeFields(),
+                        SizedBox(height: 54),
+                        OtpProfilePrepaidBottomActions(),
+                        SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
+              ],
+            ),
+          ),
         ),
       ),
     );

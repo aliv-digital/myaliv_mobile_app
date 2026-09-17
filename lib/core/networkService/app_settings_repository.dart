@@ -7,8 +7,8 @@ import 'package:myaliv_mobile_app/core/networkService/app_http_client.dart';
 
 class AppSettingsRepository {
   AppSettingsRepository({ApiService? apiService})
-      : _apiService = apiService ??
-            ApiService(requestTimeout: const Duration(seconds: 20));
+    : _apiService =
+          apiService ?? ApiService(requestTimeout: const Duration(seconds: 20));
 
   final ApiService _apiService;
 

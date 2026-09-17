@@ -94,8 +94,10 @@ class TopUpPaymentPrepaidBloc
     );
   }
 
-  Future<void> _onPayPostpaidSavedCard(PayPostpaidSavedCard event,Emitter<TopUpPaymentPrepaidState> emit) async {
-
+  Future<void> _onPayPostpaidSavedCard(
+    PayPostpaidSavedCard event,
+    Emitter<TopUpPaymentPrepaidState> emit,
+  ) async {
     final token = state.selectedMethodId?.trim() ?? '';
     if (token.isEmpty) {
       emit(
@@ -120,7 +122,9 @@ class TopUpPaymentPrepaidBloc
 
     // For a postpaid user, the top-up API path must contain the prepaid
     // recipient number received from the previous screen.
-    await _submit(emit, () => repository.payWithSavedCard(
+    await _submit(
+      emit,
+      () => repository.payWithSavedCard(
         amount: state.summary.total,
         primaryPhoneNumber: recipientPhone,
         cardToken: token,
@@ -136,8 +140,9 @@ class TopUpPaymentPrepaidBloc
     // For postpaid topping up another prepaid number the API path must use the
     // recipient's number, not the logged-in account holder's number.
     final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
-    final phone =
-        recipientPhone.isNotEmpty ? recipientPhone : _accountPrimaryPhone();
+    final phone = recipientPhone.isNotEmpty
+        ? recipientPhone
+        : _accountPrimaryPhone();
 
     if (phone.isEmpty) {
       emit(
@@ -195,9 +200,7 @@ class TopUpPaymentPrepaidBloc
       final ok = await invoke();
       emit(
         state.copyWith(
-          status: ok
-              ? TopUpPaymentStatus.success
-              : TopUpPaymentStatus.failure,
+          status: ok ? TopUpPaymentStatus.success : TopUpPaymentStatus.failure,
           navTarget: ok
               ? TopUpPaymentNavTarget.paid
               : TopUpPaymentNavTarget.none,

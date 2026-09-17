@@ -5,10 +5,7 @@ import '../theme/guest_pay_bill_theme.dart';
 class GuestPayBillRequiredLabel extends StatelessWidget {
   final String text;
 
-  const GuestPayBillRequiredLabel({
-    super.key,
-    required this.text,
-  });
+  const GuestPayBillRequiredLabel({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {

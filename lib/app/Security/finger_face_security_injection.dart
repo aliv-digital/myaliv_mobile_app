@@ -13,8 +13,6 @@ Future<void> setupFingerFaceSecurityInjection() async {
   );
 
   instance.registerLazySingleton<FingerFaceSecurityCubit>(
-    () => FingerFaceSecurityCubit(
-      instance<FingerFaceSecurityRepository>(),
-    ),
+    () => FingerFaceSecurityCubit(instance<FingerFaceSecurityRepository>()),
   );
 }

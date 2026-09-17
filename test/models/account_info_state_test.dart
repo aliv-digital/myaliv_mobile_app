@@ -133,15 +133,27 @@ void main() {
 
     test('two states with same accountInfo are equal', () {
       final account = _makeAccount();
-      final a = AccountInfoState(status: AccountInfoStatus.success, accountInfo: account);
-      final b = AccountInfoState(status: AccountInfoStatus.success, accountInfo: account);
+      final a = AccountInfoState(
+        status: AccountInfoStatus.success,
+        accountInfo: account,
+      );
+      final b = AccountInfoState(
+        status: AccountInfoStatus.success,
+        accountInfo: account,
+      );
       expect(a, equals(b));
     });
 
     test('states differing by status are not equal', () {
       final account = _makeAccount();
-      final a = AccountInfoState(status: AccountInfoStatus.loading, accountInfo: account);
-      final b = AccountInfoState(status: AccountInfoStatus.success, accountInfo: account);
+      final a = AccountInfoState(
+        status: AccountInfoStatus.loading,
+        accountInfo: account,
+      );
+      final b = AccountInfoState(
+        status: AccountInfoStatus.success,
+        accountInfo: account,
+      );
       expect(a, isNot(equals(b)));
     });
 

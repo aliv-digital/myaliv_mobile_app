@@ -14,7 +14,7 @@ class ConsumptionLimitCubit extends Cubit<ConsumptionLimitState> {
   final ConsumptionLimitRepository _repository;
 
   ConsumptionLimitCubit(this._repository)
-      : super(ConsumptionLimitState.initial());
+    : super(ConsumptionLimitState.initial());
 
   /// Load consumption limits from API
   ///
@@ -37,7 +37,9 @@ class ConsumptionLimitCubit extends Cubit<ConsumptionLimitState> {
       return;
     }
 
-    emit(state.copyWith(status: ConsumptionLimitStatus.loading, clearError: true));
+    emit(
+      state.copyWith(status: ConsumptionLimitStatus.loading, clearError: true),
+    );
 
     try {
       // Fetch limits from repository
@@ -59,7 +61,8 @@ class ConsumptionLimitCubit extends Cubit<ConsumptionLimitState> {
         debugPrint('   Total limits: ${limits.length}');
         for (final limit in limits) {
           debugPrint(
-              '   - ${limit.displayName}: \$${limit.remainingAmount.toStringAsFixed(2)} / \$${limit.initialAmount.toStringAsFixed(2)} (${limit.percentUsed}% used)');
+            '   - ${limit.displayName}: \$${limit.remainingAmount.toStringAsFixed(2)} / \$${limit.initialAmount.toStringAsFixed(2)} (${limit.percentUsed}% used)',
+          );
         }
       }
     } on ConsumptionLimitRepositoryException catch (e) {

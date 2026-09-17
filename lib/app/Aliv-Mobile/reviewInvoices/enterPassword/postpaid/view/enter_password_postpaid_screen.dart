@@ -44,8 +44,7 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
 
       body: SafeArea(
         top: false,
-        child:
-            BlocListener<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
+        child: BlocListener<EnterPasswordPostpaidBloc, EnterPasswordPostpaidState>(
           listenWhen: (p, c) =>
               p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
@@ -59,101 +58,104 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
             }
           },
           child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: DefaultAppBar(
-                        title: 'security check',
-                        showHome: false,
-                        onBack: () {
-                          context.pop();
-                        },
-                      ),
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(42, 24, 42, 24),
-                      sliver: SliverToBoxAdapter(
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 420),
-                            child: Column(
-                              children: [
-                                const EnterPasswordPostpaidHeader(),
-                                const SizedBox(height: 28),
-
-                                BlocBuilder<EnterPasswordPostpaidBloc,
-                                    EnterPasswordPostpaidState>(
-                                  buildWhen: (p, c) =>
-                                      p.password != c.password ||
-                                      p.obscure != c.obscure,
-                                  builder: (context, state) {
-                                    return EnterPasswordPostpaidPasswordInput(
-                                      value: state.password,
-                                      obscure: state.obscure,
-                                      onChanged: (v) => context
-                                          .read<EnterPasswordPostpaidBloc>()
-                                          .add(
-                                              EnterPasswordPostpaidPasswordChanged(
-                                                  v)),
-                                      onToggle: () => context
-                                          .read<EnterPasswordPostpaidBloc>()
-                                          .add(
-                                              const EnterPasswordPostpaidToggleObscure()),
-                                    );
-                                  },
-                                ),
-
-                                const SizedBox(height: 20),
-                                const EnterPasswordPostpaidTermsText(),
-                                const SizedBox(height: 30),
-
-                                BlocBuilder<EnterPasswordPostpaidBloc,
-                                    EnterPasswordPostpaidState>(
-                                  buildWhen: (p, c) =>
-                                      p.status != c.status ||
-                                      p.isValid != c.isValid,
-                                  builder: (context, state) {
-                                    final isLoading = state.status ==
-                                        EnterPasswordPostpaidStatus.submitting;
-
-                                    return EnterPasswordPostpaidContinueButton(
-                                      isLoading: isLoading,
-                                      enabled: state.isValid && !isLoading,
-                                      onTap: () {
-                                        context
-                                            .read<EnterPasswordPostpaidBloc>()
-                                            .add(
-                                                const EnterPasswordPostpaidContinuePressed());
-                                      },
-                                    );
-                                  },
-                                ),
-
-                                const SizedBox(height: 38),
-                                const EnterPasswordPostpaidOrDivider(),
-                                const SizedBox(height: 30),
-
-                                EnterPasswordPostpaidBiometricButtons(
-                                  onFaceId: () => context
-                                      .read<EnterPasswordPostpaidBloc>()
-                                      .add(
-                                          const EnterPasswordPostpaidFaceIdPressed()),
-                                  onFingerprint: () => context
-                                      .read<EnterPasswordPostpaidBloc>()
-                                      .add(
-                                          const EnterPasswordPostpaidFingerprintPressed()),
-                                ),
-                                const SizedBox(height: 180),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+            physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(
+                child: DefaultAppBar(
+                  title: 'security check',
+                  showHome: false,
+                  onBack: () {
+                    context.pop();
+                  },
                 ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(42, 24, 42, 24),
+                sliver: SliverToBoxAdapter(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: Column(
+                        children: [
+                          const EnterPasswordPostpaidHeader(),
+                          const SizedBox(height: 28),
+
+                          BlocBuilder<
+                            EnterPasswordPostpaidBloc,
+                            EnterPasswordPostpaidState
+                          >(
+                            buildWhen: (p, c) =>
+                                p.password != c.password ||
+                                p.obscure != c.obscure,
+                            builder: (context, state) {
+                              return EnterPasswordPostpaidPasswordInput(
+                                value: state.password,
+                                obscure: state.obscure,
+                                onChanged: (v) => context
+                                    .read<EnterPasswordPostpaidBloc>()
+                                    .add(
+                                      EnterPasswordPostpaidPasswordChanged(v),
+                                    ),
+                                onToggle: () => context
+                                    .read<EnterPasswordPostpaidBloc>()
+                                    .add(
+                                      const EnterPasswordPostpaidToggleObscure(),
+                                    ),
+                              );
+                            },
+                          ),
+
+                          const SizedBox(height: 20),
+                          const EnterPasswordPostpaidTermsText(),
+                          const SizedBox(height: 30),
+
+                          BlocBuilder<
+                            EnterPasswordPostpaidBloc,
+                            EnterPasswordPostpaidState
+                          >(
+                            buildWhen: (p, c) =>
+                                p.status != c.status || p.isValid != c.isValid,
+                            builder: (context, state) {
+                              final isLoading =
+                                  state.status ==
+                                  EnterPasswordPostpaidStatus.submitting;
+
+                              return EnterPasswordPostpaidContinueButton(
+                                isLoading: isLoading,
+                                enabled: state.isValid && !isLoading,
+                                onTap: () {
+                                  context.read<EnterPasswordPostpaidBloc>().add(
+                                    const EnterPasswordPostpaidContinuePressed(),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+
+                          const SizedBox(height: 38),
+                          const EnterPasswordPostpaidOrDivider(),
+                          const SizedBox(height: 30),
+
+                          EnterPasswordPostpaidBiometricButtons(
+                            onFaceId: () =>
+                                context.read<EnterPasswordPostpaidBloc>().add(
+                                  const EnterPasswordPostpaidFaceIdPressed(),
+                                ),
+                            onFingerprint: () =>
+                                context.read<EnterPasswordPostpaidBloc>().add(
+                                  const EnterPasswordPostpaidFingerprintPressed(),
+                                ),
+                          ),
+                          const SizedBox(height: 180),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

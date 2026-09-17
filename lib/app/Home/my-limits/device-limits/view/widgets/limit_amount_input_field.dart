@@ -68,7 +68,9 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
           height: double.infinity,
           decoration: BoxDecoration(
             color: const Color(0xFFF1F1F8),
-            borderRadius: BorderRadius.circular(RevPrepaidTheme.inputFieldRadius),
+            borderRadius: BorderRadius.circular(
+              RevPrepaidTheme.inputFieldRadius,
+            ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.center,
@@ -79,8 +81,9 @@ class _LimitAmountInputFieldState extends State<LimitAmountInputField> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: RevPrepaidTheme.input,
             decoration: InputDecoration(
-              prefixText:
-                  _hasFocus || _controller.text.isNotEmpty ? '\$ ' : null,
+              prefixText: _hasFocus || _controller.text.isNotEmpty
+                  ? '\$ '
+                  : null,
               prefixStyle: const TextStyle(
                 color: Color(0xFF344054),
                 fontSize: 14,

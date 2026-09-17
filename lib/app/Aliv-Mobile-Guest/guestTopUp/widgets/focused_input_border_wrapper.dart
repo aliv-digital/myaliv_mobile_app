@@ -24,16 +24,14 @@ class FocusedInputBorderWrapper extends StatelessWidget {
         gradient: isFocused ? GuestTopUpTheme.focusedInputBorderGradient : null,
         border: isFocused
             ? null
-            : Border.all(
-                color: unfocusedBorderColor,
-                width: borderWidth,
-              ),
+            : Border.all(color: unfocusedBorderColor, width: borderWidth),
         borderRadius: BorderRadius.circular(radius),
       ),
       padding: EdgeInsets.all(borderWidth),
       child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular((radius - borderWidth).clamp(0.0, radius)),
+        borderRadius: BorderRadius.circular(
+          (radius - borderWidth).clamp(0.0, radius),
+        ),
         child: child,
       ),
     );

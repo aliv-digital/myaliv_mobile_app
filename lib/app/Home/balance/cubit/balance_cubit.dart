@@ -40,7 +40,8 @@ class BalanceCubit extends HydratedCubit<BalanceState> {
 
     // Use cache if valid, still belongs to this device, and not forcing.
     final cacheBelongsToDevice =
-        state.deviceAccountId == null || state.deviceAccountId == deviceAccountId;
+        state.deviceAccountId == null ||
+        state.deviceAccountId == deviceAccountId;
     if (!forceRefresh &&
         state.isCacheValid &&
         state.hasBalance &&

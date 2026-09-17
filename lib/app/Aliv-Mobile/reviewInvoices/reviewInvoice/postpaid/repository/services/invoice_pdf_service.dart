@@ -78,10 +78,7 @@ class InvoicePdfService {
       debugPrint('InvoicePdfService: Sharing PDF');
     }
 
-    await Share.shareXFiles(
-      [XFile(filePath)],
-      text: 'Invoice $invoiceNo',
-    );
+    await Share.shareXFiles([XFile(filePath)], text: 'Invoice $invoiceNo');
   }
 
   /// Saves a PDF to the downloads folder.

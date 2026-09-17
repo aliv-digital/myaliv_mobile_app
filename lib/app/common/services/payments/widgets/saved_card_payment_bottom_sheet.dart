@@ -51,21 +51,31 @@ class SavedCardPaymentBottomSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _BackButton(onTap: () => Navigator.of(context).pop()),
-            const SizedBox(height: AutoRenewPrepaidTheme.walletPaymentBackToTitleGap),
+            const SizedBox(
+              height: AutoRenewPrepaidTheme.walletPaymentBackToTitleGap,
+            ),
             const Text(
               'pay with card',
               style: AutoRenewPrepaidTheme.walletPaymentTitleStyle,
             ),
-            const SizedBox(height: AutoRenewPrepaidTheme.walletPaymentTitleToBalanceGap),
+            const SizedBox(
+              height: AutoRenewPrepaidTheme.walletPaymentTitleToBalanceGap,
+            ),
             _CardRow(label: cardLabel),
-            const SizedBox(height: AutoRenewPrepaidTheme.walletPaymentBalanceToAmountGap),
+            const SizedBox(
+              height: AutoRenewPrepaidTheme.walletPaymentBalanceToAmountGap,
+            ),
             const Text(
               'amount',
               style: AutoRenewPrepaidTheme.walletPaymentAmountLabelStyle,
             ),
-            const SizedBox(height: AutoRenewPrepaidTheme.walletPaymentAmountLabelToFieldGap),
+            const SizedBox(
+              height: AutoRenewPrepaidTheme.walletPaymentAmountLabelToFieldGap,
+            ),
             _AmountField(amountText: amountText),
-            const SizedBox(height: AutoRenewPrepaidTheme.walletPaymentAmountFieldToButtonGap),
+            const SizedBox(
+              height: AutoRenewPrepaidTheme.walletPaymentAmountFieldToButtonGap,
+            ),
             _ConfirmButton(onPressed: () => Navigator.of(context).pop(true)),
           ],
         ),
@@ -108,11 +118,10 @@ class _CardRow extends StatelessWidget {
           size: AutoRenewPrepaidTheme.walletPaymentWalletIconSize,
           color: AutoRenewPrepaidTheme.textSecondary,
         ),
-        const SizedBox(width: AutoRenewPrepaidTheme.walletPaymentWalletIconToTextGap),
-        Text(
-          label,
-          style: AutoRenewPrepaidTheme.walletPaymentWalletLabelStyle,
+        const SizedBox(
+          width: AutoRenewPrepaidTheme.walletPaymentWalletIconToTextGap,
         ),
+        Text(label, style: AutoRenewPrepaidTheme.walletPaymentWalletLabelStyle),
       ],
     );
   }

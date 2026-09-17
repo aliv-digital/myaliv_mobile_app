@@ -28,7 +28,8 @@ class FingerFaceSecurityState extends Equatable {
   });
 
   bool get isLoading => status == FingerFaceSecurityStatus.loading;
-  bool get isAuthenticating => status == FingerFaceSecurityStatus.authenticating;
+  bool get isAuthenticating =>
+      status == FingerFaceSecurityStatus.authenticating;
   bool get isAuthenticated => status == FingerFaceSecurityStatus.authenticated;
   bool get isFailure => status == FingerFaceSecurityStatus.failure;
   bool get isBiometricEnabled => data?.isBiometricEnabled ?? false;
@@ -45,10 +46,17 @@ class FingerFaceSecurityState extends Equatable {
       data: data ?? this.data,
       errorMessage: errorMessage,
       lastAuthResult: lastAuthResult ?? this.lastAuthResult,
-      isSessionAuthenticated: isSessionAuthenticated ?? this.isSessionAuthenticated,
+      isSessionAuthenticated:
+          isSessionAuthenticated ?? this.isSessionAuthenticated,
     );
   }
 
   @override
-  List<Object?> get props => [status, data, errorMessage, lastAuthResult, isSessionAuthenticated];
+  List<Object?> get props => [
+    status,
+    data,
+    errorMessage,
+    lastAuthResult,
+    isSessionAuthenticated,
+  ];
 }

@@ -23,17 +23,22 @@ class MyProfilePrepaidAppBar extends StatelessWidget {
         children: [
           IconButton(
             onPressed: onBack,
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+              size: 18,
+            ),
           ),
           Expanded(
-            child: Text(
-              title,
-              style: MyProfilePrepaidTheme.textTitleWhite,
-            ),
+            child: Text(title, style: MyProfilePrepaidTheme.textTitleWhite),
           ),
           IconButton(
             onPressed: onHome,
-            icon: const Icon(Icons.home_outlined, color: Colors.white, size: 22),
+            icon: const Icon(
+              Icons.home_outlined,
+              color: Colors.white,
+              size: 22,
+            ),
           ),
         ],
       ),

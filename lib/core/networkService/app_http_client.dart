@@ -62,8 +62,8 @@ class ApiService {
     http.Client? client,
     this.requestTimeout = const Duration(seconds: 300),
     Future<String?> Function()? tokenProvider,
-  })  : _client = client ?? http.Client(),
-        tokenProvider = tokenProvider ?? _defaultBearerTokenProvider;
+  }) : _client = client ?? http.Client(),
+       tokenProvider = tokenProvider ?? _defaultBearerTokenProvider;
 
   /// Shared success check for API response status codes.
   static bool isSuccessStatusCode(int statusCode) {
@@ -110,15 +110,20 @@ class ApiService {
   // ---------------------------------------------------------------------------
 
   /// HTTP GET with optional query string and extra headers.
-  Future<ApiResponseModel>get(String url, {
+  Future<ApiResponseModel> get(
+    String url, {
     Map<String, dynamic>? queryParameters,
     Map<String, String>? headers,
-  })async {
+  }) async {
     final Uri uri = _buildUri(url, queryParameters);
-    final Map<String, String> resolvedHeaders = await _buildJsonHeaders(headers);
+    final Map<String, String> resolvedHeaders = await _buildJsonHeaders(
+      headers,
+    );
 
     try {
-      final http.Response response = await _client.get(uri, headers: resolvedHeaders).timeout(requestTimeout);
+      final http.Response response = await _client
+          .get(uri, headers: resolvedHeaders)
+          .timeout(requestTimeout);
       return _toApiResponse(response);
     } on TimeoutException {
       return ApiResponseModel(408, 'Request timeout');
@@ -133,11 +138,12 @@ class ApiService {
   }
 
   /// HTTP POST with JSON body. If `body` is Map/List, it will be JSON-encoded.
-  Future<ApiResponseModel> postJson(String url, {
+  Future<ApiResponseModel> postJson(
+    String url, {
     Object? body,
     Map<String, dynamic>? queryParameters,
     Map<String, String>? headers,
-  }){
+  }) {
     return _sendJsonWithBody(
       method: 'POST',
       url: url,
@@ -149,11 +155,11 @@ class ApiService {
 
   /// HTTP PUT with JSON body.
   Future<ApiResponseModel> putJson(
-      String url, {
-        Object? body,
-        Map<String, dynamic>? queryParameters,
-        Map<String, String>? headers,
-      }) {
+    String url, {
+    Object? body,
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+  }) {
     return _sendJsonWithBody(
       method: 'PUT',
       url: url,
@@ -165,11 +171,11 @@ class ApiService {
 
   /// HTTP PATCH with JSON body.
   Future<ApiResponseModel> patchJson(
-      String url, {
-        Object? body,
-        Map<String, dynamic>? queryParameters,
-        Map<String, String>? headers,
-      }) {
+    String url, {
+    Object? body,
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+  }) {
     return _sendJsonWithBody(
       method: 'PATCH',
       url: url,
@@ -181,11 +187,11 @@ class ApiService {
 
   /// HTTP DELETE. Some APIs accept a JSON body in DELETE; supported here.
   Future<ApiResponseModel> deleteJson(
-      String url, {
-        Object? body,
-        Map<String, dynamic>? queryParameters,
-        Map<String, String>? headers,
-      }) {
+    String url, {
+    Object? body,
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+  }) {
     return _sendJsonWithBody(
       method: 'DELETE',
       url: url,
@@ -208,7 +214,9 @@ class ApiService {
     final http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
     // Add token & Accept header. DO NOT set Content-Type for multipart.
-    final Map<String, String> resolvedHeaders = await _buildMultipartHeaders(headers);
+    final Map<String, String> resolvedHeaders = await _buildMultipartHeaders(
+      headers,
+    );
     request.headers.addAll(resolvedHeaders);
 
     if (fields != null && fields.isNotEmpty) {
@@ -237,9 +245,12 @@ class ApiService {
     }
 
     try {
-      final http.StreamedResponse streamedResponse =
-      await request.send().timeout(requestTimeout);
-      final http.Response response = await http.Response.fromStream(streamedResponse);
+      final http.StreamedResponse streamedResponse = await request
+          .send()
+          .timeout(requestTimeout);
+      final http.Response response = await http.Response.fromStream(
+        streamedResponse,
+      );
       return _toApiResponse(response);
     } on TimeoutException {
       return ApiResponseModel(408, 'Upload timeout');
@@ -253,22 +264,27 @@ class ApiService {
 
   /// Download any resource as raw bytes (e.g., PDF/image).
   Future<Uint8List> downloadBytes(
-      String url, {
-        Map<String, dynamic>? queryParameters,
-        Map<String, String>? headers,
-      }) async {
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Map<String, String>? headers,
+  }) async {
     final Uri uri = _buildUri(url, queryParameters);
-    final Map<String, String> resolvedHeaders = await _buildJsonHeaders(headers);
+    final Map<String, String> resolvedHeaders = await _buildJsonHeaders(
+      headers,
+    );
 
     try {
-      final http.Response response =
-      await _client.get(uri, headers: resolvedHeaders).timeout(requestTimeout);
+      final http.Response response = await _client
+          .get(uri, headers: resolvedHeaders)
+          .timeout(requestTimeout);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return response.bodyBytes;
       }
       // Convert non-2xx responses to readable errors
-      throw HttpException('HTTP ${response.statusCode} while downloading bytes');
+      throw HttpException(
+        'HTTP ${response.statusCode} while downloading bytes',
+      );
     } on TimeoutException {
       throw HttpException('Request timeout while downloading bytes');
     } on SocketException {
@@ -292,7 +308,9 @@ class ApiService {
     Map<String, String>? headers,
   }) async {
     final Uri uri = _buildUri(url, queryParameters);
-    final Map<String, String> resolvedHeaders = await _buildJsonHeaders(headers);
+    final Map<String, String> resolvedHeaders = await _buildJsonHeaders(
+      headers,
+    );
     final Object? encodedBody = _encodeBodyIfJson(body, resolvedHeaders);
 
     try {
@@ -309,7 +327,9 @@ class ApiService {
         }
       }
 
-      final http.StreamedResponse streamed = await _client.send(request).timeout(requestTimeout);
+      final http.StreamedResponse streamed = await _client
+          .send(request)
+          .timeout(requestTimeout);
       final http.Response response = await http.Response.fromStream(streamed);
       return _toApiResponse(response);
     } on TimeoutException {
@@ -343,17 +363,18 @@ class ApiService {
       }
     });
 
-    return base.replace(queryParameters: <String, String>{
-      ...base.queryParameters,
-      ...asString,
-    });
+    return base.replace(
+      queryParameters: <String, String>{...base.queryParameters, ...asString},
+    );
   }
 
   /// Build headers for JSON requests:
   /// - Accept: application/json
   /// - Content-Type: application/json; charset=utf-8
   /// - Authorization: Bearer < token >  (if provided)
-  Future<Map<String, String>> _buildJsonHeaders(Map<String, String>? extra) async {
+  Future<Map<String, String>> _buildJsonHeaders(
+    Map<String, String>? extra,
+  ) async {
     final Map<String, String> headers = <String, String>{
       'Accept': 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
@@ -371,7 +392,9 @@ class ApiService {
   }
 
   /// Build headers for multipart requests (no Content-Type here).
-  Future<Map<String, String>> _buildMultipartHeaders(Map<String, String>? extra) async {
+  Future<Map<String, String>> _buildMultipartHeaders(
+    Map<String, String>? extra,
+  ) async {
     final Map<String, String> headers = <String, String>{
       'Accept': 'application/json',
       ...?extra,
@@ -392,7 +415,8 @@ class ApiService {
   Object? _encodeBodyIfJson(Object? body, Map<String, String> headers) {
     if (body == null) return null;
 
-    final String contentType = headers['Content-Type'] ?? headers['content-type'] ?? '';
+    final String contentType =
+        headers['Content-Type'] ?? headers['content-type'] ?? '';
     final bool isJson = contentType.contains('application/json');
 
     if (isJson && body is! String) {

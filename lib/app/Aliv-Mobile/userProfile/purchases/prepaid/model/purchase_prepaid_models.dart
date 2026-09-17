@@ -13,17 +13,14 @@ enum PurchasePrepaidAction {
   autoRenew,
   autoTopUp,
   sendTopUp,
-  addOns
+  addOns,
 }
 
 class PurchasePrepaidMenuItem extends Equatable {
   final String title;
   final PurchasePrepaidAction action;
 
-  const PurchasePrepaidMenuItem({
-    required this.title,
-    required this.action,
-  });
+  const PurchasePrepaidMenuItem({required this.title, required this.action});
 
   @override
   List<Object?> get props => [title, action];

@@ -23,10 +23,7 @@ Future<DateTime?> showStartPlanCalendarPickerSheet(
 class StartPlanBottomSheet extends StatefulWidget {
   final HomePlansPostPaidPlanModel plan;
 
-  const StartPlanBottomSheet({
-    super.key,
-    required this.plan,
-  });
+  const StartPlanBottomSheet({super.key, required this.plan});
 
   @override
   State<StartPlanBottomSheet> createState() => _StartPlanBottomSheetState();
@@ -100,9 +97,9 @@ class _StartPlanBottomSheetState extends State<StartPlanBottomSheet> {
             const SizedBox(height: 20),
             _dividerOr(),
             const SizedBox(height: 20),
-            (isDateSelected == true) ?
-            _ActivateButton(selectedDate: selectedDate, plan: widget.plan) :
-            _ActivateButton(selectedDate: null, plan: widget.plan),
+            (isDateSelected == true)
+                ? _ActivateButton(selectedDate: selectedDate, plan: widget.plan)
+                : _ActivateButton(selectedDate: null, plan: widget.plan),
             const SizedBox(height: 44),
           ],
         ),
@@ -238,10 +235,7 @@ class _ActivateButton extends StatelessWidget {
   final DateTime? selectedDate;
   final HomePlansPostPaidPlanModel plan;
 
-  const _ActivateButton({
-    required this.selectedDate,
-    required this.plan,
-  });
+  const _ActivateButton({required this.selectedDate, required this.plan});
 
   @override
   Widget build(BuildContext context) {
@@ -309,8 +303,9 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
     super.initState();
     _firstDate = DateUtils.dateOnly(DateTime.now());
     final initialDate = DateUtils.dateOnly(widget.initialDate);
-    _draftSelectedDate =
-        initialDate.isBefore(_firstDate) ? _firstDate : initialDate;
+    _draftSelectedDate = initialDate.isBefore(_firstDate)
+        ? _firstDate
+        : initialDate;
   }
 
   @override
@@ -334,15 +329,14 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: Theme.of(context).colorScheme.copyWith(
-                        primary: GuestPurchasePlanTheme
-                            .roamCalendarSelectedDayBackgroundColor,
-                        onPrimary: GuestPurchasePlanTheme
-                            .roamCalendarSelectedDayTextColor,
-                        surface: GuestPurchasePlanTheme
-                            .roamCalendarSheetBackgroundColor,
-                        onSurface:
-                            GuestPurchasePlanTheme.roamCalendarDayTextColor,
-                      ),
+                    primary: GuestPurchasePlanTheme
+                        .roamCalendarSelectedDayBackgroundColor,
+                    onPrimary:
+                        GuestPurchasePlanTheme.roamCalendarSelectedDayTextColor,
+                    surface:
+                        GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
+                    onSurface: GuestPurchasePlanTheme.roamCalendarDayTextColor,
+                  ),
                   datePickerTheme: DatePickerThemeData(
                     backgroundColor:
                         GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
@@ -356,8 +350,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                     dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
                         if (states.contains(WidgetState.disabled)) {
-                          return GuestPurchasePlanTheme
-                              .roamCalendarDayTextColor
+                          return GuestPurchasePlanTheme.roamCalendarDayTextColor
                               .withValues(alpha: 0.35);
                         }
                         if (states.contains(WidgetState.selected)) {

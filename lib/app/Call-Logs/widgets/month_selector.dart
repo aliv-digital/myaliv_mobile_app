@@ -111,7 +111,9 @@ class _MonthPickerSheet extends StatelessWidget {
                     DateFormat('MMMM yyyy').format(month),
                     style: TextStyle(
                       fontFamily: 'CircularPro',
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w400,
                       color: isSelected ? const Color(0xFF645D9C) : null,
                     ),
                   ),

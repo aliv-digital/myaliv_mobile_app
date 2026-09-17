@@ -14,9 +14,7 @@ class PlanBundle extends Equatable {
   });
 
   bool get isEmpty =>
-      primaryPlans.isEmpty &&
-      secondaryPlans.isEmpty &&
-      standalonePlans.isEmpty;
+      primaryPlans.isEmpty && secondaryPlans.isEmpty && standalonePlans.isEmpty;
 
   @override
   List<Object?> get props => [primaryPlans, secondaryPlans, standalonePlans];

@@ -5,10 +5,9 @@ import 'security_event.dart';
 import 'security_state.dart';
 
 class SecurityBloc extends Bloc<SecurityEvent, SecurityState> {
-  SecurityBloc({
-    required SecurityRepository repository,
-  })  : _repository = repository,
-        super(SecurityState.initial()) {
+  SecurityBloc({required SecurityRepository repository})
+    : _repository = repository,
+      super(SecurityState.initial()) {
     on<SecurityStarted>(_onStarted);
     on<SecurityHomePressed>(_onHomePressed);
     on<SecurityNavConsumed>(_onNavConsumed);
@@ -17,15 +16,10 @@ class SecurityBloc extends Bloc<SecurityEvent, SecurityState> {
   final SecurityRepository _repository;
 
   Future<void> _onStarted(
-      SecurityStarted event,
-      Emitter<SecurityState> emit,
-      ) async {
-    emit(
-      state.copyWith(
-        status: SecurityStatus.loading,
-        errorMessage: null,
-      ),
-    );
+    SecurityStarted event,
+    Emitter<SecurityState> emit,
+  ) async {
+    emit(state.copyWith(status: SecurityStatus.loading, errorMessage: null));
 
     try {
       final SecurityContent content = await _repository.fetchContent();
@@ -46,17 +40,11 @@ class SecurityBloc extends Bloc<SecurityEvent, SecurityState> {
     }
   }
 
-  void _onHomePressed(
-      SecurityHomePressed event,
-      Emitter<SecurityState> emit,
-      ) {
+  void _onHomePressed(SecurityHomePressed event, Emitter<SecurityState> emit) {
     emit(state.copyWith(navTarget: SecurityNavTarget.home));
   }
 
-  void _onNavConsumed(
-      SecurityNavConsumed event,
-      Emitter<SecurityState> emit,
-      ) {
+  void _onNavConsumed(SecurityNavConsumed event, Emitter<SecurityState> emit) {
     emit(state.copyWith(navTarget: SecurityNavTarget.none));
   }
 }

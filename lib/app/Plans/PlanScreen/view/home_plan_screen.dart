@@ -52,8 +52,8 @@ class _HomePlanViewState extends State<_HomePlanView> {
     super.initState();
     final userType = context.read<AppUiConfigCubit>().state.userType;
     context.read<PlansCubit>().started(
-          userType: userType,
-          initialTab: widget.initialTab,
+      userType: userType,
+      initialTab: widget.initialTab,
     );
   }
 
@@ -199,7 +199,10 @@ class _HomePlanViewState extends State<_HomePlanView> {
     }
   }
 
-  void _showPostpaidStartBottomSheet(BuildContext context,HomePlansPostPaidPlanModel plan) {
+  void _showPostpaidStartBottomSheet(
+    BuildContext context,
+    HomePlansPostPaidPlanModel plan,
+  ) {
     final cubit = context.read<PlansCubit>();
     // Prevent opening multiple purchase modals simultaneously
 
@@ -354,10 +357,12 @@ class _HomePlanViewState extends State<_HomePlanView> {
       },
       // observe this flow
       onPostpaidRoamingPurchaseNow: (HomePlansPostPaidPlanModel plan) {
-        if(kDebugMode){
-          debugPrint("tapped on onPostpaidRoamingPurchaseNow button || home_plan_screen.dart");
+        if (kDebugMode) {
+          debugPrint(
+            "tapped on onPostpaidRoamingPurchaseNow button || home_plan_screen.dart",
+          );
         }
-         _showPostpaidStartBottomSheet(context, plan);
+        _showPostpaidStartBottomSheet(context, plan);
       },
       onPurchaseNow: (plan) {
         //_onPurchaseNowPressed(context, plan);

@@ -43,18 +43,14 @@ class RoamingPlanConfirmationScreen extends StatelessWidget {
         create: (ctx) => RoamingPlanConfirmationBloc(
           repository: ctx.read<RoamingPlanConfirmationRepository>(),
         )..add(RoamingPlanConfirmationStarted(args)),
-        child: _RoamingPlanConfirmationView(
-          showDateField: args.showDateField,
-        ),
+        child: _RoamingPlanConfirmationView(showDateField: args.showDateField),
       ),
     );
   }
 }
 
 class _RoamingPlanConfirmationView extends StatelessWidget {
-  const _RoamingPlanConfirmationView({
-    required this.showDateField,
-  });
+  const _RoamingPlanConfirmationView({required this.showDateField});
 
   final bool showDateField;
 
@@ -76,8 +72,10 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<RoamingPlanConfirmationBloc,
-        RoamingPlanConfirmationState>(
+    return BlocListener<
+      RoamingPlanConfirmationBloc,
+      RoamingPlanConfirmationState
+    >(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
           p.payNowRequestId != c.payNowRequestId,
@@ -98,67 +96,70 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
         backgroundColor: RoamingPlanConfirmationTheme.bg,
 
         /// fixed bottom (AddOns pattern)
-        bottomNavigationBar: BlocBuilder<RoamingPlanConfirmationBloc,
-            RoamingPlanConfirmationState>(
-          builder: (context, state) {
-            if (state.status != RoamingPlanConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+        bottomNavigationBar:
+            BlocBuilder<
+              RoamingPlanConfirmationBloc,
+              RoamingPlanConfirmationState
+            >(
+              builder: (context, state) {
+                if (state.status != RoamingPlanConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-               buttonText: 'continue',
-                isVatExclusive: true,
-                isButtonEnabled: state.isTermsChecked,
-                buttonColor: const Color(0xFF645D9C),
-                onPayNow: () {
-                  context.read<RoamingPlanConfirmationBloc>().add(
-                    const RoamingPlanConfirmationPayNowPressed(),
-                  );
-                  final data = state.data!;
-                  final primaryPlanName = data.items
-                      .firstWhere(
-                        (item) =>
-                            item.type == PurchaseLineType.primaryPlan,
-                        orElse: () => const PurchaseLineItem(
-                          id: '',
-                          type: PurchaseLineType.primaryPlan,
-                          label: '',
-                          title: '',
-                          subtitle: '',
-                          price: 0,
-                        ),
-                      )
-                      .title;
-                  final addOnNames = data.items
-                      .where((item) => item.type == PurchaseLineType.addOn)
-                      .map((item) => item.title)
-                      .toList(growable: false);
-                  final now = DateTime.now();
-                  context.push(
-                    AppRoutes.guestPurchasePlanReceipt,
-                    extra: <String, Object?>{
-                      'phoneNumber': data.phoneNumber,
-                      'amount': data.totals.total,
-                      'planName':
-                          primaryPlanName.isEmpty ? null : primaryPlanName,
-                      'addOnNames': addOnNames,
-                      'dateText': DateFormat('MMM d, yyyy').format(now),
-                      'timeText':
-                          DateFormat('h:mm a').format(now).toLowerCase(),
-                    },
-                  );
-                },
-                amountText:
-                    '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                return DefaultBottomPayBar(
+                  buttonText: 'continue',
+                  isVatExclusive: true,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    context.read<RoamingPlanConfirmationBloc>().add(
+                      const RoamingPlanConfirmationPayNowPressed(),
+                    );
+                    final data = state.data!;
+                    final primaryPlanName = data.items
+                        .firstWhere(
+                          (item) => item.type == PurchaseLineType.primaryPlan,
+                          orElse: () => const PurchaseLineItem(
+                            id: '',
+                            type: PurchaseLineType.primaryPlan,
+                            label: '',
+                            title: '',
+                            subtitle: '',
+                            price: 0,
+                          ),
+                        )
+                        .title;
+                    final addOnNames = data.items
+                        .where((item) => item.type == PurchaseLineType.addOn)
+                        .map((item) => item.title)
+                        .toList(growable: false);
+                    final now = DateTime.now();
+                    context.push(
+                      AppRoutes.guestPurchasePlanReceipt,
+                      extra: <String, Object?>{
+                        'phoneNumber': data.phoneNumber,
+                        'amount': data.totals.total,
+                        'planName': primaryPlanName.isEmpty
+                            ? null
+                            : primaryPlanName,
+                        'addOnNames': addOnNames,
+                        'dateText': DateFormat('MMM d, yyyy').format(now),
+                        'timeText': DateFormat(
+                          'h:mm a',
+                        ).format(now).toLowerCase(),
+                      },
+                    );
+                  },
+                  amountText:
+                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
                 );
-          },
-        ),
+              },
+            ),
 
         body: SafeArea(
           top: false,
-          child: BlocBuilder<RoamingPlanConfirmationBloc,
-              RoamingPlanConfirmationState>(
+          child: BlocBuilder<RoamingPlanConfirmationBloc, RoamingPlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
               final beginDate = state.routeArgs?.beginDate ?? DateTime.now();
@@ -168,7 +169,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                   /// Top app bar (fixed)
                   DefaultAppBar(
                     showHome: true,
-                    onHomeTap: (){
+                    onHomeTap: () {
                       context.go(AppRoutes.logIn);
                     },
                     title: 'confirmation and payment',
@@ -206,8 +207,10 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         onRemoveItem: (id) => context
                                             .read<RoamingPlanConfirmationBloc>()
                                             .add(
-                                                RoamingPlanConfirmationRemoveItemPressed(
-                                                    id)),
+                                              RoamingPlanConfirmationRemoveItemPressed(
+                                                id,
+                                              ),
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -280,14 +283,15 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         0,
                                       ),
                                       child: CustomPaymentBreakDownCard(
-                                        backgroundColor:
-                                            HexColor.fromHex('#645D9C'),
+                                        backgroundColor: HexColor.fromHex(
+                                          '#645D9C',
+                                        ),
                                         input:
                                             const CustomPaymentBreakdownInputConfig(
-                                          value: '',
-                                          hintText: 'promo code',
-                                          actionText: 'apply',
-                                        ),
+                                              value: '',
+                                              hintText: 'promo code',
+                                              actionText: 'apply',
+                                            ),
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',

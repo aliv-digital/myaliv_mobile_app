@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../userProfile/addOrEditCards/prepaid/theme/add_or_edit_cards_prepaid_theme.dart';
 
-
 class AddCardExpiryResult {
   final int month;
   final int year;

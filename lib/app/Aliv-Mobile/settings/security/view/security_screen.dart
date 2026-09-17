@@ -17,9 +17,9 @@ class SecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SecurityBloc(
-        repository: SecurityRepositoryImpl(),
-      )..add(const SecurityStarted()),
+      create: (_) =>
+          SecurityBloc(repository: SecurityRepositoryImpl())
+            ..add(const SecurityStarted()),
       child: const _SecurityView(),
     );
   }
@@ -31,7 +31,8 @@ class _SecurityView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SecurityBloc, SecurityState>(
-      listenWhen: (previous, current) => previous.navTarget != current.navTarget,
+      listenWhen: (previous, current) =>
+          previous.navTarget != current.navTarget,
       listener: (context, state) {
         if (state.navTarget != SecurityNavTarget.none) {
           context.read<SecurityBloc>().add(const SecurityNavConsumed());
@@ -39,9 +40,9 @@ class _SecurityView extends StatelessWidget {
       },
       builder: (context, state) {
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.noScaling,
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: SecurityTheme.bg,
             body: Column(
@@ -55,9 +56,7 @@ class _SecurityView extends StatelessWidget {
                     context.go(AppRoutes.home);
                   },
                 ),
-                Expanded(
-                  child: _buildBody(state),
-                ),
+                Expanded(child: _buildBody(state)),
               ],
             ),
           ),
@@ -70,9 +69,7 @@ class _SecurityView extends StatelessWidget {
     switch (state.status) {
       case SecurityStatus.initial:
       case SecurityStatus.loading:
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
 
       case SecurityStatus.failure:
         return Center(
@@ -104,9 +101,7 @@ class _SecurityView extends StatelessWidget {
 
         return SingleChildScrollView(
           padding: SecurityTheme.pagePadding,
-          child: SecuritySection(
-            htmlContent: content.htmlContent,
-          ),
+          child: SecuritySection(htmlContent: content.htmlContent),
         );
     }
   }

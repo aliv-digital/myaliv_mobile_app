@@ -44,8 +44,10 @@ class AutoRenewPrepaidScreen extends StatelessWidget {
     );
 
     autoRenewPrepaidBloc.add(const AutoRenewPrepaidStarted());
-    instance<SavedCardsCubit>()
-        .fetchSavedCards(forceRefresh: true, userType: UserType.prepaid);
+    instance<SavedCardsCubit>().fetchSavedCards(
+      forceRefresh: true,
+      userType: UserType.prepaid,
+    );
 
     // Balance API is keyed by DeviceID (from /Account/devices), not the user's
     // account id. Passing the wrong id makes the API return 0 and clobbers the
@@ -135,13 +137,9 @@ class _AutoRenewPrepaidViewState extends State<_AutoRenewPrepaidView> {
       case SelectSavedCard(card: final card):
         bloc.add(AutoRenewSavedCardSelected(card));
       case SelectNoAutoRenew():
-        bloc.add(
-          AutoRenewMethodSelected(AutoRenewPaymentMethod.none.id),
-        );
+        bloc.add(AutoRenewMethodSelected(AutoRenewPaymentMethod.none.id));
       case SelectPayFromWallet():
-        bloc.add(
-          AutoRenewMethodSelected(AutoRenewPaymentMethod.wallet.id),
-        );
+        bloc.add(AutoRenewMethodSelected(AutoRenewPaymentMethod.wallet.id));
     }
     _seededFromServer = true;
   }

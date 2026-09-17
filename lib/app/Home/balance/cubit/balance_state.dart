@@ -70,13 +70,13 @@ class BalanceState {
   /// coerced when rehydrated in [fromStoredJson] — we still persist them
   /// literally so callers see the raw state during app runtime.
   Map<String, dynamic> toJson() => {
-        'schemaVersion': schemaVersion,
-        'status': status.name,
-        'balance': balance?.toJson(),
-        'errorMessage': errorMessage,
-        'lastFetchedAt': lastFetchedAt?.toIso8601String(),
-        'deviceAccountId': deviceAccountId,
-      };
+    'schemaVersion': schemaVersion,
+    'status': status.name,
+    'balance': balance?.toJson(),
+    'errorMessage': errorMessage,
+    'lastFetchedAt': lastFetchedAt?.toIso8601String(),
+    'deviceAccountId': deviceAccountId,
+  };
 
   /// Rehydrate from disk. Returns `null` on schema mismatch or corrupt data
   /// so the caller can fall back to [BalanceState.initial].
@@ -106,14 +106,16 @@ class BalanceState {
     final BalanceStatus effectiveStatus;
     switch (persistedStatus) {
       case BalanceStatus.loaded:
-        effectiveStatus =
-            balance == null ? BalanceStatus.initial : BalanceStatus.loaded;
+        effectiveStatus = balance == null
+            ? BalanceStatus.initial
+            : BalanceStatus.loaded;
         break;
       case BalanceStatus.initial:
       case BalanceStatus.loading:
       case BalanceStatus.failure:
-        effectiveStatus =
-            balance == null ? BalanceStatus.initial : BalanceStatus.loaded;
+        effectiveStatus = balance == null
+            ? BalanceStatus.initial
+            : BalanceStatus.loaded;
         break;
     }
 
@@ -121,8 +123,7 @@ class BalanceState {
       status: effectiveStatus,
       balance: balance,
       errorMessage: null,
-      lastFetchedAt:
-          DateTime.tryParse(json['lastFetchedAt'] as String? ?? ''),
+      lastFetchedAt: DateTime.tryParse(json['lastFetchedAt'] as String? ?? ''),
       deviceAccountId: (json['deviceAccountId'] as num?)?.toInt(),
     );
   }

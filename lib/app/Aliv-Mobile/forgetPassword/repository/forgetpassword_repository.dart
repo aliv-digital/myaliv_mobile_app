@@ -37,7 +37,8 @@ class ForgetPasswordRepository {
     if (data is String) {
       final decoded = jsonDecode(data);
       if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return decoded.map((k, v) => MapEntry(k.toString(), v));
+      if (decoded is Map)
+        return decoded.map((k, v) => MapEntry(k.toString(), v));
     }
     throw const FormatException('Unexpected response format.');
   }
@@ -52,7 +53,8 @@ class ForgetPasswordRepository {
 
   String? _extractMessage(Map<String, dynamic>? body) {
     if (body == null) return null;
-    final raw = body['Message'] ?? body['message'] ?? body['error'] ?? body['detail'];
+    final raw =
+        body['Message'] ?? body['message'] ?? body['error'] ?? body['detail'];
     return raw?.toString();
   }
 

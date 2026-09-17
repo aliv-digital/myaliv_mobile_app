@@ -34,9 +34,12 @@ class _OTPPostpaidView extends StatelessWidget {
       body: SafeArea(
         child: BlocListener<OTPPostpaidBloc, OTPPostpaidState>(
           listener: (context, state) {
-            if (state.status == OTPPostpaidStatus.failure && state.errorMessage != null) {
-
-              AppToast.show(message: state.errorMessage.toString(),type: ToastType.error);
+            if (state.status == OTPPostpaidStatus.failure &&
+                state.errorMessage != null) {
+              AppToast.show(
+                message: state.errorMessage.toString(),
+                type: ToastType.error,
+              );
               //ScaffoldMessenger.of(context).showSnackBar(
               //  SnackBar(content: Text(state.errorMessage!)),
               //);
@@ -46,33 +49,30 @@ class _OTPPostpaidView extends StatelessWidget {
             // if (state.status == OTPPostpaidStatus.success) { ... }
           },
           child: Padding(
-                  padding: const EdgeInsets.only(),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                    slivers: [
-                      const SliverToBoxAdapter(
-                        child: OTPPostpaidHeader(),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 41, right: 41),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: const [
-                              SizedBox(height: 24),
-                              OTPPostpaidCodeFields(),
-                              SizedBox(height: 54),
-                              OTPPostpaidBottomActions(),
-                              SizedBox(height: 24),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+            padding: const EdgeInsets.only(),
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                const SliverToBoxAdapter(child: OTPPostpaidHeader()),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 41, right: 41),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: const [
+                        SizedBox(height: 24),
+                        OTPPostpaidCodeFields(),
+                        SizedBox(height: 54),
+                        OTPPostpaidBottomActions(),
+                        SizedBox(height: 24),
+                      ],
+                    ),
                   ),
                 ),
+              ],
+            ),
+          ),
         ),
       ),
     );

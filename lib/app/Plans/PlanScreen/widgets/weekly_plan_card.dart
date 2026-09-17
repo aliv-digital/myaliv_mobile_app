@@ -90,10 +90,7 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(
-                price: plan.planAmount,
-                vatAmount: plan.vatAmount,
-              ),
+              _PricePill(price: plan.planAmount, vatAmount: plan.vatAmount),
             ],
           ),
 
@@ -107,8 +104,9 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(
@@ -149,9 +147,7 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                width: HomePlanTheme.planCardActionButtonsGap,
-              ),
+              const SizedBox(width: HomePlanTheme.planCardActionButtonsGap),
               Expanded(
                 child: DefaultButton(
                   label: HomePlanTheme.planCardPurchaseNowLabel,
@@ -180,10 +176,7 @@ class _PricePill extends StatelessWidget {
   final double price;
   final double vatAmount;
 
-  const _PricePill({
-    required this.price,
-    required this.vatAmount,
-  });
+  const _PricePill({required this.price, required this.vatAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -249,41 +242,64 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                           Color labelColor;
                           BucketItemType itemType = BucketItemType.whatsApp;
 
-                          if (item.bucketUnit == 'INS_Data' && item.unit == 'GB') {
+                          if (item.bucketUnit == 'INS_Data' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' && item.unit == 'GB') {
+                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_Whatsapp_Text_10201' && item.unit == 'Text') {
+                          } else if (item.bucketUnit ==
+                                  'INS_Whatsapp_Text_10201' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.whatsApp;
-                          } else if (item.bucketUnit == 'INS_Whatsapp_All' && item.unit == 'GB') {
+                          } else if (item.bucketUnit == 'INS_Whatsapp_All' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.whatsApp;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Minutes') {
+                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
+                              item.unit == 'Minutes') {
                             itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Text') {
+                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Minutes') {
+                          } else if (item.bucketUnit ==
+                                  'INS_Voice_Only_National' &&
+                              item.unit == 'Minutes') {
                             itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Text') {
+                          } else if (item.bucketUnit ==
+                                  'INS_Voice_Only_National' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_SMS_Only_National' && item.unit == 'Text') {
+                          } else if (item.bucketUnit ==
+                                  'INS_SMS_Only_National' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' && item.unit == 'Text') {
+                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' && item.unit == 'Minutes') {
+                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' &&
+                              item.unit == 'Minutes') {
                             itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' && item.unit == 'Text') {
+                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Onnet' && item.unit == 'Minutes') {
+                          } else if (item.bucketUnit == 'INS_Voice_Onnet' &&
+                              item.unit == 'Minutes') {
                             itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_SMS_Onnet' && item.unit == 'Text') {
+                          } else if (item.bucketUnit == 'INS_SMS_Onnet' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' && item.unit == 'Text') {
+                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Data_MIFI' && item.unit == 'GB') {
+                          } else if (item.bucketUnit == 'INS_Data_MIFI' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_TikTok_10500' && item.unit == 'GB') {
+                          } else if (item.bucketUnit == 'INS_TikTok_10500' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_Facebook_MSG_10403' && item.unit == 'GB') {
+                          } else if (item.bucketUnit ==
+                                  'INS_Facebook_MSG_10403' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
                           }
 
@@ -387,7 +403,11 @@ class _ScrollIndicator extends StatelessWidget {
   }
 
   Widget _indicatorUI(
-      double trackW, double trackH, double thumbW, double left) {
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: HomePlanTheme.scrollBarRenderBoxHeight,
@@ -476,7 +496,8 @@ class _BucketItem extends StatelessWidget {
   // meaningless trailing zero decimals like `3.000000` while preserving
   // real fractional values such as `0.34` or `4.052`.
   String _formatAmount(double amount) {
-    final bool hasOnlyZeroFraction = (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    final bool hasOnlyZeroFraction =
+        (amount - amount.truncateToDouble()).abs() < 0.0000001;
     if (hasOnlyZeroFraction) {
       return amount.toStringAsFixed(0);
     }
@@ -522,19 +543,26 @@ class _BucketItem extends StatelessWidget {
     );
 
     final double labelW = _measureTextWidth(context, benefit.name, labelStyle);
-    final double valueW = _measureTextWidth(context, benefit.unlimited? "unlimited": benefit.unit, valueStyle);
-    final double subW = _measureTextWidth(context, benefit.amount.toString(), subStyle);
-    final double line1W = iconSize + iconGap + labelW;
-    final double contentW = [line1W, valueW, subW].reduce(
-      (a, b) => a > b ? a : b,
+    final double valueW = _measureTextWidth(
+      context,
+      benefit.unlimited ? "unlimited" : benefit.unit,
+      valueStyle,
     );
+    final double subW = _measureTextWidth(
+      context,
+      benefit.amount.toString(),
+      subStyle,
+    );
+    final double line1W = iconSize + iconGap + labelW;
+    final double contentW = [
+      line1W,
+      valueW,
+      subW,
+    ].reduce((a, b) => a > b ? a : b);
     final double dynamicW = contentW + 16;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: 72,
-        maxWidth: 160,
-      ),
+      constraints: const BoxConstraints(minWidth: 72, maxWidth: 160),
       child: SizedBox(
         width: dynamicW.clamp(72, 160),
         height: 50,

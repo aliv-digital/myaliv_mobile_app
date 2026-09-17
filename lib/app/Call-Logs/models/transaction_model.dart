@@ -70,8 +70,19 @@ class TransactionModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        date, phoneNumber, type, plan, amount, channel,
-        location, agent, promotion, reason, reasonDesc,
-        initiatingOrderId, subId, planStartDate,
-      ];
+    date,
+    phoneNumber,
+    type,
+    plan,
+    amount,
+    channel,
+    location,
+    agent,
+    promotion,
+    reason,
+    reasonDesc,
+    initiatingOrderId,
+    subId,
+    planStartDate,
+  ];
 }

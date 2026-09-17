@@ -207,12 +207,12 @@ class BasePlanModel {
       planGroupSortOrder: _asString(safeMap['PlanGroupSortOrder']),
       prorateOnActivate: _asString(safeMap['ProrateOnActivate']),
       prorateOnDeactivate: _asString(safeMap['ProrateOnDeactivate']),
-      planCapabilities: _asMapList(safeMap['PlanCapabilities'])
-          .map(BasePlanCapabilityModel.fromApiMap)
-          .toList(growable: false),
-      planBuckets: _asMapList(safeMap['PlanBuckets'])
-          .map(BasePlanBucketModel.fromApiMap)
-          .toList(growable: false),
+      planCapabilities: _asMapList(
+        safeMap['PlanCapabilities'],
+      ).map(BasePlanCapabilityModel.fromApiMap).toList(growable: false),
+      planBuckets: _asMapList(
+        safeMap['PlanBuckets'],
+      ).map(BasePlanBucketModel.fromApiMap).toList(growable: false),
       channelTypes: _asString(safeMap['ChannelTypes']),
       vipTypes: _asString(safeMap['VIPTypes']),
       roles: _asString(safeMap['Roles']),
@@ -237,8 +237,9 @@ class BasePlanModel {
           : BasePlanDataRulesModel.fromApiMap(
               _asMapOrNull(safeMap['DataRules'])!,
             ),
-      rawPayload:
-          includeRawPayload ? Map<String, dynamic>.unmodifiable(safeMap) : null,
+      rawPayload: includeRawPayload
+          ? Map<String, dynamic>.unmodifiable(safeMap)
+          : null,
     );
   }
 
@@ -246,10 +247,7 @@ class BasePlanModel {
   /// Used by `PlansState.standAlonePlansForBucketUsage` to merge duplicate
   /// stand-alone purchases (same `planId`, different date ranges) into a
   /// single card spanning the earliest start to the latest end.
-  BasePlanModel copyWith({
-    String? startDate,
-    String? endDate,
-  }) {
+  BasePlanModel copyWith({String? startDate, String? endDate}) {
     return BasePlanModel(
       planId: planId,
       planName: planName,
@@ -394,8 +392,8 @@ class BasePlanModel {
 
   // ===== Debug Method =====
 
-  Map<String, dynamic> toDebugMap() => toJson()
-    ..['HasRawPayload'] = rawPayload != null;
+  Map<String, dynamic> toDebugMap() =>
+      toJson()..['HasRawPayload'] = rawPayload != null;
 
   // ===== Parsing Utilities =====
 
@@ -450,7 +448,6 @@ class BasePlanModel {
         .map(_toStringKeyedMap)
         .toList(growable: false);
   }
-
 }
 
 // ===== Nested Models =====
@@ -476,9 +473,9 @@ class BasePlanCapabilityModel {
       BasePlanCapabilityModel.fromApiMap(json);
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'PlanCapabilityName': planCapabilityName,
-        'PlanCapabilityType': planCapabilityType,
-      };
+    'PlanCapabilityName': planCapabilityName,
+    'PlanCapabilityType': planCapabilityType,
+  };
 
   Map<String, dynamic> toDebugMap() => toJson();
 }
@@ -519,14 +516,14 @@ class BasePlanBucketModel {
       BasePlanBucketModel.fromApiMap(json);
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'Name': name,
-        'Amount': amount,
-        'Unit': unit,
-        'BucketOrder': bucketOrder,
-        'Suppress': suppress,
-        'Unlimited': unlimited,
-        'BucketUnit': bucketUnit,
-      };
+    'Name': name,
+    'Amount': amount,
+    'Unit': unit,
+    'BucketOrder': bucketOrder,
+    'Suppress': suppress,
+    'Unlimited': unlimited,
+    'BucketUnit': bucketUnit,
+  };
 
   Map<String, dynamic> toDebugMap() => toJson();
 }
@@ -544,8 +541,9 @@ class BasePlanDataRulesModel {
   factory BasePlanDataRulesModel.fromApiMap(Map<String, dynamic> map) {
     return BasePlanDataRulesModel(
       planId: BasePlanModel._asInt(map['PlanId']),
-      requireAltContactPhone:
-          BasePlanModel._asBool(map['RequireAltContactPhone']),
+      requireAltContactPhone: BasePlanModel._asBool(
+        map['RequireAltContactPhone'],
+      ),
     );
   }
 
@@ -553,9 +551,9 @@ class BasePlanDataRulesModel {
       BasePlanDataRulesModel.fromApiMap(json);
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'PlanId': planId,
-        'RequireAltContactPhone': requireAltContactPhone,
-      };
+    'PlanId': planId,
+    'RequireAltContactPhone': requireAltContactPhone,
+  };
 
   Map<String, dynamic> toDebugMap() => toJson();
 }

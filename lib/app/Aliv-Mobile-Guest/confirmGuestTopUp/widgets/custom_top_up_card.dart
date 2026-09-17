@@ -29,14 +29,8 @@ class CustomTopUpCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: TopUpConfirmTheme.customCardTitle,
-                ),
-                Text(
-                  phoneNumber,
-                  style: TopUpConfirmTheme.customCardPhone,
-                ),
+                Text(title, style: TopUpConfirmTheme.customCardTitle),
+                Text(phoneNumber, style: TopUpConfirmTheme.customCardPhone),
               ],
             ),
             const SizedBox(height: TopUpConfirmTheme.customCardGap),
@@ -45,10 +39,7 @@ class CustomTopUpCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Top-up amount',
-                  style: TopUpConfirmTheme.customCardLabel,
-                ),
+                Text('Top-up amount', style: TopUpConfirmTheme.customCardLabel),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: TopUpConfirmTheme.customCardAmountVerticalPadding,

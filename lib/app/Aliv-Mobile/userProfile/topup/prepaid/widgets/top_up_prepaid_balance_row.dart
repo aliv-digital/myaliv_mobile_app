@@ -16,8 +16,9 @@ class TopUpPrepaidBalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final remaining =
-        isSendTopUp ? balance - enteredAmount : balance + enteredAmount;
+    final remaining = isSendTopUp
+        ? balance - enteredAmount
+        : balance + enteredAmount;
     final isNegative = remaining < 0;
     return Center(
       child: Container(

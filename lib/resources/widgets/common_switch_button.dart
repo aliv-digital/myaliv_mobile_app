@@ -5,7 +5,11 @@ class CommonSwitchButton extends StatefulWidget {
   final bool initialValue;
   final ValueChanged<bool>? onChanged;
 
-  const CommonSwitchButton({super.key, this.initialValue = false, this.onChanged});
+  const CommonSwitchButton({
+    super.key,
+    this.initialValue = false,
+    this.onChanged,
+  });
 
   @override
   State<CommonSwitchButton> createState() => _CommonSwitchButtonState();

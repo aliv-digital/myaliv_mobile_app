@@ -14,7 +14,7 @@ class GuestSplashButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,//double.infinity,
+      width: 200, //double.infinity,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(
@@ -23,16 +23,11 @@ class GuestSplashButton extends StatelessWidget {
             const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
           ),
           shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           ),
           elevation: WidgetStateProperty.all(0),
         ),
-        child: Text(
-          label,
-          style: GuestSplashTheme.optionButtonText,
-        ),
+        child: Text(label, style: GuestSplashTheme.optionButtonText),
       ),
     );
   }

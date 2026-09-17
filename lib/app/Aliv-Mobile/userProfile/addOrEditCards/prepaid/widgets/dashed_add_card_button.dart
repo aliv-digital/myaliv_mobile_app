@@ -15,7 +15,9 @@ class DashedAddCardButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ✅ make border color stronger (deep)
-    final borderColor = AddOrEditCardsPrepaidTheme.dashedBorder.withOpacity(1.0);
+    final borderColor = AddOrEditCardsPrepaidTheme.dashedBorder.withOpacity(
+      1.0,
+    );
 
     return InkWell(
       onTap: isLoading ? null : onTap,
@@ -25,11 +27,11 @@ class DashedAddCardButton extends StatelessWidget {
           color: borderColor,
           // ✅ make it bold + visible
           strokeWidth: 4.8,
-          haloWidth: 3.2,          // ✅ halo makes dash pop
-          haloOpacity: 0.18,       // ✅ subtle glow, not ugly
+          haloWidth: 3.2, // ✅ halo makes dash pop
+          haloOpacity: 0.18, // ✅ subtle glow, not ugly
           radius: 999,
-          dash: 5,                // ✅ longer dash = more visible
-          gap: 8,                  // ✅ clearer gap
+          dash: 5, // ✅ longer dash = more visible
+          gap: 8, // ✅ clearer gap
         ),
         child: Container(
           width: double.infinity,

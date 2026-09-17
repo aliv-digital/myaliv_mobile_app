@@ -4,12 +4,16 @@ import '../repository/guest_purchase_plan_confirmation_repository.dart';
 import 'guest_purchase_plan_confirmation_event.dart';
 import 'guest_purchase_plan_confirmation_state.dart';
 
-class GuestPurchasePlanConfirmationBloc extends Bloc<
-    GuestPurchasePlanConfirmationEvent, GuestPurchasePlanConfirmationState> {
+class GuestPurchasePlanConfirmationBloc
+    extends
+        Bloc<
+          GuestPurchasePlanConfirmationEvent,
+          GuestPurchasePlanConfirmationState
+        > {
   final GuestPurchasePlanConfirmationRepository repository;
 
   GuestPurchasePlanConfirmationBloc({required this.repository})
-      : super(GuestPurchasePlanConfirmationState.initial()) {
+    : super(GuestPurchasePlanConfirmationState.initial()) {
     on<GuestPurchasePlanConfirmationStarted>(_onStarted);
     on<GuestPurchasePlanConfirmationRemoveItemPressed>(_onRemoveItem);
     on<GuestPurchasePlanConfirmationTermsPressed>(_onTerms);
@@ -27,16 +31,20 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
 
     try {
       final data = await repository.load(args: event.args);
-      emit(state.copyWith(
-        status: GuestPurchasePlanConfirmationStatus.ready,
-        data: data,
-        isTermsChecked: event.args.defaultTermsChecked,
-      ));
+      emit(
+        state.copyWith(
+          status: GuestPurchasePlanConfirmationStatus.ready,
+          data: data,
+          isTermsChecked: event.args.defaultTermsChecked,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: GuestPurchasePlanConfirmationStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: GuestPurchasePlanConfirmationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -54,14 +62,16 @@ class GuestPurchasePlanConfirmationBloc extends Bloc<
       vat: data.totals.vat,
     );
 
-    emit(state.copyWith(
-      data: GuestPurchasePlanConfirmationData(
-        phoneNumber: data.phoneNumber,
-        headerTitle: data.headerTitle,
-        items: updatedItems,
-        totals: totals,
+    emit(
+      state.copyWith(
+        data: GuestPurchasePlanConfirmationData(
+          phoneNumber: data.phoneNumber,
+          headerTitle: data.headerTitle,
+          items: updatedItems,
+          totals: totals,
+        ),
       ),
-    ));
+    );
   }
 
   void _onTerms(

@@ -59,7 +59,9 @@ class _ChangePasswordPrepaidPasswordFieldState
     final iconColor = hasError
         ? ChangePasswordPrepaidTheme.error
         : ChangePasswordPrepaidTheme.brand;
-    final textColor = hasError ? ChangePasswordPrepaidTheme.error : Colors.black;
+    final textColor = hasError
+        ? ChangePasswordPrepaidTheme.error
+        : Colors.black;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

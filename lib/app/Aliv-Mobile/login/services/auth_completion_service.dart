@@ -41,7 +41,8 @@ class AuthCompletionService {
     await accountInfoCubit.fetchAccountInfo(forceRefresh: true);
 
     if (accountInfoCubit.state.status != AccountInfoStatus.success) {
-      final errorMsg = accountInfoCubit.state.errorMessage ??
+      final errorMsg =
+          accountInfoCubit.state.errorMessage ??
           'Failed to fetch account information';
       throw Exception(errorMsg);
     }
@@ -82,8 +83,9 @@ class AuthCompletionService {
 
     if (kDebugMode) {
       debugPrint(
-          '✅ AuthCompletionService: login completed for account ${accountInfo.idAcc} '
-          '(primary device ${primaryDevice.deviceId})');
+        '✅ AuthCompletionService: login completed for account ${accountInfo.idAcc} '
+        '(primary device ${primaryDevice.deviceId})',
+      );
     }
   }
 }

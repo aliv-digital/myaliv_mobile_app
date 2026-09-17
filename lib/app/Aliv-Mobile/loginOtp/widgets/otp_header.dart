@@ -12,10 +12,7 @@ class OtpHeader extends StatelessWidget {
     return Column(
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(
-            left: LoginOtpSizes.backLeft,
-            top: 28,
-          ),
+          padding: EdgeInsets.only(left: LoginOtpSizes.backLeft, top: 28),
           iconWidth: LoginOtpSizes.backIconWidth,
           iconHeight: LoginOtpSizes.backIconHeight,
           onPressed: () {
@@ -29,10 +26,7 @@ class OtpHeader extends StatelessWidget {
           height: LoginOtpSizes.otpImageHeight,
         ),
         const SizedBox(height: LoginOtpSizes.otpImageToTitleGap),
-        const Text(
-          'verification code',
-          style: LoginOtpTheme.title,
-        ),
+        const Text('verification code', style: LoginOtpTheme.title),
         const SizedBox(height: LoginOtpSizes.titleToSubtitleGap),
         Text(
           'we have sent a verification code to your email\nand via sms',

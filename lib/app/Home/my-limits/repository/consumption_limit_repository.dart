@@ -26,8 +26,8 @@ class ConsumptionLimitRepositoryImpl implements ConsumptionLimitRepository {
   ConsumptionLimitRepositoryImpl({
     required ConsumptionLimitApiService apiService,
     required ConsumptionLimitParserService parserService,
-  })  : _apiService = apiService,
-        _parserService = parserService;
+  }) : _apiService = apiService,
+       _parserService = parserService;
 
   @override
   Future<List<ConsumptionLimitModel>> fetchLimits({

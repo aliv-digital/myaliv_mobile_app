@@ -21,13 +21,11 @@ class ReceiptBackButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: GuestPayBillReceiptTheme.backButtonBackgroundColor,
           elevation: 0,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(26),
+          ),
         ),
-        child: Text(
-          text,
-          style: GuestPayBillReceiptTheme.backButtonText,
-        ),
+        child: Text(text, style: GuestPayBillReceiptTheme.backButtonText),
       ),
     );
   }

@@ -9,13 +9,11 @@ class AddOnsConfirmationBloc
   final AddOnsConfirmationRepository repository;
 
   AddOnsConfirmationBloc({required this.repository})
-      : super(AddOnsConfirmationState.initial()) {
+    : super(AddOnsConfirmationState.initial()) {
     on<AddOnsConfirmationStarted>(_onStarted);
     on<AddOnsConfirmationRemoveItemPressed>(_onRemoveItem);
     on<AddOnsConfirmationTermsPressed>(_onTerms);
-    on<AddOnsConfirmationTermsCheckboxToggled>(
-      _onTermsCheckboxToggled,
-    );
+    on<AddOnsConfirmationTermsCheckboxToggled>(_onTermsCheckboxToggled);
     on<AddOnsConfirmationPayNowPressed>(_onPayNow);
   }
 
@@ -27,15 +25,14 @@ class AddOnsConfirmationBloc
 
     try {
       final data = await repository.load(phoneNumber: event.phoneNumber);
-      emit(state.copyWith(
-        status: AddOnsConfirmationStatus.ready,
-        data: data,
-      ));
+      emit(state.copyWith(status: AddOnsConfirmationStatus.ready, data: data));
     } catch (e) {
-      emit(state.copyWith(
-        status: AddOnsConfirmationStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: AddOnsConfirmationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -53,15 +50,17 @@ class AddOnsConfirmationBloc
       vat: data.totals.vat,
     );
 
-    emit(state.copyWith(
-      data: AddOnsConfirmationData(
-        phoneNumber: data.phoneNumber,
-        headerTitle: data.headerTitle,
-        beginsOnDateText: data.beginsOnDateText,
-        items: updatedItems,
-        totals: totals,
+    emit(
+      state.copyWith(
+        data: AddOnsConfirmationData(
+          phoneNumber: data.phoneNumber,
+          headerTitle: data.headerTitle,
+          beginsOnDateText: data.beginsOnDateText,
+          items: updatedItems,
+          totals: totals,
+        ),
       ),
-    ));
+    );
   }
 
   void _onTerms(

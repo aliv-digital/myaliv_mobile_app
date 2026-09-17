@@ -5,10 +5,7 @@ import '../theme/guest_pay_bill_theme.dart';
 class GuestPayBillReadOnlyBox extends StatelessWidget {
   final String text;
 
-  const GuestPayBillReadOnlyBox({
-    super.key,
-    required this.text,
-  });
+  const GuestPayBillReadOnlyBox({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +18,7 @@ class GuestPayBillReadOnlyBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(GuestPayBillTheme.radius),
       ),
       alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: GuestPayBillTheme.inputTextStyle,
-      ),
+      child: Text(text, style: GuestPayBillTheme.inputTextStyle),
     );
   }
 }

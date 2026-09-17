@@ -4,10 +4,8 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 /// Service for fetching plan data from API
 class PlanApiService extends BasePlanApiClient {
-  PlanApiService({
-    super.networkService,
-    super.authManager,
-  }) : super(debugName: 'plan-api-service');
+  PlanApiService({super.networkService, super.authManager})
+    : super(debugName: 'plan-api-service');
 
   Future<String> fetchRawPlansJson() async {
     final deviceId = requireDeviceAccountId();

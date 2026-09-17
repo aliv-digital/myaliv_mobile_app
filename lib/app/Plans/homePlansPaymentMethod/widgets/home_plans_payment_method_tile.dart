@@ -46,7 +46,8 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: Container(
         //padding: const EdgeInsets.only(top: 18,bottom: 18,right: 16,left: 16),
-        padding: tilePadding ?? HomePlansPaymentMethodTheme.savedCardTilePadding,
+        padding:
+            tilePadding ?? HomePlansPaymentMethodTheme.savedCardTilePadding,
         decoration: BoxDecoration(
           color: selected
               ? HomePlansPaymentMethodTheme.selectedCardBg
@@ -61,10 +62,7 @@ class HomePlansPaymentMethodTile extends StatelessWidget {
                   SizedBox(
                     width: HomePlansPaymentMethodTheme.savedCardLogoWidth,
                     height: HomePlansPaymentMethodTheme.savedCardLogoHeight,
-                    child: SvgPicture.asset(
-                      logoSvgAsset,
-                      fit: BoxFit.contain,
-                    ),
+                    child: SvgPicture.asset(logoSvgAsset, fit: BoxFit.contain),
                   ),
               const SizedBox(width: 12),
             ],

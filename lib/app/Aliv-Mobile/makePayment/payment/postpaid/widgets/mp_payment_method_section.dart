@@ -55,8 +55,8 @@ class MpPaymentMethodSection extends StatelessWidget {
             autoSelectFirst: !payWithCardSelected,
           ),
           const SizedBox(
-            height: MakePaymentPostPaidTheme
-                .paymentMethodLastCardToPayWithCardGap,
+            height:
+                MakePaymentPostPaidTheme.paymentMethodLastCardToPayWithCardGap,
           ),
           _PayWithCardTile(
             selected: payWithCardSelected,
@@ -114,10 +114,7 @@ class _MpSavedCardsList extends StatelessWidget {
 }
 
 class _PayWithCardTile extends StatelessWidget {
-  const _PayWithCardTile({
-    required this.selected,
-    required this.onTap,
-  });
+  const _PayWithCardTile({required this.selected, required this.onTap});
 
   final bool selected;
   final VoidCallback onTap;

@@ -121,18 +121,18 @@ class MakePaymentPostPaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        title,
-        paymentDueAmount,
-        bottomAmount,
-        bottomSubtitle,
-        amountOption,
-        customAmount,
-        termsAccepted,
-        paymentMode,
-        selectedMethodToken,
-        navTarget,
-        status,
-        errorMessage,
-        lastNewCardDetails,
-      ];
+    title,
+    paymentDueAmount,
+    bottomAmount,
+    bottomSubtitle,
+    amountOption,
+    customAmount,
+    termsAccepted,
+    paymentMode,
+    selectedMethodToken,
+    navTarget,
+    status,
+    errorMessage,
+    lastNewCardDetails,
+  ];
 }

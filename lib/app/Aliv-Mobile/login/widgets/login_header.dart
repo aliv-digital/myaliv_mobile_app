@@ -11,7 +11,8 @@ class LoginHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sideSlotWidth = AuthModuleSizes.backLeft + AuthModuleSizes.backIconWidth;
+    final sideSlotWidth =
+        AuthModuleSizes.backLeft + AuthModuleSizes.backIconWidth;
 
     return Padding(
       padding: EdgeInsets.only(top: 28),
@@ -32,7 +33,8 @@ class LoginHeader extends StatelessWidget {
                   context.pop();
                 } else {
                   context.go(AppRoutes.splash); // or do nothing
-                }              },
+                }
+              },
             ),
           ),
 
@@ -63,10 +65,7 @@ class _LogoTitle extends StatelessWidget {
           height: AuthModuleSizes.logoHeight,
         ),
         const SizedBox(height: AuthModuleSizes.logoToTitleGap),
-        const Text(
-          'welcome back',
-          style: AuthModuleTextStyles.welcomeBack,
-        ),
+        const Text('welcome back', style: AuthModuleTextStyles.welcomeBack),
       ],
     );
   }

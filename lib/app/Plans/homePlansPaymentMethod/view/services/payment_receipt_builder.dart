@@ -70,21 +70,18 @@ class PaymentReceiptBuilder {
       HomePlanPurchaseReceiptDetailItem(label: 'time', value: time),
     ];
     if (phone.isNotEmpty) {
-      items.add(HomePlanPurchaseReceiptDetailItem(
-        label: 'phone no.',
-        value: phone,
-      ));
+      items.add(
+        HomePlanPurchaseReceiptDetailItem(label: 'phone no.', value: phone),
+      );
     }
     if (email.isNotEmpty) {
-      items.add(HomePlanPurchaseReceiptDetailItem(
-        label: 'email address',
-        value: email,
-      ));
+      items.add(
+        HomePlanPurchaseReceiptDetailItem(label: 'email address', value: email),
+      );
     }
-    items.add(HomePlanPurchaseReceiptDetailItem(
-      label: 'payment method',
-      value: method,
-    ));
+    items.add(
+      HomePlanPurchaseReceiptDetailItem(label: 'payment method', value: method),
+    );
     return items;
   }
 

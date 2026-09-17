@@ -31,10 +31,7 @@ enum PlansStatus {
 
 /// Toast message for error display
 class PlansToastMessage {
-  const PlansToastMessage({
-    required this.id,
-    required this.message,
-  });
+  const PlansToastMessage({required this.id, required this.message});
 
   final int id;
   final String message;
@@ -345,13 +342,16 @@ class PlansState extends Equatable {
       'roamingApiPlans': roamingApiPlans.map((p) => p.toJson()).toList(),
       'roamEasyApiPlans': roamEasyApiPlans.map((p) => p.toJson()).toList(),
       'mifiApiPlans': mifiApiPlans.map((p) => p.toJson()).toList(),
-      'libertyGlobalApiPlans':
-          libertyGlobalApiPlans.map((p) => p.toJson()).toList(),
-      'postpaidRoamingApiPlans':
-          postpaidRoamingApiPlans.map((p) => p.toJson()).toList(),
+      'libertyGlobalApiPlans': libertyGlobalApiPlans
+          .map((p) => p.toJson())
+          .toList(),
+      'postpaidRoamingApiPlans': postpaidRoamingApiPlans
+          .map((p) => p.toJson())
+          .toList(),
       'addOns': addOns.map((a) => a.toJson()).toList(),
-      'addOnsApiPrimaryPlans':
-          addOnsApiPrimaryPlans.map((p) => p.toJson()).toList(),
+      'addOnsApiPrimaryPlans': addOnsApiPrimaryPlans
+          .map((p) => p.toJson())
+          .toList(),
       'secondaryPlans': secondaryPlans.map((p) => p.toJson()).toList(),
       'standAlonePlans': standAlonePlans.map((p) => p.toJson()).toList(),
       'lastFetchedAt': lastFetchedAt?.toIso8601String(),
@@ -364,23 +364,35 @@ class PlansState extends Equatable {
     final weekly = _parseList(json['weeklyApiPlans'], BasePlanModel.fromJson);
     final monthly = _parseList(json['monthlyApiPlans'], BasePlanModel.fromJson);
     final roaming = _parseList(json['roamingApiPlans'], BasePlanModel.fromJson);
-    final roamEasy =
-        _parseList(json['roamEasyApiPlans'], BasePlanModel.fromJson);
+    final roamEasy = _parseList(
+      json['roamEasyApiPlans'],
+      BasePlanModel.fromJson,
+    );
     final mifi = _parseList(json['mifiApiPlans'], BasePlanModel.fromJson);
-    final libertyGlobal =
-        _parseList(json['libertyGlobalApiPlans'], BasePlanModel.fromJson);
+    final libertyGlobal = _parseList(
+      json['libertyGlobalApiPlans'],
+      BasePlanModel.fromJson,
+    );
     final postpaidRoaming = _parseList(
-        json['postpaidRoamingApiPlans'], HomePlansPostPaidPlanModel.fromJson);
-    final addOns =
-        _parseList(json['addOns'], HomePlanAddOnModel.fromJson);
-    final primaryPlans =
-        _parseList(json['addOnsApiPrimaryPlans'], BasePlanModel.fromJson);
-    final secondary =
-        _parseList(json['secondaryPlans'], BasePlanModel.fromJson);
-    final standAlone =
-        _parseList(json['standAlonePlans'], BasePlanModel.fromJson);
+      json['postpaidRoamingApiPlans'],
+      HomePlansPostPaidPlanModel.fromJson,
+    );
+    final addOns = _parseList(json['addOns'], HomePlanAddOnModel.fromJson);
+    final primaryPlans = _parseList(
+      json['addOnsApiPrimaryPlans'],
+      BasePlanModel.fromJson,
+    );
+    final secondary = _parseList(
+      json['secondaryPlans'],
+      BasePlanModel.fromJson,
+    );
+    final standAlone = _parseList(
+      json['standAlonePlans'],
+      BasePlanModel.fromJson,
+    );
 
-    final hasData = daily.isNotEmpty ||
+    final hasData =
+        daily.isNotEmpty ||
         weekly.isNotEmpty ||
         monthly.isNotEmpty ||
         roaming.isNotEmpty ||
@@ -473,7 +485,8 @@ class PlansState extends Equatable {
       roamingApiPlans: roamingApiPlans ?? this.roamingApiPlans,
       roamEasyApiPlans: roamEasyApiPlans ?? this.roamEasyApiPlans,
       mifiApiPlans: mifiApiPlans ?? this.mifiApiPlans,
-      libertyGlobalApiPlans: libertyGlobalApiPlans ?? this.libertyGlobalApiPlans,
+      libertyGlobalApiPlans:
+          libertyGlobalApiPlans ?? this.libertyGlobalApiPlans,
       postpaidRoamingApiPlans:
           postpaidRoamingApiPlans ?? this.postpaidRoamingApiPlans,
       addOns: addOns ?? this.addOns,
@@ -484,8 +497,9 @@ class PlansState extends Equatable {
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
       isPurchaseModalOpen: isPurchaseModalOpen ?? this.isPurchaseModalOpen,
-      pendingToast:
-          clearPendingToast ? null : (pendingToast ?? this.pendingToast),
+      pendingToast: clearPendingToast
+          ? null
+          : (pendingToast ?? this.pendingToast),
       toastSequence: toastSequence ?? this.toastSequence,
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
       addOnsApiLastSyncedAt:
@@ -503,30 +517,30 @@ class PlansState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        selectedTab,
-        dailyApiPlans,
-        weeklyApiPlans,
-        monthlyApiPlans,
-        roamingApiPlans,
-        roamEasyApiPlans,
-        mifiApiPlans,
-        libertyGlobalApiPlans,
-        postpaidRoamingApiPlans,
-        addOns,
-        addOnsApiPrimaryPlans,
-        secondaryPlans,
-        standAlonePlans,
-        selectedAddOnIds,
-        expandedPlanIds,
-        isPurchaseModalOpen,
-        pendingToast,
-        toastSequence,
-        lastFetchedAt,
-        addOnsApiLastSyncedAt,
-        errorMessage,
-        optimisticActivePlan,
-        optimisticSecondaryPlans,
-        isRefreshingBundles,
-      ];
+    status,
+    selectedTab,
+    dailyApiPlans,
+    weeklyApiPlans,
+    monthlyApiPlans,
+    roamingApiPlans,
+    roamEasyApiPlans,
+    mifiApiPlans,
+    libertyGlobalApiPlans,
+    postpaidRoamingApiPlans,
+    addOns,
+    addOnsApiPrimaryPlans,
+    secondaryPlans,
+    standAlonePlans,
+    selectedAddOnIds,
+    expandedPlanIds,
+    isPurchaseModalOpen,
+    pendingToast,
+    toastSequence,
+    lastFetchedAt,
+    addOnsApiLastSyncedAt,
+    errorMessage,
+    optimisticActivePlan,
+    optimisticSecondaryPlans,
+    isRefreshingBundles,
+  ];
 }

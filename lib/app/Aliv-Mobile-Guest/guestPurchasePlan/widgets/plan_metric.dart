@@ -25,20 +25,11 @@ class PlanMetric extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: GuestPurchasePlanTheme.metricTitle,
-              ),
+              Text(title, style: GuestPurchasePlanTheme.metricTitle),
               const SizedBox(height: 2),
-              Text(
-                value,
-                style: GuestPurchasePlanTheme.metricValue,
-              ),
+              Text(value, style: GuestPurchasePlanTheme.metricValue),
               const SizedBox(height: 2),
-              Text(
-                sub,
-                style: GuestPurchasePlanTheme.metricSub,
-              ),
+              Text(sub, style: GuestPurchasePlanTheme.metricSub),
             ],
           ),
         ],

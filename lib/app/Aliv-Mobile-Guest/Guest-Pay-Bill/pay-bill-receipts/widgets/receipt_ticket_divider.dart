@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/theme/theme.dart';
 
 class ReceiptTicketDivider extends StatelessWidget {
-  const ReceiptTicketDivider({
-    super.key,
-    this.dashColor,
-    this.height = 22,
-  });
+  const ReceiptTicketDivider({super.key, this.dashColor, this.height = 22});
 
   final Color? dashColor;
   final double height;

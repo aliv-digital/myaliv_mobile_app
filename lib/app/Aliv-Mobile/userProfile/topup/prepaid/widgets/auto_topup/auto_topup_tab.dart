@@ -194,6 +194,6 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   }
 
   void _showError(String msg) {
-    AppToast.show(message: msg,type: ToastType.error);
+    AppToast.show(message: msg, type: ToastType.error);
   }
 }

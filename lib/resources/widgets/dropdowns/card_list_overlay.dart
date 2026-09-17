@@ -82,17 +82,11 @@ class _AddNewCardFooter extends StatelessWidget {
             children: [
               TextSpan(
                 text: '+ ',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 18,
-                ),
+                style: TextStyle(fontFamily: 'CircularPro', fontSize: 18),
               ),
               TextSpan(
                 text: 'add new card',
-                style: TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 15,
-                ),
+                style: TextStyle(fontFamily: 'CircularPro', fontSize: 15),
               ),
             ],
           ),
@@ -132,17 +126,11 @@ class _CardListItem extends StatelessWidget {
             Expanded(
               child: Text(
                 card.displayLabel,
-                style: const TextStyle(
-                  fontFamily: 'CircularPro',
-                  fontSize: 15,
-                ),
+                style: const TextStyle(fontFamily: 'CircularPro', fontSize: 15),
               ),
             ),
             if (isSelected)
-              const Icon(
-                Icons.check_circle,
-                color: dropdownSelectedAccent,
-              ),
+              const Icon(Icons.check_circle, color: dropdownSelectedAccent),
           ],
         ),
       ),

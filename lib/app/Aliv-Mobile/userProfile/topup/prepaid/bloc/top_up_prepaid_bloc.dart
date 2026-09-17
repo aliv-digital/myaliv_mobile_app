@@ -9,8 +9,8 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
   final TopUpPrepaidRepository repo;
 
   TopUpPrepaidBloc({TopUpPrepaidRepository? repo})
-      : repo = repo ?? TopUpPrepaidRepository(),
-        super(TopUpPrepaidState.initial()) {
+    : repo = repo ?? TopUpPrepaidRepository(),
+      super(TopUpPrepaidState.initial()) {
     on<TopUpPrepaidStarted>(_onStarted);
     on<TopUpPrepaidTabChanged>(_onTabChanged);
     on<TopUpPrepaidAmountChanged>(_onAmountChanged);
@@ -19,50 +19,53 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
   }
 
   Future<void> _onStarted(
-      TopUpPrepaidStarted event,
-      Emitter<TopUpPrepaidState> emit,
-      ) async {
-    emit(state.copyWith(
-      loadStatus: TopUpPrepaidLoadStatus.loading,
-      limitFetchFailed: false,
-      clearError: true,
-    ));
+    TopUpPrepaidStarted event,
+    Emitter<TopUpPrepaidState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        loadStatus: TopUpPrepaidLoadStatus.loading,
+        limitFetchFailed: false,
+        clearError: true,
+      ),
+    );
 
     // Balance + limit run in parallel; a failure in one must not hide the
     // other's result. Both are wrapped in their own try/catch.
-    final results = await Future.wait([
-      _safeFetchBalance(),
-      _safeFetchLimit(),
-    ]);
+    final results = await Future.wait([_safeFetchBalance(), _safeFetchLimit()]);
 
     final balanceResult = results[0] as _BalanceResult;
     final limitResult = results[1] as _LimitResult;
 
     final loadFailed = balanceResult.failed && limitResult.failed;
 
-    emit(state.copyWith(
-      loadStatus: loadFailed
-          ? TopUpPrepaidLoadStatus.failure
-          : TopUpPrepaidLoadStatus.ready,
-      balance: balanceResult.balance ?? state.balance,
-      limitLeft: limitResult.data?.limitLeft,
-      earliestTopUpDateLocal: limitResult.data?.earliestTopUpDateLocal,
-      limitFetchFailed: limitResult.failed,
-      errorMessage: loadFailed ? 'Failed to load data' : null,
-      clearError: !loadFailed,
-    ));
+    emit(
+      state.copyWith(
+        loadStatus: loadFailed
+            ? TopUpPrepaidLoadStatus.failure
+            : TopUpPrepaidLoadStatus.ready,
+        balance: balanceResult.balance ?? state.balance,
+        limitLeft: limitResult.data?.limitLeft,
+        earliestTopUpDateLocal: limitResult.data?.earliestTopUpDateLocal,
+        limitFetchFailed: limitResult.failed,
+        errorMessage: loadFailed ? 'Failed to load data' : null,
+        clearError: !loadFailed,
+      ),
+    );
   }
 
   Future<void> _onLimitRefreshed(
-      TopUpPrepaidLimitRefreshed event,
-      Emitter<TopUpPrepaidState> emit,
-      ) async {
+    TopUpPrepaidLimitRefreshed event,
+    Emitter<TopUpPrepaidState> emit,
+  ) async {
     final result = await _safeFetchLimit();
-    emit(state.copyWith(
-      limitLeft: result.data?.limitLeft,
-      earliestTopUpDateLocal: result.data?.earliestTopUpDateLocal,
-      limitFetchFailed: result.failed,
-    ));
+    emit(
+      state.copyWith(
+        limitLeft: result.data?.limitLeft,
+        earliestTopUpDateLocal: result.data?.earliestTopUpDateLocal,
+        limitFetchFailed: result.failed,
+      ),
+    );
   }
 
   Future<_BalanceResult> _safeFetchBalance() async {
@@ -84,27 +87,32 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
   }
 
   void _onTabChanged(
-      TopUpPrepaidTabChanged event,
-      Emitter<TopUpPrepaidState> emit,
-      ) {
+    TopUpPrepaidTabChanged event,
+    Emitter<TopUpPrepaidState> emit,
+  ) {
     // ✅ keep amount/balance, just update selected tab
     emit(state.copyWith(selectedTabIndex: event.index, clearError: true));
   }
 
   void _onAmountChanged(
-      TopUpPrepaidAmountChanged event,
-      Emitter<TopUpPrepaidState> emit,
-      ) {
+    TopUpPrepaidAmountChanged event,
+    Emitter<TopUpPrepaidState> emit,
+  ) {
     emit(state.copyWith(amountText: event.value, clearError: true));
   }
 
   Future<void> _onTopUpPressed(
-      TopUpPrepaidTopUpPressed event,
-      Emitter<TopUpPrepaidState> emit,
-      ) async {
+    TopUpPrepaidTopUpPressed event,
+    Emitter<TopUpPrepaidState> emit,
+  ) async {
     if (!state.canSubmit) return;
 
-    emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.loading, clearError: true));
+    emit(
+      state.copyWith(
+        submitStatus: TopUpPrepaidSubmitStatus.loading,
+        clearError: true,
+      ),
+    );
     try {
       await repo.topUp(amount: state.amountValue);
       await instance<AnalyticsService>().logWalletTopUp(
@@ -113,12 +121,19 @@ class TopUpPrepaidBloc extends Bloc<TopUpPrepaidEvent, TopUpPrepaidState> {
       );
       emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.success));
       // optional: reset amount after success
-      emit(state.copyWith(submitStatus: TopUpPrepaidSubmitStatus.idle, amountText: ''));
+      emit(
+        state.copyWith(
+          submitStatus: TopUpPrepaidSubmitStatus.idle,
+          amountText: '',
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        submitStatus: TopUpPrepaidSubmitStatus.failure,
-        errorMessage: 'Top up failed. Try again.',
-      ));
+      emit(
+        state.copyWith(
+          submitStatus: TopUpPrepaidSubmitStatus.failure,
+          errorMessage: 'Top up failed. Try again.',
+        ),
+      );
     }
   }
 }

@@ -17,9 +17,8 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HelpBloc(
-        repository: HelpRepositoryImpl(),
-      )..add(const HelpStarted()),
+      create: (_) =>
+          HelpBloc(repository: HelpRepositoryImpl())..add(const HelpStarted()),
       child: const _HelpView(),
     );
   }
@@ -42,7 +41,9 @@ class _HelpView extends StatelessWidget {
         final content = state.content;
 
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: HelpTheme.bg,
             body: Column(
@@ -60,23 +61,26 @@ class _HelpView extends StatelessWidget {
                     child: content == null
                         ? const SizedBox.shrink()
                         : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        HelpSection(
-                          title: content.title1,
-                          paragraphs: [
-                            content.paragraph1,
-                            content.paragraph2,
-                          ],
-                        ),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              HelpSection(
+                                title: content.title1,
+                                paragraphs: [
+                                  content.paragraph1,
+                                  content.paragraph2,
+                                ],
+                              ),
 
-                        Text(content.title2, style: HelpTheme.sectionHeader),
-                        const SizedBox(height: 16),
-                        Text(content.paragraph3, style: HelpTheme.body),
-                        const SizedBox(height: 16),
-                        Text(content.paragraph4, style: HelpTheme.body),
-                      ],
-                    ),
+                              Text(
+                                content.title2,
+                                style: HelpTheme.sectionHeader,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(content.paragraph3, style: HelpTheme.body),
+                              const SizedBox(height: 16),
+                              Text(content.paragraph4, style: HelpTheme.body),
+                            ],
+                          ),
                   ),
                 ),
               ],

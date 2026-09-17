@@ -1,9 +1,7 @@
 /// Cache entry with timestamp and TTL support
 class PlanCacheEntry<T> {
-  PlanCacheEntry({
-    required this.data,
-    DateTime? timestamp,
-  }) : timestamp = timestamp ?? DateTime.now();
+  PlanCacheEntry({required this.data, DateTime? timestamp})
+    : timestamp = timestamp ?? DateTime.now();
 
   /// Cached data
   final T data;
@@ -22,10 +20,7 @@ class PlanCacheEntry<T> {
 
   /// Create a fresh entry with same data but new timestamp
   PlanCacheEntry<T> refresh() {
-    return PlanCacheEntry(
-      data: data,
-      timestamp: DateTime.now(),
-    );
+    return PlanCacheEntry(data: data, timestamp: DateTime.now());
   }
 
   @override

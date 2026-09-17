@@ -116,8 +116,9 @@ List<PlanBucketUsage> computePlanBucketUsage({
   final apiNormalized = items
       .map((it) => normalizeBucketName(it.freeUnitTypeName))
       .toList(growable: false);
-  final apiTokens =
-      apiNormalized.map(tokenizeBucketName).toList(growable: false);
+  final apiTokens = apiNormalized
+      .map(tokenizeBucketName)
+      .toList(growable: false);
   final bucketTokensByKey = <String, Set<String>>{
     for (final key in orderedKeys) key: tokenizeBucketName(key),
   };
@@ -161,16 +162,15 @@ List<PlanBucketUsage> computePlanBucketUsage({
   final orderIndex = <String, int>{
     for (int i = 0; i < orderedKeys.length; i++) orderedKeys[i]: i,
   };
-  final fuzzyKeys = orderedKeys
-      .where((k) => !matchedIndexByKey.containsKey(k))
-      .toList()
-    ..sort((a, b) {
-      final at = bucketTokensByKey[a]!.length;
-      final bt = bucketTokensByKey[b]!.length;
-      if (at != bt) return bt.compareTo(at); // more tokens first
-      if (a.length != b.length) return b.length.compareTo(a.length);
-      return orderIndex[a]!.compareTo(orderIndex[b]!);
-    });
+  final fuzzyKeys =
+      orderedKeys.where((k) => !matchedIndexByKey.containsKey(k)).toList()
+        ..sort((a, b) {
+          final at = bucketTokensByKey[a]!.length;
+          final bt = bucketTokensByKey[b]!.length;
+          if (at != bt) return bt.compareTo(at); // more tokens first
+          if (a.length != b.length) return b.length.compareTo(a.length);
+          return orderIndex[a]!.compareTo(orderIndex[b]!);
+        });
 
   for (final key in fuzzyKeys) {
     final match = findBestMatch(
@@ -201,11 +201,13 @@ List<PlanBucketUsage> computePlanBucketUsage({
       // needed), so a missing API item is fine. Metered buckets still
       // need the API row — without it we'd show stale plan-side numbers.
       if (meta.isUnlimited) {
-        result.add(_unlimitedRow(
-          meta.displayName,
-          meta.bucketUnit,
-          displayUnitLabel(meta.unitFromPlan),
-        ));
+        result.add(
+          _unlimitedRow(
+            meta.displayName,
+            meta.bucketUnit,
+            displayUnitLabel(meta.unitFromPlan),
+          ),
+        );
       }
       continue;
     }
@@ -271,7 +273,11 @@ List<PlanBucketUsage> computePlanBucketUsage({
   return result;
 }
 
-PlanBucketUsage _unlimitedRow(String name, String bucketUnit, String unitLabel) {
+PlanBucketUsage _unlimitedRow(
+  String name,
+  String bucketUnit,
+  String unitLabel,
+) {
   return PlanBucketUsage(
     bucketName: name,
     bucketUnit: bucketUnit,

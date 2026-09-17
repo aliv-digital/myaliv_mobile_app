@@ -25,14 +25,10 @@ Future<void> setupPlanInjection() async {
   );
 
   // Register model factory
-  instance.registerLazySingleton<PlanModelFactory>(
-    () => PlanModelFactory(),
-  );
+  instance.registerLazySingleton<PlanModelFactory>(() => PlanModelFactory());
 
   // Register API service
-  instance.registerLazySingleton<PlanApiService>(
-    () => PlanApiService(),
-  );
+  instance.registerLazySingleton<PlanApiService>(() => PlanApiService());
 
   // Register parser service (depends on categorizer and factory)
   instance.registerLazySingleton<PlanParserService>(
@@ -43,9 +39,7 @@ Future<void> setupPlanInjection() async {
   );
 
   // Register cache service
-  instance.registerLazySingleton<PlanCacheService>(
-    () => PlanCacheService(),
-  );
+  instance.registerLazySingleton<PlanCacheService>(() => PlanCacheService());
 
   // Register new PlansRepository
   instance.registerLazySingleton<PlansRepository>(
@@ -58,8 +52,6 @@ Future<void> setupPlanInjection() async {
 
   // Register PlansCubit as singleton (state persists, reset on logout)
   instance.registerLazySingleton<PlansCubit>(
-    () => PlansCubit(
-      repository: instance<PlansRepository>(),
-    ),
+    () => PlansCubit(repository: instance<PlansRepository>()),
   );
 }

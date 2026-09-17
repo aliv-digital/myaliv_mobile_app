@@ -60,7 +60,8 @@ class BottomPayBar extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                          height: TopUpConfirmTheme.payBarAmountToVatGap),
+                        height: TopUpConfirmTheme.payBarAmountToVatGap,
+                      ),
                       Text(
                         isVatExclusive
                             ? TopUpConfirmTheme.vatExclusiveLabel

@@ -3,9 +3,7 @@ import 'package:dio/dio.dart';
 import 'privacy_repository.dart';
 
 class PrivacyRepositoryImpl implements PrivacyRepository {
-  PrivacyRepositoryImpl({
-    Dio? dio,
-  }) : _dio = dio ?? Dio();
+  PrivacyRepositoryImpl({Dio? dio}) : _dio = dio ?? Dio();
 
   final Dio _dio;
 

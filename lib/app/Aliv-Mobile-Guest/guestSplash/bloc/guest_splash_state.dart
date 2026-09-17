@@ -54,8 +54,9 @@ class GuestSplashLoadedState extends GuestSplashState {
       purchaseErrorMessage: clearPurchaseErrorMessage
           ? null
           : (purchaseErrorMessage ?? this.purchaseErrorMessage),
-      purchaseResult:
-          clearPurchaseResult ? null : (purchaseResult ?? this.purchaseResult),
+      purchaseResult: clearPurchaseResult
+          ? null
+          : (purchaseResult ?? this.purchaseResult),
     );
   }
 }

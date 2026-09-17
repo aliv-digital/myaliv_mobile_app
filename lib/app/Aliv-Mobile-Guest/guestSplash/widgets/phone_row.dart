@@ -48,7 +48,7 @@ class PhoneRow extends StatelessWidget {
         right: showCountryArrow
             ? GuestSplashTheme.purchasePlanCountryPickerRightPaddingWithArrow
             : GuestSplashTheme
-                .purchasePlanCountryPickerRightPaddingWithoutArrow,
+                  .purchasePlanCountryPickerRightPaddingWithoutArrow,
       ),
       showCountryPickerBorder: true,
       countryPickerBorderColor: GuestSplashTheme.purchasePlanFieldBorderColor,
@@ -63,9 +63,7 @@ class PhoneRow extends StatelessWidget {
       backgroundColor: GuestSplashTheme.purchasePlanFieldBackgroundColor,
       // Static border for picker, and input keeps focus-border behavior.
       unfocusedBorderColor: GuestSplashTheme.purchasePlanFieldBorderColor,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
-      ],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]'))],
       dialCodeStyle: GuestSplashTheme.dialCode,
       phoneInputStyle: GuestSplashTheme.phoneInput,
       phoneHintStyle: GuestSplashTheme.phoneHint,

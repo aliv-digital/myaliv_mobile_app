@@ -110,21 +110,21 @@ class ReferFriendPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        selectedTab,
-        friendPhone,
-        friendEmail,
-        selectedCountry,
-        friendPhoneFieldError,
-        friendEmailFieldError,
-        redeemCode,
-        shareStatus,
-        redeemStatus,
-        referralCode,
-        shareSuccessRequestId,
-        toastMessage,
-        errorMessage,
-        history,
-        referInfoHtml,
-        redeemInfoHtml,
-      ];
+    selectedTab,
+    friendPhone,
+    friendEmail,
+    selectedCountry,
+    friendPhoneFieldError,
+    friendEmailFieldError,
+    redeemCode,
+    shareStatus,
+    redeemStatus,
+    referralCode,
+    shareSuccessRequestId,
+    toastMessage,
+    errorMessage,
+    history,
+    referInfoHtml,
+    redeemInfoHtml,
+  ];
 }

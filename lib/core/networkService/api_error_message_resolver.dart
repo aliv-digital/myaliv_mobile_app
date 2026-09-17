@@ -14,12 +14,10 @@ class ApiErrorMessageResolver {
     String? backendMessage,
     bool preferBackendMessage = true,
   }) {
-    final String? parsedMessage = _firstNonEmpty(
-      <String?>[
-        _normalize(backendMessage),
-        _extractBackendMessage(responseBody),
-      ],
-    );
+    final String? parsedMessage = _firstNonEmpty(<String?>[
+      _normalize(backendMessage),
+      _extractBackendMessage(responseBody),
+    ]);
 
     if (preferBackendMessage && parsedMessage != null) {
       return parsedMessage;

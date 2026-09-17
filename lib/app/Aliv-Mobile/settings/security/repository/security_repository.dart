@@ -5,7 +5,5 @@ abstract class SecurityRepository {
 class SecurityContent {
   final String htmlContent;
 
-  const SecurityContent({
-    required this.htmlContent,
-  });
+  const SecurityContent({required this.htmlContent});
 }

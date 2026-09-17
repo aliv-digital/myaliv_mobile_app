@@ -30,9 +30,7 @@ class HomePlanAddOnCard extends StatelessWidget {
 
     return InkWell(
       onTap: onToggle,
-      borderRadius: BorderRadius.circular(
-        HomePlanTheme.addOnCardBorderRadius,
-      ),
+      borderRadius: BorderRadius.circular(HomePlanTheme.addOnCardBorderRadius),
       child: Container(
         margin: HomePlanTheme.addOnCardOuterMargin,
         padding: HomePlanTheme.addOnCardInnerPadding,
@@ -42,9 +40,7 @@ class HomePlanAddOnCard extends StatelessWidget {
             HomePlanTheme.addOnCardBorderRadius,
           ),
           border: Border.all(
-            color: selected
-                ? HomePlanTheme.brandPurple
-                : Colors.transparent,
+            color: selected ? HomePlanTheme.brandPurple : Colors.transparent,
             width: 1.2,
           ),
           boxShadow: [
@@ -70,14 +66,10 @@ class HomePlanAddOnCard extends StatelessWidget {
                     style: HomePlanTheme.addOnTitle,
                   ),
                 ),
-                _CheckBoxSquare(
-                  checked: selected,
-                  onTap: onToggle,
-                ),
+                _CheckBoxSquare(checked: selected, onTap: onToggle),
               ],
             ),
-            const SizedBox(
-                height: HomePlanTheme.addOnCardTitleToDetailsGap),
+            const SizedBox(height: HomePlanTheme.addOnCardTitleToDetailsGap),
             // Bottom row: icon + label + value on left and amount pill on right.
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -94,8 +86,7 @@ class HomePlanAddOnCard extends StatelessWidget {
                     width: HomePlanTheme.addOnCardInfoIconSize,
                     height: HomePlanTheme.addOnCardInfoIconSize,
                   ),
-                const SizedBox(
-                    width: HomePlanTheme.addOnCardIconToLabelGap),
+                const SizedBox(width: HomePlanTheme.addOnCardIconToLabelGap),
                 Text(
                   addon.label, // data balance
                   style: HomePlanTheme.addOnLabel,
@@ -144,18 +135,13 @@ class _CheckBoxSquare extends StatelessWidget {
   final bool checked;
   final VoidCallback onTap;
 
-  const _CheckBoxSquare({
-    required this.checked,
-    required this.onTap,
-  });
+  const _CheckBoxSquare({required this.checked, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(
-        HomePlanTheme.addOnCheckboxRadius,
-      ),
+      borderRadius: BorderRadius.circular(HomePlanTheme.addOnCheckboxRadius),
       child: Container(
         width: HomePlanTheme.addOnCheckboxSize,
         height: HomePlanTheme.addOnCheckboxSize,

@@ -69,8 +69,9 @@ class TopUpPrepaidTheme {
   static const double formInputHeight = 52;
   static const double formInputRadius = 8;
   static const double formInputBorderWidth = 1;
-  static const EdgeInsets formInputHorizontalPadding =
-      EdgeInsets.symmetric(horizontal: 16);
+  static const EdgeInsets formInputHorizontalPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+  );
 
   // -----------------------
   // Text styles
@@ -115,7 +116,6 @@ class TopUpPrepaidTheme {
     fontSize: 40,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
-
   );
 
   static TextStyle amountHint() => TextStyle(

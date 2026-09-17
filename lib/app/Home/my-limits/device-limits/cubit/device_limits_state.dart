@@ -1,14 +1,7 @@
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
 
 /// Status enum for Device Limits state
-enum DeviceLimitsStatus {
-  initial,
-  loading,
-  loaded,
-  updating,
-  updated,
-  failure,
-}
+enum DeviceLimitsStatus { initial, loading, loaded, updating, updated, failure }
 
 /// Immutable state for Device Limits feature
 ///

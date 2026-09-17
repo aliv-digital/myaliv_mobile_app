@@ -13,10 +13,7 @@ class SavedCardModel extends Equatable {
   final String token;
   final String number;
 
-  const SavedCardModel({
-    required this.token,
-    required this.number,
-  });
+  const SavedCardModel({required this.token, required this.number});
 
   factory SavedCardModel.fromJson(Map<String, dynamic> json) {
     return SavedCardModel(
@@ -26,10 +23,7 @@ class SavedCardModel extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'Token': token,
-      'Number': number,
-    };
+    return {'Token': token, 'Number': number};
   }
 
   /// Display label for dropdown: "card ending in 3686"

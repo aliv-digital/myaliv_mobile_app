@@ -58,16 +58,15 @@ class PurchaseSummaryCard extends StatelessWidget {
 
           Divider(
             height: AddOnsConfirmationTheme.purchaseSummaryDividerHeight,
-            thickness:
-                AddOnsConfirmationTheme.purchaseSummaryDividerThickness,
+            thickness: AddOnsConfirmationTheme.purchaseSummaryDividerThickness,
             color: AddOnsConfirmationTheme.purchaseSummaryDividerColor,
           ),
 
           // Item blocks: strict 16/20/16/20 spacing from Figma.
           for (int i = 0; i < data.items.length; i++) ...[
             Padding(
-              padding: AddOnsConfirmationTheme
-                  .purchaseSummaryItemSectionPadding,
+              padding:
+                  AddOnsConfirmationTheme.purchaseSummaryItemSectionPadding,
               child: PurchaseItemRow(
                 item: data.items[i],
                 onRemove: () => onRemoveItem(data.items[i].id),
@@ -75,10 +74,9 @@ class PurchaseSummaryCard extends StatelessWidget {
             ),
             if (i != data.items.length - 1)
               Divider(
-                height:
-                    AddOnsConfirmationTheme.purchaseSummaryDividerHeight,
-                thickness: AddOnsConfirmationTheme
-                    .purchaseSummaryDividerThickness,
+                height: AddOnsConfirmationTheme.purchaseSummaryDividerHeight,
+                thickness:
+                    AddOnsConfirmationTheme.purchaseSummaryDividerThickness,
                 color: AddOnsConfirmationTheme.purchaseSummaryDividerColor,
               ),
           ],

@@ -22,7 +22,8 @@ class SaveCardPrimaryButton extends StatelessWidget {
         onPressed: enabled ? onTap : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: AddOrEditCardsPrepaidTheme.primary,
-          disabledBackgroundColor: AddOrEditCardsPrepaidTheme.primary.withOpacity(0.45),
+          disabledBackgroundColor: AddOrEditCardsPrepaidTheme.primary
+              .withOpacity(0.45),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
@@ -30,18 +31,21 @@ class SaveCardPrimaryButton extends StatelessWidget {
         ),
         child: loading
             ? const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : const Text(
-          'save card',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+                'save card',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
     );
   }

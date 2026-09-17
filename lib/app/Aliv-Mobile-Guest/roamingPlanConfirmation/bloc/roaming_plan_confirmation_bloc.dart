@@ -9,14 +9,12 @@ class RoamingPlanConfirmationBloc
   final RoamingPlanConfirmationRepository repository;
 
   RoamingPlanConfirmationBloc({required this.repository})
-      : super(RoamingPlanConfirmationState.initial()) {
+    : super(RoamingPlanConfirmationState.initial()) {
     on<RoamingPlanConfirmationStarted>(_onStarted);
     on<RoamingPlanConfirmationRemoveItemPressed>(_onRemoveItem);
     on<RoamingPlanConfirmationBeginDateChanged>(_onBeginDateChanged);
     on<RoamingPlanConfirmationTermsPressed>(_onTerms);
-    on<RoamingPlanConfirmationTermsCheckboxToggled>(
-      _onTermsCheckboxToggled,
-    );
+    on<RoamingPlanConfirmationTermsCheckboxToggled>(_onTermsCheckboxToggled);
     on<RoamingPlanConfirmationPayNowPressed>(_onPayNow);
   }
 
@@ -24,23 +22,29 @@ class RoamingPlanConfirmationBloc
     RoamingPlanConfirmationStarted event,
     Emitter<RoamingPlanConfirmationState> emit,
   ) async {
-    emit(state.copyWith(
-      status: RoamingPlanConfirmationStatus.loading,
-      routeArgs: event.args,
-    ));
+    emit(
+      state.copyWith(
+        status: RoamingPlanConfirmationStatus.loading,
+        routeArgs: event.args,
+      ),
+    );
 
     try {
       final data = await repository.load(args: event.args);
-      emit(state.copyWith(
-        status: RoamingPlanConfirmationStatus.ready,
-        routeArgs: event.args,
-        data: data,
-      ));
+      emit(
+        state.copyWith(
+          status: RoamingPlanConfirmationStatus.ready,
+          routeArgs: event.args,
+          data: data,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: RoamingPlanConfirmationStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: RoamingPlanConfirmationStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -52,13 +56,15 @@ class RoamingPlanConfirmationBloc
     final data = state.data;
     if (routeArgs == null || data == null) return;
 
-    emit(state.copyWith(
-      routeArgs: routeArgs.copyWith(beginDate: event.beginDate),
-      data: repository.updateBeginDate(
-        data: data,
-        beginDate: event.beginDate,
+    emit(
+      state.copyWith(
+        routeArgs: routeArgs.copyWith(beginDate: event.beginDate),
+        data: repository.updateBeginDate(
+          data: data,
+          beginDate: event.beginDate,
+        ),
       ),
-    ));
+    );
   }
 
   void _onRemoveItem(
@@ -75,15 +81,17 @@ class RoamingPlanConfirmationBloc
       vat: data.totals.vat,
     );
 
-    emit(state.copyWith(
-      data: RoamingPlanConfirmationData(
-        phoneNumber: data.phoneNumber,
-        headerTitle: data.headerTitle,
-        beginsOnDateText: data.beginsOnDateText,
-        items: updatedItems,
-        totals: totals,
+    emit(
+      state.copyWith(
+        data: RoamingPlanConfirmationData(
+          phoneNumber: data.phoneNumber,
+          headerTitle: data.headerTitle,
+          beginsOnDateText: data.beginsOnDateText,
+          items: updatedItems,
+          totals: totals,
+        ),
       ),
-    ));
+    );
   }
 
   void _onTerms(

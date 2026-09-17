@@ -50,20 +50,20 @@ class GuestPayBillState extends Equatable {
   });
 
   factory GuestPayBillState.initial() => const GuestPayBillState(
-        loadStatus: GuestPayBillLoadStatus.initial,
-        services: [],
-        selectedService: null,
-        selectedCountry: PayBillCountry.defaultCountry,
-        accountNumber: '',
-        name: '',
-        mobileNumber: '',
-        confirmMobileNumber: '',
-        amountText: '',
-        verifyStatus: GuestPayBillVerifyStatus.idle,
-        accountInfo: null,
-        errorMessage: null,
-        submitStatus: GuestPayBillSubmitStatus.idle,
-      );
+    loadStatus: GuestPayBillLoadStatus.initial,
+    services: [],
+    selectedService: null,
+    selectedCountry: PayBillCountry.defaultCountry,
+    accountNumber: '',
+    name: '',
+    mobileNumber: '',
+    confirmMobileNumber: '',
+    amountText: '',
+    verifyStatus: GuestPayBillVerifyStatus.idle,
+    accountInfo: null,
+    errorMessage: null,
+    submitStatus: GuestPayBillSubmitStatus.idle,
+  );
 
   bool get isAlivPostpaid => selectedService?.code == 'ALIV_POSTPAID';
   bool get isAlivFibr => selectedService?.code == 'ALIV_FIBR';
@@ -82,10 +82,10 @@ class GuestPayBillState extends Equatable {
   static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
 
   LoginCountrySelection get _loginCountrySelection => LoginCountrySelection(
-        isoCode: selectedCountry.isoCode,
-        dialCode: selectedCountry.dialCode,
-        flagEmoji: selectedCountry.flagEmoji,
-      );
+    isoCode: selectedCountry.isoCode,
+    dialCode: selectedCountry.dialCode,
+    flagEmoji: selectedCountry.flagEmoji,
+  );
 
   bool get isMobileNumberValid => _phoneHelper
       .validateAndBuildApiUsername(
@@ -102,14 +102,14 @@ class GuestPayBillState extends Equatable {
       .isValid;
 
   bool get showMobileInvalidError => _phoneHelper.hasLiveValidationError(
-        rawPhoneNumber: mobileNumber,
-        selectedCountry: _loginCountrySelection,
-      );
+    rawPhoneNumber: mobileNumber,
+    selectedCountry: _loginCountrySelection,
+  );
 
   bool get showConfirmMobileInvalidError => _phoneHelper.hasLiveValidationError(
-        rawPhoneNumber: confirmMobileNumber,
-        selectedCountry: _loginCountrySelection,
-      );
+    rawPhoneNumber: confirmMobileNumber,
+    selectedCountry: _loginCountrySelection,
+  );
 
   bool get showConfirmMobileMismatchError {
     if (confirmMobileNumber.trim().isEmpty) return false;
@@ -173,18 +173,18 @@ class GuestPayBillState extends Equatable {
 
   @override
   List<Object?> get props => [
-        loadStatus,
-        services,
-        selectedService,
-        selectedCountry,
-        accountNumber,
-        name,
-        mobileNumber,
-        confirmMobileNumber,
-        amountText,
-        verifyStatus,
-        accountInfo,
-        errorMessage,
-        submitStatus,
-      ];
+    loadStatus,
+    services,
+    selectedService,
+    selectedCountry,
+    accountNumber,
+    name,
+    mobileNumber,
+    confirmMobileNumber,
+    amountText,
+    verifyStatus,
+    accountInfo,
+    errorMessage,
+    submitStatus,
+  ];
 }

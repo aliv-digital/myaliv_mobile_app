@@ -9,7 +9,7 @@ class GuestPurchasePlanAddOnsBloc
   final GuestPurchasePlanAddOnsRepository repository;
 
   GuestPurchasePlanAddOnsBloc({required this.repository})
-      : super(GuestPurchasePlanAddOnsState.initial()) {
+    : super(GuestPurchasePlanAddOnsState.initial()) {
     on<GuestPurchasePlanAddOnsStarted>(_onStarted);
     on<GuestPurchasePlanAddOnsAutoRenewToggled>(_onAutoRenewToggled);
     on<GuestPurchasePlanAddOnsSelectionToggled>(_onSelectionToggled);
@@ -18,10 +18,15 @@ class GuestPurchasePlanAddOnsBloc
   }
 
   Future<void> _onStarted(
-      GuestPurchasePlanAddOnsStarted event,
-      Emitter<GuestPurchasePlanAddOnsState> emit,
-      ) async {
-    emit(state.copyWith(status: GuestPurchasePlanAddOnsStatus.loading, errorMessage: null));
+    GuestPurchasePlanAddOnsStarted event,
+    Emitter<GuestPurchasePlanAddOnsState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: GuestPurchasePlanAddOnsStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       // Loading in parallel makes UI faster (clean + readable).
@@ -31,24 +36,28 @@ class GuestPurchasePlanAddOnsBloc
         repository.fetchAddOns(),
       ]);
 
-      emit(state.copyWith(
-        status: GuestPurchasePlanAddOnsStatus.ready,
-        activePlan: results[0] as dynamic,
-        fairUsePolicy: results[1] as dynamic,
-        addOns: results[2] as dynamic,
-      ));
+      emit(
+        state.copyWith(
+          status: GuestPurchasePlanAddOnsStatus.ready,
+          activePlan: results[0] as dynamic,
+          fairUsePolicy: results[1] as dynamic,
+          addOns: results[2] as dynamic,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: GuestPurchasePlanAddOnsStatus.error,
-        errorMessage: 'Failed to load add-ons',
-      ));
+      emit(
+        state.copyWith(
+          status: GuestPurchasePlanAddOnsStatus.error,
+          errorMessage: 'Failed to load add-ons',
+        ),
+      );
     }
   }
 
   void _onAutoRenewToggled(
-      GuestPurchasePlanAddOnsAutoRenewToggled event,
-      Emitter<GuestPurchasePlanAddOnsState> emit,
-      ) {
+    GuestPurchasePlanAddOnsAutoRenewToggled event,
+    Emitter<GuestPurchasePlanAddOnsState> emit,
+  ) {
     final plan = state.activePlan;
     if (plan == null) return;
 
@@ -56,9 +65,9 @@ class GuestPurchasePlanAddOnsBloc
   }
 
   void _onSelectionToggled(
-      GuestPurchasePlanAddOnsSelectionToggled event,
-      Emitter<GuestPurchasePlanAddOnsState> emit,
-      ) {
+    GuestPurchasePlanAddOnsSelectionToggled event,
+    Emitter<GuestPurchasePlanAddOnsState> emit,
+  ) {
     final updated = {...state.selectedAddOnIds};
     if (event.selected) {
       updated.add(event.addOnId);
@@ -69,16 +78,16 @@ class GuestPurchasePlanAddOnsBloc
   }
 
   void _onSkipPressed(
-      GuestPurchasePlanAddOnsSkipPressed event,
-      Emitter<GuestPurchasePlanAddOnsState> emit,
-      ) {
+    GuestPurchasePlanAddOnsSkipPressed event,
+    Emitter<GuestPurchasePlanAddOnsState> emit,
+  ) {
     emit(state.copyWith(skipRequestId: state.skipRequestId + 1));
   }
 
   void _onProceedPressed(
-      GuestPurchasePlanAddOnsProceedPressed event,
-      Emitter<GuestPurchasePlanAddOnsState> emit,
-      ) {
+    GuestPurchasePlanAddOnsProceedPressed event,
+    Emitter<GuestPurchasePlanAddOnsState> emit,
+  ) {
     emit(state.copyWith(proceedRequestId: state.proceedRequestId + 1));
   }
 }

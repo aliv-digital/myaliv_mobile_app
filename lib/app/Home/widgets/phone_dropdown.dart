@@ -90,84 +90,88 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                     ignoring: !isEnabled,
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton2<String>(
-                      // Fresh notifier per build — always holds a valid item,
-                      // so DropdownButton2's internal uniqueness assert never fires.
-                      valueListenable: ValueNotifier<String>(effectiveSelected),
-                      isExpanded: true,
+                        // Fresh notifier per build — always holds a valid item,
+                        // so DropdownButton2's internal uniqueness assert never fires.
+                        valueListenable: ValueNotifier<String>(
+                          effectiveSelected,
+                        ),
+                        isExpanded: true,
 
-                      menuItemStyleData: MenuItemStyleData(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        selectedMenuItemBuilder: (ctx, child) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            child: PhoneDropdownSelectedItem(
-                              number: effectiveSelected,
-                              isPrimary: effectiveSelected == primaryPhone,
+                        menuItemStyleData: MenuItemStyleData(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          selectedMenuItemBuilder: (ctx, child) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: PhoneDropdownSelectedItem(
+                                number: effectiveSelected,
+                                isPrimary: effectiveSelected == primaryPhone,
+                              ),
+                            );
+                          },
+                        ),
+
+                        buttonStyleData: const ButtonStyleData(
+                          padding: EdgeInsets.zero,
+                          height: 48,
+                        ),
+
+                        dropdownStyleData: DropdownStyleData(
+                          offset: const Offset(-16, -4),
+                          maxHeight: 250,
+                          width: MediaQuery.of(context).size.width - 52,
+                          decoration: BoxDecoration(
+                            color: HomeScreen.darkPurple,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+
+                        iconStyleData: IconStyleData(
+                          icon: isEnabled
+                              ? SvgPicture.asset(
+                                  'assets/icons/arrow_dropdown.svg',
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+
+                        style: const TextStyle(
+                          color: Color(0xFFF1F1F8),
+                          fontSize: 14,
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w500,
+                        ),
+
+                        items: visibleNumbers.map((number) {
+                          return DropdownItem<String>(
+                            value: number,
+                            height: 48,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: PhoneDropdownItem(
+                                number: number,
+                                isPrimary: number == primaryPhone,
+                              ),
                             ),
                           );
-                        },
-                      ),
+                        }).toList(),
 
-                      buttonStyleData: const ButtonStyleData(
-                        padding: EdgeInsets.zero,
-                        height: 48,
-                      ),
-
-                      dropdownStyleData: DropdownStyleData(
-                        offset: const Offset(-16, -4),
-                        maxHeight: 250,
-                        width: MediaQuery.of(context).size.width - 52,
-                        decoration: BoxDecoration(
-                          color: HomeScreen.darkPurple,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-
-                      iconStyleData: IconStyleData(
-                        icon: isEnabled
-                            ? SvgPicture.asset('assets/icons/arrow_dropdown.svg')
-                            : const SizedBox.shrink(),
-                      ),
-
-                      style: const TextStyle(
-                        color: Color(0xFFF1F1F8),
-                        fontSize: 14,
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w500,
-                      ),
-
-                      items: visibleNumbers.map((number) {
-                        return DropdownItem<String>(
-                          value: number,
-                          height: 48,
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: PhoneDropdownItem(
+                        // Collapsed button: number + badge only (no trailing
+                        // circle). The trailing arrow comes from iconStyleData.
+                        selectedItemBuilder: (context) {
+                          return visibleNumbers.map((number) {
+                            return PhoneDropdownItem(
                               number: number,
                               isPrimary: number == primaryPhone,
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                              showTrailing: false,
+                            );
+                          }).toList();
+                        },
 
-                      // Collapsed button: number + badge only (no trailing
-                      // circle). The trailing arrow comes from iconStyleData.
-                      selectedItemBuilder: (context) {
-                        return visibleNumbers.map((number) {
-                          return PhoneDropdownItem(
-                            number: number,
-                            isPrimary: number == primaryPhone,
-                            showTrailing: false,
-                          );
-                        }).toList();
-                      },
-
-                      onChanged: (value) {
-                        if (value != null) selectedNotifier.value = value;
-                      },
+                        onChanged: (value) {
+                          if (value != null) selectedNotifier.value = value;
+                        },
                       ),
                     ),
                   ),

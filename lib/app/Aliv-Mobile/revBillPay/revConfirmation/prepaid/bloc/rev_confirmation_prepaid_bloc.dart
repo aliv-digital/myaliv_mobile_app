@@ -9,7 +9,7 @@ class RevConfirmationPrepaidBloc
   final RevConfirmationPrepaidRepository repository;
 
   RevConfirmationPrepaidBloc({required this.repository})
-      : super(RevConfirmationPrepaidState.initial()) {
+    : super(RevConfirmationPrepaidState.initial()) {
     on<RevConfirmationStarted>(_onStarted);
     on<RevPromoCodeChanged>(_onPromoChanged);
     on<RevPromoApplyPressed>(_onApplyPromo);
@@ -22,9 +22,9 @@ class RevConfirmationPrepaidBloc
   }
 
   Future<void> _onStarted(
-      RevConfirmationStarted event,
-      Emitter<RevConfirmationPrepaidState> emit,
-      ) async {
+    RevConfirmationStarted event,
+    Emitter<RevConfirmationPrepaidState> emit,
+  ) async {
     final data = await repository.fetchConfirmation();
 
     emit(
@@ -43,9 +43,9 @@ class RevConfirmationPrepaidBloc
   }
 
   void _onPromoChanged(
-      RevPromoCodeChanged event,
-      Emitter<RevConfirmationPrepaidState> emit,
-      ) {
+    RevPromoCodeChanged event,
+    Emitter<RevConfirmationPrepaidState> emit,
+  ) {
     emit(
       state.copyWith(
         promoCode: event.value,
@@ -56,9 +56,9 @@ class RevConfirmationPrepaidBloc
   }
 
   Future<void> _onApplyPromo(
-      RevPromoApplyPressed event,
-      Emitter<RevConfirmationPrepaidState> emit,
-      ) async {
+    RevPromoApplyPressed event,
+    Emitter<RevConfirmationPrepaidState> emit,
+  ) async {
     if (!state.canApplyPromo) return;
 
     emit(state.copyWith(promoStatus: RevPromoStatus.applying));
@@ -76,20 +76,15 @@ class RevConfirmationPrepaidBloc
         ),
       );
     } else {
-      emit(
-        state.copyWith(
-          discount: 0,
-          promoStatus: RevPromoStatus.invalid,
-        ),
-      );
+      emit(state.copyWith(discount: 0, promoStatus: RevPromoStatus.invalid));
     }
   }
 
   // ✅ NEW
   void _onTermsToggled(
-      RevTermsToggled event,
-      Emitter<RevConfirmationPrepaidState> emit,
-      ) {
+    RevTermsToggled event,
+    Emitter<RevConfirmationPrepaidState> emit,
+  ) {
     emit(
       state.copyWith(
         termsAccepted: event.value,
@@ -100,9 +95,9 @@ class RevConfirmationPrepaidBloc
   }
 
   void _onContinue(
-      RevContinuePressed event,
-      Emitter<RevConfirmationPrepaidState> emit,
-      ) {
+    RevContinuePressed event,
+    Emitter<RevConfirmationPrepaidState> emit,
+  ) {
     // ✅ guard: must accept terms
     if (!state.termsAccepted) {
       emit(state.copyWith(showTermsError: true));
@@ -113,9 +108,9 @@ class RevConfirmationPrepaidBloc
   }
 
   void _onNavConsumed(
-      RevNavConsumed event,
-      Emitter<RevConfirmationPrepaidState> emit,
-      ) {
+    RevNavConsumed event,
+    Emitter<RevConfirmationPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: RevConfirmNavTarget.none));
   }
 }

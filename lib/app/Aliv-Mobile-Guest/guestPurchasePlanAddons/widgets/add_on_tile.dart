@@ -23,8 +23,9 @@ class AddOnTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = GuestPurchasePlanAddOnsTheme.outlinePurple;
-    final cardRadius =
-        BorderRadius.circular(GuestPurchasePlanAddOnsTheme.addOnCardRadius);
+    final cardRadius = BorderRadius.circular(
+      GuestPurchasePlanAddOnsTheme.addOnCardRadius,
+    );
 
     return Material(
       color: Colors.transparent,
@@ -35,8 +36,9 @@ class AddOnTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: GuestPurchasePlanAddOnsTheme.cardWhite,
             borderRadius: cardRadius,
-            border:
-                selected ? Border.all(color: borderColor, width: 1.2) : null,
+            border: selected
+                ? Border.all(color: borderColor, width: 1.2)
+                : null,
             boxShadow: const [
               BoxShadow(
                 blurRadius: 16,
@@ -59,16 +61,14 @@ class AddOnTile extends StatelessWidget {
                         style: GuestPurchasePlanAddOnsTheme.addOnTitle,
                       ),
                     ),
-                    _SquareCheckbox(
-                      value: selected,
-                      onChanged: onChanged,
-                    ),
+                    _SquareCheckbox(value: selected, onChanged: onChanged),
                   ],
                 ),
 
                 const SizedBox(
-                    height: GuestPurchasePlanAddOnsTheme
-                        .addOnCardTitleToDetailsGap),
+                  height:
+                      GuestPurchasePlanAddOnsTheme.addOnCardTitleToDetailsGap,
+                ),
 
                 Row(
                   children: [
@@ -77,15 +77,17 @@ class AddOnTile extends StatelessWidget {
                         children: [
                           _DataIcon(),
                           const SizedBox(
-                              width: GuestPurchasePlanAddOnsTheme
-                                  .addOnCardIconToLabelGap),
+                            width: GuestPurchasePlanAddOnsTheme
+                                .addOnCardIconToLabelGap,
+                          ),
                           Text(
                             item.subtitleLabel,
                             style: GuestPurchasePlanAddOnsTheme.addOnLabel,
                           ),
                           const SizedBox(
-                              width: GuestPurchasePlanAddOnsTheme
-                                  .addOnCardLabelToValueGap),
+                            width: GuestPurchasePlanAddOnsTheme
+                                .addOnCardLabelToValueGap,
+                          ),
                           Text(
                             item.subtitleValue,
                             style: GuestPurchasePlanAddOnsTheme.addOnValue,

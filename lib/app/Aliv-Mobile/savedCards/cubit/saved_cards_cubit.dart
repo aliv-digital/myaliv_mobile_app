@@ -19,10 +19,9 @@ import 'saved_cards_state.dart';
 /// - Caches data with a 5-minute TTL
 /// - Provides loading, success, and failure states
 class SavedCardsCubit extends Cubit<SavedCardsState> {
-  SavedCardsCubit({
-    required SavedCardsRepository repository,
-  })  : _repository = repository,
-        super(SavedCardsState.initial());
+  SavedCardsCubit({required SavedCardsRepository repository})
+    : _repository = repository,
+      super(SavedCardsState.initial());
 
   final SavedCardsRepository _repository;
 
@@ -50,10 +49,9 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
       debugPrint('SavedCardsCubit: Fetching saved cards from server');
     }
 
-    _safeEmit(state.copyWith(
-      status: SavedCardsStatus.loading,
-      clearError: true,
-    ));
+    _safeEmit(
+      state.copyWith(status: SavedCardsStatus.loading, clearError: true),
+    );
 
     try {
       final effectiveUserType = userType ?? _resolveUserTypeFromAccount();
@@ -75,15 +73,17 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
       final isPostpaid = effectiveUserType?.isPostpaid == true;
       final isPrepaid = effectiveUserType?.isPrepaid == true;
 
-      _safeEmit(state.copyWith(
-        status: SavedCardsStatus.success,
-        cards: cards,
-        lastFetchedAt: DateTime.now(),
-        autoPayToken: isPostpaid ? fetchedToken : null,
-        autoRenewToken: isPrepaid ? fetchedToken : null,
-        clearAutoPayToken: !isPostpaid || fetchedToken == null,
-        clearAutoRenewToken: !isPrepaid || fetchedToken == null,
-      ));
+      _safeEmit(
+        state.copyWith(
+          status: SavedCardsStatus.success,
+          cards: cards,
+          lastFetchedAt: DateTime.now(),
+          autoPayToken: isPostpaid ? fetchedToken : null,
+          autoRenewToken: isPrepaid ? fetchedToken : null,
+          clearAutoPayToken: !isPostpaid || fetchedToken == null,
+          clearAutoRenewToken: !isPrepaid || fetchedToken == null,
+        ),
+      );
 
       if (kDebugMode) {
         debugPrint(
@@ -98,10 +98,12 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
         debugPrint('SavedCardsCubit: Error fetching cards - $errorMessage');
       }
 
-      _safeEmit(state.copyWith(
-        status: SavedCardsStatus.failure,
-        errorMessage: errorMessage,
-      ));
+      _safeEmit(
+        state.copyWith(
+          status: SavedCardsStatus.failure,
+          errorMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -123,10 +125,13 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
 
       if (state.status != SavedCardsStatus.success ||
           state.errorMessage != null) {
-        _safeEmit(state.copyWith(
-          isAddingCard: false,
-          errorMessage: 'Card was added, but the card list could not refresh.',
-        ));
+        _safeEmit(
+          state.copyWith(
+            isAddingCard: false,
+            errorMessage:
+                'Card was added, but the card list could not refresh.',
+          ),
+        );
         return false;
       }
 
@@ -139,10 +144,9 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
         debugPrint('SavedCardsCubit: Failed to add card - $errorMessage');
       }
 
-      _safeEmit(state.copyWith(
-        isAddingCard: false,
-        errorMessage: errorMessage,
-      ));
+      _safeEmit(
+        state.copyWith(isAddingCard: false, errorMessage: errorMessage),
+      );
       return false;
     }
   }
@@ -197,18 +201,22 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
     final optimisticCards = List<SavedCardModel>.from(originalCards)
       ..removeAt(originalIndex);
 
-    _safeEmit(state.copyWith(
-      cards: optimisticCards,
-      removingTokens: {...state.removingTokens, token},
-      clearError: true,
-    ));
+    _safeEmit(
+      state.copyWith(
+        cards: optimisticCards,
+        removingTokens: {...state.removingTokens, token},
+        clearError: true,
+      ),
+    );
 
     try {
       await _repository.deleteCard(token);
 
-      _safeEmit(state.copyWith(
-        removingTokens: {...state.removingTokens}..remove(token),
-      ));
+      _safeEmit(
+        state.copyWith(
+          removingTokens: {...state.removingTokens}..remove(token),
+        ),
+      );
 
       if (kDebugMode) {
         debugPrint('SavedCardsCubit: Removed card $token');
@@ -224,11 +232,13 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
       final insertAt = originalIndex.clamp(0, rolledBack.length);
       rolledBack.insert(insertAt, card);
 
-      _safeEmit(state.copyWith(
-        cards: rolledBack,
-        removingTokens: {...state.removingTokens}..remove(token),
-        errorMessage: errorMessage,
-      ));
+      _safeEmit(
+        state.copyWith(
+          cards: rolledBack,
+          removingTokens: {...state.removingTokens}..remove(token),
+          errorMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -251,7 +261,8 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
   /// Extracts error message from exception.
   String _extractErrorMessage(dynamic e) {
     if (e is SavedCardsException) {
-      return e.serverMessage ?? e.toString().replaceFirst('SavedCardsException: ', '');
+      return e.serverMessage ??
+          e.toString().replaceFirst('SavedCardsException: ', '');
     }
     if (e is Exception) {
       return e.toString().replaceFirst('Exception: ', '');

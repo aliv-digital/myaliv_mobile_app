@@ -34,10 +34,7 @@ class PurchaseTotals extends Equatable {
   final double subTotal;
   final double vat;
 
-  const PurchaseTotals({
-    required this.subTotal,
-    required this.vat,
-  });
+  const PurchaseTotals({required this.subTotal, required this.vat});
 
   double get total => subTotal + vat;
 
@@ -62,10 +59,10 @@ class AddOnsConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        headerTitle,
-        beginsOnDateText,
-        items,
-        totals,
-      ];
+    phoneNumber,
+    headerTitle,
+    beginsOnDateText,
+    items,
+    totals,
+  ];
 }

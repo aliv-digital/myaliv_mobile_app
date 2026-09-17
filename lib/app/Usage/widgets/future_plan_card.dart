@@ -23,10 +23,7 @@ class FuturePlanCard extends StatelessWidget {
       height: 151,
       padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(image),
-          fit: BoxFit.fill,
-        ),
+        image: DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
@@ -65,11 +62,7 @@ class FuturePlanCard extends StatelessWidget {
             children: [
               _DateBlock(title: 'starts', value: startDate),
               const Spacer(),
-              _DateBlock(
-                title: 'expire',
-                value: endDate,
-                alignRight: true,
-              ),
+              _DateBlock(title: 'expire', value: endDate, alignRight: true),
             ],
           ),
         ],
@@ -77,6 +70,7 @@ class FuturePlanCard extends StatelessWidget {
     );
   }
 }
+
 class _DateBlock extends StatelessWidget {
   final String title;
   final String value;
@@ -91,8 +85,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-      alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           title,
@@ -118,4 +113,3 @@ class _DateBlock extends StatelessWidget {
     );
   }
 }
-

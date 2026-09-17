@@ -1,6 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-enum CreatePasswordStatus { initial, invalid, valid, submitting, success, failure }
+enum CreatePasswordStatus {
+  initial,
+  invalid,
+  valid,
+  submitting,
+  success,
+  failure,
+}
 
 class CreatePasswordState extends Equatable {
   const CreatePasswordState({

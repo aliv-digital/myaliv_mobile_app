@@ -50,11 +50,11 @@ class _TopUpPrepaidNumberPostPaidNumberSectionState
   @override
   Widget build(BuildContext context) {
     const selectedCountry = LoginCountrySelection.defaultBahamas;
-    final showLivePhoneValidationError =
-        _phoneNumberHelper.hasLiveValidationError(
-      rawPhoneNumber: widget.value,
-      selectedCountry: selectedCountry,
-    );
+    final showLivePhoneValidationError = _phoneNumberHelper
+        .hasLiveValidationError(
+          rawPhoneNumber: widget.value,
+          selectedCountry: selectedCountry,
+        );
     final phoneBorderColor = !_hasPhoneFocus && showLivePhoneValidationError
         ? AuthModuleColors.errorRed
         : AuthModuleColors.loginFieldBorderColor;

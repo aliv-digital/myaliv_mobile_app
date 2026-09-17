@@ -28,7 +28,8 @@ class HomePlanPurchaseReceiptFailureCard extends StatelessWidget {
     const double dividerH = 22;
     const double notchRadius = 10;
 
-    final double notchCenterY = cardPad +
+    final double notchCenterY =
+        cardPad +
         iconSize +
         gapAfterIcon +
         titleBoxH +
@@ -100,7 +101,6 @@ class HomePlanPurchaseReceiptFailureCard extends StatelessWidget {
             //   padding: EdgeInsets.symmetric(horizontal: 6),
             //   child: HomePlanPurchaseReceiptTicketDivider(height: dividerH),
             // ),
-
             const SizedBox(height: 10),
             const Text(
               'There was a problem processing \nyour order.',
@@ -139,13 +139,13 @@ class HomePlanPurchaseReceiptFailureCard extends StatelessWidget {
                 fontWeight: FontWeight.w700,
               ),
             ),
+
             // Details section (same as success card)
             //HomePlanPurchaseReceiptDetailRow(label: 'top up', value: data.rightType, valueBold: true),
             //HomePlanPurchaseReceiptDetailRow(label: 'date', value: data.dateText, valueBold: true),
             //HomePlanPurchaseReceiptDetailRow(label: 'time', value: data.timeText, valueBold: true),
             //HomePlanPurchaseReceiptDetailRow(label: 'phone no.', value: data.phoneNumber, valueBold: true),
             //HomePlanPurchaseReceiptDetailRow(label: 'payment method', value: data.paymentMethod, valueBold: true),
-
             const SizedBox(height: 32),
 
             // Dashed line (no notches) at the bottom
@@ -160,12 +160,11 @@ class HomePlanPurchaseReceiptFailureCard extends StatelessWidget {
             // const SizedBox(height: 6),
 
             //const SizedBox(height: 10),
-
             const SizedBox(height: 32),
 
             // Back button to home
             HomePlanPurchaseReceiptBackButton(onTap: onBackHome),
-            const SizedBox(height: 250)
+            const SizedBox(height: 250),
           ],
         ),
       ),
@@ -197,10 +196,7 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
 
     final holes = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: Offset(0, notchCenterY),
-          radius: notchRadius,
-        ),
+        Rect.fromCircle(center: Offset(0, notchCenterY), radius: notchRadius),
       )
       ..addOval(
         Rect.fromCircle(

@@ -7,9 +7,9 @@ class RevLandingBottomDecoration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final width = (screenWidth *
-            RevLandingPrepaidTheme.bottomDecorationWidthFactor)
-        .clamp(0.0, RevLandingPrepaidTheme.bottomDecorationMaxWidth);
+    final width =
+        (screenWidth * RevLandingPrepaidTheme.bottomDecorationWidthFactor)
+            .clamp(0.0, RevLandingPrepaidTheme.bottomDecorationMaxWidth);
 
     return IgnorePointer(
       child: Image.asset(

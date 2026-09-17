@@ -33,8 +33,10 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GuestPaymentMethodPrepaidBloc,
-        GuestPaymentMethodPrepaidState>(
+    return BlocConsumer<
+      GuestPaymentMethodPrepaidBloc,
+      GuestPaymentMethodPrepaidState
+    >(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
@@ -50,9 +52,9 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
           // if (state.navTarget == GuestPaymentMethodNavTarget.addCard) { ... }
           // if (state.navTarget == GuestPaymentMethodNavTarget.paid) { ... }
 
-          context
-              .read<GuestPaymentMethodPrepaidBloc>()
-              .add(const GuestPaymentNavConsumed());
+          context.read<GuestPaymentMethodPrepaidBloc>().add(
+            const GuestPaymentNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
@@ -62,22 +64,23 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
             state.status == GuestPaymentMethodPrepaidStatus.submitting;
 
         return MediaQuery(
-          data:
-              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: GuestPaymentMethodPrepaidTheme.bg,
             bottomNavigationBar: DefaultBottomPayBar(
-              
-              amountText:'\$ 20.00' ,//state.amountText,
-              isVatExclusive:
-                  state.vatNote.toLowerCase().contains('no vat applied'),
+              amountText: '\$ 20.00', //state.amountText,
+              isVatExclusive: state.vatNote.toLowerCase().contains(
+                'no vat applied',
+              ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: GuestPaymentMethodPrepaidTheme.payBtnBg,
               // onPayNow: () => context
               //     .read<GuestPaymentMethodPrepaidBloc>()
               //     .add(const GuestPayNowPressed()),
-              onPayNow: (){
+              onPayNow: () {
                 // context.go(AppRoutes.guestPurchasePlanReceipt,);
                 AppSession.appRoute = 'postpaidPayment';
                 context.push(

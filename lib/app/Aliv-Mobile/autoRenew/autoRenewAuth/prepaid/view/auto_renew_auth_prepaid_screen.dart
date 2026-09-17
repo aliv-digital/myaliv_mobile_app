@@ -28,13 +28,16 @@ class AutoRenewAuthPrepaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AutoRenewAuthPrepaidBloc(
-        repository: AutoRenewAuthPrepaidRepositoryImpl(),
-      )..add(AutoRenewAuthPrepaidStarted(
-          paymentMethod: paymentMethod,
-          cardToken: cardToken,
-          cardLastDigits: cardLastDigits,
-        )),
+      create: (_) =>
+          AutoRenewAuthPrepaidBloc(
+            repository: AutoRenewAuthPrepaidRepositoryImpl(),
+          )..add(
+            AutoRenewAuthPrepaidStarted(
+              paymentMethod: paymentMethod,
+              cardToken: cardToken,
+              cardLastDigits: cardLastDigits,
+            ),
+          ),
       child: const _AutoRenewAuthPrepaidView(),
     );
   }
@@ -52,10 +55,7 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
         final bloc = context.read<AutoRenewAuthPrepaidBloc>();
 
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          AppToast.show(
-            message: state.errorMessage!,
-            type: ToastType.error,
-          );
+          AppToast.show(message: state.errorMessage!, type: ToastType.error);
         }
 
         if (state.navTarget == AutoRenewAuthNavTarget.home) {
@@ -96,11 +96,12 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
                       SliverPersistentHeader(
                         pinned: true,
                         delegate: _PinnedHeaderDelegate(
-                          height: AutoRenewAuthPrepaidTheme.appBarHeight +
-                              topInset,
+                          height:
+                              AutoRenewAuthPrepaidTheme.appBarHeight + topInset,
                           child: DefaultAppBar(
                             showHome: false,
-                            title: state.paymentMethod ==
+                            title:
+                                state.paymentMethod ==
                                     AutoRenewPaymentMethodType.postpaidInvoice
                                 ? 'auto pay authorization form'
                                 : 'auto renew authorization form',

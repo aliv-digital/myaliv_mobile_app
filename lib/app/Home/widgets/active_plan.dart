@@ -131,12 +131,12 @@ class PrepaidActivePlanCard extends StatelessWidget {
         onPressed: () {
           showModalBottomSheet(
             context: context,
-            isScrollControlled: true,isDismissible: true,
+            isScrollControlled: true,
+            isDismissible: true,
             backgroundColor: Colors.transparent,
             barrierColor: Colors.black.withOpacity(0.5),
             builder: (_) => const AutoRenewBottomSheet(),
           );
-
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF3F4FA),
@@ -299,10 +299,7 @@ class AutoRenewBottomSheet extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  context.push(
-                    AppRoutes.autoRenewPrepaidScreen,
-                  );
-
+                  context.push(AppRoutes.autoRenewPrepaidScreen);
                 },
                 child: const Text(
                   'ok',

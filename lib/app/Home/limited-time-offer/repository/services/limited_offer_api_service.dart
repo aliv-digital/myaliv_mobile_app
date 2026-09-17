@@ -26,12 +26,18 @@ class LimitedOfferApiService {
 
     if (kDebugMode) {
       debugPrint('');
-      debugPrint('┌─────────────────────────────────────────────────────────────');
+      debugPrint(
+        '┌─────────────────────────────────────────────────────────────',
+      );
       debugPrint('│ 🌐 LIMITED OFFER API REQUEST');
-      debugPrint('├─────────────────────────────────────────────────────────────');
+      debugPrint(
+        '├─────────────────────────────────────────────────────────────',
+      );
       debugPrint('│ Method: GET');
       debugPrint('│ URL: $url');
-      debugPrint('└─────────────────────────────────────────────────────────────');
+      debugPrint(
+        '└─────────────────────────────────────────────────────────────',
+      );
     }
 
     try {
@@ -39,9 +45,13 @@ class LimitedOfferApiService {
 
       if (kDebugMode) {
         debugPrint('');
-        debugPrint('┌─────────────────────────────────────────────────────────────');
+        debugPrint(
+          '┌─────────────────────────────────────────────────────────────',
+        );
         debugPrint('│ ✅ LIMITED OFFER API RESPONSE');
-        debugPrint('├─────────────────────────────────────────────────────────────');
+        debugPrint(
+          '├─────────────────────────────────────────────────────────────',
+        );
         debugPrint('│ Status Code: ${response.statusCode}');
         final body = response.data is String
             ? response.data as String
@@ -49,7 +59,9 @@ class LimitedOfferApiService {
         debugPrint(
           '│ Response Body: ${body.length > 300 ? '${body.substring(0, 300)}...' : body}',
         );
-        debugPrint('└─────────────────────────────────────────────────────────────');
+        debugPrint(
+          '└─────────────────────────────────────────────────────────────',
+        );
         debugPrint('');
       }
 
@@ -66,28 +78,46 @@ class LimitedOfferApiService {
     } on DioException catch (e) {
       if (kDebugMode) {
         debugPrint('');
-        debugPrint('╔══════════════════════════════════════════════════════════════');
+        debugPrint(
+          '╔══════════════════════════════════════════════════════════════',
+        );
         debugPrint('║ ❌ LIMITED OFFER — NETWORK FAILURE REPORT');
-        debugPrint('╠══════════════════════════════════════════════════════════════');
+        debugPrint(
+          '╠══════════════════════════════════════════════════════════════',
+        );
         debugPrint('║ Endpoint   : $url');
         debugPrint('║ Error Type : ${e.type.name}');
         debugPrint('║ Error Msg  : ${e.message}');
-        debugPrint('║ Status Code: ${e.response?.statusCode ?? 'N/A (no response)'}');
-        debugPrint('║ ─────────────────────────────────────────────────────────────');
+        debugPrint(
+          '║ Status Code: ${e.response?.statusCode ?? 'N/A (no response)'}',
+        );
+        debugPrint(
+          '║ ─────────────────────────────────────────────────────────────',
+        );
         debugPrint('║ DIAGNOSIS  : Cloudflare JA3/TLS fingerprint block.');
         debugPrint('║   • Android Chrome  → uses system TLS stack → ✅ allowed');
-        debugPrint('║   • Flutter (Dart)  → uses own BoringSSL TLS → ❌ blocked');
-        debugPrint('║   • User-Agent header has NO effect (block is at TLS layer,');
+        debugPrint(
+          '║   • Flutter (Dart)  → uses own BoringSSL TLS → ❌ blocked',
+        );
+        debugPrint(
+          '║   • User-Agent header has NO effect (block is at TLS layer,',
+        );
         debugPrint('║     before any HTTP headers are sent).');
-        debugPrint('║ ─────────────────────────────────────────────────────────────');
+        debugPrint(
+          '║ ─────────────────────────────────────────────────────────────',
+        );
         debugPrint('║ FIX NEEDED (backend):');
         debugPrint('║   Option A — Disable Cloudflare Bot Protection for:');
         debugPrint('║     https://myalivappuat-api.bealiv.com');
         debugPrint('║   Option B — Proxy these endpoints through the existing');
         debugPrint('║     authenticated API server so the app calls the same');
         debugPrint('║     domain as all other requests:');
-        debugPrint('║     GET mockservice.newcomobile.com/v1/MyAliv/ads-timer/active');
-        debugPrint('╚══════════════════════════════════════════════════════════════');
+        debugPrint(
+          '║     GET mockservice.newcomobile.com/v1/MyAliv/ads-timer/active',
+        );
+        debugPrint(
+          '╚══════════════════════════════════════════════════════════════',
+        );
         debugPrint('');
       }
       throw LimitedOfferApiException(

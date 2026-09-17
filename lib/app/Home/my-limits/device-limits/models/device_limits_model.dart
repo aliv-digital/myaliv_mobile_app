@@ -148,8 +148,7 @@ class DeviceLimitsModel {
           (json['DefaultAllowedLocalData'] as num?)?.toDouble() ?? 0.0,
       defaultAllowedLocalText:
           (json['DefaultAllowedLocalText'] as num?)?.toDouble() ?? 0.0,
-      maxAllowedRoaming:
-          (json['MaxAllowedRoaming'] as num?)?.toDouble() ?? 0.0,
+      maxAllowedRoaming: (json['MaxAllowedRoaming'] as num?)?.toDouble() ?? 0.0,
       maxAllowedInternational:
           (json['MaxAllowedInternational'] as num?)?.toDouble() ?? 0.0,
       maxAllowedLocalVoice:
@@ -180,7 +179,8 @@ class DeviceLimitsModel {
       isESim: json['IsESim'] as bool? ?? false,
       subscriberContract: json['SubscriberContract'] != null
           ? SubscriberContract.fromJson(
-              json['SubscriberContract'] as Map<String, dynamic>)
+              json['SubscriberContract'] as Map<String, dynamic>,
+            )
           : null,
     );
   }

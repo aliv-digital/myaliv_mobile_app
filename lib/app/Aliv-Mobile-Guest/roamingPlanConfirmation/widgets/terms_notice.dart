@@ -60,7 +60,7 @@ class _TermsNoticeState extends State<TermsNotice> {
               decoration: BoxDecoration(
                 color: widget.isChecked
                     ? RoamingPlanConfirmationTheme
-                        .termsNoticeCheckboxCheckedFillColor
+                          .termsNoticeCheckboxCheckedFillColor
                     : Colors.transparent,
                 border: Border.all(
                   width: 1,

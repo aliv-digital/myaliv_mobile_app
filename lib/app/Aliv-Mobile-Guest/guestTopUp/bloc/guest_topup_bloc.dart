@@ -25,10 +25,7 @@ class GuestTopUpBloc extends Bloc<GuestTopUpEvent, GuestTopUpState> {
       emit(state.copyWith(status: GuestTopUpStatus.ready));
     } catch (_) {
       emit(
-        state.copyWith(
-          status: GuestTopUpStatus.failure,
-          errorMessage: null,
-        ),
+        state.copyWith(status: GuestTopUpStatus.failure, errorMessage: null),
       );
     }
   }

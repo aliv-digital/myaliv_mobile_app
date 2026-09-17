@@ -4,10 +4,7 @@ class RevAppBarSliver extends SliverPersistentHeaderDelegate {
   final double height;
   final Widget child;
 
-  RevAppBarSliver({
-    required this.height,
-    required this.child,
-  });
+  RevAppBarSliver({required this.height, required this.child});
 
   @override
   double get minExtent => height;
@@ -16,7 +13,11 @@ class RevAppBarSliver extends SliverPersistentHeaderDelegate {
   double get maxExtent => height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox(height: height, child: child);
   }
 

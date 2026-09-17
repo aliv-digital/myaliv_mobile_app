@@ -36,8 +36,7 @@ class ReviewInvoicePostpaidState extends Equatable {
   bool get isDownloading => downloadingInvoiceId != null;
 
   /// Checks if a specific invoice is being downloaded.
-  bool isDownloadingInvoice(int invoiceId) =>
-      downloadingInvoiceId == invoiceId;
+  bool isDownloadingInvoice(int invoiceId) => downloadingInvoiceId == invoiceId;
 
   ReviewInvoicePostpaidState copyWith({
     ReviewInvoiceStatus? status,
@@ -51,18 +50,19 @@ class ReviewInvoicePostpaidState extends Equatable {
       status: status ?? this.status,
       invoices: invoices ?? this.invoices,
       errorMessage: errorMessage,
-      downloadingInvoiceId:
-          clearDownloadingId ? null : (downloadingInvoiceId ?? this.downloadingInvoiceId),
+      downloadingInvoiceId: clearDownloadingId
+          ? null
+          : (downloadingInvoiceId ?? this.downloadingInvoiceId),
       downloadError: downloadError,
     );
   }
 
   @override
   List<Object?> get props => [
-        status,
-        invoices,
-        errorMessage,
-        downloadingInvoiceId,
-        downloadError,
-      ];
+    status,
+    invoices,
+    errorMessage,
+    downloadingInvoiceId,
+    downloadError,
+  ];
 }

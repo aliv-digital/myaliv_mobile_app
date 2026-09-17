@@ -36,7 +36,8 @@ class ReceiptSuccessCard extends StatelessWidget {
     const double notchRadius = 10;
 
     // Notch should align with the FIRST divider center (after Payment Success!)
-    final double notchCenterY = topPad +
+    final double notchCenterY =
+        topPad +
         iconSize +
         gapAfterIcon +
         titleBoxH +
@@ -79,8 +80,11 @@ class ReceiptSuccessCard extends StatelessWidget {
                       color: GuestPayBillReceiptTheme.successIconInner,
                       shape: BoxShape.circle,
                     ),
-                    child:
-                        const Icon(Icons.check, color: Colors.white, size: 18),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ),
               ),
@@ -116,20 +120,30 @@ class ReceiptSuccessCard extends StatelessWidget {
 
             // details
             ReceiptDetailRow(
-                label: data.leftType, value: data.rightType, valueBold: false),
+              label: data.leftType,
+              value: data.rightType,
+              valueBold: false,
+            ),
             ReceiptDetailRow(
-                label: 'date', value: data.dateText, valueBold: false),
+              label: 'date',
+              value: data.dateText,
+              valueBold: false,
+            ),
             ReceiptDetailRow(
-                label: 'time', value: data.timeText, valueBold: false),
+              label: 'time',
+              value: data.timeText,
+              valueBold: false,
+            ),
             ReceiptDetailRow(
               label: data.identifierLabel,
               value: data.phoneNumber,
               valueBold: false,
             ),
             ReceiptDetailRow(
-                label: 'payment method',
-                value: data.paymentMethod,
-                valueBold: false),
+              label: 'payment method',
+              value: data.paymentMethod,
+              valueBold: false,
+            ),
 
             const SizedBox(height: 6),
 
@@ -181,10 +195,7 @@ class _TicketSideNotchClipper extends CustomClipper<Path> {
     // notch circles centered on the side edges (x=0, x=width) so they cut inward
     final holes = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: Offset(0, notchCenterY),
-          radius: notchRadius,
-        ),
+        Rect.fromCircle(center: Offset(0, notchCenterY), radius: notchRadius),
       )
       ..addOval(
         Rect.fromCircle(

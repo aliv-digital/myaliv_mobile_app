@@ -4,10 +4,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills
 class GuestPayBillPayWithRevCard extends StatelessWidget {
   final VoidCallback onContinueToPay;
 
-  const GuestPayBillPayWithRevCard({
-    super.key,
-    required this.onContinueToPay,
-  });
+  const GuestPayBillPayWithRevCard({super.key, required this.onContinueToPay});
 
   @override
   Widget build(BuildContext context) {

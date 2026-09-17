@@ -31,8 +31,7 @@ class OTPPostpaidBottomActions extends StatelessWidget {
               label: 'verify',
               isLoading: loading,
               onPressed: () {
-               // context.read<OTPPostpaidBloc>().add(const OTPPostpaidSubmitted());
-
+                // context.read<OTPPostpaidBloc>().add(const OTPPostpaidSubmitted());
 
                 // ✅ Update this route if your postpaid flow uses another screen
                 context.push(AppRoutes.reviewInvoicePostPaidScreen);
@@ -65,9 +64,9 @@ class OTPPostpaidBottomActions extends StatelessWidget {
                 GestureDetector(
                   onTap: resendLoading
                       ? null
-                      : () => context
-                      .read<OTPPostpaidBloc>()
-                      .add(const OTPPostpaidResendRequested()),
+                      : () => context.read<OTPPostpaidBloc>().add(
+                          const OTPPostpaidResendRequested(),
+                        ),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: TextStyle(

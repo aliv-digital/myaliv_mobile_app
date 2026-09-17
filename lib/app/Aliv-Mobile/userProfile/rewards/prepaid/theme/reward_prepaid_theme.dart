@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class RewardPrepaidTheme {
   static const bg = Color(0xFFF1F2FA);
   static const purple = Color(0xFF655C9A);
@@ -14,11 +13,11 @@ class RewardPrepaidTheme {
   static const shadow = Color(0x14000000);
 
   static TextStyle t(
-      double size, {
-        FontWeight weight = FontWeight.w400,
-        Color color = textBlack,
-        double height = 1.2,
-      }) {
+    double size, {
+    FontWeight weight = FontWeight.w400,
+    Color color = textBlack,
+    double height = 1.2,
+  }) {
     return TextStyle(
       fontFamily: 'CircularPro',
       fontSize: size,

@@ -27,10 +27,7 @@ import '../widgets/top_up_prepaid_primary_button.dart';
 class TopUpPrepaidScreen extends StatefulWidget {
   final int initialTab;
 
-  const TopUpPrepaidScreen({
-    super.key,
-    this.initialTab = 0,
-  });
+  const TopUpPrepaidScreen({super.key, this.initialTab = 0});
 
   @override
   State<TopUpPrepaidScreen> createState() => _TopUpPrepaidScreenState();
@@ -61,7 +58,8 @@ class _TopUpPrepaidView extends StatefulWidget {
   State<_TopUpPrepaidView> createState() => _TopUpPrepaidViewState();
 }
 
-class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerProviderStateMixin {
+class _TopUpPrepaidViewState extends State<_TopUpPrepaidView>
+    with SingleTickerProviderStateMixin {
   static const _tabTitles = ['top-up', 'auto top-up', 'send top-up'];
 
   late final TabController _tabController;
@@ -89,9 +87,9 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
 
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) return;
-      context
-          .read<TopUpPrepaidBloc>()
-          .add(TopUpPrepaidTabChanged(_tabController.index));
+      context.read<TopUpPrepaidBloc>().add(
+        TopUpPrepaidTabChanged(_tabController.index),
+      );
     });
   }
 
@@ -104,10 +102,14 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
   @override
   Widget build(BuildContext context) {
     return BlocListener<TopUpPrepaidBloc, TopUpPrepaidState>(
-      listenWhen: (p, c) => p.errorMessage != c.errorMessage || p.submitStatus != c.submitStatus,
+      listenWhen: (p, c) =>
+          p.errorMessage != c.errorMessage || p.submitStatus != c.submitStatus,
       listener: (context, state) {
         if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
-          AppToast.show(message: state.errorMessage.toString(),type: ToastType.error);
+          AppToast.show(
+            message: state.errorMessage.toString(),
+            type: ToastType.error,
+          );
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text(state.errorMessage!)),
           // );
@@ -145,7 +147,10 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                     leading: IconButton(
                       icon: Padding(
                         padding: const EdgeInsets.only(left: 24.0),
-                        child: const Icon(Icons.arrow_back, color: Colors.white),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                        ),
                       ),
                       onPressed: () => Navigator.of(context).maybePop(),
                     ),
@@ -173,7 +178,8 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                       hasScrollBody: true,
                       child: TabBarView(
                         controller: _tabController,
-                        physics: const BouncingScrollPhysics(), // ✅ swipe support
+                        physics:
+                            const BouncingScrollPhysics(), // ✅ swipe support
                         children: [
                           // -------------------------
                           // Tab 0: My Number (DONE)
@@ -184,7 +190,7 @@ class _TopUpPrepaidViewState extends State<_TopUpPrepaidView> with SingleTickerP
                           const AutoTopupTab(),
 
                           // Tab 2: placeholder (future)
-                           SendTopUpPlaceholderTab(title: 'send top-up'),
+                          SendTopUpPlaceholderTab(title: 'send top-up'),
                         ],
                       ),
                     ),
@@ -261,9 +267,7 @@ class _MyNumberTabState extends State<_MyNumberTab> {
     final bloc = context.read<TopUpPrepaidBloc>();
 
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white
-      ),
+      decoration: BoxDecoration(color: Colors.white),
       child: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Padding(
@@ -304,7 +308,8 @@ class _MyNumberTabState extends State<_MyNumberTab> {
               // CTA button
               TopUpPrepaidPrimaryButton(
                 enabled: state.canSubmit && !_isChecking,
-                loading: _isChecking ||
+                loading:
+                    _isChecking ||
                     state.submitStatus == TopUpPrepaidSubmitStatus.loading,
                 onTap: _onProceed,
               ),

@@ -69,7 +69,9 @@ class TopUpPaymentPrepaidState extends Equatable {
           ? null
           : (selectedMethodId ?? this.selectedMethodId),
       summary: summary ?? this.summary,
-      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
       navTarget: navTarget ?? this.navTarget,
       lastNewCardDetails: clearLastNewCardDetails
           ? null

@@ -23,7 +23,6 @@ class FaceIdSecurityTheme {
     fontSize: 18,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
-
   );
 
   static const TextStyle body = TextStyle(

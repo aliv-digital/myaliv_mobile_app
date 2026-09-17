@@ -62,7 +62,9 @@ class LimitedOfferState {
 
   /// Check if we have an active offer to display
   bool get hasOffer =>
-      currentOffer != null && currentOffer!.isActive && !currentOffer!.isExpired;
+      currentOffer != null &&
+      currentOffer!.isActive &&
+      !currentOffer!.isExpired;
 
   /// Check if currently loading
   bool get isLoading => status == LimitedOfferStatus.loading;

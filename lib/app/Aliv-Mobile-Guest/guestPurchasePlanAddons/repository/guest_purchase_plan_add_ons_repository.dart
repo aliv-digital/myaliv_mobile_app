@@ -1,5 +1,3 @@
-
-
 import '../model/add_on_models.dart';
 
 class GuestPurchasePlanAddOnsRepository {
@@ -22,7 +20,7 @@ class GuestPurchasePlanAddOnsRepository {
     return const FairUsePolicy(
       title: 'fair use policy',
       description:
-      "add-ons can only be added to your active primary plan and expires when it ends. "
+          "add-ons can only be added to your active primary plan and expires when it ends. "
           "if you don't want an add-on select skip.",
     );
   }

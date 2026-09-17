@@ -35,7 +35,8 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
 
     return Padding(
       padding: AutoRenewPrepaidTheme.addCardBottomSheetPadding.copyWith(
-          bottom: AutoRenewPrepaidTheme.addCardBottomSheetBottomBase + bottom),
+        bottom: AutoRenewPrepaidTheme.addCardBottomSheetBottomBase + bottom,
+      ),
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -69,7 +70,9 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                     onChanged: (v) => setState(() => _month = v),
                   ),
                 ),
-                const SizedBox(width: AutoRenewPrepaidTheme.bottomSheetFieldsGap),
+                const SizedBox(
+                  width: AutoRenewPrepaidTheme.bottomSheetFieldsGap,
+                ),
                 Expanded(
                   child: _Dropdown<int>(
                     value: _year,
@@ -80,7 +83,9 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                 ),
               ],
             ),
-            const SizedBox(height: AutoRenewPrepaidTheme.bottomSheetButtonTopGap),
+            const SizedBox(
+              height: AutoRenewPrepaidTheme.bottomSheetButtonTopGap,
+            ),
             SizedBox(
               height: AutoRenewPrepaidTheme.bottomSheetActionHeight,
               width: double.infinity,
@@ -89,9 +94,9 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                   backgroundColor: AutoRenewPrepaidTheme.primary,
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop(
-                    AddCardExpiryResult(month: _month, year: _year),
-                  );
+                  Navigator.of(
+                    context,
+                  ).pop(AddCardExpiryResult(month: _month, year: _year));
                 },
                 child: const Text(
                   'save',
@@ -131,8 +136,10 @@ class _Dropdown<T> extends StatelessWidget {
               .map(
                 (e) => DropdownMenuItem<T>(
                   value: e,
-                  child: Text('$e',
-                      style: AutoRenewPrepaidTheme.dropdownItemStyle),
+                  child: Text(
+                    '$e',
+                    style: AutoRenewPrepaidTheme.dropdownItemStyle,
+                  ),
                 ),
               )
               .toList(),

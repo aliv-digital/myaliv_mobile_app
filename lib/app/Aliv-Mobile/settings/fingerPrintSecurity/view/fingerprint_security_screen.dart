@@ -33,17 +33,18 @@ class _FingerPrintSecurityView extends StatelessWidget {
       listener: (context, state) {
         if (state.navTarget == FingerPrintSecurityNavTarget.back) {
           Navigator.of(context).maybePop();
-          context
-              .read<FingerPrintSecurityBloc>()
-              .add(const FingerPrintSecurityNavConsumed());
+          context.read<FingerPrintSecurityBloc>().add(
+            const FingerPrintSecurityNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
         final content = state.content;
 
         return MediaQuery(
-          data:
-              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: FingerPrintSecurityTheme.bg,
             body: Column(

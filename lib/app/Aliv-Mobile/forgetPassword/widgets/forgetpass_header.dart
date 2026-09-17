@@ -14,10 +14,7 @@ class ForgetPasswordHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DefaultBackButton(
-          padding: EdgeInsets.only(
-            left: ForgetPasswordSizes.backLeft,
-            top: 28,
-          ),
+          padding: EdgeInsets.only(left: ForgetPasswordSizes.backLeft, top: 28),
           iconWidth: ForgetPasswordSizes.backIconWidth,
           iconHeight: ForgetPasswordSizes.backIconHeight,
           onPressed: () {
@@ -45,10 +42,7 @@ class _LogoTitle extends StatelessWidget {
           height: ForgetPasswordSizes.logoHeight,
         ),
         const SizedBox(height: ForgetPasswordSizes.logoToTitleGap),
-        Text(
-          'verify your number',
-          style: ForgetPasswordTheme.title,
-        ),
+        Text('verify your number', style: ForgetPasswordTheme.title),
         const SizedBox(height: ForgetPasswordSizes.titleToSubtitleGap),
         SizedBox(
           width: ForgetPasswordSizes.subtitleWidth,
@@ -58,7 +52,7 @@ class _LogoTitle extends StatelessWidget {
             style: ForgetPasswordTheme.subtitle,
           ),
         ),
-        SizedBox(height: 9.61)
+        SizedBox(height: 9.61),
       ],
     );
   }

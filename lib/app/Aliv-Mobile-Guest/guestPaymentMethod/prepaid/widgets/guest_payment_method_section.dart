@@ -37,8 +37,10 @@ class GuestPaymentMethodSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('payment method',
-              style: GuestPaymentMethodPrepaidTheme.sectionTitle),
+          Text(
+            'payment method',
+            style: GuestPaymentMethodPrepaidTheme.sectionTitle,
+          ),
           const SizedBox(
             height: GuestPaymentMethodPrepaidTheme.sectionTitleToFirstCardGap,
           ),
@@ -82,14 +84,20 @@ class GuestPaymentMethodSection extends StatelessWidget {
               padding: GuestPaymentMethodPrepaidTheme.payWithCardRowPadding,
               child: Row(
                 children: [
-                  const Icon(Icons.add,
-                      size: 18, color: GuestPaymentMethodPrepaidTheme.plus),
+                  const Icon(
+                    Icons.add,
+                    size: 18,
+                    color: GuestPaymentMethodPrepaidTheme.plus,
+                  ),
                   const SizedBox(width: 8),
-                  Text('pay with card',
-                      style: GuestPaymentMethodPrepaidTheme.addCard),
+                  Text(
+                    'pay with card',
+                    style: GuestPaymentMethodPrepaidTheme.addCard,
+                  ),
                   const Spacer(),
                   SizedBox(
-                    width: GuestPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                    width:
+                        GuestPaymentMethodPrepaidTheme.payWithCardChevronSize,
                     height:
                         GuestPaymentMethodPrepaidTheme.payWithCardChevronSize,
                     child: SvgPicture.asset(

@@ -49,10 +49,7 @@ class GuestPayBillCountryCodePickerBox extends StatelessWidget {
             },
           ),
           const SizedBox(width: 6),
-          Text(
-            country.dialCode,
-            style: GuestPayBillTheme.inputTextStyle,
-          ),
+          Text(country.dialCode, style: GuestPayBillTheme.inputTextStyle),
           if (showArrow) ...[
             const SizedBox(width: 4),
             const Icon(

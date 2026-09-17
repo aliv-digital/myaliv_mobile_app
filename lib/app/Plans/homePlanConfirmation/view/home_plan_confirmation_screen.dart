@@ -78,10 +78,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                 break;
               case HomePlanConfirmationPromoStatus.failure:
                 AppToast.show(
-                  message: _promoToastMessage(
-                    state,
-                    fallback: 'Invalid promo',
-                  ),
+                  message: _promoToastMessage(state, fallback: 'Invalid promo'),
                   type: ToastType.error,
                 );
                 break;
@@ -271,7 +268,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                                 onChanged: (value) {
                                                   context
                                                       .read<
-                                                          HomePlanConfirmationBloc>()
+                                                        HomePlanConfirmationBloc
+                                                      >()
                                                       .add(
                                                         HomePlanConfirmationPromoCodeChanged(
                                                           value,
@@ -284,7 +282,8 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                                   ).unfocus();
                                                   context
                                                       .read<
-                                                          HomePlanConfirmationBloc>()
+                                                        HomePlanConfirmationBloc
+                                                      >()
                                                       .add(
                                                         const HomePlanConfirmationPromoApplyPressed(),
                                                       );
@@ -298,10 +297,9 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                               label: state.promoCode,
                                               labelSuffix:
                                                   ' (${_promoDiscountDescription(state)})',
-                                              labelSuffixStyle:
-                                                  const TextStyle(
-                                                    color: _promoDiscountColor,
-                                                  ),
+                                              labelSuffixStyle: const TextStyle(
+                                                color: _promoDiscountColor,
+                                              ),
                                               value:
                                                   '- \$ ${state.promoDiscount.toStringAsFixed(2)}',
                                               valueStyle: const TextStyle(

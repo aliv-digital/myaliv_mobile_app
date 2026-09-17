@@ -16,7 +16,8 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
     on<GuestSplashPurchasePlanCountryChanged>(_onPurchaseCountryChanged);
     on<GuestSplashPurchasePlanPhoneChanged>(_onPurchasePhoneChanged);
     on<GuestSplashPurchasePlanConfirmPhoneChanged>(
-        _onPurchaseConfirmPhoneChanged);
+      _onPurchaseConfirmPhoneChanged,
+    );
     on<GuestSplashPurchasePlanSubmitted>(_onPurchaseSubmitted);
     on<GuestSplashPurchasePlanReset>(_onPurchaseReset);
   }
@@ -124,27 +125,39 @@ class GuestSplashBloc extends Bloc<GuestSplashEvent, GuestSplashState> {
     final p2 = s.purchaseConfirmPhone.trim();
 
     if (c == null) {
-      emit(s.copyWith(
+      emit(
+        s.copyWith(
           purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Select a country'));
+          purchaseErrorMessage: 'Select a country',
+        ),
+      );
       return;
     }
     if (p1.isEmpty) {
-      emit(s.copyWith(
+      emit(
+        s.copyWith(
           purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Enter mobile number'));
+          purchaseErrorMessage: 'Enter mobile number',
+        ),
+      );
       return;
     }
     if (p2.isEmpty) {
-      emit(s.copyWith(
+      emit(
+        s.copyWith(
           purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Confirm mobile number'));
+          purchaseErrorMessage: 'Confirm mobile number',
+        ),
+      );
       return;
     }
     if (p1 != p2) {
-      emit(s.copyWith(
+      emit(
+        s.copyWith(
           purchaseStatus: GuestSplashPurchasePlanStatus.failure,
-          purchaseErrorMessage: 'Numbers do not match'));
+          purchaseErrorMessage: 'Numbers do not match',
+        ),
+      );
       return;
     }
 

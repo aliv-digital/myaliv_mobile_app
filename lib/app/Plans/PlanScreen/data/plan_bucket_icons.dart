@@ -1,7 +1,6 @@
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
 class PlanBucketIcons {
-
   static const String dataIcon = AssetConstant.wifiIconSVG;
   //static const String phoneIcon = AssetConstant.phoneIconSVG;
   static const String sms = AssetConstant.smsIconSVG;
@@ -9,9 +8,7 @@ class PlanBucketIcons {
   static const String phoneCallIcon = AssetConstant.phoneCallIconSVG;
   static const String messageIcon = AssetConstant.talkTextIconSVG;
 
-
   static String forType(BucketItemType type) {
-
     switch (type) {
       case BucketItemType.data:
         return dataIcon;
@@ -23,16 +20,8 @@ class PlanBucketIcons {
         return whatsAppIcon;
       case BucketItemType.internationalSMS:
         return messageIcon;
-
     }
   }
 }
 
-
-enum BucketItemType {
-  whatsApp,
-  call,
-  sms,
-  internationalSMS,
-  data
-}
+enum BucketItemType { whatsApp, call, sms, internationalSMS, data }

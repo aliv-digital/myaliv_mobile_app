@@ -26,9 +26,9 @@ class PurchasePrepaidMenuList extends StatelessWidget {
             ),
             if (i != items.length - 1)
               const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: PurchasePrepaidTheme.divider
+                height: 1,
+                thickness: 1,
+                color: PurchasePrepaidTheme.divider,
               ),
           ],
         ],

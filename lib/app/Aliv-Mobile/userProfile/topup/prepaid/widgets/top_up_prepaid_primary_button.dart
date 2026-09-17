@@ -29,10 +29,13 @@ class TopUpPrepaidPrimaryButton extends StatelessWidget {
         onPressed: (!enabled || loading) ? null : onTap,
         child: loading
             ? const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : Text('top-up now', style: TopUpPrepaidTheme.buttonText()),
       ),
     );

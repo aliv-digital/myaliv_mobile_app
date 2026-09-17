@@ -23,11 +23,11 @@ class GuestSavedPaymentMethod extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        brand,
-        ending,
-        expiry,
-        logoSvgAsset,
-        isChargeToMyAccount,
-      ];
+    id,
+    brand,
+    ending,
+    expiry,
+    logoSvgAsset,
+    isChargeToMyAccount,
+  ];
 }

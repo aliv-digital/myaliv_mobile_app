@@ -1,4 +1,5 @@
 enum CardBrand { visa, mastercard, unknown }
+
 enum AutoRenewMethodType { card, wallet, none, payWithCard }
 
 class SavedCard {
@@ -36,16 +37,22 @@ class AutoRenewPaymentMethod {
   }
 
   /// ✅ const is fine
-  static const AutoRenewPaymentMethod wallet =
-  AutoRenewPaymentMethod._(id: 'wallet', type: AutoRenewMethodType.wallet);
+  static const AutoRenewPaymentMethod wallet = AutoRenewPaymentMethod._(
+    id: 'wallet',
+    type: AutoRenewMethodType.wallet,
+  );
 
   /// ✅ const is fine
-  static const AutoRenewPaymentMethod none =
-  AutoRenewPaymentMethod._(id: 'none', type: AutoRenewMethodType.none);
+  static const AutoRenewPaymentMethod none = AutoRenewPaymentMethod._(
+    id: 'none',
+    type: AutoRenewMethodType.none,
+  );
 
   /// Selectable "pay with card" entry — navigates to add/edit cards on proceed.
-  static const AutoRenewPaymentMethod payWithCard =
-  AutoRenewPaymentMethod._(id: 'pay-with-card', type: AutoRenewMethodType.payWithCard);
+  static const AutoRenewPaymentMethod payWithCard = AutoRenewPaymentMethod._(
+    id: 'pay-with-card',
+    type: AutoRenewMethodType.payWithCard,
+  );
 
   bool get isCard => type == AutoRenewMethodType.card;
 }

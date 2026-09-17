@@ -38,7 +38,9 @@ class UsageLimitRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: _Label(title: title, subtitle: subtitle)),
+          Expanded(
+            child: _Label(title: title, subtitle: subtitle),
+          ),
           _ProgressColumn(
             percentUsed: percentUsed,
             isUnlimited: isUnlimited,
@@ -110,8 +112,7 @@ class _ProgressColumn extends StatelessWidget {
     // postpaid stays metered even when "unlimited" so the label carries
     // the meaning instead of the bar.
     final showFullFill = isUnlimited && !isPostpaid;
-    final fraction =
-        showFullFill ? 1.0 : percentUsed.clamp(0.0, 1.0);
+    final fraction = showFullFill ? 1.0 : percentUsed.clamp(0.0, 1.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -130,10 +131,7 @@ class _ProgressColumn extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     gradient: LinearGradient(
-                      colors: [
-                        style.fill.withValues(alpha: 0),
-                        style.fill,
-                      ],
+                      colors: [style.fill.withValues(alpha: 0), style.fill],
                     ),
                   ),
                 ),

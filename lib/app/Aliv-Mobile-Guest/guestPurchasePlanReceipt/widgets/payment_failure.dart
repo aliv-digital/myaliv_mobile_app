@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/theme/theme.dart';
 
@@ -62,7 +61,10 @@ class PaymentFailedTicket extends StatelessWidget {
                 ),
                 child: Container(
                   color: backgroundColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 18,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -75,7 +77,11 @@ class PaymentFailedTicket extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
-                        child: Icon(Icons.error_outline,color: Colors.red,size: 32),
+                        child: Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 32,
+                        ),
                       ),
                       const SizedBox(height: 16),
 
@@ -148,10 +154,7 @@ class PaymentFailedTicket extends StatelessWidget {
                       const SizedBox(height: 32),
 
                       // button
-                      _PillButton(
-                        text: buttonText,
-                        onPressed: onPressed,
-                      ),
+                      _PillButton(text: buttonText, onPressed: onPressed),
                     ],
                   ),
                 ),
@@ -178,10 +181,7 @@ class _PillButton extends StatelessWidget {
       child: Material(
         color: Colors.white,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(
-            width: 1,
-            color: Color(0xFFF1F1F8),
-          ),
+          side: const BorderSide(width: 1, color: Color(0xFFF1F1F8)),
           borderRadius: BorderRadius.circular(100),
         ),
         child: InkWell(
@@ -214,10 +214,7 @@ class _PillButton extends StatelessWidget {
 }
 
 class _TicketClipper extends CustomClipper<Path> {
-  _TicketClipper({
-    required this.cornerRadius,
-    required this.notchRadius,
-  });
+  _TicketClipper({required this.cornerRadius, required this.notchRadius});
 
   final double cornerRadius;
   final double notchRadius;
@@ -237,10 +234,12 @@ class _TicketClipper extends CustomClipper<Path> {
       );
 
     final holes = Path()
-    // left notch (half outside to cut-in)
+      // left notch (half outside to cut-in)
       ..addOval(Rect.fromCircle(center: Offset(0, notchCenterY), radius: nr))
-    // right notch
-      ..addOval(Rect.fromCircle(center: Offset(size.width, notchCenterY), radius: nr));
+      // right notch
+      ..addOval(
+        Rect.fromCircle(center: Offset(size.width, notchCenterY), radius: nr),
+      );
 
     return Path.combine(PathOperation.difference, rectPath, holes);
   }

@@ -9,30 +9,36 @@ class RewardDetailsPrepaidBloc
   final RewardDetailsPrepaidRepository repository;
 
   RewardDetailsPrepaidBloc({required this.repository})
-      : super(RewardDetailsPrepaidState.initial()) {
+    : super(RewardDetailsPrepaidState.initial()) {
     on<FetchRewardDetailsPrepaid>(_onFetch);
   }
 
   Future<void> _onFetch(
-      FetchRewardDetailsPrepaid event,
-      Emitter<RewardDetailsPrepaidState> emit,
-      ) async {
-    emit(state.copyWith(
-      status: RewardDetailsPrepaidStatus.loading,
-      clearError: true,
-    ));
+    FetchRewardDetailsPrepaid event,
+    Emitter<RewardDetailsPrepaidState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: RewardDetailsPrepaidStatus.loading,
+        clearError: true,
+      ),
+    );
 
     try {
       final details = await repository.fetchDetails();
-      emit(state.copyWith(
-        status: RewardDetailsPrepaidStatus.success,
-        details: details,
-      ));
+      emit(
+        state.copyWith(
+          status: RewardDetailsPrepaidStatus.success,
+          details: details,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: RewardDetailsPrepaidStatus.failure,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: RewardDetailsPrepaidStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

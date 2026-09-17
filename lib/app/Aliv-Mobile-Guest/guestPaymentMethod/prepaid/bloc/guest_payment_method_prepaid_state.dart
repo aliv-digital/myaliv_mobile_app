@@ -7,7 +7,7 @@ enum GuestPaymentMethodPrepaidStatus {
   ready,
   submitting,
   success,
-  failure
+  failure,
 }
 
 enum GuestPaymentMethodNavTarget { none, addCard, paid }
@@ -74,12 +74,12 @@ class GuestPaymentMethodPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        errorMessage,
-        methods,
-        selectedMethodId,
-        amount,
-        vatNote,
-        navTarget,
-      ];
+    status,
+    errorMessage,
+    methods,
+    selectedMethodId,
+    amount,
+    vatNote,
+    navTarget,
+  ];
 }

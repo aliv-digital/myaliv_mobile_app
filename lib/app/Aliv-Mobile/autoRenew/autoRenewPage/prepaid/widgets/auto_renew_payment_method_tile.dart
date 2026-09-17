@@ -24,15 +24,17 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius:
-          BorderRadius.circular(AutoRenewPrepaidTheme.cardTileTapRadius),
+      borderRadius: BorderRadius.circular(
+        AutoRenewPrepaidTheme.cardTileTapRadius,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: selected
               ? AutoRenewPrepaidTheme.cardBgSelected
               : AutoRenewPrepaidTheme.cardBg,
-          borderRadius:
-              BorderRadius.circular(AutoRenewPrepaidTheme.cardTileRadius),
+          borderRadius: BorderRadius.circular(
+            AutoRenewPrepaidTheme.cardTileRadius,
+          ),
           border: Border.all(
             color: borderColor,
             width: AutoRenewPrepaidTheme.tileBorderWidth,
@@ -51,10 +53,7 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    _title(),
-                    style: _titleStyle(),
-                  ),
+                  Text(_title(), style: _titleStyle()),
                   if (_subtitle() != null) ...[
                     const SizedBox(
                       height: AutoRenewPrepaidTheme.tileTitleSubtitleGap,
@@ -91,7 +90,8 @@ class AutoRenewPaymentMethodTile extends StatelessWidget {
   }
 
   TextStyle _titleStyle() {
-    if (method.type == AutoRenewMethodType.none || method.type == AutoRenewMethodType.wallet) {
+    if (method.type == AutoRenewMethodType.none ||
+        method.type == AutoRenewMethodType.wallet) {
       return const TextStyle(
         color: Color(0xFF645D9C),
         fontSize: 14,
@@ -129,8 +129,9 @@ class _SelectionIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final border =
-        selected ? AutoRenewPrepaidTheme.primary : AutoRenewPrepaidTheme.border;
+    final border = selected
+        ? AutoRenewPrepaidTheme.primary
+        : AutoRenewPrepaidTheme.border;
 
     return Container(
       width: AutoRenewPrepaidTheme.selectionIndicatorSize,
@@ -169,8 +170,9 @@ class _BrandLogo extends StatelessWidget {
       height: AutoRenewPrepaidTheme.cardLogoHeight,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius:
-            BorderRadius.circular(AutoRenewPrepaidTheme.cardTileRadius),
+        borderRadius: BorderRadius.circular(
+          AutoRenewPrepaidTheme.cardTileRadius,
+        ),
       ),
       child: SvgPicture.asset(
         isVisa ? AssetConstant.visaCardSVG : AssetConstant.masterCardSVG,

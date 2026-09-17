@@ -7,12 +7,13 @@ class ScallopBottomClipper extends CustomClipper<Path> {
 
   @override
   Path getClip(Size size) {
-    final path = Path()..addRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        const Radius.circular(16),
-      ),
-    );
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.width, size.height),
+          const Radius.circular(16),
+        ),
+      );
 
     // Cut semicircles at bottom
     final scallop = Path();

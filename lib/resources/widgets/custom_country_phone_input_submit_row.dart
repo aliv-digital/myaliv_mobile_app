@@ -197,8 +197,9 @@ class _CustomCountryPhoneInputSubmitRowState
   Widget _buildCountryFlag(TextStyle resolvedFlagStyle) {
     final String? isoCode = widget.countryIsoCode;
     if (isoCode != null && isoCode.isNotEmpty) {
-      final String assetIsoCode =
-          isoCode.toUpperCase() == 'AC' ? 'SH' : isoCode.toUpperCase();
+      final String assetIsoCode = isoCode.toUpperCase() == 'AC'
+          ? 'SH'
+          : isoCode.toUpperCase();
       return ClipRRect(
         borderRadius: BorderRadius.circular(widget.countryFlagBorderRadius),
         child: Image.asset(
@@ -236,7 +237,8 @@ class _CustomCountryPhoneInputSubmitRowState
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle resolvedLabelStyle = widget.labelStyle ??
+    final TextStyle resolvedLabelStyle =
+        widget.labelStyle ??
         const TextStyle(
           fontSize: 14,
           height: 1.43,
@@ -244,26 +246,30 @@ class _CustomCountryPhoneInputSubmitRowState
           fontWeight: FontWeight.w700,
           color: Colors.black,
         );
-    final TextStyle resolvedFlagStyle = widget.flagStyle ??
+    final TextStyle resolvedFlagStyle =
+        widget.flagStyle ??
         const TextStyle(
           fontSize: 18,
           fontFamily: AppConstants.defaultFontFamily,
         );
-    final TextStyle resolvedDialStyle = widget.dialCodeStyle ??
+    final TextStyle resolvedDialStyle =
+        widget.dialCodeStyle ??
         const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           fontFamily: AppConstants.defaultFontFamily,
           color: Color(0xFF111111),
         );
-    final TextStyle resolvedPhoneInputStyle = widget.phoneInputStyle ??
+    final TextStyle resolvedPhoneInputStyle =
+        widget.phoneInputStyle ??
         const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           fontFamily: AppConstants.defaultFontFamily,
           color: Color(0xFF000000),
         );
-    final TextStyle resolvedPhoneHintStyle = widget.phoneHintStyle ??
+    final TextStyle resolvedPhoneHintStyle =
+        widget.phoneHintStyle ??
         const TextStyle(
           color: Color(0xB3707070),
           fontSize: 14,
@@ -271,7 +277,8 @@ class _CustomCountryPhoneInputSubmitRowState
           fontFamily: AppConstants.defaultFontFamily,
           fontWeight: FontWeight.w500,
         );
-    final TextStyle resolvedSubmitStyle = widget.submitTextStyle ??
+    final TextStyle resolvedSubmitStyle =
+        widget.submitTextStyle ??
         TextStyle(
           color: widget.submitButtonTextColor,
           fontSize: 12,
@@ -442,17 +449,18 @@ class _FocusedInputBorderWrapper extends StatelessWidget {
         border: isFocused
             ? null
             : (hideUnfocusedBorder
-                ? null
-                : Border.all(
-                    color: unfocusedBorderColor,
-                    width: borderWidth,
-                  )),
+                  ? null
+                  : Border.all(
+                      color: unfocusedBorderColor,
+                      width: borderWidth,
+                    )),
         borderRadius: BorderRadius.circular(radius),
       ),
       padding: EdgeInsets.all(borderWidth),
       child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular((radius - borderWidth).clamp(0.0, radius)),
+        borderRadius: BorderRadius.circular(
+          (radius - borderWidth).clamp(0.0, radius),
+        ),
         child: child,
       ),
     );

@@ -42,10 +42,7 @@ class PlanModelFactory {
   /// - _createRoamEasyPlan
   /// - _createMifiPlan
   /// - _createLibertyGlobalPlan
-  BasePlanModel _createBasePlan(
-    Map<String, dynamic> raw,
-    bool includePayload,
-  ) {
+  BasePlanModel _createBasePlan(Map<String, dynamic> raw, bool includePayload) {
     try {
       return BasePlanModel.fromApiMap(raw, includeRawPayload: includePayload);
     } catch (e) {

@@ -1,6 +1,7 @@
 import 'rev_confirmation_prepaid_repository.dart';
 
-class RevConfirmationPrepaidRepositoryImpl implements RevConfirmationPrepaidRepository {
+class RevConfirmationPrepaidRepositoryImpl
+    implements RevConfirmationPrepaidRepository {
   @override
   Future<RevConfirmationData> fetchConfirmation() async {
     await Future.delayed(const Duration(milliseconds: 350));

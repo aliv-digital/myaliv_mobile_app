@@ -18,13 +18,15 @@ class PlanFilterService {
     final normalizedType = planType.trim().toUpperCase();
     final normalizedFrequency = frequency.trim().toUpperCase();
 
-    return plans.where((plan) {
-      final currentType = _normalize(plan['PlanType']);
-      final currentFrequency = _normalize(plan['Frequency']);
+    return plans
+        .where((plan) {
+          final currentType = _normalize(plan['PlanType']);
+          final currentFrequency = _normalize(plan['Frequency']);
 
-      return currentType == normalizedType &&
-          currentFrequency == normalizedFrequency;
-    }).toList(growable: false);
+          return currentType == normalizedType &&
+              currentFrequency == normalizedFrequency;
+        })
+        .toList(growable: false);
   }
 
   /// Filter plans by PlanType and PlanGroup
@@ -38,12 +40,15 @@ class PlanFilterService {
     final normalizedType = planType.trim().toUpperCase();
     final normalizedGroup = planGroup.trim().toUpperCase();
 
-    return plans.where((plan) {
-      final currentType = _normalize(plan['PlanType']);
-      final currentGroup = _normalize(plan['PlanGroup']);
+    return plans
+        .where((plan) {
+          final currentType = _normalize(plan['PlanType']);
+          final currentGroup = _normalize(plan['PlanGroup']);
 
-      return currentType == normalizedType && currentGroup == normalizedGroup;
-    }).toList(growable: false);
+          return currentType == normalizedType &&
+              currentGroup == normalizedGroup;
+        })
+        .toList(growable: false);
   }
 
   /// Filter plans by PlanType, PlanGroup and PaymentOption.
@@ -57,14 +62,16 @@ class PlanFilterService {
     final normalizedGroup = planGroup.trim().toUpperCase();
     final normalizedPaymentOption = paymentOption.trim().toUpperCase();
 
-    return plans.where((plan) {
-      final currentType = _normalize(plan['PlanType']);
-      final currentGroup = _normalize(plan['PlanGroup']);
-      final currentPaymentOption = _normalize(plan['PaymentOption']);
+    return plans
+        .where((plan) {
+          final currentType = _normalize(plan['PlanType']);
+          final currentGroup = _normalize(plan['PlanGroup']);
+          final currentPaymentOption = _normalize(plan['PaymentOption']);
 
-      return currentType == normalizedType &&
-          currentGroup == normalizedGroup &&
-          currentPaymentOption == normalizedPaymentOption;
-    }).toList(growable: false);
+          return currentType == normalizedType &&
+              currentGroup == normalizedGroup &&
+              currentPaymentOption == normalizedPaymentOption;
+        })
+        .toList(growable: false);
   }
 }

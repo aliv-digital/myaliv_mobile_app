@@ -49,15 +49,15 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        accountHolderName,
-        primaryPlanName,
-        primaryPlanPrice,
-        futurePlanStartDate,
-        flow,
-        selectedAddOns,
-        forceNow,
-      ];
+    phoneNumber,
+    accountHolderName,
+    primaryPlanName,
+    primaryPlanPrice,
+    futurePlanStartDate,
+    flow,
+    selectedAddOns,
+    forceNow,
+  ];
 }
 
 class PurchaseLineItem extends Equatable {
@@ -92,10 +92,7 @@ class PurchaseTotals extends Equatable {
   final double subTotal;
   final double vat;
 
-  const PurchaseTotals({
-    required this.subTotal,
-    required this.vat,
-  });
+  const PurchaseTotals({required this.subTotal, required this.vat});
 
   double get total => subTotal + vat;
 

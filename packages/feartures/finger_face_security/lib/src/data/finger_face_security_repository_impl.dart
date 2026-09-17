@@ -7,7 +7,7 @@ class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
   final BiometricAuthService _service;
 
   FingerFaceSecurityRepositoryImpl({BiometricAuthService? service})
-      : _service = service ?? BiometricAuthService();
+    : _service = service ?? BiometricAuthService();
 
   @override
   Future<FingerFaceSecurityModel> getBiometricStatus() async {
@@ -17,7 +17,8 @@ class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
 
     return FingerFaceSecurityModel(
       isBiometricEnabled: isEnabled,
-      isFingerprintAvailable: available.contains(BiometricType.fingerprint) ||
+      isFingerprintAvailable:
+          available.contains(BiometricType.fingerprint) ||
           available.contains(BiometricType.strong),
       isFaceIdAvailable: available.contains(BiometricType.face),
       biometricTypeDescription: typeDescription,
@@ -32,7 +33,8 @@ class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
   }
 
   @override
-  Future<BiometricSetupResult> setupBiometric() => _service.setupBiometricAuth();
+  Future<BiometricSetupResult> setupBiometric() =>
+      _service.setupBiometricAuth();
 
   @override
   Future<void> disableBiometric() => _service.disableBiometricAuth();

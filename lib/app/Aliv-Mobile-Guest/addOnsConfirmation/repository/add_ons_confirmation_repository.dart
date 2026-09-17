@@ -2,9 +2,7 @@ import '../models/add_ons_confirmation_models.dart';
 
 class AddOnsConfirmationRepository {
   /// Future: call API, build the same data shape, return it.
-  Future<AddOnsConfirmationData> load({
-    required String phoneNumber,
-  }) async {
+  Future<AddOnsConfirmationData> load({required String phoneNumber}) async {
     // Seeded UI data for the add-ons confirmation mock.
     final items = <PurchaseLineItem>[
       const PurchaseLineItem(

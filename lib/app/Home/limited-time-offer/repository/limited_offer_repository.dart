@@ -26,8 +26,8 @@ class LimitedOfferRepositoryImpl implements LimitedOfferRepository {
   LimitedOfferRepositoryImpl({
     required LimitedOfferApiService apiService,
     required LimitedOfferParserService parserService,
-  })  : _apiService = apiService,
-        _parserService = parserService;
+  }) : _apiService = apiService,
+       _parserService = parserService;
 
   @override
   Future<List<LimitedOfferModel>> fetchActiveOffers({
@@ -65,7 +65,9 @@ class LimitedOfferRepositoryImpl implements LimitedOfferRepository {
           .toList();
 
       if (kDebugMode) {
-        debugPrint('   ✓ Filtered to ${filteredOffers.length} offers for $userType');
+        debugPrint(
+          '   ✓ Filtered to ${filteredOffers.length} offers for $userType',
+        );
         for (final offer in filteredOffers) {
           debugPrint('     - ${offer.title} (id: ${offer.id})');
         }

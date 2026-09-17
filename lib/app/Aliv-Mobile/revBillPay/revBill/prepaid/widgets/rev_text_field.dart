@@ -74,7 +74,9 @@ class _RevTextFieldState extends State<RevTextField> {
           height: double.infinity,
           decoration: BoxDecoration(
             color: RevPrepaidTheme.fieldBg,
-            borderRadius: BorderRadius.circular(RevPrepaidTheme.inputFieldRadius),
+            borderRadius: BorderRadius.circular(
+              RevPrepaidTheme.inputFieldRadius,
+            ),
           ),
           padding: const EdgeInsets.all(8),
           alignment: Alignment.center,

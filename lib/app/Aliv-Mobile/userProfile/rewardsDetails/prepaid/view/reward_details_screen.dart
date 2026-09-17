@@ -50,11 +50,20 @@ class RewardDetailsPrepaidScreen extends StatelessWidget {
           const SizedBox(height: 18),
           RewardDetailsSection(label: 'level', value: reward!.levelName),
           const SizedBox(height: 18),
-          RewardDetailsSection(label: 'short description', value: reward!.shortDesc),
+          RewardDetailsSection(
+            label: 'short description',
+            value: reward!.shortDesc,
+          ),
           const SizedBox(height: 18),
-          RewardDetailsSection(label: 'full description', value: reward!.fullDesc),
+          RewardDetailsSection(
+            label: 'full description',
+            value: reward!.fullDesc,
+          ),
           const SizedBox(height: 18),
-          RewardDetailsSection(label: 'terms & conditions', value: reward!.terms),
+          RewardDetailsSection(
+            label: 'terms & conditions',
+            value: reward!.terms,
+          ),
           const SizedBox(height: 18),
           RewardDetailsSection(
             label: 'start date',

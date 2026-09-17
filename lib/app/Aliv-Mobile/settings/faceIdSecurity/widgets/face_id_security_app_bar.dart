@@ -5,10 +5,7 @@ import '../theme/face_id_security_theme.dart';
 class FaceIdSecurityAppBar extends StatelessWidget {
   final String title;
 
-  const FaceIdSecurityAppBar({
-    super.key,
-    required this.title,
-  });
+  const FaceIdSecurityAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

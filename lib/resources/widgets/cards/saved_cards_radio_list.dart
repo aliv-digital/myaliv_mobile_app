@@ -135,8 +135,9 @@ class SavedCardRadioTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final BorderRadius radius =
-        BorderRadius.circular(tileRadius ?? _defaultTileRadius);
+    final BorderRadius radius = BorderRadius.circular(
+      tileRadius ?? _defaultTileRadius,
+    );
 
     return Material(
       color: Colors.transparent,
@@ -198,8 +199,7 @@ class SavedCardRadioTile extends StatelessWidget {
           Text(
             'expiry $expiry',
             style: TextStyle(
-              color:
-                  isSelected ? _selectedTextColor : _unselectedSubtitleColor,
+              color: isSelected ? _selectedTextColor : _unselectedSubtitleColor,
               fontSize: 14,
               fontFamily: AppConstants.defaultFontFamily,
               fontWeight: FontWeight.w500,
@@ -222,11 +222,7 @@ class SavedCardRadioTile extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: Icon(
-          Icons.check,
-          size: r * 0.64,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.check, size: r * 0.64, color: Colors.white),
       );
     }
     return Container(

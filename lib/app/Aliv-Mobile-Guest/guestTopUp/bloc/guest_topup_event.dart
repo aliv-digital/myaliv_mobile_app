@@ -12,21 +12,21 @@ class GuestTopUpStarted extends GuestTopUpEvent {
   const GuestTopUpStarted();
 }
 
-class GuestActivePrepaidNumberEvent extends GuestTopUpEvent{
+class GuestActivePrepaidNumberEvent extends GuestTopUpEvent {
   final String number;
   const GuestActivePrepaidNumberEvent(this.number);
   @override
   List<Object?> get props => [number];
 }
 
-class GuestActivePrepaidNumberConfirmEvent extends GuestTopUpEvent{
+class GuestActivePrepaidNumberConfirmEvent extends GuestTopUpEvent {
   final String number;
   const GuestActivePrepaidNumberConfirmEvent(this.number);
   @override
   List<Object?> get props => [number];
 }
 
-class GuestTopUpAmountEvent extends GuestTopUpEvent{
+class GuestTopUpAmountEvent extends GuestTopUpEvent {
   final String amount;
   const GuestTopUpAmountEvent(this.amount);
   @override

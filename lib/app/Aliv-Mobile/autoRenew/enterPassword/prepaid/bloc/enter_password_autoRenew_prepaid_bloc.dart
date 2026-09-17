@@ -4,11 +4,16 @@ import '../repository/enter_password_autoRenew_prepaid_repository.dart';
 import 'enter_password_autoRenew_prepaid_event.dart';
 import 'enter_password_autoRenew_prepaid_state.dart';
 
-class EnterPasswordAutoRenewPrepaidBloc extends Bloc<
-    EnterPasswordAutoRenewPrepaidEvent, EnterPasswordAutoRenewPrepaidState> {
+class EnterPasswordAutoRenewPrepaidBloc
+    extends
+        Bloc<
+          EnterPasswordAutoRenewPrepaidEvent,
+          EnterPasswordAutoRenewPrepaidState
+        > {
   final EnterPasswordAutoRenewPrepaidRepository repository;
 
-  EnterPasswordAutoRenewPrepaidBloc(this.repository) : super(EnterPasswordAutoRenewPrepaidState.initial()) {
+  EnterPasswordAutoRenewPrepaidBloc(this.repository)
+    : super(EnterPasswordAutoRenewPrepaidState.initial()) {
     on<EnterPasswordAutoRenewPrepaidStarted>(_onStarted);
     on<EnterPasswordAutoRenewPrepaidBackPressed>(_onBack);
     on<EnterPasswordAutoRenewPrepaidPasswordChanged>(_onPasswordChanged);
@@ -19,9 +24,9 @@ class EnterPasswordAutoRenewPrepaidBloc extends Bloc<
   }
 
   Future<void> _onStarted(
-      EnterPasswordAutoRenewPrepaidStarted event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) async {
+    EnterPasswordAutoRenewPrepaidStarted event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) async {
     emit(
       state.copyWith(
         status: EnterPasswordAutoRenewPrepaidStatus.ready,
@@ -31,30 +36,30 @@ class EnterPasswordAutoRenewPrepaidBloc extends Bloc<
   }
 
   void _onBack(
-      EnterPasswordAutoRenewPrepaidBackPressed event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) {
+    EnterPasswordAutoRenewPrepaidBackPressed event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) {
     // navigation handle তুমি screen-level এ করতে পারো
   }
 
   void _onPasswordChanged(
-      EnterPasswordAutoRenewPrepaidPasswordChanged event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) {
+    EnterPasswordAutoRenewPrepaidPasswordChanged event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) {
     emit(state.copyWith(password: event.value, errorMessage: null));
   }
 
   void _onToggle(
-      EnterPasswordAutoRenewPrepaidToggleObscure event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) {
+    EnterPasswordAutoRenewPrepaidToggleObscure event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) {
     emit(state.copyWith(obscure: !state.obscure));
   }
 
   Future<void> _onContinue(
-      EnterPasswordAutoRenewPrepaidContinuePressed event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) async {
+    EnterPasswordAutoRenewPrepaidContinuePressed event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) async {
     if (!state.isValid) {
       emit(
         state.copyWith(
@@ -82,7 +87,9 @@ class EnterPasswordAutoRenewPrepaidBloc extends Bloc<
       final ok = await repository.verifyPassword(state.password.trim());
 
       if (ok) {
-        emit(state.copyWith(status: EnterPasswordAutoRenewPrepaidStatus.success));
+        emit(
+          state.copyWith(status: EnterPasswordAutoRenewPrepaidStatus.success),
+        );
         emit(state.copyWith(status: EnterPasswordAutoRenewPrepaidStatus.ready));
       } else {
         emit(
@@ -115,17 +122,17 @@ class EnterPasswordAutoRenewPrepaidBloc extends Bloc<
   }
 
   Future<void> _onFaceId(
-      EnterPasswordAutoRenewPrepaidFaceIdPressed event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) async {
+    EnterPasswordAutoRenewPrepaidFaceIdPressed event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) async {
     // TODO: integrate local_auth later
     await repository.authenticateWithFaceId();
   }
 
   Future<void> _onFingerprint(
-      EnterPasswordAutoRenewPrepaidFingerprintPressed event,
-      Emitter<EnterPasswordAutoRenewPrepaidState> emit,
-      ) async {
+    EnterPasswordAutoRenewPrepaidFingerprintPressed event,
+    Emitter<EnterPasswordAutoRenewPrepaidState> emit,
+  ) async {
     // TODO: integrate local_auth later
     await repository.authenticateWithFingerprint();
   }

@@ -102,11 +102,11 @@ class TopUpPrepaidNumberPostPaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        loadStatus,
-        number,
-        confirmNumber,
-        amountText,
-        applyStatus,
-        errorMessage,
-      ];
+    loadStatus,
+    number,
+    confirmNumber,
+    amountText,
+    applyStatus,
+    errorMessage,
+  ];
 }

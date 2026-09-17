@@ -26,11 +26,13 @@ class ChangePasswordPrepaidConfirmChanged extends ChangePasswordPrepaidEvent {
   List<Object?> get props => [value];
 }
 
-class ChangePasswordPrepaidToggleNewVisibility extends ChangePasswordPrepaidEvent {
+class ChangePasswordPrepaidToggleNewVisibility
+    extends ChangePasswordPrepaidEvent {
   const ChangePasswordPrepaidToggleNewVisibility();
 }
 
-class ChangePasswordPrepaidToggleConfirmVisibility extends ChangePasswordPrepaidEvent {
+class ChangePasswordPrepaidToggleConfirmVisibility
+    extends ChangePasswordPrepaidEvent {
   const ChangePasswordPrepaidToggleConfirmVisibility();
 }
 

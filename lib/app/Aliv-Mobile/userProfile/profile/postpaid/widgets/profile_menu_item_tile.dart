@@ -17,8 +17,12 @@ class ProfilePostpaidMenuItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleColor = enabled ? ProfilePostpaidTheme.textBlack : ProfilePostpaidTheme.textGrey;
-    final chevronColor = enabled ? ProfilePostpaidTheme.chevron : ProfilePostpaidTheme.textGrey;
+    final titleColor = enabled
+        ? ProfilePostpaidTheme.textBlack
+        : ProfilePostpaidTheme.textGrey;
+    final chevronColor = enabled
+        ? ProfilePostpaidTheme.chevron
+        : ProfilePostpaidTheme.textGrey;
 
     return Column(
       children: [

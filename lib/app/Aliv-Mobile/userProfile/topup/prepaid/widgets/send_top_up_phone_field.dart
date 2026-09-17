@@ -5,10 +5,7 @@ import '../theme/top_up_prepaid_theme.dart';
 class SendTopUpPhoneField extends StatefulWidget {
   final String hint;
 
-  const SendTopUpPhoneField({
-    super.key,
-    required this.hint,
-  });
+  const SendTopUpPhoneField({super.key, required this.hint});
 
   @override
   State<SendTopUpPhoneField> createState() => _SendTopUpPhoneFieldState();
@@ -73,7 +70,6 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
           height: 60,
           child: Row(
             children: [
-
               Expanded(
                 child: Container(
                   height: 60,
@@ -81,9 +77,7 @@ class _SendTopUpPhoneFieldState extends State<SendTopUpPhoneField> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: hasError
-                          ? Colors.red
-                          : TopUpPrepaidTheme.lightBg,
+                      color: hasError ? Colors.red : TopUpPrepaidTheme.lightBg,
                       width: 1.2,
                     ),
                   ),

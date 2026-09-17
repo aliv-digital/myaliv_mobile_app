@@ -9,8 +9,8 @@ class AddOrEditCardsPrepaidBloc
   final AddOrEditCardsPrepaidRepository repo;
 
   AddOrEditCardsPrepaidBloc({AddOrEditCardsPrepaidRepository? repo})
-      : repo = repo ?? AddOrEditCardsPrepaidRepository(),
-        super(AddOrEditCardsPrepaidState.initial()) {
+    : repo = repo ?? AddOrEditCardsPrepaidRepository(),
+      super(AddOrEditCardsPrepaidState.initial()) {
     on<AddOrEditCardsPrepaidStarted>(_onStarted);
     on<AddOrEditCardsPrepaidDeletePressed>(_onDeletePressed);
     on<AddOrEditCardsPrepaidAddNewCardPressed>(_onAddNewPressed);
@@ -20,38 +20,46 @@ class AddOrEditCardsPrepaidBloc
   }
 
   Future<void> _onStarted(
-      AddOrEditCardsPrepaidStarted event,
-      Emitter<AddOrEditCardsPrepaidState> emit,
-      ) async {
-    emit(state.copyWith(
-      loadStatus: AddOrEditCardsPrepaidLoadStatus.loading,
-      clearError: true,
-    ));
+    AddOrEditCardsPrepaidStarted event,
+    Emitter<AddOrEditCardsPrepaidState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        loadStatus: AddOrEditCardsPrepaidLoadStatus.loading,
+        clearError: true,
+      ),
+    );
 
     try {
       final cards = await repo.fetchSavedCards();
-      emit(state.copyWith(
-        loadStatus: AddOrEditCardsPrepaidLoadStatus.ready,
-        cards: cards,
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: AddOrEditCardsPrepaidLoadStatus.ready,
+          cards: cards,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        loadStatus: AddOrEditCardsPrepaidLoadStatus.failure,
-        errorMessage: 'Failed to load cards',
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: AddOrEditCardsPrepaidLoadStatus.failure,
+          errorMessage: 'Failed to load cards',
+        ),
+      );
     }
   }
 
   Future<void> _onDeletePressed(
-      AddOrEditCardsPrepaidDeletePressed event,
-      Emitter<AddOrEditCardsPrepaidState> emit,
-      ) async {
+    AddOrEditCardsPrepaidDeletePressed event,
+    Emitter<AddOrEditCardsPrepaidState> emit,
+  ) async {
     if (state.deletingIds.contains(event.cardId)) return;
 
-    emit(state.copyWith(
-      deletingIds: {...state.deletingIds, event.cardId},
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(
+        deletingIds: {...state.deletingIds, event.cardId},
+        clearError: true,
+      ),
+    );
 
     try {
       await repo.deleteCard(event.cardId);
@@ -62,28 +70,32 @@ class AddOrEditCardsPrepaidBloc
       emit(state.copyWith(cards: updated, deletingIds: afterDelete));
     } catch (_) {
       final afterDelete = {...state.deletingIds}..remove(event.cardId);
-      emit(state.copyWith(
-        deletingIds: afterDelete,
-        errorMessage: 'Failed to delete card',
-      ));
+      emit(
+        state.copyWith(
+          deletingIds: afterDelete,
+          errorMessage: 'Failed to delete card',
+        ),
+      );
     }
   }
 
   void _onAddNewPressed(
-      AddOrEditCardsPrepaidAddNewCardPressed event,
-      Emitter<AddOrEditCardsPrepaidState> emit,
-      ) {
+    AddOrEditCardsPrepaidAddNewCardPressed event,
+    Emitter<AddOrEditCardsPrepaidState> emit,
+  ) {
     /// UI Listener এই navTarget দেখে BottomSheet খুলবে
-    emit(state.copyWith(
-      navTarget: AddOrEditCardsPrepaidNavTarget.addCard,
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(
+        navTarget: AddOrEditCardsPrepaidNavTarget.addCard,
+        clearError: true,
+      ),
+    );
   }
 
   Future<void> _onSaveCardPressed(
-      AddOrEditCardsPrepaidSaveCardPressed event,
-      Emitter<AddOrEditCardsPrepaidState> emit,
-      ) async {
+    AddOrEditCardsPrepaidSaveCardPressed event,
+    Emitter<AddOrEditCardsPrepaidState> emit,
+  ) async {
     if (state.savingNewCard) return;
 
     emit(state.copyWith(savingNewCard: true, clearError: true));
@@ -94,27 +106,31 @@ class AddOrEditCardsPrepaidBloc
 
       emit(state.copyWith(cards: updated, savingNewCard: false));
     } catch (_) {
-      emit(state.copyWith(
-        savingNewCard: false,
-        errorMessage: 'Failed to save card',
-      ));
+      emit(
+        state.copyWith(
+          savingNewCard: false,
+          errorMessage: 'Failed to save card',
+        ),
+      );
     }
   }
 
   void _onHomePressed(
-      AddOrEditCardsPrepaidHomePressed event,
-      Emitter<AddOrEditCardsPrepaidState> emit,
-      ) {
-    emit(state.copyWith(
-      navTarget: AddOrEditCardsPrepaidNavTarget.home,
-      clearError: true,
-    ));
+    AddOrEditCardsPrepaidHomePressed event,
+    Emitter<AddOrEditCardsPrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        navTarget: AddOrEditCardsPrepaidNavTarget.home,
+        clearError: true,
+      ),
+    );
   }
 
   void _onNavConsumed(
-      AddOrEditCardsPrepaidNavigationConsumed event,
-      Emitter<AddOrEditCardsPrepaidState> emit,
-      ) {
+    AddOrEditCardsPrepaidNavigationConsumed event,
+    Emitter<AddOrEditCardsPrepaidState> emit,
+  ) {
     if (state.navTarget == AddOrEditCardsPrepaidNavTarget.none) return;
     emit(state.copyWith(navTarget: AddOrEditCardsPrepaidNavTarget.none));
   }

@@ -14,10 +14,8 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
   final AppUiConfigCubit appUiConfigCubit;
 
   // Constructor
-  WelcomeBloc({
-    required this.repository,
-    required this.appUiConfigCubit,
-  }) : super(WelcomeInitial()) {
+  WelcomeBloc({required this.repository, required this.appUiConfigCubit})
+    : super(WelcomeInitial()) {
     // Registering the event handler for WelcomeLoaded
     on<WelcomeLoaded>(_onWelcomeLoaded);
     //test
@@ -25,7 +23,9 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
 
   // Event handler method for WelcomeLoaded
   Future<void> _onWelcomeLoaded(
-      WelcomeLoaded event, Emitter<WelcomeState> emit) async {
+    WelcomeLoaded event,
+    Emitter<WelcomeState> emit,
+  ) async {
     try {
       // Simulating data loading from the repository
       final data = await repository.loadData();

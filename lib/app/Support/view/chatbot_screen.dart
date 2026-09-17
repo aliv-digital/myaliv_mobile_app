@@ -17,8 +17,8 @@ class ChatBotScreen extends StatelessWidget {
       create: (_) => SupportRepository(dio: Dio()),
       child: BlocProvider(
         create: (context) =>
-        SupportBloc(repository: context.read<SupportRepository>())
-          ..add(const SupportStarted()),
+            SupportBloc(repository: context.read<SupportRepository>())
+              ..add(const SupportStarted()),
         child: const _ChatBotView(),
       ),
     );

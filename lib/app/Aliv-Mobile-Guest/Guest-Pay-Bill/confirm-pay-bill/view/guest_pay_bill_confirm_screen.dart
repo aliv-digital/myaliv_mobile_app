@@ -18,10 +18,7 @@ import '../widgets/guest_pay_bill_confirm_header_card.dart';
 import '../widgets/guest_pay_bill_confirm_terms_row.dart';
 
 class GuestPayBillConfirmScreen extends StatelessWidget {
-  const GuestPayBillConfirmScreen({
-    super.key,
-    required this.args,
-  });
+  const GuestPayBillConfirmScreen({super.key, required this.args});
 
   final GuestPayBillConfirmArgs args;
 
@@ -150,43 +147,51 @@ class _GuestPayBillConfirmView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: GuestPayBillConfirmTheme.pageBg,
         // Sticky bottom pay bar
-        bottomNavigationBar: BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
-          buildWhen: (previousState, currentState) {
-            final hasTotalChanged = previousState.total != currentState.total;
-            final hasPayStatusChanged = previousState.payStatus != currentState.payStatus;
-            final hasTermsCheckedChanged = previousState.isTermsChecked != currentState.isTermsChecked;
+        bottomNavigationBar:
+            BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
+              buildWhen: (previousState, currentState) {
+                final hasTotalChanged =
+                    previousState.total != currentState.total;
+                final hasPayStatusChanged =
+                    previousState.payStatus != currentState.payStatus;
+                final hasTermsCheckedChanged =
+                    previousState.isTermsChecked != currentState.isTermsChecked;
 
-            return hasTotalChanged || hasPayStatusChanged || hasTermsCheckedChanged;
-          },
-          builder: (context, state) {
-            // Shared default bottom pay bar component.
-            // Pay Now stays disabled until the T&C checkbox is checked so the
-            // user cannot submit before agreeing to the terms.
-            return DefaultBottomPayBar(
-              amountText: _formatAmount(state.total),
-              isLoading:
-                  state.payStatus == GuestPayBillConfirmPayStatus.loading,
-              isButtonEnabled: state.isTermsChecked,
-              buttonText: GuestPayBillConfirmTheme.payNowLabel,
-              isVatExclusive: true,
-              backgroundColor: Colors.white,
-              buttonColor: GuestPayBillConfirmTheme.primary,
-              onPayNow: () {
-                _onPayNowPressed(context);
+                return hasTotalChanged ||
+                    hasPayStatusChanged ||
+                    hasTermsCheckedChanged;
               },
-            );
-          },
-        ),
+              builder: (context, state) {
+                // Shared default bottom pay bar component.
+                // Pay Now stays disabled until the T&C checkbox is checked so the
+                // user cannot submit before agreeing to the terms.
+                return DefaultBottomPayBar(
+                  amountText: _formatAmount(state.total),
+                  isLoading:
+                      state.payStatus == GuestPayBillConfirmPayStatus.loading,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonText: GuestPayBillConfirmTheme.payNowLabel,
+                  isVatExclusive: true,
+                  backgroundColor: Colors.white,
+                  buttonColor: GuestPayBillConfirmTheme.primary,
+                  onPayNow: () {
+                    _onPayNowPressed(context);
+                  },
+                );
+              },
+            ),
         // Main page body
         body: SafeArea(
           top: false,
           // Rebuild body when core confirmation data changes
           child: BlocBuilder<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
             buildWhen: (previousState, currentState) {
-              final hasLoadStatusChanged = previousState.loadStatus != currentState.loadStatus;
+              final hasLoadStatusChanged =
+                  previousState.loadStatus != currentState.loadStatus;
               final hasVatChanged = previousState.vat != currentState.vat;
               final hasArgsChanged = previousState.args != currentState.args;
-              final hasTermsCheckedChanged = previousState.isTermsChecked != currentState.isTermsChecked;
+              final hasTermsCheckedChanged =
+                  previousState.isTermsChecked != currentState.isTermsChecked;
 
               return hasLoadStatusChanged ||
                   hasVatChanged ||
@@ -209,8 +214,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                       onBack: () {
                         context.pop();
                       },
-                        onHomeTap: () => context.go(AppRoutes.logIn)
-
+                      onHomeTap: () => context.go(AppRoutes.logIn),
                     ),
                   ),
                   // Padded body container below app bar

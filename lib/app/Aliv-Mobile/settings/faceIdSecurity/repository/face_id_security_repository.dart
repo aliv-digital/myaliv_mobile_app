@@ -6,8 +6,5 @@ class FaceIdSecurityContent {
   final String header;
   final String body;
 
-  const FaceIdSecurityContent({
-    required this.header,
-    required this.body,
-  });
+  const FaceIdSecurityContent({required this.header, required this.body});
 }

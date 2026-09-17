@@ -20,8 +20,9 @@ class RevPaymentMethodTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor =
-    selected ? RevPaymentMethodPrepaidTheme.selectedBorder : RevPaymentMethodPrepaidTheme.border;
+    final borderColor = selected
+        ? RevPaymentMethodPrepaidTheme.selectedBorder
+        : RevPaymentMethodPrepaidTheme.border;
 
     return InkWell(
       onTap: onTap,
@@ -45,7 +46,9 @@ class RevPaymentMethodTile extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
             ),
-            const SizedBox(width: RevPaymentMethodPrepaidTheme.paymentTileLogoToTextGap),
+            const SizedBox(
+              width: RevPaymentMethodPrepaidTheme.paymentTileLogoToTextGap,
+            ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,15 +69,17 @@ class RevPaymentMethodTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: RevPaymentMethodPrepaidTheme.paymentTileTextToIndicatorGap),
+            const SizedBox(
+              width: RevPaymentMethodPrepaidTheme.paymentTileTextToIndicatorGap,
+            ),
             selected
                 ? Container(
                     width: RevPaymentMethodPrepaidTheme.selectedIndicatorSize,
                     height: RevPaymentMethodPrepaidTheme.selectedIndicatorSize,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color:
-                          RevPaymentMethodPrepaidTheme.selectedIndicatorFillColor,
+                      color: RevPaymentMethodPrepaidTheme
+                          .selectedIndicatorFillColor,
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: RevPaymentMethodPrepaidTheme
@@ -85,8 +90,8 @@ class RevPaymentMethodTile extends StatelessWidget {
                     child: const Icon(
                       Icons.check_rounded,
                       color: Colors.white,
-                      size:
-                          RevPaymentMethodPrepaidTheme.selectedIndicatorCheckSize,
+                      size: RevPaymentMethodPrepaidTheme
+                          .selectedIndicatorCheckSize,
                     ),
                   )
                 : Container(

@@ -43,9 +43,15 @@ class MpBottomBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(amountText, style: MakePaymentPostPaidTheme.bottomAmount),
+                  Text(
+                    amountText,
+                    style: MakePaymentPostPaidTheme.bottomAmount,
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: MakePaymentPostPaidTheme.bottomSubtitle),
+                  Text(
+                    subtitle,
+                    style: MakePaymentPostPaidTheme.bottomSubtitle,
+                  ),
                 ],
               ),
             ),
@@ -63,7 +69,10 @@ class MpBottomBar extends StatelessWidget {
                   ),
                   child: Opacity(
                     opacity: enabled ? 1 : 0.7,
-                    child: Text('pay now', style: MakePaymentPostPaidTheme.payNow),
+                    child: Text(
+                      'pay now',
+                      style: MakePaymentPostPaidTheme.payNow,
+                    ),
                   ),
                 ),
               ),

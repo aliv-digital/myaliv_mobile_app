@@ -11,9 +11,9 @@ enum LineStatus {
   final String code;
 
   static LineStatus fromCode(String? raw) => LineStatus.values.firstWhere(
-        (s) => s.code == (raw ?? '').trim().toUpperCase(),
-        orElse: () => LineStatus.unknown,
-      );
+    (s) => s.code == (raw ?? '').trim().toUpperCase(),
+    orElse: () => LineStatus.unknown,
+  );
 
   bool get isActive => this == LineStatus.active;
 
@@ -25,12 +25,12 @@ enum LineStatus {
       this == suspended || this == callBarred || this == pendingDisconnect;
 
   String get displayLabel => switch (this) {
-        LineStatus.active => 'active',
-        LineStatus.suspended => 'suspended',
-        LineStatus.disconnected => 'disconnected',
-        LineStatus.pendingDisconnect => 'pending disconnect',
-        LineStatus.callBarred => 'call barred',
-        LineStatus.closed => 'closed',
-        LineStatus.unknown => 'unknown',
-      };
+    LineStatus.active => 'active',
+    LineStatus.suspended => 'suspended',
+    LineStatus.disconnected => 'disconnected',
+    LineStatus.pendingDisconnect => 'pending disconnect',
+    LineStatus.callBarred => 'call barred',
+    LineStatus.closed => 'closed',
+    LineStatus.unknown => 'unknown',
+  };
 }

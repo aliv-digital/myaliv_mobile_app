@@ -7,8 +7,8 @@ import 'call_logs_state.dart';
 /// Cubit for managing call logs/usage data
 class CallLogsCubit extends Cubit<CallLogsState> {
   CallLogsCubit({required CallLogsRepository repository})
-      : _repository = repository,
-        super(const CallLogsState());
+    : _repository = repository,
+      super(const CallLogsState());
 
   final CallLogsRepository _repository;
 
@@ -36,10 +36,12 @@ class CallLogsCubit extends Cubit<CallLogsState> {
       if (kDebugMode) {
         debugPrint('CallLogsCubit: Error - $errorMessage');
       }
-      emit(state.copyWith(
-        status: CallLogsStatus.failure,
-        errorMessage: errorMessage,
-      ));
+      emit(
+        state.copyWith(
+          status: CallLogsStatus.failure,
+          errorMessage: errorMessage,
+        ),
+      );
     }
   }
 

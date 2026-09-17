@@ -56,12 +56,11 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
   @override
   void initState() {
     super.initState();
-    if(kDebugMode){
+    if (kDebugMode) {
       debugPrint("Screen : payment");
       debugPrint("class name : TopUpPaymentScreen");
       debugPrint("file name : top_up_payment_screen.dart");
       debugPrint("location : userProfile/topUpPayment/prepaid/view");
-
     }
     // Ensure card list is loaded (uses 5-min cache; safe to call repeatedly).
     instance<SavedCardsCubit>().fetchSavedCards();
@@ -96,7 +95,8 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
   /// number. For own-number top-up, show the account holder's primary number.
   String? _receiptPhone(String? routeValue) {
     final incoming = routeValue?.trim() ?? '';
-    if (incoming.isNotEmpty && incoming.toLowerCase() != 'null') return incoming;
+    if (incoming.isNotEmpty && incoming.toLowerCase() != 'null')
+      return incoming;
 
     final account = instance<AccountInfoCubit>().state.accountInfo;
     final primary = account?.primaryPhoneNumber.trim() ?? '';
@@ -106,7 +106,6 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<TopUpPaymentPrepaidBloc, TopUpPaymentPrepaidState>(
       listenWhen: (p, c) =>
           p.errorMessage != c.errorMessage ||
@@ -261,18 +260,14 @@ class _PaymentMethodSection extends StatelessWidget {
             title: 'pay with card',
             selected: payWithCardSelected,
             onTap: () => context.read<TopUpPaymentPrepaidBloc>().add(
-                  const PayWithCardPressed(),
-                ),
+              const PayWithCardPressed(),
+            ),
             tileRadius: TopUpPaymentRadioMetrics.tileRadius,
             radioSize: TopUpPaymentRadioMetrics.radioSize,
             leadingWidth: TopUpPaymentRadioMetrics.logoBoxWidth,
             leadingHeight: TopUpPaymentRadioMetrics.logoBoxHeight,
             unselectedRadioFill: TopUpPaymentRadioMetrics.unselectedRadioFill,
-            leading: const Icon(
-              Icons.add,
-              size: 18,
-              color: Color(0xFF5045A7),
-            ),
+            leading: const Icon(Icons.add, size: 18, color: Color(0xFF5045A7)),
           ),
         ],
       ),

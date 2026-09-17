@@ -11,20 +11,16 @@ class WhyAlivBloc extends Bloc<WhyAlivEvent, WhyAlivState> {
 
   final WhyAlivRepository repository;
 
-  Future<void> _onStarted(WhyAlivStarted event, Emitter<WhyAlivState> emit) async {
-
+  Future<void> _onStarted(
+    WhyAlivStarted event,
+    Emitter<WhyAlivState> emit,
+  ) async {
     emit(state.copyWith(status: WhyAlivStatus.loading, errorMessage: null));
     try {
       await repository.initialize();
       emit(state.copyWith(status: WhyAlivStatus.ready));
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: WhyAlivStatus.failure,
-          errorMessage: null,
-        ),
-      );
-
+      emit(state.copyWith(status: WhyAlivStatus.failure, errorMessage: null));
     }
   }
 }

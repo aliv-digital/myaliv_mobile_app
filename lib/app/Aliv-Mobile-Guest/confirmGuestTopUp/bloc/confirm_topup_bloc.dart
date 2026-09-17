@@ -9,7 +9,7 @@ class GuestConfirmTopUpBloc
   final GuestConfirmTopUpRepository repository;
 
   GuestConfirmTopUpBloc({required this.repository})
-      : super(GuestConfirmTopUpState.initial()) {
+    : super(GuestConfirmTopUpState.initial()) {
     on<GuestConfirmTopUpStarted>(_onStarted);
     on<GuestConfirmTopUpPayNowPressed>(_onPayNowPressed);
     on<GuestConfirmTopUpTermsPressed>(_onTermsPressed);
@@ -57,12 +57,18 @@ class GuestConfirmTopUpBloc
   ) async {
     if (state.status == GuestConfirmTopUpStatus.loading) return;
 
-    emit(state.copyWith(
-        status: GuestConfirmTopUpStatus.loading, errorMessage: null));
+    emit(
+      state.copyWith(
+        status: GuestConfirmTopUpStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       await repository.payNow(
-          phoneNumber: state.phoneNumber, amount: state.total);
+        phoneNumber: state.phoneNumber,
+        amount: state.total,
+      );
       emit(state.copyWith(status: GuestConfirmTopUpStatus.success));
     } catch (e) {
       emit(

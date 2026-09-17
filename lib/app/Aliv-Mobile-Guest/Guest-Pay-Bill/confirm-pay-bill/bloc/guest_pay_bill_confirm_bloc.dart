@@ -12,8 +12,8 @@ class GuestPayBillConfirmBloc
   GuestPayBillConfirmBloc({
     required GuestPayBillConfirmArgs args,
     GuestPayBillConfirmRepository? repo,
-  })  : repo = repo ?? GuestPayBillConfirmRepository(),
-        super(GuestPayBillConfirmState.initial(args: args)) {
+  }) : repo = repo ?? GuestPayBillConfirmRepository(),
+       super(GuestPayBillConfirmState.initial(args: args)) {
     on<GuestPayBillConfirmStarted>(_onStarted);
     on<GuestPayBillConfirmPayNowPressed>(_onPayNow);
     on<GuestPayBillConfirmTermsCheckboxToggled>(_onTermsCheckboxToggled);
@@ -23,10 +23,12 @@ class GuestPayBillConfirmBloc
     GuestPayBillConfirmStarted event,
     Emitter<GuestPayBillConfirmState> emit,
   ) async {
-    emit(state.copyWith(
-      loadStatus: GuestPayBillConfirmLoadStatus.loading,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        loadStatus: GuestPayBillConfirmLoadStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final vat = await repo.fetchVat(
@@ -34,15 +36,19 @@ class GuestPayBillConfirmBloc
         amount: state.args.amount,
       );
 
-      emit(state.copyWith(
-        loadStatus: GuestPayBillConfirmLoadStatus.ready,
-        vat: vat,
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: GuestPayBillConfirmLoadStatus.ready,
+          vat: vat,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        loadStatus: GuestPayBillConfirmLoadStatus.failure,
-        errorMessage: 'Failed to load payment info',
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: GuestPayBillConfirmLoadStatus.failure,
+          errorMessage: 'Failed to load payment info',
+        ),
+      );
     }
   }
 
@@ -52,15 +58,18 @@ class GuestPayBillConfirmBloc
   ) async {
     if (state.payStatus == GuestPayBillConfirmPayStatus.loading) return;
     if (!state.isTermsChecked) {
-      emit(state.copyWith(
-          errorMessage: 'Please check Terms & Conditions first.'));
+      emit(
+        state.copyWith(errorMessage: 'Please check Terms & Conditions first.'),
+      );
       return;
     }
 
-    emit(state.copyWith(
-      payStatus: GuestPayBillConfirmPayStatus.loading,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        payStatus: GuestPayBillConfirmPayStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       await repo.payNow(
@@ -75,10 +84,12 @@ class GuestPayBillConfirmBloc
       );
       emit(state.copyWith(payStatus: GuestPayBillConfirmPayStatus.success));
     } catch (_) {
-      emit(state.copyWith(
-        payStatus: GuestPayBillConfirmPayStatus.failure,
-        errorMessage: 'Payment failed. Try again.',
-      ));
+      emit(
+        state.copyWith(
+          payStatus: GuestPayBillConfirmPayStatus.failure,
+          errorMessage: 'Payment failed. Try again.',
+        ),
+      );
     }
   }
 

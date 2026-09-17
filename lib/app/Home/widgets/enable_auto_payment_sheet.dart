@@ -36,7 +36,6 @@ class EnableAutoPaymentSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           /// Back Arrow
           Align(
             alignment: Alignment.centerLeft,
@@ -60,7 +59,7 @@ class EnableAutoPaymentSheet extends StatelessWidget {
 
           /// Message
           Padding(
-            padding: const EdgeInsets.only(left: 16.0,right: 16),
+            padding: const EdgeInsets.only(left: 16.0, right: 16),
             child: Text(
               'you are about to enabled your credit card for automatic payment of your postpaid plans.',
               textAlign: TextAlign.center,
@@ -77,7 +76,7 @@ class EnableAutoPaymentSheet extends StatelessWidget {
 
           /// OK Button
           Padding(
-            padding: const EdgeInsets.only(left: 16.0,right: 16),
+            padding: const EdgeInsets.only(left: 16.0, right: 16),
             child: SizedBox(
               width: double.infinity,
               height: 50,
@@ -106,7 +105,6 @@ class EnableAutoPaymentSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
         ],
       ),
     );

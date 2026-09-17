@@ -6,11 +6,7 @@ class HelpAppBar extends StatelessWidget {
   final String title;
   final VoidCallback onHomeTap;
 
-  const HelpAppBar({
-    super.key,
-    required this.title,
-    required this.onHomeTap,
-  });
+  const HelpAppBar({super.key, required this.title, required this.onHomeTap});
 
   @override
   Widget build(BuildContext context) {

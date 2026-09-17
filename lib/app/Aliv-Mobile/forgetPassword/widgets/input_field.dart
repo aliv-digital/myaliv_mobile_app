@@ -28,7 +28,9 @@ class CustomInputField extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(ForgetPasswordSizes.fieldRadius),
-          border: Border.fromBorderSide(ForgetPasswordDecorations.genericInputBorder),
+          border: Border.fromBorderSide(
+            ForgetPasswordDecorations.genericInputBorder,
+          ),
         ),
         child: TextField(
           controller: controller,

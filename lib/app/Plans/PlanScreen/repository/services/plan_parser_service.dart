@@ -9,8 +9,8 @@ class PlanParserService {
   PlanParserService({
     PlanCategorizerService? categorizer,
     PlanModelFactory? modelFactory,
-  })  : _categorizer = categorizer ?? PlanCategorizerService(),
-        _modelFactory = modelFactory ?? PlanModelFactory();
+  }) : _categorizer = categorizer ?? PlanCategorizerService(),
+       _modelFactory = modelFactory ?? PlanModelFactory();
 
   final PlanCategorizerService _categorizer;
   final PlanModelFactory _modelFactory;
@@ -28,12 +28,11 @@ class PlanParserService {
 
       return decoded
           .whereType<Map>()
-          .map((map) => map.map(
-                (key, value) => MapEntry<String, dynamic>(
-                  key.toString(),
-                  value,
-                ),
-              ))
+          .map(
+            (map) => map.map(
+              (key, value) => MapEntry<String, dynamic>(key.toString(), value),
+            ),
+          )
           .toList(growable: false);
     } catch (e) {
       throw FormatException('Failed to parse plans JSON: $e');
@@ -107,10 +106,7 @@ class PlanParserService {
       }
 
       return decoded.map(
-        (key, value) => MapEntry<String, dynamic>(
-          key.toString(),
-          value,
-        ),
+        (key, value) => MapEntry<String, dynamic>(key.toString(), value),
       );
     } catch (e) {
       throw FormatException('Failed to parse bundles JSON: $e');
@@ -127,8 +123,10 @@ class PlanParserService {
 
   /// Validate categorization result
   bool validateResult(PlanCategorizationResult result) {
-    final totalCategorized = result.categorizedPlans.values
-        .fold<int>(0, (sum, list) => sum + list.length);
+    final totalCategorized = result.categorizedPlans.values.fold<int>(
+      0,
+      (sum, list) => sum + list.length,
+    );
 
     return totalCategorized == result.totalProcessed;
   }

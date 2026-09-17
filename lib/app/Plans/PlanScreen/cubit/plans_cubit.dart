@@ -39,8 +39,8 @@ const List<String> _excludedPlanNames = [
 /// - Logout: reset() wipes the disk cache so the next user starts clean.
 class PlansCubit extends HydratedCubit<PlansState> {
   PlansCubit({PlansRepository? repository})
-      : _repository = repository ?? PlansRepository(),
-        super(const PlansState());
+    : _repository = repository ?? PlansRepository(),
+      super(const PlansState());
 
   // HydratedBloc storage key = "$runtimeType$id" → "PlansCubit_v1".
   // Explicit suffix prevents collision if the class is ever renamed.
@@ -86,11 +86,13 @@ class PlansCubit extends HydratedCubit<PlansState> {
   Future<void> changeTab(HomePlanTab tab) async {
     if (tab == state.selectedTab) return;
 
-    emit(state.copyWith(
-      selectedTab: tab,
-      expandedPlanIds: const {},
-      selectedAddOnIds: const <String>{},
-    ));
+    emit(
+      state.copyWith(
+        selectedTab: tab,
+        expandedPlanIds: const {},
+        selectedAddOnIds: const <String>{},
+      ),
+    );
   }
 
   void clearSelectedAddOns() {
@@ -114,27 +116,31 @@ class PlansCubit extends HydratedCubit<PlansState> {
     emit(state.copyWith(isRefreshingBundles: true));
 
     try {
-      final addOnsResult = await _repository.fetchAddOnsData(forceRefresh: true);
+      final addOnsResult = await _repository.fetchAddOnsData(
+        forceRefresh: true,
+      );
 
       if (isClosed) return;
 
-      emit(state.copyWith(
-        addOns: addOnsResult.addOns,
-        addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
-        secondaryPlans: addOnsResult.secondaryPlans,
-        standAlonePlans: addOnsResult.standAlonePlans,
-        addOnsApiLastSyncedAt: DateTime.now(),
-        errorMessage: null,
-        isRefreshingBundles: false,
-        clearOptimisticActivePlan: _shouldClearOptimisticPlan(
-          state.optimisticActivePlan,
-          addOnsResult.primaryPlans,
+      emit(
+        state.copyWith(
+          addOns: addOnsResult.addOns,
+          addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
+          secondaryPlans: addOnsResult.secondaryPlans,
+          standAlonePlans: addOnsResult.standAlonePlans,
+          addOnsApiLastSyncedAt: DateTime.now(),
+          errorMessage: null,
+          isRefreshingBundles: false,
+          clearOptimisticActivePlan: _shouldClearOptimisticPlan(
+            state.optimisticActivePlan,
+            addOnsResult.primaryPlans,
+          ),
+          clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+            state.optimisticSecondaryPlans,
+            addOnsResult.secondaryPlans,
+          ),
         ),
-        clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
-          state.optimisticSecondaryPlans,
-          addOnsResult.secondaryPlans,
-        ),
-      ));
+      );
     } catch (_) {
       // Silently ignore — the optimistic plan stays visible and the next
       // background refresh will retry.
@@ -167,12 +173,14 @@ class PlansCubit extends HydratedCubit<PlansState> {
     final frequency = PlanFrequency.parse(plan.frequency);
     final endUtc = _estimateEndDate(startUtc, frequency);
 
-    emit(state.copyWith(
-      optimisticActivePlan: plan.copyWith(
-        startDate: _toApiDateString(startUtc),
-        endDate: endUtc != null ? _toApiDateString(endUtc) : '',
+    emit(
+      state.copyWith(
+        optimisticActivePlan: plan.copyWith(
+          startDate: _toApiDateString(startUtc),
+          endDate: endUtc != null ? _toApiDateString(endUtc) : '',
+        ),
       ),
-    ));
+    );
   }
 
   /// Combined optimistic injection for a primary-plan purchase.
@@ -203,10 +211,12 @@ class PlansCubit extends HydratedCubit<PlansState> {
         .map((p) => p.copyWith(startDate: startTag))
         .toList(growable: false);
 
-    emit(state.copyWith(
-      optimisticActivePlan: injectedPrimary,
-      optimisticSecondaryPlans: injectedSecondary,
-    ));
+    emit(
+      state.copyWith(
+        optimisticActivePlan: injectedPrimary,
+        optimisticSecondaryPlans: injectedSecondary,
+      ),
+    );
   }
 
   /// Optimistically marks [plans] as active secondary plans immediately after
@@ -283,7 +293,9 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
     if (optimistic.every(
       (p) => newSecondaryPlans.any((n) => n.planId == p.planId),
-    )) { return true; }
+    )) {
+      return true;
+    }
 
     if (newSecondaryPlans.isEmpty) return false;
 
@@ -458,10 +470,12 @@ class PlansCubit extends HydratedCubit<PlansState> {
     final hadDataBefore = state.hasData;
 
     // Keep cached data visible during a background refresh.
-    emit(state.copyWith(
-      status: hadDataBefore ? PlansStatus.refreshing : PlansStatus.loading,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        status: hadDataBefore ? PlansStatus.refreshing : PlansStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     if (kDebugMode) {
       debugPrint(
@@ -481,24 +495,29 @@ class PlansCubit extends HydratedCubit<PlansState> {
       // Emit bundles data as soon as it arrives so the active plan card is
       // visible immediately, without waiting for the slower available-plans
       // response. The status stays loading/refreshing until both complete.
-      bundlesFuture.then((addOnsResult) {
-        if (isClosed) return;
-        emit(state.copyWith(
-          addOns: addOnsResult.addOns,
-          addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
-          secondaryPlans: addOnsResult.secondaryPlans,
-          standAlonePlans: addOnsResult.standAlonePlans,
-          addOnsApiLastSyncedAt: DateTime.now(),
-          clearOptimisticActivePlan: _shouldClearOptimisticPlan(
-            state.optimisticActivePlan,
-            addOnsResult.primaryPlans,
-          ),
-          clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
-            state.optimisticSecondaryPlans,
-            addOnsResult.secondaryPlans,
-          ),
-        ));
-      }).catchError((_) {});
+      bundlesFuture
+          .then((addOnsResult) {
+            if (isClosed) return;
+            emit(
+              state.copyWith(
+                addOns: addOnsResult.addOns,
+                addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
+                secondaryPlans: addOnsResult.secondaryPlans,
+                standAlonePlans: addOnsResult.standAlonePlans,
+                addOnsApiLastSyncedAt: DateTime.now(),
+                clearOptimisticActivePlan: _shouldClearOptimisticPlan(
+                  state.optimisticActivePlan,
+                  addOnsResult.primaryPlans,
+                ),
+                clearOptimisticSecondaryPlans:
+                    _shouldClearOptimisticSecondaryPlans(
+                      state.optimisticSecondaryPlans,
+                      addOnsResult.secondaryPlans,
+                    ),
+              ),
+            );
+          })
+          .catchError((_) {});
 
       final results = await Future.wait([plansFuture, bundlesFuture]);
 
@@ -508,32 +527,36 @@ class PlansCubit extends HydratedCubit<PlansState> {
       final addOnsResult = results[1] as AddOnsResult;
       final now = DateTime.now();
 
-      emit(state.copyWith(
-        status: PlansStatus.success,
-        dailyApiPlans: _filterBase(plansResult.dailyPlans),
-        weeklyApiPlans: _filterBase(plansResult.weeklyPlans),
-        monthlyApiPlans: _filterBase(plansResult.monthlyPlans),
-        roamingApiPlans: _filterBase(plansResult.roamingPlans),
-        roamEasyApiPlans: _filterBase(plansResult.roamEasyPlans),
-        mifiApiPlans: _filterBase(plansResult.mifiPlans),
-        libertyGlobalApiPlans: _filterBase(plansResult.libertyGlobalPlans),
-        postpaidRoamingApiPlans: _filterPostpaid(plansResult.postpaidRoamingPlans),
-        addOns: addOnsResult.addOns,
-        addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
-        secondaryPlans: addOnsResult.secondaryPlans,
-        standAlonePlans: addOnsResult.standAlonePlans,
-        lastFetchedAt: now,
-        addOnsApiLastSyncedAt: now,
-        errorMessage: null,
-        clearOptimisticActivePlan: _shouldClearOptimisticPlan(
-          state.optimisticActivePlan,
-          addOnsResult.primaryPlans,
+      emit(
+        state.copyWith(
+          status: PlansStatus.success,
+          dailyApiPlans: _filterBase(plansResult.dailyPlans),
+          weeklyApiPlans: _filterBase(plansResult.weeklyPlans),
+          monthlyApiPlans: _filterBase(plansResult.monthlyPlans),
+          roamingApiPlans: _filterBase(plansResult.roamingPlans),
+          roamEasyApiPlans: _filterBase(plansResult.roamEasyPlans),
+          mifiApiPlans: _filterBase(plansResult.mifiPlans),
+          libertyGlobalApiPlans: _filterBase(plansResult.libertyGlobalPlans),
+          postpaidRoamingApiPlans: _filterPostpaid(
+            plansResult.postpaidRoamingPlans,
+          ),
+          addOns: addOnsResult.addOns,
+          addOnsApiPrimaryPlans: addOnsResult.primaryPlans,
+          secondaryPlans: addOnsResult.secondaryPlans,
+          standAlonePlans: addOnsResult.standAlonePlans,
+          lastFetchedAt: now,
+          addOnsApiLastSyncedAt: now,
+          errorMessage: null,
+          clearOptimisticActivePlan: _shouldClearOptimisticPlan(
+            state.optimisticActivePlan,
+            addOnsResult.primaryPlans,
+          ),
+          clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
+            state.optimisticSecondaryPlans,
+            addOnsResult.secondaryPlans,
+          ),
         ),
-        clearOptimisticSecondaryPlans: _shouldClearOptimisticSecondaryPlans(
-          state.optimisticSecondaryPlans,
-          addOnsResult.secondaryPlans,
-        ),
-      ));
+      );
     } catch (e) {
       final errorMsg = _friendlyErrorMessage(e);
 
@@ -544,11 +567,13 @@ class PlansCubit extends HydratedCubit<PlansState> {
       if (hadDataBefore) {
         // Keep cached data visible; show toast only.
         final nextId = state.toastSequence + 1;
-        emit(state.copyWith(
-          status: PlansStatus.success,
-          pendingToast: PlansToastMessage(id: nextId, message: errorMsg),
-          toastSequence: nextId,
-        ));
+        emit(
+          state.copyWith(
+            status: PlansStatus.success,
+            pendingToast: PlansToastMessage(id: nextId, message: errorMsg),
+            toastSequence: nextId,
+          ),
+        );
       } else {
         _emitFailureWithToast(errorMsg);
       }
@@ -563,12 +588,14 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
   void _emitFailureWithToast(String errorMessage) {
     final nextId = state.toastSequence + 1;
-    emit(state.copyWith(
-      status: PlansStatus.failure,
-      errorMessage: errorMessage,
-      pendingToast: PlansToastMessage(id: nextId, message: errorMessage),
-      toastSequence: nextId,
-    ));
+    emit(
+      state.copyWith(
+        status: PlansStatus.failure,
+        errorMessage: errorMessage,
+        pendingToast: PlansToastMessage(id: nextId, message: errorMessage),
+        toastSequence: nextId,
+      ),
+    );
   }
 
   HomePlanTab _defaultTabForUserType(UserType userType) {
@@ -593,8 +620,7 @@ class PlansCubit extends HydratedCubit<PlansState> {
 
   List<HomePlansPostPaidPlanModel> _filterPostpaid(
     List<HomePlansPostPaidPlanModel> plans,
-  ) =>
-      plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
+  ) => plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
 
   String _friendlyErrorMessage(dynamic error) {
     final msg = error.toString().toLowerCase();

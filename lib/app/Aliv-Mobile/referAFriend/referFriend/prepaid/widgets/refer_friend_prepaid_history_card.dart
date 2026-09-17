@@ -18,23 +18,21 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-        decoration: ShapeDecoration(
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              width: 1,
-              color: const Color(0xFFDDDAF0),
-            ),
-            borderRadius: BorderRadius.circular(8),
+      decoration: ShapeDecoration(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(width: 1, color: const Color(0xFFDDDAF0)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        shadows: [
+          BoxShadow(
+            color: Color(0x0C000000),
+            blurRadius: 16,
+            offset: Offset(8, 10),
+            spreadRadius: 0,
           ),
-          shadows: [
-            BoxShadow(
-              color: Color(0x0C000000),
-              blurRadius: 16,
-              offset: Offset(8, 10),
-              spreadRadius: 0,
-            )
-          ],),
+        ],
+      ),
       // decoration: BoxDecoration(
       //   color: Colors.white,
       //   borderRadius: BorderRadius.circular(8),
@@ -68,12 +66,15 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                   onCopy();
                 },
                 borderRadius: BorderRadius.circular(100),
-                child: SvgPicture.asset('assets/icons/copy.svg')
+                child: SvgPicture.asset('assets/icons/copy.svg'),
               ),
               const Spacer(),
               if ((item.expiryLabel ?? '').isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: ShapeDecoration(
                     color: Colors.white /* 1 */,
                     shape: RoundedRectangleBorder(
@@ -87,7 +88,9 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
                   child: Text(
                     item.expiryLabel!,
                     style: TextStyle(
-                      color: const Color(0xFFD92C20) /* Colors-Text-text-error-primary-(600) */,
+                      color: const Color(
+                        0xFFD92C20,
+                      ) /* Colors-Text-text-error-primary-(600) */,
                       fontSize: 12,
                       fontFamily: 'CircularPro',
                       fontWeight: FontWeight.w500,
@@ -113,12 +116,20 @@ class ReferFriendPrepaidHistoryCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(child: _Meta(label: 'Sent Date', value: item.sentDate)),
+              Expanded(
+                child: _Meta(label: 'Sent Date', value: item.sentDate),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Container(width: 1, height: 34, color: ReferFriendPrepaidTheme.border),
+                child: Container(
+                  width: 1,
+                  height: 34,
+                  color: ReferFriendPrepaidTheme.border,
+                ),
               ),
-              Expanded(child: _Meta(label: 'Accepted Date', value: item.acceptedDate)),
+              Expanded(
+                child: _Meta(label: 'Accepted Date', value: item.acceptedDate),
+              ),
             ],
           ),
         ],

@@ -8,7 +8,7 @@ class HomePlanPurchaseReceiptBloc
   final HomePlanPurchaseReceiptRepository repository;
 
   HomePlanPurchaseReceiptBloc({required this.repository})
-      : super(HomePlanPurchaseReceiptState.initial()) {
+    : super(HomePlanPurchaseReceiptState.initial()) {
     on<HomePlanPurchaseReceiptStarted>(_onStarted);
     on<HomePlanPurchaseReceiptBackToHomePressed>(_onBackToHomePressed);
   }

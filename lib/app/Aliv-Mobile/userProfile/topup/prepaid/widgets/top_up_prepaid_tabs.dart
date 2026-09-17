@@ -4,10 +4,7 @@ import '../theme/top_up_prepaid_theme.dart';
 class TopUpPrepaidTabs extends StatelessWidget {
   final TabController controller;
 
-  const TopUpPrepaidTabs({
-    super.key,
-    required this.controller,
-  });
+  const TopUpPrepaidTabs({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +35,11 @@ class TopUpPrepaidTabs extends StatelessWidget {
             ),
           ),
         ),
-        const Divider(height: 1, thickness: 1, color: TopUpPrepaidTheme.divider),
+        const Divider(
+          height: 1,
+          thickness: 1,
+          color: TopUpPrepaidTheme.divider,
+        ),
       ],
     );
   }

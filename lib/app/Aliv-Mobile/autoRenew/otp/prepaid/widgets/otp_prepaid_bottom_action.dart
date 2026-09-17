@@ -113,8 +113,8 @@ class OtpAutoRenewPrepaidBottomActions extends StatelessWidget {
                   onTap: resendLoading
                       ? null
                       : () => context.read<OtpAutoRenewPrepaidBloc>().add(
-                            const OtpAutoRenewPrepaidResendRequested(),
-                          ),
+                          const OtpAutoRenewPrepaidResendRequested(),
+                        ),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: OtpAutoRenewPrepaidTheme.resendActionTextStyle,

@@ -29,9 +29,10 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
 
   @override
   Widget build(BuildContext context) {
-    final innerRadius = (TopUpPrepaidTheme.formInputRadius -
-            TopUpPrepaidTheme.formInputBorderWidth)
-        .clamp(0.0, TopUpPrepaidTheme.formInputRadius);
+    final innerRadius =
+        (TopUpPrepaidTheme.formInputRadius -
+                TopUpPrepaidTheme.formInputBorderWidth)
+            .clamp(0.0, TopUpPrepaidTheme.formInputRadius);
 
     return Focus(
       onFocusChange: (hasFocus) {
@@ -49,10 +50,13 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
       },
       child: Container(
         decoration: BoxDecoration(
-          gradient:
-              _hasFocus ? TopUpPrepaidTheme.focusedInputBorderGradient : null,
+          gradient: _hasFocus
+              ? TopUpPrepaidTheme.focusedInputBorderGradient
+              : null,
           border: null,
-          borderRadius: BorderRadius.circular(TopUpPrepaidTheme.formInputRadius),
+          borderRadius: BorderRadius.circular(
+            TopUpPrepaidTheme.formInputRadius,
+          ),
         ),
         padding: const EdgeInsets.all(TopUpPrepaidTheme.formInputBorderWidth),
         child: ClipRRect(
@@ -62,8 +66,9 @@ class _TopUpFormInputFieldState extends State<TopUpFormInputField> {
             padding: TopUpPrepaidTheme.formInputHorizontalPadding,
             decoration: BoxDecoration(
               color: TopUpPrepaidTheme.lightBg,
-              borderRadius:
-                  BorderRadius.circular(TopUpPrepaidTheme.formInputRadius),
+              borderRadius: BorderRadius.circular(
+                TopUpPrepaidTheme.formInputRadius,
+              ),
             ),
             alignment: Alignment.centerLeft,
             child: TextField(

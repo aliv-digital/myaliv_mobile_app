@@ -24,9 +24,5 @@ class PlanPurchasePromoCode extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    promoCodeId,
-    discountAmount,
-    planId,
-  ];
+  List<Object?> get props => [promoCodeId, discountAmount, planId];
 }

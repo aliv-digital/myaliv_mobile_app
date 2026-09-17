@@ -288,7 +288,7 @@ class TermsShieldBadge extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: HexColor.fromHex('#F9F5FF')
+        color: HexColor.fromHex('#F9F5FF'),
         // color: resolvedCoreSize == null
         //     ? const Color(0xFFEDE8FA)
         //     : const Color(0xFFF7F3FF),

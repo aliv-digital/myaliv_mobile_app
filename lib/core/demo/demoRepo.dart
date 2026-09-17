@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../model/apiResponseModel.dart';
 import '../networkService/app_http_client.dart';
-  // your ApiResponseModel
+// your ApiResponseModel
 
 /// Demo repository that shows how to use every method in ApiService.
 /// - Readable method names
@@ -14,9 +14,9 @@ class DemoApiRepository {
   final ApiService _api;
   final String _baseUrl;
 
-  DemoApiRepository({
-    required ApiService apiService,
-    required String baseUrl})  : _api = apiService, _baseUrl = baseUrl;
+  DemoApiRepository({required ApiService apiService, required String baseUrl})
+    : _api = apiService,
+      _baseUrl = baseUrl;
 
   // ---------------------------------------------------------------------------
   // 1) POST JSON: Login
@@ -29,13 +29,7 @@ class DemoApiRepository {
     required String password,
   }) async {
     final String url = '$_baseUrl/auth/login';
-    return _api.postJson(
-      url,
-      body: {
-        'phone': phone,
-        'password': password,
-      },
-    );
+    return _api.postJson(url, body: {'phone': phone, 'password': password});
   }
 
   // ---------------------------------------------------------------------------
@@ -58,13 +52,7 @@ class DemoApiRepository {
     required String email,
   }) async {
     final String url = '$_baseUrl/users/profile';
-    return _api.putJson(
-      url,
-      body: {
-        'name': name,
-        'email': email,
-      },
-    );
+    return _api.putJson(url, body: {'name': name, 'email': email});
   }
 
   // ---------------------------------------------------------------------------
@@ -78,7 +66,8 @@ class DemoApiRepository {
   }) async {
     final String url = '$_baseUrl/users/settings';
     final Map<String, dynamic> payload = {};
-    if (emailNotifications != null) payload['emailNotifications'] = emailNotifications;
+    if (emailNotifications != null)
+      payload['emailNotifications'] = emailNotifications;
     if (theme != null) payload['theme'] = theme;
 
     return _api.patchJson(url, body: payload);
@@ -91,7 +80,9 @@ class DemoApiRepository {
   /// Some APIs accept a JSON body for delete confirmation reasons.
   Future<ApiResponseModel> deleteAccount({String? reason}) async {
     final String url = '$_baseUrl/users/account';
-    final Map<String, dynamic>? payload = (reason == null) ? null : {'reason': reason};
+    final Map<String, dynamic>? payload = (reason == null)
+        ? null
+        : {'reason': reason};
     return _api.deleteJson(url, body: payload);
   }
 
@@ -108,11 +99,13 @@ class DemoApiRepository {
     return _api.uploadMultipart(
       url: url,
       files: [
-        UploadFile.path(fieldName: 'file', filePath: filePath, fileName: fileName),
+        UploadFile.path(
+          fieldName: 'file',
+          filePath: filePath,
+          fileName: fileName,
+        ),
       ],
-      fields: {
-        'folder': 'avatars',
-      },
+      fields: {'folder': 'avatars'},
     );
   }
 
@@ -127,9 +120,7 @@ class DemoApiRepository {
       files: [
         UploadFile.bytes(fieldName: 'file', bytes: bytes, fileName: fileName),
       ],
-      fields: {
-        'folder': 'avatars',
-      },
+      fields: {'folder': 'avatars'},
     );
   }
 
@@ -142,10 +133,7 @@ class DemoApiRepository {
     required String isoMonth, // e.g., "2025-07"
   }) async {
     final String url = '$_baseUrl/reports/monthly';
-    return _api.downloadBytes(
-      url,
-      queryParameters: {'month': isoMonth},
-    );
+    return _api.downloadBytes(url, queryParameters: {'month': isoMonth});
   }
 
   // ---------------------------------------------------------------------------

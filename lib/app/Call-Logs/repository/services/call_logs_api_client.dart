@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 /// Uses NetworkService which automatically handles Basic Auth from GlobalState.
 class CallLogsApiClient {
   CallLogsApiClient({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 

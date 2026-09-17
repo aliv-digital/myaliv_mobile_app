@@ -23,8 +23,12 @@ class AppTheme {
   static const double paymentBreakdownScallopOvalHeightFactor = 0.72;
 
   // Card content spacing.
-  static const EdgeInsets paymentBreakdownCardPadding =
-  EdgeInsets.fromLTRB(16, 20, 16, 20);
+  static const EdgeInsets paymentBreakdownCardPadding = EdgeInsets.fromLTRB(
+    16,
+    20,
+    16,
+    20,
+  );
   static const double paymentBreakdownRowGap = 14;
   static const double paymentBreakdownGapBeforeDivider = 24;
   static const double paymentBreakdownGapAfterDivider = 24;
@@ -39,8 +43,9 @@ class AppTheme {
   static const Color paymentBreakdownPromoBackgroundColor = Color(0xFFFFFFFF);
   static const double paymentBreakdownPromoHeight = 52;
   static const double paymentBreakdownPromoRadius = 10;
-  static const EdgeInsets paymentBreakdownPromoPadding =
-  EdgeInsets.symmetric(horizontal: 16);
+  static const EdgeInsets paymentBreakdownPromoPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+  );
   static const double paymentBreakdownPromoActionGap = 6;
   static const double paymentBreakdownPromoBottomGap = 24;
   static const double paymentBreakdownPromoDisabledOpacity = 0.45;

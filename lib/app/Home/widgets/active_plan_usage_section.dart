@@ -43,10 +43,7 @@ class ActivePlanUsageSection extends StatelessWidget {
             if (isLoading) {
               return const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _UsageSectionSkeleton(),
-                  SizedBox(height: 20),
-                ],
+                children: [_UsageSectionSkeleton(), SizedBox(height: 20)],
               );
             }
 
@@ -274,7 +271,11 @@ class _SkeletonBox extends StatelessWidget {
 /// Title row with a trailing "view all" affordance. Both elements share the
 /// same tap target so users can hit either side of the row.
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, required this.onTap,this.isRoamingSection = false});
+  const _SectionHeader({
+    required this.title,
+    required this.onTap,
+    this.isRoamingSection = false,
+  });
 
   final String title;
   final VoidCallback onTap;
@@ -299,22 +300,22 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          !isRoamingSection ?
-          GestureDetector(
-            onTap: onTap,
-            child: const Text(
-              'view all',
-              style: TextStyle(
-                color: Color(0xFF645D9C),
-                fontSize: 13,
-                fontFamily: 'CircularPro',
-                fontWeight: FontWeight.w700,
-                decoration: TextDecoration.underline,
-                decorationColor: Color(0xFF645D9C),
-              ),
-            ),
-          ):
-          SizedBox.shrink(),
+          !isRoamingSection
+              ? GestureDetector(
+                  onTap: onTap,
+                  child: const Text(
+                    'view all',
+                    style: TextStyle(
+                      color: Color(0xFF645D9C),
+                      fontSize: 13,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Color(0xFF645D9C),
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(),
         ],
       ),
     );

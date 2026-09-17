@@ -80,9 +80,9 @@ class _HomePlansPaymentMethodViewState
     }
     // addCard / wallet nav targets are placeholders for future routes.
 
-    context
-        .read<HomePlansPaymentMethodBloc>()
-        .add(const HomePlansPaymentNavConsumed());
+    context.read<HomePlansPaymentMethodBloc>().add(
+      const HomePlansPaymentNavConsumed(),
+    );
   }
 
   /// Optimistically reflects the purchase immediately, before /bundles returns.
@@ -150,8 +150,10 @@ class _HomePlansPaymentMethodViewState
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomePlansPaymentMethodBloc,
-        HomePlansPaymentMethodState>(
+    return BlocConsumer<
+      HomePlansPaymentMethodBloc,
+      HomePlansPaymentMethodState
+    >(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget ||
           p.errorMessage != c.errorMessage ||
@@ -163,7 +165,9 @@ class _HomePlansPaymentMethodViewState
             state.status == HomePlansPaymentMethodStatus.submitting;
 
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: HomePlansPaymentMethodTheme.bg,
             bottomNavigationBar: PaymentPayBar(

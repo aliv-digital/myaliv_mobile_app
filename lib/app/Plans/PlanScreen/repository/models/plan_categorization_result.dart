@@ -43,8 +43,7 @@ class PlanCategorizationResult {
 
   /// Get RoamEasy plans (typed)
   List<BasePlanModel> get roamEasyPlans =>
-      (categorizedPlans[PlanCategory.roameasy] ?? [])
-          .cast<BasePlanModel>();
+      (categorizedPlans[PlanCategory.roameasy] ?? []).cast<BasePlanModel>();
 
   /// Get MiFi plans (typed)
   List<BasePlanModel> get mifiPlans =>

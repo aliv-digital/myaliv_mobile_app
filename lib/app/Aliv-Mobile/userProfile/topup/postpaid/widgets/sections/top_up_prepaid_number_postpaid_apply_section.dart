@@ -16,7 +16,9 @@ class TopUpPrepaidNumberPostPaidApplySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = enabled ? TopUpPrepaidNumberPostPaidTheme.primary : TopUpPrepaidNumberPostPaidTheme.primary.withOpacity(0.45);
+    final bg = enabled
+        ? TopUpPrepaidNumberPostPaidTheme.primary
+        : TopUpPrepaidNumberPostPaidTheme.primary.withOpacity(0.45);
 
     return SizedBox(
       height: 48,
@@ -25,24 +27,29 @@ class TopUpPrepaidNumberPostPaidApplySection extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: bg,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
         ),
         onPressed: enabled && !loading ? onTap : null,
         child: loading
             ? const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : const Text(
-          'apply',
-          style: TextStyle(
-            fontFamily: TopUpPrepaidNumberPostPaidTheme.fontFamily,
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
+                'apply',
+                style: TextStyle(
+                  fontFamily: TopUpPrepaidNumberPostPaidTheme.fontFamily,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

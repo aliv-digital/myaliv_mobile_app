@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/repository/services/call_logs_ap
 /// Handles data fetching and parsing from API.
 class CallLogsRepository {
   CallLogsRepository({CallLogsApiClient? apiClient})
-      : _apiClient = apiClient ?? CallLogsApiClient();
+    : _apiClient = apiClient ?? CallLogsApiClient();
 
   final CallLogsApiClient _apiClient;
 

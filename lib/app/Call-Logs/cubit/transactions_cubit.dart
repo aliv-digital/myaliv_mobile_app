@@ -10,9 +10,9 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     required TransactionsRepository repository,
     required DeviceLimitsCubit deviceLimitsCubit,
-  })  : _repository = repository,
-        _deviceLimitsCubit = deviceLimitsCubit,
-        super(const TransactionsState());
+  }) : _repository = repository,
+       _deviceLimitsCubit = deviceLimitsCubit,
+       super(const TransactionsState());
 
   final TransactionsRepository _repository;
   final DeviceLimitsCubit _deviceLimitsCubit;
@@ -21,19 +21,24 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   Future<void> fetchTransactions() async {
     if (kDebugMode) {
       debugPrint(
-          'TransactionsCubit: Fetching transactions for ${state.currentMonth}');
+        'TransactionsCubit: Fetching transactions for ${state.currentMonth}',
+      );
     }
 
     final deviceId = _deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
     if (deviceId <= 0) {
-      emit(state.copyWith(
-        status: TransactionsStatus.failure,
-        errorMessage: 'Device ID unavailable. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: TransactionsStatus.failure,
+          errorMessage: 'Device ID unavailable. Please try again.',
+        ),
+      );
       return;
     }
 
-    emit(state.copyWith(status: TransactionsStatus.loading, errorMessage: null));
+    emit(
+      state.copyWith(status: TransactionsStatus.loading, errorMessage: null),
+    );
 
     try {
       final transactions = await _repository.fetchTransactions(
@@ -42,24 +47,29 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         accountId: deviceId,
       );
 
-      emit(state.copyWith(
-        status: TransactionsStatus.success,
-        transactions: transactions,
-      ));
+      emit(
+        state.copyWith(
+          status: TransactionsStatus.success,
+          transactions: transactions,
+        ),
+      );
 
       if (kDebugMode) {
         debugPrint(
-            'TransactionsCubit: Loaded ${transactions.length} transactions');
+          'TransactionsCubit: Loaded ${transactions.length} transactions',
+        );
       }
     } catch (e) {
       final errorMessage = _extractErrorMessage(e);
       if (kDebugMode) {
         debugPrint('TransactionsCubit: Error - $errorMessage');
       }
-      emit(state.copyWith(
-        status: TransactionsStatus.failure,
-        errorMessage: errorMessage,
-      ));
+      emit(
+        state.copyWith(
+          status: TransactionsStatus.failure,
+          errorMessage: errorMessage,
+        ),
+      );
     }
   }
 
@@ -80,6 +90,8 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     if (raw.startsWith(prefix)) {
       return raw.substring(prefix.length).trim();
     }
-    return raw.isEmpty ? 'Failed to fetch transactions. Please try again.' : raw;
+    return raw.isEmpty
+        ? 'Failed to fetch transactions. Please try again.'
+        : raw;
   }
 }

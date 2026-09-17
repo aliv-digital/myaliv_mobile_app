@@ -21,12 +21,7 @@ class ReceiptDetailRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              label,
-              style: ReceiptTheme.detailLabel,
-            ),
-          ),
+          Expanded(child: Text(label, style: ReceiptTheme.detailLabel)),
           Text(
             value,
             style: valueBold

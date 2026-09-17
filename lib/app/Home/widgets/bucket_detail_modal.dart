@@ -38,8 +38,9 @@ class BucketDetailModal extends StatelessWidget {
   /// Same external-launch + toast-fallback path as
   /// `HomePlanAddOnsTabContent._openFairUsePolicy`, so users see one
   /// consistent fair-use experience across the app.
-  static final Uri _fairUsePolicyUri =
-      Uri.parse('https://www.bealiv.com/fair-use-policy/');
+  static final Uri _fairUsePolicyUri = Uri.parse(
+    'https://www.bealiv.com/fair-use-policy/',
+  );
 
   Future<void> _openFairUsePolicy() async {
     try {
@@ -179,10 +180,7 @@ class BucketDetailModal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionHeader(
-            icon: Icons.list_alt_outlined,
-            label: 'details',
-          ),
+          const _SectionHeader(icon: Icons.list_alt_outlined, label: 'details'),
           const SizedBox(height: 12),
           Row(
             children: [

@@ -43,7 +43,8 @@ class MifiAltPhoneField extends StatelessWidget {
           )
         : AuthModuleTextStyles.fieldValue;
     final bool isBahamas = country.isoCode == 'BS';
-    final double errorLeftPad = AuthModuleSizes.countryWidth +
+    final double errorLeftPad =
+        AuthModuleSizes.countryWidth +
         AuthModuleSizes.countryToPhoneGap +
         AuthModulePaddings.fieldHorizontal14.left;
 
@@ -61,8 +62,9 @@ class MifiAltPhoneField extends StatelessWidget {
           enableCountryPicker: false,
           readOnly: readOnly,
           onChanged: onChanged,
-          inputFormatters:
-              isBahamas ? const [BahamasPhoneInputFormatter()] : null,
+          inputFormatters: isBahamas
+              ? const [BahamasPhoneInputFormatter()]
+              : null,
           backgroundColor: AuthModuleColors.pageBackground,
           unfocusedBorderColor: borderColor,
           borderRadius: AuthModuleSizes.fieldRadius,

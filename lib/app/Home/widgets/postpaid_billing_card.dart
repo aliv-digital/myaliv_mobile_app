@@ -229,8 +229,8 @@ class _PostpaidBillingCardContentState
 
       setState(() => _localValue = false);
 
-      final success =
-          await instance<AccountInfoCubit>().disableAutoPayInvoice();
+      final success = await instance<AccountInfoCubit>()
+          .disableAutoPayInvoice();
 
       if (!success && mounted) {
         setState(() => _localValue = true);

@@ -82,11 +82,16 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
               height: double.infinity,
               decoration: BoxDecoration(
                 color: RevPrepaidTheme.fieldBg,
-                borderRadius:
-                    BorderRadius.circular(RevPrepaidTheme.inputFieldRadius),
+                borderRadius: BorderRadius.circular(
+                  RevPrepaidTheme.inputFieldRadius,
+                ),
               ),
-              padding:
-                  const EdgeInsets.fromLTRB(14, 0, 92, 0), // space for pill
+              padding: const EdgeInsets.fromLTRB(
+                14,
+                0,
+                92,
+                0,
+              ), // space for pill
               alignment: Alignment.center,
               child: TextField(
                 controller: _controller,
@@ -106,7 +111,9 @@ class _RevNameWithSubmitFieldState extends State<RevNameWithSubmitField> {
               top: 8,
               bottom: 8,
               child: Opacity(
-                opacity: canTap ? 1 : 1, // 0.55, // activate moment , initially inactive
+                opacity: canTap
+                    ? 1
+                    : 1, // 0.55, // activate moment , initially inactive
                 child: InkWell(
                   onTap: canTap ? widget.onSubmit : null,
                   borderRadius: BorderRadius.circular(16),

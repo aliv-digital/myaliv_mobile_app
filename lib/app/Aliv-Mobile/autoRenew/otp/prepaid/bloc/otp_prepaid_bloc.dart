@@ -5,14 +5,12 @@ import '../repository/otp_prepaid_repository.dart';
 import 'otp_prepaid_event.dart';
 import 'otp_prepaid_state.dart';
 
-
-
 class OtpAutoRenewPrepaidBloc
     extends Bloc<OtpAutoRenewPrepaidEvent, OtpAutoRenewPrepaidState> {
   final OtpAutoRenewPrepaidRepository repository;
 
   OtpAutoRenewPrepaidBloc({required this.repository})
-      : super(const OtpAutoRenewPrepaidState()) {
+    : super(const OtpAutoRenewPrepaidState()) {
     on<OtpAutoRenewPrepaidCodeChanged>((event, emit) {
       emit(
         state.copyWith(
@@ -28,9 +26,9 @@ class OtpAutoRenewPrepaidBloc
   }
 
   Future<void> _onSubmitted(
-      OtpAutoRenewPrepaidSubmitted event,
-      Emitter<OtpAutoRenewPrepaidState> emit,
-      ) async {
+    OtpAutoRenewPrepaidSubmitted event,
+    Emitter<OtpAutoRenewPrepaidState> emit,
+  ) async {
     if (state.code.length < 5) {
       emit(
         state.copyWith(
@@ -63,9 +61,9 @@ class OtpAutoRenewPrepaidBloc
   }
 
   Future<void> _onResendRequested(
-      OtpAutoRenewPrepaidResendRequested event,
-      Emitter<OtpAutoRenewPrepaidState> emit,
-      ) async {
+    OtpAutoRenewPrepaidResendRequested event,
+    Emitter<OtpAutoRenewPrepaidState> emit,
+  ) async {
     emit(state.copyWith(resendStatus: OtpAutoRenewPrepaidResendStatus.loading));
 
     try {

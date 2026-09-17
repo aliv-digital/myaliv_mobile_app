@@ -14,11 +14,12 @@ class RewardDetailsPrepaidState extends Equatable {
     required this.errorMessage,
   });
 
-  factory RewardDetailsPrepaidState.initial() => const RewardDetailsPrepaidState(
-    status: RewardDetailsPrepaidStatus.initial,
-    details: null,
-    errorMessage: null,
-  );
+  factory RewardDetailsPrepaidState.initial() =>
+      const RewardDetailsPrepaidState(
+        status: RewardDetailsPrepaidStatus.initial,
+        details: null,
+        errorMessage: null,
+      );
 
   @override
   List<Object?> get props => [status, details, errorMessage];

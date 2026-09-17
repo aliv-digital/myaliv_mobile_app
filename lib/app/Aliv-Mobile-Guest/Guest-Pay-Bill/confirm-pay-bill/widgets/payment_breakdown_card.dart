@@ -71,7 +71,8 @@ class PaymentBreakdownCard extends StatelessWidget {
               textColor: rowTextColor,
             ),
             const SizedBox(
-                height: GuestPayBillConfirmTheme.breakdownGapBeforeDivider),
+              height: GuestPayBillConfirmTheme.breakdownGapBeforeDivider,
+            ),
             const _DashedDivider(
               color: GuestPayBillConfirmTheme.breakdownDividerColor,
               height: GuestPayBillConfirmTheme.breakdownDividerHeight,
@@ -79,7 +80,8 @@ class PaymentBreakdownCard extends StatelessWidget {
               dashGap: GuestPayBillConfirmTheme.breakdownDividerDashGap,
             ),
             const SizedBox(
-                height: GuestPayBillConfirmTheme.breakdownGapAfterDivider),
+              height: GuestPayBillConfirmTheme.breakdownGapAfterDivider,
+            ),
             _RowItem(
               label: GuestPayBillConfirmTheme.totalLabel,
               value: _money(total),
@@ -87,7 +89,8 @@ class PaymentBreakdownCard extends StatelessWidget {
               isBold: false,
             ),
             const SizedBox(
-                height: GuestPayBillConfirmTheme.breakdownBottomInnerGap),
+              height: GuestPayBillConfirmTheme.breakdownBottomInnerGap,
+            ),
           ],
         ),
       ),
@@ -116,7 +119,9 @@ class _RowItem extends StatelessWidget {
 
     return Row(
       children: [
-        Expanded(child: Text(label, style: style.copyWith(color: textColor))),
+        Expanded(
+          child: Text(label, style: style.copyWith(color: textColor)),
+        ),
         Text(value, style: style.copyWith(color: textColor)),
       ],
     );

@@ -22,20 +22,20 @@ class NotificationsScreen extends StatelessWidget {
                 showArrow: true,
                 icon: SvgPicture.asset('assets/icons/ion-ios-swap.svg'),
               ),
-               NotificationItem(
+              NotificationItem(
                 title: 'Your Weekly Package added\nSuccessfully',
                 time: '08:40 PM',
                 unread: true,
                 icon: SvgPicture.asset('assets/icons/ion-ios-wallet.svg'),
               ),
-               NotificationItem(
+              NotificationItem(
                 title: 'Incomplete Transaction',
                 time: '06:58 AM',
                 icon: SvgPicture.asset('assets/icons/ion-ios-wallet.svg'),
               ),
             ],
           ),
-           _DateSection(
+          _DateSection(
             date: 'July 5th',
             items: [
               NotificationItem(
@@ -57,7 +57,7 @@ class NotificationsScreen extends StatelessWidget {
               ),
             ],
           ),
-           _DateSection(
+          _DateSection(
             date: 'July 2',
             items: [
               NotificationItem(
@@ -309,7 +309,6 @@ class _DateSection extends StatelessWidget {
     );
   }
 }
-
 
 class NotificationItem extends StatelessWidget {
   final String title;

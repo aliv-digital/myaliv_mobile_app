@@ -14,10 +14,12 @@ class EditEmailPrepaidEmailInput extends StatefulWidget {
   });
 
   @override
-  State<EditEmailPrepaidEmailInput> createState() => _EditEmailPrepaidEmailInputState();
+  State<EditEmailPrepaidEmailInput> createState() =>
+      _EditEmailPrepaidEmailInputState();
 }
 
-class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput> {
+class _EditEmailPrepaidEmailInputState
+    extends State<EditEmailPrepaidEmailInput> {
   late final TextEditingController _c;
   final FocusNode _focusNode = FocusNode();
   bool _hasFocus = false;
@@ -32,7 +34,8 @@ class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput>
   @override
   void didUpdateWidget(covariant EditEmailPrepaidEmailInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialValue != widget.initialValue && _c.text != widget.initialValue) {
+    if (oldWidget.initialValue != widget.initialValue &&
+        _c.text != widget.initialValue) {
       _c.text = widget.initialValue;
       _c.selection = TextSelection.collapsed(offset: _c.text.length);
     }
@@ -56,20 +59,25 @@ class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput>
 
   @override
   Widget build(BuildContext context) {
-    final innerRadius = (EditEmailPrepaidTheme.editEmailInputRadius -
-            EditEmailPrepaidTheme.inputBorderWidth)
-        .clamp(0.0, EditEmailPrepaidTheme.editEmailInputRadius);
+    final innerRadius =
+        (EditEmailPrepaidTheme.editEmailInputRadius -
+                EditEmailPrepaidTheme.inputBorderWidth)
+            .clamp(0.0, EditEmailPrepaidTheme.editEmailInputRadius);
 
     return Container(
       decoration: BoxDecoration(
-        gradient: _hasFocus ? EditEmailPrepaidTheme.focusedInputBorderGradient : null,
+        gradient: _hasFocus
+            ? EditEmailPrepaidTheme.focusedInputBorderGradient
+            : null,
         border: _hasFocus
             ? null
             : Border.all(
                 color: EditEmailPrepaidTheme.inputBorder,
                 width: EditEmailPrepaidTheme.inputBorderWidth,
               ),
-        borderRadius: BorderRadius.circular(EditEmailPrepaidTheme.editEmailInputRadius),
+        borderRadius: BorderRadius.circular(
+          EditEmailPrepaidTheme.editEmailInputRadius,
+        ),
       ),
       padding: const EdgeInsets.all(EditEmailPrepaidTheme.inputBorderWidth),
       child: ClipRRect(
@@ -78,7 +86,9 @@ class _EditEmailPrepaidEmailInputState extends State<EditEmailPrepaidEmailInput>
           height: 50,
           decoration: BoxDecoration(
             color: EditEmailPrepaidTheme.inputBg,
-            borderRadius: BorderRadius.circular(EditEmailPrepaidTheme.editEmailInputRadius),
+            borderRadius: BorderRadius.circular(
+              EditEmailPrepaidTheme.editEmailInputRadius,
+            ),
           ),
           padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
           alignment: Alignment.center,

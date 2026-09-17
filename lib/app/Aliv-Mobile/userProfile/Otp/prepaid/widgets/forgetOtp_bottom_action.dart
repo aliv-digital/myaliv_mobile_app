@@ -9,7 +9,6 @@ import '../bloc/forgetPass_otp_bloc.dart';
 import '../bloc/forgetPass_otp_event.dart';
 import '../bloc/forgetPass_otp_state.dart';
 
-
 class OtpProfilePrepaidBottomActions extends StatelessWidget {
   const OtpProfilePrepaidBottomActions({super.key});
 
@@ -61,9 +60,9 @@ class OtpProfilePrepaidBottomActions extends StatelessWidget {
                 GestureDetector(
                   onTap: resendLoading
                       ? null
-                      : () => context
-                      .read<OtpProfilePrepaidBloc>()
-                      .add(const OtpProfilePrepaidResendRequested()),
+                      : () => context.read<OtpProfilePrepaidBloc>().add(
+                          const OtpProfilePrepaidResendRequested(),
+                        ),
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: TextStyle(

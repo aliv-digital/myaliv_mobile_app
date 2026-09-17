@@ -6,7 +6,7 @@ import 'top_up_limit_left_model.dart';
 
 class TopUpPrepaidRepository {
   TopUpPrepaidRepository({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 

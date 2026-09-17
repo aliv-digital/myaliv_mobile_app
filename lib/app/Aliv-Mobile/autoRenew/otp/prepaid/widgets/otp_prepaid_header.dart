@@ -20,18 +20,24 @@ class OtpAutoRenewPrepaidHeader extends StatelessWidget {
             context.pop();
           },
         ),
-        const SizedBox(height: OtpAutoRenewPrepaidTheme.headerBackToIllustrationGap),
+        const SizedBox(
+          height: OtpAutoRenewPrepaidTheme.headerBackToIllustrationGap,
+        ),
         SvgPicture.asset(
           AssetConstant.otpPhoneSVG,
           width: OtpAutoRenewPrepaidTheme.headerIllustrationWidth,
           height: OtpAutoRenewPrepaidTheme.headerIllustrationHeight,
         ),
-        const SizedBox(height: OtpAutoRenewPrepaidTheme.headerIllustrationToTitleGap),
+        const SizedBox(
+          height: OtpAutoRenewPrepaidTheme.headerIllustrationToTitleGap,
+        ),
         const Text(
           'verification code',
           style: OtpAutoRenewPrepaidTheme.verificationTitleTextStyle,
         ),
-        const SizedBox(height: OtpAutoRenewPrepaidTheme.headerTitleToSubtitleGap),
+        const SizedBox(
+          height: OtpAutoRenewPrepaidTheme.headerTitleToSubtitleGap,
+        ),
         Text(
           'we have sent a verification code to your email\nand via sms',
           textAlign: TextAlign.center,

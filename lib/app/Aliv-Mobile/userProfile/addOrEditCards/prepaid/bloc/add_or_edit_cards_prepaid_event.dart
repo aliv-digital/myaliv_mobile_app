@@ -19,7 +19,8 @@ class AddOrEditCardsPrepaidDeletePressed extends AddOrEditCardsPrepaidEvent {
   List<Object?> get props => [cardId];
 }
 
-class AddOrEditCardsPrepaidAddNewCardPressed extends AddOrEditCardsPrepaidEvent {
+class AddOrEditCardsPrepaidAddNewCardPressed
+    extends AddOrEditCardsPrepaidEvent {
   const AddOrEditCardsPrepaidAddNewCardPressed();
 }
 
@@ -27,7 +28,8 @@ class AddOrEditCardsPrepaidHomePressed extends AddOrEditCardsPrepaidEvent {
   const AddOrEditCardsPrepaidHomePressed();
 }
 
-class AddOrEditCardsPrepaidNavigationConsumed extends AddOrEditCardsPrepaidEvent {
+class AddOrEditCardsPrepaidNavigationConsumed
+    extends AddOrEditCardsPrepaidEvent {
   const AddOrEditCardsPrepaidNavigationConsumed();
 }
 

@@ -3,12 +3,13 @@ import '../repository/guest_payment_method_prepaid_repository.dart';
 import 'guest_payment_method_prepaid_event.dart';
 import 'guest_payment_method_prepaid_state.dart';
 
-class GuestPaymentMethodPrepaidBloc extends Bloc<GuestPaymentMethodPrepaidEvent,
-    GuestPaymentMethodPrepaidState> {
+class GuestPaymentMethodPrepaidBloc
+    extends
+        Bloc<GuestPaymentMethodPrepaidEvent, GuestPaymentMethodPrepaidState> {
   final GuestPaymentMethodPrepaidRepository repository;
 
   GuestPaymentMethodPrepaidBloc({required this.repository})
-      : super(GuestPaymentMethodPrepaidState.initial()) {
+    : super(GuestPaymentMethodPrepaidState.initial()) {
     on<GuestPaymentMethodPrepaidStarted>(_onStarted);
     on<GuestPaymentMethodSelected>(_onSelected);
     on<GuestPayWithCardPressed>(_onPayWithCard);
@@ -20,8 +21,12 @@ class GuestPaymentMethodPrepaidBloc extends Bloc<GuestPaymentMethodPrepaidEvent,
     GuestPaymentMethodPrepaidStarted event,
     Emitter<GuestPaymentMethodPrepaidState> emit,
   ) async {
-    emit(state.copyWith(
-        status: GuestPaymentMethodPrepaidStatus.loading, errorMessage: null));
+    emit(
+      state.copyWith(
+        status: GuestPaymentMethodPrepaidStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final methods = await repository.fetchPaymentMethods();
@@ -62,9 +67,12 @@ class GuestPaymentMethodPrepaidBloc extends Bloc<GuestPaymentMethodPrepaidEvent,
   ) async {
     if (!state.isPayNowEnabled) return;
 
-    emit(state.copyWith(
+    emit(
+      state.copyWith(
         status: GuestPaymentMethodPrepaidStatus.submitting,
-        errorMessage: null));
+        errorMessage: null,
+      ),
+    );
 
     try {
       await repository.payNow(methodId: state.selectedMethodId!);

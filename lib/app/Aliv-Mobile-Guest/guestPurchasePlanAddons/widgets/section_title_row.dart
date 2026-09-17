@@ -5,11 +5,7 @@ class SectionTitleRow extends StatelessWidget {
   final String title;
   final Widget? trailing;
 
-  const SectionTitleRow({
-    super.key,
-    required this.title,
-    this.trailing,
-  });
+  const SectionTitleRow({super.key, required this.title, this.trailing});
 
   @override
   Widget build(BuildContext context) {

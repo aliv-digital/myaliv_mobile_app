@@ -62,14 +62,18 @@ class _TabItem extends StatelessWidget {
               child: Text(
                 label,
                 textAlign: TextAlign.center,
-                style: active ? ReferFriendPrepaidTheme.tabActive : ReferFriendPrepaidTheme.tab,
+                style: active
+                    ? ReferFriendPrepaidTheme.tabActive
+                    : ReferFriendPrepaidTheme.tab,
               ),
             ),
             Container(
               height: 2,
               width: MediaQuery.of(context).size.width * 0.45,
               decoration: BoxDecoration(
-                color: active ? ReferFriendPrepaidTheme.brand : Colors.transparent,
+                color: active
+                    ? ReferFriendPrepaidTheme.brand
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(999),
               ),
             ),

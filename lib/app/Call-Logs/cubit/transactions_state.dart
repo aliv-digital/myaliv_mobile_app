@@ -60,5 +60,10 @@ class TransactionsState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, transactions, selectedMonth, errorMessage];
+  List<Object?> get props => [
+    status,
+    transactions,
+    selectedMonth,
+    errorMessage,
+  ];
 }

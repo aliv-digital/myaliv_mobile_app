@@ -16,10 +16,7 @@ import 'bottomsheet/wallet_payment_bottom_sheet.dart';
 class AutoRenewPrepaidStateListener extends StatelessWidget {
   final Widget child;
 
-  const AutoRenewPrepaidStateListener({
-    super.key,
-    required this.child,
-  });
+  const AutoRenewPrepaidStateListener({super.key, required this.child});
 
   // ==================== Listener Wrapper ====================
   // Attach side-effect handling without mixing it into rendering widgets.
@@ -48,8 +45,8 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
     BuildContext context,
     AutoRenewPrepaidState state,
   ) async {
-    final AutoRenewPrepaidBloc autoRenewPrepaidBloc =
-        context.read<AutoRenewPrepaidBloc>();
+    final AutoRenewPrepaidBloc autoRenewPrepaidBloc = context
+        .read<AutoRenewPrepaidBloc>();
 
     _showErrorMessageIfPresent(context, state.errorMessage);
 

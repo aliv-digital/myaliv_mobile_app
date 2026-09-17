@@ -13,7 +13,7 @@ class AssetConstant {
   static const phoneIconSVG = 'assets/icons/phone_icon.svg';
   static const wifiIconSVG = 'assets/icons/wifi_icon.svg';
   static const bonusDataIconSVG = 'assets/icons/bonus_data_icon.svg';
- // static const bonusDataIconSVG = 'assets/icons/bonus_data_icon.svg';
+  // static const bonusDataIconSVG = 'assets/icons/bonus_data_icon.svg';
   static const talkTextIconSVG = 'assets/icons/talk_text_icon.svg';
   //static const talkTextIconSVG = 'assets/icons/talk_text_icon.svg';
   static const mmsIconPNG = 'assets/icons/mms_icon.svg';

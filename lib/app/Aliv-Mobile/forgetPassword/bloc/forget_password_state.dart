@@ -43,12 +43,12 @@ class ForgetPasswordState extends Equatable {
 
   @override
   List<Object?> get props => [
-        phone,
-        mfaToken,
-        apiPhoneNumber,
-        status,
-        errorMessage,
-        isTermsLoading,
-        isPrivacyLoading,
-      ];
+    phone,
+    mfaToken,
+    apiPhoneNumber,
+    status,
+    errorMessage,
+    isTermsLoading,
+    isPrivacyLoading,
+  ];
 }

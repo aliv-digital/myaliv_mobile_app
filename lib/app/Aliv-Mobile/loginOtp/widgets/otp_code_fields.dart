@@ -24,10 +24,16 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
   /// Minimum gap between cells so borders never visually merge.
   static const double _minGap = 6;
 
-  final _controllers =
-      List.generate(_otpLength, (_) => TextEditingController(), growable: false);
-  final _focusNodes =
-      List.generate(_otpLength, (_) => FocusNode(), growable: false);
+  final _controllers = List.generate(
+    _otpLength,
+    (_) => TextEditingController(),
+    growable: false,
+  );
+  final _focusNodes = List.generate(
+    _otpLength,
+    (_) => FocusNode(),
+    growable: false,
+  );
 
   @override
   void dispose() {
@@ -47,8 +53,9 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
       // Single-digit typing (or backspace clearing the cell).
       if (_controllers[index].text != digits) {
         _controllers[index].text = digits;
-        _controllers[index].selection =
-            TextSelection.collapsed(offset: digits.length);
+        _controllers[index].selection = TextSelection.collapsed(
+          offset: digits.length,
+        );
       }
       if (digits.isNotEmpty && index < _otpLength - 1) {
         _focusNodes[index + 1].requestFocus();
@@ -98,7 +105,7 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
             final maxWidth = constraints.maxWidth.isFinite
                 ? constraints.maxWidth
                 : LoginOtpSizes.otpBoxSize * _otpLength +
-                    _minGap * (_otpLength - 1);
+                      _minGap * (_otpLength - 1);
             final totalGaps = _minGap * (_otpLength - 1);
             final rawBox = (maxWidth - totalGaps) / _otpLength;
             final boxSize = rawBox
@@ -152,8 +159,10 @@ class _OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final innerRadius =
-        (LoginOtpSizes.otpBoxRadius - LoginOtpSizes.otpBoxBorderWidth)
-            .clamp(0.0, LoginOtpSizes.otpBoxRadius);
+        (LoginOtpSizes.otpBoxRadius - LoginOtpSizes.otpBoxBorderWidth).clamp(
+          0.0,
+          LoginOtpSizes.otpBoxRadius,
+        );
 
     return SizedBox(
       width: size,
@@ -166,8 +175,9 @@ class _OtpBox extends StatelessWidget {
 
           return Container(
             decoration: BoxDecoration(
-              gradient:
-                  showFocusStyle ? LoginOtpGradients.focusedInputBorder : null,
+              gradient: showFocusStyle
+                  ? LoginOtpGradients.focusedInputBorder
+                  : null,
               border: showFocusStyle
                   ? null
                   : Border.all(

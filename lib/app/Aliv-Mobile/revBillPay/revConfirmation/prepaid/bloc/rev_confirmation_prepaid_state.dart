@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum RevConfirmNavTarget { none, continueNext }
+
 enum RevPromoStatus { idle, applying, applied, invalid }
 
 class RevConfirmationPrepaidState extends Equatable {

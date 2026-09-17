@@ -74,7 +74,8 @@ class PaymentOptionTile extends StatelessWidget {
               width: selected ? 1.5 : 1,
             ),
           ),
-          padding: contentPadding ??
+          padding:
+              contentPadding ??
               const EdgeInsets.only(top: 12, bottom: 12, right: 16),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: _tileMinHeight - 24),
@@ -92,9 +93,7 @@ class PaymentOptionTile extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible(
-                        child: Text(title, style: _titleStyle),
-                      ),
+                      Flexible(child: Text(title, style: _titleStyle)),
                       if (titleTrailing != null) ...[
                         const SizedBox(width: 10),
                         titleTrailing!,
@@ -117,12 +116,12 @@ class PaymentOptionTile extends StatelessWidget {
   }
 
   TextStyle get _titleStyle => TextStyle(
-        color: _selectedTextColor,
-        fontSize: 16,
-        fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w700,
-        height: 1.25,
-      );
+    color: _selectedTextColor,
+    fontSize: 16,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+  );
 }
 
 class _SelectionIndicator extends StatelessWidget {
@@ -147,11 +146,7 @@ class _SelectionIndicator extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: Icon(
-          Icons.check,
-          size: size * 0.64,
-          color: Colors.white,
-        ),
+        child: Icon(Icons.check, size: size * 0.64, color: Colors.white),
       );
     }
 

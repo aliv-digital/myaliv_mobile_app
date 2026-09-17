@@ -9,13 +9,16 @@ import '../repository/make_payment_confirmation_postpaid_repository.dart';
 import 'make_payment_confirmation_postpaid_event.dart';
 import 'make_payment_confirmation_postpaid_state.dart';
 
-class MakePaymentConfirmationPostPaidBloc extends Bloc<
-    MakePaymentConfirmationPostPaidEvent,
-    MakePaymentConfirmationPostPaidState> {
+class MakePaymentConfirmationPostPaidBloc
+    extends
+        Bloc<
+          MakePaymentConfirmationPostPaidEvent,
+          MakePaymentConfirmationPostPaidState
+        > {
   final MakePaymentConfirmationPostPaidRepository repository;
 
   MakePaymentConfirmationPostPaidBloc({required this.repository})
-      : super(MakePaymentConfirmationPostPaidState.initial()) {
+    : super(MakePaymentConfirmationPostPaidState.initial()) {
     on<MakePaymentConfirmationPostPaidStarted>(_onStarted);
     on<MakePaymentPromoCodeChanged>(_onPromoChanged);
     on<MakePaymentPromoApplyPressed>(_onApplyPromo);
@@ -33,8 +36,9 @@ class MakePaymentConfirmationPostPaidBloc extends Bloc<
     final balanceState = instance<BalanceCubit>().state;
 
     final customerName = resolveUserDisplayName(devices: deviceLimitsState);
-    final accountNumber =
-        _formatPhone(deviceLimitsState.deviceLimits?.tn ?? '');
+    final accountNumber = _formatPhone(
+      deviceLimitsState.deviceLimits?.tn ?? '',
+    );
     final amount = BalanceCurrencyFormatterService.format(
       balanceState.walletBalance,
     );
@@ -73,10 +77,7 @@ class MakePaymentConfirmationPostPaidBloc extends Bloc<
   ) {
     final trimmed = event.value.trim();
     emit(
-      state.copyWith(
-        promoCode: event.value,
-        canApplyPromo: trimmed.isNotEmpty,
-      ),
+      state.copyWith(promoCode: event.value, canApplyPromo: trimmed.isNotEmpty),
     );
   }
 

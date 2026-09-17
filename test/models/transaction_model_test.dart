@@ -93,10 +93,13 @@ void main() {
       expect(t.displaySubtitle, 'Plan X');
     });
 
-    test('displaySubtitle falls back to channel when phone and plan are empty', () {
-      final t = _makeTransaction(phoneNumber: null, plan: '', channel: 'Web');
-      expect(t.displaySubtitle, 'Web');
-    });
+    test(
+      'displaySubtitle falls back to channel when phone and plan are empty',
+      () {
+        final t = _makeTransaction(phoneNumber: null, plan: '', channel: 'Web');
+        expect(t.displaySubtitle, 'Web');
+      },
+    );
 
     test('fromJson parses standard fields', () {
       final json = {

@@ -2,9 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import 'guest_purchase_plan_receipt_state.dart';
 
-
-
-
 sealed class GuestPurchasePlanReceiptEvent extends Equatable {
   const GuestPurchasePlanReceiptEvent();
 
@@ -12,7 +9,8 @@ sealed class GuestPurchasePlanReceiptEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class GuestPurchasePlanReceiptStarted extends GuestPurchasePlanReceiptEvent {
+final class GuestPurchasePlanReceiptStarted
+    extends GuestPurchasePlanReceiptEvent {
   final GuestPurchasePlanReceiptData data;
   const GuestPurchasePlanReceiptStarted(this.data);
 
@@ -20,6 +18,7 @@ final class GuestPurchasePlanReceiptStarted extends GuestPurchasePlanReceiptEven
   List<Object?> get props => [data];
 }
 
-final class GuestPurchasePlanReceiptBackToHomePressed extends GuestPurchasePlanReceiptEvent {
+final class GuestPurchasePlanReceiptBackToHomePressed
+    extends GuestPurchasePlanReceiptEvent {
   const GuestPurchasePlanReceiptBackToHomePressed();
 }

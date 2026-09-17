@@ -61,16 +61,19 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
 
   @override
   Widget build(BuildContext context) {
-    final innerRadius = (TopUpPrepaidTheme.amountFieldRadius -
-            TopUpPrepaidTheme.amountFieldBorderWidth)
-        .clamp(0.0, TopUpPrepaidTheme.amountFieldRadius);
+    final innerRadius =
+        (TopUpPrepaidTheme.amountFieldRadius -
+                TopUpPrepaidTheme.amountFieldBorderWidth)
+            .clamp(0.0, TopUpPrepaidTheme.amountFieldRadius);
 
     return Container(
       width: TopUpPrepaidTheme.amountFieldWidth,
       height: TopUpPrepaidTheme.amountFieldHeight,
       decoration: BoxDecoration(
         gradient: TopUpPrepaidTheme.amountFieldFocusedBorderGradient,
-        borderRadius: BorderRadius.circular(TopUpPrepaidTheme.amountFieldRadius),
+        borderRadius: BorderRadius.circular(
+          TopUpPrepaidTheme.amountFieldRadius,
+        ),
       ),
       padding: const EdgeInsets.all(TopUpPrepaidTheme.amountFieldBorderWidth),
       child: ClipRRect(
@@ -84,10 +87,7 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (_controller.text.isNotEmpty) ...[
-                  Text(
-                    r'$',
-                    style: TopUpPrepaidTheme.amountText(),
-                  ),
+                  Text(r'$', style: TopUpPrepaidTheme.amountText()),
                   const SizedBox(
                     width: TopUpPrepaidTheme.amountFieldCurrencyGap,
                   ),

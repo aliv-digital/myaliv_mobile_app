@@ -1,7 +1,15 @@
 import 'package:equatable/equatable.dart';
 import '../model/rev_payment_method_prepaid_models.dart';
 
-enum RevPaymentMethodPrepaidStatus { initial, loading, ready, submitting, success, failure }
+enum RevPaymentMethodPrepaidStatus {
+  initial,
+  loading,
+  ready,
+  submitting,
+  success,
+  failure,
+}
+
 enum RevPaymentMethodNavTarget { none, addCard, paid }
 
 class RevPaymentMethodPrepaidState extends Equatable {
@@ -41,7 +49,8 @@ class RevPaymentMethodPrepaidState extends Equatable {
   String get amountText => r'$ ' + amount.toStringAsFixed(2);
 
   bool get isPayNowEnabled =>
-      selectedMethodId != null && status != RevPaymentMethodPrepaidStatus.submitting;
+      selectedMethodId != null &&
+      status != RevPaymentMethodPrepaidStatus.submitting;
 
   RevPaymentMethodPrepaidState copyWith({
     RevPaymentMethodPrepaidStatus? status,

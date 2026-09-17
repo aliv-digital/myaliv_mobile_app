@@ -82,8 +82,9 @@ class _MpCustomAmountFieldState extends State<MpCustomAmountField> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               color: MakePaymentPostPaidTheme.customAmountBg,
-              borderRadius:
-                  BorderRadius.circular(isFocused ? innerRadius : radius),
+              borderRadius: BorderRadius.circular(
+                isFocused ? innerRadius : radius,
+              ),
             ),
             alignment: Alignment.centerLeft,
             child: Row(

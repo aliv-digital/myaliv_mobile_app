@@ -2,9 +2,7 @@ import 'package:get_it/get_it.dart';
 
 final instance = GetIt.instance;
 
-Future<void> initAppModule() async {
-
-}
+Future<void> initAppModule() async {}
 /*
 I/flutter ( 1252): 🔄 ConsumptionLimitCubit: Resetting to initial state
 I/flutter ( 1252): ✅ All auth data cleared (SharedPreferences + GlobalState + NetworkService + HydratedBloc + Plans + PlansCache + HomeCubits)

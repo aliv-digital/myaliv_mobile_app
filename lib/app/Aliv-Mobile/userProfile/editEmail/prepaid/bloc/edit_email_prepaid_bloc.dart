@@ -7,10 +7,12 @@ import '../repository/edit_email_prepaid_repository.dart';
 import 'edit_email_prepaid_event.dart';
 import 'edit_email_prepaid_state.dart';
 
-class EditEmailPrepaidBloc extends Bloc<EditEmailPrepaidEvent, EditEmailPrepaidState> {
+class EditEmailPrepaidBloc
+    extends Bloc<EditEmailPrepaidEvent, EditEmailPrepaidState> {
   final EditEmailPrepaidRepository repository;
 
-  EditEmailPrepaidBloc(this.repository) : super(EditEmailPrepaidState.initial()) {
+  EditEmailPrepaidBloc(this.repository)
+    : super(EditEmailPrepaidState.initial()) {
     on<EditEmailPrepaidStarted>(_onStarted);
     on<EditEmailPrepaidBackPressed>(_onBack);
     on<EditEmailPrepaidHomePressed>(_onHome);
@@ -19,70 +21,112 @@ class EditEmailPrepaidBloc extends Bloc<EditEmailPrepaidEvent, EditEmailPrepaidS
   }
 
   Future<void> _onStarted(
-      EditEmailPrepaidStarted event,
-      Emitter<EditEmailPrepaidState> emit,
-      ) async {
+    EditEmailPrepaidStarted event,
+    Emitter<EditEmailPrepaidState> emit,
+  ) async {
     try {
-      emit(state.copyWith(status: EditEmailPrepaidStatus.loading, errorMessage: null));
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.loading,
+          errorMessage: null,
+        ),
+      );
       final data = await repository.fetchEditEmailData();
-      emit(state.copyWith(
-        status: EditEmailPrepaidStatus.ready,
-        data: data,
-        email: data.email,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.ready,
+          data: data,
+          email: data.email,
+          errorMessage: null,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: EditEmailPrepaidStatus.failure,
-        errorMessage: 'Failed to load',
-      ));
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.failure,
+          errorMessage: 'Failed to load',
+        ),
+      );
     }
   }
 
-  void _onBack(EditEmailPrepaidBackPressed event, Emitter<EditEmailPrepaidState> emit) {
+  void _onBack(
+    EditEmailPrepaidBackPressed event,
+    Emitter<EditEmailPrepaidState> emit,
+  ) {
     // navigation তুমি screen-level এ handle করতে পারো,
     // এখন simple: back
     // (তুমি চাইলে এখানে state-based navAction add করতে পারো)
   }
 
-  void _onHome(EditEmailPrepaidHomePressed event, Emitter<EditEmailPrepaidState> emit) {
+  void _onHome(
+    EditEmailPrepaidHomePressed event,
+    Emitter<EditEmailPrepaidState> emit,
+  ) {
     // same note as back
   }
 
-  void _onEmailChanged(EditEmailPrepaidEmailChanged event, Emitter<EditEmailPrepaidState> emit) {
+  void _onEmailChanged(
+    EditEmailPrepaidEmailChanged event,
+    Emitter<EditEmailPrepaidState> emit,
+  ) {
     emit(state.copyWith(email: event.email, errorMessage: null));
   }
 
-  Future<void> _onSave(EditEmailPrepaidSavePressed event, Emitter<EditEmailPrepaidState> emit) async {
+  Future<void> _onSave(
+    EditEmailPrepaidSavePressed event,
+    Emitter<EditEmailPrepaidState> emit,
+  ) async {
     if (!state.isEmailValid) {
-      emit(state.copyWith(
-        status: EditEmailPrepaidStatus.failure,
-        errorMessage: 'Invalid email',
-      ));
-      emit(state.copyWith(status: EditEmailPrepaidStatus.ready, errorMessage: null));
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.failure,
+          errorMessage: 'Invalid email',
+        ),
+      );
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.ready,
+          errorMessage: null,
+        ),
+      );
       return;
     }
 
     try {
-      emit(state.copyWith(status: EditEmailPrepaidStatus.submitting, errorMessage: null));
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.submitting,
+          errorMessage: null,
+        ),
+      );
       final newEmail = state.email.trim();
       final ok = await repository.updateEmail(newEmail);
       if (ok) {
         final accountInfoCubit = instance<AccountInfoCubit>();
         accountInfoCubit.updateEmailLocally(newEmail);
         unawaited(accountInfoCubit.fetchAccountInfo(forceRefresh: true));
-        emit(state.copyWith(status: EditEmailPrepaidStatus.success, errorMessage: null));
+        emit(
+          state.copyWith(
+            status: EditEmailPrepaidStatus.success,
+            errorMessage: null,
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: EditEmailPrepaidStatus.failure,
-          errorMessage: 'Failed to save',
-        ));
+        emit(
+          state.copyWith(
+            status: EditEmailPrepaidStatus.failure,
+            errorMessage: 'Failed to save',
+          ),
+        );
       }
     } catch (_) {
-      emit(state.copyWith(
-        status: EditEmailPrepaidStatus.failure,
-        errorMessage: 'Failed to save',
-      ));
+      emit(
+        state.copyWith(
+          status: EditEmailPrepaidStatus.failure,
+          errorMessage: 'Failed to save',
+        ),
+      );
     }
   }
 }

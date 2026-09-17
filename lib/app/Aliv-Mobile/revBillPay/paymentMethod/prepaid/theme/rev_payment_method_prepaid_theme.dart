@@ -7,7 +7,7 @@ class RevPaymentMethodPrepaidTheme {
   static const String fontFamily = 'CircularPro';
 
   static const Color bg = Color(0xFFF2F3FA);
-  static  Color appBarBg = HexColor.fromHex('#645D9C');
+  static Color appBarBg = HexColor.fromHex('#645D9C');
   static const Color cardBg = Colors.white;
 
   static const Color text = Color(0xFF1F1F1F);
@@ -23,8 +23,8 @@ class RevPaymentMethodPrepaidTheme {
   static const double selectedIndicatorSize = 16;
   static const double selectedIndicatorCheckSize = 12;
 
-  static  Color plus = appBarBg;
-  static  Color payBtnBg = appBarBg;
+  static Color plus = appBarBg;
+  static Color payBtnBg = appBarBg;
 
   static const double appBarHeight = 56;
 
@@ -34,8 +34,12 @@ class RevPaymentMethodPrepaidTheme {
   static const double screenBottomPadding = 20;
 
   // Payment method container spacing.
-  static const EdgeInsets sectionContentPadding =
-      EdgeInsets.fromLTRB(12, 12, 12, 12);
+  static const EdgeInsets sectionContentPadding = EdgeInsets.fromLTRB(
+    12,
+    12,
+    12,
+    12,
+  );
   static const double sectionTitleToFirstCardGap = 16;
   static const double betweenMethodCardsGap = 8;
   static const double lastCardToPayWithCardGap = 16;
@@ -89,7 +93,7 @@ class RevPaymentMethodPrepaidTheme {
     color: Color(0xCC5146A8),
   );
 
-  static TextStyle get addCard =>  TextStyle(
+  static TextStyle get addCard => TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     height: 1.2,

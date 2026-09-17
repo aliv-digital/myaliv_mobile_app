@@ -19,15 +19,11 @@ Future<void> setupSavedCardsInjection() async {
 
   // Register repository
   instance.registerLazySingleton<SavedCardsRepository>(
-    () => SavedCardsRepositoryImpl(
-      apiClient: instance<SavedCardsApiClient>(),
-    ),
+    () => SavedCardsRepositoryImpl(apiClient: instance<SavedCardsApiClient>()),
   );
 
   // Register cubit as singleton
   instance.registerLazySingleton<SavedCardsCubit>(
-    () => SavedCardsCubit(
-      repository: instance<SavedCardsRepository>(),
-    ),
+    () => SavedCardsCubit(repository: instance<SavedCardsRepository>()),
   );
 }

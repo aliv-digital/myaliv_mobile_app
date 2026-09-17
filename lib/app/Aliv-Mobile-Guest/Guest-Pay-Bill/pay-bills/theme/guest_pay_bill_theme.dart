@@ -238,13 +238,13 @@ class GuestPayBillTheme {
 
   // Used by: helper message under service dropdown.
   static TextStyle helperStyle() => const TextStyle(
-        fontSize: 11,
-        fontFamily: AppConstants.defaultFontFamily,
-        // Figma uses w450; closest Flutter-supported weight is w400.
-        fontWeight: FontWeight.w400,
-        height: 1.82,
-        color: Color(0xFF707070),
-      );
+    fontSize: 11,
+    fontFamily: AppConstants.defaultFontFamily,
+    // Figma uses w450; closest Flutter-supported weight is w400.
+    fontWeight: FontWeight.w400,
+    height: 1.82,
+    color: Color(0xFF707070),
+  );
 
   // Shared input decoration for standard text fields in this module.
   // Linked widgets/locations:

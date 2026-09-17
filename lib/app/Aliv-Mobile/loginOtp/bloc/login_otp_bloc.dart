@@ -32,17 +32,17 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     String initialMfaToken = '',
     String initialPhoneNumber = '',
     String initialApiPhoneNumber = '',
-  })  : authCompletionService =
-            authCompletionService ?? const AuthCompletionService(),
-        _internetConnection = internetConnection ?? InternetConnection(),
-        _analyticsService = analyticsService ?? instance<AnalyticsService>(),
-        super(
-          LoginOtpState(
-            mfaToken: initialMfaToken,
-            phoneNumber: initialPhoneNumber,
-            apiPhoneNumber: initialApiPhoneNumber,
-          ),
-        ) {
+  }) : authCompletionService =
+           authCompletionService ?? const AuthCompletionService(),
+       _internetConnection = internetConnection ?? InternetConnection(),
+       _analyticsService = analyticsService ?? instance<AnalyticsService>(),
+       super(
+         LoginOtpState(
+           mfaToken: initialMfaToken,
+           phoneNumber: initialPhoneNumber,
+           apiPhoneNumber: initialApiPhoneNumber,
+         ),
+       ) {
     on<LoginOtpCodeChanged>((event, emit) {
       emit(
         state.copyWith(
@@ -154,8 +154,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       final message = _extractErrorMessage(e);
       final errorType = _mapErrorTypeFromMessage(message);
       final normalized = message.toLowerCase();
-      final treatAsInvalidCode = normalized.contains('two factor') ||
-          normalized.contains('twofactor');
+      final treatAsInvalidCode =
+          normalized.contains('two factor') || normalized.contains('twofactor');
       emit(
         state.copyWith(
           status: LoginOtpStatus.failure,

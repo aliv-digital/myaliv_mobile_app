@@ -91,8 +91,9 @@ class _StandAloneFuturePlans extends StatelessWidget {
           ...state.addOnsApiPrimaryPlans.where(_startsInFuture),
           ...state.standAlonePlans.where(_startsInFuture),
         ].where((p) => seenPlanIds.add(p.planId)).toList(growable: false);
-        final startablePlanIndex =
-            isPostpaid ? null : _earliestFuturePrimaryPlanIndex(futurePlans);
+        final startablePlanIndex = isPostpaid
+            ? null
+            : _earliestFuturePrimaryPlanIndex(futurePlans);
 
         if (futurePlans.isEmpty) {
           return const _EmptyFuturePlansMessage();

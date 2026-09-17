@@ -24,8 +24,8 @@ class QuickHelpScreen extends StatelessWidget {
       create: (_) => SupportRepository(dio: Dio()),
       child: BlocProvider(
         create: (context) =>
-        SupportBloc(repository: context.read<SupportRepository>())
-          ..add(const SupportStarted()),
+            SupportBloc(repository: context.read<SupportRepository>())
+              ..add(const SupportStarted()),
         child: const _QuickHelpView(),
       ),
     );
@@ -39,9 +39,9 @@ class _QuickHelpView extends StatelessWidget {
   static const Color _bg = Color(0xFFF1F2FA);
 
   Future<void> _handleLaunch(
-      BuildContext context,
-      SupportLaunchRequest request,
-      ) async {
+    BuildContext context,
+    SupportLaunchRequest request,
+  ) async {
     final launched = await launchUrl(
       request.uri,
       mode: LaunchMode.externalApplication,
@@ -49,8 +49,8 @@ class _QuickHelpView extends StatelessWidget {
 
     if (!launched && context.mounted) {
       AppToast.show(
-          message: request.failureMessage.toString(),
-          type: ToastType.error
+        message: request.failureMessage.toString(),
+        type: ToastType.error,
       );
       //ScaffoldMessenger.of(
       //  context,
@@ -62,7 +62,7 @@ class _QuickHelpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<SupportBloc, SupportState>(
       listenWhen: (previous, current) =>
-      previous.launchRequest?.id != current.launchRequest?.id,
+          previous.launchRequest?.id != current.launchRequest?.id,
       listener: (context, state) {
         final request = state.launchRequest;
         if (request != null) {
@@ -110,9 +110,8 @@ class _QuickHelpView extends StatelessWidget {
             builder: (context, state) {
               return QuickHelpContent(
                 info: state.quickHelp,
-                onCallTap: () => context.read<SupportBloc>().add(
-                  const SupportCallPressed(),
-                ),
+                onCallTap: () =>
+                    context.read<SupportBloc>().add(const SupportCallPressed()),
               );
             },
           ),

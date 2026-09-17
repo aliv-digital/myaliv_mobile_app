@@ -123,10 +123,7 @@ class _ProgressBar extends StatelessWidget {
   final double progress;
   final List<Color> gradient;
 
-  const _ProgressBar({
-    required this.progress,
-    required this.gradient,
-  });
+  const _ProgressBar({required this.progress, required this.gradient});
 
   @override
   Widget build(BuildContext context) {

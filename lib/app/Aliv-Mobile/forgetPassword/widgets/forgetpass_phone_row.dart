@@ -55,9 +55,9 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
       countryIsoCode: _selectedCountry?.countryCode ?? 'BS',
       enableCountryPicker: false,
       inputFormatters: const [BahamasPhoneInputFormatter()],
-      onChanged: (value) => context
-          .read<ForgetPasswordBloc>()
-          .add(ForgetPasswordPhoneChanged(value)),
+      onChanged: (value) => context.read<ForgetPasswordBloc>().add(
+        ForgetPasswordPhoneChanged(value),
+      ),
       backgroundColor: ForgetPasswordColors.pageBackground,
       unfocusedBorderColor: ForgetPasswordColors.fieldBorder,
       focusedBorderGradient: ForgetPasswordGradients.focusedInputBorder,

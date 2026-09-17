@@ -1,4 +1,3 @@
-
 class WhyAlivRepository {
   const WhyAlivRepository();
 

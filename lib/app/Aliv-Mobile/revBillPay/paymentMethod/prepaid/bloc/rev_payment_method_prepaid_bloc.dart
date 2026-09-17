@@ -8,7 +8,7 @@ class RevPaymentMethodPrepaidBloc
   final RevPaymentMethodPrepaidRepository repository;
 
   RevPaymentMethodPrepaidBloc({required this.repository})
-      : super(RevPaymentMethodPrepaidState.initial()) {
+    : super(RevPaymentMethodPrepaidState.initial()) {
     on<RevPaymentMethodPrepaidStarted>(_onStarted);
     on<RevPaymentMethodSelected>(_onSelected);
     on<RevPayWithCardPressed>(_onPayWithCard);
@@ -17,10 +17,15 @@ class RevPaymentMethodPrepaidBloc
   }
 
   Future<void> _onStarted(
-      RevPaymentMethodPrepaidStarted event,
-      Emitter<RevPaymentMethodPrepaidState> emit,
-      ) async {
-    emit(state.copyWith(status: RevPaymentMethodPrepaidStatus.loading, errorMessage: null));
+    RevPaymentMethodPrepaidStarted event,
+    Emitter<RevPaymentMethodPrepaidState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: RevPaymentMethodPrepaidStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final methods = await repository.fetchPaymentMethods();
@@ -42,26 +47,31 @@ class RevPaymentMethodPrepaidBloc
   }
 
   void _onSelected(
-      RevPaymentMethodSelected event,
-      Emitter<RevPaymentMethodPrepaidState> emit,
-      ) {
+    RevPaymentMethodSelected event,
+    Emitter<RevPaymentMethodPrepaidState> emit,
+  ) {
     emit(state.copyWith(selectedMethodId: event.methodId));
   }
 
   void _onPayWithCard(
-      RevPayWithCardPressed event,
-      Emitter<RevPaymentMethodPrepaidState> emit,
-      ) {
+    RevPayWithCardPressed event,
+    Emitter<RevPaymentMethodPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: RevPaymentMethodNavTarget.addCard));
   }
 
   Future<void> _onPayNow(
-      RevPayNowPressed event,
-      Emitter<RevPaymentMethodPrepaidState> emit,
-      ) async {
+    RevPayNowPressed event,
+    Emitter<RevPaymentMethodPrepaidState> emit,
+  ) async {
     if (!state.isPayNowEnabled) return;
 
-    emit(state.copyWith(status: RevPaymentMethodPrepaidStatus.submitting, errorMessage: null));
+    emit(
+      state.copyWith(
+        status: RevPaymentMethodPrepaidStatus.submitting,
+        errorMessage: null,
+      ),
+    );
 
     try {
       await repository.payNow(methodId: state.selectedMethodId!);
@@ -82,9 +92,9 @@ class RevPaymentMethodPrepaidBloc
   }
 
   void _onNavConsumed(
-      RevPaymentNavConsumed event,
-      Emitter<RevPaymentMethodPrepaidState> emit,
-      ) {
+    RevPaymentNavConsumed event,
+    Emitter<RevPaymentMethodPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: RevPaymentMethodNavTarget.none));
   }
 }

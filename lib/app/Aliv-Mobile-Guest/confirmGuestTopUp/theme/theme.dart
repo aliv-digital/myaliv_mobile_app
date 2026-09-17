@@ -77,10 +77,15 @@ class TopUpConfirmTheme {
   static const String termsLinkText = 'Terms & Conditions.';
 
   // Breakdown card layout and shape.
-  static const EdgeInsets breakdownWrapperPadding =
-      EdgeInsets.symmetric(horizontal: pageHorizontalPadding);
-  static const EdgeInsets breakdownCardPadding =
-      EdgeInsets.fromLTRB(16, 20, 16, 20);
+  static const EdgeInsets breakdownWrapperPadding = EdgeInsets.symmetric(
+    horizontal: pageHorizontalPadding,
+  );
+  static const EdgeInsets breakdownCardPadding = EdgeInsets.fromLTRB(
+    16,
+    20,
+    16,
+    20,
+  );
   // Top-left and top-right corner radius of the breakdown card.
   static const double breakdownCardRadius = 20;
   static const double breakdownScallopRadius = 10;
@@ -126,8 +131,10 @@ class TopUpConfirmTheme {
   static const double amountPillVerticalPadding = 6;
 
   // Optional custom card token set.
-  static const EdgeInsets customCardMargin =
-      EdgeInsets.symmetric(vertical: 10, horizontal: 20);
+  static const EdgeInsets customCardMargin = EdgeInsets.symmetric(
+    vertical: 10,
+    horizontal: 20,
+  );
   static const double customCardRadius = 12;
   static const double customCardElevation = 4;
   static const EdgeInsets customCardPadding = EdgeInsets.all(16);

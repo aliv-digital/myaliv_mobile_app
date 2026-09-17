@@ -79,7 +79,10 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
     );
   }
 
-  bool _shouldHandleStateSideEffects(ReferFriendPrepaidState previous,ReferFriendPrepaidState current) {
+  bool _shouldHandleStateSideEffects(
+    ReferFriendPrepaidState previous,
+    ReferFriendPrepaidState current,
+  ) {
     return previous.toastMessage != current.toastMessage ||
         previous.errorMessage != current.errorMessage ||
         previous.selectedTab != current.selectedTab ||
@@ -131,7 +134,8 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
     BuildContext context,
     ReferFriendPrepaidState state,
   ) {
-    final hasNewSuccessRequest = state.shareSuccessRequestId > _lastHandledShareSuccessRequestId;
+    final hasNewSuccessRequest =
+        state.shareSuccessRequestId > _lastHandledShareSuccessRequestId;
     final referralCode = state.referralCode.trim();
 
     // The share API owns navigation. The refer tab only submits the form;
@@ -161,7 +165,8 @@ class _ReferFriendPrepaidViewState extends State<_ReferFriendPrepaidView> {
 
   Widget _buildTabs() {
     return BlocBuilder<ReferFriendPrepaidBloc, ReferFriendPrepaidState>(
-      buildWhen: (previous, current) => previous.selectedTab != current.selectedTab,
+      buildWhen: (previous, current) =>
+          previous.selectedTab != current.selectedTab,
       builder: (context, state) {
         return ReferFriendPrepaidTabs(
           selectedIndex: state.selectedTab,

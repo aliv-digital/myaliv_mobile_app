@@ -21,8 +21,9 @@ class MpHeaderCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: MakePaymentConfirmationPostPaidTheme.cardBg,
-        borderRadius:
-            BorderRadius.circular(MakePaymentConfirmationPostPaidTheme.cardRadius),
+        borderRadius: BorderRadius.circular(
+          MakePaymentConfirmationPostPaidTheme.cardRadius,
+        ),
         boxShadow: const [
           BoxShadow(
             blurRadius: 10,
@@ -34,7 +35,8 @@ class MpHeaderCard extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: MakePaymentConfirmationPostPaidTheme.headerTopSectionPadding,
+            padding:
+                MakePaymentConfirmationPostPaidTheme.headerTopSectionPadding,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Column(
@@ -58,7 +60,8 @@ class MpHeaderCard extends StatelessWidget {
           ),
           const Divider(
             height: MakePaymentConfirmationPostPaidTheme.headerDividerThickness,
-            thickness: MakePaymentConfirmationPostPaidTheme.headerDividerThickness,
+            thickness:
+                MakePaymentConfirmationPostPaidTheme.headerDividerThickness,
             color: MakePaymentConfirmationPostPaidTheme.headerDividerColor,
           ),
           Padding(
@@ -94,8 +97,9 @@ class _AmountPill extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: MakePaymentConfirmationPostPaidTheme.amountPillBg,
-        borderRadius:
-            BorderRadius.circular(MakePaymentConfirmationPostPaidTheme.pillRadius),
+        borderRadius: BorderRadius.circular(
+          MakePaymentConfirmationPostPaidTheme.pillRadius,
+        ),
       ),
       child: Text(text, style: MakePaymentConfirmationPostPaidTheme.amountPill),
     );

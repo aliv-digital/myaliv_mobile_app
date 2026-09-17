@@ -25,8 +25,7 @@ class PaymentPayBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultBottomPayBar(
       amountText: state.amountText,
-      isVatExclusive:
-          state.vatNote.toLowerCase().contains('no vat applied'),
+      isVatExclusive: state.vatNote.toLowerCase().contains('no vat applied'),
       isButtonEnabled: state.isPayNowEnabled,
       isLoading: isSubmitting,
       buttonColor: HomePlansPaymentMethodTheme.payBtnBg,
@@ -66,7 +65,9 @@ class PaymentPayBar extends StatelessWidget {
     PaymentSheetLauncher.openWallet(
       context,
       walletBalance: balance.walletBalance,
-      walletBalanceText: BalanceCurrencyFormatterService.format(balance.walletBalance),
+      walletBalanceText: BalanceCurrencyFormatterService.format(
+        balance.walletBalance,
+      ),
       amountText: state.amountText,
     );
   }

@@ -7,7 +7,7 @@ import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 /// that detail here makes the UI easier to read and easier to test later.
 class UsageRepository {
   UsageRepository({NetworkService? networkService})
-      : _networkService = networkService;
+    : _networkService = networkService;
 
   final NetworkService? _networkService;
 

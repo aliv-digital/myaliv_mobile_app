@@ -63,17 +63,22 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MakePaymentConfirmationPostPaidBloc,
-        MakePaymentConfirmationPostPaidState>(
+    return BlocConsumer<
+      MakePaymentConfirmationPostPaidBloc,
+      MakePaymentConfirmationPostPaidState
+    >(
       listenWhen: (previousState, currentState) {
         return previousState.navTarget != currentState.navTarget;
       },
       listener: _handleNavigationIntent,
       builder: (context, state) {
-        final confirmationBloc = context.read<MakePaymentConfirmationPostPaidBloc>();
+        final confirmationBloc = context
+            .read<MakePaymentConfirmationPostPaidBloc>();
 
         return MediaQuery(
-          data:MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             // Page-level shell.
             backgroundColor: MakePaymentConfirmationPostPaidTheme.bg,
@@ -85,9 +90,7 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
             body: Column(
               children: [
                 _buildHeader(context, state),
-                Expanded(
-                  child: _buildScrollableContent(state),
-                ),
+                Expanded(child: _buildScrollableContent(state)),
               ],
             ),
           ),
@@ -105,8 +108,8 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
       return;
     }
     context.read<MakePaymentConfirmationPostPaidBloc>().add(
-          const MakePaymentNavConsumed(),
-        );
+      const MakePaymentNavConsumed(),
+    );
   }
 
   // Top app bar section.
@@ -176,7 +179,9 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPaymentBreakdownCard(MakePaymentConfirmationPostPaidState state) {
+  Widget _buildPaymentBreakdownCard(
+    MakePaymentConfirmationPostPaidState state,
+  ) {
     return CustomPaymentBreakDownCard(
       backgroundColor: MakePaymentConfirmationPostPaidTheme.receiptBg,
       scallopCount: _receiptScallopCount,
@@ -184,16 +189,12 @@ class _MakePaymentConfirmationPostPaidPage extends StatelessWidget {
     );
   }
 
-  List<CustomPaymentBreakdownLineItem> _buildBreakdownItems( MakePaymentConfirmationPostPaidState state) {
+  List<CustomPaymentBreakdownLineItem> _buildBreakdownItems(
+    MakePaymentConfirmationPostPaidState state,
+  ) {
     return <CustomPaymentBreakdownLineItem>[
-      _buildBreakdownLineItem(
-        label: 'sub total',
-        value: state.subtotal,
-      ),
-      _buildBreakdownLineItem(
-        label: 'vat',
-        value: state.vat,
-      ),
+      _buildBreakdownLineItem(label: 'sub total', value: state.subtotal),
+      _buildBreakdownLineItem(label: 'vat', value: state.vat),
       _buildBreakdownLineItem(
         label: 'total',
         value: state.total,

@@ -20,9 +20,9 @@ class ReferFriendPrepaidBloc
     required this.repository,
     LoginPhoneNumberHelper? phoneNumberHelper,
     ReferFriendPrepaidEmailHelper? emailHelper,
-  })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
-        emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
-        super(const ReferFriendPrepaidState()) {
+  }) : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+       emailHelper = emailHelper ?? const ReferFriendPrepaidEmailHelper(),
+       super(const ReferFriendPrepaidState()) {
     on<ReferFriendPrepaidStarted>(_onStarted);
     on<ReferFriendPrepaidTabChanged>(_onTabChanged);
 
@@ -146,13 +146,14 @@ class ReferFriendPrepaidBloc
       return;
     }
 
-    final LoginPhoneValidationResult phoneValidationResult =
-        phoneNumberHelper.validateAndBuildApiUsername(
-      rawPhoneNumber: state.friendPhone,
-      selectedCountry: state.selectedCountry,
-    );
+    final LoginPhoneValidationResult phoneValidationResult = phoneNumberHelper
+        .validateAndBuildApiUsername(
+          rawPhoneNumber: state.friendPhone,
+          selectedCountry: state.selectedCountry,
+        );
 
-    final bool hasInvalidPhone = !phoneValidationResult.isValid ||
+    final bool hasInvalidPhone =
+        !phoneValidationResult.isValid ||
         phoneValidationResult.phoneNumberForApi == null;
     final bool hasInvalidEmail = !emailHelper.isValid(state.friendEmail);
 
@@ -311,10 +312,8 @@ class ReferFriendPrepaidBloc
 
     // Refer-a-friend body carries `ReferringDeviceAccountId` — that's
     // the DEVICE id (from /Account/devices), not the account's id_acc.
-    final primaryDevice =
-        instance<DeviceLimitsCubit>().state.deviceLimits;
-    final deviceAccountId =
-        (primaryDevice?.deviceId ?? 0).toString();
+    final primaryDevice = instance<DeviceLimitsCubit>().state.deviceLimits;
+    final deviceAccountId = (primaryDevice?.deviceId ?? 0).toString();
     final phoneNumber = _firstNotEmpty([
       account.tNs.isNotEmpty ? account.tNs.first : '',
       account.primaryPhoneNumber,
@@ -365,8 +364,9 @@ class ReferFriendPrepaidBloc
     const String exceptionPrefix = 'Exception:';
 
     if (rawMessage.startsWith(exceptionPrefix)) {
-      final String cleanedMessage =
-          rawMessage.substring(exceptionPrefix.length).trim();
+      final String cleanedMessage = rawMessage
+          .substring(exceptionPrefix.length)
+          .trim();
 
       if (cleanedMessage.isNotEmpty) {
         return cleanedMessage;

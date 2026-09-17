@@ -3,9 +3,7 @@ import 'package:dio/dio.dart';
 import 'security_repository.dart';
 
 class SecurityRepositoryImpl implements SecurityRepository {
-  SecurityRepositoryImpl({
-    Dio? dio,
-  }) : _dio = dio ?? Dio();
+  SecurityRepositoryImpl({Dio? dio}) : _dio = dio ?? Dio();
 
   final Dio _dio;
 

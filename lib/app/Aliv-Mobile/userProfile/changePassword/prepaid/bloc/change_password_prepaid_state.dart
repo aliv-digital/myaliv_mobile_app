@@ -1,6 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-enum ChangePasswordPrepaidStatus { initial, ready, submitting, success, failure }
+enum ChangePasswordPrepaidStatus {
+  initial,
+  ready,
+  submitting,
+  success,
+  failure,
+}
 
 class ChangePasswordPrepaidState extends Equatable {
   final ChangePasswordPrepaidStatus status;

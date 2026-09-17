@@ -23,7 +23,9 @@ class RevPrimaryButton extends StatelessWidget {
         width: double.infinity,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: enabled ? RevPrepaidTheme.appBarBg : RevPrepaidTheme.proceedDisabled,
+          color: enabled
+              ? RevPrepaidTheme.appBarBg
+              : RevPrepaidTheme.proceedDisabled,
           borderRadius: BorderRadius.circular(22),
         ),
         child: Text(
@@ -31,7 +33,9 @@ class RevPrimaryButton extends StatelessWidget {
           style: RevPrepaidTheme.button.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: enabled ? Colors.white : Colors.white.withValues(alpha: 0.75),
+            color: enabled
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.75),
           ),
         ),
       ),

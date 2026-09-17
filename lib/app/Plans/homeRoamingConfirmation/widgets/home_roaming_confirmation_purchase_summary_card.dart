@@ -110,8 +110,9 @@ class HomeRoamingConfirmationPurchaseSummaryCard extends StatelessWidget {
                 item: _resolveDisplayItem(data.items[i]),
                 onRemove: () {
                   final itemId = data.items[i].id;
-                  final remainingItemCount =
-                      data.items.where((item) => item.id != itemId).length;
+                  final remainingItemCount = data.items
+                      .where((item) => item.id != itemId)
+                      .length;
 
                   onRemoveItem(itemId);
 

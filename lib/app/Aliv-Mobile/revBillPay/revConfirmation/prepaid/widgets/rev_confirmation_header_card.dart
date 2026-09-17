@@ -40,7 +40,10 @@ class RevConfirmationHeaderCard extends StatelessWidget {
             ),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(customerName, style: RevConfirmationPrepaidTheme.name),
+              child: Text(
+                customerName,
+                style: RevConfirmationPrepaidTheme.name,
+              ),
             ),
           ),
           const Divider(height: 1, thickness: 1, color: Color(0xFFE6E6F2)),
@@ -74,10 +77,7 @@ class _ServiceBlock extends StatelessWidget {
   final String service;
   final String accountNumber;
 
-  const _ServiceBlock({
-    required this.service,
-    required this.accountNumber,
-  });
+  const _ServiceBlock({required this.service, required this.accountNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,10 @@ class _ServiceBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(service, style: RevConfirmationPrepaidTheme.service),
-        Text('acct no. $accountNumber', style: RevConfirmationPrepaidTheme.smallMuted),
+        Text(
+          'acct no. $accountNumber',
+          style: RevConfirmationPrepaidTheme.smallMuted,
+        ),
       ],
     );
   }

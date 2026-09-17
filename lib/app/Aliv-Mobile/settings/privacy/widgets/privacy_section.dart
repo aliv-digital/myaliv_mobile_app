@@ -19,13 +19,11 @@ class PrivacySection extends StatelessWidget {
         Text(title, style: PrivacyTheme.title),
         const SizedBox(height: 16),
         ...paragraphs.map(
-              (p) => Padding(
+          (p) => Padding(
             padding: const EdgeInsets.only(bottom: 48),
             child: Text(p, style: PrivacyTheme.body),
           ),
-
         ),
-
       ],
     );
   }

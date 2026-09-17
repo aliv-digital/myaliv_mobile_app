@@ -42,7 +42,7 @@ class SplashPage extends StatelessWidget {
                   ColorManager
                       .splashVar1, //Color.fromRGBO(102, 89, 151, 1), // first color : rgb(102, 89, 151)
                   ColorManager
-                      .splashVar2 //Color.fromRGBO(74, 56, 107, 1),  // second color : rgb(74, 56, 107)
+                      .splashVar2, //Color.fromRGBO(74, 56, 107, 1),  // second color : rgb(74, 56, 107)
                 ],
                 stops: [
                   0.0, // first color stop point

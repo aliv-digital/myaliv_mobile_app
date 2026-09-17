@@ -33,8 +33,9 @@ class _AuthNameInputState extends State<AuthNameInput> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value != widget.value && _controller.text != widget.value) {
       _controller.text = widget.value;
-      _controller.selection =
-          TextSelection.collapsed(offset: widget.value.length);
+      _controller.selection = TextSelection.collapsed(
+        offset: widget.value.length,
+      );
     }
   }
 
@@ -57,8 +58,9 @@ class _AuthNameInputState extends State<AuthNameInput> {
       animation: _focusNode,
       builder: (BuildContext context, Widget? child) {
         final bool isFocused = _focusNode.hasFocus;
-        final double activeBorderWidth =
-            isFocused ? AutoRenewAuthPrepaidTheme.nameInputBorderWidth : 0.0;
+        final double activeBorderWidth = isFocused
+            ? AutoRenewAuthPrepaidTheme.nameInputBorderWidth
+            : 0.0;
         final double innerRadius =
             (AutoRenewAuthPrepaidTheme.nameInputBorderRadius -
                     activeBorderWidth)

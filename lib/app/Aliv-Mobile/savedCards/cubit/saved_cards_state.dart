@@ -2,12 +2,7 @@ import 'package:equatable/equatable.dart';
 import '../models/saved_card_model.dart';
 
 /// Status enum for saved cards operations.
-enum SavedCardsStatus {
-  initial,
-  loading,
-  success,
-  failure,
-}
+enum SavedCardsStatus { initial, loading, success, failure }
 
 /// State class for saved cards cubit.
 class SavedCardsState extends Equatable {
@@ -100,8 +95,9 @@ class SavedCardsState extends Equatable {
       isAddingCard: isAddingCard ?? this.isAddingCard,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastFetchedAt: lastFetchedAt ?? this.lastFetchedAt,
-      autoPayToken:
-          clearAutoPayToken ? null : (autoPayToken ?? this.autoPayToken),
+      autoPayToken: clearAutoPayToken
+          ? null
+          : (autoPayToken ?? this.autoPayToken),
       autoRenewToken: clearAutoRenewToken
           ? null
           : (autoRenewToken ?? this.autoRenewToken),
@@ -110,13 +106,13 @@ class SavedCardsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        cards,
-        removingTokens,
-        isAddingCard,
-        errorMessage,
-        lastFetchedAt,
-        autoPayToken,
-        autoRenewToken,
-      ];
+    status,
+    cards,
+    removingTokens,
+    isAddingCard,
+    errorMessage,
+    lastFetchedAt,
+    autoPayToken,
+    autoRenewToken,
+  ];
 }

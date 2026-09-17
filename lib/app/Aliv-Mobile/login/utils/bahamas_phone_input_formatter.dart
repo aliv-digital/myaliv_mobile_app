@@ -49,8 +49,9 @@ class BahamasPhoneInputFormatter extends TextInputFormatter {
       newValue.text,
       newValue.selection.extentOffset,
     );
-    final int digitIndexToRemove =
-        digitsBeforeCursor <= 0 ? 0 : digitsBeforeCursor - 1;
+    final int digitIndexToRemove = digitsBeforeCursor <= 0
+        ? 0
+        : digitsBeforeCursor - 1;
 
     return _removeDigitAt(oldDigits, digitIndexToRemove);
   }

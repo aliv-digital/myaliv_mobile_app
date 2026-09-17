@@ -14,10 +14,9 @@ class PayFromWalletCubit extends Cubit<PayFromWalletState> {
   }) async {
     if (state.isSubmitting) return;
 
-    emit(state.copyWith(
-      status: PayFromWalletStatus.submitting,
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(status: PayFromWalletStatus.submitting, clearError: true),
+    );
 
     try {
       await _repository.transfer(toNumber: toNumber, amount: amount);
@@ -27,15 +26,19 @@ class PayFromWalletCubit extends Cubit<PayFromWalletState> {
       );
       emit(state.copyWith(status: PayFromWalletStatus.success));
     } on SendTopupException catch (e) {
-      emit(state.copyWith(
-        status: PayFromWalletStatus.failure,
-        errorMessage: e.message,
-      ));
+      emit(
+        state.copyWith(
+          status: PayFromWalletStatus.failure,
+          errorMessage: e.message,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: PayFromWalletStatus.failure,
-        errorMessage: 'Could not complete the transfer. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: PayFromWalletStatus.failure,
+          errorMessage: 'Could not complete the transfer. Please try again.',
+        ),
+      );
     }
   }
 }

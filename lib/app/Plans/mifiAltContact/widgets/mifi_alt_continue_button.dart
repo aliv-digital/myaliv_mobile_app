@@ -20,8 +20,7 @@ class MifiAltContinueButton extends StatelessWidget {
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-        child:
-            BlocBuilder<AltNumberValidationCubit, AltNumberValidationState>(
+        child: BlocBuilder<AltNumberValidationCubit, AltNumberValidationState>(
           builder: (context, state) {
             final bool busy = state.isLoading;
             return DefaultButton(

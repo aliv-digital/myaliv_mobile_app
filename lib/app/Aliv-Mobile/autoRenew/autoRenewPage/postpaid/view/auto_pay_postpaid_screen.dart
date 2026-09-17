@@ -49,16 +49,16 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   @override
   void initState() {
     super.initState();
-    instance<SavedCardsCubit>()
-        .fetchSavedCards(forceRefresh: true, userType: UserType.postpaid);
+    instance<SavedCardsCubit>().fetchSavedCards(
+      forceRefresh: true,
+      userType: UserType.postpaid,
+    );
   }
 
   void _seedSelectionFromServer(SavedCardsState state) {
     if (_seededFromServer) return;
     if (!state.isSuccess) return;
-    if (_selectedCard != null ||
-        _noAutoRenewSelected ||
-        _payWithCardSelected) {
+    if (_selectedCard != null || _noAutoRenewSelected || _payWithCardSelected) {
       _seededFromServer = true;
       return;
     }
@@ -151,7 +151,8 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
   Widget build(BuildContext context) {
     return BlocListener<SavedCardsCubit, SavedCardsState>(
       listenWhen: (prev, curr) =>
-          prev.status != curr.status || prev.cards != curr.cards ||
+          prev.status != curr.status ||
+          prev.cards != curr.cards ||
           prev.autoPayToken != curr.autoPayToken,
       listener: (context, state) => _seedSelectionFromServer(state),
       child: _buildScaffold(),
@@ -168,7 +169,8 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
             SliverPersistentHeader(
               pinned: true,
               delegate: _PinnedHeaderDelegate(
-                height: AutoRenewPrepaidTheme.appBarHeight +
+                height:
+                    AutoRenewPrepaidTheme.appBarHeight +
                     MediaQuery.paddingOf(context).top,
                 child: DefaultAppBar(
                   showHome: true,
@@ -189,8 +191,8 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
                       selectedMethodId: _payWithCardSelected
                           ? AutoRenewPaymentMethod.payWithCard.id
                           : _noAutoRenewSelected
-                              ? AutoRenewPaymentMethod.none.id
-                              : _selectedCard?.token,
+                          ? AutoRenewPaymentMethod.none.id
+                          : _selectedCard?.token,
                       onCardSelected: (c) => setState(() {
                         _selectedCard = c;
                         _noAutoRenewSelected = false;

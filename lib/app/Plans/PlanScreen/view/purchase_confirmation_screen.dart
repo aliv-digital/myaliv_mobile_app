@@ -113,7 +113,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     final hasRecipientPhone = widget.recipientPhone != null;
 
     final isMyNumberTopUp = hasTopUpAmount && !hasRecipientPhone;
-    final isPostpaidOtherNumberTopUp = config.isPostpaid && hasTopUpAmount && hasRecipientPhone;
+    final isPostpaidOtherNumberTopUp =
+        config.isPostpaid && hasTopUpAmount && hasRecipientPhone;
     if (isMyNumberTopUp) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       context.push(
@@ -129,7 +130,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     if (isPostpaidOtherNumberTopUp) {
       final amountParam = widget.topUpAmount!.toStringAsFixed(2);
       final recipientParam = Uri.encodeQueryComponent(widget.recipientPhone!);
-      if(kDebugMode){
+      if (kDebugMode) {
         debugPrint("amount : $amountParam");
         debugPrint("receiver's phone : $recipientParam");
       }
@@ -439,54 +440,53 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         onBack: () => Navigator.of(context).maybePop(),
         onHome: () => context.go(AppRoutes.home),
       ),
-        bottomNavigationBar: ConfirmationBottomBar(
-          totalText: totalText,
-          vatLabel: vatLabel,
-          enabled: _termsAccepted,
-          onContinue: _continuePressed,
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ConfirmationPlanCard(
-                  date: _selectedBeginDate,
-                  showBeginOn: widget.showBeginOn,
-                  plan: _selectedPostpaidPlan,
-                  topUpAmount: widget.topUpAmount,
-                  recipientPhone: widget.recipientPhone,
+      bottomNavigationBar: ConfirmationBottomBar(
+        totalText: totalText,
+        vatLabel: vatLabel,
+        enabled: _termsAccepted,
+        onContinue: _continuePressed,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ConfirmationPlanCard(
+                date: _selectedBeginDate,
+                showBeginOn: widget.showBeginOn,
+                plan: _selectedPostpaidPlan,
+                topUpAmount: widget.topUpAmount,
+                recipientPhone: widget.recipientPhone,
+              ),
+              const SizedBox(height: 16),
+              if (widget.showBeginOn && _selectedBeginDate != null)
+                ConfirmationBeginOnCard(
+                  date: _selectedBeginDate!,
+                  onDateChanged: (date) =>
+                      setState(() => _selectedBeginDate = date),
                 ),
-                const SizedBox(height: 16),
-                if (widget.showBeginOn && _selectedBeginDate != null)
-                  ConfirmationBeginOnCard(
-                    date: _selectedBeginDate!,
-                    onDateChanged: (date) =>
-                        setState(() => _selectedBeginDate = date),
-                  ),
-                const SizedBox(height: 16),
-                ConfirmationTermsCheckbox(
-                  isChecked: _termsAccepted,
-                  onChanged: (v) => setState(() => _termsAccepted = v),
-                ),
-                const SizedBox(height: 16),
-                ConfirmationBreakdown(
-                  subTotalText: subTotalText,
-                  vatText: formatConfirmationCurrency(vat),
-                  totalText: totalText,
-                  promoValue: isSendTopUp ? null : _promoCode,
-                  promoEnabled:
-                      _promoStatus != _ConfirmationPromoStatus.applying,
-                  isPromoActionLoading:
-                      _promoStatus == _ConfirmationPromoStatus.applying,
-                  onPromoChanged: _onPromoCodeChanged,
-                  onPromoApply: _applyPromo,
-                ),
-              ],
-            ),
+              const SizedBox(height: 16),
+              ConfirmationTermsCheckbox(
+                isChecked: _termsAccepted,
+                onChanged: (v) => setState(() => _termsAccepted = v),
+              ),
+              const SizedBox(height: 16),
+              ConfirmationBreakdown(
+                subTotalText: subTotalText,
+                vatText: formatConfirmationCurrency(vat),
+                totalText: totalText,
+                promoValue: isSendTopUp ? null : _promoCode,
+                promoEnabled: _promoStatus != _ConfirmationPromoStatus.applying,
+                isPromoActionLoading:
+                    _promoStatus == _ConfirmationPromoStatus.applying,
+                onPromoChanged: _onPromoCodeChanged,
+                onPromoApply: _applyPromo,
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

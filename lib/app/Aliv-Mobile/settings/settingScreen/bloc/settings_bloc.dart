@@ -5,7 +5,8 @@ import '../repository/settings_repository.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   SettingsBloc({required SettingsRepository repository})
-      : _repository = repository, super(SettingsState.initial()) {
+    : _repository = repository,
+      super(SettingsState.initial()) {
     on<SettingsStarted>(_onStarted);
     on<FingerprintToggled>(_onFingerprintToggled);
     on<FaceScanToggled>(_onFaceScanToggled);
@@ -20,9 +21,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository _repository;
 
   Future<void> _onStarted(
-      SettingsStarted event,
-      Emitter<SettingsState> emit,
-      ) async {
+    SettingsStarted event,
+    Emitter<SettingsState> emit,
+  ) async {
     emit(state.copyWith(status: SettingsStatus.loading, errorMessage: null));
 
     try {
@@ -47,9 +48,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   Future<void> _onFingerprintToggled(
-      FingerprintToggled event,
-      Emitter<SettingsState> emit,
-      ) async {
+    FingerprintToggled event,
+    Emitter<SettingsState> emit,
+  ) async {
     // optimistic UI update
     emit(state.copyWith(fingerprintEnabled: event.enabled));
 
@@ -67,9 +68,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   Future<void> _onFaceScanToggled(
-      FaceScanToggled event,
-      Emitter<SettingsState> emit,
-      ) async {
+    FaceScanToggled event,
+    Emitter<SettingsState> emit,
+  ) async {
     emit(state.copyWith(faceScanEnabled: event.enabled));
 
     try {

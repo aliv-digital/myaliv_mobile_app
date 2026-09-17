@@ -9,7 +9,7 @@ class AutoRenewAuthPrepaidBloc
   final AutoRenewAuthPrepaidRepository repository;
 
   AutoRenewAuthPrepaidBloc({required this.repository})
-      : super(AutoRenewAuthPrepaidState.initial()) {
+    : super(AutoRenewAuthPrepaidState.initial()) {
     on<AutoRenewAuthPrepaidStarted>(_onStarted);
     on<AutoRenewAuthNameChanged>(_onNameChanged);
     on<AutoRenewAuthSubmitPressed>(_onSubmitPressed);
@@ -18,15 +18,17 @@ class AutoRenewAuthPrepaidBloc
   }
 
   Future<void> _onStarted(
-      AutoRenewAuthPrepaidStarted event,
-      Emitter<AutoRenewAuthPrepaidState> emit,
-      ) async {
-    emit(state.copyWith(
-      loadStatus: AutoRenewAuthLoadStatus.loading,
-      paymentMethod: event.paymentMethod,
-      cardToken: event.cardToken,
-      clearError: true,
-    ));
+    AutoRenewAuthPrepaidStarted event,
+    Emitter<AutoRenewAuthPrepaidState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        loadStatus: AutoRenewAuthLoadStatus.loading,
+        paymentMethod: event.paymentMethod,
+        cardToken: event.cardToken,
+        clearError: true,
+      ),
+    );
 
     try {
       final content = await repository.fetchContent(
@@ -49,16 +51,16 @@ class AutoRenewAuthPrepaidBloc
   }
 
   void _onNameChanged(
-      AutoRenewAuthNameChanged event,
-      Emitter<AutoRenewAuthPrepaidState> emit,
-      ) {
+    AutoRenewAuthNameChanged event,
+    Emitter<AutoRenewAuthPrepaidState> emit,
+  ) {
     emit(state.copyWith(name: event.name, clearError: true));
   }
 
   Future<void> _onSubmitPressed(
-      AutoRenewAuthSubmitPressed event,
-      Emitter<AutoRenewAuthPrepaidState> emit,
-      ) async {
+    AutoRenewAuthSubmitPressed event,
+    Emitter<AutoRenewAuthPrepaidState> emit,
+  ) async {
     final name = state.name;
     if (name.trim().isEmpty) {
       emit(state.copyWith(errorMessage: 'Please enter your name.'));
@@ -67,13 +69,21 @@ class AutoRenewAuthPrepaidBloc
 
     // Validate the exact displayed name before calling the API.
     if (!state.isNameValid) {
-      emit(state.copyWith(
-        errorMessage: 'Name does not match. Please enter your name exactly as displayed.',
-      ));
+      emit(
+        state.copyWith(
+          errorMessage:
+              'Name does not match. Please enter your name exactly as displayed.',
+        ),
+      );
       return;
     }
 
-    emit(state.copyWith(submitStatus: AutoRenewAuthSubmitStatus.submitting, clearError: true));
+    emit(
+      state.copyWith(
+        submitStatus: AutoRenewAuthSubmitStatus.submitting,
+        clearError: true,
+      ),
+    );
 
     try {
       final success = await repository.submitAuthorization(
@@ -108,16 +118,16 @@ class AutoRenewAuthPrepaidBloc
   }
 
   void _onHomePressed(
-      AutoRenewAuthHomePressed event,
-      Emitter<AutoRenewAuthPrepaidState> emit,
-      ) {
+    AutoRenewAuthHomePressed event,
+    Emitter<AutoRenewAuthPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: AutoRenewAuthNavTarget.home));
   }
 
   void _onNavigationConsumed(
-      AutoRenewAuthNavigationConsumed event,
-      Emitter<AutoRenewAuthPrepaidState> emit,
-      ) {
+    AutoRenewAuthNavigationConsumed event,
+    Emitter<AutoRenewAuthPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: AutoRenewAuthNavTarget.none));
   }
 }

@@ -73,8 +73,12 @@ class GuestPayBillConfirmTheme {
   static const double amountPillRadius = 5;
 
   // Bottom bar layout
-  static const EdgeInsets bottomBarPadding =
-      EdgeInsets.fromLTRB(18, 12, 18, 14);
+  static const EdgeInsets bottomBarPadding = EdgeInsets.fromLTRB(
+    18,
+    12,
+    18,
+    14,
+  );
   static const double bottomBarAmountToCaptionGap = 2;
   static const double bottomBarButtonHeight = 40;
   static const double bottomBarButtonWidth = 150;
@@ -150,7 +154,7 @@ class GuestPayBillConfirmTheme {
     fontFamily: AppConstants.defaultFontFamily,
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
-    decorationColor: termsLinkColor
+    decorationColor: termsLinkColor,
   );
 
   static const TextStyle breakdownRow = TextStyle(
@@ -170,18 +174,18 @@ class GuestPayBillConfirmTheme {
   );
 
   static TextStyle receiptLabel() => const TextStyle(
-        color: textLight,
-        fontSize: 12,
-        fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w500,
-      );
+    color: textLight,
+    fontSize: 12,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w500,
+  );
 
   static TextStyle receiptValue() => const TextStyle(
-        color: textLight,
-        fontSize: 12,
-        fontFamily: AppConstants.defaultFontFamily,
-        fontWeight: FontWeight.w600,
-      );
+    color: textLight,
+    fontSize: 12,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w600,
+  );
 
   static const TextStyle bottomAmount = TextStyle(
     color: textDark,

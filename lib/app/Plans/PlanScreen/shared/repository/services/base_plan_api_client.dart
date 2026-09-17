@@ -52,8 +52,8 @@ abstract class BasePlanApiClient {
     NetworkService? networkService,
     AuthManager? authManager,
     this.debugName,
-  })  : _networkService = networkService ?? instance<NetworkService>(),
-        _authManager = authManager ?? instance<AuthManager>();
+  }) : _networkService = networkService ?? instance<NetworkService>(),
+       _authManager = authManager ?? instance<AuthManager>();
 
   final NetworkService _networkService;
   final AuthManager _authManager;
@@ -208,7 +208,7 @@ abstract class BasePlanApiClient {
           'error',
           'errorMessage',
           'detail',
-          'title'
+          'title',
         ]) {
           final value = decoded[key];
           if (value is String && value.trim().isNotEmpty) {

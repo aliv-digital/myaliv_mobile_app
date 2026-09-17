@@ -6,10 +6,7 @@ class ReferFriendResponsePrepaidIcon extends StatelessWidget {
   /// If empty => fallback icon shows.
   final String assetPath;
 
-  const ReferFriendResponsePrepaidIcon({
-    super.key,
-    required this.assetPath,
-  });
+  const ReferFriendResponsePrepaidIcon({super.key, required this.assetPath});
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +39,17 @@ class ReferFriendResponsePrepaidIcon extends StatelessWidget {
             child: Center(
               child: hasAsset
                   ? SvgPicture.asset(
-                assetPath,
-                width: 18,
-                height: 18,
-                // NOTE: If your SVG uses its own color, leave as-is.
-                // If you want to force white icon, tell me—I'll add a color override.
-              )
+                      assetPath,
+                      width: 18,
+                      height: 18,
+                      // NOTE: If your SVG uses its own color, leave as-is.
+                      // If you want to force white icon, tell me—I'll add a color override.
+                    )
                   : const Icon(
-                Icons.sms_outlined,
-                size: 18,
-                color: Colors.white,
-              ),
+                      Icons.sms_outlined,
+                      size: 18,
+                      color: Colors.white,
+                    ),
             ),
           ),
         ],

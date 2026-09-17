@@ -9,7 +9,7 @@ class EnterPasswordPostpaidBloc
   final EnterPasswordPostpaidRepository repository;
 
   EnterPasswordPostpaidBloc(this.repository)
-      : super(EnterPasswordPostpaidState.initial()) {
+    : super(EnterPasswordPostpaidState.initial()) {
     on<EnterPasswordPostpaidStarted>(_onStarted);
     on<EnterPasswordPostpaidBackPressed>(_onBack);
     on<EnterPasswordPostpaidPasswordChanged>(_onPasswordChanged);
@@ -20,9 +20,9 @@ class EnterPasswordPostpaidBloc
   }
 
   Future<void> _onStarted(
-      EnterPasswordPostpaidStarted event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) async {
+    EnterPasswordPostpaidStarted event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) async {
     emit(
       state.copyWith(
         status: EnterPasswordPostpaidStatus.ready,
@@ -32,30 +32,30 @@ class EnterPasswordPostpaidBloc
   }
 
   void _onBack(
-      EnterPasswordPostpaidBackPressed event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) {
+    EnterPasswordPostpaidBackPressed event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) {
     // navigation handle তুমি screen-level এ করতে পারো
   }
 
   void _onPasswordChanged(
-      EnterPasswordPostpaidPasswordChanged event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) {
+    EnterPasswordPostpaidPasswordChanged event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) {
     emit(state.copyWith(password: event.value, errorMessage: null));
   }
 
   void _onToggle(
-      EnterPasswordPostpaidToggleObscure event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) {
+    EnterPasswordPostpaidToggleObscure event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) {
     emit(state.copyWith(obscure: !state.obscure));
   }
 
   Future<void> _onContinue(
-      EnterPasswordPostpaidContinuePressed event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) async {
+    EnterPasswordPostpaidContinuePressed event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) async {
     if (!state.isValid) {
       emit(
         state.copyWith(
@@ -116,17 +116,17 @@ class EnterPasswordPostpaidBloc
   }
 
   Future<void> _onFaceId(
-      EnterPasswordPostpaidFaceIdPressed event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) async {
+    EnterPasswordPostpaidFaceIdPressed event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) async {
     // TODO: integrate local_auth later
     await repository.authenticateWithFaceId();
   }
 
   Future<void> _onFingerprint(
-      EnterPasswordPostpaidFingerprintPressed event,
-      Emitter<EnterPasswordPostpaidState> emit,
-      ) async {
+    EnterPasswordPostpaidFingerprintPressed event,
+    Emitter<EnterPasswordPostpaidState> emit,
+  ) async {
     // TODO: integrate local_auth later
     await repository.authenticateWithFingerprint();
   }

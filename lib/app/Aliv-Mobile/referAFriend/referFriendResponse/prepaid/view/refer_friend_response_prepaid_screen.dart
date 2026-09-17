@@ -32,41 +32,46 @@ class _ReferFriendResponsePrepaidView extends StatelessWidget {
       backgroundColor: ReferFriendResponsePrepaidTheme.bg,
       body: SafeArea(
         top: false,
-        child: BlocListener<ReferFriendResponsePrepaidBloc,
-            ReferFriendResponsePrepaidState>(
-          listenWhen: (p, c) => p.toastMessage != c.toastMessage,
-          listener: (context, state) {
-            final msg = state.toastMessage;
-            if (msg == null || msg.isEmpty) return;
+        child:
+            BlocListener<
+              ReferFriendResponsePrepaidBloc,
+              ReferFriendResponsePrepaidState
+            >(
+              listenWhen: (p, c) => p.toastMessage != c.toastMessage,
+              listener: (context, state) {
+                final msg = state.toastMessage;
+                if (msg == null || msg.isEmpty) return;
 
-            AppToast.show(message: msg.toString());
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(content: Text(msg)),
-            // );
+                AppToast.show(message: msg.toString());
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   SnackBar(content: Text(msg)),
+                // );
 
-            context.read<ReferFriendResponsePrepaidBloc>().add(const ReferFriendResponsePrepaidToastConsumed());
-          },
-          child: Column(
-            children: [
-              // ✅ Sticky AppBar (won't scroll)
-              const _HeaderBar(),
+                context.read<ReferFriendResponsePrepaidBloc>().add(
+                  const ReferFriendResponsePrepaidToastConsumed(),
+                );
+              },
+              child: Column(
+                children: [
+                  // ✅ Sticky AppBar (won't scroll)
+                  const _HeaderBar(),
 
-              // ✅ Body
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 420),
-                      child: const ReferFriendResponsePrepaidCard(),
+                  // ✅ Body
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 420),
+                          child: const ReferFriendResponsePrepaidCard(),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
       ),
     );
   }
@@ -80,7 +85,8 @@ class _HeaderBar extends StatelessWidget {
     return DefaultAppBar(
       title: 'success!',
       showHome: false,
-      showBackArrow: true,centerTitle: false,
+      showBackArrow: true,
+      centerTitle: false,
       backgroundColor: ReferFriendResponsePrepaidTheme.brand,
       onBack: () {},
     );

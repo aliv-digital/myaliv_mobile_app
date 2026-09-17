@@ -187,9 +187,7 @@ class _SupportBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
-      child: _SupportMenuList(),
-    );
+    return const SafeArea(child: _SupportMenuList());
   }
 }
 

@@ -51,13 +51,20 @@ class AutoRenewPrepaidTheme {
   static const EdgeInsets bodyPadding = EdgeInsets.fromLTRB(24, 32, 24, 18);
   static const EdgeInsets sectionPadding = EdgeInsets.all(14);
   static const EdgeInsets cardTilePadding = EdgeInsets.all(16);
-  static const EdgeInsets addCardButtonPadding =
-      EdgeInsets.symmetric(horizontal: 16);
-  static const EdgeInsets addCardBottomSheetPadding =
-      EdgeInsets.fromLTRB(18, 14, 18, 18);
+  static const EdgeInsets addCardButtonPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+  );
+  static const EdgeInsets addCardBottomSheetPadding = EdgeInsets.fromLTRB(
+    18,
+    14,
+    18,
+    18,
+  );
   static const double addCardBottomSheetBottomBase = 18.0;
-  static const EdgeInsets addCardInputPadding =
-      EdgeInsets.symmetric(horizontal: 12, vertical: 0);
+  static const EdgeInsets addCardInputPadding = EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 0,
+  );
 
   static const double sectionItemGap = 10.0;
   static const double sectionTitleGap = 16.0;
@@ -105,20 +112,20 @@ class AutoRenewPrepaidTheme {
   );
 
   static TextStyle tileTitle({required bool selected}) => TextStyle(
-        fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-        color: selected ? primary : textSecondary,
-        fontSize: 14,
-        fontFamily: fontFamily,
-        height: 1.43,
-      );
+    fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+    color: selected ? primary : textSecondary,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    height: 1.43,
+  );
 
   static TextStyle tileSubtitle({required bool selected}) => TextStyle(
-        color: selected ? primary : textSecondary,
-        fontSize: 14,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w500,
-        height: 1.43,
-      );
+    color: selected ? primary : textSecondary,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    height: 1.43,
+  );
 
   static const TextStyle addCardButtonTextStyle = TextStyle(
     color: primary,

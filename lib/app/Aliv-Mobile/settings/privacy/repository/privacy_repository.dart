@@ -5,7 +5,5 @@ abstract class PrivacyRepository {
 class PrivacyContent {
   final String htmlContent;
 
-  const PrivacyContent({
-    required this.htmlContent,
-  });
+  const PrivacyContent({required this.htmlContent});
 }

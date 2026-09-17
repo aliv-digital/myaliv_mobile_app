@@ -70,14 +70,12 @@ class AddOnCard extends StatelessWidget {
                     style: GuestPurchasePlanTheme.addOnTitle,
                   ),
                 ),
-                _CheckBoxSquare(
-                  checked: selected,
-                  onTap: onToggle,
-                ),
+                _CheckBoxSquare(checked: selected, onTap: onToggle),
               ],
             ),
             const SizedBox(
-                height: GuestPurchasePlanTheme.addOnCardTitleToDetailsGap),
+              height: GuestPurchasePlanTheme.addOnCardTitleToDetailsGap,
+            ),
             // Bottom row: icon + label + value on left and amount pill on right.
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,13 +93,15 @@ class AddOnCard extends StatelessWidget {
                     height: GuestPurchasePlanTheme.addOnCardInfoIconSize,
                   ),
                 const SizedBox(
-                    width: GuestPurchasePlanTheme.addOnCardIconToLabelGap),
+                  width: GuestPurchasePlanTheme.addOnCardIconToLabelGap,
+                ),
                 Text(
                   addon.label, // data balance
                   style: GuestPurchasePlanTheme.addOnLabel,
                 ),
                 const SizedBox(
-                    width: GuestPurchasePlanTheme.addOnCardLabelToValueGap),
+                  width: GuestPurchasePlanTheme.addOnCardLabelToValueGap,
+                ),
                 Expanded(
                   child: Text(
                     addon.value, // 1gb
@@ -111,7 +111,8 @@ class AddOnCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                    width: GuestPurchasePlanTheme.addOnCardValueToPriceGap),
+                  width: GuestPurchasePlanTheme.addOnCardValueToPriceGap,
+                ),
                 _PricePill(price: addon.price),
               ],
             ),
@@ -146,10 +147,7 @@ class _CheckBoxSquare extends StatelessWidget {
   final bool checked;
   final VoidCallback onTap;
 
-  const _CheckBoxSquare({
-    required this.checked,
-    required this.onTap,
-  });
+  const _CheckBoxSquare({required this.checked, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

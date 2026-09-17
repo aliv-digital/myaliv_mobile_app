@@ -25,8 +25,8 @@ class BalanceRepositoryImpl implements BalanceRepository {
   BalanceRepositoryImpl({
     required BalanceApiService apiService,
     required BalanceParserService parserService,
-  })  : _apiService = apiService,
-        _parserService = parserService;
+  }) : _apiService = apiService,
+       _parserService = parserService;
 
   @override
   Future<BalanceModel> fetchBalances({required int deviceAccountId}) async {

@@ -21,7 +21,11 @@ class NotAppToast {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.check, size: 16, color: Color(0xFF57C7B0)),
+              child: const Icon(
+                Icons.check,
+                size: 16,
+                color: Color(0xFF57C7B0),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(

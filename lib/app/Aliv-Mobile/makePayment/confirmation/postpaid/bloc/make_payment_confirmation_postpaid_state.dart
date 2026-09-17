@@ -87,18 +87,18 @@ class MakePaymentConfirmationPostPaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        title,
-        customerName,
-        accountNumber,
-        headerLabel,
-        amountPill,
-        subtotal,
-        vat,
-        total,
-        bottomSubtitle,
-        bottomAmount,
-        promoCode,
-        canApplyPromo,
-        navTarget,
-      ];
+    title,
+    customerName,
+    accountNumber,
+    headerLabel,
+    amountPill,
+    subtotal,
+    vat,
+    total,
+    bottomSubtitle,
+    bottomAmount,
+    promoCode,
+    canApplyPromo,
+    navTarget,
+  ];
 }

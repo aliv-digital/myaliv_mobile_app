@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-
-final GlobalKey<NavigatorState> rootNavigatorKey =
-GlobalKey<NavigatorState>();
-
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 enum ToastType { success, error }
 
@@ -23,21 +20,20 @@ class AppToast {
 
     final isSuccess = type == ToastType.success;
 
-    final backgroundColor =
-    isSuccess ? const Color(0xFF4DDBC0) : const Color(0xFFE54848);
+    final backgroundColor = isSuccess
+        ? const Color(0xFF4DDBC0)
+        : const Color(0xFFE54848);
 
-    final textColor =
-    isSuccess ? const Color(0xFF084338) : Colors.white;
+    final textColor = isSuccess ? const Color(0xFF084338) : Colors.white;
 
-    final iconColor =
-    isSuccess ? const Color(0xFF094338) : Colors.white;
+    final iconColor = isSuccess ? const Color(0xFF094338) : Colors.white;
 
     final entry = OverlayEntry(
       builder: (_) => Positioned(
-        top: MediaQueryData.fromWindow(
-            WidgetsBinding.instance.window)
-            .padding
-            .top +
+        top:
+            MediaQueryData.fromWindow(
+              WidgetsBinding.instance.window,
+            ).padding.top +
             16,
         left: 16,
         right: 16,
@@ -110,5 +106,4 @@ class AppToast {
       _currentToast = null;
     });
   }
-
 }

@@ -24,15 +24,9 @@ class ReceiptDetailRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              label,
-              style: GuestPayBillReceiptTheme.detailLabel,
-            ),
+            child: Text(label, style: GuestPayBillReceiptTheme.detailLabel),
           ),
-          Text(
-            value,
-            style: valueStyle,
-          ),
+          Text(value, style: valueStyle),
         ],
       ),
     );

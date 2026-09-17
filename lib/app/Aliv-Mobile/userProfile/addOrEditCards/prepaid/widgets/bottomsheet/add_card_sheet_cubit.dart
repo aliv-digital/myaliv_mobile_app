@@ -67,21 +67,33 @@ class AddCardSheetCubit extends Cubit<AddCardSheetState> {
 
   void init() {
     final months = const [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
 
     final now = DateTime.now();
     final years = List<int>.generate(12, (i) => now.year + i); // next 12 years
 
-    emit(state.copyWith(
-      months: months,
-      years: years,
-      selectedMonth: months.first,
-      selectedYear: years.first,
-      status: AddCardSheetStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        months: months,
+        years: years,
+        selectedMonth: months.first,
+        selectedYear: years.first,
+        status: AddCardSheetStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void monthChanged(String value) {
@@ -95,7 +107,9 @@ class AddCardSheetCubit extends Cubit<AddCardSheetState> {
   Future<void> savePressed() async {
     if (state.status == AddCardSheetStatus.loading) return;
 
-    emit(state.copyWith(status: AddCardSheetStatus.loading, errorMessage: null));
+    emit(
+      state.copyWith(status: AddCardSheetStatus.loading, errorMessage: null),
+    );
 
     try {
       // ✅ API integrate later:
@@ -104,10 +118,12 @@ class AddCardSheetCubit extends Cubit<AddCardSheetState> {
       await Future<void>.delayed(const Duration(milliseconds: 450));
       emit(state.copyWith(status: AddCardSheetStatus.success));
     } catch (_) {
-      emit(state.copyWith(
-        status: AddCardSheetStatus.failure,
-        errorMessage: 'Failed to save card. Try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: AddCardSheetStatus.failure,
+          errorMessage: 'Failed to save card. Try again.',
+        ),
+      );
     }
   }
 }

@@ -24,7 +24,8 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     required this.dateText,
     required this.timeText,
     this.paymentMethod = 'credit card',
-    this.statusMessage = 'It will take a few moments for the top-up to appear on the account. ',
+    this.statusMessage =
+        'It will take a few moments for the top-up to appear on the account. ',
     this.leftType = 'service',
     this.rightType = 'REV',
     this.details,
@@ -57,12 +58,15 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
       return _PaymentFailedReceiptView(phoneNumber: phoneNumber);
     }
 
-    final displayPaymentMethod =
-        AppSession.appRoute == 'prepaidPlanPurchase' ? 'wallet' : paymentMethod;
+    final displayPaymentMethod = AppSession.appRoute == 'prepaidPlanPurchase'
+        ? 'wallet'
+        : paymentMethod;
 
     /// Dynamic details list. Prefer values passed through route `extra`; keep
     /// the old placeholder rows only for legacy callers that do not pass data.
-    final receiptDetails = details ?? <HomePlanPurchaseReceiptDetailItem>[
+    final receiptDetails =
+        details ??
+        <HomePlanPurchaseReceiptDetailItem>[
           const HomePlanPurchaseReceiptDetailItem(
             label: 'plan',
             value: 'liberty70',
@@ -152,7 +156,10 @@ class _HomePlanPurchaseReceiptViewState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<HomePlanPurchaseReceiptBloc, HomePlanPurchaseReceiptState>(
+    return BlocListener<
+      HomePlanPurchaseReceiptBloc,
+      HomePlanPurchaseReceiptState
+    >(
       listenWhen: (p, c) => p.backHomeRequestId != c.backHomeRequestId,
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
@@ -181,34 +188,38 @@ class _HomePlanPurchaseReceiptViewState
                     top: 29,
                     bottom: 30,
                   ),
-                  child: BlocBuilder<HomePlanPurchaseReceiptBloc,
-                      HomePlanPurchaseReceiptState>(
-                    builder: (context, state) {
-                      final data = state.data;
-                      if (data == null) return const SizedBox.shrink();
+                  child:
+                      BlocBuilder<
+                        HomePlanPurchaseReceiptBloc,
+                        HomePlanPurchaseReceiptState
+                      >(
+                        builder: (context, state) {
+                          final data = state.data;
+                          if (data == null) return const SizedBox.shrink();
 
-                      return HomePlanPurchaseReceiptSuccessCard(
-                        data: data,
-                        onBackHome: () {
-                          if (AppSession.appRoute == 'prepaidPlan' ||
-                              AppSession.appRoute == 'postpaidPlan' ||
-                              AppSession.appRoute == 'prepaidPlanPurchase' ||
-                              AppSession.appRoute == 'addOnsPrepaid') {
-                            context.go(AppRoutes.home);
-                            AppSession.resetAppRoute();
-                          } else {
-                            context.go(AppRoutes.home);
-                          }
+                          return HomePlanPurchaseReceiptSuccessCard(
+                            data: data,
+                            onBackHome: () {
+                              if (AppSession.appRoute == 'prepaidPlan' ||
+                                  AppSession.appRoute == 'postpaidPlan' ||
+                                  AppSession.appRoute ==
+                                      'prepaidPlanPurchase' ||
+                                  AppSession.appRoute == 'addOnsPrepaid') {
+                                context.go(AppRoutes.home);
+                                AppSession.resetAppRoute();
+                              } else {
+                                context.go(AppRoutes.home);
+                              }
+                            },
+                            saveCardSection: SaveCardOnReceiptSection(
+                              details: widget.cardToSave,
+                            ),
+                            pageBackground:
+                                HomePlanPurchaseReceiptTheme.circleBackground,
+                            statusMessage: widget.statusMessage,
+                          );
                         },
-                        saveCardSection: SaveCardOnReceiptSection(
-                          details: widget.cardToSave,
-                        ),
-                        pageBackground:
-                            HomePlanPurchaseReceiptTheme.circleBackground,
-                        statusMessage: widget.statusMessage,
-                      );
-                    },
-                  ),
+                      ),
                 ),
               ),
 

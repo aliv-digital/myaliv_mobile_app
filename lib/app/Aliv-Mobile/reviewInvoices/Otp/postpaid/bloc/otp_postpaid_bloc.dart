@@ -8,7 +8,8 @@ import 'otp_postpaid_state.dart';
 class OTPPostpaidBloc extends Bloc<OTPPostpaidEvent, OTPPostpaidState> {
   final OTPPostpaidRepository repository;
 
-  OTPPostpaidBloc({required this.repository}) : super(const OTPPostpaidState()) {
+  OTPPostpaidBloc({required this.repository})
+    : super(const OTPPostpaidState()) {
     on<OTPPostpaidCodeChanged>((event, emit) {
       emit(
         state.copyWith(
@@ -24,9 +25,9 @@ class OTPPostpaidBloc extends Bloc<OTPPostpaidEvent, OTPPostpaidState> {
   }
 
   Future<void> _onSubmitted(
-      OTPPostpaidSubmitted event,
-      Emitter<OTPPostpaidState> emit,
-      ) async {
+    OTPPostpaidSubmitted event,
+    Emitter<OTPPostpaidState> emit,
+  ) async {
     if (state.code.length < 5) {
       emit(
         state.copyWith(
@@ -37,12 +38,7 @@ class OTPPostpaidBloc extends Bloc<OTPPostpaidEvent, OTPPostpaidState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        status: OTPPostpaidStatus.loading,
-        errorMessage: null,
-      ),
-    );
+    emit(state.copyWith(status: OTPPostpaidStatus.loading, errorMessage: null));
 
     try {
       debugPrint("OTP CODE : ${state.code}");
@@ -59,9 +55,9 @@ class OTPPostpaidBloc extends Bloc<OTPPostpaidEvent, OTPPostpaidState> {
   }
 
   Future<void> _onResendRequested(
-      OTPPostpaidResendRequested event,
-      Emitter<OTPPostpaidState> emit,
-      ) async {
+    OTPPostpaidResendRequested event,
+    Emitter<OTPPostpaidState> emit,
+  ) async {
     emit(state.copyWith(resendStatus: OTPPostpaidResendStatus.loading));
 
     try {

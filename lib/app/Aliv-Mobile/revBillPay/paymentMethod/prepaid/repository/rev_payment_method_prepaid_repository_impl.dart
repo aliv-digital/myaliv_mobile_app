@@ -3,7 +3,8 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../model/rev_payment_method_prepaid_models.dart';
 import 'rev_payment_method_prepaid_repository.dart';
 
-class RevPaymentMethodPrepaidRepositoryImpl implements RevPaymentMethodPrepaidRepository {
+class RevPaymentMethodPrepaidRepositoryImpl
+    implements RevPaymentMethodPrepaidRepository {
   @override
   Future<List<RevSavedPaymentMethod>> fetchPaymentMethods() async {
     // TODO: replace with real API

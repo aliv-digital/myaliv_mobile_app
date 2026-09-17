@@ -62,7 +62,7 @@ class _LoginView extends StatelessWidget {
           listenWhen: (previous, current) {
             final bool loginSuccessChanged =
                 previous.status != current.status &&
-                    current.status == LoginStatus.success;
+                current.status == LoginStatus.success;
 
             final bool errorToastTriggered =
                 previous.errorToastId != current.errorToastId;
@@ -84,7 +84,9 @@ class _LoginView extends StatelessWidget {
 
               // 2FA path: forward mfa_token to the OTP screen.
               AppToast.show(
-                  message: 'OTP sent successfully', type: ToastType.success);
+                message: 'OTP sent successfully',
+                type: ToastType.success,
+              );
 
               final String? mfaToken = state.mfaToken;
               if (mfaToken == null || mfaToken.isEmpty) {
@@ -126,9 +128,7 @@ class _LoginView extends StatelessWidget {
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              const SliverToBoxAdapter(
-                child: LoginHeader(),
-              ),
+              const SliverToBoxAdapter(child: LoginHeader()),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: AuthModulePaddings.pageHorizontal,
@@ -137,12 +137,20 @@ class _LoginView extends StatelessWidget {
                     children: [
                       const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
                       const LoginPhoneRow(),
-                      const SizedBox(height: AuthModuleSizes.phoneToPasswordGap),
+                      const SizedBox(
+                        height: AuthModuleSizes.phoneToPasswordGap,
+                      ),
                       const LoginPasswordField(),
-                      const SizedBox(height: AuthModuleSizes.passwordToErrorRowGap),
+                      const SizedBox(
+                        height: AuthModuleSizes.passwordToErrorRowGap,
+                      ),
                       BlocBuilder<LoginBloc, LoginState>(
                         builder: (context, state) {
-                          final hasError = state.status == LoginStatus.failure && state.errorMessage != null && (state.phoneFieldError || state.passwordFieldError);
+                          final hasError =
+                              state.status == LoginStatus.failure &&
+                              state.errorMessage != null &&
+                              (state.phoneFieldError ||
+                                  state.passwordFieldError);
                           return Row(
                             children: [
                               Expanded(
@@ -168,7 +176,8 @@ class _LoginView extends StatelessWidget {
                                 onPressed: () {
                                   context.push(AppRoutes.forgetPassword);
                                 },
-                                child: const Text('forgot password?',
+                                child: const Text(
+                                  'forgot password?',
                                   style: AuthModuleTextStyles.forgotPassword,
                                 ),
                               ),
@@ -176,7 +185,9 @@ class _LoginView extends StatelessWidget {
                           );
                         },
                       ),
-                      const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
+                      const SizedBox(
+                        height: AuthModuleSizes.errorRowToSignInGap,
+                      ),
                       BlocBuilder<LoginBloc, LoginState>(
                         builder: (context, state) {
                           final loading = state.status == LoginStatus.loading;
@@ -186,7 +197,9 @@ class _LoginView extends StatelessWidget {
                             height: AuthModuleSizes.fieldHeight,
                             textStyle: AuthModuleTextStyles.signInButton,
                             onPressed: () {
-                              context.read<LoginBloc>().add(const LoginSubmitted());
+                              context.read<LoginBloc>().add(
+                                const LoginSubmitted(),
+                              );
                             },
                           );
                         },
@@ -195,7 +208,9 @@ class _LoginView extends StatelessWidget {
                       const LoginSocialButtons(),
                       const SizedBox(height: AuthModuleSizes.socialToBottomGap),
                       LoginBottomTexts(),
-                      const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
+                      const SizedBox(
+                        height: AuthModuleSizes.bottomScrollSafeGap,
+                      ),
                     ],
                   ),
                 ),

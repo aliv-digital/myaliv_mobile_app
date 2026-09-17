@@ -15,7 +15,8 @@ class LoginPhoneValidationResult {
     this.errorMessage,
   });
 
-  const LoginPhoneValidationResult.success({required String phoneNumberForApi}) : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
+  const LoginPhoneValidationResult.success({required String phoneNumberForApi})
+    : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
 
   const LoginPhoneValidationResult.failure({required String errorMessage})
     : this._(isValid: false, errorMessage: errorMessage);
@@ -39,6 +40,7 @@ class LoginPhoneNumberHelper {
     }
     return rawInput.trim();
   }
+
   static const Map<String, String> _territoryDialCodeOverrides =
       <String, String>{
         // Bahamas is part of the shared NANP parent code and should display `1`

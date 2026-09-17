@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 enum OtpAutoRenewPrepaidStatus { initial, loading, success, failure }
+
 enum OtpAutoRenewPrepaidResendStatus { idle, loading, done }
 
 class OtpAutoRenewPrepaidState extends Equatable {

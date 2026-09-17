@@ -78,142 +78,138 @@ class GuestSplashView extends StatelessWidget {
 
       body: BlocBuilder<GuestSplashBloc, GuestSplashState>(
         builder: (context, state) {
-          final imageUrl =
-              state is GuestSplashLoadedState ? state.mobileImageUrl : null;
+          final imageUrl = state is GuestSplashLoadedState
+              ? state.mobileImageUrl
+              : null;
 
           return LayoutBuilder(
-              builder: (context, constraints) {
-                final minPurpleHeight =
-                    (constraints.maxHeight - _heroHeight).clamp(
-                  0.0,
-                  double.infinity,
-                );
+            builder: (context, constraints) {
+              final minPurpleHeight = (constraints.maxHeight - _heroHeight)
+                  .clamp(0.0, double.infinity);
 
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: _heroHeight,
-                          width: double.infinity,
-                          child: Stack(
-                            children: [
-                              Positioned.fill(
-                                child: _GuestHeroImage(imageUrl: imageUrl),
-                              ),
-                              Positioned(
-                                top: _backButtonTopOffset,
-                                left: _backButtonLeftOffset,
-                                child: SafeArea(
-                                  bottom: false,
-                                  child: InkWell(
-                                    onTap: () {
-                                      context.pop();
-                                    },
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: Container(
-                                      width: _backButtonSize,
-                                      height: _backButtonSize,
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Colors.white.withValues(alpha: 0.6),
-                                        shape: BoxShape.circle,
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: _heroHeight,
+                        width: double.infinity,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: _GuestHeroImage(imageUrl: imageUrl),
+                            ),
+                            Positioned(
+                              top: _backButtonTopOffset,
+                              left: _backButtonLeftOffset,
+                              child: SafeArea(
+                                bottom: false,
+                                child: InkWell(
+                                  onTap: () {
+                                    context.pop();
+                                  },
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    width: _backButtonSize,
+                                    height: _backButtonSize,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.6,
                                       ),
-                                      alignment: Alignment.center,
-                                      child: Icon(
-                                        Icons.chevron_left,
-                                        color: HexColor.fromHex('#645D9C'),
-                                        size: _backIconSize,
-                                      ),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      Icons.chevron_left,
+                                      color: HexColor.fromHex('#645D9C'),
+                                      size: _backIconSize,
                                     ),
                                   ),
                                 ),
                               ),
-                              Positioned(
-                                top: _logoTopOffset,
-                                left:
-                                    constraints.maxWidth / 2 - (_logoWidth / 2),
-                                right:
-                                    constraints.maxWidth / 2 - (_logoWidth / 2),
-                                child: SvgPicture.asset(
-                                  AssetConstant.splashLogoSVG,
-                                  width: _logoWidth,
-                                  height: _logoHeight,
-                                ),
+                            ),
+                            Positioned(
+                              top: _logoTopOffset,
+                              left: constraints.maxWidth / 2 - (_logoWidth / 2),
+                              right:
+                                  constraints.maxWidth / 2 - (_logoWidth / 2),
+                              child: SvgPicture.asset(
+                                AssetConstant.splashLogoSVG,
+                                width: _logoWidth,
+                                height: _logoHeight,
                               ),
-                              Positioned(
-                                left: 0,
-                                right: 0,
-                                bottom: -6,
-                                child: Container(
-                                  height: _heroBottomPurpleMaskHeight,
-                                  color: GuestSplashTheme.purple,
-                                ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: -6,
+                              child: Container(
+                                height: _heroBottomPurpleMaskHeight,
+                                color: GuestSplashTheme.purple,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Container(
-                          width: double.infinity,
-                          constraints:
-                              BoxConstraints(minHeight: minPurpleHeight),
-                          color: GuestSplashTheme.purple,
-                          padding: EdgeInsets.fromLTRB(
-                            _horizontalPadding,
-                            _titleTopPadding,
-                            _horizontalPadding,
-                            safeBottom,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Please Select Option',
-                                style: GuestSplashTheme.title,
-                              ),
-                              const SizedBox(height: _titleToFirstButtonGap),
-                              GuestSplashButton(
-                                label: 'why ALIV ?',
-                                onPressed: () =>
-                                    context.push(AppRoutes.whyAliv),
-                              ),
-                              const SizedBox(height: _buttonVerticalGap),
-                              GuestSplashButton(
-                                label: 'top-up',
-                                onPressed: () =>
-                                    context.push(AppRoutes.guestTopUp),
-                              ),
-                              const SizedBox(height: _buttonVerticalGap),
-                              GuestSplashButton(
-                                label: 'purchase a plan',
-                                onPressed: () async {
-                                  final result =
-                                      await showGuestSplashPurchasePlanBottomSheet(
-                                    context,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        constraints: BoxConstraints(minHeight: minPurpleHeight),
+                        color: GuestSplashTheme.purple,
+                        padding: EdgeInsets.fromLTRB(
+                          _horizontalPadding,
+                          _titleTopPadding,
+                          _horizontalPadding,
+                          safeBottom,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Please Select Option',
+                              style: GuestSplashTheme.title,
+                            ),
+                            const SizedBox(height: _titleToFirstButtonGap),
+                            GuestSplashButton(
+                              label: 'why ALIV ?',
+                              onPressed: () => context.push(AppRoutes.whyAliv),
+                            ),
+                            const SizedBox(height: _buttonVerticalGap),
+                            GuestSplashButton(
+                              label: 'top-up',
+                              onPressed: () =>
+                                  context.push(AppRoutes.guestTopUp),
+                            ),
+                            const SizedBox(height: _buttonVerticalGap),
+                            GuestSplashButton(
+                              label: 'purchase a plan',
+                              onPressed: () async {
+                                final result =
+                                    await showGuestSplashPurchasePlanBottomSheet(
+                                      context,
+                                    );
+                                if (!context.mounted) return;
+                                if (result != null) {
+                                  debugPrint(
+                                    'PurchasePlan -> ${result.fullPhone}',
                                   );
-                                  if (!context.mounted) return;
-                                  if (result != null) {
-                                    debugPrint(
-                                        'PurchasePlan -> ${result.fullPhone}');
-                                  }
-                                },
-                              ),
-                              const SizedBox(height: _buttonVerticalGap),
-                              GuestSplashButton(
-                                label: 'bill pay',
-                                onPressed: () =>
-                                    context.push(AppRoutes.guestPayBill),
-                              ),
-                              const SizedBox(height: _bottomTailSpace),
-                            ],
-                          ),
+                                }
+                              },
+                            ),
+                            const SizedBox(height: _buttonVerticalGap),
+                            GuestSplashButton(
+                              label: 'bill pay',
+                              onPressed: () =>
+                                  context.push(AppRoutes.guestPayBill),
+                            ),
+                            const SizedBox(height: _bottomTailSpace),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
+                ),
+              );
             },
           );
         },

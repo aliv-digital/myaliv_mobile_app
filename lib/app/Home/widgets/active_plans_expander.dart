@@ -140,20 +140,20 @@ class _ActivePlansExpanderState extends State<ActivePlansExpander> {
   Widget _badge(_PlanBadge badge) {
     final (bg, fg, label) = switch (badge) {
       _PlanBadge.primary => (
-          const Color(0xFFB6EBD5),
-          const Color(0xFF0C5C44),
-          'Primary',
-        ),
+        const Color(0xFFB6EBD5),
+        const Color(0xFF0C5C44),
+        'Primary',
+      ),
       _PlanBadge.addOn => (
-          const Color(0xFFE4E6EC),
-          const Color(0xFF4A4D55),
-          'Add-ons',
-        ),
+        const Color(0xFFE4E6EC),
+        const Color(0xFF4A4D55),
+        'Add-ons',
+      ),
       _PlanBadge.roaming => (
-          const Color(0xFFE4E6EC),
-          const Color(0xFF4A4D55),
-          'Roaming plan',
-        ),
+        const Color(0xFFE4E6EC),
+        const Color(0xFF4A4D55),
+        'Roaming plan',
+      ),
     };
 
     return Container(

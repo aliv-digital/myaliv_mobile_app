@@ -122,11 +122,13 @@ class PlanCategorizerService {
 
     // Check for roaming-related special plans
     final planName = (plan['PlanName'] as String?)?.toLowerCase() ?? '';
-    final planDescription = (plan['PlanDescription'] as String?)?.toLowerCase() ?? '';
+    final planDescription =
+        (plan['PlanDescription'] as String?)?.toLowerCase() ?? '';
 
-    final isRoamingRelated = planName.contains('roam') ||
-                             planDescription.contains('roam') ||
-                             planGroup == PlanGroup.roaming;
+    final isRoamingRelated =
+        planName.contains('roam') ||
+        planDescription.contains('roam') ||
+        planGroup == PlanGroup.roaming;
 
     // Postpaid roaming special plans
     if (isRoamingRelated && paymentOption == PaymentOption.postpay) {
@@ -145,7 +147,7 @@ class PlanCategorizerService {
   /// Validate that a plan has minimum required fields
   bool isValidPlan(Map<String, dynamic> plan) {
     return plan.containsKey('PlanType') &&
-        plan.containsKey('PlanID') &&  // Fixed: API uses 'PlanID' not 'PlanId'
+        plan.containsKey('PlanID') && // Fixed: API uses 'PlanID' not 'PlanId'
         plan['PlanType'] != null &&
         plan['PlanID'] != null;
   }

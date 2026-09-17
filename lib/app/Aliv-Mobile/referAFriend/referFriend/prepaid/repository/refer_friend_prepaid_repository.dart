@@ -7,7 +7,7 @@ import '../models/refer_friend_prepaid_models.dart';
 
 class ReferFriendPrepaidRepository {
   ReferFriendPrepaidRepository({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 

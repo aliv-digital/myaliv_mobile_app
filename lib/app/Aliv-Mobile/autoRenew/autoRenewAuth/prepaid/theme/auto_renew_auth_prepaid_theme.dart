@@ -65,8 +65,12 @@ class AutoRenewAuthPrepaidTheme {
   // Used by the name input content area. Right padding reduced from 14→4.2
   // (−70%) so the long hint "type your name exactly as it appears on your
   // account" isn't clipped early.
-  static const EdgeInsets nameInputContentPadding =
-      EdgeInsets.fromLTRB(14, 14, 0, 14);
+  static const EdgeInsets nameInputContentPadding = EdgeInsets.fromLTRB(
+    14,
+    14,
+    0,
+    14,
+  );
 
   // ==================== Button Behaviour ====================
   // Used to preserve the intended 0.45 disabled opacity with DefaultButton.
@@ -75,91 +79,94 @@ class AutoRenewAuthPrepaidTheme {
 
   // ==================== Border Radius ====================
   // Used by default submit button shape and auth body card.
-  static const BorderRadius submitButtonBorderRadius =
-      BorderRadius.all(Radius.circular(submitButtonRadius));
-  static const BorderRadius nameInputBorderRadiusShape =
-      BorderRadius.all(Radius.circular(nameInputBorderRadius));
-  static const BorderRadius authBodyCardRadius =
-      BorderRadius.all(Radius.circular(14));
+  static const BorderRadius submitButtonBorderRadius = BorderRadius.all(
+    Radius.circular(submitButtonRadius),
+  );
+  static const BorderRadius nameInputBorderRadiusShape = BorderRadius.all(
+    Radius.circular(nameInputBorderRadius),
+  );
+  static const BorderRadius authBodyCardRadius = BorderRadius.all(
+    Radius.circular(14),
+  );
 
   // ==================== Text Style: App/Section Title ====================
   // Used for title emphasis if needed in auth section headers.
   static TextStyle titleTextStyle() => const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: textPrimary,
-      );
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    color: textPrimary,
+  );
 
   // ==================== Text Style: Paragraph ====================
   // Used for paragraph1, paragraph2 and failure fallback message in auth screen.
   static TextStyle paragraphTextStyle() => const TextStyle(
-        color: textNeutral,
-        fontSize: 14,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w500,
-        height: 1.43,
-      );
+    color: textNeutral,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    height: 1.43,
+  );
 
   // ==================== Text Style: Consent Header ====================
   // Used for consent title text in auth screen.
   static TextStyle sectionHeaderTextStyle() => const TextStyle(
-        color: textNeutral,
-        fontSize: 16,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w700,
-        height: 1.25,
-      );
+    color: textNeutral,
+    fontSize: 16,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+  );
 
   // ==================== Text Style: Signature ====================
   // Used for signer name text in auth screen.
   static TextStyle signatureTextStyle() => const TextStyle(
-        color: textNeutral,
-        fontSize: 14,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w700,
-        height: 1.43,
-      );
+    color: textNeutral,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
 
   // ==================== Text Style: Field Label ====================
   // Used for "name" label above name input.
   static TextStyle fieldLabelTextStyle() => const TextStyle(
-        color: fieldLabelColor,
-        fontSize: 14,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w700,
-        height: 1.43,
-      );
+    color: fieldLabelColor,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+    height: 1.43,
+  );
 
   // ==================== Text Style: Input Value ====================
   // Used for typed text inside the authorization name input field.
   static TextStyle nameInputValueTextStyle() => const TextStyle(
-        color: fieldValueColor,
-        fontSize: 14,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w500,
-        height: 1.43,
-      );
+    color: fieldValueColor,
+    fontSize: 14,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    height: 1.43,
+  );
 
   // ==================== Text Style: Input Hint ====================
   // Used for placeholder text inside the authorization name input field.
   // Hint size trimmed 14→13.0 to fit the long placeholder without ellipsis.
   static TextStyle nameInputHintTextStyle() => const TextStyle(
-        color: textNeutral,
-        fontSize: 13.0,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w500,
-        height: 1.43,
-      );
+    color: textNeutral,
+    fontSize: 13.0,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    height: 1.43,
+  );
 
   // ==================== Text Style: Submit Button ====================
   // Used for submit button label in auth screen.
   static TextStyle submitButtonTextStyle() => const TextStyle(
-        color: buttonTextColor,
-        fontSize: 15,
-        fontFamily: fontFamily,
-        fontWeight: FontWeight.w700,
-      );
+    color: buttonTextColor,
+    fontSize: 15,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w700,
+  );
 
   // ==================== Input Gradient ====================
   // Used by focused name input border wrapper in auth_name_input.dart.

@@ -4,10 +4,7 @@ import '../repository/plan_types.dart';
 import '../theme/theme.dart';
 
 class HomePlanSectionHeader extends StatelessWidget {
-  const HomePlanSectionHeader({
-    super.key,
-    required this.selectedTab,
-  });
+  const HomePlanSectionHeader({super.key, required this.selectedTab});
 
   final HomePlanTab selectedTab;
 

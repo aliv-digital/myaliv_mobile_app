@@ -29,8 +29,7 @@ class PlanCard extends StatelessWidget {
       padding: HomePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planCardRadius),
         boxShadow: const [
           BoxShadow(
             color: HomePlanTheme.planCardShadowColor,
@@ -64,10 +63,8 @@ class PlanCard extends StatelessWidget {
                           expanded
                               ? AssetConstant.upArrowSVG
                               : AssetConstant.downArrowSVG,
-                          width:
-                              HomePlanTheme.planCardToggleArrowWidth,
-                          height:
-                              HomePlanTheme.planCardToggleArrowHeight,
+                          width: HomePlanTheme.planCardToggleArrowWidth,
+                          height: HomePlanTheme.planCardToggleArrowHeight,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -102,8 +99,9 @@ class PlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -129,11 +127,9 @@ class PlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardViewDetailsBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardViewDetailsTextStyle,
+                  textStyle: HomePlanTheme.planCardViewDetailsTextStyle,
                   borderSide: BorderSide(
-                    color:
-                        HomePlanTheme.planCardViewDetailsBorderColor,
+                    color: HomePlanTheme.planCardViewDetailsBorderColor,
                   ),
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
@@ -151,8 +147,7 @@ class PlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardPurchaseNowBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardPurchaseNowTextStyle,
+                  textStyle: HomePlanTheme.planCardPurchaseNowTextStyle,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
@@ -176,8 +171,7 @@ class _PricePill extends StatelessWidget {
       padding: HomePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -228,14 +222,11 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                     ),
                     if (i != widget.benefits.length - 1)
                       Container(
-                        width:
-                            HomePlanTheme.planBenefitDividerWidth,
-                        height:
-                            HomePlanTheme.planBenefitDividerHeight,
-                        margin: HomePlanTheme
-                            .planBenefitDividerHorizontalMargin,
-                        color:
-                            HomePlanTheme.planBenefitDividerColor,
+                        width: HomePlanTheme.planBenefitDividerWidth,
+                        height: HomePlanTheme.planBenefitDividerHeight,
+                        margin:
+                            HomePlanTheme.planBenefitDividerHorizontalMargin,
+                        color: HomePlanTheme.planBenefitDividerColor,
                       ),
                   ],
                 );
@@ -255,9 +246,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
 class _ScrollIndicator extends StatelessWidget {
   final ScrollController controller;
 
-  const _ScrollIndicator({
-    required this.controller,
-  });
+  const _ScrollIndicator({required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +285,11 @@ class _ScrollIndicator extends StatelessWidget {
   }
 
   Widget _indicatorUI(
-      double trackW, double trackH, double thumbW, double left) {
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: HomePlanTheme.scrollBarRenderBoxHeight,
@@ -360,8 +353,12 @@ class _AssetIcon extends StatelessWidget {
     final lower = path.toLowerCase();
 
     if (lower.endsWith('.svg')) {
-      return SvgPicture.asset(path,
-          width: size, height: size, fit: BoxFit.contain);
+      return SvgPicture.asset(
+        path,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
     }
     return Image.asset(path, width: size, height: size, fit: BoxFit.contain);
   }

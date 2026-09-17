@@ -8,10 +8,10 @@ class HomePlanIconAssets {
   static const String talk = AssetConstant.phoneIconSVG;
   static const String sms = AssetConstant.smsIconSVG;
   static final String bonusData = AssetConstant.bonusDataIconSVG;
-  static const String phone = AssetConstant.phoneCallIconSVG;//phoneIconPNG;//talkTextIconPNG;
+  static const String phone =
+      AssetConstant.phoneCallIconSVG; //phoneIconPNG;//talkTextIconPNG;
   static const String mms = AssetConstant.mmsIconPNG;
   static const String usOrCanTalk = AssetConstant.talkTextIconSVG;
-
 
   static String forType(HomePlanBenefitType type) {
     switch (type) {

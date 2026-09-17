@@ -24,16 +24,23 @@ class ReferFriendPrepaidPrimaryButton extends StatelessWidget {
         onPressed: enabled ? onTap : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: ReferFriendPrepaidTheme.brand,
-          disabledBackgroundColor: ReferFriendPrepaidTheme.brand.withValues(alpha: 0.35),
+          disabledBackgroundColor: ReferFriendPrepaidTheme.brand.withValues(
+            alpha: 0.35,
+          ),
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
         ),
         child: isLoading
             ? const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : Text(label, style: ReferFriendPrepaidTheme.button),
       ),
     );

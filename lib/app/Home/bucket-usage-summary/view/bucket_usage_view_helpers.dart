@@ -49,7 +49,7 @@ BucketCardStyle styleForBucket(String bucketName) {
       color: Color(0xFFFF6C36),
     );
   }
-  if(normalized.contains('whatsapp')){
+  if (normalized.contains('whatsapp')) {
     return BucketCardStyle(
       icon: AssetConstant.whatsAppIconSVG,
       color: HexColor.fromHex('#00C4B3'),
@@ -66,13 +66,13 @@ BucketCardStyle styleForBucket(String bucketName) {
   }
   if (normalized.contains('sms') || normalized.contains('text')) {
     return const BucketCardStyle(
-      icon: AssetConstant.messageIconSVG,//'assets/icons/message.svg'
+      icon: AssetConstant.messageIconSVG, //'assets/icons/message.svg'
       color: Color(0xFF5045A7),
     );
   }
-  if(normalized.contains('aliv to')){
+  if (normalized.contains('aliv to')) {
     return BucketCardStyle(
-      icon: AssetConstant.textIconSVG,//'assets/icons/message.svg'
+      icon: AssetConstant.textIconSVG, //'assets/icons/message.svg'
       color: HexColor.fromHex('#FF6C36'),
     );
   }

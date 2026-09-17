@@ -4,11 +4,7 @@ import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../theme/add_ons_confirmation_theme.dart';
 
 class BeginsOnCard extends StatelessWidget {
-  const BeginsOnCard({
-    super.key,
-    required this.dateText,
-    this.onCalendarTap,
-  });
+  const BeginsOnCard({super.key, required this.dateText, this.onCalendarTap});
 
   final String dateText;
   final VoidCallback? onCalendarTap;

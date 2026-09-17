@@ -16,10 +16,7 @@ class MakePaymentPostPaidSideEffects {
 
   /// Called from the screen's `BlocConsumer.listener`. Runs any error toast
   /// first, then handles a `paid` nav target if set.
-  static void onState(
-    BuildContext context,
-    MakePaymentPostPaidState state,
-  ) {
+  static void onState(BuildContext context, MakePaymentPostPaidState state) {
     _showErrorToast(state.errorMessage);
     _handlePaidNav(context, state);
   }

@@ -34,16 +34,18 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RevPaymentMethodPrepaidBloc,
-        RevPaymentMethodPrepaidState>(
+    return BlocConsumer<
+      RevPaymentMethodPrepaidBloc,
+      RevPaymentMethodPrepaidState
+    >(
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget || p.errorMessage != c.errorMessage,
       listener: (context, state) {
-        if (state.errorMessage != null && state.status == RevPaymentMethodPrepaidStatus.failure) {
-
+        if (state.errorMessage != null &&
+            state.status == RevPaymentMethodPrepaidStatus.failure) {
           AppToast.show(
             message: state.errorMessage!.toString(),
-            type: ToastType.error
+            type: ToastType.error,
           );
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(content: Text(state.errorMessage!)),
@@ -55,9 +57,9 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
           // if (state.navTarget == RevPaymentMethodNavTarget.addCard) { ... }
           // if (state.navTarget == RevPaymentMethodNavTarget.paid) { ... }
 
-          context
-              .read<RevPaymentMethodPrepaidBloc>()
-              .add(const RevPaymentNavConsumed());
+          context.read<RevPaymentMethodPrepaidBloc>().add(
+            const RevPaymentNavConsumed(),
+          );
         }
       },
       builder: (context, state) {
@@ -66,23 +68,26 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
             state.status == RevPaymentMethodPrepaidStatus.submitting;
 
         return MediaQuery(
-          data:
-              MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: Scaffold(
             backgroundColor: RevPaymentMethodPrepaidTheme.bg,
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: state.amountText,
-              isVatExclusive: true,//state.vatNote.trim().toLowerCase() == 'no vat applied',
+              isVatExclusive:
+                  true, //state.vatNote.trim().toLowerCase() == 'no vat applied',
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,
               buttonColor: RevPaymentMethodPrepaidTheme.payBtnBg,
               onPayNow: () {
-                context
-                    .read<RevPaymentMethodPrepaidBloc>()
-                    .add(const RevPayNowPressed());
+                context.read<RevPaymentMethodPrepaidBloc>().add(
+                  const RevPayNowPressed(),
+                );
                 AppSession.appRoute = 'postpaidPayment';
-                context.push(AppRoutes.guestPayBillReceipt,extra:
-                  GuestPayBillReceiptArgs(
+                context.push(
+                  AppRoutes.guestPayBillReceipt,
+                  extra: GuestPayBillReceiptArgs(
                     serviceName: 'REV',
                     identifierLabel: 'phone no.',
                     identifierValue: '242-801-0000',
@@ -91,7 +96,7 @@ class _REVPaymentMethodPrepaidView extends StatelessWidget {
                     timeText: '07:30 am',
                   ),
                 );
-              }
+              },
             ),
             body: Column(
               children: [

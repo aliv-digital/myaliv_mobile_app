@@ -77,14 +77,10 @@ class _CreatePasswordView extends StatelessWidget {
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            keyboardDismissBehavior:
-                ScrollViewKeyboardDismissBehavior.onDrag,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
               SliverToBoxAdapter(
-                child: CreatePasswordHeader(
-                  title: title,
-                  subtitle: subtitle,
-                ),
+                child: CreatePasswordHeader(title: title, subtitle: subtitle),
               ),
               SliverPadding(
                 padding: const EdgeInsets.only(right: 42, left: 42),
@@ -148,8 +144,8 @@ class _CreatePasswordView extends StatelessWidget {
                         builder: (context, state) {
                           return DefaultButton(
                             label: buttonLabel,
-                            isLoading: state.status ==
-                                CreatePasswordStatus.submitting,
+                            isLoading:
+                                state.status == CreatePasswordStatus.submitting,
                             onPressed: () => context
                                 .read<CreatePasswordBloc>()
                                 .add(const SubmitCreatePassword()),

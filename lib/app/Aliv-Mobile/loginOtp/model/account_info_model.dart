@@ -114,7 +114,9 @@ class AccountInfoModel {
     return AccountInfoModel(
       island: _asString(_first(source, const ['Island'])),
       topUp24HourLimit: _asDouble(_first(source, const ['TopUp24HourLimit'])),
-      topUpPerTransLimit: _asDouble(_first(source, const ['TopUpPerTransLimit'])),
+      topUpPerTransLimit: _asDouble(
+        _first(source, const ['TopUpPerTransLimit']),
+      ),
       dob: _asString(_first(source, const ['DOB', 'Dob'])),
       gender: _asString(_first(source, const ['Gender'])),
       altPhoneNumber: _asString(_first(source, const ['AltPhoneNumber'])),
@@ -141,7 +143,9 @@ class AccountInfoModel {
       paymentOption: _asString(_first(source, const ['PaymentOption'])),
       vip: _asString(_first(source, const ['VIP'])),
       creditLimit: _asDouble(_first(source, const ['CreditLimit'])),
-      notificationOption: _asString(_first(source, const ['NotificationOption'])),
+      notificationOption: _asString(
+        _first(source, const ['NotificationOption']),
+      ),
       autoRenew: _asBool(_first(source, const ['AutoRenew'])),
       depositAmount: _asDouble(_first(source, const ['DepositAmount'])),
       corpId: _asInt(_first(source, const ['CorpID', 'CorpId'])),
@@ -153,7 +157,9 @@ class AccountInfoModel {
       tNs: _asStringList(_first(source, const ['TNs', 'Tns'])),
       password: _asString(_first(source, const ['Password'])),
       allowRoaming: _asDouble(_first(source, const ['AllowRoaming'])),
-      allowInternational: _asDouble(_first(source, const ['AllowInternational'])),
+      allowInternational: _asDouble(
+        _first(source, const ['AllowInternational']),
+      ),
       ocsVersion: _asString(_first(source, const ['OCSVersion'])),
       ocsKey: _asString(_first(source, const ['OCSKey'])),
       invoiceDeliveryMethod: _asString(
@@ -165,15 +171,26 @@ class AccountInfoModel {
       showUsageRecordsOnInvoice: _asString(
         _first(source, const ['ShowUsageRecordsOnInvoice']),
       ),
-      salesforceId: _asString(_first(source, const ['SalesforceID', 'SalesforceId'])),
-      primaryPhoneNumber: _asString(_first(source, const ['PrimaryPhoneNumber'])),
-      wholeSaleId: _asString(_first(source, const ['WholeSaleID', 'WholeSaleId'])),
+      salesforceId: _asString(
+        _first(source, const ['SalesforceID', 'SalesforceId']),
+      ),
+      primaryPhoneNumber: _asString(
+        _first(source, const ['PrimaryPhoneNumber']),
+      ),
+      wholeSaleId: _asString(
+        _first(source, const ['WholeSaleID', 'WholeSaleId']),
+      ),
       autoPayInvoice: _asBool(_first(source, const ['AutoPayInvoice'])),
       collectionsStatus: _asString(_first(source, const ['CollectionsStatus'])),
       emaiVerificationStatus: _asString(
-        _first(source, const ['EmaiVerificationStatus', 'EmailVerificationStatus']),
+        _first(source, const [
+          'EmaiVerificationStatus',
+          'EmailVerificationStatus',
+        ]),
       ),
-      reason: _asString(_first(source, const ['Reason', 'Message', 'Error', 'Detail'])),
+      reason: _asString(
+        _first(source, const ['Reason', 'Message', 'Error', 'Detail']),
+      ),
     );
   }
 

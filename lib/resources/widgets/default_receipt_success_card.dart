@@ -197,7 +197,8 @@ class _BackToLoginButton extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   (AppSession.appRoute == 'prepaidPlan' ||
-                          AppSession.appRoute == 'addOnsPrepaid' ||  AppSession.appRoute == 'postpaidPayment')
+                          AppSession.appRoute == 'addOnsPrepaid' ||
+                          AppSession.appRoute == 'postpaidPayment')
                       ? 'back to home page'
                       : 'back to login page',
                   textAlign: TextAlign.center,

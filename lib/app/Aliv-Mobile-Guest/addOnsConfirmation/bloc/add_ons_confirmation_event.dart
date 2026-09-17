@@ -6,8 +6,7 @@ sealed class AddOnsConfirmationEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class AddOnsConfirmationStarted
-    extends AddOnsConfirmationEvent {
+final class AddOnsConfirmationStarted extends AddOnsConfirmationEvent {
   final String phoneNumber;
   const AddOnsConfirmationStarted(this.phoneNumber);
 
@@ -24,8 +23,7 @@ final class AddOnsConfirmationRemoveItemPressed
   List<Object?> get props => [itemId];
 }
 
-final class AddOnsConfirmationTermsPressed
-    extends AddOnsConfirmationEvent {
+final class AddOnsConfirmationTermsPressed extends AddOnsConfirmationEvent {
   const AddOnsConfirmationTermsPressed();
 }
 
@@ -39,7 +37,6 @@ final class AddOnsConfirmationTermsCheckboxToggled
   List<Object?> get props => [isChecked];
 }
 
-final class AddOnsConfirmationPayNowPressed
-    extends AddOnsConfirmationEvent {
+final class AddOnsConfirmationPayNowPressed extends AddOnsConfirmationEvent {
   const AddOnsConfirmationPayNowPressed();
 }

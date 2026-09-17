@@ -40,7 +40,8 @@ class _AddOrEditCardsPrepaidScreenState
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          AddOrEditCardsPrepaidBloc()..add(const AddOrEditCardsPrepaidStarted()),
+          AddOrEditCardsPrepaidBloc()
+            ..add(const AddOrEditCardsPrepaidStarted()),
       child: const _AddOrEditCardsPrepaidView(),
     );
   }
@@ -178,9 +179,8 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
                         const SizedBox(height: 20),
                         DashedAddCardButton(
                           isLoading: savedCardsState.isAddingCard,
-                          onTap: () => context
-                              .read<AddOrEditCardsPrepaidBloc>()
-                              .add(
+                          onTap: () =>
+                              context.read<AddOrEditCardsPrepaidBloc>().add(
                                 const AddOrEditCardsPrepaidAddNewCardPressed(),
                               ),
                         ),

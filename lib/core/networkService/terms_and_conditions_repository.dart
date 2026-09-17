@@ -11,8 +11,8 @@ enum TermsAndConditionsAudience { prepaid, postpaid }
 /// API. Failures return null so the UI can retain its bundled fallback copy.
 class TermsAndConditionsRepository {
   TermsAndConditionsRepository({ApiService? apiService})
-      : _apiService = apiService ??
-            ApiService(requestTimeout: const Duration(seconds: 12));
+    : _apiService =
+          apiService ?? ApiService(requestTimeout: const Duration(seconds: 12));
 
   static final TermsAndConditionsRepository shared =
       TermsAndConditionsRepository();

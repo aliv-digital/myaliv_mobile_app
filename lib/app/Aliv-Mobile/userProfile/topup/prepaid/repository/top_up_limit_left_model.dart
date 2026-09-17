@@ -10,10 +10,7 @@ class TopUpLimitLeft extends Equatable {
   final double limitLeft;
   final DateTime? earliestTopUpDateLocal;
 
-  const TopUpLimitLeft({
-    required this.limitLeft,
-    this.earliestTopUpDateLocal,
-  });
+  const TopUpLimitLeft({required this.limitLeft, this.earliestTopUpDateLocal});
 
   factory TopUpLimitLeft.fromJson(Map<String, dynamic> json) {
     return TopUpLimitLeft(

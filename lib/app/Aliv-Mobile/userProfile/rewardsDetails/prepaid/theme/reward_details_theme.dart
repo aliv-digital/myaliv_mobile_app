@@ -9,11 +9,11 @@ class RewardDetailsTheme {
   static const textGrey = Color(0xFF707070);
 
   static TextStyle t(
-      double size, {
-        FontWeight weight = FontWeight.w400,
-        Color color = textBlack,
-        double height = 1.2,
-      }) {
+    double size, {
+    FontWeight weight = FontWeight.w400,
+    Color color = textBlack,
+    double height = 1.2,
+  }) {
     return TextStyle(
       fontFamily: 'CircularPro',
       fontSize: size,

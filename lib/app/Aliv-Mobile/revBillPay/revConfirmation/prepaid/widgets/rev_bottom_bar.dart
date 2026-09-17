@@ -20,7 +20,9 @@ class RevBottomBar extends StatelessWidget {
           BoxShadow(
             blurRadius: 14,
             offset: Offset(0, -6),
-            color: Color(0x14000000), // ✅ subtle top shadow like figma separation
+            color: Color(
+              0x14000000,
+            ), // ✅ subtle top shadow like figma separation
           ),
         ],
       ),
@@ -34,9 +36,15 @@ class RevBottomBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(amountText, style: RevConfirmationPrepaidTheme.bottomAmount),
+                  Text(
+                    amountText,
+                    style: RevConfirmationPrepaidTheme.bottomAmount,
+                  ),
                   const SizedBox(height: 2),
-                  Text('vat inclusive', style: RevConfirmationPrepaidTheme.bottomVat),
+                  Text(
+                    'vat inclusive',
+                    style: RevConfirmationPrepaidTheme.bottomVat,
+                  ),
                 ],
               ),
             ),
@@ -52,7 +60,10 @@ class RevBottomBar extends StatelessWidget {
                     color: RevConfirmationPrepaidTheme.continueBtnBg,
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  child: Text('continue', style: RevConfirmationPrepaidTheme.continueText),
+                  child: Text(
+                    'continue',
+                    style: RevConfirmationPrepaidTheme.continueText,
+                  ),
                 ),
               ),
             ),

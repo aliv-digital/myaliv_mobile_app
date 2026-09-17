@@ -82,9 +82,9 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
     if (!v.isValid || isOptedIn == null) return;
 
     context.read<AltNumberValidationCubit>().submit(
-          altNumber: v.phoneNumberForApi ?? '',
-          isOptedIn: isOptedIn,
-        );
+      altNumber: v.phoneNumberForApi ?? '',
+      isOptedIn: isOptedIn,
+    );
   }
 
   void _onValidationSuccess() {

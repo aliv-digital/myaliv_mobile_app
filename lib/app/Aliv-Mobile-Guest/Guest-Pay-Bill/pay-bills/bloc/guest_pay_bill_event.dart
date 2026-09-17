@@ -53,8 +53,11 @@ class GuestPayBillCountryChanged extends GuestPayBillEvent {
   final PayBillCountry country;
   const GuestPayBillCountryChanged(this.country);
   @override
-  List<Object?> get props =>
-      [country.flagEmoji, country.dialCode, country.isoCode];
+  List<Object?> get props => [
+    country.flagEmoji,
+    country.dialCode,
+    country.isoCode,
+  ];
 }
 
 class GuestPayBillAmountChanged extends GuestPayBillEvent {

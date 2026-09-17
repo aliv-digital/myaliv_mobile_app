@@ -116,7 +116,9 @@ class _FingerFaceSecurityScreenState extends State<FingerFaceSecurityScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 4),
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   child: SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Enable Biometric Lock'),
@@ -139,8 +141,9 @@ class _FingerFaceSecurityScreenState extends State<FingerFaceSecurityScreen> {
                                 : Icons.lock_open_rounded,
                             color: data?.isBiometricEnabled == true
                                 ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.4),
+                                : theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.4,
+                                  ),
                           ),
                   ),
                 ),
@@ -158,8 +161,10 @@ class _FingerFaceSecurityScreenState extends State<FingerFaceSecurityScreen> {
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          Icon(Icons.warning_amber_rounded,
-                              color: theme.colorScheme.onErrorContainer),
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(

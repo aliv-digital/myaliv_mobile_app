@@ -25,10 +25,7 @@ class AddOrEditCardsPrepaidRepository {
   }
 
   /// ✅ new card save
-  Future<SavedCard> saveCard({
-    required int month,
-    required int year,
-  }) async {
+  Future<SavedCard> saveCard({required int month, required int year}) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
     final mm = month.toString().padLeft(2, '0');

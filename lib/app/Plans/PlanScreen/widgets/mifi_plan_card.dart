@@ -29,8 +29,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
       padding: HomePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planCardRadius),
         boxShadow: const [
           BoxShadow(
             color: HomePlanTheme.planCardShadowColor,
@@ -64,23 +63,19 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                               plan.planName,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style:
-                                  HomePlanTheme.planCardTitleTextStyle,
+                              style: HomePlanTheme.planCardTitleTextStyle,
                             ),
                           ),
                           const SizedBox(
-                            width:
-                                HomePlanTheme.planCardTitleToArrowGap,
+                            width: HomePlanTheme.planCardTitleToArrowGap,
                           ),
                           SizedBox(
                             child: SvgPicture.asset(
                               expanded
                                   ? AssetConstant.upArrowSVG
                                   : AssetConstant.downArrowSVG,
-                              width: HomePlanTheme
-                                  .planCardToggleArrowWidth,
-                              height: HomePlanTheme
-                                  .planCardToggleArrowHeight,
+                              width: HomePlanTheme.planCardToggleArrowWidth,
+                              height: HomePlanTheme.planCardToggleArrowHeight,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -94,10 +89,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(
-                price: plan.planAmount,
-                vatAmount: plan.vatAmount,
-              ),
+              _PricePill(price: plan.planAmount, vatAmount: plan.vatAmount),
             ],
           ),
 
@@ -110,8 +102,9 @@ class HomePlanMifiPlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
               padding: const EdgeInsets.only(
@@ -143,20 +136,16 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardViewDetailsBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardViewDetailsTextStyle,
+                  textStyle: HomePlanTheme.planCardViewDetailsTextStyle,
                   borderSide: BorderSide(
-                    color:
-                        HomePlanTheme.planCardViewDetailsBorderColor,
+                    color: HomePlanTheme.planCardViewDetailsBorderColor,
                   ),
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
-              const SizedBox(
-                width: HomePlanTheme.planCardActionButtonsGap,
-              ),
+              const SizedBox(width: HomePlanTheme.planCardActionButtonsGap),
               Expanded(
                 child: DefaultButton(
                   label: HomePlanTheme.planCardPurchaseNowLabel,
@@ -167,8 +156,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardPurchaseNowBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardPurchaseNowTextStyle,
+                  textStyle: HomePlanTheme.planCardPurchaseNowTextStyle,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
@@ -182,37 +170,37 @@ class HomePlanMifiPlanCard extends StatelessWidget {
   }
 
   String _durationText(BasePlanModel plan) {
-    if(plan.frequency == 'W'){
+    if (plan.frequency == 'W') {
       return '7 days';
     }
-    if(plan.frequency == 'M'){
+    if (plan.frequency == 'M') {
       return '30 days';
     }
-    if(plan.frequency == 'D'){
+    if (plan.frequency == 'D') {
       return '1 day';
     }
-    if(plan.frequency == 'H'){
+    if (plan.frequency == 'H') {
       return '15 days';
     }
-    if(plan.frequency == 'T'){
+    if (plan.frequency == 'T') {
       return '10 days';
     }
-    if(plan.frequency == 'S'){
+    if (plan.frequency == 'S') {
       return '60 days';
     }
-    if(plan.frequency == 'N'){
+    if (plan.frequency == 'N') {
       return '90 days';
     }
-    if(plan.frequency == 'B'){
+    if (plan.frequency == 'B') {
       return '15 days';
     }
-    if(plan.frequency == '3'){
+    if (plan.frequency == '3') {
       return '3 days';
     }
-    if(plan.frequency == '5'){
+    if (plan.frequency == '5') {
       return '5 days';
     }
-    if(plan.frequency == 'A'){
+    if (plan.frequency == 'A') {
       return '1 year';
     }
 
@@ -224,10 +212,7 @@ class _PricePill extends StatelessWidget {
   final double price;
   final double vatAmount;
 
-  const _PricePill({
-    required this.price,
-    required this.vatAmount,
-  });
+  const _PricePill({required this.price, required this.vatAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -237,8 +222,7 @@ class _PricePill extends StatelessWidget {
       padding: HomePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${finalPrice.toStringAsFixed(2)}',
@@ -269,7 +253,9 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
   Widget build(BuildContext context) {
     const double rowH = 50;
     const double sidePad = 2;
-    final List<BasePlanBucketModel> visibleBenefits = widget.benefits.take(1).toList();
+    final List<BasePlanBucketModel> visibleBenefits = widget.benefits
+        .take(1)
+        .toList();
 
     if (visibleBenefits.isEmpty) {
       return const SizedBox.shrink();
@@ -309,8 +295,10 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                               if (i != visibleBenefits.length - 1)
                                 Container(
                                   width: HomePlanTheme.planBenefitDividerWidth,
-                                  height: HomePlanTheme.planBenefitDividerHeight,
-                                  margin: HomePlanTheme.planBenefitDividerHorizontalMargin,
+                                  height:
+                                      HomePlanTheme.planBenefitDividerHeight,
+                                  margin: HomePlanTheme
+                                      .planBenefitDividerHorizontalMargin,
                                   color: HomePlanTheme.planBenefitDividerColor,
                                 ),
                             ],
@@ -364,8 +352,10 @@ class _ScrollIndicator extends StatelessWidget {
               return const SizedBox.shrink();
             }
 
-            final double progress =
-                (position.pixels / maxScroll).clamp(0.0, 1.0);
+            final double progress = (position.pixels / maxScroll).clamp(
+              0.0,
+              1.0,
+            );
             final double maxThumbTravel = (trackW - thumbW).clamp(0.0, trackW);
             final double left = progress * maxThumbTravel;
 
@@ -376,7 +366,12 @@ class _ScrollIndicator extends StatelessWidget {
     );
   }
 
-  Widget _indicatorUI(double trackW, double trackH, double thumbW, double left) {
+  Widget _indicatorUI(
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: HomePlanTheme.scrollBarRenderBoxHeight,
@@ -514,18 +509,21 @@ class _BucketItem extends StatelessWidget {
       benefit.unlimited ? 'unlimited' : _formatAmount(benefit.amount),
       valueStyle,
     );
-    final double subW = _measureTextWidth(context, benefit.unit.toLowerCase(), subStyle);
-    final double line1W = iconSize + iconGap + labelW;
-    final double contentW = [line1W, valueW, subW].reduce(
-      (a, b) => a > b ? a : b,
+    final double subW = _measureTextWidth(
+      context,
+      benefit.unit.toLowerCase(),
+      subStyle,
     );
+    final double line1W = iconSize + iconGap + labelW;
+    final double contentW = [
+      line1W,
+      valueW,
+      subW,
+    ].reduce((a, b) => a > b ? a : b);
     final double dynamicW = contentW + 16;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: 72,
-        maxWidth: 160,
-      ),
+      constraints: const BoxConstraints(minWidth: 72, maxWidth: 160),
       child: SizedBox(
         width: dynamicW.clamp(72, 160),
         height: 50,

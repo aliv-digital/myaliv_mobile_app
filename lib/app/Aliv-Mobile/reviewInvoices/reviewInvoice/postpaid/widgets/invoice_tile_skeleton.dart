@@ -14,7 +14,9 @@ class InvoiceTileSkeleton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(ReviewInvoicePostpaidTheme.radius),
+          borderRadius: BorderRadius.circular(
+            ReviewInvoicePostpaidTheme.radius,
+          ),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(

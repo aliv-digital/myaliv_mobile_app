@@ -21,35 +21,38 @@ class PlanCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: height,
-          decoration: BoxDecoration(
-            // color: color,
-              borderRadius: BorderRadius.circular(16),
-              image: DecorationImage(image: AssetImage(plan.imageUrl),fit: BoxFit.fill)
+        decoration: BoxDecoration(
+          // color: color,
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: AssetImage(plan.imageUrl),
+            fit: BoxFit.fill,
           ),
-          // child: Image.asset(plan.imageUrl,fit: BoxFit.fill,)
+        ),
+        // child: Image.asset(plan.imageUrl,fit: BoxFit.fill,)
         // decoration: BoxDecoration(
         //   color: Color(plan.backgroundColor),
         //   borderRadius: BorderRadius.circular(12),
         // ),
         child: Row(
           children: [
-        //     // IMAGE
-        //     ClipRRect(
-        //       borderRadius: const BorderRadius.only(
-        //         topLeft: Radius.circular(12),
-        //         bottomLeft: Radius.circular(12),
-        //       ),
-        //       child: SizedBox(
-        //         width: imageWidth,
-        //         height: double.infinity,
-        //         child: Image.network(
-        //           plan.imageUrl,
-        //           fit: BoxFit.cover,
-        //         ),
-        //       ),
-        //     ),
-        //
-        //     // CONTENT
+            //     // IMAGE
+            //     ClipRRect(
+            //       borderRadius: const BorderRadius.only(
+            //         topLeft: Radius.circular(12),
+            //         bottomLeft: Radius.circular(12),
+            //       ),
+            //       child: SizedBox(
+            //         width: imageWidth,
+            //         height: double.infinity,
+            //         child: Image.network(
+            //           plan.imageUrl,
+            //           fit: BoxFit.cover,
+            //         ),
+            //       ),
+            //     ),
+            //
+            //     // CONTENT
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 24, 12),

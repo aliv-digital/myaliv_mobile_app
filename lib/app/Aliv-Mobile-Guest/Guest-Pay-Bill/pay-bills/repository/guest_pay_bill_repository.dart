@@ -24,10 +24,7 @@ class GuestPayBillRepository {
     }
 
     // Sample response aligned with the UI mock.
-    return const PayBillAccountInfo(
-      status: 'Active',
-      balance: 200.00,
-    );
+    return const PayBillAccountInfo(status: 'Active', balance: 200.00);
   }
 
   Future<PayBillAccountInfo> verifyRev({

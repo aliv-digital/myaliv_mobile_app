@@ -34,14 +34,15 @@ class _ProfilePostpaidView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<ProfilePostpaidBloc, ProfilePostpaidState>(
       listenWhen: (p, c) =>
-      p.backRequestId != c.backRequestId ||
+          p.backRequestId != c.backRequestId ||
           p.openRouteRequestId != c.openRouteRequestId,
       listener: (context, state) {
         if (state.backRequestId > 0) {
           Navigator.of(context).maybePop();
         }
 
-        if (state.openRouteRequestId > 0 && (state.routeToOpen?.isNotEmpty ?? false)) {
+        if (state.openRouteRequestId > 0 &&
+            (state.routeToOpen?.isNotEmpty ?? false)) {
           // go_router use করলে:
           // context.push(state.routeToOpen!);
           // ignore: avoid_print
@@ -57,10 +58,11 @@ class _ProfilePostpaidView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: DefaultAppBar(
                   title: 'profile',
-                  onBack: () => context.read<ProfilePostpaidBloc>().add(const ProfilePostpaidBackPressed()),
+                  onBack: () => context.read<ProfilePostpaidBloc>().add(
+                    const ProfilePostpaidBackPressed(),
+                  ),
                   showBackArrow: true,
-                    onHomeTap: () => context.go(AppRoutes.home)
-
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
               ),
               SliverToBoxAdapter(
@@ -75,12 +77,18 @@ class _ProfilePostpaidView extends StatelessWidget {
 
                     return Column(
                       children: [
-                        const Divider(height: 1, thickness: 1, color: ProfilePostpaidTheme.divider),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: ProfilePostpaidTheme.divider,
+                        ),
                         ...state.items.map((item) {
                           return ProfilePostpaidMenuItemTile(
                             title: item.title,
                             enabled: item.enabled,
-                            onTap: () => context.read<ProfilePostpaidBloc>().add(ProfilePostpaidItemPressed(item)),
+                            onTap: () => context
+                                .read<ProfilePostpaidBloc>()
+                                .add(ProfilePostpaidItemPressed(item)),
                           );
                         }),
                       ],

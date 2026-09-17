@@ -1,13 +1,3 @@
-enum BioDataStatus{
-  incomplete,
-  notSubmitted,
-  inReview,
-  notApproved,
-  approved
-}
+enum BioDataStatus { incomplete, notSubmitted, inReview, notApproved, approved }
 
-enum PaymentMethod{
-  bKash,
-  nagad,
-  other
-}
+enum PaymentMethod { bKash, nagad, other }

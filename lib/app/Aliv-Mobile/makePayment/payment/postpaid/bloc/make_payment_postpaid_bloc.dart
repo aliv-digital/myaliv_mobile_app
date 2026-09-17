@@ -12,7 +12,7 @@ class MakePaymentPostPaidBloc
   final MakePaymentPostPaidRepository repository;
 
   MakePaymentPostPaidBloc({required this.repository})
-      : super(MakePaymentPostPaidState.initial()) {
+    : super(MakePaymentPostPaidState.initial()) {
     on<MakePaymentPostPaidStarted>(_onStarted);
     on<MpAmountOptionChanged>(_onAmountOptionChanged);
     on<MpCustomAmountChanged>(_onCustomAmountChanged);
@@ -168,10 +168,7 @@ class MakePaymentPostPaidBloc
     if (state.status == MpPaymentStatus.paying) return;
 
     emit(
-      state.copyWith(
-        status: MpPaymentStatus.paying,
-        clearErrorMessage: true,
-      ),
+      state.copyWith(status: MpPaymentStatus.paying, clearErrorMessage: true),
     );
 
     try {

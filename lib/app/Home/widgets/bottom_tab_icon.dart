@@ -5,11 +5,7 @@ class BottomTabIcon extends StatelessWidget {
   final String asset;
   final bool isActive;
 
-  const BottomTabIcon({
-    super.key,
-    required this.asset,
-    required this.isActive,
-  });
+  const BottomTabIcon({super.key, required this.asset, required this.isActive});
 
   @override
   Widget build(BuildContext context) {

@@ -79,8 +79,7 @@ class ConsumptionLimitState {
       getLimitByName('C_SMS_local_Restriction');
 
   /// Get local data limit
-  ConsumptionLimitModel? get localDataLimit =>
-      getLimitByName('C_GPRS_Local');
+  ConsumptionLimitModel? get localDataLimit => getLimitByName('C_GPRS_Local');
 
   /// Get local talk mins limit
   ConsumptionLimitModel? get localTalkLimit =>

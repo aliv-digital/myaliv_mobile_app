@@ -155,8 +155,10 @@ class _SheetBody extends StatelessWidget {
 
         final bool isBahamas =
             (state.purchaseCountry?.countryCode ?? '').toUpperCase() == 'BS';
-        final bool showPhoneError =
-            _isPhoneInvalid(state.purchasePhone, state.purchaseCountry);
+        final bool showPhoneError = _isPhoneInvalid(
+          state.purchasePhone,
+          state.purchaseCountry,
+        );
         final bool showConfirmError = _isMismatch(
           state.purchasePhone,
           state.purchaseConfirmPhone,
@@ -168,12 +170,14 @@ class _SheetBody extends StatelessWidget {
             ? GuestSplashTheme.errorRed
             : GuestSplashTheme.purchasePlanFieldBorderColor;
         final TextStyle phoneInputStyle = showPhoneError
-            ? GuestSplashTheme.phoneInput
-                .copyWith(color: GuestSplashTheme.errorRed)
+            ? GuestSplashTheme.phoneInput.copyWith(
+                color: GuestSplashTheme.errorRed,
+              )
             : GuestSplashTheme.phoneInput;
         final TextStyle confirmInputStyle = showConfirmError
-            ? GuestSplashTheme.phoneInput
-                .copyWith(color: GuestSplashTheme.errorRed)
+            ? GuestSplashTheme.phoneInput.copyWith(
+                color: GuestSplashTheme.errorRed,
+              )
             : GuestSplashTheme.phoneInput;
         final List<TextInputFormatter> phoneFormatters = isBahamas
             ? const <TextInputFormatter>[BahamasPhoneInputFormatter()]
@@ -339,7 +343,8 @@ class _SheetBody extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: GuestSplashTheme.purchasePlanSectionGap),
-              if (state.purchaseStatus == GuestSplashPurchasePlanStatus.failure &&
+              if (state.purchaseStatus ==
+                      GuestSplashPurchasePlanStatus.failure &&
                   (state.purchaseErrorMessage?.isNotEmpty ?? false))
                 Padding(
                   padding: const EdgeInsets.only(
@@ -354,7 +359,8 @@ class _SheetBody extends StatelessWidget {
                 label: 'continue',
                 isLoading: false,
                 height: GuestSplashTheme.purchasePlanContinueButtonHeight,
-                backgroundColor: GuestSplashTheme.purchasePlanContinueButtonColor,
+                backgroundColor:
+                    GuestSplashTheme.purchasePlanContinueButtonColor,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(
                     GuestSplashTheme.purchasePlanContinueButtonRadius,
@@ -389,8 +395,8 @@ class _SheetBody extends StatelessWidget {
                     extra: {
                       'phoneNumber':
                           LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
-                        state.purchasePhone,
-                      ),
+                            state.purchasePhone,
+                          ),
                     },
                   );
                 },

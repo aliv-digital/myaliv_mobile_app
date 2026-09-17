@@ -9,8 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 class UsageFairUseLink extends StatelessWidget {
   const UsageFairUseLink({super.key});
 
-  static final Uri _uri =
-      Uri.parse('https://www.bealiv.com/fair-use-policy/');
+  static final Uri _uri = Uri.parse('https://www.bealiv.com/fair-use-policy/');
 
   Future<void> _launch() async {
     try {

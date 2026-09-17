@@ -19,7 +19,6 @@ class TermsAgreement extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-
         /// Custom Checkbox
         GestureDetector(
           onTap: () => onChanged(!value),
@@ -30,9 +29,7 @@ class TermsAgreement extends StatelessWidget {
               width: 16,
               height: 16,
               decoration: BoxDecoration(
-                color: value
-                    ? const Color(0xFF645D9C)
-                    : Colors.transparent,
+                color: value ? const Color(0xFF645D9C) : Colors.transparent,
                 borderRadius: BorderRadius.circular(2),
                 border: Border.all(
                   color: value
@@ -42,11 +39,7 @@ class TermsAgreement extends StatelessWidget {
                 ),
               ),
               child: value
-                  ? const Icon(
-                Icons.check,
-                size: 12,
-                color: Colors.white,
-              )
+                  ? const Icon(Icons.check, size: 12, color: Colors.white)
                   : null,
             ),
           ),
@@ -60,8 +53,7 @@ class TermsAgreement extends StatelessWidget {
             TextSpan(
               children: [
                 const TextSpan(
-                  text:
-                  'By checking this box, I agree to the ',
+                  text: 'By checking this box, I agree to the ',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,
@@ -78,11 +70,10 @@ class TermsAgreement extends StatelessWidget {
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
-                    decorationColor:  Color(0xFF645D9C),
+                    decorationColor: Color(0xFF645D9C),
                     height: 1.43,
                   ),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = onTermsTap,
+                  recognizer: TapGestureRecognizer()..onTap = onTermsTap,
                 ),
               ],
             ),

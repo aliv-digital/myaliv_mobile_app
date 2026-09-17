@@ -67,25 +67,24 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
         create: (ctx) => GuestPurchasePlanReceiptBloc(
           repository: ctx.read<GuestPurchasePlanReceiptRepository>(),
         )..add(GuestPurchasePlanReceiptStarted(receiptData)),
-        child: _GuestPurchasePlanReceiptView(
-          statusMessage: statusMessage,
-        ),
+        child: _GuestPurchasePlanReceiptView(statusMessage: statusMessage),
       ),
     );
   }
 }
 
 class _GuestPurchasePlanReceiptView extends StatelessWidget {
-  const _GuestPurchasePlanReceiptView({
-    required this.statusMessage,
-  });
+  const _GuestPurchasePlanReceiptView({required this.statusMessage});
 
   static const _bg = Color(0xFFF1F2FA);
   final String statusMessage;
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPurchasePlanReceiptBloc, GuestPurchasePlanReceiptState>(
+    return BlocListener<
+      GuestPurchasePlanReceiptBloc,
+      GuestPurchasePlanReceiptState
+    >(
       listenWhen: (p, c) => p.backHomeRequestId != c.backHomeRequestId,
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
@@ -114,29 +113,32 @@ class _GuestPurchasePlanReceiptView extends StatelessWidget {
                     top: 29,
                     bottom: 30,
                   ),
-                  child: BlocBuilder<GuestPurchasePlanReceiptBloc, GuestPurchasePlanReceiptState>(
-                    builder: (context, state) {
-                      final data = state.data;
-                      if (data == null) return const SizedBox.shrink();
+                  child:
+                      BlocBuilder<
+                        GuestPurchasePlanReceiptBloc,
+                        GuestPurchasePlanReceiptState
+                      >(
+                        builder: (context, state) {
+                          final data = state.data;
+                          if (data == null) return const SizedBox.shrink();
 
-                      return DefaultReceiptSuccessCard(
-                      
-
-                        data: data,
-                        onBackHome: () {
-                          if(AppSession.appRoute == 'prepaidPlan' || AppSession.appRoute == 'addOnsPrepaid'){
-                            context.go(AppRoutes.home);
-                            AppSession.resetAppRoute();
-                          }else{
-                            context.go(AppRoutes.logIn);
-
-                          }
+                          return DefaultReceiptSuccessCard(
+                            data: data,
+                            onBackHome: () {
+                              if (AppSession.appRoute == 'prepaidPlan' ||
+                                  AppSession.appRoute == 'addOnsPrepaid') {
+                                context.go(AppRoutes.home);
+                                AppSession.resetAppRoute();
+                              } else {
+                                context.go(AppRoutes.logIn);
+                              }
+                            },
+                            pageBackground:
+                                GuestPurchasePlanReceiptTheme.circleBackground,
+                            statusMessage: statusMessage,
+                          );
                         },
-                        pageBackground: GuestPurchasePlanReceiptTheme.circleBackground,
-                        statusMessage: statusMessage,
-                      );
-                    },
-                  ),
+                      ),
                 ),
               ),
 

@@ -25,9 +25,8 @@ abstract class SavedCardsRepository {
 
 /// Implementation of [SavedCardsRepository].
 class SavedCardsRepositoryImpl implements SavedCardsRepository {
-  SavedCardsRepositoryImpl({
-    required SavedCardsApiClient apiClient,
-  }) : _apiClient = apiClient;
+  SavedCardsRepositoryImpl({required SavedCardsApiClient apiClient})
+    : _apiClient = apiClient;
 
   final SavedCardsApiClient _apiClient;
 
@@ -117,7 +116,9 @@ class SavedCardsRepositoryImpl implements SavedCardsRepository {
         } else {
           // Skip malformed items but log in debug mode
           if (kDebugMode) {
-            debugPrint('SavedCardsRepository: Skipping malformed card item: $item');
+            debugPrint(
+              'SavedCardsRepository: Skipping malformed card item: $item',
+            );
           }
         }
       }

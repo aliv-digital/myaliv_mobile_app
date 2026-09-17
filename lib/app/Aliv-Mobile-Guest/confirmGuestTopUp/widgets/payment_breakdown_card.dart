@@ -30,7 +30,8 @@ class PaymentBreakdownCard extends StatelessWidget {
         scallopCount: TopUpConfirmTheme.breakdownScallopCount,
         scallopGap: TopUpConfirmTheme.breakdownScallopGap,
         scallopDepth: TopUpConfirmTheme.breakdownScallopDepth,
-        scallopOvalHeightFactor: TopUpConfirmTheme.breakdownScallopOvalHeightFactor,
+        scallopOvalHeightFactor:
+            TopUpConfirmTheme.breakdownScallopOvalHeightFactor,
         scallopSideInset: TopUpConfirmTheme.breakdownScallopSideInset,
       ),
       clipBehavior: Clip.antiAlias,

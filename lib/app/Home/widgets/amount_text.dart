@@ -19,7 +19,7 @@ class OutlinedAmountText extends StatelessWidget {
             fontFamily: 'CircularPro',
             fontWeight: FontWeight.w700,
           ),
-        )
+        ),
       ],
     );
   }

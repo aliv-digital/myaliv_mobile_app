@@ -22,11 +22,7 @@ class OTPPostpaidHeader extends StatelessWidget {
           },
         ),
         const SizedBox(height: 16),
-        SvgPicture.asset(
-          AssetConstant.otpPhoneSVG,
-          width: 162,
-          height: 170,
-        ),
+        SvgPicture.asset(AssetConstant.otpPhoneSVG, width: 162, height: 170),
         const SizedBox(height: 21),
         const Text(
           'verification code',

@@ -62,14 +62,14 @@ class LoginOtpState extends Equatable {
 
   @override
   List<Object?> get props => [
-        code,
-        mfaToken,
-        phoneNumber,
-        apiPhoneNumber,
-        status,
-        resendStatus,
-        errorType,
-        codeFieldError,
-        errorMessage,
-      ];
+    code,
+    mfaToken,
+    phoneNumber,
+    apiPhoneNumber,
+    status,
+    resendStatus,
+    errorType,
+    codeFieldError,
+    errorMessage,
+  ];
 }

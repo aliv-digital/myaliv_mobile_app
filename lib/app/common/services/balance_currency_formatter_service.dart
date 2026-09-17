@@ -6,10 +6,7 @@ class BalanceCurrencyFormatterService {
     return value < 0 ? '\$($formattedValue)' : '\$$formattedValue';
   }
 
-  static String formatNullable(
-    num? value, {
-    String placeholder = '--------',
-  }) {
+  static String formatNullable(num? value, {String placeholder = '--------'}) {
     if (value == null) return placeholder;
     return format(value);
   }

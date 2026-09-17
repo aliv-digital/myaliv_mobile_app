@@ -9,7 +9,7 @@ import '../../app/Home/home/data/home_ui_config.dart';
 /// - OTP/login flow can update this later from real API response
 class AppUiConfigCubit extends Cubit<HomeUiConfig> {
   AppUiConfigCubit({HomeUiConfig? initialConfig})
-      : super(initialConfig ?? _defaultConfig);
+    : super(initialConfig ?? _defaultConfig);
 
   /// Sensible default for guest / first-run: prepaid (the more common
   /// case, and the prepaid tabs render harmlessly for edge cases).

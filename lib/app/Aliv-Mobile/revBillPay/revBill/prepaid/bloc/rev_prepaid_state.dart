@@ -82,10 +82,12 @@ class RevPrepaidState extends Equatable {
       service: service ?? this.service,
       accountNumber: accountNumber ?? this.accountNumber,
       name: name ?? this.name,
-      accountStatus:
-          clearAccountData ? null : (accountStatus ?? this.accountStatus),
-      accountBalance:
-          clearAccountData ? null : (accountBalance ?? this.accountBalance),
+      accountStatus: clearAccountData
+          ? null
+          : (accountStatus ?? this.accountStatus),
+      accountBalance: clearAccountData
+          ? null
+          : (accountBalance ?? this.accountBalance),
       amount: amount ?? this.amount,
       submitting: submitting ?? this.submitting,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -95,15 +97,15 @@ class RevPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        title,
-        service,
-        accountNumber,
-        name,
-        accountStatus,
-        accountBalance,
-        amount,
-        submitting,
-        errorMessage,
-        navTarget,
-      ];
+    title,
+    service,
+    accountNumber,
+    name,
+    accountStatus,
+    accountBalance,
+    amount,
+    submitting,
+    errorMessage,
+    navTarget,
+  ];
 }

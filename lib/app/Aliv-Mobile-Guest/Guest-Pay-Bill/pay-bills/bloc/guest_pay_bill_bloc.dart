@@ -8,8 +8,8 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   final GuestPayBillRepository repo;
 
   GuestPayBillBloc({GuestPayBillRepository? repo})
-      : repo = repo ?? GuestPayBillRepository(),
-        super(GuestPayBillState.initial()) {
+    : repo = repo ?? GuestPayBillRepository(),
+      super(GuestPayBillState.initial()) {
     on<GuestPayBillStarted>(_onStarted);
     on<GuestPayBillServiceChanged>(_onServiceChanged);
 
@@ -32,17 +32,21 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     emit(state.copyWith(loadStatus: GuestPayBillLoadStatus.loading));
     try {
       final services = await repo.fetchServices();
-      emit(state.copyWith(
-        loadStatus: GuestPayBillLoadStatus.ready,
-        services: services,
-        // optional: default select ALIV Postpaid like screenshot
-        selectedService: services.first,
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: GuestPayBillLoadStatus.ready,
+          services: services,
+          // optional: default select ALIV Postpaid like screenshot
+          selectedService: services.first,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        loadStatus: GuestPayBillLoadStatus.failure,
-        errorMessage: 'Failed to load network',
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: GuestPayBillLoadStatus.failure,
+          errorMessage: 'Failed to load network',
+        ),
+      );
     }
   }
 
@@ -50,79 +54,91 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     GuestPayBillServiceChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
-    emit(state.copyWith(
-      selectedService: event.service,
-      selectedCountry: PayBillCountry.defaultCountry,
-      // reset all inputs + verification
-      accountNumber: '',
-      name: '',
-      mobileNumber: '',
-      confirmMobileNumber: '',
-      accountInfo: null,
-      verifyStatus: GuestPayBillVerifyStatus.idle,
-      submitStatus: GuestPayBillSubmitStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        selectedService: event.service,
+        selectedCountry: PayBillCountry.defaultCountry,
+        // reset all inputs + verification
+        accountNumber: '',
+        name: '',
+        mobileNumber: '',
+        confirmMobileNumber: '',
+        accountInfo: null,
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        submitStatus: GuestPayBillSubmitStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onCountryChanged(
     GuestPayBillCountryChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
-    emit(state.copyWith(
-      selectedCountry: event.country,
-      accountInfo: null,
-      verifyStatus: GuestPayBillVerifyStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        selectedCountry: event.country,
+        accountInfo: null,
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onAccountChanged(
     GuestPayBillAccountNumberChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
-    emit(state.copyWith(
-      accountNumber: event.value,
-      accountInfo: null,
-      verifyStatus: GuestPayBillVerifyStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        accountNumber: event.value,
+        accountInfo: null,
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onNameChanged(
     GuestPayBillNameChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
-    emit(state.copyWith(
-      name: event.value,
-      accountInfo: null,
-      verifyStatus: GuestPayBillVerifyStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        name: event.value,
+        accountInfo: null,
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onMobileChanged(
     GuestPayBillMobileChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
-    emit(state.copyWith(
-      mobileNumber: event.value,
-      accountInfo: null,
-      verifyStatus: GuestPayBillVerifyStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        mobileNumber: event.value,
+        accountInfo: null,
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onConfirmMobileChanged(
     GuestPayBillConfirmMobileChanged event,
     Emitter<GuestPayBillState> emit,
   ) {
-    emit(state.copyWith(
-      confirmMobileNumber: event.value,
-      accountInfo: null,
-      verifyStatus: GuestPayBillVerifyStatus.idle,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        confirmMobileNumber: event.value,
+        accountInfo: null,
+        verifyStatus: GuestPayBillVerifyStatus.idle,
+        errorMessage: null,
+      ),
+    );
   }
 
   void _onAmountChanged(
@@ -138,11 +154,13 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   ) async {
     if (!state.canVerify) return;
 
-    emit(state.copyWith(
-      verifyStatus: GuestPayBillVerifyStatus.loading,
-      errorMessage: null,
-      accountInfo: null,
-    ));
+    emit(
+      state.copyWith(
+        verifyStatus: GuestPayBillVerifyStatus.loading,
+        errorMessage: null,
+        accountInfo: null,
+      ),
+    );
 
     try {
       final info = state.isAlivPostpaid
@@ -151,27 +169,31 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
               confirmMobileNumber: state.confirmMobileNumber,
             )
           : state.isAlivFibr
-              ? await repo.verifyAlivFibr(
-                  accountNumberOrUsername: state.accountNumber,
-                  enteredName: state.name,
-                )
-              : await repo.verifyRev(
-                  accountNumber: state.accountNumber,
-                  enteredName: state.name,
-                );
+          ? await repo.verifyAlivFibr(
+              accountNumberOrUsername: state.accountNumber,
+              enteredName: state.name,
+            )
+          : await repo.verifyRev(
+              accountNumber: state.accountNumber,
+              enteredName: state.name,
+            );
 
-      emit(state.copyWith(
-        verifyStatus: GuestPayBillVerifyStatus.success,
-        accountInfo: info,
-      ));
+      emit(
+        state.copyWith(
+          verifyStatus: GuestPayBillVerifyStatus.success,
+          accountInfo: info,
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        verifyStatus: GuestPayBillVerifyStatus.failure,
-        errorMessage: state.isAlivPostpaid
-            ? 'Mobile number mismatch or invalid.'
-            : 'Account not found. Please check details.',
-        accountInfo: null,
-      ));
+      emit(
+        state.copyWith(
+          verifyStatus: GuestPayBillVerifyStatus.failure,
+          errorMessage: state.isAlivPostpaid
+              ? 'Mobile number mismatch or invalid.'
+              : 'Account not found. Please check details.',
+          accountInfo: null,
+        ),
+      );
     }
   }
 
@@ -181,10 +203,12 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   ) async {
     if (!state.canSubmit) return;
 
-    emit(state.copyWith(
-      submitStatus: GuestPayBillSubmitStatus.loading,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        submitStatus: GuestPayBillSubmitStatus.loading,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final identifier = state.isAlivPostpaid
@@ -199,10 +223,12 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
 
       emit(state.copyWith(submitStatus: GuestPayBillSubmitStatus.success));
     } catch (_) {
-      emit(state.copyWith(
-        submitStatus: GuestPayBillSubmitStatus.failure,
-        errorMessage: 'Payment failed. Try again.',
-      ));
+      emit(
+        state.copyWith(
+          submitStatus: GuestPayBillSubmitStatus.failure,
+          errorMessage: 'Payment failed. Try again.',
+        ),
+      );
     }
   }
 }

@@ -35,6 +35,7 @@ class EnterPasswordPostpaidFaceIdPressed extends EnterPasswordPostpaidEvent {
   const EnterPasswordPostpaidFaceIdPressed();
 }
 
-class EnterPasswordPostpaidFingerprintPressed extends EnterPasswordPostpaidEvent {
+class EnterPasswordPostpaidFingerprintPressed
+    extends EnterPasswordPostpaidEvent {
   const EnterPasswordPostpaidFingerprintPressed();
 }

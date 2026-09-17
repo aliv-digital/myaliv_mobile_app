@@ -42,10 +42,6 @@ class _Stripe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: double.infinity,
-      color: color,
-    );
+    return Container(height: height, width: double.infinity, color: color);
   }
 }

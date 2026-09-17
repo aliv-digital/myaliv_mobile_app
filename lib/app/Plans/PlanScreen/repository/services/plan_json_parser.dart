@@ -10,10 +10,12 @@ class PlanJsonParser extends BasePlanJsonParser {
   /// Parse raw JSON string into normalized plan list
   ///
   /// Alias for parseList() - for backwards compatibility.
-  Future<List<Map<String, dynamic>>> parse(String rawJson) => parseList(rawJson);
+  Future<List<Map<String, dynamic>>> parse(String rawJson) =>
+      parseList(rawJson);
 
   /// Parse raw bundles JSON string into normalized root map
   ///
   /// Alias for parseMap() - for backwards compatibility.
-  Future<Map<String, dynamic>> parseBundles(String rawJson) => parseMap(rawJson);
+  Future<Map<String, dynamic>> parseBundles(String rawJson) =>
+      parseMap(rawJson);
 }

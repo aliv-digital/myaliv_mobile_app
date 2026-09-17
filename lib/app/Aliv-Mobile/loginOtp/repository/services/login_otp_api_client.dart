@@ -11,7 +11,7 @@ import '../login_otp_exception.dart';
 /// them, and a 401 here means "bad OTP", not "session expired".
 class LoginOtpApiClient {
   LoginOtpApiClient({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 

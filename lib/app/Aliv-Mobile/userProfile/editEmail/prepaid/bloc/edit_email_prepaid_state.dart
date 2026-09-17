@@ -1,6 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-enum EditEmailPrepaidStatus { initial, loading, ready, submitting, success, failure }
+enum EditEmailPrepaidStatus {
+  initial,
+  loading,
+  ready,
+  submitting,
+  success,
+  failure,
+}
 
 class EditEmailPrepaidData extends Equatable {
   final String fullName;

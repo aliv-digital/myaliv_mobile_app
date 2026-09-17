@@ -25,8 +25,9 @@ class PurchasesPrepaidScreen extends StatelessWidget {
     final isPrepaid = context.read<AppUiConfigCubit>().state.isPrepaid;
 
     return BlocProvider(
-      create: (_) => PurchasePrepaidBloc(repo: PurchasePrepaidRepository())
-        ..add(PurchasePrepaidStarted(isPrepaid: isPrepaid)),
+      create: (_) =>
+          PurchasePrepaidBloc(repo: PurchasePrepaidRepository())
+            ..add(PurchasePrepaidStarted(isPrepaid: isPrepaid)),
       child: const _PurchasePrepaidView(),
     );
   }
@@ -43,7 +44,7 @@ class _PurchasePrepaidView extends StatelessWidget {
       listener: (context, state) {
         final err = state.errorMessage;
         if (err != null && err.isNotEmpty) {
-          AppToast.show(message: err.toString(),type: ToastType.error);
+          AppToast.show(message: err.toString(), type: ToastType.error);
           // ScaffoldMessenger.of(context)
           //   ..hideCurrentSnackBar()
           //   ..showSnackBar(SnackBar(content: Text(err)));
@@ -53,8 +54,8 @@ class _PurchasePrepaidView extends StatelessWidget {
         if (nav != null) {
           _handleNavigation(context, nav);
           context.read<PurchasePrepaidBloc>().add(
-                const PurchasePrepaidNavigationConsumed(),
-              );
+            const PurchasePrepaidNavigationConsumed(),
+          );
         }
       },
       child: StripedScaffold(
@@ -68,9 +69,10 @@ class _PurchasePrepaidView extends StatelessWidget {
                   // App bar as in your project
                   SliverToBoxAdapter(
                     child: DefaultAppBar(
-                        title: 'purchases',
-                        onBack: () => Navigator.of(context).maybePop(),
-                        onHomeTap: () => context.go(AppRoutes.home)),
+                      title: 'purchases',
+                      onBack: () => Navigator.of(context).maybePop(),
+                      onHomeTap: () => context.go(AppRoutes.home),
+                    ),
                   ),
 
                   if (state.status == PurchasePrepaidLoadStatus.loading)
@@ -95,8 +97,8 @@ class _PurchasePrepaidView extends StatelessWidget {
                           items: state.items,
                           onTapItem: (item) {
                             context.read<PurchasePrepaidBloc>().add(
-                                  PurchasePrepaidItemTapped(item.action),
-                                );
+                              PurchasePrepaidItemTapped(item.action),
+                            );
                           },
                         ),
                       ),

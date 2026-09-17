@@ -119,25 +119,29 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                   width: GuestPurchasePlanTheme.roamBottomSheetWarningTextWidth,
                   child: Text(
                     widget.warningText,
-                    style: GuestPurchasePlanTheme.roamBottomSheetWarningTextStyle,
+                    style:
+                        GuestPurchasePlanTheme.roamBottomSheetWarningTextStyle,
                   ),
                 ),
               ),
               const SizedBox(
-                height: GuestPurchasePlanTheme.roamBottomSheetWarningToStartFromGap,
+                height:
+                    GuestPurchasePlanTheme.roamBottomSheetWarningToStartFromGap,
               ),
 
               // Date start label.
               SizedBox(
-                width: GuestPurchasePlanTheme.roamBottomSheetStartFromLabelWidth,
+                width:
+                    GuestPurchasePlanTheme.roamBottomSheetStartFromLabelWidth,
                 child: Text(
                   widget.startFromLabel,
-                  style:
-                      GuestPurchasePlanTheme.roamBottomSheetStartFromLabelTextStyle,
+                  style: GuestPurchasePlanTheme
+                      .roamBottomSheetStartFromLabelTextStyle,
                 ),
               ),
               const SizedBox(
-                height: GuestPurchasePlanTheme.roamBottomSheetStartFromToDateFieldGap,
+                height: GuestPurchasePlanTheme
+                    .roamBottomSheetStartFromToDateFieldGap,
               ),
 
               // Select-date field.
@@ -148,7 +152,8 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                 ),
                 child: Container(
                   height: GuestPurchasePlanTheme.roamBottomSheetDateFieldHeight,
-                  padding: GuestPurchasePlanTheme.roamBottomSheetDateFieldPadding,
+                  padding:
+                      GuestPurchasePlanTheme.roamBottomSheetDateFieldPadding,
                   decoration: BoxDecoration(
                     color: GuestPurchasePlanTheme
                         .roamBottomSheetDateFieldBackgroundColor,
@@ -161,16 +166,19 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                       Expanded(
                         child: Text(
                           _formatDateWithOrdinal(_selectedDate),
-                          style:
-                              GuestPurchasePlanTheme.roamBottomSheetDateFieldTextStyle,
+                          style: GuestPurchasePlanTheme
+                              .roamBottomSheetDateFieldTextStyle,
                         ),
                       ),
                       SvgPicture.asset(
                         AssetConstant.calenderIconSVG,
-                        width: GuestPurchasePlanTheme.roamBottomSheetDateFieldIconSize,
-                        height: GuestPurchasePlanTheme.roamBottomSheetDateFieldIconSize,
+                        width: GuestPurchasePlanTheme
+                            .roamBottomSheetDateFieldIconSize,
+                        height: GuestPurchasePlanTheme
+                            .roamBottomSheetDateFieldIconSize,
                         colorFilter: ColorFilter.mode(
-                          GuestPurchasePlanTheme.roamBottomSheetDateFieldIconColor,
+                          GuestPurchasePlanTheme
+                              .roamBottomSheetDateFieldIconColor,
                           BlendMode.srcIn,
                         ),
                       ),
@@ -188,13 +196,14 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: GuestPurchasePlanTheme.roamBottomSheetOrDividerColor,
+                      color:
+                          GuestPurchasePlanTheme.roamBottomSheetOrDividerColor,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal:
-                          GuestPurchasePlanTheme.roamBottomSheetOrTextHorizontalPadding,
+                      horizontal: GuestPurchasePlanTheme
+                          .roamBottomSheetOrTextHorizontalPadding,
                     ),
                     child: Text(
                       'or',
@@ -204,13 +213,15 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                   Expanded(
                     child: Container(
                       height: 1,
-                      color: GuestPurchasePlanTheme.roamBottomSheetOrDividerColor,
+                      color:
+                          GuestPurchasePlanTheme.roamBottomSheetOrDividerColor,
                     ),
                   ),
                 ],
               ),
               const SizedBox(
-                height: GuestPurchasePlanTheme.roamBottomSheetOrToActivateNowGap,
+                height:
+                    GuestPurchasePlanTheme.roamBottomSheetOrToActivateNowGap,
               ),
 
               // Primary CTA. activate now
@@ -249,14 +260,13 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
 }
 
 class _RoamCalendarPickerSheet extends StatefulWidget {
-  const _RoamCalendarPickerSheet({
-    required this.initialDate,
-  });
+  const _RoamCalendarPickerSheet({required this.initialDate});
 
   final DateTime initialDate;
 
   @override
-  State<_RoamCalendarPickerSheet> createState() => _RoamCalendarPickerSheetState();
+  State<_RoamCalendarPickerSheet> createState() =>
+      _RoamCalendarPickerSheetState();
 }
 
 class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
@@ -268,8 +278,9 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
     super.initState();
     _firstDate = DateUtils.dateOnly(DateTime.now());
     final initialDate = DateUtils.dateOnly(widget.initialDate);
-    _draftSelectedDate =
-        initialDate.isBefore(_firstDate) ? _firstDate : initialDate;
+    _draftSelectedDate = initialDate.isBefore(_firstDate)
+        ? _firstDate
+        : initialDate;
   }
 
   @override
@@ -293,14 +304,14 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: Theme.of(context).colorScheme.copyWith(
-                        primary: GuestPurchasePlanTheme
-                            .roamCalendarSelectedDayBackgroundColor,
-                        onPrimary:
-                            GuestPurchasePlanTheme.roamCalendarSelectedDayTextColor,
-                        surface: GuestPurchasePlanTheme
-                            .roamCalendarSheetBackgroundColor,
-                        onSurface: GuestPurchasePlanTheme.roamCalendarDayTextColor,
-                      ),
+                    primary: GuestPurchasePlanTheme
+                        .roamCalendarSelectedDayBackgroundColor,
+                    onPrimary:
+                        GuestPurchasePlanTheme.roamCalendarSelectedDayTextColor,
+                    surface:
+                        GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
+                    onSurface: GuestPurchasePlanTheme.roamCalendarDayTextColor,
+                  ),
                   datePickerTheme: DatePickerThemeData(
                     backgroundColor:
                         GuestPurchasePlanTheme.roamCalendarSheetBackgroundColor,
@@ -314,8 +325,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                     dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
                         if (states.contains(WidgetState.disabled)) {
-                          return GuestPurchasePlanTheme
-                              .roamCalendarDayTextColor
+                          return GuestPurchasePlanTheme.roamCalendarDayTextColor
                               .withValues(alpha: 0.35);
                         }
                         if (states.contains(WidgetState.selected)) {
@@ -325,8 +335,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                         return GuestPurchasePlanTheme.roamCalendarDayTextColor;
                       },
                     ),
-                    dayBackgroundColor:
-                        WidgetStateProperty.resolveWith<Color?>(
+                    dayBackgroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
                         if (states.contains(WidgetState.selected)) {
                           return GuestPurchasePlanTheme
@@ -346,7 +355,8 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                   ),
                 ),
                 child: SizedBox(
-                  height: GuestPurchasePlanTheme.roamCalendarPickerVisibleHeight,
+                  height:
+                      GuestPurchasePlanTheme.roamCalendarPickerVisibleHeight,
                   child: CalendarDatePicker(
                     initialDate: _draftSelectedDate,
                     firstDate: _firstDate,
@@ -375,10 +385,12 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                       label: GuestPurchasePlanTheme.roamCalendarCancelLabel,
                       isLoading: false,
                       onPressed: () => Navigator.of(context).pop(),
-                      height: GuestPurchasePlanTheme.roamCalendarActionButtonHeight,
+                      height:
+                          GuestPurchasePlanTheme.roamCalendarActionButtonHeight,
                       backgroundColor: GuestPurchasePlanTheme
                           .roamCalendarCancelButtonBackgroundColor,
-                      textStyle: GuestPurchasePlanTheme.roamCalendarCancelTextStyle,
+                      textStyle:
+                          GuestPurchasePlanTheme.roamCalendarCancelTextStyle,
                       borderRadius: BorderRadius.circular(
                         GuestPurchasePlanTheme
                             .bottomSheetActionButtonCornerRadius,
@@ -394,9 +406,11 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                       isLoading: false,
                       onPressed: () =>
                           Navigator.of(context).pop(_draftSelectedDate),
-                      height: GuestPurchasePlanTheme.roamCalendarActionButtonHeight,
+                      height:
+                          GuestPurchasePlanTheme.roamCalendarActionButtonHeight,
                       backgroundColor: GuestPurchasePlanTheme.activateNowButton,
-                      textStyle: GuestPurchasePlanTheme.roamCalendarApplyTextStyle,
+                      textStyle:
+                          GuestPurchasePlanTheme.roamCalendarApplyTextStyle,
                       borderRadius: BorderRadius.circular(
                         GuestPurchasePlanTheme
                             .bottomSheetActionButtonCornerRadius,

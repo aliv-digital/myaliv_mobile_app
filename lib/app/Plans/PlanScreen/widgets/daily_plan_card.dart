@@ -30,8 +30,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
       padding: HomePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planCardRadius),
         boxShadow: const [
           BoxShadow(
             color: HomePlanTheme.planCardShadowColor,
@@ -76,10 +75,8 @@ class HomePlanDailyPlanCard extends StatelessWidget {
                               expanded
                                   ? AssetConstant.upArrowSVG
                                   : AssetConstant.downArrowSVG,
-                              width: HomePlanTheme
-                                  .planCardToggleArrowWidth,
-                              height: HomePlanTheme
-                                  .planCardToggleArrowHeight,
+                              width: HomePlanTheme.planCardToggleArrowWidth,
+                              height: HomePlanTheme.planCardToggleArrowHeight,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -93,7 +90,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.planAmount,vatAmount: plan.vatAmount),
+              _PricePill(price: plan.planAmount, vatAmount: plan.vatAmount),
             ],
           ),
 
@@ -107,8 +104,9 @@ class HomePlanDailyPlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(
@@ -130,7 +128,9 @@ class HomePlanDailyPlanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: DefaultButton(
-                  label: expanded ? HomePlanTheme.planCardHideDetailsLabel : HomePlanTheme.planCardViewDetailsLabel,
+                  label: expanded
+                      ? HomePlanTheme.planCardHideDetailsLabel
+                      : HomePlanTheme.planCardViewDetailsLabel,
                   isLoading: false,
                   onPressed: onViewDetails,
                   height: HomePlanTheme.planCardActionButtonHeight,
@@ -138,20 +138,16 @@ class HomePlanDailyPlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardViewDetailsBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardViewDetailsTextStyle,
+                  textStyle: HomePlanTheme.planCardViewDetailsTextStyle,
                   borderSide: BorderSide(
-                    color:
-                        HomePlanTheme.planCardViewDetailsBorderColor,
+                    color: HomePlanTheme.planCardViewDetailsBorderColor,
                   ),
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
                 ),
               ),
-              const SizedBox(
-                width: HomePlanTheme.planCardActionButtonsGap,
-              ),
+              const SizedBox(width: HomePlanTheme.planCardActionButtonsGap),
               Expanded(
                 child: DefaultButton(
                   label: HomePlanTheme.planCardPurchaseNowLabel,
@@ -162,8 +158,7 @@ class HomePlanDailyPlanCard extends StatelessWidget {
                       HomePlanTheme.planCardActionButtonContentPadding,
                   backgroundColor:
                       HomePlanTheme.planCardPurchaseNowBackgroundColor,
-                  textStyle:
-                      HomePlanTheme.planCardPurchaseNowTextStyle,
+                  textStyle: HomePlanTheme.planCardPurchaseNowTextStyle,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.planCardActionButtonRadius,
                   ),
@@ -180,17 +175,16 @@ class HomePlanDailyPlanCard extends StatelessWidget {
 class _PricePill extends StatelessWidget {
   final double price;
   final double vatAmount;
-  const _PricePill({required this.price,required this.vatAmount});
+  const _PricePill({required this.price, required this.vatAmount});
 
   @override
   Widget build(BuildContext context) {
-    final finalPrice = price+vatAmount;
+    final finalPrice = price + vatAmount;
     return Container(
       padding: HomePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: HomePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(HomePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
         '\$ ${finalPrice.toStringAsFixed(2)}',
@@ -247,80 +241,97 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
 
                           BucketItemType itemType = BucketItemType.whatsApp;
 
-                          if(item.bucketUnit == 'INS_Data' && item.unit == 'GB'){
+                          if (item.bucketUnit == 'INS_Data' &&
+                              item.unit == 'GB') {
                             // data icon
-                           // labelColor = HomePlanTheme.dataColor;
+                            // labelColor = HomePlanTheme.dataColor;
                             itemType = BucketItemType.data;
-
-                          }else if(item.bucketUnit == 'INS_DATA_UNLIMITED' && item.unit == 'GB'){
+                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' &&
+                              item.unit == 'GB') {
                             // data icon
                             //labelColor = HomePlanTheme.dataColor;
                             itemType = BucketItemType.data;
-                          }else if(item.bucketUnit == 'INS_Whatsapp_Text_10201' && item.unit == 'Text'){
+                          } else if (item.bucketUnit ==
+                                  'INS_Whatsapp_Text_10201' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.whatsApp;
                             // whatsApp icon
-                          }else if(item.bucketUnit ==  'INS_Whatsapp_All' && item.unit == 'GB'){
+                          } else if (item.bucketUnit == 'INS_Whatsapp_All' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.whatsApp;
 
                             // whatsapp icon
-                          }else if(item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Minutes'){
+                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
+                              item.unit == 'Minutes') {
                             //BucketUnit  ==   INS_LDI_US_CANADA && unit == Minutes → call icon
                             itemType = BucketItemType.call;
-                          }else if(item.bucketUnit == 'INS_LDI_US_CANADA' && item.unit == 'Text'){
+                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
                             // BucketUnit  ==   INS_LDI_US_CANADA && unit == Text → message icon
-                          }
-                          else if(item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Minutes'){
+                          } else if (item.bucketUnit ==
+                                  'INS_Voice_Only_National' &&
+                              item.unit == 'Minutes') {
                             // BucketUnit  ==   INS_Voice_Only_National && unit == Minutes → call icon
                             itemType = BucketItemType.call;
                             // BucketUnit  ==   INS_Voice_Only_National && unit == Minutes → call icon
-                          }else if(item.bucketUnit == 'INS_Voice_Only_National' && item.unit == 'Text'){
+                          } else if (item.bucketUnit ==
+                                  'INS_Voice_Only_National' &&
+                              item.unit == 'Text') {
                             // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
                             itemType = BucketItemType.sms;
-                           // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
-                           // Unlimited == true → need to show unlimited  else show the amount
-
-                        }else if(item.bucketUnit == 'INS_SMS_Only_National' && item.unit == 'Text'){
+                            // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
+                            // Unlimited == true → need to show unlimited  else show the amount
+                          } else if (item.bucketUnit ==
+                                  'INS_SMS_Only_National' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.sms;
                             //BucketUnit  ==  INS_SMS_Only_National && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
-                          }else if(item.bucketUnit == 'INS_SMS_US_Canada' && item.unit == 'Text'){
+                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
                             //BucketUnit→  INS_SMS_US_Canada && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
-                          }else if(item.bucketUnit == 'INS_Voice_Nat_US' && item.unit == 'Minutes'){
+                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' &&
+                              item.unit == 'Minutes') {
                             itemType = BucketItemType.call;
                             //
-                           // BucketUnit→  INS_Voice_Nat_US && unit == Minutes → call icon
-                          //  Unlimited == true → need to show unlimited  else show the amount
-
-                          }else if(item.bucketUnit == 'INS_Sms_Nat_US' && item.unit == 'Text'){
+                            // BucketUnit→  INS_Voice_Nat_US && unit == Minutes → call icon
+                            //  Unlimited == true → need to show unlimited  else show the amount
+                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
                             //BucketUnit→  INS_Sms_Nat_US && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
-
-                        }else if(item.bucketUnit == 'INS_Voice_Onnet' && item.unit == 'Minutes'){
+                          } else if (item.bucketUnit == 'INS_Voice_Onnet' &&
+                              item.unit == 'Minutes') {
                             itemType = BucketItemType.call;
                             //BucketUnit→  INS_Voice_Onnet && unit == Minutes → call icon
                             //Unlimited == true → need to show unlimited  else show the amount
-
-                          }else if(item.bucketUnit == 'INS_SMS_Onnet' && item.unit == 'Text'){
+                          } else if (item.bucketUnit == 'INS_SMS_Onnet' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.sms;
                             //BucketUnit→  INS_SMS_Onnet && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
-                          }else if(item.bucketUnit == 'INS_MMS_Nat_US' && item.unit == 'Text'){
+                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' &&
+                              item.unit == 'Text') {
                             itemType = BucketItemType.internationalSMS;
                             //BucketUnit→  INS_MMS_Nat_US && unit == Text → sms icon
                             //Unlimited == true → need to show unlimited  else show the amount
-                          }else if(item.bucketUnit == 'INS_Data_MIFI' && item.unit == 'GB'){
+                          } else if (item.bucketUnit == 'INS_Data_MIFI' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
                             //BucketUnit→  INS_Data_MIFI && unit == GB → data icon
                             //Unlimited == true → need to show unlimited  else show the amount
-                          }else if(item.bucketUnit == 'INS_TikTok_10500' && item.unit == 'GB'){
+                          } else if (item.bucketUnit == 'INS_TikTok_10500' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
                             //BucketUnit→  INS_TikTok_10500 && unit == GB → data icon
                             // Unlimited == true → need to show unlimited  else show the amount
-                          }else if(item.bucketUnit == 'INS_Facebook_MSG_10403' && item.unit == 'GB'){
+                          } else if (item.bucketUnit ==
+                                  'INS_Facebook_MSG_10403' &&
+                              item.unit == 'GB') {
                             itemType = BucketItemType.data;
                             //BucketUnit→  INS_Facebook_MSG_10403 && unit == GB → data icon
                             // Unlimited == true → need to show unlimited  else show the amount
@@ -350,15 +361,17 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                                 height: rowH,
                                 child: _BucketItem(
                                   benefit: item,
-                                  labelColor:  labelColor,
-                                  itemType: itemType,//labelColor,
+                                  labelColor: labelColor,
+                                  itemType: itemType, //labelColor,
                                 ),
                               ),
                               if (i != widget.benefits.length - 1)
                                 Container(
-                                  width:HomePlanTheme.planBenefitDividerWidth,
-                                  height: HomePlanTheme.planBenefitDividerHeight,
-                                  margin: HomePlanTheme.planBenefitDividerHorizontalMargin,
+                                  width: HomePlanTheme.planBenefitDividerWidth,
+                                  height:
+                                      HomePlanTheme.planBenefitDividerHeight,
+                                  margin: HomePlanTheme
+                                      .planBenefitDividerHorizontalMargin,
                                   color: HomePlanTheme.planBenefitDividerColor,
                                 ),
                             ],
@@ -424,7 +437,11 @@ class _ScrollIndicator extends StatelessWidget {
   }
 
   Widget _indicatorUI(
-      double trackW, double trackH, double thumbW, double left) {
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: HomePlanTheme.scrollBarRenderBoxHeight,
@@ -502,13 +519,18 @@ class _BucketItem extends StatelessWidget {
   final BucketItemType itemType;
   final BasePlanBucketModel benefit;
   final Color labelColor;
-  const _BucketItem({required this.benefit, required this.labelColor,required this.itemType});
+  const _BucketItem({
+    required this.benefit,
+    required this.labelColor,
+    required this.itemType,
+  });
 
   // API bucket amounts always arrive as doubles, but UI should hide
   // meaningless trailing zero decimals like `3.000000` while preserving
   // real fractional values such as `0.34` or `4.052`.
   String _formatAmount(double amount) {
-    final bool hasOnlyZeroFraction = (amount - amount.truncateToDouble()).abs() < 0.0000001;
+    final bool hasOnlyZeroFraction =
+        (amount - amount.truncateToDouble()).abs() < 0.0000001;
     if (hasOnlyZeroFraction) {
       return amount.toStringAsFixed(0);
     }
@@ -555,16 +577,17 @@ class _BucketItem extends StatelessWidget {
 
     final labelW = _measureTextWidth(context, benefit.name, labelStyle);
     final valueW = _measureTextWidth(context, benefit.unit, valueStyle);
-    final subW = _measureTextWidth(context, benefit.amount.toString(), subStyle);
+    final subW = _measureTextWidth(
+      context,
+      benefit.amount.toString(),
+      subStyle,
+    );
     final line1W = iconSize + iconGap + labelW;
     final contentW = [line1W, valueW, subW].reduce((a, b) => a > b ? a : b);
     final dynamicW = contentW + 16;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: 72,
-        maxWidth: 160,
-      ),
+      constraints: const BoxConstraints(minWidth: 72, maxWidth: 160),
       child: SizedBox(
         width: dynamicW.clamp(72, 160),
         height: 50,

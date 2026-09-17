@@ -29,15 +29,15 @@ class AutoRenewPrepaidState extends Equatable {
   });
 
   factory AutoRenewPrepaidState.initial() => const AutoRenewPrepaidState(
-        loadStatus: AutoRenewLoadStatus.initial,
-        methods: [],
-        selectedMethodId: null,
-        selectedCard: null,
-        walletPaymentAmount: 75.00,
-        navTarget: AutoRenewNavTarget.none,
-        errorMessage: null,
-        savingSelection: false,
-      );
+    loadStatus: AutoRenewLoadStatus.initial,
+    methods: [],
+    selectedMethodId: null,
+    selectedCard: null,
+    walletPaymentAmount: 75.00,
+    navTarget: AutoRenewNavTarget.none,
+    errorMessage: null,
+    savingSelection: false,
+  );
 
   bool get isWalletSelected =>
       selectedMethodId == AutoRenewPaymentMethod.wallet.id;
@@ -47,10 +47,10 @@ class AutoRenewPrepaidState extends Equatable {
       selectedMethodId == AutoRenewPaymentMethod.payWithCard.id;
   bool get canProceed =>
       (selectedCard != null ||
-              isWalletSelected ||
-              isNoAutoRenewSelected ||
-              isPayWithCardSelected) &&
-          !savingSelection;
+          isWalletSelected ||
+          isNoAutoRenewSelected ||
+          isPayWithCardSelected) &&
+      !savingSelection;
   String get walletPaymentAmountText =>
       '\$ ${walletPaymentAmount.toStringAsFixed(2)}';
 
@@ -70,8 +70,9 @@ class AutoRenewPrepaidState extends Equatable {
       loadStatus: loadStatus ?? this.loadStatus,
       methods: methods ?? this.methods,
       selectedMethodId: selectedMethodId ?? this.selectedMethodId,
-      selectedCard:
-          clearSelectedCard ? null : (selectedCard ?? this.selectedCard),
+      selectedCard: clearSelectedCard
+          ? null
+          : (selectedCard ?? this.selectedCard),
       walletPaymentAmount: walletPaymentAmount ?? this.walletPaymentAmount,
       navTarget: navTarget ?? this.navTarget,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -81,13 +82,13 @@ class AutoRenewPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        loadStatus,
-        methods,
-        selectedMethodId,
-        selectedCard,
-        walletPaymentAmount,
-        navTarget,
-        errorMessage,
-        savingSelection,
-      ];
+    loadStatus,
+    methods,
+    selectedMethodId,
+    selectedCard,
+    walletPaymentAmount,
+    navTarget,
+    errorMessage,
+    savingSelection,
+  ];
 }

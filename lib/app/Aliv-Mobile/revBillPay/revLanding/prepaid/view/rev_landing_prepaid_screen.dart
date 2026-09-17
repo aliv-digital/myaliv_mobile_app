@@ -58,8 +58,8 @@ class RevLandingPrepaidScreen extends StatelessWidget {
                             style: RevLandingPrepaidTheme.question,
                           ),
                           const SizedBox(
-                            height: RevLandingPrepaidTheme
-                                .questionToFirstButtonGap,
+                            height:
+                                RevLandingPrepaidTheme.questionToFirstButtonGap,
                           ),
                           Center(
                             child: RevLandingChoiceButton(

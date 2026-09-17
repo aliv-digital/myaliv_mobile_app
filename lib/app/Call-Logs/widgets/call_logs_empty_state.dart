@@ -45,11 +45,7 @@ class CallLogsErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const CallLogsErrorState({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const CallLogsErrorState({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {

@@ -58,7 +58,8 @@ class _GuestTopUpReceiptView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
-      listenWhen: (previous, current) => previous.backHomeRequestId != current.backHomeRequestId,
+      listenWhen: (previous, current) =>
+          previous.backHomeRequestId != current.backHomeRequestId,
       listener: (context, state) {
         if (state.backHomeRequestId > 0) {
           Navigator.of(context).popUntil((r) => r.isFirst);
@@ -67,22 +68,31 @@ class _GuestTopUpReceiptView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: ReceiptTheme.screenBackground,
         body: SafeArea(
-            top: false,
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: DefaultAppBar(
-                    backgroundColor: HexColor.fromHex('#645D9C'),
-                    showBackArrow: false,
-                      title: '   my receipt',
-                      onBack:(){}
-                  ),
+          top: false,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: DefaultAppBar(
+                  backgroundColor: HexColor.fromHex('#645D9C'),
+                  showBackArrow: false,
+                  title: '   my receipt',
+                  onBack: () {},
                 ),
+              ),
 
-                SliverToBoxAdapter(
-                  child: Padding(
-                      padding: EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
-                      child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 29,
+                    bottom: 30,
+                  ),
+                  child:
+                      BlocBuilder<
+                        GuestTopUpReceiptBloc,
+                        GuestTopUpReceiptState
+                      >(
                         builder: (context, state) {
                           final data = state.data;
                           if (data == null) return const SizedBox.shrink();
@@ -93,44 +103,44 @@ class _GuestTopUpReceiptView extends StatelessWidget {
                             },
                             pageBackground: ReceiptTheme.circleBackground,
                           );
-                        }
-                      )
-                  )
+                        },
+                      ),
                 ),
-            //     SliverToBoxAdapter(
-            //   //hasScrollBody: false,
-            //   child: Center(
-            //     child: ConstrainedBox(
-            //       constraints: const BoxConstraints(maxWidth: 420),
-            //       child: Padding(
-            //         padding: const EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
-            //         child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
-            //           builder: (context, state) {
-            //             final data = state.data;
-            //             if (data == null) return const SizedBox.shrink();
-            //
-            //             return PaymentFailedTicket(
-            //               phone: "242-300-2548",
-            //               onPressed: () {
-            //                 Navigator.pop(context); // বা Home route
-            //               },
-            //             );
-            //             // return ReceiptFailureCard(
-            //             //   data: data,
-            //             //   pageBackground: ReceiptTheme.screenBackground,
-            //             //   onBackHome: () => context.read<GuestTopUpReceiptBloc>().add(
-            //             //     const GuestTopUpReceiptBackToHomePressed(),
-            //             //   ),
-            //             // );
-            //           },
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-              ],
-            )
-        )
+              ),
+              //     SliverToBoxAdapter(
+              //   //hasScrollBody: false,
+              //   child: Center(
+              //     child: ConstrainedBox(
+              //       constraints: const BoxConstraints(maxWidth: 420),
+              //       child: Padding(
+              //         padding: const EdgeInsets.only(left: 24,right: 24,top: 29,bottom: 30),
+              //         child: BlocBuilder<GuestTopUpReceiptBloc, GuestTopUpReceiptState>(
+              //           builder: (context, state) {
+              //             final data = state.data;
+              //             if (data == null) return const SizedBox.shrink();
+              //
+              //             return PaymentFailedTicket(
+              //               phone: "242-300-2548",
+              //               onPressed: () {
+              //                 Navigator.pop(context); // বা Home route
+              //               },
+              //             );
+              //             // return ReceiptFailureCard(
+              //             //   data: data,
+              //             //   pageBackground: ReceiptTheme.screenBackground,
+              //             //   onBackHome: () => context.read<GuestTopUpReceiptBloc>().add(
+              //             //     const GuestTopUpReceiptBackToHomePressed(),
+              //             //   ),
+              //             // );
+              //           },
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
+        ),
       ),
     );
   }

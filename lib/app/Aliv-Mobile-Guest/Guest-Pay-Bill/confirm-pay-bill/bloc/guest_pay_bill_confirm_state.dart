@@ -59,11 +59,11 @@ class GuestPayBillConfirmState extends Equatable {
 
   @override
   List<Object?> get props => [
-        args,
-        loadStatus,
-        payStatus,
-        isTermsChecked,
-        vat,
-        errorMessage,
-      ];
+    args,
+    loadStatus,
+    payStatus,
+    isTermsChecked,
+    vat,
+    errorMessage,
+  ];
 }

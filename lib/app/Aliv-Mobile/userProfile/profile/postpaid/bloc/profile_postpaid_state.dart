@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 
 import '../models/profile_postpaid_models.dart';
 
-
 enum ProfilePostpaidStatus { initial, loading, ready, failure }
 
 class ProfilePostpaidState extends Equatable {

@@ -49,11 +49,11 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         final bool isBahamasSelected = state.selectedCountry.isoCode == 'BS';
-        final bool showLivePhoneValidationError =
-            _phoneNumberHelper.hasLiveValidationError(
-          rawPhoneNumber: state.phone,
-          selectedCountry: state.selectedCountry,
-        );
+        final bool showLivePhoneValidationError = _phoneNumberHelper
+            .hasLiveValidationError(
+              rawPhoneNumber: state.phone,
+              selectedCountry: state.selectedCountry,
+            );
         final bool showPhoneBorderError =
             state.phoneFieldError || showLivePhoneValidationError;
         final Color phoneBorderColor = !_hasPhoneFocus && showPhoneBorderError
@@ -64,7 +64,8 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
                 color: AuthModuleColors.errorRed,
               )
             : AuthModuleTextStyles.fieldValue;
-        final double phoneErrorLeftPadding = AuthModuleSizes.countryWidth +
+        final double phoneErrorLeftPadding =
+            AuthModuleSizes.countryWidth +
             AuthModuleSizes.countryToPhoneGap +
             AuthModulePaddings.fieldHorizontal14.left;
 

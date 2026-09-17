@@ -7,11 +7,13 @@ abstract class TopUpPrepaidNumberPostPaidEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class TopUpPrepaidNumberPostPaidStarted extends TopUpPrepaidNumberPostPaidEvent {
+class TopUpPrepaidNumberPostPaidStarted
+    extends TopUpPrepaidNumberPostPaidEvent {
   const TopUpPrepaidNumberPostPaidStarted();
 }
 
-class TopUpPrepaidNumberPostPaidNumberChanged extends TopUpPrepaidNumberPostPaidEvent {
+class TopUpPrepaidNumberPostPaidNumberChanged
+    extends TopUpPrepaidNumberPostPaidEvent {
   final String value;
   const TopUpPrepaidNumberPostPaidNumberChanged(this.value);
 
@@ -19,7 +21,8 @@ class TopUpPrepaidNumberPostPaidNumberChanged extends TopUpPrepaidNumberPostPaid
   List<Object?> get props => [value];
 }
 
-class TopUpPrepaidNumberPostPaidConfirmNumberChanged extends TopUpPrepaidNumberPostPaidEvent {
+class TopUpPrepaidNumberPostPaidConfirmNumberChanged
+    extends TopUpPrepaidNumberPostPaidEvent {
   final String value;
   const TopUpPrepaidNumberPostPaidConfirmNumberChanged(this.value);
 
@@ -27,7 +30,8 @@ class TopUpPrepaidNumberPostPaidConfirmNumberChanged extends TopUpPrepaidNumberP
   List<Object?> get props => [value];
 }
 
-class TopUpPrepaidNumberPostPaidAmountChanged extends TopUpPrepaidNumberPostPaidEvent {
+class TopUpPrepaidNumberPostPaidAmountChanged
+    extends TopUpPrepaidNumberPostPaidEvent {
   final String value;
   const TopUpPrepaidNumberPostPaidAmountChanged(this.value);
 
@@ -35,6 +39,7 @@ class TopUpPrepaidNumberPostPaidAmountChanged extends TopUpPrepaidNumberPostPaid
   List<Object?> get props => [value];
 }
 
-class TopUpPrepaidNumberPostPaidApplyPressed extends TopUpPrepaidNumberPostPaidEvent {
+class TopUpPrepaidNumberPostPaidApplyPressed
+    extends TopUpPrepaidNumberPostPaidEvent {
   const TopUpPrepaidNumberPostPaidApplyPressed();
 }

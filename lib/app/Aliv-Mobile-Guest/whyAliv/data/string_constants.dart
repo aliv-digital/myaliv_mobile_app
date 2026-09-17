@@ -1,6 +1,6 @@
 class WhyAlivStrings {
   // AssetConstant additions for WhyAlivScreen
-// Copy-paste these inside your AssetConstant class.
+  // Copy-paste these inside your AssetConstant class.
 
   static const String whyAlivAppbarTitle = 'why ALIV';
 
@@ -21,5 +21,4 @@ class WhyAlivStrings {
 
   /// Optional: generic fallback used in the screen snack bar
   static const String commonSomethingWentWrong = 'Something went wrong';
-
 }

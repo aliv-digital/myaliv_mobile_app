@@ -18,10 +18,7 @@ import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
 
 class GuestPurchasePlanConfirmationScreen extends StatelessWidget {
-  const GuestPurchasePlanConfirmationScreen({
-    super.key,
-    required this.args,
-  });
+  const GuestPurchasePlanConfirmationScreen({super.key, required this.args});
 
   final GuestPurchasePlanConfirmationRouteArgs args;
 
@@ -44,8 +41,10 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GuestPurchasePlanConfirmationBloc,
-        GuestPurchasePlanConfirmationState>(
+    return BlocListener<
+      GuestPurchasePlanConfirmationBloc,
+      GuestPurchasePlanConfirmationState
+    >(
       listenWhen: (previous, current) =>
           previous.openTermsRequestId != current.openTermsRequestId ||
           previous.payNowRequestId != current.payNowRequestId,
@@ -60,61 +59,67 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: GuestPurchasePlanConfirmationTheme.bg,
-        bottomNavigationBar: BlocBuilder<GuestPurchasePlanConfirmationBloc,
-            GuestPurchasePlanConfirmationState>(
-          builder: (context, state) {
-            if (state.status != GuestPurchasePlanConfirmationStatus.ready ||
-                state.data == null) {
-              return const SizedBox.shrink();
-            }
+        bottomNavigationBar:
+            BlocBuilder<
+              GuestPurchasePlanConfirmationBloc,
+              GuestPurchasePlanConfirmationState
+            >(
+              builder: (context, state) {
+                if (state.status != GuestPurchasePlanConfirmationStatus.ready ||
+                    state.data == null) {
+                  return const SizedBox.shrink();
+                }
 
-            return DefaultBottomPayBar(
-              isVatExclusive: true,
-              isButtonEnabled: state.isTermsChecked,
-              buttonColor: const Color(0xFF645D9C),
-              onPayNow: () {
-                final data = state.data!;
-                final primaryPlanName = data.items
-                    .firstWhere(
-                      (item) => item.type == PurchaseLineType.primaryPlan,
-                      orElse: () => const PurchaseLineItem(
-                        id: '',
-                        type: PurchaseLineType.primaryPlan,
-                        label: '',
-                        title: '',
-                        subtitle: '',
-                        price: 0,
-                      ),
-                    )
-                    .title;
-                final addOnNames = data.items
-                    .where((item) => item.type == PurchaseLineType.addOn)
-                    .map((item) => item.title)
-                    .toList(growable: false);
-                final now = DateTime.now();
+                return DefaultBottomPayBar(
+                  isVatExclusive: true,
+                  isButtonEnabled: state.isTermsChecked,
+                  buttonColor: const Color(0xFF645D9C),
+                  onPayNow: () {
+                    final data = state.data!;
+                    final primaryPlanName = data.items
+                        .firstWhere(
+                          (item) => item.type == PurchaseLineType.primaryPlan,
+                          orElse: () => const PurchaseLineItem(
+                            id: '',
+                            type: PurchaseLineType.primaryPlan,
+                            label: '',
+                            title: '',
+                            subtitle: '',
+                            price: 0,
+                          ),
+                        )
+                        .title;
+                    final addOnNames = data.items
+                        .where((item) => item.type == PurchaseLineType.addOn)
+                        .map((item) => item.title)
+                        .toList(growable: false);
+                    final now = DateTime.now();
 
-                context.push(
-                  AppRoutes.guestPurchasePlanReceipt,
-                  extra: <String, Object?>{
-                    'phoneNumber': data.phoneNumber,
-                    'amount': data.totals.total,
-                    'planName': primaryPlanName.isEmpty ? null : primaryPlanName,
-                    'addOnNames': addOnNames,
-                    'dateText': DateFormat('MMM d, yyyy').format(now),
-                    'timeText':
-                        DateFormat('h:mm a').format(now).toLowerCase(),
-                    'emailAddress': 'guest',
+                    context.push(
+                      AppRoutes.guestPurchasePlanReceipt,
+                      extra: <String, Object?>{
+                        'phoneNumber': data.phoneNumber,
+                        'amount': data.totals.total,
+                        'planName': primaryPlanName.isEmpty
+                            ? null
+                            : primaryPlanName,
+                        'addOnNames': addOnNames,
+                        'dateText': DateFormat('MMM d, yyyy').format(now),
+                        'timeText': DateFormat(
+                          'h:mm a',
+                        ).format(now).toLowerCase(),
+                        'emailAddress': 'guest',
+                      },
+                    );
                   },
+                  amountText:
+                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
                 );
               },
-              amountText: '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
-            );
-          },
-        ),
+            ),
         body: SafeArea(
           top: false,
-          child: BlocBuilder<GuestPurchasePlanConfirmationBloc,
-              GuestPurchasePlanConfirmationState>(
+          child: BlocBuilder<GuestPurchasePlanConfirmationBloc, GuestPurchasePlanConfirmationState>(
             builder: (context, state) {
               final data = state.data;
 
@@ -149,7 +154,8 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                         data: data,
                                         onRemoveItem: (id) => context
                                             .read<
-                                                GuestPurchasePlanConfirmationBloc>()
+                                              GuestPurchasePlanConfirmationBloc
+                                            >()
                                             .add(
                                               GuestPurchasePlanConfirmationRemoveItemPressed(
                                                 id,
@@ -174,7 +180,8 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                         isChecked: state.isTermsChecked,
                                         onToggleChecked: () => context
                                             .read<
-                                                GuestPurchasePlanConfirmationBloc>()
+                                              GuestPurchasePlanConfirmationBloc
+                                            >()
                                             .add(
                                               GuestPurchasePlanConfirmationTermsCheckboxToggled(
                                                 !state.isTermsChecked,

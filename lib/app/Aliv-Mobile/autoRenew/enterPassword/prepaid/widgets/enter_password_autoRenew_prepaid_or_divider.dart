@@ -10,12 +10,8 @@ class EnterPasswordAutoRenewPrepaidOrDivider extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width:23,
-          child: Divider(
-            height: 1,
-            thickness: 1,
-            color: Color(0xFF8A8A8F),
-          ),
+          width: 23,
+          child: Divider(height: 1, thickness: 1, color: Color(0xFF8A8A8F)),
         ),
         SizedBox(width: 4),
         Text(
@@ -32,12 +28,8 @@ class EnterPasswordAutoRenewPrepaidOrDivider extends StatelessWidget {
         ),
         SizedBox(width: 4),
         SizedBox(
-          width:23,
-          child: Divider(
-            height: 1,
-            thickness: 1,
-            color: Color(0xFF8A8A8F),
-          ),
+          width: 23,
+          child: Divider(height: 1, thickness: 1, color: Color(0xFF8A8A8F)),
         ),
       ],
     );

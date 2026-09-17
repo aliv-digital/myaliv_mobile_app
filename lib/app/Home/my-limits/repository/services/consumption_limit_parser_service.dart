@@ -49,7 +49,8 @@ class ConsumptionLimitParserService {
           debugPrint('│ Parsed ${limits.length} limits');
           for (final limit in limits) {
             debugPrint(
-                '│   - ${limit.displayName}: \$${limit.remainingAmount.toStringAsFixed(2)} of \$${limit.initialAmount.toStringAsFixed(2)}');
+              '│   - ${limit.displayName}: \$${limit.remainingAmount.toStringAsFixed(2)} of \$${limit.initialAmount.toStringAsFixed(2)}',
+            );
           }
           debugPrint('└─────────────────────────────────────────');
           debugPrint('');

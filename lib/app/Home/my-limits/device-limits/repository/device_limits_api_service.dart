@@ -35,7 +35,7 @@ class DeviceLimitsApiService {
   final NetworkService _networkService;
 
   DeviceLimitsApiService({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   /// Fetch device limits from API
   ///
@@ -199,10 +199,7 @@ class DeviceLimitsApiService {
       final response = await _networkService.request<dynamic>(
         Api.creditCardAutoRenew,
         method: HttpMethod.post,
-        data: {
-          'Token': token,
-          'AgreementText': 'I agree to automatic renewal',
-        },
+        data: {'Token': token, 'AgreementText': 'I agree to automatic renewal'},
       );
 
       final data = response.data;

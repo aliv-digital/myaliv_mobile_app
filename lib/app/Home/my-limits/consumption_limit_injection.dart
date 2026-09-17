@@ -24,9 +24,8 @@ Future<void> setupConsumptionLimitInjection() async {
 
   // Register API service (uses NetworkService from core package)
   instance.registerLazySingleton<ConsumptionLimitApiService>(
-    () => ConsumptionLimitApiService(
-      networkService: instance<NetworkService>(),
-    ),
+    () =>
+        ConsumptionLimitApiService(networkService: instance<NetworkService>()),
   );
 
   // Register parser service (handles JSON parsing)

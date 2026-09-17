@@ -11,10 +11,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_empty_state.
 /// the user-profile `PurchaseAddOnsScreen`. Renders the same shimmer,
 /// no-primary-plan, empty, and tab-content states from `PlansCubit` data.
 class PlanAddOnsBody extends StatefulWidget {
-  const PlanAddOnsBody({
-    super.key,
-    this.onNoPrimaryPlanPurchase,
-  });
+  const PlanAddOnsBody({super.key, this.onNoPrimaryPlanPurchase});
 
   /// Action when the user has no primary plan and taps "purchase plan".
   /// Defaults to switching the cubit to the monthly tab (PlanScreen behavior).
@@ -63,7 +60,8 @@ class _PlanAddOnsBodyState extends State<PlanAddOnsBody> {
 
         // Show shimmer when bundles has never responded OR when it came back
         // empty and an auto-refresh is currently in-flight.
-        if (!bundlesReady || (state.addOns.isEmpty && state.isRefreshingBundles)) {
+        if (!bundlesReady ||
+            (state.addOns.isEmpty && state.isRefreshingBundles)) {
           if (!bundlesReady && status == PlansStatus.failure) {
             return PlanErrorState(
               errorMessage:
@@ -76,9 +74,9 @@ class _PlanAddOnsBodyState extends State<PlanAddOnsBody> {
 
         if (state.earliestAddOnsPrimaryPlan == null) {
           return AddOnsNoPrimaryPlanState(
-            onPurchasePlan: widget.onNoPrimaryPlanPurchase ??
-                () =>
-                    context.read<PlansCubit>().changeTab(HomePlanTab.monthly),
+            onPurchasePlan:
+                widget.onNoPrimaryPlanPurchase ??
+                () => context.read<PlansCubit>().changeTab(HomePlanTab.monthly),
           );
         }
 

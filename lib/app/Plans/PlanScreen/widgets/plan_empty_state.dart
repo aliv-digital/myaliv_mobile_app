@@ -75,10 +75,7 @@ class PlanEmptyState extends StatelessWidget {
 /// Add-ons can't be purchased without one — CTA switches the tab strip
 /// back to a primary-plan tab.
 class AddOnsNoPrimaryPlanState extends StatelessWidget {
-  const AddOnsNoPrimaryPlanState({
-    super.key,
-    required this.onPurchasePlan,
-  });
+  const AddOnsNoPrimaryPlanState({super.key, required this.onPurchasePlan});
 
   final VoidCallback onPurchasePlan;
 

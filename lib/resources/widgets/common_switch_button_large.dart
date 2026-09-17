@@ -25,10 +25,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 //     isOn = widget.initialValue;
 //   }
 
-  // void _toggle() {
-  //   setState(() => isOn = !isOn);
-  //   widget.onChanged?.call(isOn);
-  // }
+// void _toggle() {
+//   setState(() => isOn = !isOn);
+//   widget.onChanged?.call(isOn);
+// }
 class CommonSwitchButtonLarge extends StatelessWidget {
   final bool value;
   final ValueChanged<bool>? onChanged;
@@ -84,7 +84,6 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                         width: 20,
                       ),
                       const SizedBox(width: 3),
-
                     ],
                   )
                 : Row(
@@ -115,7 +114,6 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 3),
-
                     ],
                   ),
             // child: Row(

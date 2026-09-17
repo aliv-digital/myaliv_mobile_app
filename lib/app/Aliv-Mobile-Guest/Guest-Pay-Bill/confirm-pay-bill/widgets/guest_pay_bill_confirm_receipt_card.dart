@@ -37,12 +37,7 @@ class GuestPayBillConfirmReceiptCard extends StatelessWidget {
             ],
           ),
         ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: -10,
-          child: _ScallopRow(),
-        ),
+        Positioned(left: 0, right: 0, bottom: -10, child: _ScallopRow()),
       ],
     );
   }

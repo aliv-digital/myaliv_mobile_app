@@ -29,10 +29,12 @@ class RoamingPlanSection extends StatelessWidget {
         // the Future Plans tab. Mirrors `_startsInFuture` in
         // `future_plan_tab.dart` so each plan appears in exactly one tab.
         final now = DateTime.now();
-        final plans = state.standAlonePlans.where((p) {
-          final start = p.startDateTime;
-          return start == null || !start.isAfter(now);
-        }).toList(growable: false);
+        final plans = state.standAlonePlans
+            .where((p) {
+              final start = p.startDateTime;
+              return start == null || !start.isAfter(now);
+            })
+            .toList(growable: false);
         if (plans.isEmpty) return const SizedBox.shrink();
 
         return Column(
@@ -101,7 +103,7 @@ class _MetricRows extends StatelessWidget {
               subtitle: rows[i].isUnlimited
                   ? 'unlimited'
                   : '${formatBucketAmount(rows[i].remaining, rows[i].unitLabel)}'
-                      ' of ${formatBucketAmount(rows[i].initial, rows[i].unitLabel)}',
+                        ' of ${formatBucketAmount(rows[i].initial, rows[i].unitLabel)}',
               percentUsed: rows[i].progress,
               isUnlimited: rows[i].isUnlimited,
             ),

@@ -163,10 +163,7 @@ class DefaultPaymentBreakDownCard extends StatelessWidget {
 }
 
 class _RowItem extends StatelessWidget {
-  const _RowItem({
-    required this.item,
-    required this.theme,
-  });
+  const _RowItem({required this.item, required this.theme});
 
   final PaymentBreakdownLineItem item;
   final _BreakdownTheme theme;
@@ -185,10 +182,7 @@ class _RowItem extends StatelessWidget {
 }
 
 class _InputRow extends StatefulWidget {
-  const _InputRow({
-    required this.config,
-    required this.theme,
-  });
+  const _InputRow({required this.config, required this.theme});
 
   final PaymentBreakdownInputConfig config;
   final _BreakdownTheme theme;
@@ -259,12 +253,11 @@ class _InputRowState extends State<_InputRow> {
             child: Opacity(
               opacity: canInteract ? 1 : 0.45,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-                child: Text(
-                  c.actionText,
-                  style: widget.theme.actionText,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 10,
                 ),
+                child: Text(c.actionText, style: widget.theme.actionText),
               ),
             ),
           ),

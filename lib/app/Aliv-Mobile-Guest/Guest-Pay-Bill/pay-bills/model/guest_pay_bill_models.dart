@@ -9,11 +9,7 @@ class PayBillAccountInfo {
   final String? name; // optional (REV type)
   final double? balance; // optional (REV type)
 
-  const PayBillAccountInfo({
-    required this.status,
-    this.name,
-    this.balance,
-  });
+  const PayBillAccountInfo({required this.status, this.name, this.balance});
 }
 
 class PayBillCountry {

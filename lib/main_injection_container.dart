@@ -35,9 +35,7 @@ class AppMainInjection {
   Future<void> initInjection() async {
     // Initialize core with hard-logout callback (invoked by
     // BearerAuthInterceptor when refresh fails / refresh token dies).
-    await _coreInjection.initInjection(
-      onHardLogout: performHardLogout,
-    );
+    await _coreInjection.initInjection(onHardLogout: performHardLogout);
 
     // Initialize account information feature
     await setupAccountInfoInjection();

@@ -112,10 +112,7 @@ class AutoTopupApplyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
           ),
         ),
-        child: Text(
-          'apply',
-          style: TopUpPrepaidTheme.buttonText(),
-        ),
+        child: Text('apply', style: TopUpPrepaidTheme.buttonText()),
       ),
     );
   }

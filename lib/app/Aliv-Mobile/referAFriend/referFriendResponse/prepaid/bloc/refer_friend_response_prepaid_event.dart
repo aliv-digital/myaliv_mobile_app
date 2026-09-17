@@ -7,11 +7,13 @@ sealed class ReferFriendResponsePrepaidEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class ReferFriendResponsePrepaidStarted extends ReferFriendResponsePrepaidEvent {
+class ReferFriendResponsePrepaidStarted
+    extends ReferFriendResponsePrepaidEvent {
   const ReferFriendResponsePrepaidStarted();
 }
 
-class ReferFriendResponsePrepaidCopyPressed extends ReferFriendResponsePrepaidEvent {
+class ReferFriendResponsePrepaidCopyPressed
+    extends ReferFriendResponsePrepaidEvent {
   final String code;
   const ReferFriendResponsePrepaidCopyPressed(this.code);
 
@@ -19,10 +21,12 @@ class ReferFriendResponsePrepaidCopyPressed extends ReferFriendResponsePrepaidEv
   List<Object?> get props => [code];
 }
 
-class ReferFriendResponsePrepaidBackHomePressed extends ReferFriendResponsePrepaidEvent {
+class ReferFriendResponsePrepaidBackHomePressed
+    extends ReferFriendResponsePrepaidEvent {
   const ReferFriendResponsePrepaidBackHomePressed();
 }
 
-class ReferFriendResponsePrepaidToastConsumed extends ReferFriendResponsePrepaidEvent {
+class ReferFriendResponsePrepaidToastConsumed
+    extends ReferFriendResponsePrepaidEvent {
   const ReferFriendResponsePrepaidToastConsumed();
 }

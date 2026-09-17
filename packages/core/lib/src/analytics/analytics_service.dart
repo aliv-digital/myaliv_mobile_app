@@ -166,8 +166,7 @@ class AnalyticsService {
   // ── Support ───────────────────────────────────────────────────────────────
 
   /// Log when the user navigates to the support chatbot.
-  Future<void> logSupportChatOpened() =>
-      _log(AnalyticsEvent.supportChatOpened);
+  Future<void> logSupportChatOpened() => _log(AnalyticsEvent.supportChatOpened);
 
   // ── Private ───────────────────────────────────────────────────────────────
 

@@ -48,7 +48,9 @@ class AppMenuDrawer extends StatelessWidget {
                       bloc: instance<DeviceLimitsCubit>(),
                       builder: (context, state) {
                         final fullName = resolveUserDisplayName(devices: state);
-                        final phone = _formatPhone(state.deviceLimits?.tn ?? '');
+                        final phone = _formatPhone(
+                          state.deviceLimits?.tn ?? '',
+                        );
 
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,9 +86,7 @@ class AppMenuDrawer extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: InkWell(
                       onTap: () => Navigator.pop(context),
-                      child: SvgPicture.asset(
-                        'assets/icons/ic_back_bold.svg',
-                      ),
+                      child: SvgPicture.asset('assets/icons/ic_back_bold.svg'),
                     ),
                   ),
                 ],

@@ -6,7 +6,8 @@ import 'package:equatable/equatable.dart';
 /// field: empty string → OK, non-empty → blocked with human-readable copy
 /// meant to be displayed as-is (e.g. "Order # 12234 is in progress for # …").
 class CanSubmitOrderResult extends Equatable {
-  static const pendingOrdersMessage = 'You have pending or failed orders. '
+  static const pendingOrdersMessage =
+      'You have pending or failed orders. '
       'Please wait for the open orders to complete '
       'before sending another request.';
 

@@ -27,14 +27,16 @@ class _MyLimitsTabState extends State<MyLimitsTab> {
   }
 
   void _loadLimits() {
-    final deviceId = instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+    final deviceId =
+        instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
     if (deviceId > 0) {
       instance<ConsumptionLimitCubit>().loadLimits(deviceAccountId: deviceId);
     }
   }
 
   Future<void> _refreshLimits() async {
-    final deviceId = instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
+    final deviceId =
+        instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0;
     if (deviceId > 0) {
       await instance<ConsumptionLimitCubit>().loadLimits(
         deviceAccountId: deviceId,

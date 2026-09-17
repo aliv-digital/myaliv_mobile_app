@@ -16,10 +16,10 @@ class LoginOtpRepository implements BaseLoginOtpRepository {
     PhoneNormalizer? phoneNormalizer,
     OtpResponseValidator? responseValidator,
     OtpJsonParser? jsonParser,
-  })  : _apiClient = apiClient ?? LoginOtpApiClient(),
-        _phoneNormalizer = phoneNormalizer ?? PhoneNormalizer(),
-        _responseValidator = responseValidator ?? OtpResponseValidator(),
-        _jsonParser = jsonParser ?? OtpJsonParser();
+  }) : _apiClient = apiClient ?? LoginOtpApiClient(),
+       _phoneNormalizer = phoneNormalizer ?? PhoneNormalizer(),
+       _responseValidator = responseValidator ?? OtpResponseValidator(),
+       _jsonParser = jsonParser ?? OtpJsonParser();
 
   final LoginOtpApiClient _apiClient;
   final PhoneNormalizer _phoneNormalizer;
@@ -35,7 +35,9 @@ class LoginOtpRepository implements BaseLoginOtpRepository {
     final normalizedPhone = _phoneNormalizer.normalize(phoneNumber);
 
     if (kDebugMode) {
-      debugPrint('LoginOtpRepository: Verifying OTP for phone=$normalizedPhone');
+      debugPrint(
+        'LoginOtpRepository: Verifying OTP for phone=$normalizedPhone',
+      );
     }
 
     final rawJson = await _apiClient.verifyOtp(
@@ -57,7 +59,9 @@ class LoginOtpRepository implements BaseLoginOtpRepository {
     final normalizedPhone = _phoneNormalizer.normalize(phoneNumber);
 
     if (kDebugMode) {
-      debugPrint('LoginOtpRepository: Resending OTP for phone=$normalizedPhone');
+      debugPrint(
+        'LoginOtpRepository: Resending OTP for phone=$normalizedPhone',
+      );
     }
 
     final rawJson = await _apiClient.resendOtp(

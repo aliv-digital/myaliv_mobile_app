@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/why_aliv_theme.dart';
 
 class WhyAlivAppBar extends StatelessWidget {
-  const WhyAlivAppBar({super.key,
-    required this.title,
-    required this.onBack,
-  });
+  const WhyAlivAppBar({super.key, required this.title, required this.onBack});
 
   final String title;
   final VoidCallback onBack;

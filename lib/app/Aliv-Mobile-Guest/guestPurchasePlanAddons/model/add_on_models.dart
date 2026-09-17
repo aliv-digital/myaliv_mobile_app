@@ -2,12 +2,12 @@ import 'package:equatable/equatable.dart';
 
 class ActivePlanSummary extends Equatable {
   final String label; // "active plan"
-  final String name;  // "liberty70"
+  final String name; // "liberty70"
   final bool autoRenew;
   final String activeDateLabel; // "active"
-  final String activeDate;      // "20/08/24"
+  final String activeDate; // "20/08/24"
   final String expireDateLabel; // "expire"
-  final String expireDate;      // "19/09/24"
+  final String expireDate; // "19/09/24"
 
   const ActivePlanSummary({
     required this.label,
@@ -45,10 +45,10 @@ class ActivePlanSummary extends Equatable {
 
 class AddOnItem extends Equatable {
   final String id;
-  final String title;          // "liberty data 1"
-  final String subtitleLabel;  // "data balance"
-  final String subtitleValue;  // "1gb"
-  final double price;          // 5.00
+  final String title; // "liberty data 1"
+  final String subtitleLabel; // "data balance"
+  final String subtitleValue; // "1gb"
+  final double price; // 5.00
   final String currencySymbol; // "$"
 
   const AddOnItem({
@@ -61,17 +61,21 @@ class AddOnItem extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, title, subtitleLabel, subtitleValue, price, currencySymbol];
+  List<Object?> get props => [
+    id,
+    title,
+    subtitleLabel,
+    subtitleValue,
+    price,
+    currencySymbol,
+  ];
 }
 
 class FairUsePolicy extends Equatable {
-  final String title;       // "fair use policy"
+  final String title; // "fair use policy"
   final String description; // text
 
-  const FairUsePolicy({
-    required this.title,
-    required this.description,
-  });
+  const FairUsePolicy({required this.title, required this.description});
 
   @override
   List<Object?> get props => [title, description];

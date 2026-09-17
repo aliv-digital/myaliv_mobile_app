@@ -29,8 +29,9 @@ class PlanCard extends StatelessWidget {
       padding: GuestPurchasePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planCardRadius,
+        ),
         boxShadow: const [
           BoxShadow(
             color: GuestPurchasePlanTheme.planCardShadowColor,
@@ -102,8 +103,9 @@ class PlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -176,8 +178,9 @@ class _PricePill extends StatelessWidget {
       padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planPricePillRadius,
+        ),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -228,14 +231,11 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                     ),
                     if (i != widget.benefits.length - 1)
                       Container(
-                        width:
-                            GuestPurchasePlanTheme.planBenefitDividerWidth,
-                        height:
-                            GuestPurchasePlanTheme.planBenefitDividerHeight,
+                        width: GuestPurchasePlanTheme.planBenefitDividerWidth,
+                        height: GuestPurchasePlanTheme.planBenefitDividerHeight,
                         margin: GuestPurchasePlanTheme
                             .planBenefitDividerHorizontalMargin,
-                        color:
-                            GuestPurchasePlanTheme.planBenefitDividerColor,
+                        color: GuestPurchasePlanTheme.planBenefitDividerColor,
                       ),
                   ],
                 );
@@ -255,9 +255,7 @@ class _BenefitsRowState extends State<_BenefitsRow> {
 class _ScrollIndicator extends StatelessWidget {
   final ScrollController controller;
 
-  const _ScrollIndicator({
-    required this.controller,
-  });
+  const _ScrollIndicator({required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +294,11 @@ class _ScrollIndicator extends StatelessWidget {
   }
 
   Widget _indicatorUI(
-      double trackW, double trackH, double thumbW, double left) {
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: GuestPurchasePlanTheme.scrollBarRenderBoxHeight,
@@ -360,8 +362,12 @@ class _AssetIcon extends StatelessWidget {
     final lower = path.toLowerCase();
 
     if (lower.endsWith('.svg')) {
-      return SvgPicture.asset(path,
-          width: size, height: size, fit: BoxFit.contain);
+      return SvgPicture.asset(
+        path,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
     }
     return Image.asset(path, width: size, height: size, fit: BoxFit.contain);
   }

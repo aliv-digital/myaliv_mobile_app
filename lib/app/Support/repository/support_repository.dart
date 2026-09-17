@@ -81,7 +81,7 @@ class SupportRepository {
     ];
   }
 
-  static final faqUri =  Uri.parse("https://www.bealiv.com/aliv-mobile-faqs/");
+  static final faqUri = Uri.parse("https://www.bealiv.com/aliv-mobile-faqs/");
 
   Future<Uri> fetchFaqUri() async {
     const String endpoint =

@@ -45,7 +45,7 @@ class BottomShell extends StatelessWidget {
                 blurRadius: 16,
                 offset: Offset(0, -4),
                 spreadRadius: 0,
-              )
+              ),
             ],
           ),
           child: Padding(
@@ -57,66 +57,68 @@ class BottomShell extends StatelessWidget {
                 splashFactory: NoSplash.splashFactory,
               ),
               child: BottomNavigationBar(
-            elevation: 0,
-            currentIndex: currentIndex,
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  context.go(AppRoutes.home);
-                  break;
-                case 1:
-                  context.go(AppRoutes.usage);
-                  break;
-                case 2:
-                  context.go(AppRoutes.plans);
-                  break;
-                case 3:
-                  // context.go(AppRoutes.menu);
-                  // 🔥 OPEN DRAWER INSTEAD OF ROUTE
-                  bottomShellKey.currentState?.openDrawer();
-                  break;
-              }
-            },
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.white,
-            selectedItemColor: const Color(0xFF645D9C),
-            unselectedItemColor: const Color(0xFFB0AEDA),
-            selectedLabelStyle: const TextStyle(
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w600,
-            ),
-            unselectedLabelStyle: const TextStyle(fontFamily: 'CircularPro'),
-            items: [
-              BottomNavigationBarItem(
-                icon: BottomTabIcon(
-                  asset: 'assets/icons/home.svg',
-                  isActive: currentIndex == 0,
+                elevation: 0,
+                currentIndex: currentIndex,
+                onTap: (index) {
+                  switch (index) {
+                    case 0:
+                      context.go(AppRoutes.home);
+                      break;
+                    case 1:
+                      context.go(AppRoutes.usage);
+                      break;
+                    case 2:
+                      context.go(AppRoutes.plans);
+                      break;
+                    case 3:
+                      // context.go(AppRoutes.menu);
+                      // 🔥 OPEN DRAWER INSTEAD OF ROUTE
+                      bottomShellKey.currentState?.openDrawer();
+                      break;
+                  }
+                },
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                selectedItemColor: const Color(0xFF645D9C),
+                unselectedItemColor: const Color(0xFFB0AEDA),
+                selectedLabelStyle: const TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontWeight: FontWeight.w600,
                 ),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: BottomTabIcon(
-                  asset: 'assets/icons/usage.svg',
-                  isActive: currentIndex == 1,
+                unselectedLabelStyle: const TextStyle(
+                  fontFamily: 'CircularPro',
                 ),
-                label: 'Usage',
+                items: [
+                  BottomNavigationBarItem(
+                    icon: BottomTabIcon(
+                      asset: 'assets/icons/home.svg',
+                      isActive: currentIndex == 0,
+                    ),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: BottomTabIcon(
+                      asset: 'assets/icons/usage.svg',
+                      isActive: currentIndex == 1,
+                    ),
+                    label: 'Usage',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: BottomTabIcon(
+                      asset: 'assets/icons/ListStar.svg',
+                      isActive: currentIndex == 2,
+                    ),
+                    label: 'Plans',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: BottomTabIcon(
+                      asset: 'assets/icons/menu.svg',
+                      isActive: false,
+                    ),
+                    label: 'Menu',
+                  ),
+                ],
               ),
-              BottomNavigationBarItem(
-                icon: BottomTabIcon(
-                  asset: 'assets/icons/ListStar.svg',
-                  isActive: currentIndex == 2,
-                ),
-                label: 'Plans',
-              ),
-              BottomNavigationBarItem(
-                icon: BottomTabIcon(
-                  asset: 'assets/icons/menu.svg',
-                  isActive: false,
-                ),
-                label: 'Menu',
-              ),
-            ],
-            ),
             ),
           ),
         ),

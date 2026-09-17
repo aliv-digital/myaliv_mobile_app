@@ -40,19 +40,21 @@ class _EnterPasswordAutoRenewPrepaidPasswordInputState
         animation: _passwordFocusNode,
         builder: (BuildContext context, Widget? child) {
           final bool isFocused = _passwordFocusNode.hasFocus;
-          final double innerRadius = (EnterPasswordAutoRenewPrepaidTheme
-                      .passwordInputBorderRadius -
-                  EnterPasswordAutoRenewPrepaidTheme.passwordInputBorderWidth)
-              .clamp(
-            0.0,
-            EnterPasswordAutoRenewPrepaidTheme.passwordInputBorderRadius,
-          );
+          final double innerRadius =
+              (EnterPasswordAutoRenewPrepaidTheme.passwordInputBorderRadius -
+                      EnterPasswordAutoRenewPrepaidTheme
+                          .passwordInputBorderWidth)
+                  .clamp(
+                    0.0,
+                    EnterPasswordAutoRenewPrepaidTheme
+                        .passwordInputBorderRadius,
+                  );
 
           return Container(
             decoration: BoxDecoration(
               gradient: isFocused
                   ? EnterPasswordAutoRenewPrepaidTheme
-                      .focusedInputBorderGradient
+                        .focusedInputBorderGradient
                   : null,
               border: isFocused
                   ? null

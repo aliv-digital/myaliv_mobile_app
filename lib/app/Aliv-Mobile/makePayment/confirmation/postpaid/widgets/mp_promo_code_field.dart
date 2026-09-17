@@ -93,7 +93,10 @@ class _MpPromoCodeFieldState extends State<MpPromoCodeField> {
             child: Opacity(
               opacity: widget.canApply ? 1 : 0.55,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 10,
+                ),
                 child: Text(
                   'apply',
                   style: MakePaymentConfirmationPostPaidTheme.promoApply,

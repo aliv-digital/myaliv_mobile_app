@@ -42,7 +42,9 @@ class RevPaymentMethodSection extends StatelessWidget {
             textAlign: TextAlign.center,
             style: RevPaymentMethodPrepaidTheme.sectionTitle,
           ),
-          const SizedBox(height: RevPaymentMethodPrepaidTheme.sectionTitleToFirstCardGap),
+          const SizedBox(
+            height: RevPaymentMethodPrepaidTheme.sectionTitleToFirstCardGap,
+          ),
 
           for (int i = 0; i < methods.length; i++) ...[
             RevPaymentMethodTile(
@@ -53,9 +55,13 @@ class RevPaymentMethodSection extends StatelessWidget {
               onTap: () => onSelect(methods[i].id),
             ),
             if (i < methods.length - 1)
-              const SizedBox(height: RevPaymentMethodPrepaidTheme.betweenMethodCardsGap),
+              const SizedBox(
+                height: RevPaymentMethodPrepaidTheme.betweenMethodCardsGap,
+              ),
           ],
-          const SizedBox(height: RevPaymentMethodPrepaidTheme.lastCardToPayWithCardGap),
+          const SizedBox(
+            height: RevPaymentMethodPrepaidTheme.lastCardToPayWithCardGap,
+          ),
 
           InkWell(
             onTap: onPayWithCard,
@@ -63,17 +69,26 @@ class RevPaymentMethodSection extends StatelessWidget {
               padding: RevPaymentMethodPrepaidTheme.payWithCardRowPadding,
               child: Row(
                 children: [
-                   Icon(Icons.add, size: 18, color: RevPaymentMethodPrepaidTheme.plus),
+                  Icon(
+                    Icons.add,
+                    size: 18,
+                    color: RevPaymentMethodPrepaidTheme.plus,
+                  ),
                   const SizedBox(width: 8),
-                  Text('pay with card', style: RevPaymentMethodPrepaidTheme.addCard),
+                  Text(
+                    'pay with card',
+                    style: RevPaymentMethodPrepaidTheme.addCard,
+                  ),
                   const Spacer(),
                   SizedBox(
                     width: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
                     height: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
                     child: SvgPicture.asset(
                       AssetConstant.arrowRightIconSVG,
-                      width: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
-                      height: RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                      width:
+                          RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
+                      height:
+                          RevPaymentMethodPrepaidTheme.payWithCardChevronSize,
                       fit: BoxFit.contain,
                     ),
                   ),

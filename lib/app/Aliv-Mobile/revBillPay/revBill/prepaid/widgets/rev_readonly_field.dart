@@ -4,10 +4,7 @@ import '../theme/rev_prepaid_theme.dart';
 class RevReadonlyField extends StatelessWidget {
   final String text;
 
-  const RevReadonlyField({
-    super.key,
-    required this.text,
-  });
+  const RevReadonlyField({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -24,4 +21,5 @@ class RevReadonlyField extends StatelessWidget {
     );
   }
 }
+
 // test

@@ -43,8 +43,8 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     BuildContext context,
     AutoRenewPrepaidState autoRenewPrepaidState,
   ) {
-    final AutoRenewPrepaidBloc autoRenewPrepaidBloc =
-        context.read<AutoRenewPrepaidBloc>();
+    final AutoRenewPrepaidBloc autoRenewPrepaidBloc = context
+        .read<AutoRenewPrepaidBloc>();
 
     return CustomScrollView(
       slivers: [
@@ -125,8 +125,10 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
     AutoRenewPrepaidState autoRenewPrepaidState,
     AutoRenewPrepaidBloc autoRenewPrepaidBloc,
   ) {
-    final isAutoRenewToggling =
-        context.watch<DeviceLimitsCubit>().state.isTogglingAutoRenew;
+    final isAutoRenewToggling = context
+        .watch<DeviceLimitsCubit>()
+        .state
+        .isTogglingAutoRenew;
     final isWalletRenewLoading =
         autoRenewPrepaidState.isWalletSelected && isAutoRenewToggling;
     final isNoRenewLoading =
@@ -169,7 +171,8 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
         const SizedBox(height: AutoRenewPrepaidTheme.dashedToActionGap),
         AutoRenewPrepaidProceedActionButton(
           isEnabled: autoRenewPrepaidState.canProceed,
-          isLoading: autoRenewPrepaidState.savingSelection ||
+          isLoading:
+              autoRenewPrepaidState.savingSelection ||
               isWalletRenewLoading ||
               isNoRenewLoading,
           onPressed: () async {
@@ -231,8 +234,8 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
       message: success
           ? "We're working on it! Auto-renew takes a few minutes to update. Thank you for your patience."
           : (errorMessage?.isNotEmpty == true
-              ? errorMessage!
-              : 'Failed to disable auto-renew'),
+                ? errorMessage!
+                : 'Failed to disable auto-renew'),
       type: success ? ToastType.success : ToastType.error,
     );
 
@@ -274,16 +277,15 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
       return;
     }
 
-    final success =
-        await deviceLimitsCubit.enableAutoRenewWallet(deviceId);
+    final success = await deviceLimitsCubit.enableAutoRenewWallet(deviceId);
 
     final errorMessage = deviceLimitsCubit.state.errorMessage;
     AppToast.show(
       message: success
           ? "We're working on it! Auto renew takes a few minutes to update. Thank you for your patience."
           : (errorMessage?.isNotEmpty == true
-              ? errorMessage!
-              : 'Failed to enable auto-renew'),
+                ? errorMessage!
+                : 'Failed to enable auto-renew'),
       type: success ? ToastType.success : ToastType.error,
     );
 

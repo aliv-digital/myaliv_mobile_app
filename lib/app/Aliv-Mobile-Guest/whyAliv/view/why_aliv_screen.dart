@@ -17,8 +17,9 @@ class WhyAlivScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => WhyAlivBloc(repository: const WhyAlivRepository())
-        ..add(const WhyAlivStarted()),
+      create: (_) =>
+          WhyAlivBloc(repository: const WhyAlivRepository())
+            ..add(const WhyAlivStarted()),
       child: const _WhyAlivView(),
     );
   }
@@ -67,7 +68,7 @@ class _WhyAlivView extends StatelessWidget {
               prev.status != curr.status &&
               curr.status == WhyAlivStatus.failure,
           listener: (context, state) {
-            final sms =  state.errorMessage ?? 'Something went wrong';
+            final sms = state.errorMessage ?? 'Something went wrong';
             AppToast.show(message: sms);
             // ScaffoldMessenger.of(context).showSnackBar(
             //   SnackBar(

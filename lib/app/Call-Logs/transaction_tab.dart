@@ -24,7 +24,8 @@ class TransactionsTab extends StatelessWidget {
           if (state.status == TransactionsStatus.failure) {
             return TransactionsErrorState(
               message: state.errorMessage ?? 'Failed to load transactions',
-              onRetry: () => context.read<TransactionsCubit>().fetchTransactions(),
+              onRetry: () =>
+                  context.read<TransactionsCubit>().fetchTransactions(),
             );
           }
 

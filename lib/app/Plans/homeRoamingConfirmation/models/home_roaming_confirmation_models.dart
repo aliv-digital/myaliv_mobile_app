@@ -36,12 +36,12 @@ class HomeRoamingConfirmationRouteArgs extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        selectedPlan,
-        beginDate,
-        showDateField,
-        forceNow,
-      ];
+    phoneNumber,
+    selectedPlan,
+    beginDate,
+    showDateField,
+    forceNow,
+  ];
 }
 
 class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
@@ -98,15 +98,15 @@ class HomeRoamingConfirmationPurchaseLineItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        type,
-        planTypeCode,
-        label,
-        title,
-        subtitle,
-        price,
-        vatAmount,
-      ];
+    id,
+    type,
+    planTypeCode,
+    label,
+    title,
+    subtitle,
+    price,
+    vatAmount,
+  ];
 }
 
 class HomeRoamingConfirmationPurchaseTotals extends Equatable {
@@ -141,10 +141,10 @@ class HomeRoamingConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        headerTitle,
-        beginsOnDateText,
-        items,
-        totals,
-      ];
+    phoneNumber,
+    headerTitle,
+    beginsOnDateText,
+    items,
+    totals,
+  ];
 }

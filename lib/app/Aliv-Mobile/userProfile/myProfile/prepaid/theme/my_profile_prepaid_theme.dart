@@ -18,9 +18,6 @@ class MyProfilePrepaidTheme {
     color: Colors.black,
   );
 
-
-
-
   static const TextStyle deviceTitle = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 14,

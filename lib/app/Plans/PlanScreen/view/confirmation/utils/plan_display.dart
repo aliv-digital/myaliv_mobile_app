@@ -15,7 +15,9 @@ String planTitleFor(HomePlansPostPaidPlanModel? plan) {
 
 String planPriceFor(HomePlansPostPaidPlanModel? plan) {
   if (plan == null) return '\$ --.--';
-  return formatConfirmationCurrency(plan.planAmountWithVat); // previously returning : plan.planAmount
+  return formatConfirmationCurrency(
+    plan.planAmountWithVat,
+  ); // previously returning : plan.planAmount
 }
 
 String planTypeLabelFor(HomePlansPostPaidPlanModel? plan) {

@@ -5,7 +5,7 @@ import '../../../../../../core/networkService/api_paths.dart';
 /// Handles API calls for prepaid plan data.
 class PlanApiClient extends BasePlanApiClient {
   PlanApiClient({super.networkService, super.authManager})
-      : super(debugName: 'prepaid');
+    : super(debugName: 'prepaid');
 
   Future<String> fetchRawPlansJson() async {
     final deviceId = requireDeviceAccountId();

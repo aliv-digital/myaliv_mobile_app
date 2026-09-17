@@ -75,9 +75,9 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                     hintText: 'enter your password',
                     hintStyle: AuthModuleTextStyles.passwordHint,
                   ),
-                  onChanged: (value) => context
-                      .read<LoginBloc>()
-                      .add(LoginPasswordChanged(value)),
+                  onChanged: (value) => context.read<LoginBloc>().add(
+                    LoginPasswordChanged(value),
+                  ),
                 ),
               ),
               GestureDetector(

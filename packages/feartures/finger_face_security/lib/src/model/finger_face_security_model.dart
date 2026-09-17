@@ -13,7 +13,8 @@ class FingerFaceSecurityModel extends Equatable {
     this.biometricTypeDescription = 'Biometric authentication',
   });
 
-  bool get isAnyBiometricAvailable => isFingerprintAvailable || isFaceIdAvailable;
+  bool get isAnyBiometricAvailable =>
+      isFingerprintAvailable || isFaceIdAvailable;
 
   FingerFaceSecurityModel copyWith({
     bool? isBiometricEnabled,
@@ -23,17 +24,19 @@ class FingerFaceSecurityModel extends Equatable {
   }) {
     return FingerFaceSecurityModel(
       isBiometricEnabled: isBiometricEnabled ?? this.isBiometricEnabled,
-      isFingerprintAvailable: isFingerprintAvailable ?? this.isFingerprintAvailable,
+      isFingerprintAvailable:
+          isFingerprintAvailable ?? this.isFingerprintAvailable,
       isFaceIdAvailable: isFaceIdAvailable ?? this.isFaceIdAvailable,
-      biometricTypeDescription: biometricTypeDescription ?? this.biometricTypeDescription,
+      biometricTypeDescription:
+          biometricTypeDescription ?? this.biometricTypeDescription,
     );
   }
 
   @override
   List<Object?> get props => [
-        isBiometricEnabled,
-        isFingerprintAvailable,
-        isFaceIdAvailable,
-        biometricTypeDescription,
-      ];
+    isBiometricEnabled,
+    isFingerprintAvailable,
+    isFaceIdAvailable,
+    biometricTypeDescription,
+  ];
 }

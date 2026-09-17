@@ -55,18 +55,18 @@ class SavedCardTile extends StatelessWidget {
           // ✅ Delete area aligned like screenshot (no IconButton extra padding)
           deleting
               ? const SizedBox(
-            width: 22,
-            height: 22,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: onDelete,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SvgPicture.asset('assets/icons/delete.svg'),
-            ),
-          ),
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: onDelete,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SvgPicture.asset('assets/icons/delete.svg'),
+                  ),
+                ),
         ],
       ),
     );

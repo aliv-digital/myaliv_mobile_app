@@ -21,8 +21,9 @@ class EditEmailPrepaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => EditEmailPrepaidBloc(EditEmailPrepaidRepository())
-        ..add(const EditEmailPrepaidStarted()),
+      create: (_) =>
+          EditEmailPrepaidBloc(EditEmailPrepaidRepository())
+            ..add(const EditEmailPrepaidStarted()),
       child: const _EditEmailPrepaidView(),
     );
   }
@@ -62,124 +63,123 @@ class _EditEmailPrepaidView extends StatelessWidget {
             }
           },
           child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: DefaultAppBar(
-                        title: 'edit email',
-                        showHome: true,
-                        onHomeTap: () {
-                          context.go(AppRoutes.home);
-                        },
-                        onBack: () {
-                          context.pop();
-                        },
-                      ),
-                    ),
-                    BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
-                      builder: (context, state) {
-                        if (state.status == EditEmailPrepaidStatus.loading ||
-                            state.status == EditEmailPrepaidStatus.initial) {
-                          return const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
+            physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(
+                child: DefaultAppBar(
+                  title: 'edit email',
+                  showHome: true,
+                  onHomeTap: () {
+                    context.go(AppRoutes.home);
+                  },
+                  onBack: () {
+                    context.pop();
+                  },
+                ),
+              ),
+              BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
+                builder: (context, state) {
+                  if (state.status == EditEmailPrepaidStatus.loading ||
+                      state.status == EditEmailPrepaidStatus.initial) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-                        final data = state.data;
-                        if (data == null) {
-                          return const SliverFillRemaining(
-                            hasScrollBody: false,
-                            child: Center(child: Text('No data')),
-                          );
-                        }
+                  final data = state.data;
+                  if (data == null) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: Text('No data')),
+                    );
+                  }
 
-                        return SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
-                          sliver: SliverToBoxAdapter(
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(maxWidth: 420),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 6),
-                                    EditEmailPrepaidInfoField(
-                                      label: 'full name',
-                                      value: data.fullName,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    EditEmailPrepaidInfoField(
-                                      label: 'phone number',
-                                      value: data.phoneNumber,
-                                    ),
-                                    if (data.gender.trim().isNotEmpty) ...[
-                                      const SizedBox(height: 16),
-                                      EditEmailPrepaidInfoField(
-                                        label: 'gender',
-                                        value: data.gender,
-                                      ),
-                                    ],
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'email address',
-                                      style: EditEmailPrepaidTheme.fieldLabel,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    BlocBuilder<EditEmailPrepaidBloc,
-                                        EditEmailPrepaidState>(
-                                      buildWhen: (p, c) =>
-                                          p.email != c.email ||
-                                          p.status != c.status,
-                                      builder: (context, state) {
-                                        return EditEmailPrepaidEmailInput(
-                                          initialValue: state.email,
-                                          enabled: state.status !=
-                                              EditEmailPrepaidStatus.submitting,
-                                          onChanged: (v) => context
-                                              .read<EditEmailPrepaidBloc>()
-                                              .add(EditEmailPrepaidEmailChanged(
-                                                  v)),
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(height: 30),
-                                  ],
-                                ),
+                  return SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+                    sliver: SliverToBoxAdapter(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 420),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 6),
+                              EditEmailPrepaidInfoField(
+                                label: 'full name',
+                                value: data.fullName,
                               ),
-                            ),
+                              const SizedBox(height: 16),
+                              EditEmailPrepaidInfoField(
+                                label: 'phone number',
+                                value: data.phoneNumber,
+                              ),
+                              if (data.gender.trim().isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                EditEmailPrepaidInfoField(
+                                  label: 'gender',
+                                  value: data.gender,
+                                ),
+                              ],
+                              const SizedBox(height: 16),
+                              Text(
+                                'email address',
+                                style: EditEmailPrepaidTheme.fieldLabel,
+                              ),
+                              const SizedBox(height: 8),
+                              BlocBuilder<
+                                EditEmailPrepaidBloc,
+                                EditEmailPrepaidState
+                              >(
+                                buildWhen: (p, c) =>
+                                    p.email != c.email || p.status != c.status,
+                                builder: (context, state) {
+                                  return EditEmailPrepaidEmailInput(
+                                    initialValue: state.email,
+                                    enabled:
+                                        state.status !=
+                                        EditEmailPrepaidStatus.submitting,
+                                    onChanged: (v) => context
+                                        .read<EditEmailPrepaidBloc>()
+                                        .add(EditEmailPrepaidEmailChanged(v)),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 30),
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 40, right: 40),
-                        child: BlocBuilder<EditEmailPrepaidBloc,
-                            EditEmailPrepaidState>(
-                          buildWhen: (p, c) =>
-                              p.status != c.status ||
-                              p.isEmailValid != c.isEmailValid,
-                          builder: (context, state) {
-                            final isLoading = state.status ==
-                                EditEmailPrepaidStatus.submitting;
-
-                            return EditEmailPrepaidSaveButton(
-                              isLoading: isLoading,
-                              enabled: state.isEmailValid && !isLoading,
-                              onTap: () => context
-                                  .read<EditEmailPrepaidBloc>()
-                                  .add(const EditEmailPrepaidSavePressed()),
-                            );
-                          },
                         ),
                       ),
                     ),
-                  ],
+                  );
+                },
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 40, right: 40),
+                  child:
+                      BlocBuilder<EditEmailPrepaidBloc, EditEmailPrepaidState>(
+                        buildWhen: (p, c) =>
+                            p.status != c.status ||
+                            p.isEmailValid != c.isEmailValid,
+                        builder: (context, state) {
+                          final isLoading =
+                              state.status == EditEmailPrepaidStatus.submitting;
+
+                          return EditEmailPrepaidSaveButton(
+                            isLoading: isLoading,
+                            enabled: state.isEmailValid && !isLoading,
+                            onTap: () => context
+                                .read<EditEmailPrepaidBloc>()
+                                .add(const EditEmailPrepaidSavePressed()),
+                          );
+                        },
+                      ),
                 ),
+              ),
+            ],
+          ),
         ),
       ),
     );

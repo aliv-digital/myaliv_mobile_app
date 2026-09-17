@@ -45,5 +45,4 @@ class WhyAlivTheme {
   static final TextStyle snackBarText = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
   );
-
 }

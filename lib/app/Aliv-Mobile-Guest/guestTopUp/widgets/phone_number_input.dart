@@ -63,7 +63,10 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
   Widget _buildCountryFlag(CountryInfo countryInfo) {
     if (countryInfo.isoCode != null && countryInfo.isoCode!.isNotEmpty) {
       if (countryInfo.isoCode!.toUpperCase() == 'AC') {
-        return Text(countryInfo.flagEmoji, style: const TextStyle(fontSize: 18));
+        return Text(
+          countryInfo.flagEmoji,
+          style: const TextStyle(fontSize: 18),
+        );
       }
 
       return Image.asset(
@@ -73,7 +76,10 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
         height: _countryFlagHeight,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
-          return Text(countryInfo.flagEmoji, style: const TextStyle(fontSize: 18));
+          return Text(
+            countryInfo.flagEmoji,
+            style: const TextStyle(fontSize: 18),
+          );
         },
       );
     }
@@ -111,8 +117,10 @@ class _LabeledInputFieldState extends State<LabeledInputField> {
                     children: [
                       _buildCountryFlag(widget.country),
                       const SizedBox(width: 4),
-                      Text(widget.country.dialCode,
-                          style: GuestTopUpTheme.dialCode),
+                      Text(
+                        widget.country.dialCode,
+                        style: GuestTopUpTheme.dialCode,
+                      ),
                       if (widget.enableCountryPicker) ...[
                         const SizedBox(width: 2),
                         const Icon(

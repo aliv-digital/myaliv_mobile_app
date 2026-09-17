@@ -5,10 +5,7 @@ import '../theme/fingerprint_security_theme.dart';
 class FingerPrintSecurityAppBar extends StatelessWidget {
   final String title;
 
-  const FingerPrintSecurityAppBar({
-    super.key,
-    required this.title,
-  });
+  const FingerPrintSecurityAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

@@ -38,19 +38,17 @@ class AnimatedTimerBox extends StatelessWidget {
             transitionBuilder: (Widget child, Animation<double> animation) {
               // Slide transition from bottom to top
               return SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0.0, 0.5),
-                  end: Offset.zero,
-                ).animate(
-                  CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeOutCubic,
-                  ),
-                ),
-                child: FadeTransition(
-                  opacity: animation,
-                  child: child,
-                ),
+                position:
+                    Tween<Offset>(
+                      begin: const Offset(0.0, 0.5),
+                      end: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutCubic,
+                      ),
+                    ),
+                child: FadeTransition(opacity: animation, child: child),
               );
             },
             child: Text(

@@ -25,10 +25,7 @@ class PurchasePrepaidMenuTile extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  title,
-                  style: PurchasePrepaidTheme.itemTextStyle(),
-                ),
+                child: Text(title, style: PurchasePrepaidTheme.itemTextStyle()),
               ),
               const Icon(
                 Icons.chevron_right,

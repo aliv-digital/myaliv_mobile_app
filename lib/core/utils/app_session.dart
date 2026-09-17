@@ -14,6 +14,7 @@ class AppSession {
   static void resetAppRoute() {
     AppSession.appRoute = '';
   }
+
   static void resetFlagForTopUp() {
     AppSession.isTopUp = false;
   }

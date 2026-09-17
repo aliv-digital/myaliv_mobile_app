@@ -43,9 +43,7 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
       decoration: BoxDecoration(
         color: HomePlanTheme.roamBottomSheetBackgroundColor,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-            HomePlanTheme.bottomSheetTopCornerRadius,
-          ),
+          top: Radius.circular(HomePlanTheme.bottomSheetTopCornerRadius),
         ),
       ),
       child: SafeArea(
@@ -92,8 +90,7 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
               Container(
                 padding: HomePlanTheme.bottomSheetWarningPadding,
                 decoration: BoxDecoration(
-                  color: HomePlanTheme
-                      .roamBottomSheetWarningBackgroundColor,
+                  color: HomePlanTheme.roamBottomSheetWarningBackgroundColor,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.bottomSheetWarningRadius,
                   ),
@@ -119,8 +116,7 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                 width: HomePlanTheme.roamBottomSheetStartFromLabelWidth,
                 child: Text(
                   widget.startFromLabel,
-                  style:
-                      HomePlanTheme.roamBottomSheetStartFromLabelTextStyle,
+                  style: HomePlanTheme.roamBottomSheetStartFromLabelTextStyle,
                 ),
               ),
               const SizedBox(
@@ -137,8 +133,8 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                   height: HomePlanTheme.roamBottomSheetDateFieldHeight,
                   padding: HomePlanTheme.roamBottomSheetDateFieldPadding,
                   decoration: BoxDecoration(
-                    color: HomePlanTheme
-                        .roamBottomSheetDateFieldBackgroundColor,
+                    color:
+                        HomePlanTheme.roamBottomSheetDateFieldBackgroundColor,
                     borderRadius: BorderRadius.circular(
                       HomePlanTheme.roamBottomSheetDateFieldRadius,
                     ),
@@ -207,8 +203,7 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                 onPressed: widget.onActivateNowPressed,
                 height: HomePlanTheme.bottomSheetActionButtonHeight,
                 backgroundColor: HomePlanTheme.activateNowButton,
-                textStyle:
-                    HomePlanTheme.roamBottomSheetActivateNowTextStyle,
+                textStyle: HomePlanTheme.roamBottomSheetActivateNowTextStyle,
                 borderRadius: BorderRadius.circular(
                   HomePlanTheme.bottomSheetActionButtonCornerRadius,
                 ),
@@ -227,9 +222,7 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
       barrierColor: Colors.black.withValues(alpha: 0.45),
       isScrollControlled: true,
       builder: (calendarContext) {
-        return _RoamCalendarPickerSheet(
-          initialDate: _selectedDate,
-        );
+        return _RoamCalendarPickerSheet(initialDate: _selectedDate);
       },
     );
 
@@ -243,14 +236,13 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
 }
 
 class _RoamCalendarPickerSheet extends StatefulWidget {
-  const _RoamCalendarPickerSheet({
-    required this.initialDate,
-  });
+  const _RoamCalendarPickerSheet({required this.initialDate});
 
   final DateTime initialDate;
 
   @override
-  State<_RoamCalendarPickerSheet> createState() => _RoamCalendarPickerSheetState();
+  State<_RoamCalendarPickerSheet> createState() =>
+      _RoamCalendarPickerSheetState();
 }
 
 class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
@@ -262,8 +254,9 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
     super.initState();
     _firstDate = DateUtils.dateOnly(DateTime.now());
     final initialDate = DateUtils.dateOnly(widget.initialDate);
-    _draftSelectedDate =
-        initialDate.isBefore(_firstDate) ? _firstDate : initialDate;
+    _draftSelectedDate = initialDate.isBefore(_firstDate)
+        ? _firstDate
+        : initialDate;
   }
 
   @override
@@ -272,9 +265,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
       decoration: BoxDecoration(
         color: HomePlanTheme.roamCalendarSheetBackgroundColor,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-            HomePlanTheme.bottomSheetTopCornerRadius,
-          ),
+          top: Radius.circular(HomePlanTheme.bottomSheetTopCornerRadius),
         ),
       ),
       child: SafeArea(
@@ -287,14 +278,12 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: Theme.of(context).colorScheme.copyWith(
-                        primary: HomePlanTheme
-                            .roamCalendarSelectedDayBackgroundColor,
-                        onPrimary:
-                            HomePlanTheme.roamCalendarSelectedDayTextColor,
-                        surface: HomePlanTheme
-                            .roamCalendarSheetBackgroundColor,
-                        onSurface: HomePlanTheme.roamCalendarDayTextColor,
-                      ),
+                    primary:
+                        HomePlanTheme.roamCalendarSelectedDayBackgroundColor,
+                    onPrimary: HomePlanTheme.roamCalendarSelectedDayTextColor,
+                    surface: HomePlanTheme.roamCalendarSheetBackgroundColor,
+                    onSurface: HomePlanTheme.roamCalendarDayTextColor,
+                  ),
                   datePickerTheme: DatePickerThemeData(
                     backgroundColor:
                         HomePlanTheme.roamCalendarSheetBackgroundColor,
@@ -302,8 +291,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                         HomePlanTheme.roamCalendarDayTextColor,
                     headerHeadlineStyle:
                         HomePlanTheme.roamCalendarHeaderTextStyle,
-                    weekdayStyle:
-                        HomePlanTheme.roamCalendarWeekdayTextStyle,
+                    weekdayStyle: HomePlanTheme.roamCalendarWeekdayTextStyle,
                     dayStyle: HomePlanTheme.roamCalendarDayTextStyle,
                     dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
@@ -312,14 +300,12 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                               .withValues(alpha: 0.35);
                         }
                         if (states.contains(WidgetState.selected)) {
-                          return HomePlanTheme
-                              .roamCalendarSelectedDayTextColor;
+                          return HomePlanTheme.roamCalendarSelectedDayTextColor;
                         }
                         return HomePlanTheme.roamCalendarDayTextColor;
                       },
                     ),
-                    dayBackgroundColor:
-                        WidgetStateProperty.resolveWith<Color?>(
+                    dayBackgroundColor: WidgetStateProperty.resolveWith<Color?>(
                       (Set<WidgetState> states) {
                         if (states.contains(WidgetState.selected)) {
                           return HomePlanTheme
@@ -369,12 +355,11 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                       isLoading: false,
                       onPressed: () => Navigator.of(context).pop(),
                       height: HomePlanTheme.roamCalendarActionButtonHeight,
-                      backgroundColor: HomePlanTheme
-                          .roamCalendarCancelButtonBackgroundColor,
+                      backgroundColor:
+                          HomePlanTheme.roamCalendarCancelButtonBackgroundColor,
                       textStyle: HomePlanTheme.roamCalendarCancelTextStyle,
                       borderRadius: BorderRadius.circular(
-                        HomePlanTheme
-                            .bottomSheetActionButtonCornerRadius,
+                        HomePlanTheme.bottomSheetActionButtonCornerRadius,
                       ),
                     ),
                   ),
@@ -391,8 +376,7 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                       backgroundColor: HomePlanTheme.activateNowButton,
                       textStyle: HomePlanTheme.roamCalendarApplyTextStyle,
                       borderRadius: BorderRadius.circular(
-                        HomePlanTheme
-                            .bottomSheetActionButtonCornerRadius,
+                        HomePlanTheme.bottomSheetActionButtonCornerRadius,
                       ),
                     ),
                   ),

@@ -29,7 +29,8 @@ class WalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
         color: GuestPurchasePlanTheme.bottomSheetBackground,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(
-              GuestPurchasePlanTheme.bottomSheetTopCornerRadius),
+            GuestPurchasePlanTheme.bottomSheetTopCornerRadius,
+          ),
         ),
       ),
       child: SafeArea(
@@ -60,7 +61,8 @@ class WalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                  height: GuestPurchasePlanTheme.bottomSheetSectionGap),
+                height: GuestPurchasePlanTheme.bottomSheetSectionGap,
+              ),
               // Warning box.
               Container(
                 padding: GuestPurchasePlanTheme.bottomSheetWarningPadding,
@@ -80,7 +82,8 @@ class WalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                  height: GuestPurchasePlanTheme.bottomSheetSectionGap),
+                height: GuestPurchasePlanTheme.bottomSheetSectionGap,
+              ),
               // Selected plan summary card.
               _SelectedPlanSummaryCard(
                 planName: planName,
@@ -88,7 +91,8 @@ class WalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                 planPriceText: planPriceText,
               ),
               const SizedBox(
-                  height: GuestPurchasePlanTheme.bottomSheetSectionGap),
+                height: GuestPurchasePlanTheme.bottomSheetSectionGap,
+              ),
               // Dual CTAs: activate now + future plan.
               Row(
                 children: [

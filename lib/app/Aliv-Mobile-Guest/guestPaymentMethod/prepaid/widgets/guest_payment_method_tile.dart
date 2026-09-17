@@ -68,7 +68,8 @@ class GuestPaymentMethodTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: titleStyle ??
+                    style:
+                        titleStyle ??
                         (selected
                             ? GuestPaymentMethodPrepaidTheme.selectedMethodTitle
                             : GuestPaymentMethodPrepaidTheme.methodTitle),
@@ -79,7 +80,7 @@ class GuestPaymentMethodTile extends StatelessWidget {
                       subtitle!,
                       style: selected
                           ? GuestPaymentMethodPrepaidTheme
-                              .selectedMethodSubtitle
+                                .selectedMethodSubtitle
                           : GuestPaymentMethodPrepaidTheme.methodSubtitle,
                     ),
                   ],

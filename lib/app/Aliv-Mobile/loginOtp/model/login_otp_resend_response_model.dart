@@ -7,10 +7,7 @@ class LoginOtpResendResponse {
   final String? mfaToken;
   final String? reason;
 
-  const LoginOtpResendResponse({
-    this.mfaToken,
-    this.reason,
-  });
+  const LoginOtpResendResponse({this.mfaToken, this.reason});
 
   factory LoginOtpResendResponse.fromJson(Map<String, dynamic>? json) {
     if (json == null) return const LoginOtpResendResponse();

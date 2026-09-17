@@ -38,9 +38,7 @@ class ConfirmationPlanCard extends StatelessWidget {
         recipientPhone: recipientPhone!,
       );
     } else if (isMyNumberTopUp) {
-      content = ConfirmationPlanCardMyNumberContent(
-        topUpAmount: topUpAmount!,
-      );
+      content = ConfirmationPlanCardMyNumberContent(topUpAmount: topUpAmount!);
     } else {
       content = ConfirmationPlanCardPostpaidContent(
         date: date,

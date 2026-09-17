@@ -94,11 +94,7 @@ class _BestPlanCard extends StatelessWidget {
   final double height;
   final VoidCallback? onTap;
 
-  const _BestPlanCard({
-    required this.plan,
-    required this.height,
-    this.onTap,
-  });
+  const _BestPlanCard({required this.plan, required this.height, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +121,11 @@ class _BestPlanCard extends StatelessWidget {
                     errorWidget: (context, url, error) => Container(
                       color: const Color(0xFF645D9C),
                       child: const Center(
-                        child: Icon(Icons.image_not_supported,
-                            color: Colors.white54, size: 48),
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.white54,
+                          size: 48,
+                        ),
                       ),
                     ),
                   ),

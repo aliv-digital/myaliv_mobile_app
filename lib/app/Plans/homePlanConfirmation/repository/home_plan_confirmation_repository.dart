@@ -7,7 +7,7 @@ import '../models/home_plan_promo_response_model.dart';
 
 class HomePlanConfirmationRepository {
   HomePlanConfirmationRepository({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   final NetworkService _networkService;
 
@@ -53,8 +53,9 @@ class HomePlanConfirmationRepository {
       );
     }
 
-    final double primaryVat =
-        args.isPrimaryPlanActive ? 0 : args.primaryPlanVatAmount;
+    final double primaryVat = args.isPrimaryPlanActive
+        ? 0
+        : args.primaryPlanVatAmount;
     final double addOnsVat = args.selectedAddOns.fold<double>(
       0,
       (sum, addOn) => sum + addOn.vatAmount,

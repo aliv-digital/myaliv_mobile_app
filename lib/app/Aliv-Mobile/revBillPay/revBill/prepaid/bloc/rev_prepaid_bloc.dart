@@ -7,7 +7,8 @@ import 'rev_prepaid_state.dart';
 class RevPrepaidBloc extends Bloc<RevPrepaidEvent, RevPrepaidState> {
   final RevPrepaidRepository repository;
 
-  RevPrepaidBloc({required this.repository}) : super(RevPrepaidState.initial()) {
+  RevPrepaidBloc({required this.repository})
+    : super(RevPrepaidState.initial()) {
     on<RevPrepaidStarted>(_onStarted);
     on<RevAccountNumberChanged>(_onAccountChanged);
     on<RevNameChanged>(_onNameChanged);
@@ -21,7 +22,10 @@ class RevPrepaidBloc extends Bloc<RevPrepaidEvent, RevPrepaidState> {
     emit(state.copyWith(clearError: true));
   }
 
-  void _onAccountChanged(RevAccountNumberChanged event, Emitter<RevPrepaidState> emit) {
+  void _onAccountChanged(
+    RevAccountNumberChanged event,
+    Emitter<RevPrepaidState> emit,
+  ) {
     emit(
       state.copyWith(
         accountNumber: event.value,
@@ -46,7 +50,10 @@ class RevPrepaidBloc extends Bloc<RevPrepaidEvent, RevPrepaidState> {
     emit(state.copyWith(amount: parsed, clearError: true));
   }
 
-  Future<void> _onSubmit(RevSubmitPressed event, Emitter<RevPrepaidState> emit) async {
+  Future<void> _onSubmit(
+    RevSubmitPressed event,
+    Emitter<RevPrepaidState> emit,
+  ) async {
     if (!state.canSubmit) return;
 
     emit(state.copyWith(submitting: true, clearError: true));
@@ -80,7 +87,10 @@ class RevPrepaidBloc extends Bloc<RevPrepaidEvent, RevPrepaidState> {
     emit(state.copyWith(navTarget: RevNavTarget.proceed));
   }
 
-  void _onNavConsumed(RevNavigationConsumed event, Emitter<RevPrepaidState> emit) {
+  void _onNavConsumed(
+    RevNavigationConsumed event,
+    Emitter<RevPrepaidState> emit,
+  ) {
     emit(state.copyWith(navTarget: RevNavTarget.none));
   }
 

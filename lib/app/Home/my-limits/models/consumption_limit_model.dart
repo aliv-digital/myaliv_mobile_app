@@ -72,10 +72,7 @@ class ConsumptionLimitModel {
         return "int'l talk mins";
       default:
         // Convert snake_case to readable format
-        return name
-            .replaceAll('C_', '')
-            .replaceAll('_', ' ')
-            .toLowerCase();
+        return name.replaceAll('C_', '').replaceAll('_', ' ').toLowerCase();
     }
   }
 

@@ -55,11 +55,11 @@ class AddOnsConfirmationState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        data,
-        errorMessage,
-        openTermsRequestId,
-        payNowRequestId,
-        isTermsChecked,
-      ];
+    status,
+    data,
+    errorMessage,
+    openTermsRequestId,
+    payNowRequestId,
+    isTermsChecked,
+  ];
 }

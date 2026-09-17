@@ -25,7 +25,9 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
   });
 
   static const double _addOnsTabHorizontalPadding = 25;
-  static final Uri _fairUsePolicyUri = Uri.parse('https://www.bealiv.com/fair-use-policy/');
+  static final Uri _fairUsePolicyUri = Uri.parse(
+    'https://www.bealiv.com/fair-use-policy/',
+  );
 
   Future<void> _openFairUsePolicy() async {
     try {
@@ -72,8 +74,8 @@ class HomePlanAddOnsTabContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fairUsePolicy = _fairUsePolicy();
-    final isPostpaid = context.watch<AppUiConfigCubit>().state.userType ==
-        UserType.postpaid;
+    final isPostpaid =
+        context.watch<AppUiConfigCubit>().state.userType == UserType.postpaid;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(

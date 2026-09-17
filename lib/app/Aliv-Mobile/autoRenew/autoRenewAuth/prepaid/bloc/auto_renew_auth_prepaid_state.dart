@@ -3,7 +3,9 @@ import 'package:equatable/equatable.dart';
 import '../repository/auto_renew_auth_prepaid_repository.dart';
 
 enum AutoRenewAuthLoadStatus { loading, ready, failure }
+
 enum AutoRenewAuthSubmitStatus { idle, submitting, success, failure }
+
 enum AutoRenewAuthNavTarget { none, home, success }
 
 class AutoRenewAuthPrepaidState extends Equatable {
@@ -82,13 +84,13 @@ class AutoRenewAuthPrepaidState extends Equatable {
 
   @override
   List<Object?> get props => [
-        loadStatus,
-        content,
-        name,
-        submitStatus,
-        errorMessage,
-        navTarget,
-        paymentMethod,
-        cardToken,
-      ];
+    loadStatus,
+    content,
+    name,
+    submitStatus,
+    errorMessage,
+    navTarget,
+    paymentMethod,
+    cardToken,
+  ];
 }

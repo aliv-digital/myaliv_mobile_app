@@ -15,8 +15,11 @@ class OTPPostpaidCodeFields extends StatefulWidget {
 }
 
 class _OTPPostpaidCodeFieldsState extends State<OTPPostpaidCodeFields> {
-  final _controllers =
-  List.generate(5, (_) => TextEditingController(), growable: false);
+  final _controllers = List.generate(
+    5,
+    (_) => TextEditingController(),
+    growable: false,
+  );
   final _focusNodes = List.generate(5, (_) => FocusNode(), growable: false);
 
   @override
@@ -34,8 +37,9 @@ class _OTPPostpaidCodeFieldsState extends State<OTPPostpaidCodeFields> {
     if (value.length > 1) {
       value = value.characters.last;
       _controllers[index].text = value;
-      _controllers[index].selection =
-          TextSelection.collapsed(offset: value.length);
+      _controllers[index].selection = TextSelection.collapsed(
+        offset: value.length,
+      );
     }
 
     if (value.isNotEmpty && index < 4) {
@@ -52,7 +56,7 @@ class _OTPPostpaidCodeFieldsState extends State<OTPPostpaidCodeFields> {
   Widget build(BuildContext context) {
     return BlocListener<OTPPostpaidBloc, OTPPostpaidState>(
       listenWhen: (p, c) =>
-      p.status != c.status && c.status == OTPPostpaidStatus.failure,
+          p.status != c.status && c.status == OTPPostpaidStatus.failure,
       listener: (context, state) {
         // চাইলে error হলে সব clear করতে পারো
         // for (final c in _controllers) c.clear();
@@ -102,8 +106,12 @@ class _OtpBox extends StatelessWidget {
         ),
         decoration: InputDecoration(
           isCollapsed: true,
-          contentPadding:
-          const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),
+          contentPadding: const EdgeInsets.only(
+            left: 15,
+            right: 15,
+            top: 10,
+            bottom: 15,
+          ),
           counterText: '',
           border: OutlineInputBorder(
             borderRadius: const BorderRadius.all(Radius.circular(6)),

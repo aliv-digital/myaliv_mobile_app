@@ -73,21 +73,21 @@ class HomePlanConfirmationRouteArgs extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        accountHolderName,
-        primaryPlanId,
-        primaryPlanName,
-        primaryPlanTypeCode,
-        primaryPlanPrice,
-        primaryPlanVatAmount,
-        futurePlanStartDate,
-        flow,
-        selectedAddOns,
-        isPrimaryPlanActive,
-        forceNow,
-        altContactNumber,
-        marketingOptIn,
-      ];
+    phoneNumber,
+    accountHolderName,
+    primaryPlanId,
+    primaryPlanName,
+    primaryPlanTypeCode,
+    primaryPlanPrice,
+    primaryPlanVatAmount,
+    futurePlanStartDate,
+    flow,
+    selectedAddOns,
+    isPrimaryPlanActive,
+    forceNow,
+    altContactNumber,
+    marketingOptIn,
+  ];
 }
 
 class PurchaseLineItem extends Equatable {
@@ -122,15 +122,15 @@ class PurchaseLineItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        type,
-        planTypeCode,
-        label,
-        title,
-        subtitle,
-        price,
-        vatAmount,
-      ];
+    id,
+    type,
+    planTypeCode,
+    label,
+    title,
+    subtitle,
+    price,
+    vatAmount,
+  ];
 }
 
 class PurchaseTotals extends Equatable {
@@ -162,10 +162,10 @@ class HomePlanConfirmationData extends Equatable {
 
   @override
   List<Object?> get props => [
-        phoneNumber,
-        headerTitle,
-        beginsOnDateText,
-        items,
-        totals,
-      ];
+    phoneNumber,
+    headerTitle,
+    beginsOnDateText,
+    items,
+    totals,
+  ];
 }

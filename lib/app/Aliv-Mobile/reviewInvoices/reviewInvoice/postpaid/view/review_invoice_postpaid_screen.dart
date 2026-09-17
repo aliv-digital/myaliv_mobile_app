@@ -79,8 +79,9 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final invoice = state.invoices[index];
-              final isDownloading =
-                  state.isDownloadingInvoice(invoice.invoiceId);
+              final isDownloading = state.isDownloadingInvoice(
+                invoice.invoiceId,
+              );
 
               return InvoiceTile(
                 invoice: invoice,
@@ -103,45 +104,51 @@ class _ReviewInvoicePostpaidView extends StatelessWidget {
       body: SafeArea(
         top: false,
         bottom: false,
-        child: BlocConsumer<ReviewInvoicePostpaidCubit,
-            ReviewInvoicePostpaidState>(
-          listenWhen: (prev, curr) =>
-              prev.downloadError != curr.downloadError &&
-              curr.downloadError != null,
-          listener: (context, state) {
-            // Show error snackbar when download fails
-            if (state.downloadError != null) {
-              AppToast.show(message: state.downloadError!.toString(),type: ToastType.error);
-              // ScaffoldMessenger.of(context)
-              //   ..hideCurrentSnackBar()
-              //   ..showSnackBar(
-              //     SnackBar(
-              //       content: Text(state.downloadError!),
-              //       behavior: SnackBarBehavior.floating,
-              //     ),
-              //   );
-              context.read<ReviewInvoicePostpaidCubit>().clearDownloadError();
-            }
-          },
-          builder: (context, state) {
-            return Column(
-              children: [
-                // Fixed / sticky top appbar
-                DefaultAppBar(
-                  title: 'review invoices',
-                  backgroundColor: ReviewInvoicePostpaidTheme.appBarColor,
-                ),
+        child:
+            BlocConsumer<
+              ReviewInvoicePostpaidCubit,
+              ReviewInvoicePostpaidState
+            >(
+              listenWhen: (prev, curr) =>
+                  prev.downloadError != curr.downloadError &&
+                  curr.downloadError != null,
+              listener: (context, state) {
+                // Show error snackbar when download fails
+                if (state.downloadError != null) {
+                  AppToast.show(
+                    message: state.downloadError!.toString(),
+                    type: ToastType.error,
+                  );
+                  // ScaffoldMessenger.of(context)
+                  //   ..hideCurrentSnackBar()
+                  //   ..showSnackBar(
+                  //     SnackBar(
+                  //       content: Text(state.downloadError!),
+                  //       behavior: SnackBarBehavior.floating,
+                  //     ),
+                  //   );
+                  context
+                      .read<ReviewInvoicePostpaidCubit>()
+                      .clearDownloadError();
+                }
+              },
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    // Fixed / sticky top appbar
+                    DefaultAppBar(
+                      title: 'review invoices',
+                      backgroundColor: ReviewInvoicePostpaidTheme.appBarColor,
+                    ),
 
-                const SizedBox(height: 14),
+                    const SizedBox(height: 14),
 
-                // Content area
-                Expanded(
-                  child: _buildContent(context, state),
-                ),
-              ],
-            );
-          },
-        ),
+                    // Content area
+                    Expanded(child: _buildContent(context, state)),
+                  ],
+                );
+              },
+            ),
       ),
     );
   }

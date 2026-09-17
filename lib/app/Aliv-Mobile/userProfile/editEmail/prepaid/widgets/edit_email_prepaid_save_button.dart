@@ -22,7 +22,9 @@ class EditEmailPrepaidSaveButton extends StatelessWidget {
         onPressed: enabled ? onTap : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: EditEmailPrepaidTheme.brand,
-          disabledBackgroundColor: EditEmailPrepaidTheme.brand.withValues(alpha: 0.35),
+          disabledBackgroundColor: EditEmailPrepaidTheme.brand.withValues(
+            alpha: 0.35,
+          ),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(999),
@@ -30,19 +32,22 @@ class EditEmailPrepaidSaveButton extends StatelessWidget {
         ),
         child: isLoading
             ? const SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-        )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
             : const Text(
-          'save',
-          style: TextStyle(
-            fontFamily: 'CircularPro',
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-        ),
+                'save',
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

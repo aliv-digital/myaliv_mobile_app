@@ -35,9 +35,7 @@ class MpAmountOptionTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(label, style: textStyle),
-            ),
+            Expanded(child: Text(label, style: textStyle)),
             const SizedBox(
               width:
                   MakePaymentPostPaidTheme.paymentDueOptionTextToIndicatorGap,

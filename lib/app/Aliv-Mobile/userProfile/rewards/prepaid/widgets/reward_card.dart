@@ -28,7 +28,7 @@ class RewardPrepaidCard extends StatelessWidget {
             color: Color(0x0C000000),
             blurRadius: 16,
             offset: Offset(8, 10),
-          )
+          ),
         ],
       ),
       child: ClipRRect(
@@ -36,14 +36,14 @@ class RewardPrepaidCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(AssetConstant.rewardsCardBackgroundPNG, fit: BoxFit.fitHeight),
+            Image.asset(
+              AssetConstant.rewardsCardBackgroundPNG,
+              fit: BoxFit.fitHeight,
+            ),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
-                children: [
-                  _buildTopSection(),
-                  _buildButtonRow(context),
-                ],
+                children: [_buildTopSection(), _buildButtonRow(context)],
               ),
             ),
           ],

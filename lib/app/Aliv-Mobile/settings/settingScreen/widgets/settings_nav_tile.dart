@@ -26,9 +26,7 @@ class SettingsNavTile extends StatelessWidget {
             children: [
               _IconCircle(svgAsset: iconAsset),
               const SizedBox(width: 12),
-              Expanded(
-                child: Text(title, style: SettingsTheme.tileText),
-              ),
+              Expanded(child: Text(title, style: SettingsTheme.tileText)),
               const Icon(
                 Icons.chevron_right_rounded,
                 color: SettingsTheme.chevron,

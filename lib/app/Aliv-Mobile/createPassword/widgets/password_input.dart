@@ -49,14 +49,15 @@ class _PasswordInputState extends State<PasswordInput> {
 
   @override
   Widget build(BuildContext context) {
-    final innerRadius = (CreatePasswordTheme.inputRadius -
-            CreatePasswordTheme.inputBorderWidth)
-        .clamp(0.0, CreatePasswordTheme.inputRadius);
+    final innerRadius =
+        (CreatePasswordTheme.inputRadius - CreatePasswordTheme.inputBorderWidth)
+            .clamp(0.0, CreatePasswordTheme.inputRadius);
 
     return Container(
       decoration: BoxDecoration(
-        gradient:
-            _hasFocus ? CreatePasswordTheme.focusedInputBorderGradient : null,
+        gradient: _hasFocus
+            ? CreatePasswordTheme.focusedInputBorderGradient
+            : null,
         border: _hasFocus
             ? null
             : Border.all(

@@ -213,8 +213,10 @@ class HomePlanTheme {
   static final Color planPriceText = HexColor.fromHex('#6258B8');
   static final Color planPricePillBackground = HexColor.fromHex('#F4F4F6');
   static final Color planPricePillTextColor = HexColor.fromHex('#222222');
-  static const EdgeInsets planPricePillPadding =
-      EdgeInsets.symmetric(horizontal: 10, vertical: 4);
+  static const EdgeInsets planPricePillPadding = EdgeInsets.symmetric(
+    horizontal: 10,
+    vertical: 4,
+  );
   static const double planPricePillRadius = 5;
   static final Color activateNowButton = HexColor.fromHex('#645D9C');
 
@@ -442,8 +444,9 @@ class HomePlanTheme {
 
   static const double bottomSheetSummaryPricePillBorderWidth = 1;
 
-  static final Color bottomSheetSummaryPricePillBackground =
-      HexColor.fromHex('#F4F4F6');
+  static final Color bottomSheetSummaryPricePillBackground = HexColor.fromHex(
+    '#F4F4F6',
+  );
 
   static final TextStyle bottomSheetSummaryPriceTextStyle = TextStyle(
     color: const Color(0xFF222222),
@@ -515,11 +518,17 @@ class HomePlanTheme {
     height: 1.43,
   );
 
-  static final Color roamBottomSheetDateFieldBackgroundColor =
-      HexColor.fromHex('#F2F1F9');
+  static final Color roamBottomSheetDateFieldBackgroundColor = HexColor.fromHex(
+    '#F2F1F9',
+  );
   static const double roamBottomSheetDateFieldHeight = 44;
   static const double roamBottomSheetDateFieldRadius = 8;
-  static const EdgeInsets roamBottomSheetDateFieldPadding = EdgeInsets.only(left: 16,right: 8,top: 8,bottom: 8);
+  static const EdgeInsets roamBottomSheetDateFieldPadding = EdgeInsets.only(
+    left: 16,
+    right: 8,
+    top: 8,
+    bottom: 8,
+  );
 
   static final TextStyle roamBottomSheetDateFieldTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
@@ -533,7 +542,9 @@ class HomePlanTheme {
   static final Color roamBottomSheetDateFieldIconColor = planPriceBorder;
   static const double roamBottomSheetDateFieldIconSize = 18;
 
-  static final Color roamBottomSheetOrDividerColor = HexColor.fromHex('#DCDCEA');
+  static final Color roamBottomSheetOrDividerColor = HexColor.fromHex(
+    '#DCDCEA',
+  );
   static final TextStyle roamBottomSheetOrTextStyle = TextStyle(
     fontFamily: AppConstants.defaultFontFamily,
     fontSize: 16,
@@ -586,8 +597,9 @@ class HomePlanTheme {
 
   // Calendar picker bottom sheet styles for roam date selection.
   static final Color roamCalendarSheetBackgroundColor = bottomSheetBackground;
-  static final Color roamCalendarSelectedDayBackgroundColor =
-      HexColor.fromHex('#645D9C');
+  static final Color roamCalendarSelectedDayBackgroundColor = HexColor.fromHex(
+    '#645D9C',
+  );
   static const Color roamCalendarSelectedDayTextColor = Colors.white;
   static final Color roamCalendarDayTextColor = HexColor.fromHex('#34465D');
   static final TextStyle roamCalendarHeaderTextStyle = TextStyle(
@@ -620,8 +632,9 @@ class HomePlanTheme {
   // Visible calendar height to avoid excessive blank area below day grid.
   static const double roamCalendarPickerVisibleHeight = 300;
   static final Color roamCalendarDividerColor = HexColor.fromHex('#DCDCEA');
-  static final Color roamCalendarCancelButtonBackgroundColor =
-      HexColor.fromHex('#FFFFFF');
+  static final Color roamCalendarCancelButtonBackgroundColor = HexColor.fromHex(
+    '#FFFFFF',
+  );
   static const double roamCalendarActionButtonsGap = 12;
   static const double roamCalendarActionButtonHeight = 42;
   // Vertical gap between divider and action buttons.

@@ -37,7 +37,6 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
       return;
     }
 
-
     emit(state.copyWith(status: LimitedOfferStatus.loading, clearError: true));
 
     try {
@@ -68,7 +67,6 @@ class LimitedOfferCubit extends Cubit<LimitedOfferState> {
       );
 
       emit(newState);
-
 
       // Start countdown timer for live updates
       _startCountdownTimer(userType: userType);

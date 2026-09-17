@@ -72,8 +72,7 @@ class NetworkLoggingInterceptor extends Interceptor {
     final response = error.response;
     if (response != null) {
       if (_config.logResponseHeaders) {
-        _printChunked(
-            '📋 Response Headers', _formatBody(response.headers.map));
+        _printChunked('📋 Response Headers', _formatBody(response.headers.map));
       }
       if (response.data != null) {
         debugPrint('📛 Extracted: ${_extractErrorMessage(response.data)}');

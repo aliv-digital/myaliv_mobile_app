@@ -22,6 +22,10 @@ class NewCardDetails extends Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [cardNumber, cardExpiration, cardSecurityCode, cardHolderName];
+  List<Object?> get props => [
+    cardNumber,
+    cardExpiration,
+    cardSecurityCode,
+    cardHolderName,
+  ];
 }

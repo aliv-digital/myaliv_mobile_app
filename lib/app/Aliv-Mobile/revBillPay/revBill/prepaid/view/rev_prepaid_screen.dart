@@ -54,7 +54,8 @@ class _RevPrepaidView extends StatelessWidget {
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: RevAppBarSliver(
-                    height: RevPrepaidTheme.appBarHeight +
+                    height:
+                        RevPrepaidTheme.appBarHeight +
                         MediaQuery.paddingOf(context).top,
                     child: DefaultAppBar(
                       title: state.title,
@@ -81,7 +82,9 @@ class _RevPrepaidView extends StatelessWidget {
                           label: 'service',
                           child: RevReadonlyField(text: state.service),
                         ),
-                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
+                        const SizedBox(
+                          height: RevPrepaidTheme.sectionVerticalGap,
+                        ),
                         RevLabeledSection(
                           label: 'Account Number',
                           child: RevTextField(
@@ -94,7 +97,9 @@ class _RevPrepaidView extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
+                        const SizedBox(
+                          height: RevPrepaidTheme.sectionVerticalGap,
+                        ),
 
                         RevLabeledSection(
                           label: 'Name',
@@ -112,7 +117,9 @@ class _RevPrepaidView extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
+                        const SizedBox(
+                          height: RevPrepaidTheme.sectionVerticalGap,
+                        ),
 
                         RevLabeledSection(
                           label: 'Account Status',
@@ -121,7 +128,9 @@ class _RevPrepaidView extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
+                        const SizedBox(
+                          height: RevPrepaidTheme.sectionVerticalGap,
+                        ),
 
                         Text('amount due', style: RevPrepaidTheme.fieldTitle),
                         const SizedBox(height: RevPrepaidTheme.labelToFieldGap),
@@ -135,7 +144,9 @@ class _RevPrepaidView extends StatelessWidget {
                             color: HexColor.fromHex('#344054'),
                           ),
                         ), //style: RevPrepaidTheme.value),
-                        const SizedBox(height: RevPrepaidTheme.sectionVerticalGap),
+                        const SizedBox(
+                          height: RevPrepaidTheme.sectionVerticalGap,
+                        ),
                         RevLabeledSection(
                           label: 'enter a custom amount',
                           child: CustomInputField(
@@ -143,10 +154,11 @@ class _RevPrepaidView extends StatelessWidget {
                             height: RevPrepaidTheme.inputFieldHeight,
                             textAlign: TextAlign.start,
                             textAlignVertical: TextAlignVertical.center,
-                            keyboardType:TextInputType.number,
+                            keyboardType: TextInputType.number,
 
                             backgroundColor: RevPrepaidTheme.fieldBg,
-                            unfocusedBorderColor:RevPrepaidTheme.inputFieldBorderColor,
+                            unfocusedBorderColor:
+                                RevPrepaidTheme.inputFieldBorderColor,
                             radius: 8,
                             borderWidth: RevPrepaidTheme.inputFieldBorderWidth,
                             style: RevPrepaidTheme.input,
@@ -163,7 +175,9 @@ class _RevPrepaidView extends StatelessWidget {
                             },
                           ),
                         ),
-                        const SizedBox(height: RevPrepaidTheme.proceedButtonTopGap),
+                        const SizedBox(
+                          height: RevPrepaidTheme.proceedButtonTopGap,
+                        ),
                         RevPrimaryButton(
                           text: 'proceed',
                           enabled: state.canProceed,

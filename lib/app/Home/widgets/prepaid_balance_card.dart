@@ -17,10 +17,7 @@ class PrepaidBalanceCard extends StatelessWidget {
         decoration: ShapeDecoration(
           color: Colors.white,
           shape: RoundedRectangleBorder(
-            side: BorderSide(
-              width: 1,
-              color: const Color(0xFFF1F5F9),
-            ),
+            side: BorderSide(width: 1, color: const Color(0xFFF1F5F9)),
             borderRadius: BorderRadius.circular(8),
           ),
         ),
@@ -107,4 +104,3 @@ class PrepaidBalanceCard extends StatelessWidget {
     );
   }
 }
-

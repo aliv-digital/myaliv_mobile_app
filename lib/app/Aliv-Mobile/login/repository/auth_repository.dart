@@ -9,7 +9,7 @@ import '../model/auth_response_model.dart';
 
 class LoginRepository {
   LoginRepository({NetworkService? networkService})
-      : _network = networkService ?? instance<NetworkService>();
+    : _network = networkService ?? instance<NetworkService>();
 
   final NetworkService _network;
 
@@ -61,7 +61,8 @@ class LoginRepository {
     if (data is String) {
       final decoded = jsonDecode(data);
       if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return decoded.map((k, v) => MapEntry(k.toString(), v));
+      if (decoded is Map)
+        return decoded.map((k, v) => MapEntry(k.toString(), v));
     }
     throw const FormatException('Login response body was not a JSON object');
   }
@@ -75,7 +76,8 @@ class LoginRepository {
   }
 
   String? _extractMessage(Map<String, dynamic> body) {
-    final raw = body['Message'] ??
+    final raw =
+        body['Message'] ??
         body['message'] ??
         body['ErrorCodeName'] ??
         body['error'] ??

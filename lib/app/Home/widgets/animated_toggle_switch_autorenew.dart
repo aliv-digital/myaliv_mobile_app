@@ -5,7 +5,8 @@ class AnimatedAutoRenewToggle extends StatefulWidget {
   const AnimatedAutoRenewToggle({super.key});
 
   @override
-  State<AnimatedAutoRenewToggle> createState() => _AnimatedAutoRenewToggleState();
+  State<AnimatedAutoRenewToggle> createState() =>
+      _AnimatedAutoRenewToggleState();
 }
 
 class _AnimatedAutoRenewToggleState extends State<AnimatedAutoRenewToggle> {
@@ -32,8 +33,9 @@ class _AnimatedAutoRenewToggleState extends State<AnimatedAutoRenewToggle> {
           ),
 
           styleBuilder: (value) => ToggleStyle(
-            indicatorColor:
-            value ? const Color(0xFF645D9C) : const Color(0xFF6F6F6F),
+            indicatorColor: value
+                ? const Color(0xFF645D9C)
+                : const Color(0xFF6F6F6F),
           ),
 
           iconBuilder: (value) => Icon(

@@ -12,7 +12,7 @@ class BalanceApiService {
   final NetworkService _networkService;
 
   BalanceApiService({NetworkService? networkService})
-      : _networkService = networkService ?? instance<NetworkService>();
+    : _networkService = networkService ?? instance<NetworkService>();
 
   /// Fetch balances from API
   ///
@@ -45,7 +45,9 @@ class BalanceApiService {
         debugPrint('┌─────────────────────────────────────────');
         debugPrint('│ ✅ BALANCE API RESPONSE');
         debugPrint('│ Status Code: ${response.statusCode}');
-        debugPrint('│ Response Body Length: ${response.data?.length ?? 0} chars');
+        debugPrint(
+          '│ Response Body Length: ${response.data?.length ?? 0} chars',
+        );
         if (response.data != null && response.data!.length < 500) {
           debugPrint('│ Response Body: ${response.data}');
         }

@@ -97,7 +97,7 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                       backgroundColor: HomePlanTheme
                           .bottomSheetSecondaryButtonBackgroundColor,
                       textStyle:
-                      HomePlanTheme.bottomSheetSecondaryActionDualStyle,
+                          HomePlanTheme.bottomSheetSecondaryActionDualStyle,
                       borderRadius: BorderRadius.circular(
                         HomePlanTheme.bottomSheetActionButtonCornerRadius,
                       ),
@@ -115,7 +115,7 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                       height: HomePlanTheme.bottomSheetActionButtonHeight,
                       backgroundColor: HomePlanTheme.activateNowButton,
                       textStyle:
-                      HomePlanTheme.bottomSheetPrimaryActionDualStyle,
+                          HomePlanTheme.bottomSheetPrimaryActionDualStyle,
                       borderRadius: BorderRadius.circular(
                         HomePlanTheme.bottomSheetActionButtonCornerRadius,
                       ),

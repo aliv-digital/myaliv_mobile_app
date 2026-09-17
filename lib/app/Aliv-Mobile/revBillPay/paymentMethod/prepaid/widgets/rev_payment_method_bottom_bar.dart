@@ -34,9 +34,15 @@ class RevPaymentMethodBottomBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(amountText, style: RevPaymentMethodPrepaidTheme.bottomAmount),
+                      Text(
+                        amountText,
+                        style: RevPaymentMethodPrepaidTheme.bottomAmount,
+                      ),
                       const SizedBox(height: 4),
-                      Text(vatNote, style: RevPaymentMethodPrepaidTheme.bottomVat),
+                      Text(
+                        vatNote,
+                        style: RevPaymentMethodPrepaidTheme.bottomVat,
+                      ),
                     ],
                   ),
                 ),
@@ -47,21 +53,25 @@ class RevPaymentMethodBottomBar extends StatelessWidget {
                     onPressed: enabled && !loading ? onPayNow : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: RevPaymentMethodPrepaidTheme.payBtnBg,
-                      disabledBackgroundColor:
-                      RevPaymentMethodPrepaidTheme.payBtnBg.withValues(alpha: 0.45),
+                      disabledBackgroundColor: RevPaymentMethodPrepaidTheme
+                          .payBtnBg
+                          .withValues(alpha: 0.45),
                       shape: const StadiumBorder(),
                       elevation: 0,
                     ),
                     child: loading
                         ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                        : Text('pay now', style: RevPaymentMethodPrepaidTheme.payNow),
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            'pay now',
+                            style: RevPaymentMethodPrepaidTheme.payNow,
+                          ),
                   ),
                 ),
               ],

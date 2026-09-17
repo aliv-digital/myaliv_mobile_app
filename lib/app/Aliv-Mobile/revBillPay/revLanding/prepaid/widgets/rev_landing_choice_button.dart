@@ -34,10 +34,7 @@ class RevLandingChoiceButton extends StatelessWidget {
           ),
           onTap: onPressed,
           child: Center(
-            child: Text(
-              label,
-              style: RevLandingPrepaidTheme.buttonLabel,
-            ),
+            child: Text(label, style: RevLandingPrepaidTheme.buttonLabel),
           ),
         ),
       ),

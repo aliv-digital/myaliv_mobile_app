@@ -21,12 +21,16 @@ class CreatePasswordRepository {
       final data = response.data;
       if (data is Map<String, dynamic> && data['Success'] == false) {
         final message = data['Message']?.toString();
-        throw Exception(message ?? 'Failed to update password. Please try again.');
+        throw Exception(
+          message ?? 'Failed to update password. Please try again.',
+        );
       }
     } on DioException catch (e) {
       final body = _asMapOrNull(e.response?.data);
       final message = _extractMessage(body);
-      throw Exception(message ?? 'Failed to update password. Please try again.');
+      throw Exception(
+        message ?? 'Failed to update password. Please try again.',
+      );
     }
   }
 
@@ -37,7 +41,8 @@ class CreatePasswordRepository {
       if (data is String) {
         final decoded = jsonDecode(data);
         if (decoded is Map<String, dynamic>) return decoded;
-        if (decoded is Map) return decoded.map((k, v) => MapEntry(k.toString(), v));
+        if (decoded is Map)
+          return decoded.map((k, v) => MapEntry(k.toString(), v));
       }
     } catch (_) {}
     return null;

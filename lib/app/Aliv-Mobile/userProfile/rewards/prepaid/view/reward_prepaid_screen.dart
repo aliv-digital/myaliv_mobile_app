@@ -43,10 +43,7 @@ class _RewardPrepaidView extends StatelessWidget {
             if (action is NavigateToDeals) {
               final uri = Uri.parse('https://www.bealiv.com/deals/');
 
-              if (!await launchUrl(
-                uri,
-                mode: LaunchMode.externalApplication,
-              )) {
+              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
                 AppToast.show(
                   message: 'Could not open rewards',
                   type: ToastType.error,
@@ -104,7 +101,8 @@ class _RewardPrepaidView extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
                   child: NoRewardsPrepaid(
-                    prefixText: "looks like you're currently not eligible\nfor any rewards. visit ",
+                    prefixText:
+                        "looks like you're currently not eligible\nfor any rewards. visit ",
                     linkText: "bealiv.com/\ndeals",
                     suffixText: " to discover exciting offers!",
                     onLinkPressed: () =>
@@ -115,24 +113,21 @@ class _RewardPrepaidView extends StatelessWidget {
             }
 
             return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final reward = state.rewards[index];
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
-                    child: RewardPrepaidCard(
-                      reward: reward,
-                      onGetThisPressed: () => context
-                          .read<RewardPrepaidCubit>()
-                          .onGetThisTapped(reward),
-                      onReadMorePressed: () => context
-                          .read<RewardPrepaidCubit>()
-                          .onReadMoreTapped(reward),
-                    ),
-                  );
-                },
-                childCount: state.rewards.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final reward = state.rewards[index];
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                  child: RewardPrepaidCard(
+                    reward: reward,
+                    onGetThisPressed: () => context
+                        .read<RewardPrepaidCubit>()
+                        .onGetThisTapped(reward),
+                    onReadMorePressed: () => context
+                        .read<RewardPrepaidCubit>()
+                        .onReadMoreTapped(reward),
+                  ),
+                );
+              }, childCount: state.rewards.length),
             );
           },
         ),

@@ -113,10 +113,7 @@ class RoamingCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         gradient: LinearGradient(
-                          colors: [
-                            style.fill.withValues(alpha: 0),
-                            style.fill,
-                          ],
+                          colors: [style.fill.withValues(alpha: 0), style.fill],
                         ),
                       ),
                     ),

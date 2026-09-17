@@ -35,8 +35,9 @@ class MonthlyPlanCard extends StatelessWidget {
       padding: GuestPurchasePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planCardRadius,
+        ),
         boxShadow: const [
           BoxShadow(
             color: GuestPurchasePlanTheme.planCardShadowColor,
@@ -116,8 +117,9 @@ class MonthlyPlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(
@@ -200,8 +202,9 @@ class _PricePill extends StatelessWidget {
       padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planPricePillRadius,
+        ),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',
@@ -276,21 +279,16 @@ class _BenefitsRowState extends State<_BenefitsRow> {
                       SizedBox(
                         // width: itemW,
                         height: rowH, //  50
-                        child: _BenefitItem(
-                          benefit: b,
-                          labelColor: labelColor,
-                        ),
+                        child: _BenefitItem(benefit: b, labelColor: labelColor),
                       ),
                       if (i != widget.benefits.length - 1)
                         Container(
-                          width:
-                              GuestPurchasePlanTheme.planBenefitDividerWidth,
+                          width: GuestPurchasePlanTheme.planBenefitDividerWidth,
                           height:
                               GuestPurchasePlanTheme.planBenefitDividerHeight,
                           margin: GuestPurchasePlanTheme
                               .planBenefitDividerHorizontalMargin,
-                          color:
-                              GuestPurchasePlanTheme.planBenefitDividerColor,
+                          color: GuestPurchasePlanTheme.planBenefitDividerColor,
                         ),
                     ],
                   );
@@ -357,7 +355,11 @@ class _ScrollIndicator extends StatelessWidget {
   }
 
   Widget _indicatorUI(
-      double trackW, double trackH, double thumbW, double left) {
+    double trackW,
+    double trackH,
+    double thumbW,
+    double left,
+  ) {
     return SizedBox(
       width: trackW,
       height: GuestPurchasePlanTheme.scrollBarRenderBoxHeight,
@@ -530,7 +532,7 @@ class _BenefitItem extends StatelessWidget {
             SizedBox(
               height: 12,
               child: Text(
-               benefit.sub,
+                benefit.sub,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: subStyle,

@@ -37,8 +37,9 @@ class RoamEasyPlanCard extends StatelessWidget {
       padding: GuestPurchasePlanTheme.planCardInnerPadding,
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planCardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planCardRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planCardRadius,
+        ),
         boxShadow: const [
           BoxShadow(
             color: GuestPurchasePlanTheme.planCardShadowColor,
@@ -116,8 +117,9 @@ class RoamEasyPlanCard extends StatelessWidget {
           // ===== Expanded description =====
           AnimatedCrossFade(
             duration: const Duration(milliseconds: 180),
-            crossFadeState:
-                expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: expanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: const SizedBox(height: 0),
             secondChild: Padding(
               padding: const EdgeInsets.only(
@@ -198,8 +200,9 @@ class _PricePill extends StatelessWidget {
       padding: GuestPurchasePlanTheme.planPricePillPadding,
       decoration: BoxDecoration(
         color: GuestPurchasePlanTheme.planPricePillBackground,
-        borderRadius:
-            BorderRadius.circular(GuestPurchasePlanTheme.planPricePillRadius),
+        borderRadius: BorderRadius.circular(
+          GuestPurchasePlanTheme.planPricePillRadius,
+        ),
       ),
       child: Text(
         '\$ ${price.toStringAsFixed(2)}',

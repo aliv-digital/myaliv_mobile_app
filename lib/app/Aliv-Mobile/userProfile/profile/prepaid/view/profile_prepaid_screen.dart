@@ -56,90 +56,87 @@ class _ProfilePrepaidView extends StatelessWidget {
         body: SafeArea(
           top: false,
           child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: DefaultAppBar(
-                        title: 'profile',
-                        onBack: () => context.read<ProfilePrepaidBloc>().add(
-                          const ProfilePrepaidBackPressed(),
-                        ),
-                        showBackArrow: true,
-                        onHomeTap: () => context.go(AppRoutes.home),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
-                        builder: (context, state) {
-                          if (state.status == ProfilePrepaidStatus.loading) {
-                            return const Padding(
-                              padding: EdgeInsets.only(top: 16),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
-
-                          return Padding(
-                            padding: const EdgeInsets.only(left: 20.0),
-                            child: Column(
-                              children: [
-                                const Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                  color: ProfilePrepaidTheme.divider,
-                                ),
-                                ...state.items.map((item) {
-                                  return ProfileMenuItemTile(
-                                    title: item.title,
-                                    enabled: item.enabled,
-                                    onTap: () async {
-                                      if (item.id == 'my_profile') {
-                                        context.push(
-                                          AppRoutes.myProfilePrepaidScreen,
-                                        );
-                                      }
-                                      if (item.id == 'my_plans') {
-                                        context
-                                            .read<AppUiConfigCubit>()
-                                            .showCurrentPlansView();
-                                        context.go(AppRoutes.usage);
-                                      }
-
-                                      if (item.id == 'call_logs') {
-                                        context.push(
-                                          '${AppRoutes.callLogs}?tab=call_logs',
-                                        );
-                                        // context.push(AppRoutes.enterPassword);
-                                        // context.push(
-                                        //   Uri(
-                                        //     path: AppRoutes.enterPassword,
-                                        //     queryParameters: {
-                                        //       'title': 'enter password',
-                                        //       'continue': 'call_logs',
-                                        //     },
-                                        //   ).toString(),
-                                        // );
-                                      }
-                                      if (item.id == 'rewards') {
-                                        context.push(
-                                          AppRoutes.rewardPrepaidScreen,
-                                        );
-                                      }
-                                      context.read<ProfilePrepaidBloc>().add(
-                                        ProfilePrepaidItemPressed(item),
-                                      );
-                                    },
-                                  );
-                                }),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+            physics: const BouncingScrollPhysics(),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(
+                child: DefaultAppBar(
+                  title: 'profile',
+                  onBack: () => context.read<ProfilePrepaidBloc>().add(
+                    const ProfilePrepaidBackPressed(),
+                  ),
+                  showBackArrow: true,
+                  onHomeTap: () => context.go(AppRoutes.home),
                 ),
+              ),
+              SliverToBoxAdapter(
+                child: BlocBuilder<ProfilePrepaidBloc, ProfilePrepaidState>(
+                  builder: (context, state) {
+                    if (state.status == ProfilePrepaidStatus.loading) {
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Column(
+                        children: [
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: ProfilePrepaidTheme.divider,
+                          ),
+                          ...state.items.map((item) {
+                            return ProfileMenuItemTile(
+                              title: item.title,
+                              enabled: item.enabled,
+                              onTap: () async {
+                                if (item.id == 'my_profile') {
+                                  context.push(
+                                    AppRoutes.myProfilePrepaidScreen,
+                                  );
+                                }
+                                if (item.id == 'my_plans') {
+                                  context
+                                      .read<AppUiConfigCubit>()
+                                      .showCurrentPlansView();
+                                  context.go(AppRoutes.usage);
+                                }
+
+                                if (item.id == 'call_logs') {
+                                  context.push(
+                                    '${AppRoutes.callLogs}?tab=call_logs',
+                                  );
+                                  // context.push(AppRoutes.enterPassword);
+                                  // context.push(
+                                  //   Uri(
+                                  //     path: AppRoutes.enterPassword,
+                                  //     queryParameters: {
+                                  //       'title': 'enter password',
+                                  //       'continue': 'call_logs',
+                                  //     },
+                                  //   ).toString(),
+                                  // );
+                                }
+                                if (item.id == 'rewards') {
+                                  context.push(AppRoutes.rewardPrepaidScreen);
+                                }
+                                context.read<ProfilePrepaidBloc>().add(
+                                  ProfilePrepaidItemPressed(item),
+                                );
+                              },
+                            );
+                          }),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

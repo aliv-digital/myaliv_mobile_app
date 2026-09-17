@@ -163,8 +163,9 @@ class _DateBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment:
-          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignRight
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         Text(
           label,
@@ -248,10 +249,7 @@ class _TopRow extends StatelessWidget {
 
 /// Auto-pay invoice toggle (interactive) for postpaid
 class _AutoPayToggle extends StatefulWidget {
-  const _AutoPayToggle({
-    required this.value,
-    this.isLoading = false,
-  });
+  const _AutoPayToggle({required this.value, this.isLoading = false});
 
   final bool value;
   final bool isLoading;
@@ -317,8 +315,8 @@ class _AutoPayToggleState extends State<_AutoPayToggle> {
 
       setState(() => isOn = false);
 
-      final success =
-          await instance<AccountInfoCubit>().disableAutoPayInvoice();
+      final success = await instance<AccountInfoCubit>()
+          .disableAutoPayInvoice();
 
       if (!success && mounted) {
         // Revert on failure

@@ -117,13 +117,16 @@ void main() {
     });
 
     group('isStarted', () {
-      test('is true when startFrom is today (plan started at day boundary)', () {
-        final today = DateTime.now();
-        final plan = _makePlan(
-          startFrom: DateTime(today.year, today.month, today.day),
-        );
-        expect(plan.isStarted, true);
-      });
+      test(
+        'is true when startFrom is today (plan started at day boundary)',
+        () {
+          final today = DateTime.now();
+          final plan = _makePlan(
+            startFrom: DateTime(today.year, today.month, today.day),
+          );
+          expect(plan.isStarted, true);
+        },
+      );
 
       test('is true when startFrom is yesterday', () {
         final plan = _makePlan(

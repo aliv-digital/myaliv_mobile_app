@@ -82,12 +82,16 @@ class ForgetPasswordPaddings {
   );
 
   // Internal paddings for form fields.
-  static const EdgeInsets countryHorizontal8 =
-      EdgeInsets.symmetric(horizontal: 8);
-  static const EdgeInsets fieldHorizontal14 =
-      EdgeInsets.symmetric(horizontal: 14);
-  static const EdgeInsets genericInputContent =
-      EdgeInsets.symmetric(vertical: 10, horizontal: 12);
+  static const EdgeInsets countryHorizontal8 = EdgeInsets.symmetric(
+    horizontal: 8,
+  );
+  static const EdgeInsets fieldHorizontal14 = EdgeInsets.symmetric(
+    horizontal: 14,
+  );
+  static const EdgeInsets genericInputContent = EdgeInsets.symmetric(
+    vertical: 10,
+    horizontal: 12,
+  );
 
   // Terms paragraph wrapper padding.
   static const EdgeInsets termsHorizontal = EdgeInsets.symmetric(

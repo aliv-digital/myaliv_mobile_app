@@ -23,45 +23,51 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginPhoneNumberHelper? phoneNumberHelper,
     AuthCompletionService? authCompletionService,
     InternetConnection? internetConnection,
-  })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
-        authCompletionService =
-            authCompletionService ?? const AuthCompletionService(),
-        _internetConnection = internetConnection ?? InternetConnection(),
-        super(const LoginState()) {
+  }) : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
+       authCompletionService =
+           authCompletionService ?? const AuthCompletionService(),
+       _internetConnection = internetConnection ?? InternetConnection(),
+       super(const LoginState()) {
     on<LoginPhoneChanged>((event, emit) {
-      emit(state.copyWith(
-        phone: event.phone,
-        status: LoginStatus.initial,
-        outcome: LoginOutcome.none,
-        errorMessage: null,
-        mfaToken: null,
-        apiPhoneNumber: null,
-        phoneFieldError: false,
-      ));
+      emit(
+        state.copyWith(
+          phone: event.phone,
+          status: LoginStatus.initial,
+          outcome: LoginOutcome.none,
+          errorMessage: null,
+          mfaToken: null,
+          apiPhoneNumber: null,
+          phoneFieldError: false,
+        ),
+      );
     });
 
     on<LoginPasswordChanged>((event, emit) {
-      emit(state.copyWith(
-        password: event.password,
-        status: LoginStatus.initial,
-        outcome: LoginOutcome.none,
-        errorMessage: null,
-        mfaToken: null,
-        apiPhoneNumber: null,
-        passwordFieldError: false,
-      ));
+      emit(
+        state.copyWith(
+          password: event.password,
+          status: LoginStatus.initial,
+          outcome: LoginOutcome.none,
+          errorMessage: null,
+          mfaToken: null,
+          apiPhoneNumber: null,
+          passwordFieldError: false,
+        ),
+      );
     });
 
     on<LoginCountryChanged>((event, emit) {
-      emit(state.copyWith(
-        selectedCountry: event.selectedCountry,
-        status: LoginStatus.initial,
-        outcome: LoginOutcome.none,
-        errorMessage: null,
-        mfaToken: null,
-        apiPhoneNumber: null,
-        phoneFieldError: false,
-      ));
+      emit(
+        state.copyWith(
+          selectedCountry: event.selectedCountry,
+          status: LoginStatus.initial,
+          outcome: LoginOutcome.none,
+          errorMessage: null,
+          mfaToken: null,
+          apiPhoneNumber: null,
+          phoneFieldError: false,
+        ),
+      );
     });
 
     on<LoginSubmitted>(_onSubmitted);
@@ -94,7 +100,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   Future<void> _onSubmitted(
-      LoginSubmitted event, Emitter<LoginState> emit) async {
+    LoginSubmitted event,
+    Emitter<LoginState> emit,
+  ) async {
     final isPhoneEmpty = state.phone.trim().isEmpty;
     final isPasswordEmpty = state.password.trim().isEmpty;
 
@@ -115,17 +123,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       return;
     }
-    final LoginPhoneValidationResult phoneValidationResult =
-        phoneNumberHelper.validateAndBuildApiUsername(
-      rawPhoneNumber: state.phone,
-      selectedCountry: state.selectedCountry,
-    );
+    final LoginPhoneValidationResult phoneValidationResult = phoneNumberHelper
+        .validateAndBuildApiUsername(
+          rawPhoneNumber: state.phone,
+          selectedCountry: state.selectedCountry,
+        );
 
     if (!phoneValidationResult.isValid ||
         phoneValidationResult.phoneNumberForApi == null) {
       _emitFailure(
         emit,
-        message: phoneValidationResult.errorMessage ??
+        message:
+            phoneValidationResult.errorMessage ??
             LoginPhoneNumberHelper.invalidPhoneNumberMessage,
         phoneFieldError: true,
         passwordFieldError: false,
@@ -144,15 +153,17 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       return;
     }
 
-    emit(state.copyWith(
-      status: LoginStatus.loading,
-      outcome: LoginOutcome.none,
-      errorMessage: null,
-      mfaToken: null,
-      apiPhoneNumber: null,
-      phoneFieldError: false,
-      passwordFieldError: false,
-    ));
+    emit(
+      state.copyWith(
+        status: LoginStatus.loading,
+        outcome: LoginOutcome.none,
+        errorMessage: null,
+        mfaToken: null,
+        apiPhoneNumber: null,
+        phoneFieldError: false,
+        passwordFieldError: false,
+      ),
+    );
 
     try {
       final result = await repository.login(
@@ -170,28 +181,32 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             appUiConfigCubit: appUiConfigCubit,
           );
 
-          emit(state.copyWith(
-            status: LoginStatus.success,
-            outcome: LoginOutcome.authenticated,
-            errorMessage: null,
-            mfaToken: null,
-            apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
-            phoneFieldError: false,
-            passwordFieldError: false,
-          ));
+          emit(
+            state.copyWith(
+              status: LoginStatus.success,
+              outcome: LoginOutcome.authenticated,
+              errorMessage: null,
+              mfaToken: null,
+              apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
+              phoneFieldError: false,
+              passwordFieldError: false,
+            ),
+          );
 
         case LoginMfaChallenge(:final mfaToken):
           // 2FA path: server dispatched a 6-digit PIN and gave us an
           // mfa_token. UI forwards these to the OTP screen.
-          emit(state.copyWith(
-            status: LoginStatus.success,
-            outcome: LoginOutcome.needsOtp,
-            errorMessage: null,
-            mfaToken: mfaToken,
-            apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
-            phoneFieldError: false,
-            passwordFieldError: false,
-          ));
+          emit(
+            state.copyWith(
+              status: LoginStatus.success,
+              outcome: LoginOutcome.needsOtp,
+              errorMessage: null,
+              mfaToken: mfaToken,
+              apiPhoneNumber: phoneValidationResult.phoneNumberForApi,
+              phoneFieldError: false,
+              passwordFieldError: false,
+            ),
+          );
       }
     } catch (e) {
       final message = _extractErrorMessage(e);

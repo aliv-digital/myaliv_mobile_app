@@ -16,6 +16,7 @@ final class GuestPayBillReceiptStarted extends GuestPayBillReceiptEvent {
   List<Object?> get props => [data];
 }
 
-final class GuestPayBillReceiptBackToHomePressed extends GuestPayBillReceiptEvent {
+final class GuestPayBillReceiptBackToHomePressed
+    extends GuestPayBillReceiptEvent {
   const GuestPayBillReceiptBackToHomePressed();
 }

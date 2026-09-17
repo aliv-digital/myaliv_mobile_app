@@ -113,10 +113,10 @@ class BucketUsageSummaryState extends Equatable {
   /// Pure function call — cheap on rebuilds and identical for the same
   /// state instance (BLoC state is immutable).
   List<PlanBucketUsage> get activePlanBucketUsage => computePlanBucketUsage(
-        activePlans: activePlans,
-        items: items,
-        excludePlanIds: standAlonePlanIds,
-      );
+    activePlans: activePlans,
+    items: items,
+    excludePlanIds: standAlonePlanIds,
+  );
 
   /// Per-bucket view-model for stand-alone (roaming) plans. Mirror of
   /// [activePlanBucketUsage] with the two plan groups swapped — primary +
@@ -124,10 +124,10 @@ class BucketUsageSummaryState extends Equatable {
   /// roaming plan's own allowance. Currently stored for future surfaces;
   /// the home screen does not render it.
   List<PlanBucketUsage> get roamingPlanBucketUsage => computePlanBucketUsage(
-        activePlans: standAlonePlans,
-        items: items,
-        excludePlanIds: activePlanIds,
-      );
+    activePlans: standAlonePlans,
+    items: items,
+    excludePlanIds: activePlanIds,
+  );
 
   /// Per-bucket view-model for a single stand-alone plan. Excludes
   /// primary/secondary plans **and** every other stand-alone plan so the

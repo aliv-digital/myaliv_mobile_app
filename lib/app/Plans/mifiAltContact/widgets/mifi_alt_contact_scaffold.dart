@@ -47,15 +47,15 @@ class MifiAltContactScaffold extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: BlocBuilder<AltNumberValidationCubit,
-                AltNumberValidationState>(
-              builder: (context, state) => MifiAltContactBody(
-                busy: state.isLoading,
-                marketingOptIn: marketingOptIn,
-                phoneField: phoneFieldBuilder(readOnly: state.isLoading),
-                onMarketingChanged: onMarketingChanged,
-              ),
-            ),
+            child:
+                BlocBuilder<AltNumberValidationCubit, AltNumberValidationState>(
+                  builder: (context, state) => MifiAltContactBody(
+                    busy: state.isLoading,
+                    marketingOptIn: marketingOptIn,
+                    phoneField: phoneFieldBuilder(readOnly: state.isLoading),
+                    onMarketingChanged: onMarketingChanged,
+                  ),
+                ),
           ),
           MifiAltContinueButton(
             canContinue: canContinue,

@@ -24,8 +24,9 @@ class TopUpSummaryCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: TopUpConfirmTheme.cardBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(TopUpConfirmTheme.summaryCardRadius),
+        borderRadius: BorderRadius.circular(
+          TopUpConfirmTheme.summaryCardRadius,
+        ),
         boxShadow: const <BoxShadow>[
           BoxShadow(
             color: TopUpConfirmTheme.cardShadowColor,
@@ -50,16 +51,11 @@ class TopUpSummaryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TopUpConfirmTheme.summaryTitle,
-                ),
+                Text(title, style: TopUpConfirmTheme.summaryTitle),
                 const SizedBox(
-                    height: TopUpConfirmTheme.summaryTitleToPhoneGap),
-                Text(
-                  phoneNumber,
-                  style: TopUpConfirmTheme.summaryPhone,
+                  height: TopUpConfirmTheme.summaryTitleToPhoneGap,
                 ),
+                Text(phoneNumber, style: TopUpConfirmTheme.summaryPhone),
               ],
             ),
           ),
@@ -77,10 +73,7 @@ class TopUpSummaryCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text(
-                  actionLabel,
-                  style: TopUpConfirmTheme.summaryAction,
-                ),
+                Text(actionLabel, style: TopUpConfirmTheme.summaryAction),
                 const Spacer(),
                 _AmountPill(text: amountText),
               ],
@@ -119,8 +112,9 @@ class _AmountPill extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: TopUpConfirmTheme.summaryAmountPillBackgroundColor,
-        borderRadius:
-            BorderRadius.circular(TopUpConfirmTheme.summaryAmountPillRadius),
+        borderRadius: BorderRadius.circular(
+          TopUpConfirmTheme.summaryAmountPillRadius,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

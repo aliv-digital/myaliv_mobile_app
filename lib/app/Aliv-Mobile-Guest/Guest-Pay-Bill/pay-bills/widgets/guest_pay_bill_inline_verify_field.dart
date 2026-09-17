@@ -74,14 +74,15 @@ class _GuestPayBillInlineVerifyFieldState
                 onChanged: widget.onChanged,
                 style: GuestPayBillTheme.inputTextStyle,
                 textAlignVertical: TextAlignVertical.center,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                ).copyWith(
-                  hintText: widget.hint,
-                  hintStyle: GuestPayBillTheme.inputHintTextStyle,
-                ),
+                decoration:
+                    const InputDecoration(
+                      border: InputBorder.none,
+                      isCollapsed: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                    ).copyWith(
+                      hintText: widget.hint,
+                      hintStyle: GuestPayBillTheme.inputHintTextStyle,
+                    ),
               ),
             ),
             const SizedBox(width: 8),
@@ -130,7 +131,7 @@ class GuestPayBillInlineSubmitButton extends StatelessWidget {
                   onTap();
                   return;
                 }
-                AppToast.show(message:  'Please enter required details first');
+                AppToast.show(message: 'Please enter required details first');
                 // ScaffoldMessenger.of(context).showSnackBar(
                 //   const SnackBar(
                 //     content: Text(

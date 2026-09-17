@@ -19,8 +19,8 @@ class PrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-      PrivacyBloc(repository: PrivacyRepositoryImpl())
-        ..add(const PrivacyStarted()),
+          PrivacyBloc(repository: PrivacyRepositoryImpl())
+            ..add(const PrivacyStarted()),
       child: const _PrivacyView(),
     );
   }
@@ -33,7 +33,7 @@ class _PrivacyView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<PrivacyBloc, PrivacyState>(
       listenWhen: (previous, current) =>
-      previous.navTarget != current.navTarget,
+          previous.navTarget != current.navTarget,
       listener: (context, state) {
         if (state.navTarget != PrivacyNavTarget.none) {
           context.read<PrivacyBloc>().add(const PrivacyNavConsumed());
@@ -58,15 +58,11 @@ class _PrivacyView extends StatelessWidget {
                   showBackArrow: true,
                   showHome: true,
                   onHomeTap: () {
-                    context.read<PrivacyBloc>().add(
-                      const PrivacyHomePressed(),
-                    );
+                    context.read<PrivacyBloc>().add(const PrivacyHomePressed());
                     context.go(AppRoutes.home);
                   },
                 ),
-                Expanded(
-                  child: _buildBody(state),
-                ),
+                Expanded(child: _buildBody(state)),
               ],
             ),
           ),
@@ -79,9 +75,7 @@ class _PrivacyView extends StatelessWidget {
     switch (state.status) {
       case PrivacyStatus.initial:
       case PrivacyStatus.loading:
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
 
       case PrivacyStatus.failure:
         return Center(

@@ -25,15 +25,15 @@ class GuestPayBillReceiptData extends Equatable {
 
   @override
   List<Object?> get props => [
-        leftType,
-        rightType,
-        dateText,
-        timeText,
-        phoneNumber,
-        identifierLabel,
-        paymentMethod,
-        amount,
-      ];
+    leftType,
+    rightType,
+    dateText,
+    timeText,
+    phoneNumber,
+    identifierLabel,
+    paymentMethod,
+    amount,
+  ];
 }
 
 class GuestPayBillReceiptState extends Equatable {
