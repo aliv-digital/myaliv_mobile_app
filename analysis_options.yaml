@@ -16,6 +16,11 @@ analyzer:
     - "**/*.gr.dart"
     - "build/**"
     - ".dart_tool/**"
+  errors:
+    unused_import: info
+    unused_field: info
+    unused_element: info
+    unused_element_parameter: info
 
 linter:
   rules:
