@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
+import '../repository/base_login_otp_repository.dart';
 import '../repository/login_otp_repository.dart';
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
@@ -16,19 +17,25 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   /// two-factor-auth endpoint).
   static const int _otpLength = 6;
 
-  final LoginOtpRepository repository;
+  final BaseLoginOtpRepository repository;
   final AppUiConfigCubit appUiConfigCubit;
   final AuthCompletionService authCompletionService;
+  final InternetConnection _internetConnection;
+  final AnalyticsService _analyticsService;
 
   LoginOtpBloc({
     required this.repository,
     required this.appUiConfigCubit,
     AuthCompletionService? authCompletionService,
+    InternetConnection? internetConnection,
+    AnalyticsService? analyticsService,
     String initialMfaToken = '',
     String initialPhoneNumber = '',
     String initialApiPhoneNumber = '',
   })  : authCompletionService =
             authCompletionService ?? const AuthCompletionService(),
+        _internetConnection = internetConnection ?? InternetConnection(),
+        _analyticsService = analyticsService ?? instance<AnalyticsService>(),
         super(
           LoginOtpState(
             mfaToken: initialMfaToken,
@@ -97,7 +104,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       return;
     }
 
-    final bool isConnected = await InternetConnection().hasInternetAccess;
+    final bool isConnected = await _internetConnection.hasInternetAccess;
     if (isConnected == false) {
       emit(
         state.copyWith(
@@ -133,7 +140,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
 
       await Future.delayed(const Duration(milliseconds: 1500));
 
-      await instance<AnalyticsService>().logLogin();
+      await _analyticsService.logLogin();
 
       emit(
         state.copyWith(
@@ -199,7 +206,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       return;
     }
 
-    final bool isConnected = await InternetConnection().hasInternetAccess;
+    final bool isConnected = await _internetConnection.hasInternetAccess;
     if (isConnected == false) {
       emit(
         state.copyWith(

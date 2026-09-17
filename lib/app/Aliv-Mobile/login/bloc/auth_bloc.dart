@@ -15,15 +15,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginPhoneNumberHelper phoneNumberHelper;
   final AppUiConfigCubit appUiConfigCubit;
   final AuthCompletionService authCompletionService;
+  final InternetConnection _internetConnection;
 
   LoginBloc({
     required this.repository,
     required this.appUiConfigCubit,
     LoginPhoneNumberHelper? phoneNumberHelper,
     AuthCompletionService? authCompletionService,
+    InternetConnection? internetConnection,
   })  : phoneNumberHelper = phoneNumberHelper ?? const LoginPhoneNumberHelper(),
         authCompletionService =
             authCompletionService ?? const AuthCompletionService(),
+        _internetConnection = internetConnection ?? InternetConnection(),
         super(const LoginState()) {
     on<LoginPhoneChanged>((event, emit) {
       emit(state.copyWith(
@@ -129,7 +132,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       return;
     }
-    final bool isConnected = await InternetConnection().hasInternetAccess;
+    final bool isConnected = await _internetConnection.hasInternetAccess;
     if (isConnected == false) {
       _emitFailure(
         emit,
