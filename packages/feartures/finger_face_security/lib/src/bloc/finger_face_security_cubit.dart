@@ -6,7 +6,8 @@ import 'package:finger_face_security/src/services/biometric_auth_service.dart';
 class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
   final FingerFaceSecurityRepository _repository;
 
-  FingerFaceSecurityCubit(this._repository) : super(const FingerFaceSecurityState());
+  FingerFaceSecurityCubit(this._repository)
+      : super(const FingerFaceSecurityState());
 
   Future<void> loadBiometricStatus() async {
     emit(state.copyWith(status: FingerFaceSecurityStatus.loading));
@@ -21,10 +22,16 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
     }
   }
 
-  Future<void> authenticate({String? reason}) async {
+  Future<BiometricAuthResult> authenticate({
+    String? reason,
+    bool biometricOnly = false,
+  }) async {
     emit(state.copyWith(status: FingerFaceSecurityStatus.authenticating));
     try {
-      final result = await _repository.authenticate(reason: reason);
+      final result = await _repository.authenticate(
+        reason: reason,
+        biometricOnly: biometricOnly,
+      );
       if (result == BiometricAuthResult.success) {
         emit(state.copyWith(
           status: FingerFaceSecurityStatus.authenticated,
@@ -37,11 +44,13 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
           errorMessage: _authResultMessage(result),
         ));
       }
+      return result;
     } catch (e) {
       emit(state.copyWith(
         status: FingerFaceSecurityStatus.failure,
         errorMessage: e.toString(),
       ));
+      return BiometricAuthResult.error;
     }
   }
 
@@ -74,7 +83,8 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
     try {
       await _repository.disableBiometric();
       final updated = state.data?.copyWith(isBiometricEnabled: false);
-      emit(state.copyWith(status: FingerFaceSecurityStatus.ready, data: updated));
+      emit(state.copyWith(
+          status: FingerFaceSecurityStatus.ready, data: updated));
     } catch (e) {
       emit(state.copyWith(
         status: FingerFaceSecurityStatus.failure,
@@ -84,7 +94,10 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
   }
 
   String _authResultMessage(BiometricAuthResult result) => switch (result) {
-        BiometricAuthResult.failed => 'Authentication failed. Please try again.',
+        BiometricAuthResult.failed =>
+          'Authentication failed. Please try again.',
+        BiometricAuthResult.canceled =>
+          'Authentication failed. Please try again.',
         BiometricAuthResult.biometricsNotEnrolled =>
           'No biometric data found. Please set up biometrics in device settings.',
         BiometricAuthResult.biometricsNotAvailable =>

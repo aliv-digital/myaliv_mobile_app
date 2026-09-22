@@ -1,0 +1,422 @@
+AUTHENTICATION AUDIT
+
+Audit type: static implementation audit only; no code was changed.
+Audit boundary: ALIV Mobile entry through redirect to Home. Home and settings biometric setup were not audited.
+Important limitation: no Authentication design/message-spec artifact was present in reports/, notes/, or the project root. Therefore exact design copy and presentation parity are marked NEEDS-CONFIRMATION where the expected value cannot be established from the supplied workspace. Functional expectations below are derived only from the task scope, the visible UI copy, and api_catalog.json.
+
+1. Files inspected
+
+- api_catalog.json
+- lib/main.dart
+- lib/core/networkService/api_paths.dart
+- lib/core/utils/appUtils.dart
+- lib/router/app_routes.dart
+- lib/router/app_router.dart
+- lib/app/splash/bloc/splash_bloc.dart
+- lib/app/splash/view/splash_page.dart
+- lib/app/welcome/bloc/welcome_bloc.dart
+- lib/app/welcome/view/welcome_view.dart
+- lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart
+- lib/app/Aliv-Mobile/login/bloc/auth_state.dart
+- lib/app/Aliv-Mobile/login/model/auth_response_model.dart
+- lib/app/Aliv-Mobile/login/model/login_country_selection.dart
+- lib/app/Aliv-Mobile/login/repository/auth_repository.dart
+- lib/app/Aliv-Mobile/login/services/auth_completion_service.dart
+- lib/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart
+- lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart
+- lib/app/Aliv-Mobile/login/view/login_page.dart
+- lib/app/Aliv-Mobile/login/widgets/login_bottom_texts.dart
+- lib/app/Aliv-Mobile/login/widgets/login_header.dart
+- lib/app/Aliv-Mobile/login/widgets/login_password_field.dart
+- lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart
+- lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_state.dart
+- lib/app/Aliv-Mobile/loginOtp/repository/login_otp_exception.dart
+- lib/app/Aliv-Mobile/loginOtp/repository/login_otp_repository.dart
+- lib/app/Aliv-Mobile/loginOtp/repository/services/login_otp_api_client.dart
+- lib/app/Aliv-Mobile/loginOtp/repository/services/otp_response_validator.dart
+- lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- lib/app/Aliv-Mobile/loginOtp/widgets/otp_bottom_actions.dart
+- lib/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart
+- lib/app/Aliv-Mobile/loginOtp/widgets/otp_header.dart
+- lib/app/Aliv-Mobile/forgetPassword/bloc/forget_password_bloc.dart
+- lib/app/Aliv-Mobile/forgetPassword/bloc/forget_password_state.dart
+- lib/app/Aliv-Mobile/forgetPassword/repository/forgetpassword_repository.dart
+- lib/app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart
+- lib/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_header.dart
+- lib/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_phone_row.dart
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart
+- lib/app/Aliv-Mobile/createPassword/repository/create_password_repository.dart
+- lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart
+- lib/app/Aliv-Mobile/createPassword/widgets/create_password_header.dart
+- lib/app/Aliv-Mobile/createPassword/widgets/password_input.dart
+- lib/resources/widgets/custom_country_phone_input_row.dart
+- lib/resources/widgets/defaultButton.dart
+- lib/resources/widgets/top_toast.dart
+- packages/core/lib/src/analytics/analytics_service.dart
+- packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart
+- packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart
+- packages/feartures/finger_face_security/lib/src/view/biometric_lock_screen.dart
+
+2. Current flow summary
+
+- Splash checks the persisted JWT refresh expiry. A valid session redirects to Home; otherwise the user reaches the service-selection screen.
+- Selecting ALIV Mobile checks the same persisted session and routes to Home or Login. ALIV Mobile Guest and ALIVFibr are separate paths and were not audited further.
+- Login validates required phone/password values and the Bahamas number locally, checks connectivity, then calls POST /v1/MyAliv/Auth/login. A direct JWT response completes authentication; an mfa_token response opens the six-digit Verification Code screen.
+- OTP verify calls POST /v1/MyAliv/Auth/2fa/verify, persists the returned session, loads account/device context, and redirects to Home. Resend calls /Auth/2fa/resend.
+- Forgot Password opens Verify Your Number, calls POST /v1/MyAliv/Auth/forgot, then reuses the Login OTP screen and verifier. After verification it attempts to route through Home to Create Password. Create Password calls POST /v1/MyAliv/Auth/update-password and redirects to Home on success.
+- Face ID and Fingerprint are visible on Login but their buttons do nothing. A separate biometric lock implementation exists at the Home-route boundary.
+
+3. Requirement audit
+
+[ENTRY-1]
+- Screen/Area: Splash / ALIV Mobile service selection
+- Trigger: App launch or tap ALIV Mobile.
+- Expected message/behavior: Valid persisted authentication may continue to Home; otherwise show Login.
+- Current message/behavior: Refresh-expired/missing session goes to Welcome/Login; valid session goes to Home. No message is shown.
+- Status: CORRECT
+- Relevant file/code location: lib/app/splash/bloc/splash_bloc.dart:8-20; lib/app/welcome/bloc/welcome_bloc.dart:81-90; lib/app/welcome/view/welcome_view.dart:143-153
+
+[LOGIN-1]
+- Screen/Area: Login required fields
+- Trigger: Sign in with both fields empty, phone empty, or password empty.
+- Expected message/behavior: Required validation on the affected field(s); exact spec copy/presentation unavailable.
+- Current message/behavior: Inline row below Password shows respectively "enter phone number and password", "phone number is required", or "password is required"; affected borders are flagged; no toast.
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:93-113; lib/app/Aliv-Mobile/login/view/login_page.dart:143-178
+
+[LOGIN-2]
+- Screen/Area: Login mobile-number validation
+- Trigger: User types any non-empty partial/invalid number or submits an invalid number.
+- Expected message/behavior: Invalid phone state should be presented once at the specified trigger; exact trigger/copy unavailable.
+- Current message/behavior: "invalid phone number" appears live from the first incomplete digit. On submit the same message can appear both under the phone field and again in the shared row below Password.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart:122-141; lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart:51-119; lib/app/Aliv-Mobile/login/view/login_page.dart:143-163
+
+[LOGIN-3]
+- Screen/Area: Login Bahamas number acceptance
+- Trigger: Submit a non-empty Bahamas number.
+- Expected message/behavior: Accept only the number forms authorized by the Authentication spec/Kansys contract.
+- Current message/behavior: UI shows +1 and a 242-xxx-xxxx example. Validator accepts either seven digits (silently prefixes 242) or ten digits beginning 242; country selection is disabled.
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart:183-199; lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart:74-87
+
+[LOGIN-4]
+- Screen/Area: Login password input
+- Trigger: Type/toggle password, then sign in.
+- Expected message/behavior: Obscured password with visibility toggle; sign-in password validation should require a value.
+- Current message/behavior: Password is obscured and toggleable; only non-empty validation is applied, which is appropriate for validating an existing password.
+- Status: CORRECT
+- Relevant file/code location: lib/app/Aliv-Mobile/login/widgets/login_password_field.dart:44-107; lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:95-112
+
+[LOGIN-5]
+- Screen/Area: Login offline state
+- Trigger: Submit valid-looking credentials without internet.
+- Expected message/behavior: Block request and show the specified connection error.
+- Current message/behavior: Top error toast: "No Internet Connection".
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:132-141; lib/app/Aliv-Mobile/login/view/login_page.dart:116-123
+
+[LOGIN-6]
+- Screen/Area: Login invalid number returned by API
+- Trigger: Kansys returns ErrorCodeName/message FailedSimpleValidation.
+- Expected message/behavior: Backend determines condition; frontend maps it to approved user copy.
+- Current message/behavior: Top error toast: "The number you entered is invalid". Matching depends on that exact backend string.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:193-203; lib/app/Aliv-Mobile/login/repository/auth_repository.dart:49-52,77-84
+
+[LOGIN-7]
+- Screen/Area: Login invalid credentials
+- Trigger: Kansys returns FailedUsernameOrPassword.
+- Expected message/behavior: Backend owns credential rejection; frontend should show approved invalid-credential copy.
+- Current message/behavior: Top error toast: "Invalid Credentials". Matching depends on the exact backend string.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:212-219
+
+[LOGIN-8]
+- Screen/Area: Login locked account
+- Trigger: Kansys returns FailedUsernameIsLocked.
+- Expected message/behavior: Backend owns lock state/duration; frontend should show approved lockout copy.
+- Current message/behavior: Top error toast: "your account is locked out, please try again in 15 minutes"; duration is hard-coded in the app.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:204-211
+
+[LOGIN-9]
+- Screen/Area: Login unrecognized API/error response
+- Trigger: Any login error not matching the three hard-coded Kansys strings.
+- Expected message/behavior: Stable, user-safe fallback/message mapping.
+- Current message/behavior: Raw backend/Dio/FormatException text is shown in a top error toast; this can expose technical copy and varies by response.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:220-238; lib/app/Aliv-Mobile/login/repository/auth_repository.dart:49-52,87-90
+
+[LOGIN-10]
+- Screen/Area: Login MFA challenge
+- Trigger: Kansys login returns mfa_token (or supported legacy TwoFactorKey).
+- Expected message/behavior: Notify that a code was sent and open Verification Code with the verification context.
+- Current message/behavior: Success top toast "OTP sent successfully"; passes token and phone values to /otp.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/login/model/auth_response_model.dart:29-65; lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:180-191; lib/app/Aliv-Mobile/login/view/login_page.dart:85-114
+
+[LOGIN-11]
+- Screen/Area: Direct-login success and completion failure
+- Trigger: Login returns JWT directly; account/device loading then succeeds or fails.
+- Expected message/behavior: Commit a usable authenticated state atomically; failure must not leave a persisted authenticated session.
+- Current message/behavior: Session is persisted before account/device loading. If a later step fails, Login shows an error but the saved session remains and can be treated as logged in at the next launch.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/login/services/auth_completion_service.dart:34-70; lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart:160-178,193-228
+
+[LOGIN-12]
+- Screen/Area: Direct-login redirect to Home
+- Trigger: Direct JWT login completes successfully on a biometric-capable device.
+- Expected message/behavior: Show "Logged in successfully" and cross the Home boundary; biometric challenge only if the intended login-biometric policy requires it.
+- Current message/behavior: Shows the success toast and routes Home, but unlike OTP login it does not mark the session authenticated. The Home redirect then opens biometric lock whenever any biometric is available, even if biometric security is not enabled.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/login/view/login_page.dart:73-82; lib/router/app_router.dart:117-123; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:35-52,105-109
+
+[OTP-1]
+- Screen/Area: Login Verification Code header
+- Trigger: Open Login OTP or reset-password OTP.
+- Expected message/behavior: Context-appropriate delivery message, normally identifying the actual channel/recipient; exact design copy unavailable.
+- Current message/behavior: Both flows use the same hard-coded text: "we have sent a verification code to your email and via sms". The passed phone number is never displayed and backend-confirmed delivery channels are not read.
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/widgets/otp_header.dart:32-41; lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:18-57,120-136
+
+[OTP-2]
+- Screen/Area: OTP length/input
+- Trigger: Enter verification code.
+- Expected message/behavior: Code length must match the active Kansys endpoint/contract.
+- Current message/behavior: Six numeric cells, paste/SMS autofill support, and six-digit submit requirement. api_catalog.json still documents the legacy two-factor endpoint and does not establish the new six-digit rule.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:14-17,76-98; lib/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart:12-91; api_catalog.json auth.verifyOtp
+
+[OTP-3]
+- Screen/Area: Empty/incomplete OTP validation
+- Trigger: Tap Verify with zero or fewer than six digits.
+- Expected message/behavior: Show specified field validation and prevent request; exact copy/presentation unavailable.
+- Current message/behavior: All OTP cells turn red and a top error toast shows "Please enter the code" or "Please enter the full code".
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:76-98; lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:91-97; lib/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart:100-166
+
+[OTP-4]
+- Screen/Area: Invalid/expired OTP API errors
+- Trigger: Verify endpoint rejects the code.
+- Expected message/behavior: Distinguish invalid, expired, throttled, and server errors using approved user copy.
+- Current message/behavior: Errors containing "two factor" become "Invalid OTP". Other invalid/OTP-looking messages turn cells red but retain raw backend text. Expiry has no explicit UI mapping despite repository error categories defining it.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:146-159,249-278; lib/app/Aliv-Mobile/loginOtp/repository/login_otp_exception.dart:1-73
+
+[OTP-5]
+- Screen/Area: OTP offline/missing context
+- Trigger: Verify/resend offline, or open route without phone/token extras.
+- Expected message/behavior: Prevent request and show a recoverable error.
+- Current message/behavior: Top error toast "No Internet Connection" or "Missing verification details. Please login again." Missing context does not automatically return to Login.
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:64-74,100-110,192-210; lib/router/app_router.dart:716-732
+
+[OTP-6]
+- Screen/Area: Login OTP success
+- Trigger: Verify returns a valid session and account/device completion succeeds.
+- Expected message/behavior: Show success, mark current session authenticated, and redirect to Home.
+- Current message/behavior: Top success toast "Logged in successfully", marks biometric session authenticated, and goes Home after a fixed 1.5-second delay.
+- Status: CORRECT
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:122-145; lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:80-89
+
+[OTP-7]
+- Screen/Area: Resend code
+- Trigger: Tap Resend Code.
+- Expected message/behavior: Request another code, update token if supplied, show success/error, and enforce any required retry cooldown.
+- Current message/behavior: Calls Kansys, updates mfa_token, and shows "Verification code resent successfully." No timer/cooldown/attempt limit exists; repeated taps are allowed as soon as each request completes.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:185-246; lib/app/Aliv-Mobile/loginOtp/widgets/otp_bottom_actions.dart:34-58; lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:99-113
+
+[OTP-8]
+- Screen/Area: Change phone number
+- Trigger: Tap "change phone number".
+- Expected message/behavior: Return to the immediately preceding phone-entry screen.
+- Current message/behavior: Pops the current route, returning to Login or Verify Your Number.
+- Status: CORRECT
+- Relevant file/code location: lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:150-163
+
+[FORGOT-1]
+- Screen/Area: Forgot/manage-password entry
+- Trigger: Tap "forgot password?" or "manage my password" on Login.
+- Expected message/behavior: Open Verify Your Number.
+- Current message/behavior: Both links open /forget-password, titled "verify your number".
+- Status: CORRECT
+- Relevant file/code location: lib/app/Aliv-Mobile/login/view/login_page.dart:166-174; lib/app/Aliv-Mobile/login/widgets/login_bottom_texts.dart:19-35; lib/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_header.dart:48-59
+
+[FORGOT-2]
+- Screen/Area: Verify Your Number validation
+- Trigger: Tap Send with empty, partial, or malformed input.
+- Expected message/behavior: Reuse the authentication phone validator and show the specified invalid/required field state.
+- Current message/behavior: Empty input produces top error toast "Please enter your phone number." Any non-empty digit sequence, including one digit, is sent to Kansys. No invalid border/inline message or connectivity precheck exists.
+- Status: MISSING
+- Relevant file/code location: lib/app/Aliv-Mobile/forgetPassword/bloc/forget_password_bloc.dart:22-44; lib/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_phone_row.dart:49-84
+
+[FORGOT-3]
+- Screen/Area: Forgot-password request success
+- Trigger: Kansys /Auth/forgot returns mfa_token.
+- Expected message/behavior: Open reset-password OTP with phone/token context.
+- Current message/behavior: Opens the shared OTP screen. No "code sent" confirmation is shown on this transition.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/forgetPassword/repository/forgetpassword_repository.dart:10-30; lib/app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart:50-61
+
+[FORGOT-4]
+- Screen/Area: Forgot-password request failure
+- Trigger: Kansys/network rejects /Auth/forgot.
+- Expected message/behavior: Approved user-safe error mapping.
+- Current message/behavior: Raw Message/message/error/detail or Dio text is shown in a top error toast; absent mfa_token shows "No MFA token in response."
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/forgetPassword/repository/forgetpassword_repository.dart:22-30,53-62; lib/app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart:64-67
+
+[FORGOT-5]
+- Screen/Area: Reset-password OTP verification contract
+- Trigger: Verify code reached from Forgot Password.
+- Expected message/behavior: Use the reset-password verification contract and obtain only the authorization/context needed to change the password.
+- Current message/behavior: Reuses login /Auth/2fa/verify and full AuthCompletionService, requiring a login session plus account/device loading. Whether /Auth/forgot tokens are valid for this endpoint and return a JWT is not confirmed locally.
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/router/app_router.dart:740-758; lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:122-145; lib/app/Aliv-Mobile/loginOtp/repository/services/login_otp_api_client.dart:15-42
+
+[FORGOT-6]
+- Screen/Area: Reset-password OTP success navigation
+- Trigger: Reset OTP verifies successfully.
+- Expected message/behavior: Show verification success and go directly to Create Password without entering Home first.
+- Current message/behavior: Shows "Code verified.", then executes go(Home) followed immediately by push(Create Password). This unnecessarily crosses the authenticated Home boundary and creates fragile route ordering/back-stack behavior.
+- Status: MISMATCH
+- Relevant file/code location: lib/router/app_router.dart:749-757; lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:81-88
+
+[CREATE-1]
+- Screen/Area: Create Password length validation
+- Trigger: Continue with fewer than 8 or more than 64 trimmed characters.
+- Expected message/behavior: Enforce the visible 8-64 rule with specified validation presentation.
+- Current message/behavior: Bottom yellow warning toast: "Password must be at least 8 characters." or "Password must be 64 characters or fewer." The state considers 65+ matching characters "valid" because max length is omitted from canSubmit, and the button is enabled for all states.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart:39-53,70-77; lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart:22-24; lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart:146-156; lib/core/utils/appUtils.dart:41-48
+
+[CREATE-2]
+- Screen/Area: Create Password allowed character rule
+- Trigger: Enter symbols-only/other non-alphanumeric password of valid length.
+- Expected message/behavior: Visible helper says the password should contain letters and/or numbers.
+- Current message/behavior: No character-class validation exists; any trimmed string of 8-64 characters is accepted if confirmation matches.
+- Status: MISMATCH
+- Relevant file/code location: lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart:22-24; lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart:137-142
+
+[CREATE-3]
+- Screen/Area: Confirm Password mismatch
+- Trigger: Continue when password and confirmation differ.
+- Expected message/behavior: Prevent request and show mismatch validation; exact presentation unavailable.
+- Current message/behavior: Bottom yellow warning toast: "Passwords do not match." No field-level error state is displayed.
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart:50-53; lib/core/utils/appUtils.dart:41-48
+
+[CREATE-4]
+- Screen/Area: Password creation success
+- Trigger: /Auth/update-password succeeds.
+- Expected message/behavior: Confirm success and redirect to Home boundary.
+- Current message/behavior: Top success toast "Password updated successfully." and go(Home).
+- Status: CORRECT
+- Relevant file/code location: lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart:59-69; lib/app/Aliv-Mobile/createPassword/repository/create_password_repository.dart:13-30
+
+[CREATE-5]
+- Screen/Area: Password creation API failure
+- Trigger: Kansys returns Success=false or HTTP error.
+- Expected message/behavior: Approved policy/server message without technical leakage.
+- Current message/behavior: Shows backend Message/message/error in a top error toast, otherwise "Failed to update password. Please try again."
+- Status: KANSYS-BACKEND
+- Relevant file/code location: lib/app/Aliv-Mobile/createPassword/repository/create_password_repository.dart:21-30,46-49; lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart:70-76
+
+[BIOMETRIC-1]
+- Screen/Area: Login Face ID / Fingerprint buttons
+- Trigger: Tap either biometric sign-in button.
+- Expected message/behavior: Start the supported biometric login path, or hide/disable unavailable methods with specified feedback.
+- Current message/behavior: Both buttons are always visible and both use empty onPressed callbacks; there is no availability, enablement, cached-session, success, cancellation, or error handling.
+- Status: MISSING
+- Relevant file/code location: lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart:15-47
+
+[BIOMETRIC-2]
+- Screen/Area: Biometric Home-boundary guard
+- Trigger: Any navigation to Home when the in-memory biometric-session flag is false.
+- Expected message/behavior: Challenge only when biometric login/security is enabled and a valid underlying session exists.
+- Current message/behavior: Guard checks only whether any biometric is available, not isBiometricEnabled. It can force biometric after direct login or on cold start even when the user has not enabled it. There is no onAuthError fallback route in the router configuration.
+- Status: MISMATCH
+- Relevant file/code location: lib/router/app_router.dart:117-123,799-810; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:35-52,105-109
+
+[BIOMETRIC-3]
+- Screen/Area: Reusable biometric error states
+- Trigger: Local authentication fails, is unsupported, unavailable, or not enrolled.
+- Expected message/behavior: Friendly state-specific feedback.
+- Current message/behavior: Reusable cubit/lock screen has distinct messages and retry behavior, but Login does not call it. Cancellation is treated as "Authentication failed. Please try again."
+- Status: NEEDS-CONFIRMATION
+- Relevant file/code location: packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart:24-45,86-99; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:55-102; packages/feartures/finger_face_security/lib/src/view/biometric_lock_screen.dart:87-127
+
+4. Issues found
+
+Login
+- Invalid phone feedback can be duplicated and begins while the number is merely incomplete.
+- Unknown API/Dio/parse errors are exposed as raw top-toast text.
+- Session is saved before post-login account/device completion; a displayed login failure can still leave a persisted valid session.
+- Direct login does not set the biometric session flag, producing behavior different from OTP login.
+- Bahamas seven-digit acceptance versus the ten-digit design hint requires confirmation.
+
+OTP
+- One hard-coded header is reused for login and password reset and claims both email and SMS without inspecting delivery data.
+- Invalid/expired/throttled OTP messages are not robustly categorized; raw backend copy can surface.
+- Resend has no countdown/cooldown or attempt control.
+- Six-digit/new endpoint assumptions conflict with the legacy api_catalog.json entry and require Kansys confirmation.
+
+Forgot Password
+- Verify Your Number does not reuse LoginPhoneNumberHelper; any non-empty digit sequence is sent.
+- No local connectivity check or field-level invalid state exists.
+- Forgot verification assumes the login 2FA endpoint returns a full JWT/session for a forgot token.
+- Successful reset OTP navigates through Home before Create Password.
+
+Create Password
+- canSubmit omits the 64-character maximum and does not control button enablement.
+- Visible letters/numbers guidance is not enforced.
+- Local validation uses a bottom yellow Fluttertoast while other authentication errors use the shared top overlay toast; field error presentation is absent.
+
+Biometrics
+- Login Face ID and Fingerprint controls are nonfunctional placeholders and always visible.
+- Existing biometric service/lock logic is not connected to Login.
+- Home guard ignores isBiometricEnabled and has no configured failure fallback.
+
+5. Shared/reusable logic discovered
+
+- LoginPhoneNumberHelper: country-aware normalization/validation and API username construction. It should be reused by Verify Your Number once the approved Bahamas input rule is confirmed.
+- BahamasPhoneInputFormatter: shared Login/Forgot presentation formatter, capped at ten digits.
+- CustomCountryPhoneInputRow: shared phone/country input presentation.
+- AuthCompletionService: shared direct-login and OTP post-token completion; needs transactional cleanup/rollback behavior before reuse is considered safe.
+- LoginResponseParser: handles direct JWT and MFA challenge response shapes, including legacy key aliases.
+- LoginOtpRepository/API client/JSON validator: reusable OTP verify/resend transport and response validation.
+- AppToast: shared three-second top success/error overlay. Create Password local validation instead uses AppUtils bottom Fluttertoast.
+- FingerFaceSecurityCubit/BiometricAuthService/BiometricLockScreen: existing device capability, local-auth, state-message, and retry logic that could support Login biometrics.
+- DefaultButton: shared loading-disable behavior; current Create Password caller does not use validation state to disable it.
+
+6. Recommended implementation scope
+
+Smallest likely change set; do not implement until the design/message spec and Kansys contracts are confirmed:
+
+- Login validation/presentation: auth_bloc.dart, login_phone_number_helper.dart, login_phone_row.dart, login_page.dart.
+- Safe auth completion/direct-login biometric state: auth_completion_service.dart, login_page.dart, and app_router.dart.
+- Login biometric wiring/conditional visibility: login_social_buttons.dart plus the existing finger_face_security cubit/service; avoid changes to settings biometric setup.
+- OTP copy/error/cooldown behavior: login_otp_bloc.dart, login_otp_state.dart, login_otp_screen.dart, otp_header.dart, otp_bottom_actions.dart, and login_otp_api_client.dart only if the Kansys error contract requires it.
+- Verify Your Number validation: forget_password_bloc.dart, forget_password_state.dart, forgetpass_phone_row.dart; reuse LoginPhoneNumberHelper.
+- Reset flow separation/navigation: app_router.dart and, if Kansys uses a distinct reset verification contract, a small reset-specific repository/bloc rather than forcing LoginOtpBloc/AuthCompletionService.
+- Create Password validation/presentation: create_password_bloc.dart, create_password_state.dart, create_password_page.dart, password_input.dart.
+- Contract documentation only after confirmation: api_catalog.json and api_paths.dart if the legacy/current endpoint conflict is resolved.
+
+7. Open questions / spec conflicts
+
+- The referenced Authentication design/message spec was not available in the workspace. Exact capitalization, punctuation, trigger timing, inline-versus-toast presentation, biometric visibility, and success copy cannot be conclusively approved.
+- api_catalog.json documents legacy POST /Auth/two-factor-auth with Key/PinCode and /two-factor-auth/resend, while current code uses /Auth/2fa/verify with mfa_token/otp_code/Channel and /Auth/2fa/resend with mfa_token. Which is the active Kansys contract?
+- Does Kansys always issue six-digit codes for both login and forgot-password flows? The code says six; the local catalog is legacy and does not confirm length.
+- Does /Auth/forgot deliver to SMS, email, or both, and should the UI show a masked phone/email? Current UI always claims both.
+- Is a seven-digit Bahamas subscriber number valid input, or must users enter the full 242 + seven-digit number shown by the UI?
+- What are the complete Kansys error codes/messages for invalid number, wrong credentials, lockout duration, invalid/expired OTP, resend throttling, unknown account, and password-policy rejection?
+- Does a forgot-password mfa_token verify through /Auth/2fa/verify and return a normal JWT session, or is a reset-specific verification token/endpoint required?
+- Should successful reset OTP authenticate the user, or only authorize password reset? Current flow creates a full session and loads account/device data before password creation.
+- Should Create Password enforce only length, require at least one letter or number, restrict to alphanumeric characters, or apply a stronger Kansys policy?
+- Should Login show only the biometric type available/enabled for the device, and must a valid cached JWT exist before Face ID/Fingerprint can sign in?
+- Should biometric cancellation return to Login without an error, and what fallback is required after lockout/unavailable hardware?

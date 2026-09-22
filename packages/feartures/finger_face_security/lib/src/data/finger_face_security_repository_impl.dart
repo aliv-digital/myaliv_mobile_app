@@ -25,14 +25,19 @@ class FingerFaceSecurityRepositoryImpl implements FingerFaceSecurityRepository {
   }
 
   @override
-  Future<BiometricAuthResult> authenticate({String? reason}) {
+  Future<BiometricAuthResult> authenticate({
+    String? reason,
+    bool biometricOnly = false,
+  }) {
     return _service.authenticateWithBiometrics(
       localizedReason: reason ?? 'Authenticate to access MyAliv',
+      biometricOnly: biometricOnly,
     );
   }
 
   @override
-  Future<BiometricSetupResult> setupBiometric() => _service.setupBiometricAuth();
+  Future<BiometricSetupResult> setupBiometric() =>
+      _service.setupBiometricAuth();
 
   @override
   Future<void> disableBiometric() => _service.disableBiometricAuth();

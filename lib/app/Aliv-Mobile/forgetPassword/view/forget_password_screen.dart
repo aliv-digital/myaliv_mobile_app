@@ -51,6 +51,11 @@ class _ForgetPasswordScreenView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == ForgetPasswordStatus.success) {
+              AppToast.show(
+                message:
+                    'a verification code has been sent to your number and email',
+                type: ToastType.success,
+              );
               context.push(
                 AppRoutes.forgetPasswordOtp,
                 extra: LoginOtpRouteArgs(
@@ -62,8 +67,10 @@ class _ForgetPasswordScreenView extends StatelessWidget {
             }
 
             if (state.status == ForgetPasswordStatus.failure &&
-                state.errorMessage != null) {
-              AppToast.show(message: state.errorMessage!, type: ToastType.error);
+                state.errorMessage != null &&
+                !state.phoneFieldError) {
+              AppToast.show(
+                  message: state.errorMessage!, type: ToastType.error);
             }
           },
           child: CustomScrollView(
@@ -78,14 +85,15 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const ForgetPasswordPhoneRow(),
-                      const SizedBox(height: ForgetPasswordSizes.phoneToSendGap),
-
+                      const SizedBox(
+                          height: ForgetPasswordSizes.phoneToSendGap),
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) => prev.status != curr.status,
                         builder: (context, state) {
                           return DefaultButton(
                             label: 'send',
-                            isLoading: state.status == ForgetPasswordStatus.loading,
+                            isLoading:
+                                state.status == ForgetPasswordStatus.loading,
                             textStyle: ForgetPasswordTheme.sendButton,
                             onPressed: () {
                               context
@@ -95,9 +103,8 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                           );
                         },
                       ),
-
-                      const SizedBox(height: ForgetPasswordSizes.sendToTermsGap),
-
+                      const SizedBox(
+                          height: ForgetPasswordSizes.sendToTermsGap),
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) =>
                             prev.isTermsLoading != curr.isTermsLoading ||
@@ -110,9 +117,12 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                               await showTermsAndConditionsModal(context);
                             },
                             onPrivacyTap: () async {
-                              final uri = Uri.parse('https://www.bealiv.com/privacy-policy/');
-                              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-                                throw Exception('Could not open privacy policy');
+                              final uri = Uri.parse(
+                                  'https://www.bealiv.com/privacy-policy/');
+                              if (!await launchUrl(uri,
+                                  mode: LaunchMode.externalApplication)) {
+                                throw Exception(
+                                    'Could not open privacy policy');
                               }
                             },
                           );

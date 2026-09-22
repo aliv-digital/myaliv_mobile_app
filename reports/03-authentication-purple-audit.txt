@@ -1,0 +1,86 @@
+AUTHENTICATION PURPLE AUDIT
+
+Audit type: current-code audit only. No implementation code was changed.
+Scope: source rows 14, 139, and 142 only.
+
+1. Previous reports used
+
+- reports/01-authentication-audit.txt
+- reports/02-authentication-implementation.txt
+
+The current source sheet wording supplied for this task was treated as authoritative where it conflicts with earlier requirements.
+
+2. Files inspected
+
+- reports/01-authentication-audit.txt
+- reports/02-authentication-implementation.txt
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart
+- lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart
+- lib/core/utils/appUtils.dart
+- lib/app/welcome/view/welcome_view.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_state.dart
+- lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- lib/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart
+- lib/app/Aliv-Mobile/loginOtp/widgets/otp_bottom_actions.dart
+- lib/app/Aliv-Mobile/loginOtp/theme/login_otp_theme.dart
+- lib/resources/widgets/top_toast.dart
+
+3. Task-by-task findings
+
+RESET PASSWORD
+
+- Source row / Ref ID: Source row 14
+- Requirement: When the password does not meet the criteria, show exactly "Password must be 4 characters long".
+- Current behavior: Submit validates a trimmed password as at least 8 characters with at least one ASCII letter and one number. Failure shows "use at least 8 characters, including a letter and a number" through AppUtils.showWarningToast, a bottom yellow Fluttertoast. The same 8-character guidance is permanently displayed below the fields. CreatePasswordState uses the same 8-character/letter/number rule when deriving canSubmit.
+- Status: MISMATCH
+- Relevant files: lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart:44-55; lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart:29-33; lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart:149-154; lib/core/utils/appUtils.dart:41-48
+- Smallest required change: In the existing CreatePasswordBloc/State, replace the current 8-character letter/number predicate with the literal source-sheet rule of exactly 4 trimmed characters and use the required message in the existing warning-toast presentation. Update the always-visible helper copy in create_password_page.dart so it does not contradict the validation. Preserve confirmation-mismatch and repository behavior.
+- Blocker/dependency: The purple requirement directly supersedes the 8-character letter/number rule implemented in report 02. Frontend intent is clear, but the Kansys password policy was not inspected and may reject a 4-character password; backend compatibility should be confirmed before implementation verification.
+
+ALIVFIBR PORTAL FAILURE
+
+- Source row / Ref ID: Source row 139 / AUTH-010
+- Requirement: If the ALIVFibr portal link fails, show "we couldn't open the ALIVFibr portal. try again or visit portal.alivfibr.com." with a retry action in a Banner.
+- Current behavior: ALIVFibr calls launchUrl for https://portal.alivfibr.com/myfibr/login.aspx in external-application mode. A false result displays the top error AppToast "Could not open ALIVfbr portal." There is no retry action, no Banner, and no local catch for a launchUrl exception.
+- Status: MISMATCH
+- Relevant files: lib/app/welcome/view/welcome_view.dart:52-53,158-179; lib/resources/widgets/top_toast.dart:9-112
+- Smallest required change: Change only welcome_view.dart: keep the existing URI and launchUrl call, but route false results and launch exceptions to ScaffoldMessenger.showMaterialBanner using the exact required copy and a retry TextButton that repeats the same launch operation. Hide the banner after a successful retry. The existing MaterialBanner/retry pattern in create_password_page.dart:71-92 can be followed without adding a component or abstraction.
+- Blocker/dependency: None. The failure signal already exists locally; exception handling should cover launchUrl failures that do not return false.
+
+OTP INCOMPLETE CODE
+
+- Source row / Ref ID: Source row 142 / OTP-002
+- Requirement: When Verify is tapped with an incomplete code, show inline "enter all 6 digits of your verification code".
+- Current behavior: Both the BLoC and OTP widget currently enforce six digits. Empty input sets emptyCode and "Please enter the code"; 1-5 digits sets incompleteCode and "Please enter the full code". Both set codeFieldError, turning all six cell borders red. LoginOtpScreen then displays either message in a top AppToast; no inline error text exists.
+- Status: MISMATCH
+- Relevant files: lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart:15-18,57-99; lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_state.dart:7-14,23-25; lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart:73-98; lib/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart:16-18,84-132; lib/app/Aliv-Mobile/loginOtp/widgets/otp_bottom_actions.dart:17-28
+- Smallest required change: Keep the six-digit constants and input cells unchanged. In LoginOtpBloc, use the exact required message for both zero and 1-5 digits. In LoginOtpScreen, exclude emptyCode/incompleteCode from the failure toast and add a BlocBuilder immediately below OtpCodeFields that renders the state error inline only for those two local validation types, using existing OTP error color/theme values. LoginOtpCodeChanged already clears the error, so no new state or helper is needed.
+- Blocker/dependency: None. Current validation is conclusively six digits in both BLoC and widget and matches this purple requirement.
+
+4. Regression risks
+
+- Reset Password: changing from the report-02 rule to exactly four characters can create a frontend/backend policy mismatch and intentionally reverses the previous visible helper text and canSubmit criteria. Confirmation mismatch and save-failure handling must remain unchanged.
+- ALIVFibr: retry must reuse the same fixed URI and external launch mode, avoid stacking multiple banners, catch thrown launch failures, and check context.mounted after asynchronous attempts.
+- OTP: adding inline copy without suppressing the current toast would duplicate the message. Only empty/incomplete local validation should move inline; invalid, expired, network, resend, and missing-context presentations must remain unchanged. Six-cell paste/autofill and red error borders must not regress.
+- Existing uncommitted Authentication work from report 02 must be preserved; implementation should touch only the lines needed for these three purple tasks.
+
+5. Recommended implementation scope
+
+- Reset Password only:
+  - lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart
+  - lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart
+  - lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart
+- ALIVFibr failure only:
+  - lib/app/welcome/view/welcome_view.dart
+- OTP incomplete validation only:
+  - lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+  - lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- No repository, API, route, session/JWT, dependency, biometric, Home, or shared-architecture changes are required.
+
+6. Blockers / confirmations needed
+
+- Reset Password backend compatibility: confirm Kansys accepts exactly four-character passwords. The source-sheet frontend requirement itself is unambiguous and should otherwise be implemented literally.
+- No blocker for AUTH-010; the existing launch result and ScaffoldMessenger pattern are sufficient.
+- No blocker for OTP-002; current code independently confirms a six-digit rule in LoginOtpBloc and OtpCodeFields.

@@ -1,6 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-enum CreatePasswordStatus { initial, invalid, valid, submitting, success, failure }
+enum CreatePasswordStatus {
+  initial,
+  invalid,
+  valid,
+  submitting,
+  success,
+  failure
+}
 
 class CreatePasswordState extends Equatable {
   const CreatePasswordState({
@@ -19,9 +26,9 @@ class CreatePasswordState extends Equatable {
   final CreatePasswordStatus status;
   final String? errorMessage;
 
-  bool get isMinValid => password.trim().length >= 8;
+  bool get isLengthValid => password.trim().length == 4;
   bool get isMatch => password.trim() == confirmPassword.trim();
-  bool get canSubmit => isMinValid && isMatch;
+  bool get canSubmit => isLengthValid && isMatch;
 
   CreatePasswordState copyWith({
     String? password,
@@ -43,11 +50,11 @@ class CreatePasswordState extends Equatable {
 
   @override
   List<Object?> get props => [
-    password,
-    confirmPassword,
-    obscurePassword,
-    obscureConfirm,
-    status,
-    errorMessage,
-  ];
+        password,
+        confirmPassword,
+        obscurePassword,
+        obscureConfirm,
+        status,
+        errorMessage,
+      ];
 }

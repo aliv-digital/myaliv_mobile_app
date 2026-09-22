@@ -29,13 +29,13 @@ class TermsAndPrivacyText extends StatelessWidget {
           style: ForgetPasswordTheme.termsBase,
           children: [
             const TextSpan(
-              text: "By pressing the ‘send’ button above you agree to the ",
+              text: "by pressing the 'send' button you agree to our ",
               style: ForgetPasswordTheme.termsIntro,
             ),
 
             // ---- Terms & Conditions ----
             TextSpan(
-              text: isTermsLoading ? "Loading..." : "Terms & Conditions",
+              text: isTermsLoading ? "loading..." : "terms & conditions",
               style: isTermsLoading
                   ? ForgetPasswordTheme.termsLinkDisabled
                   : ForgetPasswordTheme.termsAndConditionsLink,
@@ -44,11 +44,11 @@ class TermsAndPrivacyText extends StatelessWidget {
                   : null,
             ),
 
-            const TextSpan(text: " & "),
+            const TextSpan(text: " and "),
 
             // ---- Privacy Policy ----
             TextSpan(
-              text: isPrivacyLoading ? "Loading..." : "Privacy Policy",
+              text: isPrivacyLoading ? "loading..." : "privacy policy",
               style: isPrivacyLoading
                   ? ForgetPasswordTheme.termsLinkDisabled
                   : ForgetPasswordTheme.privacyPolicyLink,

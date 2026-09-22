@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 import '../theme/login_theme.dart';
 
 class LoginSocialButtons extends StatelessWidget {
-  const LoginSocialButtons({super.key});
+  const LoginSocialButtons({
+    required this.onFaceIdPressed,
+    required this.onFingerprintPressed,
+    super.key,
+  });
+
+  final VoidCallback? onFaceIdPressed;
+  final VoidCallback? onFingerprintPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +22,17 @@ class LoginSocialButtons extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: _SocialButton(label: 'face id'),
+              child: _SocialButton(
+                label: 'face id',
+                onPressed: onFaceIdPressed,
+              ),
             ),
             const SizedBox(width: AuthModuleSizes.socialButtonsGap),
             Expanded(
-              child: _SocialButton(label: 'fingerprint'),
+              child: _SocialButton(
+                label: 'fingerprint',
+                onPressed: onFingerprintPressed,
+              ),
             ),
           ],
         ),
@@ -29,9 +42,13 @@ class LoginSocialButtons extends StatelessWidget {
 }
 
 class _SocialButton extends StatelessWidget {
-  const _SocialButton({required this.label});
+  const _SocialButton({
+    required this.label,
+    required this.onPressed,
+  });
 
   final String label;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +56,7 @@ class _SocialButton extends StatelessWidget {
       height: AuthModuleSizes.socialButtonHeight,
       child: OutlinedButton(
         style: AuthModuleButtonStyles.socialOutlined,
-        onPressed: () {},
+        onPressed: onPressed,
         child: Text(
           label,
           textAlign: TextAlign.center,

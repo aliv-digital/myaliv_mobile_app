@@ -85,15 +85,17 @@ class BiometricAuthService {
       return switch (e.code) {
         LocalAuthExceptionCode.userCanceled ||
         LocalAuthExceptionCode.userRequestedFallback =>
-          BiometricAuthResult.failed,
+          BiometricAuthResult.canceled,
         LocalAuthExceptionCode.noBiometricsEnrolled ||
         LocalAuthExceptionCode.noCredentialsSet =>
           BiometricAuthResult.biometricsNotEnrolled,
         LocalAuthExceptionCode.noBiometricHardware ||
         LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable =>
           BiometricAuthResult.biometricsNotAvailable,
-        LocalAuthExceptionCode.temporaryLockout ||
-        LocalAuthExceptionCode.biometricLockout => BiometricAuthResult.error,
+        LocalAuthExceptionCode.temporaryLockout =>
+          BiometricAuthResult.temporaryLockout,
+        LocalAuthExceptionCode.biometricLockout =>
+          BiometricAuthResult.biometricLockout,
         _ => BiometricAuthResult.error,
       };
     } catch (e) {
@@ -163,6 +165,9 @@ class BiometricAuthService {
 enum BiometricAuthResult {
   success,
   failed,
+  canceled,
+  temporaryLockout,
+  biometricLockout,
   deviceNotSupported,
   biometricsNotAvailable,
   biometricsNotEnrolled,

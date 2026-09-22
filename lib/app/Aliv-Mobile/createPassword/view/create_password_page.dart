@@ -19,7 +19,7 @@ class CreatePasswordScreen extends StatelessWidget {
     super.key,
     this.title = 'create password',
     this.subtitle =
-        'Set the new password for your account so you can login and access myaliv app',
+        'set a new password for your account so you can sign in and access the myALIV app',
     this.buttonLabel = 'continue',
   });
 
@@ -61,24 +61,42 @@ class _CreatePasswordView extends StatelessWidget {
               p.status != c.status || p.errorMessage != c.errorMessage,
           listener: (context, state) {
             if (state.status == CreatePasswordStatus.success) {
+              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
               AppToast.show(
-                message: 'Password updated successfully.',
+                message: 'Password reset successful!',
                 type: ToastType.success,
               );
               context.go(AppRoutes.home);
             }
             if (state.status == CreatePasswordStatus.failure &&
                 state.errorMessage != null) {
-              AppToast.show(
-                message: state.errorMessage!,
-                type: ToastType.error,
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.hideCurrentMaterialBanner();
+              messenger.showMaterialBanner(
+                MaterialBanner(
+                  content: const Text(
+                    "we couldn't save your new password. try again in a few moments.",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        messenger.hideCurrentMaterialBanner();
+                        context
+                            .read<CreatePasswordBloc>()
+                            .add(const SubmitCreatePassword());
+                      },
+                      child: const Text('retry'),
+                    ),
+                  ],
+                ),
               );
+            } else if (state.status != CreatePasswordStatus.success) {
+              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
             }
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            keyboardDismissBehavior:
-                ScrollViewKeyboardDismissBehavior.onDrag,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
               SliverToBoxAdapter(
                 child: CreatePasswordHeader(
@@ -93,7 +111,6 @@ class _CreatePasswordView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 39),
-
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) =>
                             p.obscurePassword != c.obscurePassword ||
@@ -111,9 +128,7 @@ class _CreatePasswordView extends StatelessWidget {
                           );
                         },
                       ),
-
                       const SizedBox(height: 15),
-
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) =>
                             p.obscureConfirm != c.obscureConfirm ||
@@ -131,32 +146,26 @@ class _CreatePasswordView extends StatelessWidget {
                           );
                         },
                       ),
-
                       const SizedBox(height: 10),
-
                       Text(
-                        'your password should contain letters and/or\n'
-                        'numbers and be between 8 and 64 characters long.',
+                        'Password must be 4 characters long',
                         textAlign: TextAlign.center,
                         style: CreatePasswordTheme.helperText,
                       ),
-
                       const SizedBox(height: 30),
-
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) => p.status != c.status,
                         builder: (context, state) {
                           return DefaultButton(
                             label: buttonLabel,
-                            isLoading: state.status ==
-                                CreatePasswordStatus.submitting,
+                            isLoading:
+                                state.status == CreatePasswordStatus.submitting,
                             onPressed: () => context
                                 .read<CreatePasswordBloc>()
                                 .add(const SubmitCreatePassword()),
                           );
                         },
                       ),
-
                       const SizedBox(height: 181),
                     ],
                   ),

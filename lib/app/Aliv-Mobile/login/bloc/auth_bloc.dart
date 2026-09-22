@@ -98,11 +98,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (isPhoneEmpty || isPasswordEmpty) {
       final String validationMessage;
       if (isPhoneEmpty && isPasswordEmpty) {
-        validationMessage = 'enter phone number and password';
+        validationMessage = 'enter your mobile number';
       } else if (isPhoneEmpty) {
-        validationMessage = 'phone number is required';
+        validationMessage = 'enter your mobile number';
       } else {
-        validationMessage = 'password is required';
+        validationMessage = 'enter your password';
       }
       _emitFailure(
         emit,
@@ -196,15 +196,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (message.toString() == "FailedSimpleValidation") {
         _emitFailure(
           emit,
-          message: 'The number you entered is invalid',
-          phoneFieldError: false,
+          message: LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+          phoneFieldError: true,
           passwordFieldError: false,
-          showToast: true,
         );
       } else if (message.toString() == "FailedUsernameIsLocked") {
         _emitFailure(
           emit,
-          message: "your account is locked out, please try again in 15 minutes",
+          message: 'Invalid credentials. Reset your password?',
           phoneFieldError: false,
           passwordFieldError: false,
           showToast: true,
@@ -212,7 +211,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else if (message.toString() == "FailedUsernameOrPassword") {
         _emitFailure(
           emit,
-          message: 'Invalid Credentials',
+          message: 'Invalid login credentials.',
           phoneFieldError: false,
           passwordFieldError: false,
           showToast: true,

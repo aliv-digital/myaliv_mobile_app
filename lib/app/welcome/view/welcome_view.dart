@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,6 +51,41 @@ class WelcomeView extends StatelessWidget {
   static final Uri _alivFbrPortalUri =
       Uri.parse('https://portal.alivfibr.com/myfibr/login.aspx');
 
+  Future<void> _launchAlivFibrPortal(BuildContext context) async {
+    var isLaunched = false;
+    try {
+      isLaunched = await launchUrl(
+        _alivFbrPortalUri,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      isLaunched = false;
+    }
+
+    if (!context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentMaterialBanner();
+    if (isLaunched) return;
+
+    messenger.showMaterialBanner(
+      MaterialBanner(
+        content: const Text(
+          "we couldn't open the ALIVFibr portal. try again or visit portal.alivfibr.com.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              messenger.hideCurrentMaterialBanner();
+              await _launchAlivFibrPortal(context);
+            },
+            child: const Text('retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -77,119 +111,100 @@ class WelcomeView extends StatelessWidget {
               state is WelcomeLoadedState ? state.mobileImageUrl : null;
 
           return LayoutBuilder(
-              builder: (context, constraints) {
-                final h = constraints.maxHeight;
-                final w = constraints.maxWidth;
+            builder: (context, constraints) {
+              final h = constraints.maxHeight;
+              final w = constraints.maxWidth;
 
-                final bottomH = (h * _panelRatio).clamp(_panelMinH, _panelMaxH);
-                final topH = h - bottomH;
+              final bottomH = (h * _panelRatio).clamp(_panelMinH, _panelMaxH);
+              final topH = h - bottomH;
 
-                return Column(
-                  children: [
-                    // -------- Top image area (fixed by calculation) --------
-                    SizedBox(
-                      height: topH,
-                      width: w,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: ClipRect(
-                              child: Transform.scale(
-                                scale: _imageZoom,
-                                // ✅ Slightly up for nicer crop like Figma
-                                alignment: const Alignment(0, -0.05),
-                                child: _WelcomeHeroImage(imageUrl: imageUrl),
-                              ),
+              return Column(
+                children: [
+                  // -------- Top image area (fixed by calculation) --------
+                  SizedBox(
+                    height: topH,
+                    width: w,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: ClipRect(
+                            child: Transform.scale(
+                              scale: _imageZoom,
+                              // ✅ Slightly up for nicer crop like Figma
+                              alignment: const Alignment(0, -0.05),
+                              child: _WelcomeHeroImage(imageUrl: imageUrl),
                             ),
                           ),
+                        ),
 
-                          // ✅ Logo placement responsive (no magic bottom pixels)
-                          Align(
-                            alignment: const Alignment(0, 0.62),
-                            child: SvgPicture.asset(
-                              AssetConstant.splashLogoSVG,
-                              width: 192,
-                              height: 98,
+                        // ✅ Logo placement responsive (no magic bottom pixels)
+                        Align(
+                          alignment: const Alignment(0, 0.62),
+                          child: SvgPicture.asset(
+                            AssetConstant.splashLogoSVG,
+                            width: 192,
+                            height: 98,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // -------- Bottom purple panel (fixed by calculation) --------
+                  SizedBox(
+                    height: bottomH,
+                    width: double.infinity,
+                    child: Container(
+                      color: ColorManager.welcomeScreenBloc,
+                      padding: EdgeInsets.fromLTRB(
+                        _horizontal,
+                        _panelTopPadding,
+                        _horizontal,
+                        safeBottom + _panelBottomGap,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'welcome to ALIV',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: 'CircularPro',
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: -0.30,
                             ),
+                          ),
+                          const SizedBox(height: 20),
+                          CustomButton(
+                            label: 'ALIV Mobile',
+                            onPressed: () async {
+                              // Ask bloc to decide where to go based on cached ticket.
+                              final route = await context
+                                  .read<WelcomeBloc>()
+                                  .resolveAlivMobileRoute();
+
+                              if (!context.mounted) return;
+                              context.go(route);
+                            },
+                          ),
+                          const SizedBox(height: 18),
+                          CustomButton(
+                            label: 'ALIVFibr',
+                            onPressed: () => _launchAlivFibrPortal(context),
+                          ),
+                          const SizedBox(height: 18),
+                          CustomButton(
+                            label: 'ALIV Mobile Guest',
+                            onPressed: () =>
+                                context.push(AppRoutes.guestSplash),
                           ),
                         ],
                       ),
                     ),
-
-                    // -------- Bottom purple panel (fixed by calculation) --------
-                    SizedBox(
-                      height: bottomH,
-                      width: double.infinity,
-                      child: Container(
-                        color: ColorManager.welcomeScreenBloc,
-                        padding: EdgeInsets.fromLTRB(
-                          _horizontal,
-                          _panelTopPadding,
-                          _horizontal,
-                          safeBottom + _panelBottomGap,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'welcome to ALIV',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontFamily: 'CircularPro',
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: -0.30,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            CustomButton(
-                              label: 'ALIV Mobile',
-                              onPressed: () async {
-                                // Ask bloc to decide where to go based on cached ticket.
-                                final route = await context
-                                    .read<WelcomeBloc>()
-                                    .resolveAlivMobileRoute();
-
-                                if (!context.mounted) return;
-                                context.go(route);
-                              },
-                            ),
-                            const SizedBox(height: 18),
-                            CustomButton(
-                              label: 'ALIVFibr',
-                              onPressed: () async {
-                                final bool isLaunched = await launchUrl(
-                                  _alivFbrPortalUri,
-                                  mode: LaunchMode.externalApplication,
-                                );
-
-                                if (!isLaunched && context.mounted) {
-                                  AppToast.show(
-                                    message: 'Could not open ALIVfbr portal.',
-                                    type: ToastType.error
-                                  );
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   const SnackBar(
-                                  //     content: Text(
-                                  //       'Could not open ALIVfbr portal.',
-                                  //     ),
-                                  //   ),
-                                  // );
-                                }
-                              },
-                            ),
-                            const SizedBox(height: 18),
-                            CustomButton(
-                              label: 'ALIV Mobile Guest',
-                              onPressed: () =>
-                                  context.push(AppRoutes.guestSplash),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
+                  ),
+                ],
+              );
             },
           );
         },

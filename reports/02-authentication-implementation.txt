@@ -1,0 +1,131 @@
+AUTHENTICATION MESSAGE/VALIDATION IMPLEMENTATION
+
+1. Previous report used
+
+- reports/01-authentication-audit.txt
+- Scope remained limited to Authentication through the redirect-to-Home boundary.
+- No JWT/session persistence, API endpoint/contract, route architecture, Home, or Settings biometric setup changes were made.
+
+2. Files changed
+
+- lib/app/Aliv-Mobile/login/bloc/auth_bloc.dart
+- lib/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart
+- lib/app/Aliv-Mobile/login/view/login_page.dart
+- lib/app/Aliv-Mobile/login/widgets/login_phone_row.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+- lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- lib/app/Aliv-Mobile/forgetPassword/bloc/forget_password_bloc.dart
+- lib/app/Aliv-Mobile/forgetPassword/bloc/forget_password_state.dart
+- lib/app/Aliv-Mobile/forgetPassword/theme/forget_password_theme.dart
+- lib/app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart
+- lib/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_phone_row.dart
+- lib/app/Aliv-Mobile/forgetPassword/widgets/termsAndConditions.dart
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart
+- lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart
+- lib/app/Aliv-Mobile/createPassword/widgets/create_password_header.dart
+- reports/02-authentication-implementation.txt
+
+3. Implemented requirements
+
+Login
+- Empty mobile on submit now displays inline: "enter your mobile number".
+- Invalid mobile now displays inline: "enter a valid 10-digit mobile number".
+- Bahamas mobile validation now requires exactly ten digits beginning with 242; the previous seven-digit auto-prefix path was removed. Unsupported non-formatting characters are rejected by the shared validator.
+- Phone validation is submit-driven and shown only below the phone field; the duplicate message below Password was removed.
+- Empty password on submit now displays inline: "enter your password".
+- Existing reliable FailedUsernameOrPassword mapping now displays: "Invalid login credentials."
+- Existing reliable FailedUsernameIsLocked mapping now displays: "Invalid credentials. Reset your password?"
+- Existing reliable FailedSimpleValidation mapping now uses the approved inline mobile-format message.
+
+OTP / Verification Code
+- Verification connectivity precheck and structured no-internet/timeout errors now display: "We couldn't verify the OTP due to a network error. Please try again later."
+- Existing structured unauthorized/invalid-OTP cases and explicit invalid-OTP/two-factor messages now display: "Invalid OTP."
+- Structured expired-OTP errors and backend text explicitly identifying an expired OTP/code now display: "OTP expired."
+- "change phone number" now opens the required confirmation modal:
+  - Title: "change your number?"
+  - Body: "you'll need to start again with your new number. your current code will stop working."
+  - Actions: "change number" / "cancel"
+- Confirming change number returns to the preceding Login or Verify Your Number screen; cancel keeps the current OTP active.
+
+Forgot / Reset Password
+- Verify Your Number now reuses LoginPhoneNumberHelper.
+- Empty mobile displays inline: "enter your mobile number".
+- Invalid mobile displays inline: "enter a valid 10-digit mobile number".
+- Local phone validation no longer produces a duplicate top toast.
+- Successful /Auth/forgot response now shows toast: "a verification code has been sent to your number and email" before opening OTP.
+- Terms copy now reads: "by pressing the 'send' button you agree to our terms & conditions and privacy policy" while preserving the two existing links.
+
+Create Password
+- Screen copy now reads: "create password — set a new password for your account so you can sign in and access the myALIV app".
+- Password validation now requires at least eight characters, at least one ASCII letter, and at least one number.
+- The previous app-side 64-character maximum was removed because it is not an authoritative requirement for this task.
+- Password rule/helper message is: "use at least 8 characters, including a letter and a number".
+- Confirmation mismatch displays: "these passwords don't match. re-enter them to continue."
+- Server-side save failure now displays a Material banner: "we couldn't save your new password. try again in a few moments." with a "retry" action.
+- Success toast now displays: "Password reset successful!"
+
+4. Already-correct requirements left unchanged
+
+- Verification Code screen already presents the title "verification code" and subtitle "we have sent a verification code to your email and via sms".
+- OTP input remains numeric and keeps the existing six-cell paste/autofill behavior.
+- Login and OTP success still stop at the existing redirect-to-Home boundary.
+- Existing password visibility toggles, loading states, and authentication layouts were retained.
+- API endpoints, request payloads, session persistence, and forgot/reset route architecture were not changed.
+
+5. Backend/Kansys cases not safely mappable
+
+- Number not registered: no reliable response identifier/status dedicated to this case is present. The requested account-not-found banner and contact-support action were not added because mapping a generic forgot-password failure could mislabel network/server errors.
+- Three consecutive incorrect OTPs: no reliable backend identifier or attempt-count field is present. The requested banner/resend action was not added; no client-side security counter was invented.
+- Password reuse: no reliable response identifier dedicated to reuse is present. The approved reuse copy was not mapped; failures use the approved generic save-failure banner.
+- Unknown login failures: only the existing exact identifiers FailedSimpleValidation, FailedUsernameIsLocked, and FailedUsernameOrPassword were changed. Other backend/Dio text remains unmapped pending a Kansys error-code contract.
+- Unknown OTP failures: only structured network/unauthorized/invalid/expired categories and text explicitly identifying invalid/expired OTP are normalized. Other server text remains unmapped rather than guessing.
+
+6. Blocked / unresolved cases
+
+- BLOCKED / NEEDS CONFIRMATION — OTP length: the master sheet specifies four digits, while the implementation and current code comments use six digits and the local API catalog documents a legacy endpoint. OTP length was not changed.
+- MISSING / FEATURE-DEPENDENT — Login biometrics: Face ID/Fingerprint Login buttons remain placeholders. Existing biometric code is a separate Home-boundary/device-lock path and cannot be safely aligned into Login without implementing the missing feature. No biometric login or Settings biometric setup code was changed.
+- NEEDS KANSYS CONFIRMATION — exact identifiers for account-not-found, three incorrect OTP attempts, password reuse, and the remaining login/OTP errors.
+- Existing reset-password verification/session/route behavior identified in report 01 was not changed because this task prohibited API, session, and route architecture changes.
+
+7. Checks run and results
+
+- dart format on all 16 changed Dart files: completed successfully.
+- flutter analyze --no-pub on login, loginOtp, forgetPassword, and createPassword directories: no errors and no warnings. Two pre-existing info lints remain:
+  - unintended_html_in_doc_comment in create_password_repository.dart
+  - non-lowercase file name termsAndConditions.dart
+- Relevant existing tests: none available; the repository has no test/ directory.
+- git diff --check: passed.
+- No dependency file changes remain after verification.
+
+8. Exact Authentication cases ready for verification
+
+Login
+- Submit both fields empty: both approved inline messages appear once, at their respective fields.
+- Submit empty mobile only: "enter your mobile number" inline.
+- Submit empty password only: "enter your password" inline.
+- Submit fewer/more than ten digits or a ten-digit value outside the accepted Bahamas 242 format: "enter a valid 10-digit mobile number" inline.
+- Submit a valid formatted 242 number: request uses the normalized ten-digit value.
+- Kansys FailedSimpleValidation: approved mobile-format message inline, no toast duplicate.
+- Kansys FailedUsernameOrPassword: top error toast "Invalid login credentials."
+- Kansys FailedUsernameIsLocked: top error toast "Invalid credentials. Reset your password?"
+
+OTP
+- Offline verify/resend or structured timeout/network failure: approved network-error toast.
+- Structured unauthorized/invalid OTP or existing explicit invalid-OTP/two-factor response: "Invalid OTP."
+- Structured or explicit expired OTP/code response: "OTP expired."
+- Tap change phone number, cancel: OTP screen remains.
+- Tap change phone number, confirm: returns to the preceding number-entry screen.
+
+Forgot / Reset Password
+- Submit empty number: approved inline empty message; no top toast.
+- Submit malformed/short number: approved inline ten-digit message; no API request.
+- Submit valid number and receive mfa_token: approved code-sent toast, then OTP screen.
+- Verify exact terms sentence and retained Terms/Privacy links.
+
+Create Password
+- Fewer than eight characters, letters-only, numbers-only, or symbols-only: single approved password-rule message.
+- Eight or more characters containing at least one letter and one number: passes local rule.
+- Nonmatching confirmation: approved mismatch message.
+- Save failure: approved banner with retry action; retry resubmits the same values.
+- Save success: "Password reset successful!" and redirect-to-Home boundary.

@@ -12,6 +12,7 @@ class ForgetPasswordColors {
   static const Color linkBlue = Color(0xFF13AEE1);
   static const Color actionLinkPurple = Color(0xFF645D9C);
   static const Color fieldBorder = Color(0xFFE0E0E0);
+  static const Color errorRed = Color(0xFFFF3B30);
 
   // Focused input border gradient colors.
   static const Color focusedInputBorderYellow = Color(0xFFFFC627);
@@ -190,6 +191,11 @@ class ForgetPasswordTheme {
     fontSize: 14,
     fontFamily: AppConstants.defaultFontFamily,
     color: ForgetPasswordColors.hintGrey,
+  );
+
+  static const TextStyle phoneError = TextStyle(
+    fontSize: 12,
+    color: ForgetPasswordColors.errorRed,
   );
 
   // Country flag text in the phone-country picker.

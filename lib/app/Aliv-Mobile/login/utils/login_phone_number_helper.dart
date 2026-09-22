@@ -15,16 +15,18 @@ class LoginPhoneValidationResult {
     this.errorMessage,
   });
 
-  const LoginPhoneValidationResult.success({required String phoneNumberForApi}) : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
+  const LoginPhoneValidationResult.success({required String phoneNumberForApi})
+      : this._(isValid: true, phoneNumberForApi: phoneNumberForApi);
 
   const LoginPhoneValidationResult.failure({required String errorMessage})
-    : this._(isValid: false, errorMessage: errorMessage);
+      : this._(isValid: false, errorMessage: errorMessage);
 }
 
 class LoginPhoneNumberHelper {
   const LoginPhoneNumberHelper();
 
-  static const String invalidPhoneNumberMessage = 'invalid phone number';
+  static const String invalidPhoneNumberMessage =
+      'enter a valid 10-digit mobile number';
 
   /// Normalizes any typed/formatted Bahamas phone value to `242-899-9999`.
   ///
@@ -39,12 +41,13 @@ class LoginPhoneNumberHelper {
     }
     return rawInput.trim();
   }
+
   static const Map<String, String> _territoryDialCodeOverrides =
       <String, String>{
-        // Bahamas is part of the shared NANP parent code and should display `1`
-        // in the picker, while the typed field keeps the local `242` area code.
-        'BS': '1',
-      };
+    // Bahamas is part of the shared NANP parent code and should display `1`
+    // in the picker, while the typed field keeps the local `242` area code.
+    'BS': '1',
+  };
 
   /// country_picker returns composite codes such as `1-242` for Bahamas.
   ///
@@ -55,8 +58,7 @@ class LoginPhoneNumberHelper {
 
     return LoginCountrySelection(
       isoCode: isoCode,
-      dialCode:
-          _territoryDialCodeOverrides[isoCode] ??
+      dialCode: _territoryDialCodeOverrides[isoCode] ??
           _normalizeDisplayDialCode(country.phoneCode),
       flagEmoji: country.flagEmoji,
     );
@@ -66,6 +68,12 @@ class LoginPhoneNumberHelper {
     required String rawPhoneNumber,
     required LoginCountrySelection selectedCountry,
   }) {
+    if (!RegExp(r'^[0-9()+\-\s]+$').hasMatch(rawPhoneNumber)) {
+      return const LoginPhoneValidationResult.failure(
+        errorMessage: invalidPhoneNumberMessage,
+      );
+    }
+
     final String enteredDigits = _digitsOnly(rawPhoneNumber);
     if (enteredDigits.isEmpty) {
       return const LoginPhoneValidationResult.failure(
@@ -181,12 +189,6 @@ class LoginPhoneNumberHelper {
   }
 
   LoginPhoneValidationResult _validateBahamasPhoneNumber(String enteredDigits) {
-    if (enteredDigits.length == 7) {
-      return LoginPhoneValidationResult.success(
-        phoneNumberForApi: '242$enteredDigits',
-      );
-    }
-
     if (enteredDigits.length == 10 && enteredDigits.startsWith('242')) {
       return LoginPhoneValidationResult.success(
         phoneNumberForApi: enteredDigits,
@@ -214,7 +216,7 @@ class LoginPhoneNumberHelper {
   }) {
     final bool usesTerritoryDialCode =
         displayDialCode != parsedPhone.countryCode &&
-        parsedPhone.nsn.startsWith(displayDialCode);
+            parsedPhone.nsn.startsWith(displayDialCode);
 
     if (usesTerritoryDialCode) {
       final int subscriberLength =

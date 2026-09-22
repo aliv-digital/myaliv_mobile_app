@@ -1,0 +1,104 @@
+BIOMETRIC PURPLE PARTIAL IMPLEMENTATION
+
+1. Previous reports used
+
+- reports/01-authentication-audit.txt
+- reports/02-authentication-implementation.txt
+- reports/03-authentication-purple-audit.txt
+- reports/04-authentication-purple-implementation.txt
+- reports/05-biometric-purple-audit.txt
+
+2. Files changed
+
+- lib/app/Aliv-Mobile/login/view/login_page.dart
+- lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart
+- packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart
+- packages/feartures/finger_face_security/lib/src/repository/finger_face_security_repository.dart
+- packages/feartures/finger_face_security/lib/src/data/finger_face_security_repository_impl.dart
+- packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart
+- reports/06-biometric-purple-partial-implementation.txt
+
+3. Source row 49 implementation
+
+- Exact message: "Face not detected. Try again."
+- Trigger/result mapping: A Face ID Login action that returns BiometricAuthResult.failed from local_auth's false/non-authenticated result.
+- Presentation: Existing Login AppToast error presentation.
+- Login requests biometric-only authentication through the existing cubit/repository/service path.
+- The message is not shown for success, cancellation/fallback, unavailable/not-enrolled biometrics, lockout, or unexpected errors.
+- Files changed:
+  - lib/app/Aliv-Mobile/login/view/login_page.dart
+  - lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart
+  - packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart
+  - packages/feartures/finger_face_security/lib/src/repository/finger_face_security_repository.dart
+  - packages/feartures/finger_face_security/lib/src/data/finger_face_security_repository_impl.dart
+  - packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart
+- Completion status: COMPLETE
+
+4. Source row 56 implementation
+
+- Exact message: "Fingerprint not recognized. Please try again."
+- Trigger/result mapping: A Fingerprint Login action that returns BiometricAuthResult.failed from local_auth's false/non-authenticated result.
+- Presentation: Existing Login AppToast error presentation.
+- The message is not shown for success, cancellation/fallback, unavailable/not-enrolled biometrics, lockout, or unexpected errors.
+- Files changed: same six Dart files listed in section 3.
+- Completion status: COMPLETE
+
+5. Source row 57 implementation
+
+- Exact message: "Too many failed attempts. Please log in with your password."
+- Trigger/result mapping: A Fingerprint Login action receiving either LocalAuthExceptionCode.temporaryLockout or LocalAuthExceptionCode.biometricLockout. The service now preserves these as distinct BiometricAuthResult values, and Login maps both to the same required copy.
+- Presentation: Existing Login AppToast error presentation.
+- No app-side attempt counter was introduced. The result depends only on platform-reported lockout.
+- Password fields, password validation, and the Sign In action remain enabled and unchanged.
+- Files changed: same six Dart files listed in section 3.
+- Completion status: COMPLETE
+
+6. Cancellation/setup handling preserved
+
+- userCanceled and userRequestedFallback now map to BiometricAuthResult.canceled instead of failed.
+- Login treats cancellation/fallback as a silent return to password login: no non-match or lockout toast is shown.
+- Login biometric buttons are enabled only when the existing saved biometric-enabled state is true and the corresponding availability flag is true.
+- Buttons are disabled while authentication is in progress, and remain disabled for unavailable/not-enrolled or disabled biometric methods.
+- A runtime unavailable/not-enrolled result or unexpected platform error does not display any of the three purple messages.
+- The shared cubit retains its previous generic cancellation message for existing Home behavior; Login ignores that shared message and performs its own result-specific mapping.
+
+7. Source rows 51 and 58 intentionally blocked
+
+- Source row 51: BLOCKED — biometric success session contract not defined.
+- Source row 58: BLOCKED — biometric success session contract not defined.
+- BiometricAuthResult.success is allowed to remain in the existing local cubit state, but Login shows no "Welcome!", performs no navigation, does not mark the biometric session authenticated, and does not create, refresh, or persist a MyAliv/Kansys session.
+
+8. Existing behavior preserved
+
+- Existing BiometricAuthService, repository, cubit, dependency injection, and Login AppToast component are reused.
+- Existing Home/Settings calls retain biometricOnly=false by default. Only Login requests biometricOnly=true.
+- Existing Home/Settings visible mappings remain unchanged: cancellation retains the prior authentication-failed copy, while lockout retains the prior generic-error copy outside Login.
+- No route, Home, Settings screen, AuthCompletionService, JWT/session, backend/Kansys, dependency, password-login, or Login field behavior was changed.
+- No new state-management layer, biometric service/repository, route, dependency, or attempt counter was added.
+
+9. Regression risks
+
+- local_auth controls when a non-match is returned versus when its OS prompt continues collecting attempts; the app maps only the final false result.
+- The existing repository treats BiometricType.strong as fingerprint availability. That pre-existing platform ambiguity was not redesigned in this scoped task.
+- Login relies on the biometric status loaded at startup or subsequently updated by the existing cubit; external device-enrollment changes while the app is running may require the existing status reload path.
+- Changes to the shared result enum could affect exhaustive downstream switches; targeted analysis found no compile errors, and existing switches retain their prior visible fallback behavior.
+
+10. Checks run and results
+
+- dart format on all six changed Dart files: PASS.
+- flutter analyze --no-pub on the six changed Login/biometric files: PASS with no errors or warnings. Three pre-existing info-level curly-brace lints remain in biometric_auth_service.dart at lines 70, 128, and 130; those statements were not changed.
+- git diff --check: PASS.
+- Relevant tests: none run because neither the root project nor the biometric package has a test directory.
+
+11. Exact cases ready for verification
+
+- Enabled/available Face ID, local_auth returns false: top error toast shows exactly "Face not detected. Try again."
+- Enabled/available Fingerprint, local_auth returns false: top error toast shows exactly "Fingerprint not recognized. Please try again."
+- Fingerprint reports temporaryLockout: top error toast shows exactly "Too many failed attempts. Please log in with your password."
+- Fingerprint reports biometricLockout: the same exact lockout toast is shown.
+- Face ID lockout: no Face-not-detected message and no fingerprint-lockout message is shown.
+- User cancels or requests fallback: no biometric error toast is shown; password login remains available.
+- Biometric disabled, unavailable, or not enrolled: the corresponding Login action is disabled and no purple failure message is shown.
+- Runtime unavailable/not-enrolled or unexpected error: no purple failure message is shown.
+- Local biometric success: Login remains on the current screen, shows no "Welcome!", performs no Home navigation, and changes no MyAliv/Kansys session state.
+- Password login remains fully usable after biometric non-match, cancellation, lockout, or other biometric outcomes.

@@ -69,7 +69,6 @@ class _LoginOtpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return StripedScaffold(
       resizeToAvoidBottomInset: true,
-
       body: SafeArea(
         child: BlocListener<LoginOtpBloc, LoginOtpState>(
           listenWhen: (previous, current) {
@@ -79,7 +78,9 @@ class _LoginOtpView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
-              AppToast.show(message: successMessage ?? 'Logged in successfully', type: ToastType.success);
+              AppToast.show(
+                  message: successMessage ?? 'Logged in successfully',
+                  type: ToastType.success);
               instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
               if (onSuccess != null) {
                 onSuccess!(context);
@@ -89,7 +90,9 @@ class _LoginOtpView extends StatelessWidget {
             }
 
             if (state.status == LoginOtpStatus.failure &&
-                state.errorMessage != null) {
+                state.errorMessage != null &&
+                state.errorType != LoginOtpErrorType.emptyCode &&
+                state.errorType != LoginOtpErrorType.incompleteCode) {
               AppToast.show(
                 message: state.errorMessage!,
                 type: ToastType.error,
@@ -114,8 +117,7 @@ class _LoginOtpView extends StatelessWidget {
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            keyboardDismissBehavior:
-                ScrollViewKeyboardDismissBehavior.onDrag,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
               const SliverToBoxAdapter(child: OtpHeader()),
               SliverToBoxAdapter(
@@ -126,6 +128,33 @@ class _LoginOtpView extends StatelessWidget {
                     children: [
                       SizedBox(height: LoginOtpSizes.contentTopGap),
                       OtpCodeFields(),
+                      BlocBuilder<LoginOtpBloc, LoginOtpState>(
+                        buildWhen: (previous, current) =>
+                            previous.errorType != current.errorType ||
+                            previous.errorMessage != current.errorMessage,
+                        builder: (context, state) {
+                          final showIncompleteCodeError = state.errorMessage !=
+                                  null &&
+                              (state.errorType == LoginOtpErrorType.emptyCode ||
+                                  state.errorType ==
+                                      LoginOtpErrorType.incompleteCode);
+                          if (!showIncompleteCodeError) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Text(
+                              state.errorMessage!,
+                              textAlign: TextAlign.center,
+                              style: LoginOtpTheme.snackBarText.copyWith(
+                                color: LoginOtpColors.otpBoxBorderError,
+                                fontSize: 12,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                       SizedBox(
                         height: LoginOtpSizes.otpToBottomActionsGap,
                       ),
@@ -153,12 +182,38 @@ class _ChangePhoneNumberAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).maybePop(),
+      onTap: () => _showChangeNumberConfirmation(context),
       child: Text(
         'change phone number',
         textAlign: TextAlign.center,
         style: LoginOtpTheme.changePhoneText,
       ),
     );
+  }
+
+  Future<void> _showChangeNumberConfirmation(BuildContext context) async {
+    final shouldChange = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('change your number?'),
+        content: const Text(
+          "you'll need to start again with your new number. your current code will stop working.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('change number'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldChange == true && context.mounted) {
+      Navigator.of(context).maybePop();
+    }
   }
 }

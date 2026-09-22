@@ -1,0 +1,158 @@
+BIOMETRIC PURPLE AUDIT
+
+Audit type: current-code audit only. No implementation code was changed.
+Scope: biometric purple source rows 49, 51, 56, 57, and 58 only.
+
+1. Previous reports used
+
+- reports/01-authentication-audit.txt
+- reports/02-authentication-implementation.txt
+- reports/03-authentication-purple-audit.txt
+- reports/04-authentication-purple-implementation.txt
+
+2. Files inspected
+
+- reports/01-authentication-audit.txt
+- reports/02-authentication-implementation.txt
+- reports/03-authentication-purple-audit.txt
+- reports/04-authentication-purple-implementation.txt
+- lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart
+- lib/app/Aliv-Mobile/login/view/login_page.dart
+- lib/app/Aliv-Mobile/login/services/auth_completion_service.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+- lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- lib/app/splash/bloc/splash_bloc.dart
+- lib/app/welcome/bloc/welcome_bloc.dart
+- lib/router/app_router.dart
+- lib/main.dart
+- lib/main_injection_container.dart
+- lib/app/Security/finger_face_security_injection.dart
+- packages/feartures/finger_face_security/lib/finger_face_security.dart
+- packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart
+- packages/feartures/finger_face_security/lib/src/repository/finger_face_security_repository.dart
+- packages/feartures/finger_face_security/lib/src/data/finger_face_security_repository_impl.dart
+- packages/feartures/finger_face_security/lib/src/model/finger_face_security_model.dart
+- packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart
+- packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_state.dart
+- packages/feartures/finger_face_security/lib/src/view/biometric_lock_screen.dart
+- packages/feartures/finger_face_security/lib/src/view/finger_face_security_screen.dart
+- packages/feartures/finger_face_security/pubspec.yaml
+- android/app/src/main/AndroidManifest.xml
+- ios/Runner/Info.plist
+- /Users/nazmulhaquenahin/.pub-cache/hosted/pub.dev/local_auth-3.0.2/lib/src/local_auth.dart
+- /Users/nazmulhaquenahin/.pub-cache/hosted/pub.dev/local_auth_platform_interface-1.1.0/lib/types/auth_exception.dart
+
+3. Current biometric architecture
+
+- App startup registers one BiometricAuthService, repository, and FingerFaceSecurityCubit, then loads device availability and the saved biometric-enabled flag.
+- BiometricAuthService wraps local_auth for hardware/support checks, enrolled types, device-local authentication, and SharedPreferences enablement flags.
+- FingerFaceSecurityRepositoryImpl exposes availability as isFaceIdAvailable/isFingerprintAvailable and passes authentication results to the cubit.
+- FingerFaceSecurityCubit provides loading/authenticated/failure states and generic messages. BiometricLockScreen automatically authenticates and displays status text with retry.
+- The Settings screen enables/disables biometric lock by reusing the same cubit/service. Android biometric permissions and the iOS Face ID usage description are present.
+- The Home redirect uses the global cubit's in-memory isSessionAuthenticated flag and biometric availability. It does not check the biometric-enabled flag or validate a JWT itself.
+- authenticateWithBiometrics currently defaults biometricOnly to false, so the underlying platform may permit device PIN/passcode/pattern fallback.
+
+4. Login biometric current behavior
+
+- Face ID and Fingerprint buttons both exist and are always visible.
+- Both buttons call an empty onPressed callback. They are placeholders: no BLoC/cubit event, biometric service call, availability check, loading state, message, session check, or navigation occurs.
+- None of the five required source-sheet messages exists in the scoped Login or biometric code.
+- The normal password Login success message is "Logged in successfully"; the reusable lock screen's success status is "Authentication successful!". Neither is biometric Login behavior or the required "Welcome!".
+
+5. Task-by-task findings
+
+FACE ID LOGIN FAILURE
+
+- Source row: 49
+- Requirement: When a Face ID login attempt fails, show "Face not detected. Try again."
+- Current behavior: The Face ID Login button does nothing. The reusable service has only a generic failed result; the cubit maps it to "Authentication failed. Please try again." User cancellation and requested fallback are also collapsed into failed.
+- Status: MISSING
+- Relevant files: lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart:15-23,31-49; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:55-102,163-170; packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart:24-45,86-95
+- Smallest required change: Wire the existing Login button to the existing cubit/service and map a genuine Face ID non-match to the exact required copy using the existing Login message presentation. Preserve cancellation/fallback separately so they are not mislabeled as an undetected face.
+- Dependency/blocker: The service reports available types but not which modality completed an authentication. Safe Face-specific presentation requires availability/button context and a distinct cancellation result; devices exposing multiple or generic strong biometrics need confirmation.
+
+FACE ID LOGIN SUCCESS
+
+- Source row: 51
+- Requirement: On successful Face ID login, show "Welcome!"
+- Current behavior: The button does nothing. The reusable service can return BiometricAuthResult.success, but that result proves only local device authentication and does not create, refresh, or validate a MyAliv/Kansys session.
+- Status: BLOCKED
+- Relevant files: lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart:15-23,31-49; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:55-82; lib/app/splash/bloc/splash_bloc.dart:11-17; lib/app/welcome/bloc/welcome_bloc.dart:81-90; lib/router/app_router.dart:117-123,799-810
+- Smallest required change: After an approved session contract exists, reuse BiometricAuthResult.success, show exactly "Welcome!", mark the biometric session authenticated, and navigate through the existing Home boundary only when a valid persisted MyAliv session has been verified.
+- Dependency/blocker: Login is normally reached only when currentSession is absent or refresh-expired. There is no biometric credential exchange or other mechanism that creates a valid MyAliv session from this screen. Local success must not be treated as server login success without product/backend confirmation.
+
+FINGERPRINT NOT RECOGNIZED
+
+- Source row: 56
+- Requirement: When a fingerprint login attempt is not recognized, show "Fingerprint not recognized. Please try again."
+- Current behavior: The Fingerprint Login button does nothing. Elsewhere, a false authentication result becomes generic failed and the cubit displays "Authentication failed. Please try again." Cancellation/fallback is currently indistinguishable downstream from a non-match.
+- Status: MISSING
+- Relevant files: lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart:15-23,31-49; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:55-102,163-170; packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart:24-45,86-95
+- Smallest required change: Wire the existing button to the reusable cubit/service, preserve cancellation/fallback as a distinct outcome, and map a genuine fingerprint non-match to the exact required copy using the existing Login message presentation.
+- Dependency/blocker: Authentication results carry no modality. The repository also treats BiometricType.strong as fingerprint, although that value is not inherently fingerprint-specific; button visibility and modality handling must be confirmed on devices offering multiple/generic biometric types.
+
+TOO MANY FINGERPRINT FAILURES
+
+- Source row: 57
+- Requirement: After too many failed fingerprint login attempts, show "Too many failed attempts. Please log in with your password."
+- Current behavior: Login has no fingerprint action. local_auth exposes temporaryLockout and biometricLockout exception codes, but BiometricAuthService maps both to the generic BiometricAuthResult.error. The cubit then displays "An authentication error occurred. Please try again."
+- Status: MISSING
+- Relevant files: packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:83-102,163-170; packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart:24-45,86-95; /Users/nazmulhaquenahin/.pub-cache/hosted/pub.dev/local_auth_platform_interface-1.1.0/lib/types/auth_exception.dart:90-104
+- Smallest required change: Extend the existing BiometricAuthResult/state path to retain lockout as a distinct result, then map that result in Login to the exact required message and keep password login available. No client-side attempt counter or new dependency is needed.
+- Dependency/blocker: The underlying codes can detect platform-reported temporary/permanent lockout reliably, but the current service discards that distinction. The app cannot infer a threshold before the platform reports lockout and should not invent one.
+
+FINGERPRINT LOGIN SUCCESS
+
+- Source row: 58
+- Requirement: On successful fingerprint login, show "Welcome!"
+- Current behavior: The button does nothing. Generic local biometric success exists elsewhere, but it is not tied to a verified MyAliv session and does not identify fingerprint as the successful modality.
+- Status: BLOCKED
+- Relevant files: lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart:15-23,31-49; packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart:55-82; lib/app/splash/bloc/splash_bloc.dart:11-17; lib/app/welcome/bloc/welcome_bloc.dart:81-90; lib/router/app_router.dart:117-123,799-810
+- Smallest required change: After the session contract is confirmed, reuse the existing success result, show exactly "Welcome!", mark the biometric session authenticated, and navigate through the existing Home boundary only with a verified valid persisted MyAliv session.
+- Dependency/blocker: Same session blocker as Face ID success. local_auth performs device authentication only; it cannot establish a Kansys/MyAliv login session.
+
+6. Reusable existing biometric flow
+
+- A working device-local biometric mechanism exists and can be reused: BiometricAuthService -> FingerFaceSecurityRepositoryImpl -> FingerFaceSecurityCubit.
+- Availability flags can conditionally show Face ID or Fingerprint instead of always showing both buttons.
+- The existing cubit supplies authenticating/success/failure states and the lock screen supplies retry behavior.
+- The entire Home-boundary lock flow should not be copied into Login unchanged: its guard checks availability rather than enablement, its success is not independently JWT-gated, and its messages do not match the purple requirements.
+- Face versus fingerprint availability is partially distinguishable. Authentication success/failure itself is generic and carries no matched modality; selected-button context would be needed.
+- Lockout is distinguishable at the local_auth exception boundary but not after the current service mapping.
+
+7. Session/auth dependency findings
+
+- AuthCompletionService persists a MyAliv JWT only after password or OTP authentication. The biometric service never calls AuthCompletionService, AuthManager, or Kansys.
+- Splash and ALIV Mobile entry route to Login when the persisted session is missing or refresh-expired; a valid session routes toward Home instead. Therefore the normal Login screen does not have a valid session for biometrics merely to unlock.
+- OTP success marks the in-memory biometric session authenticated only after server authentication/session completion. Login biometric buttons have no equivalent authenticated prerequisite.
+- The Home biometric guard does not itself prove a valid persisted session and can be reached directly. Its local success must not be treated as sufficient evidence of MyAliv login.
+- Result: the failure/lockout messages can be implemented within the current biometric state architecture, but both true biometric-login success tasks cannot be completed safely without a confirmed session model. If the intended behavior is only to unlock a still-valid persisted session, that eligibility rule and Login entry behavior must be defined. If biometrics must create a new session, a backend/credential-binding flow is required and is outside this task.
+
+8. Regression risks
+
+- Changing global cubit messages would also change Home lock and Settings behavior; Login-specific purple copy should be mapped at the Login presentation boundary.
+- Treating cancellation, fallback, unavailable hardware, or no enrollment as “not recognized” would show incorrect failure copy.
+- Treating local biometric success as login success could expose Home without a valid server session.
+- Showing both controls regardless of enrolled modality can launch the wrong labeled flow; generic BiometricType.strong is not sufficient proof of fingerprint.
+- Lockout handling must rely on platform codes, not an app-side failure counter, and must leave password login usable.
+- Enabling biometric-only authentication or changing fallback behavior globally could alter the existing Home lock/Settings flow.
+
+9. Recommended implementation scope
+
+- Do not implement the success paths until the session/auth questions below are resolved.
+- Once confirmed, the smallest likely change set is:
+  - lib/app/Aliv-Mobile/login/widgets/login_social_buttons.dart: callbacks, availability-driven visibility, and loading/disabled state.
+  - lib/app/Aliv-Mobile/login/view/login_page.dart: listen to the existing biometric cubit, present the five exact Login messages, verify session eligibility, and use existing navigation.
+  - packages/feartures/finger_face_security/lib/src/services/biometric_auth_service.dart: preserve cancellation and lockout result distinctions rather than collapsing them.
+  - packages/feartures/finger_face_security/lib/src/bloc/finger_face_security_cubit.dart and finger_face_security_state.dart only if needed to expose those existing result distinctions cleanly.
+- Reuse the existing repository, dependency injection, local_auth dependency, AppToast/message component, AuthManager, and Home route. Do not create a new biometric system, repository, route architecture, dependency, or client-side attempt counter.
+
+10. Blockers / confirmations needed
+
+- Define biometric “login”: unlock an existing unexpired persisted JWT, or obtain a new MyAliv/Kansys session. Current code supports only local device authentication.
+- Confirm why/how a user with a valid persisted session should reach Login, since current Splash/Welcome entry sends that user toward Home.
+- Confirm that biometric login is allowed only when the app's saved biometric-enabled/setup state is true; current Login buttons ignore both.
+- Confirm handling for cancel and device-credential fallback. They must not be mislabeled as face/fingerprint recognition failures.
+- Confirm button behavior on devices exposing both modalities or only BiometricType.strong; the authentication result does not identify which modality succeeded.
+- Confirm whether both temporaryLockout and biometricLockout should use the row-57 message. The current dependency exposes both, but the app currently merges them into generic error.
+- Confirm the Login message presentation for these rows. The copy is authoritative, but the source-sheet details supplied here do not state toast, inline, banner, or lock-screen presentation.

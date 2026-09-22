@@ -1,4 +1,6 @@
 // lib/login/login_screen.dart
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +22,8 @@ import '../widgets/login_password_field.dart';
 import '../widgets/login_phone_row.dart';
 import '../widgets/login_social_buttons.dart';
 
+enum _LoginBiometricMethod { faceId, fingerprint }
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -37,6 +41,52 @@ class LoginScreen extends StatelessWidget {
 
 class _LoginView extends StatelessWidget {
   const _LoginView();
+
+  Future<void> _authenticateWithBiometrics(
+    BuildContext context,
+    _LoginBiometricMethod method,
+  ) async {
+    final cubit = instance<FingerFaceSecurityCubit>();
+    final biometricData = cubit.state.data;
+    final methodIsAvailable = switch (method) {
+      _LoginBiometricMethod.faceId => biometricData?.isFaceIdAvailable == true,
+      _LoginBiometricMethod.fingerprint =>
+        biometricData?.isFingerprintAvailable == true,
+    };
+
+    if (cubit.state.isAuthenticating ||
+        !cubit.state.isBiometricEnabled ||
+        !methodIsAvailable) {
+      return;
+    }
+
+    final result = await cubit.authenticate(
+      reason: switch (method) {
+        _LoginBiometricMethod.faceId => 'Use Face ID to sign in to MyAliv',
+        _LoginBiometricMethod.fingerprint =>
+          'Use your fingerprint to sign in to MyAliv',
+      },
+      biometricOnly: true,
+    );
+
+    if (!context.mounted) return;
+
+    final message = switch (result) {
+      BiometricAuthResult.failed when method == _LoginBiometricMethod.faceId =>
+        'Face not detected. Try again.',
+      BiometricAuthResult.failed =>
+        'Fingerprint not recognized. Please try again.',
+      BiometricAuthResult.temporaryLockout ||
+      BiometricAuthResult.biometricLockout
+          when method == _LoginBiometricMethod.fingerprint =>
+        'Too many failed attempts. Please log in with your password.',
+      _ => null,
+    };
+
+    if (message != null) {
+      AppToast.show(message: message, type: ToastType.error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,12 +187,16 @@ class _LoginView extends StatelessWidget {
                     children: [
                       const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
                       const LoginPhoneRow(),
-                      const SizedBox(height: AuthModuleSizes.phoneToPasswordGap),
+                      const SizedBox(
+                          height: AuthModuleSizes.phoneToPasswordGap),
                       const LoginPasswordField(),
-                      const SizedBox(height: AuthModuleSizes.passwordToErrorRowGap),
+                      const SizedBox(
+                          height: AuthModuleSizes.passwordToErrorRowGap),
                       BlocBuilder<LoginBloc, LoginState>(
                         builder: (context, state) {
-                          final hasError = state.status == LoginStatus.failure && state.errorMessage != null && (state.phoneFieldError || state.passwordFieldError);
+                          final hasError =
+                              state.status == LoginStatus.failure &&
+                                  state.passwordFieldError;
                           return Row(
                             children: [
                               Expanded(
@@ -155,8 +209,7 @@ class _LoginView extends StatelessWidget {
                                     maintainAnimation: true,
                                     //child: Text(''),
                                     child: Text(
-                                      state.errorMessage ??
-                                          'invalid credentials!',
+                                      'enter your password',
                                       style: AuthModuleTextStyles
                                           .invalidCredentials,
                                     ),
@@ -168,7 +221,8 @@ class _LoginView extends StatelessWidget {
                                 onPressed: () {
                                   context.push(AppRoutes.forgetPassword);
                                 },
-                                child: const Text('forgot password?',
+                                child: const Text(
+                                  'forgot password?',
                                   style: AuthModuleTextStyles.forgotPassword,
                                 ),
                               ),
@@ -176,7 +230,8 @@ class _LoginView extends StatelessWidget {
                           );
                         },
                       ),
-                      const SizedBox(height: AuthModuleSizes.errorRowToSignInGap),
+                      const SizedBox(
+                          height: AuthModuleSizes.errorRowToSignInGap),
                       BlocBuilder<LoginBloc, LoginState>(
                         builder: (context, state) {
                           final loading = state.status == LoginStatus.loading;
@@ -186,16 +241,44 @@ class _LoginView extends StatelessWidget {
                             height: AuthModuleSizes.fieldHeight,
                             textStyle: AuthModuleTextStyles.signInButton,
                             onPressed: () {
-                              context.read<LoginBloc>().add(const LoginSubmitted());
+                              context
+                                  .read<LoginBloc>()
+                                  .add(const LoginSubmitted());
                             },
                           );
                         },
                       ),
                       const SizedBox(height: AuthModuleSizes.signInToSocialGap),
-                      const LoginSocialButtons(),
+                      BlocBuilder<FingerFaceSecurityCubit,
+                          FingerFaceSecurityState>(
+                        bloc: instance<FingerFaceSecurityCubit>(),
+                        builder: (context, state) {
+                          final data = state.data;
+                          final canAuthenticate = state.isBiometricEnabled &&
+                              !state.isAuthenticating;
+
+                          return LoginSocialButtons(
+                            onFaceIdPressed: canAuthenticate &&
+                                    data?.isFaceIdAvailable == true
+                                ? () => _authenticateWithBiometrics(
+                                      context,
+                                      _LoginBiometricMethod.faceId,
+                                    )
+                                : null,
+                            onFingerprintPressed: canAuthenticate &&
+                                    data?.isFingerprintAvailable == true
+                                ? () => _authenticateWithBiometrics(
+                                      context,
+                                      _LoginBiometricMethod.fingerprint,
+                                    )
+                                : null,
+                          );
+                        },
+                      ),
                       const SizedBox(height: AuthModuleSizes.socialToBottomGap),
                       LoginBottomTexts(),
-                      const SizedBox(height: AuthModuleSizes.bottomScrollSafeGap),
+                      const SizedBox(
+                          height: AuthModuleSizes.bottomScrollSafeGap),
                     ],
                   ),
                 ),

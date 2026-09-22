@@ -16,8 +16,6 @@ class LoginPhoneRow extends StatefulWidget {
 }
 
 class _LoginPhoneRowState extends State<LoginPhoneRow> {
-  final LoginPhoneNumberHelper _phoneNumberHelper =
-      const LoginPhoneNumberHelper();
   final FocusNode _phoneFocusNode = FocusNode();
   bool _hasPhoneFocus = false;
 
@@ -49,21 +47,10 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         final bool isBahamasSelected = state.selectedCountry.isoCode == 'BS';
-        final bool showLivePhoneValidationError =
-            _phoneNumberHelper.hasLiveValidationError(
-          rawPhoneNumber: state.phone,
-          selectedCountry: state.selectedCountry,
-        );
-        final bool showPhoneBorderError =
-            state.phoneFieldError || showLivePhoneValidationError;
-        final Color phoneBorderColor = !_hasPhoneFocus && showPhoneBorderError
+        final bool showPhoneError = state.phoneFieldError;
+        final Color phoneBorderColor = !_hasPhoneFocus && showPhoneError
             ? AuthModuleColors.errorRed
             : AuthModuleColors.loginFieldBorderColor;
-        final TextStyle phoneInputStyle = showLivePhoneValidationError
-            ? AuthModuleTextStyles.fieldValue.copyWith(
-                color: AuthModuleColors.errorRed,
-              )
-            : AuthModuleTextStyles.fieldValue;
         final double phoneErrorLeftPadding = AuthModuleSizes.countryWidth +
             AuthModuleSizes.countryToPhoneGap +
             AuthModulePaddings.fieldHorizontal14.left;
@@ -103,16 +90,18 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
               countryArrowColor: AuthModuleColors.hintGrey,
               flagStyle: AuthModuleTextStyles.countryFlag,
               dialCodeStyle: AuthModuleTextStyles.countryCode,
-              phoneInputStyle: phoneInputStyle,
+              phoneInputStyle: AuthModuleTextStyles.fieldValue,
               phoneHintStyle: AuthModuleTextStyles.fieldHint,
             ),
-            if (showLivePhoneValidationError) ...[
+            if (showPhoneError) ...[
               const SizedBox(height: 6),
               // Align the inline error with the phone text input, not the picker.
               Padding(
                 padding: EdgeInsets.only(left: phoneErrorLeftPadding),
-                child: const Text(
-                  LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+                child: Text(
+                  state.phone.trim().isEmpty
+                      ? 'enter your mobile number'
+                      : LoginPhoneNumberHelper.invalidPhoneNumberMessage,
                   style: AuthModuleTextStyles.invalidCredentials,
                 ),
               ),

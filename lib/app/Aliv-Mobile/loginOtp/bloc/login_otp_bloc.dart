@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 import '../repository/login_otp_repository.dart';
+import '../repository/login_otp_exception.dart' as repository_error;
 import 'login_otp_event.dart';
 import 'login_otp_state.dart';
 
@@ -79,7 +80,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           status: LoginOtpStatus.failure,
           errorType: LoginOtpErrorType.emptyCode,
           codeFieldError: true,
-          errorMessage: 'Please enter the code',
+          errorMessage: 'enter all 6 digits of your verification code',
         ),
       );
       return;
@@ -91,7 +92,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           status: LoginOtpStatus.failure,
           errorType: LoginOtpErrorType.incompleteCode,
           codeFieldError: true,
-          errorMessage: 'Please enter the full code',
+          errorMessage: 'enter all 6 digits of your verification code',
         ),
       );
       return;
@@ -104,7 +105,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           status: LoginOtpStatus.failure,
           errorType: LoginOtpErrorType.unknown,
           codeFieldError: false,
-          errorMessage: 'No Internet Connection',
+          errorMessage:
+              "We couldn't verify the OTP due to a network error. Please try again later.",
         ),
       );
       return;
@@ -144,17 +146,14 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
         ),
       );
     } catch (e) {
-      final message = _extractErrorMessage(e);
+      final message = _verificationErrorMessage(e);
       final errorType = _mapErrorTypeFromMessage(message);
-      final normalized = message.toLowerCase();
-      final treatAsInvalidCode = normalized.contains('two factor') ||
-          normalized.contains('twofactor');
       emit(
         state.copyWith(
           status: LoginOtpStatus.failure,
           errorType: errorType,
           codeFieldError: _isCodeInputRelatedError(errorType),
-          errorMessage: treatAsInvalidCode ? 'Invalid OTP' : message,
+          errorMessage: message,
         ),
       );
     }
@@ -204,7 +203,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
       emit(
         state.copyWith(
           resendStatus: LoginOtpResendStatus.idle,
-          errorMessage: 'No Internet Connection',
+          errorMessage:
+              "We couldn't verify the OTP due to a network error. Please try again later.",
         ),
       );
       return;
@@ -256,6 +256,37 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     return trimmed.isEmpty
         ? 'OTP verification failed. Please try again.'
         : trimmed;
+  }
+
+  String _verificationErrorMessage(Object error) {
+    if (error is repository_error.LoginOtpException) {
+      switch (error.type) {
+        case repository_error.LoginOtpErrorType.noInternet:
+        case repository_error.LoginOtpErrorType.timeout:
+          return "We couldn't verify the OTP due to a network error. Please try again later.";
+        case repository_error.LoginOtpErrorType.unauthorized:
+        case repository_error.LoginOtpErrorType.invalidOtp:
+          return 'Invalid OTP.';
+        case repository_error.LoginOtpErrorType.expiredOtp:
+          return 'OTP expired.';
+        default:
+          break;
+      }
+    }
+
+    final message = _extractErrorMessage(error);
+    final normalized = message.trim().toLowerCase();
+    if (normalized.contains('expired') &&
+        (normalized.contains('otp') || normalized.contains('code'))) {
+      return 'OTP expired.';
+    }
+    if (normalized.contains('two factor') ||
+        normalized.contains('twofactor') ||
+        normalized == 'invalid otp' ||
+        normalized == 'invalid otp code') {
+      return 'Invalid OTP.';
+    }
+    return message;
   }
 
   LoginOtpErrorType _mapErrorTypeFromMessage(String message) {

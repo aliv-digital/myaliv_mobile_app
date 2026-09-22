@@ -1,0 +1,83 @@
+AUTHENTICATION PURPLE IMPLEMENTATION
+
+1. Previous reports used
+
+- reports/01-authentication-audit.txt
+- reports/02-authentication-implementation.txt
+- reports/03-authentication-purple-audit.txt
+
+2. Files changed
+
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart
+- lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart
+- lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart
+- lib/app/welcome/view/welcome_view.dart
+- lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+- lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- reports/04-authentication-purple-implementation.txt
+
+3. Source row 14 implementation
+
+- Implemented message: "Password must be 4 characters long"
+- Component/presentation: Existing yellow warning toast on failed submission, plus matching visible helper copy on the Create Password screen.
+- Validation: The existing BLoC/state flow now requires exactly four trimmed characters. No additional password criteria were introduced.
+- Confirmation mismatch behavior and save/retry behavior remain unchanged.
+- Files changed:
+  - lib/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart
+  - lib/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart
+  - lib/app/Aliv-Mobile/createPassword/view/create_password_page.dart
+- Completion: FULLY COMPLETE on the frontend.
+
+4. AUTH-010 implementation
+
+- Implemented message: "we couldn't open the ALIVFibr portal. try again or visit portal.alivfibr.com."
+- Component/presentation: MaterialBanner with a retry action.
+- Both a false launchUrl result and a thrown exception use the failure banner.
+- Retry calls the same ALIVFibr launch method. The current banner is hidden before retry and after a successful launch; a current banner is also hidden before showing a failure, preventing duplicates.
+- The existing URL and LaunchMode.externalApplication behavior are unchanged.
+- File changed: lib/app/welcome/view/welcome_view.dart
+- Completion: FULLY COMPLETE.
+
+5. OTP-002 implementation
+
+- Implemented message: "enter all 6 digits of your verification code"
+- Component/presentation: Inline error text immediately below the OTP fields, with the existing red OTP error borders retained.
+- Verify with zero through five digits sets the same exact inline message.
+- Local empty/incomplete-code validation is excluded from the top toast. Other OTP errors retain their existing presentation.
+- The existing OTP-change state transition clears the inline message and error borders when the user changes the code.
+- Files changed:
+  - lib/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart
+  - lib/app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart
+- Completion: FULLY COMPLETE.
+
+6. Existing behavior intentionally preserved
+
+- Create Password confirmation-mismatch handling and save/retry flow.
+- Create Password repository, request contract, routing, and session behavior.
+- The six-digit OTP rule, all six OTP cells, paste/autofill input path, and red error-border behavior.
+- Invalid OTP, expired OTP, network error, resend, and backend-error behavior and messages.
+- The ALIVFibr URL, external application launch mode, and all other Welcome screen actions.
+- No dependencies, repositories, API endpoints/contracts, JWT/session persistence, or route architecture were changed.
+
+7. Blockers / backend compatibility notes
+
+- No implementation blocker was found.
+- Kansys acceptance of an exactly four-character password is not verified locally. If Kansys rejects it, that is a backend compatibility issue; no backend or API behavior was changed in this task.
+
+8. Checks run and results
+
+- dart format on the six changed Dart files: PASS (6 files processed).
+- flutter analyze --no-pub on the six changed/auth-related files: PASS (no issues found).
+- git diff --check: PASS.
+- Relevant existing tests: none run because this repository has no test directory.
+
+9. Exact cases ready for verification
+
+- Create Password: a password whose trimmed length is not four shows "Password must be 4 characters long" and does not submit.
+- Create Password: the visible helper states "Password must be 4 characters long"; an exactly four-character matching password can proceed to the unchanged save flow.
+- Create Password: confirmation mismatch continues to use its existing behavior/message.
+- ALIVFibr: launchUrl returning false shows the required MaterialBanner.
+- ALIVFibr: launchUrl throwing an exception shows the required MaterialBanner.
+- ALIVFibr: retry invokes the same URL/launch mode; success removes the banner; repeated failure does not stack banners.
+- Login OTP: Verify with zero through five digits shows "enter all 6 digits of your verification code" inline below the OTP cells, with red borders and no duplicate top toast.
+- Login OTP: changing the entered code clears the local inline error; six-digit submission and all non-incomplete OTP error paths retain existing behavior.
