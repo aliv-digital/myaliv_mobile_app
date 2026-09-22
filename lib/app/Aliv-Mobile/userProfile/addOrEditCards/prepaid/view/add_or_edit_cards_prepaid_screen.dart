@@ -6,6 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -15,7 +21,6 @@ import '../bloc/add_or_edit_cards_prepaid_event.dart';
 import '../bloc/add_or_edit_cards_prepaid_state.dart';
 import '../model/add_or_edit_cards_prepaid_models.dart';
 import '../theme/add_or_edit_cards_prepaid_theme.dart';
-import '../widgets/bottomsheet/add_card_details_bottom_sheet.dart';
 import '../widgets/bottomsheet/confirm_remove_card_bottom_sheet.dart';
 import '../widgets/dashed_add_card_button.dart';
 import '../widgets/payment_method_section.dart';
@@ -84,18 +89,66 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     }
 
     if (state.navTarget == AddOrEditCardsPrepaidNavTarget.addCard) {
-      final details = await AddCardDetailsBottomSheet.show(context);
-
       if (!context.mounted) return;
       bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
-      if (details == null) return;
 
-      final added = await context.read<SavedCardsCubit>().addCard(details);
-      if (!context.mounted || !added) return;
+      // Step 1: capture expiry before opening the iframe.
+      final expirationDate = await SaveNewCardBottomSheet.showForExpiryCapture(
+        context,
+      );
+      if (!context.mounted || expirationDate == null) return;
 
-      AppToast.show(
-        message: 'your card has been added successfully',
-        type: ToastType.success,
+      final navigator = Navigator.of(context);
+      final cubit = context.read<SavedCardsCubit>();
+
+      navigator.push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => PaymentIFrameScreen(
+            request: PaymentRequest(
+              url: Api.addCreditCard,
+              body: ChangeBundleRequestFactory.addCardBodyFor3DS(),
+              redirectScheme: 'myaliv',
+            ),
+            title: 'add card',
+            appBarBgColor: AddOrEditCardsPrepaidTheme.primary,
+            onSuccess: (PaymentSuccess success) async {
+              navigator.pop();
+              final orderId = int.tryParse(success.orderId ?? '');
+              if (orderId == null) {
+                AppToast.show(
+                  message: 'Failed to save card. Try again.',
+                  type: ToastType.error,
+                );
+                return;
+              }
+              final ok = await cubit.saveNewCard(
+                orderId: orderId,
+                expirationDate: expirationDate, // captured before iframe
+              );
+              if (ok) {
+                final serverMsg = success.queryParams['Message']?.trim();
+                AppToast.show(
+                  message: (serverMsg != null && serverMsg.isNotEmpty)
+                      ? serverMsg
+                      : 'your card has been added successfully',
+                  type: ToastType.success,
+                );
+              } else {
+                final msg = cubit.state.errorMessage?.trim();
+                AppToast.show(
+                  message: (msg == null || msg.isEmpty)
+                      ? 'Failed to save card. Try again.'
+                      : msg,
+                  type: ToastType.error,
+                );
+              }
+            },
+            onFailure: (String msg) {
+              navigator.pop();
+              AppToast.show(message: msg, type: ToastType.error);
+            },
+          ),
+        ),
       );
       return;
     }

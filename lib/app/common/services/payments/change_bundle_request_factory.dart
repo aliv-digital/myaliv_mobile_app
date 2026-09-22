@@ -116,8 +116,10 @@ class ChangeBundleRequestFactory {
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
+    // Round to 2 dp to avoid floating-point noise in JSON (e.g. 115.999…→116).
+    final roundedAmount = double.parse(amount.toStringAsFixed(2));
     final base = changeBundleBody(
-      cardPayment: <String, dynamic>{'Amount': amount},
+      cardPayment: <String, dynamic>{'Amount': roundedAmount},
       bundle: bundle,
       promoCodes: promoCodes,
       forceNow: forceNow,
@@ -125,6 +127,18 @@ class ChangeBundleRequestFactory {
     );
     return <String, dynamic>{
       ...base,
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+    };
+  }
+
+  /// Add-card 3DS envelope sent to `POST /CreditCard/add`.
+  /// Card details are entered inside the bank's WebView form.
+  /// The server responds with `{"html": "..."}`.
+  /// After the 3DS callback, auto-call `POST /CreditCard/savenew` using the
+  /// orderId and expirationDate from the redirect URL query params.
+  static Map<String, dynamic> addCardBodyFor3DS() {
+    return <String, dynamic>{
       'RedirectURL': 'myaliv://topup-callback',
       'Branch': 'branch',
     };

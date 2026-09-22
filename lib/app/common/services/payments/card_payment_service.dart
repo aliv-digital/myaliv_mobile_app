@@ -53,12 +53,14 @@ class CardPaymentService {
     }
   }
 
-  /// POSTs to the 3DS endpoint and extracts the `PaymentUrl` from the response.
+  /// POSTs to the 3DS endpoint and returns the HTML page that the WebView
+  /// must load directly (via `loadHtmlString`). The server responds with
+  /// `{ "html": "<full HTML string>" }` which contains a self-submitting
+  /// form that POSTs to the payment gateway for 3D-Secure authentication.
   ///
-  /// Returns `null` when the server responds 2xx but omits the URL.
-  /// Throws [Exception] on network failure or non-2xx status so the caller
-  /// can surface the error in a retry UI.
-  Future<String?> fetch3DSUrl({
+  /// Returns `null` when the server responds 2xx but omits the html field.
+  /// Throws [Exception] on network failure or non-2xx status.
+  Future<String?> fetch3DSHtml({
     required String url,
     required Map<String, dynamic> body,
     String logTag = 'card-payment-3ds',
@@ -89,7 +91,7 @@ class CardPaymentService {
 
       final data = response.data;
       if (data is Map) {
-        final raw = data['PaymentUrl'] ?? data['paymentUrl'];
+        final raw = data['html'] ?? data['Html'] ?? data['HTML'];
         if (raw is String && raw.isNotEmpty) return raw;
       }
       return null;

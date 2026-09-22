@@ -8,11 +8,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 /// Full-screen 3DS payment WebView.
 ///
-/// 1. POSTs [request.url] with [request.body] → extracts `PaymentUrl` from response.
-/// 2. Loads that URL in an in-app WebView.
-/// 3. When the bank page redirects to `<redirectScheme>://…`, parses the query
-///    params and calls [onSuccess]. If the initial POST or WebView fails,
-///    calls [onFailure] with a user-readable message.
+/// 1. POSTs [request.url] with [request.body] → server returns `{"html": "..."}`.
+/// 2. Loads that HTML directly into the WebView (`loadHtmlString`). The HTML
+///    contains a self-submitting form that POSTs to the payment gateway.
+/// 3. When the gateway redirects back to `<redirectScheme>://…`, the
+///    callback URL is intercepted, params parsed, and [onSuccess] is called.
 class PaymentIFrameScreen extends StatefulWidget {
   const PaymentIFrameScreen({
     super.key,
@@ -20,6 +20,7 @@ class PaymentIFrameScreen extends StatefulWidget {
     required this.appBarBgColor,
     required this.onSuccess,
     required this.onFailure,
+    this.title = 'payment',
     this.onHomeTap,
   });
 
@@ -27,6 +28,7 @@ class PaymentIFrameScreen extends StatefulWidget {
   final Color appBarBgColor;
   final ValueChanged<PaymentSuccess> onSuccess;
   final ValueChanged<String> onFailure;
+  final String title;
   final VoidCallback? onHomeTap;
 
   @override
@@ -35,37 +37,38 @@ class PaymentIFrameScreen extends StatefulWidget {
 
 class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
   WebViewController? _controller;
-  bool _fetchingUrl = true;
+  bool _fetchingHtml = true;
   bool _webViewLoading = false;
   String? _error;
-  // Guards onSuccess/onFailure from firing more than once — some WebView
-  // implementations call onNavigationRequest twice for the same redirect.
+  // Prevents onSuccess/onFailure from firing more than once — some WebView
+  // implementations call onNavigationRequest twice for the same redirect URL.
   bool _resultHandled = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchPaymentUrl();
+    _fetchAndLoad();
   }
 
-  Future<void> _fetchPaymentUrl() async {
+  Future<void> _fetchAndLoad() async {
     setState(() {
-      _fetchingUrl = true;
+      _fetchingHtml = true;
       _error = null;
+      _resultHandled = false;
     });
 
     try {
-      final paymentUrl = await instance<CardPaymentService>().fetch3DSUrl(
+      final html = await instance<CardPaymentService>().fetch3DSHtml(
         url: widget.request.url,
         body: widget.request.body,
       );
 
       if (!mounted) return;
 
-      if (paymentUrl == null || paymentUrl.isEmpty) {
+      if (html == null || html.isEmpty) {
         setState(() {
           _error = 'Payment setup failed. Please try again.';
-          _fetchingUrl = false;
+          _fetchingHtml = false;
         });
         return;
       }
@@ -81,7 +84,9 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
             onPageFinished: (_) {
               if (mounted) setState(() => _webViewLoading = false);
             },
-            onWebResourceError: (error) {
+            onWebResourceError: (WebResourceError error) {
+              // Only surface errors for the main frame — sub-resource failures
+              // (tracking scripts, etc.) should not abort the payment flow.
               if (mounted && error.isForMainFrame == true) {
                 setState(() {
                   _webViewLoading = false;
@@ -92,19 +97,19 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
             },
           ),
         )
-        ..loadRequest(Uri.parse(paymentUrl));
+        ..loadHtmlString(html);
 
       if (mounted) {
         setState(() {
           _controller = controller;
-          _fetchingUrl = false;
+          _fetchingHtml = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = e.toString().replaceFirst('Exception: ', '');
-        _fetchingUrl = false;
+        _fetchingHtml = false;
       });
     }
   }
@@ -116,8 +121,19 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
       _resultHandled = true;
       final uri = Uri.tryParse(req.url);
       final params = uri?.queryParameters ?? const <String, String>{};
+      // The redirect URL may use 'orderId', 'OrderID', or 'orderid' depending
+      // on the backend endpoint — check all variants case-insensitively.
+      final orderIdRaw = params.entries
+          .firstWhere(
+            (e) => e.key.toLowerCase() == 'orderid',
+            orElse: () => const MapEntry('', ''),
+          )
+          .value;
       widget.onSuccess(
-        PaymentSuccess(orderId: params['orderId'], queryParams: params),
+        PaymentSuccess(
+          orderId: orderIdRaw.isEmpty ? null : orderIdRaw,
+          queryParams: params,
+        ),
       );
       return NavigationDecision.prevent;
     }
@@ -132,7 +148,7 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
         child: Column(
           children: <Widget>[
             DefaultAppBar(
-              title: 'payment',
+              title: widget.title,
               backgroundColor: widget.appBarBgColor,
               showHome: widget.onHomeTap != null,
               onBack: () => Navigator.of(context).maybePop(),
@@ -146,7 +162,7 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
   }
 
   Widget _buildBody() {
-    if (_fetchingUrl) {
+    if (_fetchingHtml) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -164,7 +180,7 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _fetchPaymentUrl,
+                onPressed: _fetchAndLoad,
                 child: const Text('retry'),
               ),
             ],
