@@ -53,6 +53,54 @@ class CardPaymentService {
     }
   }
 
+  /// POSTs to the 3DS endpoint and extracts the `PaymentUrl` from the response.
+  ///
+  /// Returns `null` when the server responds 2xx but omits the URL.
+  /// Throws [Exception] on network failure or non-2xx status so the caller
+  /// can surface the error in a retry UI.
+  Future<String?> fetch3DSUrl({
+    required String url,
+    required Map<String, dynamic> body,
+    String logTag = 'card-payment-3ds',
+  }) async {
+    if (kDebugMode) {
+      debugPrint('$logTag POST $url body: $body');
+    }
+
+    try {
+      final response = await _networkService.request<dynamic>(
+        url,
+        method: HttpMethod.post,
+        data: body,
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          '$logTag status: ${response.statusCode} body: ${response.data}',
+        );
+      }
+
+      final code = response.statusCode ?? 0;
+      if (code < 200 || code >= 300) {
+        throw Exception(
+          _errorMessage(ServerException('Payment setup failed (status $code)', statusCode: code)),
+        );
+      }
+
+      final data = response.data;
+      if (data is Map) {
+        final raw = data['PaymentUrl'] ?? data['paymentUrl'];
+        if (raw is String && raw.isNotEmpty) return raw;
+      }
+      return null;
+    } on NetworkException catch (error) {
+      throw Exception(_errorMessage(error));
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Payment setup failed: $e');
+    }
+  }
+
   int? _extractOrderId(dynamic data) {
     if (data is Map && data['OrderId'] is int) return data['OrderId'] as int;
     if (data is Map && data['OrderId'] is String) {

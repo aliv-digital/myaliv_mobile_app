@@ -60,6 +60,10 @@ class HomePlansPaymentMethodState extends Equatable {
   /// null for saved-card / wallet / charge-to-my-account payments.
   final NewCardDetails? lastNewCardDetails;
 
+  /// Order ID from the 3DS callback URL. Set after a successful 3DS payment
+  /// so the receipt can offer the save-card affordance via /CreditCard/savenew.
+  final String? orderId;
+
   const HomePlansPaymentMethodState({
     required this.status,
     required this.errorMessage,
@@ -78,6 +82,7 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.walletWarningMessage,
     required this.walletWarningRequestId,
     this.lastNewCardDetails,
+    this.orderId,
   });
 
   factory HomePlansPaymentMethodState.initial() {
@@ -138,6 +143,8 @@ class HomePlansPaymentMethodState extends Equatable {
     int? walletWarningRequestId,
     NewCardDetails? lastNewCardDetails,
     bool clearLastNewCardDetails = false,
+    String? orderId,
+    bool clearOrderId = false,
   }) {
     return HomePlansPaymentMethodState(
       status: status ?? this.status,
@@ -160,6 +167,7 @@ class HomePlansPaymentMethodState extends Equatable {
       lastNewCardDetails: clearLastNewCardDetails
           ? null
           : (lastNewCardDetails ?? this.lastNewCardDetails),
+      orderId: clearOrderId ? null : (orderId ?? this.orderId),
     );
   }
 
@@ -182,5 +190,6 @@ class HomePlansPaymentMethodState extends Equatable {
     walletWarningMessage,
     walletWarningRequestId,
     lastNewCardDetails,
+    orderId,
   ];
 }

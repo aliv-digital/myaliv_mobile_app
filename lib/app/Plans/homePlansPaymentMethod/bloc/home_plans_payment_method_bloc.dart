@@ -22,6 +22,7 @@ class HomePlansPaymentMethodBloc
     on<HomePlansPayWithCardConfirmed>(_onPayWithCardConfirmed);
     on<HomePlansPayNowPressed>(_onPayNow);
     on<HomePlansPaymentNavConsumed>(_onNavConsumed);
+    on<HomePlans3DSPayWithCardSucceeded>(_on3DSSucceeded);
   }
 
   Future<void> _onStarted(
@@ -312,6 +313,20 @@ class HomePlansPaymentMethodBloc
     Emitter<HomePlansPaymentMethodState> emit,
   ) {
     emit(state.copyWith(navTarget: HomePlansPaymentMethodNavTarget.none));
+  }
+
+  Future<void> _on3DSSucceeded(
+    HomePlans3DSPayWithCardSucceeded event,
+    Emitter<HomePlansPaymentMethodState> emit,
+  ) async {
+    await _logPurchaseAnalytics();
+    emit(
+      state.copyWith(
+        status: HomePlansPaymentMethodStatus.success,
+        navTarget: HomePlansPaymentMethodNavTarget.paid,
+        orderId: event.orderId,
+      ),
+    );
   }
 
   // Fires the correct GA4 event based on whether the purchase is a plan

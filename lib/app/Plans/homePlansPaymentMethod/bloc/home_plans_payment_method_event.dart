@@ -101,3 +101,14 @@ class HomePlansPayNowPressed extends HomePlansPaymentMethodEvent {
 class HomePlansPaymentNavConsumed extends HomePlansPaymentMethodEvent {
   const HomePlansPaymentNavConsumed();
 }
+
+/// Fired when the 3DS WebView completes successfully. The [orderId] (from
+/// the callback URL query params) is stored in state so the receipt screen
+/// can offer the save-card affordance via POST /CreditCard/savenew.
+class HomePlans3DSPayWithCardSucceeded extends HomePlansPaymentMethodEvent {
+  final String? orderId;
+  const HomePlans3DSPayWithCardSucceeded({this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}

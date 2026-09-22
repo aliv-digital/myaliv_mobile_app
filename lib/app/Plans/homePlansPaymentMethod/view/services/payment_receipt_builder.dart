@@ -47,6 +47,7 @@ class PaymentReceiptBuilder {
       'selectedMethodId': state.selectedMethodId,
       'paymentMethods': state.methods,
       'cardToSave': ?cardToSave,
+      if (state.orderId != null) 'orderId': state.orderId,
     };
   }
 

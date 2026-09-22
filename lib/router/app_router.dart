@@ -494,6 +494,7 @@ class AppRouter {
           String rightType = 'REV';
           List<HomePlanPurchaseReceiptDetailItem>? details;
           NewCardDetails? cardToSave;
+          String? orderId;
 
           if (extra is Map<String, dynamic>) {
             // Payment failure — show failure ticket, skip all other fields.
@@ -513,6 +514,11 @@ class AppRouter {
             final dynamic cardToSaveValue = extra['cardToSave'];
             if (cardToSaveValue is NewCardDetails) {
               cardToSave = cardToSaveValue;
+            }
+
+            final dynamic orderIdValue = extra['orderId'];
+            if (orderIdValue is String && orderIdValue.isNotEmpty) {
+              orderId = orderIdValue;
             }
 
             final dynamic phoneValue = extra['phoneNumber'];
@@ -578,6 +584,7 @@ class AppRouter {
             rightType: rightType,
             details: details,
             cardToSave: cardToSave,
+            orderId: orderId,
           );
         },
       ),

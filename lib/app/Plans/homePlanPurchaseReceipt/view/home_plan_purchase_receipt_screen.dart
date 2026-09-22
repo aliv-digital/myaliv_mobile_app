@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/repository/h
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../core/utils/app_session.dart';
@@ -30,6 +31,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     this.rightType = 'REV',
     this.details,
     this.cardToSave,
+    this.orderId,
     this.isPaymentFailed = false,
   });
 
@@ -43,10 +45,14 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
   final String rightType;
   final List<HomePlanPurchaseReceiptDetailItem>? details;
 
-  /// New-card details captured during payment. When present, the save-card
-  /// button is shown; when null (wallet / saved-card payments) the button
-  /// hides itself.
+  /// New-card details captured during payment (legacy direct-entry flow).
+  /// When present, the save-card button is shown via [SaveCardOnReceiptSection].
   final NewCardDetails? cardToSave;
+
+  /// Order ID from the 3DS callback URL. When present, the save-card button
+  /// is shown via [SaveNewCardOnReceiptSection] (POST /CreditCard/savenew).
+  /// Takes precedence over [cardToSave] when both are non-null.
+  final String? orderId;
 
   /// When true the failure ticket is shown instead of the success card.
   /// The bloc is not created in this case.
@@ -112,6 +118,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
         child: _HomePlanPurchaseReceiptView(
           statusMessage: statusMessage,
           cardToSave: cardToSave,
+          orderId: orderId,
         ),
       ),
     );
@@ -122,10 +129,12 @@ class _HomePlanPurchaseReceiptView extends StatefulWidget {
   const _HomePlanPurchaseReceiptView({
     required this.statusMessage,
     required this.cardToSave,
+    this.orderId,
   });
 
   final String statusMessage;
   final NewCardDetails? cardToSave;
+  final String? orderId;
 
   @override
   State<_HomePlanPurchaseReceiptView> createState() =>
@@ -211,9 +220,13 @@ class _HomePlanPurchaseReceiptViewState
                                 context.go(AppRoutes.home);
                               }
                             },
-                            saveCardSection: SaveCardOnReceiptSection(
-                              details: widget.cardToSave,
-                            ),
+                            saveCardSection: widget.orderId != null
+                                ? SaveNewCardOnReceiptSection(
+                                    orderId: widget.orderId!,
+                                  )
+                                : SaveCardOnReceiptSection(
+                                    details: widget.cardToSave,
+                                  ),
                             pageBackground:
                                 HomePlanPurchaseReceiptTheme.circleBackground,
                             statusMessage: widget.statusMessage,

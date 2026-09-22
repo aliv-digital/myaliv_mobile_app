@@ -163,6 +163,7 @@ class Api {
   /// POST /Order/transfer
   /// Body: `{ "ToNumber": "<digits>", "Amount": <number> }`
   static const orderTransferUrl = '$baseUrl/v1/MyAliv/Order/transfer';
+
   //{{baseUrl}}/v1/MyAliv/device/:deviceAccountId/bucket-usage-summary
   static String bucketUsageSummary(int deviceAccountId) =>
       '$baseUrl/v1/MyAliv/device/$deviceAccountId/bucket-usage-summary';
@@ -172,4 +173,13 @@ class Api {
   static String mifiAltNumber(String number) =>
       '$baseUrl/v1/MyAliv/AltNumber/opt-in/${Uri.encodeComponent(number.trim())}';
   static const addCreditCard = "$baseUrl/v1/MyAliv/CreditCard/add";
+
+  /// Save a card after a 3DS payment: POST /CreditCard/savenew
+  /// Body: `{ "Branch": "branch", "OrderID": <int>, "ExpirationDate": "MMYY" }`
+  static const saveNewCardUrl = '$baseUrl/v1/MyAliv/CreditCard/savenew';
+
+  /// 3DS change-bundle: POST /Order/3ds/change-bundle
+  /// Same envelope as change-bundle but with RedirectURL + Branch at the top level.
+  static const changeBundleDs3Url =
+      '$baseUrl/v1/MyAliv/Order/3ds/change-bundle';
 }

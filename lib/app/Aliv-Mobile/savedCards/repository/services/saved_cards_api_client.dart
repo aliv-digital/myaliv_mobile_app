@@ -197,6 +197,52 @@ class SavedCardsApiClient {
     }
   }
 
+  /// Saves a card after a 3DS payment via POST /CreditCard/savenew.
+  ///
+  /// [orderId] is the order id returned in the 3DS callback URL.
+  /// [expirationDate] is MMYY format, e.g. "1030" for October 2030.
+  Future<void> saveNewCard({
+    required int orderId,
+    required String expirationDate,
+  }) async {
+    try {
+      final response = await _networkService.request<dynamic>(
+        Api.saveNewCardUrl,
+        method: HttpMethod.post,
+        data: <String, dynamic>{
+          'Branch': 'branch',
+          'OrderID': orderId,
+          'ExpirationDate': expirationDate,
+        },
+      );
+
+      if (kDebugMode) {
+        debugPrint(
+          'SavedCardsApiClient: saveNewCard status=${response.statusCode}',
+        );
+      }
+
+      final code = response.statusCode ?? 0;
+      if (code < 200 || code >= 300) {
+        throw SavedCardsException(
+          type: SavedCardsErrorType.badResponse,
+          statusCode: code,
+          serverMessage: 'Failed to save card (status $code)',
+        );
+      }
+    } on NetworkException catch (e) {
+      throw _mapNetworkExceptionToSavedCardsException(e);
+    } on SavedCardsException {
+      rethrow;
+    } catch (e) {
+      throw SavedCardsException(
+        type: SavedCardsErrorType.unknown,
+        statusCode: 0,
+        serverMessage: e.toString(),
+      );
+    }
+  }
+
   Map<String, dynamic> _addCardPayload(NewCardDetails details) {
     final expirationParts = details.cardExpiration.split('-');
     final expirationYear = expirationParts.length == 2

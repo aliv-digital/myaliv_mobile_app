@@ -106,6 +106,30 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// 3DS change-bundle envelope. Identical to [changeBundleBody] but the
+  /// `CardPayment` contains only the amount (card details are entered in the
+  /// 3DS WebView), and `RedirectURL` + `Branch` are added at the top level.
+  static Map<String, dynamic> changeBundleBodyFor3DS({
+    required double amount,
+    required PlanBundle bundle,
+    required List<PlanPurchasePromoCode> promoCodes,
+    required bool forceNow,
+    DateTime? selectedBeginDate,
+  }) {
+    final base = changeBundleBody(
+      cardPayment: <String, dynamic>{'Amount': amount},
+      bundle: bundle,
+      promoCodes: promoCodes,
+      forceNow: forceNow,
+      selectedBeginDate: selectedBeginDate,
+    );
+    return <String, dynamic>{
+      ...base,
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+    };
+  }
+
   /// Top-up envelope: same as [changeBundleBody] minus the `Bundle` block.
   /// Posted to `POST /Order/top-up/{PrimaryPhoneNumber}`.
   static Map<String, dynamic> topUpBody({
