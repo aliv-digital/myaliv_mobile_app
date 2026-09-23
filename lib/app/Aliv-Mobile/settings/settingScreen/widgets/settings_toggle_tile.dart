@@ -3,10 +3,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../theme/settings_theme.dart';
 
 class SettingsToggleTile extends StatelessWidget {
-  final String iconAsset; // svg asset path
+  final String iconAsset;
   final String title;
   final bool value;
   final ValueChanged<bool> onChanged;
+  // When false the tile is dimmed and non-interactive.
+  final bool enabled;
 
   const SettingsToggleTile({
     super.key,
@@ -14,29 +16,36 @@ class SettingsToggleTile extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: SettingsTheme.tileHeight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Row(
-          children: [
-            _IconCircle(svgAsset: iconAsset),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: SettingsTheme.tileText.copyWith(
-                  fontSize: 16, // figma-like bigger
-                  fontWeight: FontWeight.w700,
+    return IgnorePointer(
+      ignoring: !enabled,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.4,
+        child: SizedBox(
+          height: SettingsTheme.tileHeight,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(
+              children: [
+                _IconCircle(svgAsset: iconAsset),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: SettingsTheme.tileText.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
+                _FigmaToggle(value: value, onChanged: onChanged),
+              ],
             ),
-            _FigmaToggle(value: value, onChanged: onChanged),
-          ],
+          ),
         ),
       ),
     );

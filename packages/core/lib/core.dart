@@ -10,6 +10,7 @@ export 'src/network/network_types.dart';
 export 'src/auth/auth_manager.dart';
 export 'src/auth/token_session.dart';
 export 'src/auth/token_store.dart';
+export 'src/auth/credential_store.dart';
 
 // App
 export 'src/app/global_state.dart';

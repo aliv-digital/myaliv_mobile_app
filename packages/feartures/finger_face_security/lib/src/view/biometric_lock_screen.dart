@@ -13,6 +13,8 @@ class BiometricLockScreen extends StatefulWidget {
     this.appName = 'MyAliv',
     this.appIcon,
     this.lockSubtitle,
+    this.showFingerprint = false,
+    this.showFaceId = false,
   });
 
   final VoidCallback? onAuthSuccess;
@@ -20,6 +22,9 @@ class BiometricLockScreen extends StatefulWidget {
   final String appName;
   final Widget? appIcon;
   final String? lockSubtitle;
+  // Which biometric type the user has enabled. Used for icon + instruction.
+  final bool showFingerprint;
+  final bool showFaceId;
 
   @override
   State<BiometricLockScreen> createState() => _BiometricLockScreenState();
@@ -69,15 +74,23 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
 
   Future<void> _loadAndAuthenticate() async {
     final cubit = context.read<FingerFaceSecurityCubit>();
-    await cubit.loadBiometricStatus();
     if (mounted) {
-      final type = cubit.state.data?.biometricTypeDescription ?? 'Biometric';
+      final type = _resolveDisplayType();
       setState(() {
         _biometricType = type;
         _statusMessage = _getStatusMessage(type);
       });
       await cubit.authenticate(reason: 'Unlock ${widget.appName} to continue');
     }
+  }
+
+  // Derives the display label from the user-enabled type flags.
+  String _resolveDisplayType() {
+    if (widget.showFingerprint && widget.showFaceId)
+      return 'Fingerprint & Face ID';
+    if (widget.showFingerprint) return 'Fingerprint';
+    if (widget.showFaceId) return 'Face ID';
+    return 'Biometric';
   }
 
   Future<void> _retryAuthentication() async {
@@ -96,6 +109,7 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
   IconData _getBiometricIcon(String type) => switch (type.toLowerCase()) {
     'fingerprint' => Icons.fingerprint_rounded,
     'face id' => Icons.face_rounded,
+    'fingerprint & face id' => Icons.fingerprint_rounded,
     _ => Icons.security_rounded,
   };
 

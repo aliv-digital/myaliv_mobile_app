@@ -123,7 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
       // resolved above — fire the plans refresh now so its APIs actually go
       // on the wire on cold restart. Fire-and-forget: PlansCubit updates
       // BucketUsageSummaryCubit through the BlocListener in build().
-      instance<PlansCubit>().loadInitialPlans(userType: userType);
+      instance<PlansCubit>().loadInitialPlans(
+        userType: userType,
+        forceRefresh: true,
+      );
 
       final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId;
       if (deviceId != null && deviceId > 0) {

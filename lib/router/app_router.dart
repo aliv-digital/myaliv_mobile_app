@@ -114,13 +114,6 @@ class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
     initialLocation: AppRoutes.splash,
-    redirect: (context, state) {
-      if (state.matchedLocation != AppRoutes.home) return null;
-      final cubit = instance<FingerFaceSecurityCubit>();
-      if (cubit.state.isSessionAuthenticated) return null;
-      if (cubit.state.data?.isAnyBiometricAvailable != true) return null;
-      return AppRoutes.biometricLock;
-    },
     routes: [
       GoRoute(
         path: AppRoutes.homePlanConfirmationScreen,
@@ -805,17 +798,22 @@ class AppRouter {
 
       GoRoute(
         path: AppRoutes.biometricLock,
-        builder: (context, state) => BlocProvider.value(
-          value: instance<FingerFaceSecurityCubit>(),
-          child: BiometricLockScreen(
-            appName: 'MyAliv',
-            lockSubtitle: 'Verify your identity to continue',
-            onAuthSuccess: () {
-              instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
-              router.go(AppRoutes.home);
-            },
-          ),
-        ),
+        builder: (context, state) {
+          final cubit = instance<FingerFaceSecurityCubit>();
+          return BlocProvider.value(
+            value: cubit,
+            child: BiometricLockScreen(
+              appName: 'MyAliv',
+              lockSubtitle: 'Verify your identity to continue',
+              showFingerprint: cubit.state.fingerprintEnabled,
+              showFaceId: cubit.state.faceIdEnabled,
+              onAuthSuccess: () {
+                cubit.markSessionAuthenticated();
+                router.go(AppRoutes.home);
+              },
+            ),
+          );
+        },
       ),
 
       ShellRoute(

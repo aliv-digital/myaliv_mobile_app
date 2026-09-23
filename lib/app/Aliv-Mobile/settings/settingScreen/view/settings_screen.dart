@@ -116,31 +116,56 @@ class _SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 14),
 
-                        // Card 3: toggles
+                        // Card 3: toggles — active only if device supports that biometric type
                         SettingsSectionCard(
                           printLine: false,
                           children: [
                             SettingsToggleTile(
                               title: 'login with fingerprint',
                               value: state.fingerprintEnabled,
+                              enabled: state.isFingerprintAvailable,
                               onChanged: (v) {
-                                context.push(
-                                  AppRoutes.fingerPrintSecurityScreen,
-                                );
-                                context.read<SettingsBloc>().add(
-                                  FingerprintToggled(v),
-                                );
+                                if (v) {
+                                  // Navigate to terms screen; after user agrees,
+                                  // the security bloc calls enableFingerprintBiometric().
+                                  // Reload settings state from the cubit on return.
+                                  context
+                                      .push(AppRoutes.fingerPrintSecurityScreen)
+                                      .then((_) {
+                                        if (context.mounted) {
+                                          context.read<SettingsBloc>().add(
+                                            const SettingsStarted(),
+                                          );
+                                        }
+                                      });
+                                } else {
+                                  context.read<SettingsBloc>().add(
+                                    FingerprintToggled(false),
+                                  );
+                                }
                               },
                               iconAsset: AssetConstant.fingerprintIconSVG,
                             ),
                             SettingsToggleTile(
                               title: 'login with face scan',
                               value: state.faceScanEnabled,
+                              enabled: state.isFaceIdAvailable,
                               onChanged: (v) {
-                                context.push(AppRoutes.faceIdSecurityScreen);
-                                context.read<SettingsBloc>().add(
-                                  FaceScanToggled(v),
-                                );
+                                if (v) {
+                                  context
+                                      .push(AppRoutes.faceIdSecurityScreen)
+                                      .then((_) {
+                                        if (context.mounted) {
+                                          context.read<SettingsBloc>().add(
+                                            const SettingsStarted(),
+                                          );
+                                        }
+                                      });
+                                } else {
+                                  context.read<SettingsBloc>().add(
+                                    FaceScanToggled(false),
+                                  );
+                                }
                               },
                               iconAsset: AssetConstant.faceViewFinderIconSVG,
                             ),

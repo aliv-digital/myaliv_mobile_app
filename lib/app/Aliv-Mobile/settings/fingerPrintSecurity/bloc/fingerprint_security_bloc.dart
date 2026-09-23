@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository/fingerprint_security_repository.dart';
 import 'fingerprint_security_event.dart';
@@ -43,11 +45,12 @@ class FingerPrintSecurityBloc
     }
   }
 
-  void _onAgreePressed(
+  Future<void> _onAgreePressed(
     AgreePressed event,
     Emitter<FingerPrintSecurityState> emit,
-  ) {
-    // Navigation hook: after agree, go back (or proceed)
+  ) async {
+    // Trigger biometric auth + enable fingerprint lock, then navigate back.
+    await instance<FingerFaceSecurityCubit>().enableFingerprintBiometric();
     emit(state.copyWith(navTarget: FingerPrintSecurityNavTarget.back));
   }
 

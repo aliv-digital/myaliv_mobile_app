@@ -14,3 +14,5 @@ class SplashLoaded extends SplashState {}
 class SplashError extends SplashState {}
 
 class LoggedIn extends SplashState {}
+
+class BiometricLockRequired extends SplashState {}

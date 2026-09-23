@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository/face_id_security_repository.dart';
 import 'face_id_security_event.dart';
@@ -37,10 +39,12 @@ class FaceIdSecurityBloc
     }
   }
 
-  void _onAgreePressed(
+  Future<void> _onAgreePressed(
     FaceIdAgreePressed event,
     Emitter<FaceIdSecurityState> emit,
-  ) {
+  ) async {
+    // Trigger biometric auth + enable face lock, then navigate back.
+    await instance<FingerFaceSecurityCubit>().enableFaceIdBiometric();
     emit(state.copyWith(navTarget: FaceIdSecurityNavTarget.back));
   }
 

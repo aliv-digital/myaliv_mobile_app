@@ -33,6 +33,9 @@ class FingerFaceSecurityState extends Equatable {
   bool get isAuthenticated => status == FingerFaceSecurityStatus.authenticated;
   bool get isFailure => status == FingerFaceSecurityStatus.failure;
   bool get isBiometricEnabled => data?.isBiometricEnabled ?? false;
+  bool get fingerprintEnabled => data?.fingerprintEnabled ?? false;
+  bool get faceIdEnabled => data?.faceIdEnabled ?? false;
+  bool get isAnyEnabled => data?.isAnyEnabled ?? false;
 
   FingerFaceSecurityState copyWith({
     FingerFaceSecurityStatus? status,

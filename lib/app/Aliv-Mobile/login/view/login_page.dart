@@ -1,4 +1,6 @@
 // lib/login/login_screen.dart
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,11 +27,16 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LoginBloc(
-        repository: LoginRepository(),
-        appUiConfigCubit: context.read<AppUiConfigCubit>(),
-      ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => LoginBloc(
+            repository: LoginRepository(),
+            appUiConfigCubit: context.read<AppUiConfigCubit>(),
+          ),
+        ),
+        BlocProvider.value(value: instance<FingerFaceSecurityCubit>()),
+      ],
       child: const _LoginView(),
     );
   }

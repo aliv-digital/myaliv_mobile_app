@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'splash_event.dart';
 import 'splash_state.dart';
@@ -12,7 +13,13 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
         // currentSession reflects persisted JWT state at this point.
         final session = instance<AuthManager>().currentSession;
         if (session != null && !session.refreshExpired) {
-          emit(LoggedIn());
+          final biometricCubit = instance<FingerFaceSecurityCubit>();
+          if (biometricCubit.state.isAnyEnabled &&
+              !biometricCubit.state.isSessionAuthenticated) {
+            emit(BiometricLockRequired());
+          } else {
+            emit(LoggedIn());
+          }
         } else {
           emit(SplashLoaded());
         }

@@ -102,6 +102,114 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
     }
   }
 
+  Future<void> enableFingerprintBiometric() async {
+    emit(state.copyWith(status: FingerFaceSecurityStatus.loading));
+    try {
+      final result = await _repository.setupFingerprintBiometric();
+      if (result == BiometricSetupResult.success) {
+        final updated = state.data?.copyWith(
+          fingerprintEnabled: true,
+          isBiometricEnabled: true,
+        );
+        emit(
+          state.copyWith(
+            status: FingerFaceSecurityStatus.setupSuccess,
+            data: updated,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: FingerFaceSecurityStatus.failure,
+            errorMessage: _setupResultMessage(result),
+          ),
+        );
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FingerFaceSecurityStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> disableFingerprintBiometric() async {
+    emit(state.copyWith(status: FingerFaceSecurityStatus.loading));
+    try {
+      await _repository.disableFingerprintBiometric();
+      final updated = state.data?.copyWith(
+        fingerprintEnabled: false,
+        isBiometricEnabled: (state.data?.faceIdEnabled ?? false),
+      );
+      emit(
+        state.copyWith(status: FingerFaceSecurityStatus.ready, data: updated),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FingerFaceSecurityStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> enableFaceIdBiometric() async {
+    emit(state.copyWith(status: FingerFaceSecurityStatus.loading));
+    try {
+      final result = await _repository.setupFaceIdBiometric();
+      if (result == BiometricSetupResult.success) {
+        final updated = state.data?.copyWith(
+          faceIdEnabled: true,
+          isBiometricEnabled: true,
+        );
+        emit(
+          state.copyWith(
+            status: FingerFaceSecurityStatus.setupSuccess,
+            data: updated,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: FingerFaceSecurityStatus.failure,
+            errorMessage: _setupResultMessage(result),
+          ),
+        );
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FingerFaceSecurityStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> disableFaceIdBiometric() async {
+    emit(state.copyWith(status: FingerFaceSecurityStatus.loading));
+    try {
+      await _repository.disableFaceIdBiometric();
+      final updated = state.data?.copyWith(
+        faceIdEnabled: false,
+        isBiometricEnabled: (state.data?.fingerprintEnabled ?? false),
+      );
+      emit(
+        state.copyWith(status: FingerFaceSecurityStatus.ready, data: updated),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FingerFaceSecurityStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
+  }
+
   String _authResultMessage(BiometricAuthResult result) => switch (result) {
     BiometricAuthResult.failed => 'Authentication failed. Please try again.',
     BiometricAuthResult.biometricsNotEnrolled =>

@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -21,10 +23,15 @@ class EnterPasswordPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          EnterPasswordPrepaidBloc(EnterPasswordPrepaidRepository())
-            ..add(const EnterPasswordPrepaidStarted()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              EnterPasswordPrepaidBloc(EnterPasswordPrepaidRepository())
+                ..add(const EnterPasswordPrepaidStarted()),
+        ),
+        BlocProvider.value(value: instance<FingerFaceSecurityCubit>()),
+      ],
       child: const _EnterPasswordPrepaidView(),
     );
   }
@@ -149,14 +156,34 @@ class _EnterPasswordPrepaidView extends StatelessWidget {
                           const SizedBox(height: 38),
                           const EnterPasswordPrepaidOrDivider(),
                           const SizedBox(height: 30),
-                          EnterPasswordPrepaidBiometricButtons(
-                            onFaceId: () => context
-                                .read<EnterPasswordPrepaidBloc>()
-                                .add(const EnterPasswordPrepaidFaceIdPressed()),
-                            onFingerprint: () =>
-                                context.read<EnterPasswordPrepaidBloc>().add(
-                                  const EnterPasswordPrepaidFingerprintPressed(),
-                                ),
+                          BlocBuilder<
+                            FingerFaceSecurityCubit,
+                            FingerFaceSecurityState
+                          >(
+                            buildWhen: (p, c) =>
+                                p.fingerprintEnabled != c.fingerprintEnabled ||
+                                p.faceIdEnabled != c.faceIdEnabled,
+                            builder: (context, biometricState) {
+                              final showFp = biometricState.fingerprintEnabled;
+                              final showFace = biometricState.faceIdEnabled;
+                              if (!showFp && !showFace) {
+                                return const SizedBox.shrink();
+                              }
+                              return EnterPasswordPrepaidBiometricButtons(
+                                showFingerprint: showFp,
+                                showFaceId: showFace,
+                                onFaceId: () => context
+                                    .read<EnterPasswordPrepaidBloc>()
+                                    .add(
+                                      const EnterPasswordPrepaidFaceIdPressed(),
+                                    ),
+                                onFingerprint: () => context
+                                    .read<EnterPasswordPrepaidBloc>()
+                                    .add(
+                                      const EnterPasswordPrepaidFingerprintPressed(),
+                                    ),
+                              );
+                            },
                           ),
                           const SizedBox(height: 180),
                         ],

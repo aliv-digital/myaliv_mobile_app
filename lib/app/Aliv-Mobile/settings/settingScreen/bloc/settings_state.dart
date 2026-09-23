@@ -10,6 +10,9 @@ class SettingsState extends Equatable {
   final bool fingerprintEnabled;
   final bool faceScanEnabled;
 
+  final bool isFingerprintAvailable;
+  final bool isFaceIdAvailable;
+
   final SettingsNavTarget navTarget;
   final String? errorMessage;
 
@@ -17,6 +20,8 @@ class SettingsState extends Equatable {
     required this.status,
     required this.fingerprintEnabled,
     required this.faceScanEnabled,
+    required this.isFingerprintAvailable,
+    required this.isFaceIdAvailable,
     required this.navTarget,
     required this.errorMessage,
   });
@@ -25,6 +30,8 @@ class SettingsState extends Equatable {
     status: SettingsStatus.initial,
     fingerprintEnabled: false,
     faceScanEnabled: false,
+    isFingerprintAvailable: false,
+    isFaceIdAvailable: false,
     navTarget: SettingsNavTarget.none,
     errorMessage: null,
   );
@@ -33,6 +40,8 @@ class SettingsState extends Equatable {
     SettingsStatus? status,
     bool? fingerprintEnabled,
     bool? faceScanEnabled,
+    bool? isFingerprintAvailable,
+    bool? isFaceIdAvailable,
     SettingsNavTarget? navTarget,
     String? errorMessage,
   }) {
@@ -40,6 +49,9 @@ class SettingsState extends Equatable {
       status: status ?? this.status,
       fingerprintEnabled: fingerprintEnabled ?? this.fingerprintEnabled,
       faceScanEnabled: faceScanEnabled ?? this.faceScanEnabled,
+      isFingerprintAvailable:
+          isFingerprintAvailable ?? this.isFingerprintAvailable,
+      isFaceIdAvailable: isFaceIdAvailable ?? this.isFaceIdAvailable,
       navTarget: navTarget ?? this.navTarget,
       errorMessage: errorMessage,
     );
@@ -50,6 +62,8 @@ class SettingsState extends Equatable {
     status,
     fingerprintEnabled,
     faceScanEnabled,
+    isFingerprintAvailable,
+    isFaceIdAvailable,
     navTarget,
     errorMessage,
   ];

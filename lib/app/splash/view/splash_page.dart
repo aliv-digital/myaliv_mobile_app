@@ -27,7 +27,9 @@ class SplashPage extends StatelessWidget {
       child: Scaffold(
         body: BlocListener<SplashBloc, SplashState>(
           listener: (context, state) {
-            if (state is LoggedIn) {
+            if (state is BiometricLockRequired) {
+              context.go(AppRoutes.biometricLock);
+            } else if (state is LoggedIn) {
               context.go(AppRoutes.home);
             } else if (state is SplashLoaded || state is SplashError) {
               context.go(AppRoutes.welcome);

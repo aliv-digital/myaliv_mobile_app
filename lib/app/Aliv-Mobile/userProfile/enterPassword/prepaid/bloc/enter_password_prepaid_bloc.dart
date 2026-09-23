@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repository/enter_password_prepaid_repository.dart';
 import 'enter_password_prepaid_event.dart';
@@ -116,15 +118,17 @@ class EnterPasswordPrepaidBloc
     EnterPasswordPrepaidFaceIdPressed event,
     Emitter<EnterPasswordPrepaidState> emit,
   ) async {
-    // TODO: integrate local_auth later
-    await repository.authenticateWithFaceId();
+    await instance<FingerFaceSecurityCubit>().authenticate(
+      reason: 'Use Face ID to verify your identity',
+    );
   }
 
   Future<void> _onFingerprint(
     EnterPasswordPrepaidFingerprintPressed event,
     Emitter<EnterPasswordPrepaidState> emit,
   ) async {
-    // TODO: integrate local_auth later
-    await repository.authenticateWithFingerprint();
+    await instance<FingerFaceSecurityCubit>().authenticate(
+      reason: 'Use fingerprint to verify your identity',
+    );
   }
 }

@@ -6,4 +6,10 @@ abstract class FingerFaceSecurityRepository {
   Future<BiometricAuthResult> authenticate({String? reason});
   Future<BiometricSetupResult> setupBiometric();
   Future<void> disableBiometric();
+
+  // Per-type setup / disable
+  Future<BiometricSetupResult> setupFingerprintBiometric();
+  Future<BiometricSetupResult> setupFaceIdBiometric();
+  Future<void> disableFingerprintBiometric();
+  Future<void> disableFaceIdBiometric();
 }
