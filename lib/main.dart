@@ -110,21 +110,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-/*
-{"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366m4hufc3hGeOp5SmURGfwMWFf8jyyfMH6jU3BKTcYlnUbxtfe3455xR0m3TT9dokmhhu01ZiiU35wXfwh0o8lBQ==","AccountId":1018469885}
-I/flutter ( 8948): Ticket : db09c1ce-9969-43d3-a346-a5cb18f1d366m4hufc3hGeOp5SmURGfwMWFf8jyyfMH6jU3BKTcYlnUbxtfe3455xR0m3TT9dokmhhu01ZiiU35wXfwh0o8lBQ==
-I/flutter ( 8948): Account id : 1018469885
-I/flutter ( 8948): Account info request initiated for user: 027BA54E-973F-45DD-897B-F635E6C3EEBC
-
-
-  {"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366namVns9SFsRE493Vvnh9kO5wY/RT7ViqsBIyByqVBbvnBPBiwDyiEKKwH9iPfZOCkY56sJN/lZwiJJkf8bPqaA==","AccountId":924171314}
-
-{"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366FHhJb7JzhNKk7NrXWqlVnWMQooo9uaNeszB6uGtTDuXcmTO3Wsv8Qf+g3ghUQZnCVL8K5DcobdtxT+i6H5uKdg==","AccountId":1018469885}
-
- MDI3QkE1NEUtOTczRi00NURELTg5N0ItRjYzNUU2QzNFRUJDOmRiMDljMWNlLTk5NjktNDNkMy1hMzQ2LWE1Y2IxOGYxZDM2NmN5WGtockZucllPZlE1azNnZGtGclU1K1lYcTBDb2FuUjZINnFaY3RxSVBrRnNySFU4MXY3azE1d2ZGYkNIZlowTlF2SmtCcHhObVlVdzFiWXhyQ25BPT0=
-
-
- 580468973
-{"Ticket":"db09c1ce-9969-43d3-a346-a5cb18f1d366WyBVH/lKbWfRXHkj1R8UhKVaJHKzRp/Q8l9Z58FywJg93yYCogpWko0ltE/KloKX/6wv0q+cMZwa5QfY0urdZw==","AccountId":1259947673}
- */
