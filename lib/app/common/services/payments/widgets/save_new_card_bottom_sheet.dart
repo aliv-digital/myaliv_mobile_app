@@ -46,8 +46,18 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
   static const Color _dropdownBg = Color(0xFFF5F4F8);
 
   static const List<String> _monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   late int _selectedMonth;
@@ -100,7 +110,9 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
     } else {
       final msg = cubit.state.errorMessage?.trim();
       AppToast.show(
-        message: (msg == null || msg.isEmpty) ? 'Failed to save card. Try again.' : msg,
+        message: (msg == null || msg.isEmpty)
+            ? 'Failed to save card. Try again.'
+            : msg,
         type: ToastType.error,
       );
     }
@@ -190,13 +202,9 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
                 const SizedBox(height: 20),
                 Row(
                   children: <Widget>[
-                    Expanded(
-                      child: _buildMonthDropdown(_monthNames),
-                    ),
+                    Expanded(child: _buildMonthDropdown(_monthNames)),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildYearDropdown(years),
-                    ),
+                    Expanded(child: _buildYearDropdown(years)),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -218,7 +226,9 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Text(
@@ -380,8 +390,18 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
   static const Color _dropdownBg = Color(0xFFF5F4F8);
 
   static const List<String> _monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   late int _selectedMonth;
@@ -454,7 +474,11 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
                     shape: BoxShape.circle,
                     border: Border.all(color: const Color(0xFFD0D5DD)),
                   ),
-                  child: const Icon(Icons.close, size: 16, color: Color(0xFF344054)),
+                  child: const Icon(
+                    Icons.close,
+                    size: 16,
+                    color: Color(0xFF344054),
+                  ),
                 ),
               ),
             ],
@@ -561,7 +585,11 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
-            BoxShadow(color: Color(0x1A000000), blurRadius: 8, offset: Offset(0, 4)),
+            BoxShadow(
+              color: Color(0x1A000000),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
           ],
         ),
         maxHeight: 260,
@@ -618,7 +646,11 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
-            BoxShadow(color: Color(0x1A000000), blurRadius: 8, offset: Offset(0, 4)),
+            BoxShadow(
+              color: Color(0x1A000000),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
           ],
         ),
         maxHeight: 260,

@@ -85,7 +85,12 @@ class CardPaymentService {
       final code = response.statusCode ?? 0;
       if (code < 200 || code >= 300) {
         throw Exception(
-          _errorMessage(ServerException('Payment setup failed (status $code)', statusCode: code)),
+          _errorMessage(
+            ServerException(
+              'Payment setup failed (status $code)',
+              statusCode: code,
+            ),
+          ),
         );
       }
 

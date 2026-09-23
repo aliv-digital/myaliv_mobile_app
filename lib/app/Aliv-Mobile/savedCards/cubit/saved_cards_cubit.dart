@@ -214,7 +214,10 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
     _safeEmit(state.copyWith(isAddingCard: true, clearError: true));
 
     try {
-      await _repository.saveNewCard(orderId: orderId, expirationDate: expirationDate);
+      await _repository.saveNewCard(
+        orderId: orderId,
+        expirationDate: expirationDate,
+      );
       await fetchSavedCards(forceRefresh: true);
       _safeEmit(state.copyWith(isAddingCard: false, clearError: true));
       return true;
@@ -225,7 +228,9 @@ class SavedCardsCubit extends Cubit<SavedCardsState> {
         debugPrint('SavedCardsCubit: Failed to save new card - $errorMessage');
       }
 
-      _safeEmit(state.copyWith(isAddingCard: false, errorMessage: errorMessage));
+      _safeEmit(
+        state.copyWith(isAddingCard: false, errorMessage: errorMessage),
+      );
       return false;
     }
   }

@@ -36,8 +36,9 @@ class _SaveCardOnReceiptSectionState extends State<SaveCardOnReceiptSection> {
     if (widget.details == null) return;
 
     // Step 1: capture expiry before opening the iframe.
-    final expirationDate =
-        await SaveNewCardBottomSheet.showForExpiryCapture(context);
+    final expirationDate = await SaveNewCardBottomSheet.showForExpiryCapture(
+      context,
+    );
     if (!mounted || expirationDate == null) return;
 
     final cubit = instance<SavedCardsCubit>();

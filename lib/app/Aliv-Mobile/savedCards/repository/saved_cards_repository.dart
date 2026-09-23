@@ -74,7 +74,8 @@ class SavedCardsRepositoryImpl implements SavedCardsRepository {
   Future<void> saveNewCard({
     required int orderId,
     required String expirationDate,
-  }) => _apiClient.saveNewCard(orderId: orderId, expirationDate: expirationDate);
+  }) =>
+      _apiClient.saveNewCard(orderId: orderId, expirationDate: expirationDate);
 
   /// Parses the raw JSON response into a list of [SavedCardModel].
   ///
