@@ -44,6 +44,7 @@ class BearerAuthInterceptor extends QueuedInterceptor {
 
     var session = authManager.currentSession;
     if (session == null) {
+      await onHardLogout();
       return handler.reject(_sessionExpired(options), true);
     }
 
@@ -72,19 +73,27 @@ class BearerAuthInterceptor extends QueuedInterceptor {
     final isAuthCall = err.requestOptions.extra[_skipAuthKey] == true;
     final alreadyRetried = err.requestOptions.extra[_retriedKey] == true;
 
-    if (err.response?.statusCode == 401 && !isAuthCall && !alreadyRetried) {
-      final session = await authManager.refreshIfNeeded();
-      if (session != null) {
-        final opts = err.requestOptions;
-        opts.extra[_retriedKey] = true;
-        opts.headers['Authorization'] = 'Bearer ${session.accessToken}';
-        try {
-          final response = await retryDio.fetch<dynamic>(opts);
-          return handler.resolve(response);
-        } catch (_) {
-          // fall through to normal error flow
+    if (err.response?.statusCode == 401 && !isAuthCall) {
+      if (!alreadyRetried) {
+        final session = await authManager.refreshIfNeeded();
+        if (session != null) {
+          final opts = err.requestOptions;
+          opts.extra[_retriedKey] = true;
+          opts.headers['Authorization'] = 'Bearer ${session.accessToken}';
+          try {
+            final response = await retryDio.fetch<dynamic>(opts);
+            return handler.resolve(response);
+          } catch (e) {
+            if (e is DioException && e.response?.statusCode == 401) {
+              await onHardLogout();
+            }
+            // fall through to normal error flow
+          }
+        } else {
+          await onHardLogout();
         }
       } else {
+        // Retried with a fresh token and still got 401 — hard logout.
         await onHardLogout();
       }
     }
