@@ -50,7 +50,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   HomePlansPostPaidPlanModel? _selectedPostpaidPlan;
   DateTime? _selectedBeginDate;
   late final NetworkService _networkService = instance<NetworkService>();
-  bool _termsAccepted = true;
+  bool _termsAccepted = false;
   String _promoCode = '';
   _ConfirmationPromoStatus _promoStatus = _ConfirmationPromoStatus.idle;
   String _promoErrorMessage = '';
