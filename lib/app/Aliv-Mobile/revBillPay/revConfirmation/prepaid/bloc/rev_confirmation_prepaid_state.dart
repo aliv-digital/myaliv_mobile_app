@@ -101,7 +101,6 @@ class RevConfirmationPrepaidState extends Equatable {
       promoCode: promoCode ?? this.promoCode,
       promoStatus: promoStatus ?? this.promoStatus,
       navTarget: navTarget ?? this.navTarget,
-
       termsAccepted: termsAccepted ?? this.termsAccepted,
       showTermsError: showTermsError ?? this.showTermsError,
     );

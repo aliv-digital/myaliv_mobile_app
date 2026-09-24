@@ -66,7 +66,6 @@ class PrepaidActivePlanCard extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
             Text.rich(
               TextSpan(
@@ -226,7 +225,6 @@ class AutoRenewBottomSheet extends StatelessWidget {
       child: Container(
         width: MediaQuery.of(context).size.width,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-
         decoration: const ShapeDecoration(
           color: Colors.white,
           shape: RoundedRectangleBorder(

@@ -80,7 +80,6 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                         children: [
                           const EnterPasswordPostpaidHeader(),
                           const SizedBox(height: 28),
-
                           BlocBuilder<
                             EnterPasswordPostpaidBloc,
                             EnterPasswordPostpaidState
@@ -105,11 +104,9 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                               );
                             },
                           ),
-
                           const SizedBox(height: 20),
                           const EnterPasswordPostpaidTermsText(),
                           const SizedBox(height: 30),
-
                           BlocBuilder<
                             EnterPasswordPostpaidBloc,
                             EnterPasswordPostpaidState
@@ -132,11 +129,9 @@ class _EnterPasswordPostpaidView extends StatelessWidget {
                               );
                             },
                           ),
-
                           const SizedBox(height: 38),
                           const EnterPasswordPostpaidOrDivider(),
                           const SizedBox(height: 30),
-
                           EnterPasswordPostpaidBiometricButtons(
                             onFaceId: () =>
                                 context.read<EnterPasswordPostpaidBloc>().add(

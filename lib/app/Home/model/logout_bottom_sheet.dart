@@ -119,9 +119,7 @@ class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
                             color: _logoutAllDevices
                                 ? const Color(0xFF645D9C)
                                 : Colors.transparent,
-                            border: Border.all(
-                              color: const Color(0xFF645D9C),
-                            ),
+                            border: Border.all(color: const Color(0xFF645D9C)),
                             borderRadius: BorderRadius.circular(1),
                           ),
                           alignment: Alignment.center,
@@ -199,8 +197,8 @@ class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
                             final res =
                                 await (widget.repository ?? LogoutRepository())
                                     .logout(
-                              logoutAllDevices: _logoutAllDevices,
-                            );
+                                      logoutAllDevices: _logoutAllDevices,
+                                    );
 
                             if (!context.mounted) return;
 

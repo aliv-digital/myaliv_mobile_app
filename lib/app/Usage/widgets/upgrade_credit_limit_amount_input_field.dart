@@ -82,7 +82,6 @@ class _AmountInputFieldState extends State<AmountInputField> {
             onChanged: widget.onChanged,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             style: RevPrepaidTheme.input,
-
             decoration: InputDecoration(
               // prefix: Text(
               //   '\$ ',

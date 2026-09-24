@@ -188,7 +188,6 @@ class GuestPurchasePlanRepository {
                 value: 'unlimited',
                 sub: 'local text',
               ),
-
               PlanBenefit(
                 type: PlanBenefitType.bonusData,
                 label: 'bonus data',
@@ -234,7 +233,6 @@ class GuestPurchasePlanRepository {
                 value: 'unlimited',
                 sub: 'local text',
               ),
-
               PlanBenefit(
                 type: PlanBenefitType.bonusData,
                 label: 'bonus data',
@@ -346,7 +344,6 @@ class GuestPurchasePlanRepository {
                 value: 'unlimited',
                 sub: 'local text',
               ),
-
               PlanBenefit(
                 type: PlanBenefitType.bonusData,
                 label: 'bonus data',
@@ -410,7 +407,6 @@ class GuestPurchasePlanRepository {
                 value: 'unlimited',
                 sub: 'local text',
               ),
-
               PlanBenefit(
                 type: PlanBenefitType.bonusData,
                 label: 'bonus data',

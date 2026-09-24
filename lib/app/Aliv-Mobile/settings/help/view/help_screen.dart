@@ -70,7 +70,6 @@ class _HelpView extends StatelessWidget {
                                   content.paragraph2,
                                 ],
                               ),
-
                               Text(
                                 content.title2,
                                 style: HelpTheme.sectionHeader,

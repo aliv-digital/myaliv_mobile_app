@@ -10,9 +10,9 @@ class LogoutRepository {
     NetworkService? networkService,
     AuthManager? authManager,
     Future<void> Function()? performLocalLogout,
-  })  : _network = networkService ?? instance<NetworkService>(),
-        _authManager = authManager ?? instance<AuthManager>(),
-        _performLocalLogout = performLocalLogout ?? performHardLogout;
+  }) : _network = networkService ?? instance<NetworkService>(),
+       _authManager = authManager ?? instance<AuthManager>(),
+       _performLocalLogout = performLocalLogout ?? performHardLogout;
 
   final NetworkService _network;
   final AuthManager _authManager;

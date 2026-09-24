@@ -39,7 +39,6 @@ class PaymentMethodSection extends StatelessWidget {
             style: AddOrEditCardsPrepaidTheme.sectionTitle(),
           ),
           const SizedBox(height: 12),
-
           if (cards.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),

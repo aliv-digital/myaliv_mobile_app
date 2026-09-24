@@ -103,7 +103,6 @@ class HomePlanWalletPaymentActivateOrFutureBottomSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(
                     width: HomePlanTheme.bottomSheetDualActionButtonsGap,
                   ),

@@ -57,9 +57,7 @@ class _AnimatedAutoRenewToggleState extends State<AnimatedAutoRenewToggle> {
             ),
           ),
         ),
-
         const SizedBox(width: 10),
-
         const Text(
           'Auto Renew',
           style: TextStyle(

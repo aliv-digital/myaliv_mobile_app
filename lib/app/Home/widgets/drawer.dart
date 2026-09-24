@@ -193,7 +193,6 @@ class AppMenuDrawer extends StatelessWidget {
           ? SvgPicture.asset(icon, height: 12, width: 12)
           : SvgPicture.asset(icon, height: 18, width: 18),
       title: Text(label, style: const TextStyle(fontFamily: 'CircularPro')),
-
       trailing: label == 'refer a friend'
           ? null
           : label == 'notifications'

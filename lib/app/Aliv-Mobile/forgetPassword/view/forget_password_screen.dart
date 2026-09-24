@@ -84,7 +84,6 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                       const SizedBox(
                         height: ForgetPasswordSizes.phoneToSendGap,
                       ),
-
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) => prev.status != curr.status,
                         builder: (context, state) {
@@ -101,11 +100,9 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                           );
                         },
                       ),
-
                       const SizedBox(
                         height: ForgetPasswordSizes.sendToTermsGap,
                       ),
-
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) =>
                             prev.isTermsLoading != curr.isTermsLoading ||
