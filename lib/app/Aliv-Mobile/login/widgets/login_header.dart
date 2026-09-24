@@ -37,7 +37,6 @@ class LoginHeader extends StatelessWidget {
               },
             ),
           ),
-
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(top: 24),

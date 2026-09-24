@@ -45,7 +45,6 @@ class RevPaymentMethodSection extends StatelessWidget {
           const SizedBox(
             height: RevPaymentMethodPrepaidTheme.sectionTitleToFirstCardGap,
           ),
-
           for (int i = 0; i < methods.length; i++) ...[
             RevPaymentMethodTile(
               logoSvgAsset: methods[i].logoSvgAsset,
@@ -62,7 +61,6 @@ class RevPaymentMethodSection extends StatelessWidget {
           const SizedBox(
             height: RevPaymentMethodPrepaidTheme.lastCardToPayWithCardGap,
           ),
-
           InkWell(
             onTap: onPayWithCard,
             child: Padding(

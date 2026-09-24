@@ -36,16 +36,13 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
           lastDay: DateTime.now().add(const Duration(days: 365)),
           focusedDay: _focusedDay,
           currentDay: DateTime.now(),
-
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-
           onDaySelected: (selectedDay, focusedDay) {
             setState(() {
               _selectedDay = selectedDay;
               _focusedDay = focusedDay;
             });
           },
-
           headerStyle: HeaderStyle(
             titleCentered: true,
             formatButtonVisible: false,
@@ -58,7 +55,6 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
               color: Color(0xFF2E3A59),
             ),
           ),
-
           daysOfWeekStyle: const DaysOfWeekStyle(
             weekdayStyle: TextStyle(
               fontWeight: FontWeight.w600,
@@ -69,34 +65,27 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
               color: Color(0xFF2E3A59),
             ),
           ),
-
           calendarStyle: CalendarStyle(
             outsideDaysVisible: true,
-
             defaultTextStyle: const TextStyle(
               fontFamily: 'CircularPro',
               fontWeight: FontWeight.w500,
               color: Color(0xFF2E3A59),
             ),
-
             outsideTextStyle: const TextStyle(color: Color(0xFFB0B7C3)),
-
             selectedDecoration: const BoxDecoration(
               color: Color(0xFF645D9C),
               shape: BoxShape.circle,
             ),
-
             todayDecoration: const BoxDecoration(
               color: Color(0x1A645D9C),
               shape: BoxShape.circle,
             ),
-
             markerDecoration: const BoxDecoration(
               color: Color(0xFF645D9C),
               shape: BoxShape.circle,
             ),
           ),
-
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
               if (events.isEmpty) return null;
@@ -110,10 +99,8 @@ class _AlivCalendarPickerState extends State<AlivCalendarPicker> {
             },
           ),
         ),
-
         const SizedBox(height: 24),
         const Divider(),
-
         Row(
           children: [
             Expanded(

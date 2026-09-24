@@ -66,7 +66,6 @@ class _RevPrepaidView extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(
                     RevPrepaidTheme.contentHorizontalPadding,
@@ -155,7 +154,6 @@ class _RevPrepaidView extends StatelessWidget {
                             textAlign: TextAlign.start,
                             textAlignVertical: TextAlignVertical.center,
                             keyboardType: TextInputType.number,
-
                             backgroundColor: RevPrepaidTheme.fieldBg,
                             unfocusedBorderColor:
                                 RevPrepaidTheme.inputFieldBorderColor,

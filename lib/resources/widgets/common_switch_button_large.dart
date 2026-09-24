@@ -62,10 +62,8 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
-
                     children: [
                       const SizedBox(width: 3),
-
                       Text(
                         'on',
                         textAlign: TextAlign.center,
@@ -90,17 +88,14 @@ class CommonSwitchButtonLarge extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
-
                     children: [
                       const SizedBox(width: 3),
-
                       SvgPicture.asset(
                         'assets/icons/cross.svg',
                         height: 20,
                         width: 20,
                         // color: const Color(0xFF707070),
                       ),
-
                       const SizedBox(width: 2),
                       Text(
                         'off',

@@ -407,7 +407,6 @@ class _MonthDropdown extends StatelessWidget {
           },
         );
       },
-
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(

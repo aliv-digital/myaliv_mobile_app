@@ -42,13 +42,11 @@ class ReferFriendResponsePrepaidCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   const ReferFriendResponsePrepaidIcon(assetPath: _smsSvgAsset),
                   const SizedBox(height: 16),
-
                   const Text(
                     'Inviting Success!',
                     style: ReferFriendResponsePrepaidTheme.title,
                   ),
                   const SizedBox(height: 32),
-
                   const Text(
                     "Thank you for inviting your friend to join\n"
                     "the ALIV network! once they’re on the\n"
@@ -57,29 +55,24 @@ class ReferFriendResponsePrepaidCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: ReferFriendResponsePrepaidTheme.subtitle,
                   ),
-
                   const SizedBox(height: 24),
-
                   const Text(
                     'Your referral code is:',
                     style: ReferFriendResponsePrepaidTheme.label,
                   ),
                   const SizedBox(height: 10),
-
                   ReferFriendResponsePrepaidReferralRow(
                     code: code,
                     onCopied: () => context
                         .read<ReferFriendResponsePrepaidBloc>()
                         .add(ReferFriendResponsePrepaidCopyPressed(code)),
                   ),
-
                   const SizedBox(height: 32),
                   const Divider(
                     height: 1,
                     color: ReferFriendResponsePrepaidTheme.border,
                   ),
                   const SizedBox(height: 32),
-
                   ReferFriendResponsePrepaidButton(
                     label: 'back to home page',
                     onTap: () {

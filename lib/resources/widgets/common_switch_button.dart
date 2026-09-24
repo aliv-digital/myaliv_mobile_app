@@ -83,7 +83,6 @@ class _CommonSwitchButtonState extends State<CommonSwitchButton> {
                         width: 14,
                         // color: const Color(0xFF707070),
                       ),
-
                       const SizedBox(width: 2),
                       Text(
                         'off',

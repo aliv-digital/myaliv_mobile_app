@@ -68,12 +68,10 @@ class _EnterPasswordAutoRenewPrepaidTermsTextState
                   fontSize: 13,
                   fontFamily: 'CircularPro',
                   fontWeight: FontWeight.w700,
-
                   decoration: TextDecoration.underline,
                   decorationColor: Color(0xFF645D9C),
                 ),
               ),
-
               TextSpan(
                 text: ' & ',
                 style: TextStyle(

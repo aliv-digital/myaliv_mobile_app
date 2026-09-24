@@ -51,22 +51,18 @@ class RevReceiptPanel extends StatelessWidget {
               onChanged: onPromoChanged,
             ),
             const SizedBox(height: 18),
-
             _RowItem(label: 'sub total', value: subTotalText),
             const SizedBox(height: 14),
             _RowItem(label: 'vat', value: vatText),
             const SizedBox(height: 24),
-
             const _DashedDivider(
               color: Color(0xB3FFFFFF),
               height: 1,
               dashWidth: 6,
               dashGap: 5,
             ),
-
             const SizedBox(height: 24),
             _RowItem(label: 'total', value: totalText, isBold: true),
-
             const SizedBox(height: 18),
           ],
         ),

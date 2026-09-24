@@ -124,7 +124,6 @@ class _GuestConfirmTopUpView extends StatelessWidget {
 
                 return DefaultBottomPayBar(
                   amountText: amountText,
-
                   isLoading: isLoading,
                   isButtonEnabled: state.isTermsChecked,
                   buttonText: TopUpConfirmTheme.payNowLabel,

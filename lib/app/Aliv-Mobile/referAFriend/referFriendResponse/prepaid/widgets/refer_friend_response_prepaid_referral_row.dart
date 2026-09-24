@@ -20,7 +20,6 @@ class ReferFriendResponsePrepaidReferralRow extends StatelessWidget {
         Expanded(
           child: Container(
             height: 38,
-
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.white,

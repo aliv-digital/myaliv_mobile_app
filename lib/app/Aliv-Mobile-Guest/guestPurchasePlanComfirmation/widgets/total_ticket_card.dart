@@ -22,14 +22,12 @@ class TotalTicketCard extends StatelessWidget {
             const SizedBox(height: 10),
             _row('vat', totals.vat),
             const SizedBox(height: 14),
-
             DashedDivider(
               height: 1,
               dashWidth: 6,
               dashGap: 6,
               color: Colors.white.withOpacity(0.55),
             ),
-
             const SizedBox(height: 14),
             _row('total', totals.total, isTotal: true),
           ],

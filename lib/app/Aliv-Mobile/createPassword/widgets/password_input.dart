@@ -85,7 +85,6 @@ class _PasswordInputState extends State<PasswordInput> {
                 ),
               ),
               const SizedBox(width: CreatePasswordTheme.iconToFieldGap),
-
               Expanded(
                 child: TextField(
                   focusNode: _focusNode,
@@ -101,9 +100,7 @@ class _PasswordInputState extends State<PasswordInput> {
                   ),
                 ),
               ),
-
               const SizedBox(width: CreatePasswordTheme.iconToFieldGap),
-
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: widget.onToggle,

@@ -338,7 +338,6 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
                   ),
                 ),
               ),
-
               Container(
                 height: 1,
                 color: HomePlanTheme.roamCalendarDividerColor,
@@ -346,7 +345,6 @@ class _RoamCalendarPickerSheetState extends State<_RoamCalendarPickerSheet> {
               const SizedBox(
                 height: HomePlanTheme.roamCalendarDividerToActionsGap,
               ),
-
               Row(
                 children: [
                   Expanded(

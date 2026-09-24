@@ -86,7 +86,6 @@ class _RevConfirmationPrepaidView extends StatelessWidget {
                   showHome: true,
                   onHomeTap: () => context.go(AppRoutes.home),
                 ),
-
                 Expanded(
                   child: CustomScrollView(
                     slivers: [

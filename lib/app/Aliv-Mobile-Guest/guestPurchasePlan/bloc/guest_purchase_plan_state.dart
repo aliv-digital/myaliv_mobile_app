@@ -47,7 +47,6 @@ class GuestPurchasePlanState {
     // ✅ AddOns
     List<AddOnModel>? addOns,
     Set<String>? selectedAddOnIds,
-
     String? errorMessage,
   }) {
     return GuestPurchasePlanState(
@@ -55,10 +54,8 @@ class GuestPurchasePlanState {
       selectedTab: selectedTab ?? this.selectedTab,
       plans: plans ?? this.plans,
       expandedPlanIds: expandedPlanIds ?? this.expandedPlanIds,
-
       addOns: addOns ?? this.addOns,
       selectedAddOnIds: selectedAddOnIds ?? this.selectedAddOnIds,
-
       errorMessage: errorMessage,
     );
   }

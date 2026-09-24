@@ -69,7 +69,6 @@ class _LoginOtpView extends StatelessWidget {
   Widget build(BuildContext context) {
     return StripedScaffold(
       resizeToAvoidBottomInset: true,
-
       body: SafeArea(
         child: BlocListener<LoginOtpBloc, LoginOtpState>(
           listenWhen: (previous, current) {

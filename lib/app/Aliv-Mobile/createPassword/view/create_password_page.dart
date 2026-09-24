@@ -89,7 +89,6 @@ class _CreatePasswordView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 39),
-
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) =>
                             p.obscurePassword != c.obscurePassword ||
@@ -107,9 +106,7 @@ class _CreatePasswordView extends StatelessWidget {
                           );
                         },
                       ),
-
                       const SizedBox(height: 15),
-
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) =>
                             p.obscureConfirm != c.obscureConfirm ||
@@ -127,18 +124,14 @@ class _CreatePasswordView extends StatelessWidget {
                           );
                         },
                       ),
-
                       const SizedBox(height: 10),
-
                       Text(
                         'your password should contain letters and/or\n'
                         'numbers and be between 8 and 64 characters long.',
                         textAlign: TextAlign.center,
                         style: CreatePasswordTheme.helperText,
                       ),
-
                       const SizedBox(height: 30),
-
                       BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                         buildWhen: (p, c) => p.status != c.status,
                         builder: (context, state) {
@@ -152,7 +145,6 @@ class _CreatePasswordView extends StatelessWidget {
                           );
                         },
                       ),
-
                       const SizedBox(height: 181),
                     ],
                   ),
