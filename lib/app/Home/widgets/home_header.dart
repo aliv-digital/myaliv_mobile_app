@@ -75,7 +75,7 @@ class HomeHeader extends StatelessWidget {
                     devices: deviceState,
                   );
                   return Text(
-                    'welcome back, $name',
+                    'welcome back, $name!',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Color(0xFFF1F1F8),
