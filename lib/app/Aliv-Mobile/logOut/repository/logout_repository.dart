@@ -6,38 +6,62 @@ import 'package:myaliv_mobile_app/core/auth/hard_logout.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 class LogoutRepository {
-  LogoutRepository({NetworkService? networkService})
-    : _network = networkService ?? instance<NetworkService>();
+  LogoutRepository({
+    NetworkService? networkService,
+    AuthManager? authManager,
+    Future<void> Function()? performLocalLogout,
+  })  : _network = networkService ?? instance<NetworkService>(),
+        _authManager = authManager ?? instance<AuthManager>(),
+        _performLocalLogout = performLocalLogout ?? performHardLogout;
 
   final NetworkService _network;
+  final AuthManager _authManager;
+  final Future<void> Function() _performLocalLogout;
 
-  /// Ends the session:
-  ///   1. POST /Auth/logout { access_token }  (best-effort; ignore failures)
-  ///   2. Run the shared hard-logout sequence (clears secure storage,
-  ///      cubits, cookies; navigates to welcome).
-  ///
-  /// Marks the request `skipAuth` so the bearer interceptor doesn't try
-  /// to inject/refresh a token that's about to be discarded anyway.
-  Future<bool> logout() async {
-    final session = instance<AuthManager>().currentSession;
+  /// Calls the selected logout API, then always clears the local session.
+  /// Server errors are ignored so the user can still leave the app safely.
+  Future<bool> logout({bool logoutAllDevices = false}) async {
+    final session = _authManager.currentSession;
 
     if (session != null) {
       try {
-        await _network.request<dynamic>(
-          Api.logOutUrl,
-          method: HttpMethod.post,
-          data: {'access_token': session.accessToken},
-          options: Options(extra: {'skipAuth': true}),
-        );
+        if (logoutAllDevices) {
+          await _logoutAllDevices();
+        } else {
+          await _logoutCurrentDevice(session.accessToken);
+        }
       } catch (e) {
         // Server-side revocation is best-effort — local logout must
         // proceed even if the network call fails so users don't get
         // stuck with a dead session they can't clear.
-        if (kDebugMode) debugPrint('Logout API call failed (ignoring): $e');
+        if (kDebugMode) {
+          debugPrint('Logout API call failed (ignoring): $e');
+        }
       }
     }
 
-    await performHardLogout();
+    await _performLocalLogout();
     return true;
+  }
+
+  Future<void> _logoutAllDevices() async {
+    // This is a normal authenticated request. The bearer interceptor adds
+    // the Authorization header and, after a 401, refreshes the token and
+    // retries this request once.
+    await _network.request<dynamic>(
+      Api.logoutAllDevicesUrl,
+      method: HttpMethod.post,
+    );
+  }
+
+  Future<void> _logoutCurrentDevice(String accessToken) async {
+    // The existing single-device endpoint receives its token in the body.
+    // skipAuth preserves its current behavior and avoids bearer refresh.
+    await _network.request<dynamic>(
+      Api.logOutUrl,
+      method: HttpMethod.post,
+      data: {'access_token': accessToken},
+      options: Options(extra: {'skipAuth': true}),
+    );
   }
 }

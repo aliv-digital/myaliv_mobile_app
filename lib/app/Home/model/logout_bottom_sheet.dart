@@ -5,8 +5,18 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import '../../../router/app_routes.dart';
 
-class LogoutBottomSheet extends StatelessWidget {
-  const LogoutBottomSheet({super.key});
+class LogoutBottomSheet extends StatefulWidget {
+  const LogoutBottomSheet({super.key, this.repository});
+
+  final LogoutRepository? repository;
+
+  @override
+  State<LogoutBottomSheet> createState() => _LogoutBottomSheetState();
+}
+
+class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
+  bool _logoutAllDevices = false;
+  bool _isLoggingOut = false;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +86,71 @@ class LogoutBottomSheet extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
+
+            Semantics(
+              checked: _logoutAllDevices,
+              button: true,
+              label: 'log out of all devices',
+              child: ExcludeSemantics(
+                child: GestureDetector(
+                  key: const Key('logout_all_devices_checkbox'),
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _isLoggingOut
+                      ? null
+                      : () {
+                          setState(() {
+                            _logoutAllDevices = !_logoutAllDevices;
+                          });
+                        },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          width: 15,
+                          height: 15,
+                          decoration: BoxDecoration(
+                            color: _logoutAllDevices
+                                ? const Color(0xFF645D9C)
+                                : Colors.transparent,
+                            border: Border.all(
+                              color: const Color(0xFF645D9C),
+                            ),
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                          alignment: Alignment.center,
+                          child: _logoutAllDevices
+                              ? const Icon(
+                                  Icons.check_rounded,
+                                  size: 11,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'log out of all devices',
+                          style: TextStyle(
+                            color: Color(0xFF121212),
+                            fontSize: 14,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
 
             /// Buttons Row
             Row(
@@ -116,21 +190,31 @@ class LogoutBottomSheet extends StatelessWidget {
                 /// YES BUTTON
                 Expanded(
                   child: GestureDetector(
-                    onTap: () async {
-                      bool res = await LogoutRepository().logout();
+                    key: const Key('confirm_logout_button'),
+                    onTap: _isLoggingOut
+                        ? null
+                        : () async {
+                            setState(() => _isLoggingOut = true);
 
-                      if (!context.mounted) return;
+                            final res =
+                                await (widget.repository ?? LogoutRepository())
+                                    .logout(
+                              logoutAllDevices: _logoutAllDevices,
+                            );
 
-                      if (res == true) {
-                        context.pop();
-                        context.go(AppRoutes.welcome);
-                      } else {
-                        AppToast.show(
-                          message: 'Logout failed. Please try again.',
-                          type: ToastType.error,
-                        );
-                      }
-                    },
+                            if (!context.mounted) return;
+
+                            if (res) {
+                              context.pop();
+                              context.go(AppRoutes.welcome);
+                            } else {
+                              setState(() => _isLoggingOut = false);
+                              AppToast.show(
+                                message: 'Logout failed. Please try again.',
+                                type: ToastType.error,
+                              );
+                            }
+                          },
                     child: Container(
                       height: 50,
                       decoration: ShapeDecoration(

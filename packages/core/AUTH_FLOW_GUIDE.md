@@ -326,10 +326,20 @@ Only reachable on Dio:
 
 ### 6.8 Explicit logout
 
+<!-- Previous single-device-only flow:
 1. `LogoutRepository.logout()` reads `currentSession.accessToken` and
    POSTs `/Auth/logout { access_token }` with `skipAuth: true`
    (best-effort; failures ignored — local logout must proceed so users
    don't get stuck).
+-->
+
+1. `LogoutRepository.logout()` calls the selected endpoint:
+   - Current device: POSTs `/Auth/logout { access_token }` with
+     `skipAuth: true`.
+   - All devices: POSTs `/Auth/logout-all` through the bearer interceptor,
+     which adds the authorization header and refreshes/retries once after
+     a 401.
+   Both calls are best-effort; failures are ignored so users don't get stuck.
 2. Then calls `performHardLogout()` — same cleanup as 6.7.
 
 ---
