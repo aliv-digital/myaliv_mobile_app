@@ -40,15 +40,13 @@ class WelcomeView extends StatelessWidget {
   // ✅ Figma-like image crop/zoom
   static const double _imageZoom = 1.14;
 
-  // ✅ Bottom panel sizing (device independent feel)
-  // - ratio-based but clamped so it never becomes too tall/too short
-  static const double _panelMinH = 290;
-  static const double _panelMaxH = 330;
-  static const double _panelRatio = 0.40;
+  // Fixed lower section height from the Figma design.
+  static const double _panelHeight = 268;
 
   // ✅ Panel paddings (Figma-like)
   static const double _panelTopPadding = 22;
   static const double _panelBottomGap = 16;
+  static const double _logoBottomGap = 116;
   static final Uri _alivFbrPortalUri = Uri.parse(
     'https://portal.alivfibr.com/myfibr/login.aspx',
   );
@@ -83,7 +81,7 @@ class WelcomeView extends StatelessWidget {
               final h = constraints.maxHeight;
               final w = constraints.maxWidth;
 
-              final bottomH = (h * _panelRatio).clamp(_panelMinH, _panelMaxH);
+              final bottomH = _panelHeight;
               final topH = h - bottomH;
 
               return Column(
@@ -105,13 +103,17 @@ class WelcomeView extends StatelessWidget {
                           ),
                         ),
 
-                        // ✅ Logo placement responsive (no magic bottom pixels)
-                        Align(
-                          alignment: const Alignment(0, 0.62),
-                          child: SvgPicture.asset(
-                            AssetConstant.splashLogoSVG,
-                            width: 192,
-                            height: 98,
+                        // Keep the Figma gap between the logo and image edge.
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: _logoBottomGap,
+                          child: Center(
+                            child: SvgPicture.asset(
+                              AssetConstant.splashLogoSVG,
+                              width: 192,
+                              height: 98,
+                            ),
                           ),
                         ),
                       ],
