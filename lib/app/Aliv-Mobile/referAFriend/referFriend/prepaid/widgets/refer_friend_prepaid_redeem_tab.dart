@@ -61,7 +61,10 @@ class ReferFriendPrepaidRedeemTab extends StatelessWidget {
           BlocSelector<ReferFriendPrepaidBloc, ReferFriendPrepaidState, String>(
             selector: (state) => state.redeemInfoHtml,
             builder: (context, redeemInfoHtml) {
-              return ReferFriendPrepaidInfoHtml(htmlContent: redeemInfoHtml);
+              return ReferFriendPrepaidInfoHtml(
+                htmlContent: redeemInfoHtml,
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              );
             },
           ),
         ],

@@ -34,7 +34,7 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
               return ReferFriendPrepaidInfoHtml(
                 htmlContent: referInfoHtml,
                 linkTermsText: true,
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
               );
             },
           ),
