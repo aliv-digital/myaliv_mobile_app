@@ -4,17 +4,19 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestSplash/theme/guest_
 class GuestSplashButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
+  final double width;
 
   const GuestSplashButton({
     super.key,
     required this.label,
     required this.onPressed,
+    this.width = 200,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200, //double.infinity,
+      width: width,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ButtonStyle(

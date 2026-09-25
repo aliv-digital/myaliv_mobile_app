@@ -32,17 +32,19 @@ class GuestSplashScreen extends StatelessWidget {
 class GuestSplashView extends StatelessWidget {
   const GuestSplashView({super.key});
 
-  // Fixed design tokens from Figma.
-  static const double _heroHeight = 460;
-  static const double _heroBottomPurpleMaskHeight = 36;
-  static const double _horizontalPadding = 95;
-  static const double _titleTopPadding = 20;
+  // The Figma screen is 390 px wide and uses equally sized hero and option
+  // sections. Scaling from the screen width keeps that balance across phones.
+  static const double _designWidth = 390;
+  static const double _designSectionHeight = 421;
+  static const double _contentHorizontalPadding = 16;
+  static const double _titleTopPadding = 30;
   static const double _bottomTailSpace = 103;
   static const double _titleToFirstButtonGap = 27;
   static const double _buttonVerticalGap = 20;
-  static const double _logoTopOffset = _heroHeight - _logoHeight - 80;
+  static const double _optionButtonWidth = 200;
   static const double _logoWidth = 193;
   static const double _logoHeight = 99;
+  static const double _logoBottomOffset = 38;
   static const double _backButtonSize = 36;
   static const double _backIconSize = 26;
   static const double _backButtonTopOffset = 12;
@@ -84,8 +86,20 @@ class GuestSplashView extends StatelessWidget {
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              final minPurpleHeight = (constraints.maxHeight - _heroHeight)
+              final designScale = constraints.maxWidth / _designWidth;
+              final heroHeight = _designSectionHeight * designScale;
+              final designOptionsHeight = _designSectionHeight * designScale;
+              final remainingHeight = (constraints.maxHeight - heroHeight)
                   .clamp(0.0, double.infinity);
+              final optionsMinHeight = remainingHeight > designOptionsHeight
+                  ? remainingHeight
+                  : designOptionsHeight;
+              final buttonWidth = (_optionButtonWidth * designScale).clamp(
+                180.0,
+                240.0,
+              );
+              final logoWidth = (_logoWidth * designScale).clamp(165.0, 220.0);
+              final logoHeight = logoWidth * (_logoHeight / _logoWidth);
 
               return SingleChildScrollView(
                 child: ConstrainedBox(
@@ -93,7 +107,7 @@ class GuestSplashView extends StatelessWidget {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: _heroHeight,
+                        height: heroHeight,
                         width: double.infinity,
                         child: Stack(
                           children: [
@@ -130,23 +144,15 @@ class GuestSplashView extends StatelessWidget {
                               ),
                             ),
                             Positioned(
-                              top: _logoTopOffset,
-                              left: constraints.maxWidth / 2 - (_logoWidth / 2),
-                              right:
-                                  constraints.maxWidth / 2 - (_logoWidth / 2),
-                              child: SvgPicture.asset(
-                                AssetConstant.splashLogoSVG,
-                                width: _logoWidth,
-                                height: _logoHeight,
-                              ),
-                            ),
-                            Positioned(
                               left: 0,
                               right: 0,
-                              bottom: -6,
-                              child: Container(
-                                height: _heroBottomPurpleMaskHeight,
-                                color: GuestSplashTheme.purple,
+                              bottom: _logoBottomOffset * designScale,
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  AssetConstant.splashLogoSVG,
+                                  width: logoWidth,
+                                  height: logoHeight,
+                                ),
                               ),
                             ),
                           ],
@@ -154,12 +160,14 @@ class GuestSplashView extends StatelessWidget {
                       ),
                       Container(
                         width: double.infinity,
-                        constraints: BoxConstraints(minHeight: minPurpleHeight),
+                        constraints: BoxConstraints(
+                          minHeight: optionsMinHeight,
+                        ),
                         color: GuestSplashTheme.purple,
                         padding: EdgeInsets.fromLTRB(
-                          _horizontalPadding,
-                          _titleTopPadding,
-                          _horizontalPadding,
+                          _contentHorizontalPadding,
+                          _titleTopPadding * designScale,
+                          _contentHorizontalPadding,
                           safeBottom,
                         ),
                         child: Column(
@@ -169,19 +177,24 @@ class GuestSplashView extends StatelessWidget {
                               'Please Select Option',
                               style: GuestSplashTheme.title,
                             ),
-                            const SizedBox(height: _titleToFirstButtonGap),
+                            SizedBox(
+                              height: _titleToFirstButtonGap * designScale,
+                            ),
                             GuestSplashButton(
+                              width: buttonWidth,
                               label: 'why ALIV ?',
                               onPressed: () => context.push(AppRoutes.whyAliv),
                             ),
-                            const SizedBox(height: _buttonVerticalGap),
+                            SizedBox(height: _buttonVerticalGap * designScale),
                             GuestSplashButton(
+                              width: buttonWidth,
                               label: 'top-up',
                               onPressed: () =>
                                   context.push(AppRoutes.guestTopUp),
                             ),
-                            const SizedBox(height: _buttonVerticalGap),
+                            SizedBox(height: _buttonVerticalGap * designScale),
                             GuestSplashButton(
+                              width: buttonWidth,
                               label: 'purchase a plan',
                               onPressed: () async {
                                 final result =
@@ -196,13 +209,14 @@ class GuestSplashView extends StatelessWidget {
                                 }
                               },
                             ),
-                            const SizedBox(height: _buttonVerticalGap),
+                            SizedBox(height: _buttonVerticalGap * designScale),
                             GuestSplashButton(
+                              width: buttonWidth,
                               label: 'bill pay',
                               onPressed: () =>
                                   context.push(AppRoutes.guestPayBill),
                             ),
-                            const SizedBox(height: _bottomTailSpace),
+                            SizedBox(height: _bottomTailSpace * designScale),
                           ],
                         ),
                       ),
@@ -221,8 +235,6 @@ class GuestSplashView extends StatelessWidget {
 class _GuestHeroImage extends StatelessWidget {
   const _GuestHeroImage({this.imageUrl});
 
-  static const Alignment _alignment = Alignment(0, -0.9);
-
   final String? imageUrl;
 
   @override
@@ -234,8 +246,10 @@ class _GuestHeroImage extends StatelessWidget {
 
     return CachedNetworkImage(
       imageUrl: resolvedImageUrl,
-      fit: BoxFit.fitWidth,
-      alignment: _alignment,
+      // Cover keeps the image natural. The slight upward alignment retains
+      // the face and shows more of the body than a top-aligned crop.
+      fit: BoxFit.cover,
+      alignment: const Alignment(0, -0.25),
       placeholder: (context, url) => _fallbackImage(),
       errorWidget: (context, url, error) {
         debugPrint('GuestHeroImage load failed: $url -> $error');
@@ -245,10 +259,8 @@ class _GuestHeroImage extends StatelessWidget {
   }
 
   Widget _fallbackImage() {
-    return Image.asset(
-      AssetConstant.guestImagePNG,
-      fit: BoxFit.fitWidth,
-      alignment: _alignment,
-    );
+    // Keep the hero area stable while the API image is loading. The previous
+    // local fallback path does not exist in the bundled assets.
+    return ColoredBox(color: GuestSplashTheme.purple);
   }
 }
