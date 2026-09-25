@@ -203,12 +203,18 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
 
   GuestPayBillConfirmArgs _buildConfirmArgs(GuestPayBillState state) {
     final serviceName = state.selectedService?.label ?? '';
-    final identifierLabel = state.isAlivPostpaid ? 'phone no.' : 'account no.';
+    final identifierLabel = state.isAlivPostpaid
+        ? 'phone no.'
+        : state.isAlivFibr
+        ? 'Acc #'
+        : 'account no.';
 
     final identifierValue = state.isAlivPostpaid
         ? LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
             state.mobileNumber,
           )
+        : state.isAlivFibr
+        ? '348340572044'
         : state.accountNumber.trim();
 
     return GuestPayBillConfirmArgs(

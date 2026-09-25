@@ -70,7 +70,7 @@ class _ChangePasswordPrepaidPasswordFieldState
           isFocused: !hasError && _isFocused,
           unfocusedBorderColor: hasError
               ? ChangePasswordPrepaidTheme.error
-              : ChangePasswordPrepaidTheme.inputBorder,
+              : Colors.transparent,
           radius: 10,
           borderWidth: 1,
           child: Container(

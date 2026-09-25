@@ -51,12 +51,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
   final String phoneNumber;
 
   static const double _addOnsTabHorizontalPadding = 25;
-
-  bool _hasActivePlan(PlanModel plan) {
-    final subtitle = plan.subtitle.toLowerCase();
-    return !subtitle.contains('begins immediately') &&
-        !subtitle.contains('start immediately');
-  }
+  static const String _guestFuturePlanStartDate = '01-06-25';
 
   String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 
@@ -126,6 +121,20 @@ class _GuestPurchasePlanView extends StatelessWidget {
     );
   }
 
+  GuestPurchasePlanConfirmationRouteArgs _futurePlanConfirmationArgs(
+    PlanModel plan,
+  ) {
+    return GuestPurchasePlanConfirmationRouteArgs(
+      phoneNumber: phoneNumber,
+      accountHolderName: 'guest purchase a plan',
+      primaryPlanName: plan.title,
+      primaryPlanPrice: plan.price,
+      futurePlanStartDate: _guestFuturePlanStartDate,
+      flow: GuestPurchasePlanConfirmationEntryFlow.skip,
+      forceNow: false,
+    );
+  }
+
   Widget _buildAddOnsTabContent(
     BuildContext context,
     GuestPurchasePlanState state,
@@ -181,7 +190,9 @@ class _GuestPurchasePlanView extends StatelessWidget {
         .read<GuestPurchasePlanBloc>()
         .state
         .selectedTab;
-    final hasActivePlan = _hasActivePlan(plan);
+    final isLiberty70MonthlyPlan =
+        selectedTab == PlanTab.monthly &&
+        plan.title.toLowerCase() == 'liberty70';
 
     showModalBottomSheet<void>(
       context: context,
@@ -230,7 +241,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
         //     },
         //   );
         // }
-        if (hasActivePlan && selectedTab == PlanTab.addOns) {
+        if (isLiberty70MonthlyPlan) {
           return WalletPaymentActivateOrFutureBottomSheet(
             warningText:
                 'activating now replaces the account owner current plan, '
@@ -250,8 +261,8 @@ class _GuestPurchasePlanView extends StatelessWidget {
             onFuturePlanPressed: () {
               Navigator.of(sheetContext).pop();
               context.push(
-                AppRoutes.guestPurchasePlanAddOns,
-                extra: {'phoneNumber': phoneNumber},
+                AppRoutes.guestPurchasePlanConfirmation,
+                extra: _futurePlanConfirmationArgs(plan),
               );
             },
           );

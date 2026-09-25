@@ -694,7 +694,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.guestTopUpReceipt,
         builder: (context, state) => const GuestTopUpReceiptScreen(
-          phoneNumber: '234-235-454',
+          phoneNumber: '242-801-1616',
           amount: 12,
           dateText: 'Mar 22, 2023',
           timeText: '8:34 am',

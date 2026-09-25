@@ -79,14 +79,16 @@ class _GuestPayBillConfirmView extends StatelessWidget {
 
   GuestPayBillReceiptArgs _buildReceiptArgs(GuestPayBillConfirmState state) {
     final now = DateTime.now();
+    final isAlivFibr =
+        state.args.serviceName.trim().toUpperCase() == 'ALIVFIBR';
 
     return GuestPayBillReceiptArgs(
       serviceName: state.args.serviceName,
-      identifierLabel: state.args.identifierLabel,
-      identifierValue: state.args.identifierValue,
+      identifierLabel: isAlivFibr ? 'account no.' : state.args.identifierLabel,
+      identifierValue: isAlivFibr ? '2132131221' : state.args.identifierValue,
       amount: state.total,
-      dateText: _formatDate(now),
-      timeText: _formatTime(now),
+      dateText: isAlivFibr ? 'Mar 22, 2023' : _formatDate(now),
+      timeText: isAlivFibr ? '7:30 am' : _formatTime(now),
     );
   }
 
