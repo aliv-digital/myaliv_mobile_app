@@ -108,7 +108,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                         'timeText': DateFormat(
                           'h:mm a',
                         ).format(now).toLowerCase(),
-                        'emailAddress': 'guest',
+                        'emailAddress': 'jade123@hotmail.com',
                       },
                     );
                   },
