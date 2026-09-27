@@ -160,6 +160,37 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// Guest top-up 3DS envelope: POST /Guest/top-up.
+  /// Phone number lives in the body (not the URL path).
+  static Map<String, dynamic> guestTopUpBodyFor3DS({
+    required double amount,
+    required String phoneNumber,
+  }) {
+    final rawPhone = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return <String, dynamic>{
+      'Amount': double.parse(amount.toStringAsFixed(2)),
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+      'ChannelType': 'SelfCare',
+      'PhoneNumber': rawPhone,
+    };
+  }
+
+  /// Guest bill-pay 3DS envelope: POST /Guest/billpay.
+  static Map<String, dynamic> guestBillPayBodyFor3DS({
+    required double amount,
+    required String phoneNumber,
+  }) {
+    final rawPhone = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return <String, dynamic>{
+      'Amount': double.parse(amount.toStringAsFixed(2)),
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+      'ChannelType': 'SelfCare',
+      'PhoneNumber': rawPhone,
+    };
+  }
+
   static String? _formatStartDate(DateTime? date) {
     if (date == null) return null;
     String two(int v) => v.toString().padLeft(2, '0');

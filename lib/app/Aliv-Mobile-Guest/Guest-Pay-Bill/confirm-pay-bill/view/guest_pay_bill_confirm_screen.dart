@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/model/guest_pay_bill_receipt_args.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
@@ -110,16 +115,55 @@ class _GuestPayBillConfirmView extends StatelessWidget {
     if (errorMessage != null && errorMessage.isNotEmpty) {
       _showSnackBar(context, errorMessage);
     }
-
-    if (state.payStatus == GuestPayBillConfirmPayStatus.success) {
-      final receiptArgs = _buildReceiptArgs(state);
-      context.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
-    }
   }
 
-  void _onPayNowPressed(BuildContext context) {
-    final bloc = _bloc(context);
-    bloc.add(const GuestPayBillConfirmPayNowPressed());
+  void _open3DSPayment(BuildContext context, GuestPayBillConfirmState state) {
+    final navigator = Navigator.of(context);
+    final router = GoRouter.of(context);
+
+    final body = ChangeBundleRequestFactory.guestBillPayBodyFor3DS(
+      amount: state.total,
+      phoneNumber: state.args.identifierValue,
+    );
+
+    final request = PaymentRequest(
+      url: Api.guestBillPay3DSUrl,
+      body: body,
+      redirectScheme: 'myaliv',
+      skipAuth: true,
+    );
+
+    navigator.push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => PaymentIFrameScreen(
+          request: request,
+          appBarBgColor: GuestPayBillConfirmTheme.primary,
+          title: 'payment',
+          onSuccess: (PaymentSuccess success) {
+            final orderId = int.tryParse(success.orderId ?? '');
+            if (orderId == null || orderId <= 0) {
+              navigator.pop();
+              AppToast.show(
+                message: 'Payment failed. Please try again.',
+                type: ToastType.error,
+              );
+              return;
+            }
+            navigator.pop();
+            final receiptArgs = _buildReceiptArgs(state);
+            router.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
+          },
+          onFailure: (String message) {
+            navigator.pop();
+            AppToast.show(message: message, type: ToastType.error);
+          },
+          onHomeTap: () {
+            navigator.pop();
+            router.go(AppRoutes.home);
+          },
+        ),
+      ),
+    );
   }
 
   void _onTermsCheckboxToggled(BuildContext context) {
@@ -134,14 +178,8 @@ class _GuestPayBillConfirmView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
-      listenWhen: (previousState, currentState) {
-        final hasErrorChanged =
-            previousState.errorMessage != currentState.errorMessage;
-        final hasPayStatusChanged =
-            previousState.payStatus != currentState.payStatus;
-
-        return hasErrorChanged || hasPayStatusChanged;
-      },
+      listenWhen: (previousState, currentState) =>
+          previousState.errorMessage != currentState.errorMessage,
       listener: (context, state) {
         _onStateChanged(context, state);
       },
@@ -177,7 +215,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                   backgroundColor: Colors.white,
                   buttonColor: GuestPayBillConfirmTheme.primary,
                   onPayNow: () {
-                    _onPayNowPressed(context);
+                    _open3DSPayment(context, state);
                   },
                 );
               },

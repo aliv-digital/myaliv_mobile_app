@@ -182,4 +182,22 @@ class Api {
   /// Same envelope as change-bundle but with RedirectURL + Branch at the top level.
   static const changeBundleDs3Url =
       '$baseUrl/v1/MyAliv/Order/3ds/change-bundle';
+
+  /// Guest top-up 3DS: POST /Guest/top-up
+  /// Body: { Amount, RedirectURL, Branch, ChannelType, PhoneNumber }
+  /// Response: { "html": "..." } — loaded into PaymentIFrameScreen.
+  /// Success when orderId from redirect is > 0.
+  static const guestTopUp3DSUrl = '$baseUrl/v1/MyAliv/Guest/top-up';
+
+  /// Guest account balance check: POST /Guest/balance
+  /// Body: { "ChannelType": "SelfCare", "PhoneNumber": "digits-only" }
+  /// Response: { "Balance": 171.38, "AccountStatus": "AC" }
+  /// AccountStatus null → treat as "unidentified".
+  static const guestBalanceUrl = '$baseUrl/v1/MyAliv/Guest/balance';
+
+  /// Guest bill pay 3DS: POST /Guest/billpay
+  /// Body: { Amount, RedirectURL, Branch, ChannelType, PhoneNumber }
+  /// Response: { "html": "..." } — loaded into PaymentIFrameScreen.
+  /// Success when orderId from redirect is > 0.
+  static const guestBillPay3DSUrl = '$baseUrl/v1/MyAliv/Guest/billpay';
 }

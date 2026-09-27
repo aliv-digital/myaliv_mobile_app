@@ -693,12 +693,15 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.guestTopUpReceipt,
-        builder: (context, state) => const GuestTopUpReceiptScreen(
-          phoneNumber: '242-801-1616',
-          amount: 12,
-          dateText: 'Mar 22, 2023',
-          timeText: '8:34 am',
-        ),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return GuestTopUpReceiptScreen(
+            phoneNumber: extra?['phoneNumber'] as String? ?? '',
+            amount: (extra?['amount'] as num?)?.toDouble() ?? 0,
+            dateText: extra?['dateText'] as String? ?? '',
+            timeText: extra?['timeText'] as String? ?? '',
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.splash,

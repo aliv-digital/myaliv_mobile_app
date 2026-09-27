@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
 
@@ -63,6 +64,7 @@ class CardPaymentService {
   Future<String?> fetch3DSHtml({
     required String url,
     required Map<String, dynamic> body,
+    bool skipAuth = false,
     String logTag = 'card-payment-3ds',
   }) async {
     if (kDebugMode) {
@@ -74,6 +76,7 @@ class CardPaymentService {
         url,
         method: HttpMethod.post,
         data: body,
+        options: skipAuth ? Options(extra: {'skipAuth': true}) : null,
       );
 
       if (kDebugMode) {

@@ -4,6 +4,7 @@ class PaymentRequest {
     required this.url,
     required this.body,
     required this.redirectScheme,
+    this.skipAuth = false,
   });
 
   /// Backend endpoint to POST the payment body to.
@@ -14,4 +15,7 @@ class PaymentRequest {
 
   /// URL scheme the bank page redirects to on completion (e.g. `"myaliv"`).
   final String redirectScheme;
+
+  /// Set to true for guest endpoints that do not require a Bearer token.
+  final bool skipAuth;
 }

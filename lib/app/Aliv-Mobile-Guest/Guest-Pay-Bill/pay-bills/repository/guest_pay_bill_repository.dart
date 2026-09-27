@@ -1,3 +1,7 @@
+import 'package:core/core.dart';
+import 'package:dio/dio.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+
 import '../model/guest_pay_bill_models.dart';
 
 class GuestPayBillRepository {
@@ -14,17 +18,33 @@ class GuestPayBillRepository {
     required String mobileNumber,
     required String confirmMobileNumber,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 700));
+    final rawPhone = mobileNumber.replaceAll(RegExp(r'\D'), '');
 
-    if (mobileNumber.trim().isEmpty || confirmMobileNumber.trim().isEmpty) {
-      throw Exception('Missing number');
-    }
-    if (mobileNumber.trim() != confirmMobileNumber.trim()) {
-      throw Exception('Number mismatch');
-    }
+    final networkService = instance<NetworkService>();
+    final response = await networkService.request<dynamic>(
+      Api.guestBalanceUrl,
+      method: HttpMethod.post,
+      data: <String, dynamic>{
+        'ChannelType': 'SelfCare',
+        'PhoneNumber': rawPhone,
+      },
+      options: Options(extra: {'skipAuth': true}),
+    );
 
-    // Sample response aligned with the UI mock.
-    return const PayBillAccountInfo(status: 'Active', balance: 200.00);
+    final data = response.data;
+    final balance =
+        (data is Map ? (data['Balance'] ?? data['balance']) : null);
+    final statusRaw =
+        data is Map ? (data['AccountStatus'] ?? data['accountStatus']) : null;
+    final status =
+        (statusRaw is String && statusRaw.trim().isNotEmpty)
+            ? statusRaw.trim()
+            : 'unidentified';
+
+    return PayBillAccountInfo(
+      status: status,
+      balance: balance is num ? balance.toDouble() : null,
+    );
   }
 
   Future<PayBillAccountInfo> verifyRev({

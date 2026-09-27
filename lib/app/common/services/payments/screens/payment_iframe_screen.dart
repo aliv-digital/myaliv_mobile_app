@@ -61,6 +61,7 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
       final html = await instance<CardPaymentService>().fetch3DSHtml(
         url: widget.request.url,
         body: widget.request.body,
+        skipAuth: widget.request.skipAuth,
       );
 
       if (!mounted) return;
@@ -107,10 +108,8 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = e.toString().replaceFirst('Exception: ', '');
-        _fetchingHtml = false;
-      });
+      final message = e.toString().replaceFirst('Exception: ', '');
+      widget.onFailure(message);
     }
   }
 

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
@@ -59,45 +65,70 @@ class _GuestConfirmTopUpView extends StatelessWidget {
     return '\$ ${amount.toStringAsFixed(2)}';
   }
 
-  void _showSnackBar(BuildContext context, String message) {
-    AppToast.show(message: message.toString());
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text(
-    //       message,
-    //       style: TopUpConfirmTheme.snackBarText,
-    //     ),
-    //   ),
-    // );
-  }
+  void _open3DSPayment(BuildContext context, GuestConfirmTopUpState state) {
+    final navigator = Navigator.of(context);
+    final router = GoRouter.of(context);
 
-  void _openTerms(BuildContext context) {
-    // TODO: open terms page / modal / webview
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()));
+    final body = ChangeBundleRequestFactory.guestTopUpBodyFor3DS(
+      amount: state.total,
+      phoneNumber: state.phoneNumber,
+    );
+
+    final request = PaymentRequest(
+      url: Api.guestTopUp3DSUrl,
+      body: body,
+      redirectScheme: 'myaliv',
+      skipAuth: true,
+    );
+
+    navigator.push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => PaymentIFrameScreen(
+          request: request,
+          appBarBgColor: TopUpConfirmTheme.appBarColor,
+          title: 'payment',
+          onSuccess: (PaymentSuccess success) {
+            final orderId = int.tryParse(success.orderId ?? '');
+            if (orderId == null || orderId <= 0) {
+              navigator.pop();
+              AppToast.show(
+                message: 'Payment failed. Please try again.',
+                type: ToastType.error,
+              );
+              return;
+            }
+            navigator.pop();
+            final now = DateTime.now();
+            router.push(
+              AppRoutes.guestTopUpReceipt,
+              extra: <String, dynamic>{
+                'phoneNumber': state.phoneNumber,
+                'amount': state.total,
+                'dateText': DateFormat('MMM d, yyyy').format(now),
+                'timeText': DateFormat('h:mm a').format(now).toLowerCase(),
+              },
+            );
+          },
+          onFailure: (String message) {
+            navigator.pop();
+            AppToast.show(message: message, type: ToastType.error);
+          },
+          onHomeTap: () {
+            navigator.pop();
+            router.go(AppRoutes.home);
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<GuestConfirmTopUpBloc, GuestConfirmTopUpState>(
-      listenWhen: (previousState, currentState) {
-        final hasStatusChanged = previousState.status != currentState.status;
-        final hasTermsRequestChanged =
-            previousState.termsRequestId != currentState.termsRequestId;
-        return hasStatusChanged || hasTermsRequestChanged;
-      },
+      listenWhen: (previousState, currentState) =>
+          previousState.termsRequestId != currentState.termsRequestId,
       listener: (context, state) {
-        if (state.status == GuestConfirmTopUpStatus.success) {
-          _showSnackBar(context, 'Payment successful');
-        }
-
-        if (state.status == GuestConfirmTopUpStatus.failure) {
-          final errorMessage = state.errorMessage ?? 'Payment failed';
-          _showSnackBar(context, errorMessage);
-        }
-
-        if (state.termsRequestId != 0) {
-          _openTerms(context);
-        }
+        // no-op: terms modal is handled inline via onTapTerms
       },
       child: Scaffold(
         backgroundColor: TopUpConfirmTheme.screenBackgroundColor,
@@ -131,12 +162,9 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
                   buttonColor: TopUpConfirmTheme.payBarButtonColor,
                   onPayNow: () {
-                    // If payment should be done by BLoC flow, use:
-                    // final bloc = context.read<GuestConfirmTopUpBloc>();
-                    // bloc.add(
-                    //   const GuestConfirmTopUpPayNowPressed(),
-                    // );
-                    context.push(AppRoutes.guestTopUpReceipt);
+                    final state =
+                        context.read<GuestConfirmTopUpBloc>().state;
+                    _open3DSPayment(context, state);
                   },
                 );
               },
