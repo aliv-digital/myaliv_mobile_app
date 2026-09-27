@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/guest_pay_bill_models.dart';
 import '../repository/guest_pay_bill_repository.dart';
@@ -184,13 +185,14 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
           accountInfo: info,
         ),
       );
-    } catch (_) {
+    } catch (e) {
+      final serverMessage = _extractMessage(e);
       emit(
         state.copyWith(
           verifyStatus: GuestPayBillVerifyStatus.failure,
-          errorMessage: state.isAlivPostpaid
+          errorMessage: serverMessage ?? (state.isAlivPostpaid
               ? 'Mobile number mismatch or invalid.'
-              : 'Account not found. Please check details.',
+              : 'Account not found. Please check details.'),
           accountInfo: null,
         ),
       );
@@ -230,5 +232,20 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
         ),
       );
     }
+  }
+
+  /// Extracts the server's `Message` field from a [NetworkException] response
+  /// body. Returns null if the exception carries no useful message so the
+  /// caller can fall back to a generic string.
+  String? _extractMessage(Object e) {
+    if (e is! NetworkException) return null;
+    final data = e.data;
+    if (data is Map) {
+      final msg = data['Message'] ?? data['message'];
+      if (msg is String && msg.trim().isNotEmpty) return msg.trim();
+    }
+    final msg = e.message.trim();
+    if (msg.isNotEmpty && msg != 'An error occurred') return msg;
+    return null;
   }
 }

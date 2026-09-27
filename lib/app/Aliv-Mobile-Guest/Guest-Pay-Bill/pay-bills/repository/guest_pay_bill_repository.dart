@@ -68,17 +68,31 @@ class GuestPayBillRepository {
     required String accountNumberOrUsername,
     required String enteredName,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 700));
+    final networkService = instance<NetworkService>();
+    final response = await networkService.request<dynamic>(
+      Api.guestFibrBalanceUrl,
+      method: HttpMethod.post,
+      data: <String, dynamic>{
+        'ChannelType': 'SelfCare',
+        'FibrName': enteredName.trim().toUpperCase(),
+        'FibrAccountID': accountNumberOrUsername.trim(),
+      },
+      options: Options(extra: {'skipAuth': true}),
+    );
 
-    if (accountNumberOrUsername.trim().length >= 8) {
-      return PayBillAccountInfo(
-        status: 'Active',
-        name: enteredName.trim().isEmpty ? 'Tanya Bain' : enteredName.trim(),
-        balance: 200.00,
-      );
-    }
+    final data = response.data;
+    final idAcc = data is Map ? (data['id_acc'] ?? data['Id_acc']) : null;
+    final balance = data is Map ? (data['Balance'] ?? data['balance']) : null;
+    final statusRaw =
+        data is Map ? (data['AccountStatus'] ?? data['accountStatus']) : null;
 
-    throw Exception('Account not found');
+    return PayBillAccountInfo(
+      status: (statusRaw is String && statusRaw.trim().isNotEmpty)
+          ? statusRaw.trim()
+          : 'unidentified',
+      balance: balance is num ? balance.toDouble() : null,
+      fibrAccountId: idAcc is num ? idAcc.toInt() : null,
+    );
   }
 
   Future<void> submitBillPayment({

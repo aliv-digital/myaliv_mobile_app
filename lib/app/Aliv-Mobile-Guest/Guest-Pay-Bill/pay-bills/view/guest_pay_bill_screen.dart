@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/model/line_status.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_submit_row.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -213,8 +214,6 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         ? LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
             state.mobileNumber,
           )
-        : state.isAlivFibr
-        ? '348340572044'
         : state.accountNumber.trim();
 
     return GuestPayBillConfirmArgs(
@@ -222,6 +221,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       identifierLabel: identifierLabel,
       identifierValue: identifierValue,
       amount: state.amountValue,
+      fibrAccountId: state.accountInfo?.fibrAccountId,
     );
   }
 
@@ -501,9 +501,11 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               height: GuestPayBillTheme.labelToFieldGap,
                             ),
                             GuestPayBillReadOnlyBox(
-                              text:
-                                  state.accountInfo?.status ??
-                                  GuestPayBillTheme.statusPlaceholderText,
+                              text: state.accountInfo != null
+                                  ? LineStatus.fromCode(
+                                      state.accountInfo!.status,
+                                    ).displayLabel
+                                  : GuestPayBillTheme.statusPlaceholderText,
                             ),
                             const SizedBox(
                               height: GuestPayBillTheme.sectionGap,

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 
 abstract class GuestPayBillConfirmEvent extends Equatable {
   const GuestPayBillConfirmEvent();
@@ -16,4 +17,11 @@ class GuestPayBillConfirmPayNowPressed extends GuestPayBillConfirmEvent {
 
 class GuestPayBillConfirmTermsCheckboxToggled extends GuestPayBillConfirmEvent {
   const GuestPayBillConfirmTermsCheckboxToggled();
+}
+
+class GuestPayBillConfirmFibrPayPressed extends GuestPayBillConfirmEvent {
+  const GuestPayBillConfirmFibrPayPressed({required this.cardDetails});
+  final NewCardDetails cardDetails;
+  @override
+  List<Object?> get props => [cardDetails];
 }

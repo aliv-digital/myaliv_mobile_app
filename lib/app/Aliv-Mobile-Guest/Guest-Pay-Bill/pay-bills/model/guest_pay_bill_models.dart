@@ -8,8 +8,14 @@ class PayBillAccountInfo {
   final String status; // Active
   final String? name; // optional (REV type)
   final double? balance; // optional (REV type)
+  final int? fibrAccountId; // id_acc from /Guest/fibrbalance response
 
-  const PayBillAccountInfo({required this.status, this.name, this.balance});
+  const PayBillAccountInfo({
+    required this.status,
+    this.name,
+    this.balance,
+    this.fibrAccountId,
+  });
 }
 
 class PayBillCountry {

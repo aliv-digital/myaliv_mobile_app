@@ -17,6 +17,7 @@ class GuestPayBillConfirmBloc
     on<GuestPayBillConfirmStarted>(_onStarted);
     on<GuestPayBillConfirmPayNowPressed>(_onPayNow);
     on<GuestPayBillConfirmTermsCheckboxToggled>(_onTermsCheckboxToggled);
+    on<GuestPayBillConfirmFibrPayPressed>(_onFibrPay);
   }
 
   Future<void> _onStarted(
@@ -98,5 +99,42 @@ class GuestPayBillConfirmBloc
     Emitter<GuestPayBillConfirmState> emit,
   ) {
     emit(state.copyWith(isTermsChecked: !state.isTermsChecked));
+  }
+
+  Future<void> _onFibrPay(
+    GuestPayBillConfirmFibrPayPressed event,
+    Emitter<GuestPayBillConfirmState> emit,
+  ) async {
+    if (state.payStatus == GuestPayBillConfirmPayStatus.loading) return;
+
+    emit(
+      state.copyWith(
+        payStatus: GuestPayBillConfirmPayStatus.loading,
+        errorMessage: null,
+      ),
+    );
+
+    try {
+      final orderId = await repo.fibrPay(
+        fibrAccountId: state.args.fibrAccountId!,
+        amount: state.total,
+        cardDetails: event.cardDetails,
+      );
+
+      if (orderId <= 0) throw Exception('Payment failed. Please try again.');
+
+      await instance<AnalyticsService>().logBillPayment(
+        amount: state.total,
+        paymentMethod: 'card',
+      );
+      emit(state.copyWith(payStatus: GuestPayBillConfirmPayStatus.success));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          payStatus: GuestPayBillConfirmPayStatus.failure,
+          errorMessage: e.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+    }
   }
 }

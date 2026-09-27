@@ -200,4 +200,14 @@ class Api {
   /// Response: { "html": "..." } — loaded into PaymentIFrameScreen.
   /// Success when orderId from redirect is > 0.
   static const guestBillPay3DSUrl = '$baseUrl/v1/MyAliv/Guest/billpay';
+
+  /// ALIVFibr balance check: POST /Guest/fibrbalance
+  /// Body: { "ChannelType": "SelfCare", "FibrName": "UPPERCASE NAME", "FibrAccountID": "digits" }
+  /// Response: { "id_acc": 407413542, "Balance": 889.37, "AccountStatus": "AC" }
+  static const guestFibrBalanceUrl = '$baseUrl/v1/MyAliv/Guest/fibrbalance';
+
+  /// ALIVFibr direct card payment: POST /Guest/fibrpay (no 3DS)
+  /// Body: { "CardPayment": { Amount, PaymentInstrument, CardNumber, CardExpiration, CardSecurityCode, CardHolderName }, "Branch": "branch", "ChannelType": "SelfCare", "FibrAccountID": 407413542 }
+  /// Response: { "OrderId": 804441 } — success when OrderId > 0.
+  static const guestFibrPayUrl = '$baseUrl/v1/MyAliv/Guest/fibrpay';
 }

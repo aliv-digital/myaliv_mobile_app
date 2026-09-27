@@ -176,6 +176,27 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// ALIVFibr direct card payment: POST /Guest/fibrpay (no 3DS).
+  static Map<String, dynamic> fibrPayBody({
+    required int fibrAccountId,
+    required double amount,
+    required NewCardDetails card,
+  }) {
+    return <String, dynamic>{
+      'CardPayment': <String, dynamic>{
+        'Amount': double.parse(amount.toStringAsFixed(2)),
+        'PaymentInstrument': 'Visa',
+        'CardNumber': card.cardNumber,
+        'CardExpiration': card.cardExpiration,
+        'CardSecurityCode': card.cardSecurityCode,
+        'CardHolderName': card.cardHolderName,
+      },
+      'Branch': 'branch',
+      'ChannelType': 'SelfCare',
+      'FibrAccountID': fibrAccountId,
+    };
+  }
+
   /// Guest bill-pay 3DS envelope: POST /Guest/billpay.
   static Map<String, dynamic> guestBillPayBodyFor3DS({
     required double amount,

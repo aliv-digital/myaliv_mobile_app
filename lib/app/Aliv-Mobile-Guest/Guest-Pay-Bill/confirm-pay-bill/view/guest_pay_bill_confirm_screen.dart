@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_req
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/widgets/checkout_card_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -84,16 +85,13 @@ class _GuestPayBillConfirmView extends StatelessWidget {
 
   GuestPayBillReceiptArgs _buildReceiptArgs(GuestPayBillConfirmState state) {
     final now = DateTime.now();
-    final isAlivFibr =
-        state.args.serviceName.trim().toUpperCase() == 'ALIVFIBR';
-
     return GuestPayBillReceiptArgs(
       serviceName: state.args.serviceName,
-      identifierLabel: isAlivFibr ? 'account no.' : state.args.identifierLabel,
-      identifierValue: isAlivFibr ? '2132131221' : state.args.identifierValue,
+      identifierLabel: state.args.identifierLabel,
+      identifierValue: state.args.identifierValue,
       amount: state.total,
-      dateText: isAlivFibr ? 'Mar 22, 2023' : _formatDate(now),
-      timeText: isAlivFibr ? '7:30 am' : _formatTime(now),
+      dateText: _formatDate(now),
+      timeText: _formatTime(now),
     );
   }
 
@@ -115,6 +113,20 @@ class _GuestPayBillConfirmView extends StatelessWidget {
     if (errorMessage != null && errorMessage.isNotEmpty) {
       _showSnackBar(context, errorMessage);
     }
+  }
+
+  Future<void> _openFibrPayment(
+    BuildContext context,
+    GuestPayBillConfirmState state,
+  ) async {
+    final cardDetails = await CheckoutCardBottomSheet.show(
+      context,
+      amountText: _formatAmount(state.total),
+    );
+    if (cardDetails == null || !context.mounted) return;
+    _bloc(context).add(
+      GuestPayBillConfirmFibrPayPressed(cardDetails: cardDetails),
+    );
   }
 
   void _open3DSPayment(BuildContext context, GuestPayBillConfirmState state) {
@@ -179,9 +191,20 @@ class _GuestPayBillConfirmView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<GuestPayBillConfirmBloc, GuestPayBillConfirmState>(
       listenWhen: (previousState, currentState) =>
-          previousState.errorMessage != currentState.errorMessage,
+          previousState.errorMessage != currentState.errorMessage ||
+          previousState.payStatus != currentState.payStatus,
       listener: (context, state) {
         _onStateChanged(context, state);
+        if (state.payStatus == GuestPayBillConfirmPayStatus.success) {
+          final isAlivFibr =
+              state.args.serviceName.trim().toUpperCase() == 'ALIVFIBR';
+          if (isAlivFibr) {
+            GoRouter.of(context).push(
+              AppRoutes.guestPayBillReceipt,
+              extra: _buildReceiptArgs(state),
+            );
+          }
+        }
       },
       // Root screen scaffold
       child: Scaffold(
@@ -215,7 +238,15 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                   backgroundColor: Colors.white,
                   buttonColor: GuestPayBillConfirmTheme.primary,
                   onPayNow: () {
-                    _open3DSPayment(context, state);
+                    final isAlivFibr = state.args.serviceName
+                            .trim()
+                            .toUpperCase() ==
+                        'ALIVFIBR';
+                    if (isAlivFibr) {
+                      _openFibrPayment(context, state);
+                    } else {
+                      _open3DSPayment(context, state);
+                    }
                   },
                 );
               },
