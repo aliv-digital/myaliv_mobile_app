@@ -20,6 +20,7 @@ import '../widgets/login_bottom_texts.dart';
 import '../widgets/login_header.dart';
 import '../widgets/login_password_field.dart';
 import '../widgets/login_phone_row.dart';
+import '../widgets/login_privacy_policy_link.dart';
 import '../widgets/login_social_buttons.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -215,11 +216,24 @@ class _LoginView extends StatelessWidget {
                       const LoginSocialButtons(),
                       const SizedBox(height: AuthModuleSizes.socialToBottomGap),
                       LoginBottomTexts(),
-                      const SizedBox(
-                        height: AuthModuleSizes.bottomScrollSafeGap,
-                      ),
+                      // Previous bottom spacer is intentionally preserved but
+                      // hidden because the privacy footer now fills the
+                      // remaining space and stays above the colored stripes.
+                      // const SizedBox(
+                      //   height: AuthModuleSizes.bottomScrollSafeGap,
+                      // ),
                     ],
                   ),
+                ),
+              ),
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Spacer(),
+                    LoginPrivacyPolicyLink(),
+                    SizedBox(height: AuthModuleSizes.privacyPolicyBottomGap),
+                  ],
                 ),
               ),
             ],
