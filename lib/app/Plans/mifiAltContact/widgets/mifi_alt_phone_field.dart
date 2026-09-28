@@ -55,7 +55,7 @@ class MifiAltPhoneField extends StatelessWidget {
           controller: controller,
           focusNode: focusNode,
           hideUnfocusedInputBorder: false,
-          hintText: 'eg: 242-899-9999',
+          hintText: 'eg: (242)-899-9999',
           flagEmoji: country.flagEmoji,
           dialCode: country.dialCode,
           countryIsoCode: country.isoCode,

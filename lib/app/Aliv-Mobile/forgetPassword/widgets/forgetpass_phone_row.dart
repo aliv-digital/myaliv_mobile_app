@@ -49,7 +49,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
   @override
   Widget build(BuildContext context) {
     return CustomCountryPhoneInputRow(
-      hintText: 'eg: 242-899-9999',
+      hintText: 'eg: (242)-899-9999',
       flagEmoji: _flagEmoji,
       dialCode: _dialCode,
       countryIsoCode: _selectedCountry?.countryCode ?? 'BS',

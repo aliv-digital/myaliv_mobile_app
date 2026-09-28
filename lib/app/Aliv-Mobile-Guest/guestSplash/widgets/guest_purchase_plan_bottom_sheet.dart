@@ -212,7 +212,7 @@ class _SheetBody extends StatelessWidget {
               //   showCountryArrow: true,
               // ),
               CustomCountryPhoneInputRow(
-                hintText: 'eg: 242-899-9999',
+                hintText: 'eg: (242)-899-9999',
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
                 countryIsoCode: state.purchaseCountry?.countryCode,
@@ -286,7 +286,7 @@ class _SheetBody extends StatelessWidget {
               //   showCountryArrow: false,
               // ),
               CustomCountryPhoneInputRow(
-                hintText: 'eg: 242-899-9999',
+                hintText: 'eg: (242)-899-9999',
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
                 countryIsoCode: state.purchaseCountry?.countryCode,

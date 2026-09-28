@@ -20,7 +20,7 @@ class GuestPayBillTheme {
   static const String confirmMobileNumberLabel = 'confirm mobile number';
 
   // Used by: phone `TextField` hint and inline verify hint.
-  static const String phoneHintText = 'eg: 242-899-9999';
+  static const String phoneHintText = 'eg: (242)-899-9999';
 
   // Used by: inline validation error under phone fields.
   static const String invalidPhoneErrorMessage = 'invalid phone number';
