@@ -5,10 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
-import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../router/app_routes.dart';
+import '../../login/widgets/login_privacy_policy_link.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
@@ -16,7 +15,6 @@ import '../repository/forgetpassword_repository.dart';
 import '../theme/forget_password_theme.dart';
 import '../widgets/forgetpass_header.dart';
 import '../widgets/forgetpass_phone_row.dart';
-import '../widgets/termsAndConditions.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});
@@ -103,33 +101,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                       const SizedBox(
                         height: ForgetPasswordSizes.sendToTermsGap,
                       ),
-                      BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
-                        buildWhen: (prev, curr) =>
-                            prev.isTermsLoading != curr.isTermsLoading ||
-                            prev.isPrivacyLoading != curr.isPrivacyLoading,
-                        builder: (context, state) {
-                          return TermsAndPrivacyText(
-                            isTermsLoading: state.isTermsLoading,
-                            isPrivacyLoading: state.isPrivacyLoading,
-                            onTermsTap: () async {
-                              await showTermsAndConditionsModal(context);
-                            },
-                            onPrivacyTap: () async {
-                              final uri = Uri.parse(
-                                'https://www.bealiv.com/privacy-policy/',
-                              );
-                              if (!await launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
-                              )) {
-                                throw Exception(
-                                  'Could not open privacy policy',
-                                );
-                              }
-                            },
-                          );
-                        },
-                      ),
+                      const Center(child: LoginPrivacyPolicyLink()),
                     ],
                   ),
                 ),
