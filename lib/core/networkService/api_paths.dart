@@ -5,6 +5,8 @@ class Api {
   static const updatePasswordUrl = '$baseUrl/v1/MyAliv/Auth/update-password';
   static const verifyOtpUrl = '$baseUrl/v1/MyAliv/Auth/2fa/verify';
   static const resendOtpUrl = '$baseUrl/v1/MyAliv/Auth/2fa/resend';
+                                          
+  static const challengeOtpUrl = '$baseUrl/v1/MyAliv/Auth/2fa/challenge';
   static const refreshUrl = '$baseUrl/v1/MyAliv/Auth/refresh';
 
   static const accountUrl = '$baseUrl/v1/MyAliv/Account';

@@ -106,9 +106,7 @@ class _ProfilePrepaidView extends StatelessWidget {
                                 }
 
                                 if (item.id == 'call_logs') {
-                                  context.push(
-                                    '${AppRoutes.callLogs}?tab=call_logs',
-                                  );
+                                  context.push(AppRoutes.callLogsVerification);
                                   // context.push(AppRoutes.enterPassword);
                                   // context.push(
                                   //   Uri(
