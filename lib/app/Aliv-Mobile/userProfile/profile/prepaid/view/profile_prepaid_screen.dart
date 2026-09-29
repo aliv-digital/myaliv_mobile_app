@@ -1,8 +1,12 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import '../bloc/profile_prepaid_bloc.dart';
@@ -29,8 +33,40 @@ class ProfilePrepaidScreen extends StatelessWidget {
   }
 }
 
-class _ProfilePrepaidView extends StatelessWidget {
+class _ProfilePrepaidView extends StatefulWidget {
   const _ProfilePrepaidView();
+
+  @override
+  State<_ProfilePrepaidView> createState() => _ProfilePrepaidViewState();
+}
+
+class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
+  bool _requestingCallLogsChallenge = false;
+
+  Future<void> _openCallLogs() async {
+    if (_requestingCallLogsChallenge) return;
+
+    setState(() => _requestingCallLogsChallenge = true);
+    try {
+      final challenge = await instance<CallLogsVerificationRepository>().requestChallenge();
+      if (!mounted) return;
+
+      context.push(
+        AppRoutes.callLogsOtp,
+        extra: CallLogsOtpRouteArgs(
+          mfaToken: challenge.mfaToken,
+          apiPhoneNumber: challenge.apiPhoneNumber,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      AppToast.show(message: error.toString(), type: ToastType.error);
+    } finally {
+      if (mounted) {
+        setState(() => _requestingCallLogsChallenge = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +99,8 @@ class _ProfilePrepaidView extends StatelessWidget {
                 child: DefaultAppBar(
                   title: 'profile',
                   onBack: () => context.read<ProfilePrepaidBloc>().add(
-                    const ProfilePrepaidBackPressed(),
-                  ),
+                        const ProfilePrepaidBackPressed(),
+                      ),
                   showBackArrow: true,
                   onHomeTap: () => context.go(AppRoutes.home),
                 ),
@@ -92,6 +128,21 @@ class _ProfilePrepaidView extends StatelessWidget {
                             return ProfileMenuItemTile(
                               title: item.title,
                               enabled: item.enabled,
+                              trailing: item.id == 'call_logs' && _requestingCallLogsChallenge
+                                  ? const SizedBox.square(
+                                      dimension: 22,
+                                      child: Center(
+                                        child: SizedBox.square(
+                                          dimension: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color:
+                                                ProfilePrepaidTheme.textBlack,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : null,
                               onTap: () async {
                                 if (item.id == 'my_profile') {
                                   context.push(
@@ -106,24 +157,18 @@ class _ProfilePrepaidView extends StatelessWidget {
                                 }
 
                                 if (item.id == 'call_logs') {
-                                  context.push(AppRoutes.callLogsVerification);
-                                  // context.push(AppRoutes.enterPassword);
-                                  // context.push(
-                                  //   Uri(
-                                  //     path: AppRoutes.enterPassword,
-                                  //     queryParameters: {
-                                  //       'title': 'enter password',
-                                  //       'continue': 'call_logs',
-                                  //     },
-                                  //   ).toString(),
-                                  // );
+                                  context.read<ProfilePrepaidBloc>().add(
+                                        ProfilePrepaidItemPressed(item),
+                                      );
+                                  await _openCallLogs();
+                                  return;
                                 }
                                 if (item.id == 'rewards') {
                                   context.push(AppRoutes.rewardPrepaidScreen);
                                 }
                                 context.read<ProfilePrepaidBloc>().add(
-                                  ProfilePrepaidItemPressed(item),
-                                );
+                                      ProfilePrepaidItemPressed(item),
+                                    );
                               },
                             );
                           }),

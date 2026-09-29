@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:core/core.dart';
-import 'package:dio/dio.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
@@ -54,18 +53,16 @@ class CallLogsVerificationRepository {
       );
     }
 
-    var refreshedBeforeChallenge = false;
-    if (session.accessExpired) {
-      session = await _authManager.refreshIfNeeded();
-      if (session == null || session.accessExpired) {
-        throw const CallLogsVerificationException(
-          'Your session has expired. Please sign in again.',
-        );
-      }
-      refreshedBeforeChallenge = true;
-    }
-
     try {
+      if (session.accessExpired) {
+        session = await _authManager.refreshIfNeeded();
+        if (session == null || session.accessExpired) {
+          throw const CallLogsVerificationException(
+            'Your session has expired. Please sign in again.',
+          );
+        }
+      }
+
       return await _sendChallenge(
         accessToken: session.accessToken,
         apiPhoneNumber: apiPhoneNumber,
@@ -73,20 +70,6 @@ class CallLogsVerificationRepository {
     } on CallLogsVerificationException {
       rethrow;
     } catch (error) {
-      if (!refreshedBeforeChallenge && _mayBeExpiredToken(error)) {
-        final refreshedSession = await _authManager.refreshIfNeeded();
-        if (refreshedSession != null &&
-            refreshedSession.accessToken != session.accessToken) {
-          try {
-            return await _sendChallenge(
-              accessToken: refreshedSession.accessToken,
-              apiPhoneNumber: apiPhoneNumber,
-            );
-          } catch (retryError) {
-            throw CallLogsVerificationException(_errorMessage(retryError));
-          }
-        }
-      }
       throw CallLogsVerificationException(_errorMessage(error));
     }
   }
@@ -99,7 +82,6 @@ class CallLogsVerificationRepository {
       Api.challengeOtpUrl,
       method: HttpMethod.post,
       data: <String, dynamic>{'access_token': accessToken},
-      options: Options(extra: const <String, dynamic>{'skipAuth': true}),
     );
     final body = _asMap(response.data);
     final mfaToken =
@@ -115,11 +97,6 @@ class CallLogsVerificationRepository {
       mfaToken: mfaToken,
       apiPhoneNumber: apiPhoneNumber,
     );
-  }
-
-  bool _mayBeExpiredToken(Object error) {
-    return error is NetworkException &&
-        (error.statusCode == 401 || (error.statusCode ?? 0) >= 500);
   }
 
   static Future<String?> _defaultPhoneNumberProvider() async {

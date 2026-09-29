@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,8 @@ import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_session_c
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/widgets/profile_menu_item_tile.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -45,7 +49,6 @@ void main() {
           Api.challengeOtpUrl,
           method: HttpMethod.post,
           data: any(named: 'data'),
-          options: any(named: 'options'),
         ),
       ).thenAnswer(
         (_) async => Response<dynamic>(
@@ -69,13 +72,12 @@ void main() {
           Api.challengeOtpUrl,
           method: HttpMethod.post,
           data: captureAny(named: 'data'),
-          options: captureAny(named: 'options'),
         ),
       ).captured;
       expect(captured.first, <String, dynamic>{
         'access_token': 'current-access',
       });
-      expect((captured.last as Options).extra?['skipAuth'], isTrue);
+      verifyNever(authManager.refreshIfNeeded);
     });
 
     test('does not call challenge API without a signed-in session', () async {
@@ -101,16 +103,17 @@ void main() {
           Api.challengeOtpUrl,
           method: HttpMethod.post,
           data: any(named: 'data'),
-          options: any(named: 'options'),
         ),
       );
     });
 
-    test('refreshes and retries when backend rejects an expired token',
-        () async {
-      final staleSession = _session(accessToken: 'expired-access');
+    test('refreshes before challenge and posts the new access token', () async {
+      final expiredSession = _session(
+        accessToken: 'expired-access',
+        accessExpiresAt: DateTime.now().subtract(const Duration(minutes: 1)),
+      );
       final refreshedSession = _session(accessToken: 'fresh-access');
-      when(() => authManager.currentSession).thenReturn(staleSession);
+      when(() => authManager.currentSession).thenReturn(expiredSession);
       when(authManager.refreshIfNeeded)
           .thenAnswer((_) async => refreshedSession);
       when(
@@ -118,22 +121,14 @@ void main() {
           Api.challengeOtpUrl,
           method: HttpMethod.post,
           data: any(named: 'data'),
-          options: any(named: 'options'),
         ),
-      ).thenAnswer((invocation) async {
-        final data = invocation.namedArguments[#data] as Map<String, dynamic>;
-        if (data['access_token'] == 'expired-access') {
-          throw ServerException(
-            'An unexpected error occurred.',
-            statusCode: 500,
-          );
-        }
-        return Response<dynamic>(
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
           data: <String, dynamic>{'mfa_token': 'mfa-after-refresh'},
           statusCode: 202,
           requestOptions: RequestOptions(path: Api.challengeOtpUrl),
-        );
-      });
+        ),
+      );
       final repository = CallLogsVerificationRepository(
         networkService: networkService,
         authManager: authManager,
@@ -144,18 +139,48 @@ void main() {
 
       expect(result.mfaToken, 'mfa-after-refresh');
       verify(authManager.refreshIfNeeded).called(1);
-      final requests = verify(
+      verify(
         () => networkService.request<dynamic>(
           Api.challengeOtpUrl,
           method: HttpMethod.post,
-          data: captureAny(named: 'data'),
-          options: any(named: 'options'),
+          data: <String, dynamic>{'access_token': 'fresh-access'},
         ),
-      ).captured;
-      expect(requests, <Map<String, dynamic>>[
-        <String, dynamic>{'access_token': 'expired-access'},
-        <String, dynamic>{'access_token': 'fresh-access'},
-      ]);
+      ).called(1);
+    });
+
+    test('does not refresh or retry when the challenge API fails', () async {
+      final session = _session(accessToken: 'current-access');
+      when(() => authManager.currentSession).thenReturn(session);
+      when(
+        () => networkService.request<dynamic>(
+          Api.challengeOtpUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+        ),
+      ).thenThrow(
+        ServerException(
+          'An unexpected error occurred.',
+          statusCode: 500,
+        ),
+      );
+      final repository = CallLogsVerificationRepository(
+        networkService: networkService,
+        authManager: authManager,
+        phoneNumberProvider: () async => '12425551234',
+      );
+
+      await expectLater(
+        repository.requestChallenge(),
+        throwsA(isA<CallLogsVerificationException>()),
+      );
+      verifyNever(authManager.refreshIfNeeded);
+      verify(
+        () => networkService.request<dynamic>(
+          Api.challengeOtpUrl,
+          method: HttpMethod.post,
+          data: <String, dynamic>{'access_token': 'current-access'},
+        ),
+      ).called(1);
     });
   });
 
@@ -244,6 +269,71 @@ void main() {
     expect(session.isVerified, isFalse);
   });
 
+  testWidgets(
+    'profile shows an inline loader and opens OTP after challenge success',
+    (tester) async {
+      final repository = _MockVerificationRepository();
+      final challengeCompleter = Completer<CallLogsChallenge>();
+      when(repository.requestChallenge).thenAnswer(
+        (_) => challengeCompleter.future,
+      );
+      instance.registerSingleton<CallLogsVerificationRepository>(repository);
+      addTearDown(() async {
+        await instance.unregister<CallLogsVerificationRepository>();
+      });
+
+      CallLogsOtpRouteArgs? receivedArgs;
+      final router = GoRouter(
+        initialLocation: '/profile-test',
+        routes: [
+          GoRoute(
+            path: '/profile-test',
+            builder: (context, state) => const ProfilePrepaidScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.callLogsOtp,
+            builder: (context, state) {
+              receivedArgs = state.extra! as CallLogsOtpRouteArgs;
+              return const Scaffold(body: Text('OTP destination'));
+            },
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('call logs'));
+      await tester.pump();
+
+      final callLogsTile = find.byWidgetPredicate(
+        (widget) =>
+            widget is ProfileMenuItemTile && widget.title == 'call logs',
+      );
+      expect(
+        find.descendant(
+          of: callLogsTile,
+          matching: find.byType(CircularProgressIndicator),
+        ),
+        findsOneWidget,
+      );
+      verify(repository.requestChallenge).called(1);
+
+      challengeCompleter.complete(
+        const CallLogsChallenge(
+          mfaToken: 'mfa-from-profile',
+          apiPhoneNumber: '12425551234',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('OTP destination'), findsOneWidget);
+      expect(receivedArgs?.mfaToken, 'mfa-from-profile');
+      expect(receivedArgs?.apiPhoneNumber, '12425551234');
+    },
+  );
+
   testWidgets('gate requests challenge and forwards the MFA token to OTP', (
     tester,
   ) async {
@@ -295,11 +385,13 @@ void main() {
 TokenSession _session({
   String accessToken = 'access',
   String refreshToken = 'refresh',
+  DateTime? accessExpiresAt,
 }) {
   return TokenSession(
     accessToken: accessToken,
     refreshToken: refreshToken,
-    accessExpiresAt: DateTime.now().add(const Duration(hours: 1)),
+    accessExpiresAt:
+        accessExpiresAt ?? DateTime.now().add(const Duration(hours: 1)),
     refreshExpiresAt: DateTime.now().add(const Duration(days: 30)),
   );
 }

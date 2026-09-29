@@ -8,21 +8,21 @@ class ProfileMenuItemTile extends StatelessWidget {
     required this.enabled,
     required this.onTap,
     this.showDivider = true,
+    this.trailing,
   });
 
   final String title;
   final bool enabled;
   final VoidCallback onTap;
   final bool showDivider;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    final titleColor = enabled
-        ? ProfilePrepaidTheme.textBlack
-        : ProfilePrepaidTheme.textGrey;
-    final chevronColor = enabled
-        ? ProfilePrepaidTheme.textBlack
-        : ProfilePrepaidTheme.textGrey;
+    final titleColor =
+        enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
+    final chevronColor =
+        enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
 
     return Column(
       children: [
@@ -42,7 +42,8 @@ class ProfileMenuItemTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right, size: 22, color: chevronColor),
+                trailing ??
+                    Icon(Icons.chevron_right, size: 22, color: chevronColor),
               ],
             ),
           ),
