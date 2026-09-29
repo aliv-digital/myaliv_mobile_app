@@ -9,7 +9,9 @@ import '../theme/login_theme.dart';
 import 'focused_input_border_wrapper.dart';
 
 class LoginPasswordField extends StatefulWidget {
-  const LoginPasswordField({super.key});
+  const LoginPasswordField({super.key, required this.onSubmitted});
+
+  final VoidCallback onSubmitted;
 
   @override
   State<LoginPasswordField> createState() => _LoginPasswordFieldState();
@@ -69,6 +71,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                 child: TextField(
                   focusNode: _passwordFocusNode,
                   obscureText: _obscure,
+                  textInputAction: TextInputAction.done,
                   style: AuthModuleTextStyles.fieldValue,
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -78,6 +81,13 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
                   onChanged: (value) => context.read<LoginBloc>().add(
                     LoginPasswordChanged(value),
                   ),
+                  onSubmitted: (_) {
+                    if (context.read<LoginBloc>().state.status ==
+                        LoginStatus.loading) {
+                      return;
+                    }
+                    widget.onSubmitted();
+                  },
                 ),
               ),
               GestureDetector(

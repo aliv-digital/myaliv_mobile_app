@@ -48,6 +48,10 @@ class _LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void submitLogin() {
+      context.read<LoginBloc>().add(const LoginSubmitted());
+    }
+
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: AuthModuleColors.pageBackground,
@@ -148,7 +152,7 @@ class _LoginView extends StatelessWidget {
                       const SizedBox(
                         height: AuthModuleSizes.phoneToPasswordGap,
                       ),
-                      const LoginPasswordField(),
+                      LoginPasswordField(onSubmitted: submitLogin),
                       const SizedBox(
                         height: AuthModuleSizes.passwordToErrorRowGap,
                       ),
@@ -204,11 +208,7 @@ class _LoginView extends StatelessWidget {
                             isLoading: loading,
                             height: AuthModuleSizes.fieldHeight,
                             textStyle: AuthModuleTextStyles.signInButton,
-                            onPressed: () {
-                              context.read<LoginBloc>().add(
-                                const LoginSubmitted(),
-                              );
-                            },
+                            onPressed: submitLogin,
                           );
                         },
                       ),

@@ -74,6 +74,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
           children: [
             CustomCountryPhoneInputRow(
               focusNode: _phoneFocusNode,
+              textInputAction: TextInputAction.next,
               hideUnfocusedInputBorder: false,
               hintText: 'eg: (242)-899-9999',
               flagEmoji: state.selectedCountry.flagEmoji,
