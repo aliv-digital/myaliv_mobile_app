@@ -72,7 +72,7 @@ class _GuestPaymentMethodPrepaidView extends StatelessWidget {
             bottomNavigationBar: DefaultBottomPayBar(
               amountText: '\$ 20.00', //state.amountText,
               isVatExclusive: state.vatNote.toLowerCase().contains(
-                'no vat applied',
+                'no VAT applied',
               ),
               isButtonEnabled: state.isPayNowEnabled,
               isLoading: isSubmitting,

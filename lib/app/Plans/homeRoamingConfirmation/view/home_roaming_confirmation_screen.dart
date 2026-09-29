@@ -141,8 +141,8 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                         phoneNumber: state.data!.phoneNumber,
                         amount: state.data!.totals.total,
                         vatNote: state.data!.totals.vat > 0
-                            ? 'vat inclusive'
-                            : 'no vat applied',
+                            ? 'VAT inclusive'
+                            : 'no VAT applied',
                         forceNow: state.routeArgs?.forceNow ?? false,
                         selectedBeginDate: state.routeArgs?.beginDate,
                         selectedItems: state.data!.items

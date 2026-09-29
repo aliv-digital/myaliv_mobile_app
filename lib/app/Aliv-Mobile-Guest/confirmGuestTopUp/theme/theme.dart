@@ -120,8 +120,8 @@ class TopUpConfirmTheme {
   static const double payBarLoadingStroke = 2.4;
   static const double payBarDisabledOpacity = 0.7;
   static const String payNowLabel = 'pay now';
-  static const String vatInclusiveLabel = 'vat inclusive';
-  static const String vatExclusiveLabel = 'vat exclusive';
+  static const String vatInclusiveLabel = 'VAT inclusive';
+  static const String vatExclusiveLabel = 'VAT exclusive';
 
   // Generic amount-pill token set.
   static const Color amountPillBackgroundColor = Color(0xFFFFFFFF);

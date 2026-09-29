@@ -13,7 +13,7 @@ class MakePaymentConfirmationPostPaidRepositoryImpl
       subtotal: r'$ 129.00',
       vat: r'$ 0.00',
       total: r'$ 129.00',
-      bottomSubtitle: 'no vat applied',
+      bottomSubtitle: 'no VAT applied',
       bottomAmount: r'$ 129.00',
     );
   }
