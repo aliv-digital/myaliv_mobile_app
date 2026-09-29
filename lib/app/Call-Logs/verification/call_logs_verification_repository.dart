@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/phone_dropdown_helper.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 class CallLogsChallenge {
@@ -100,19 +103,59 @@ class CallLogsVerificationRepository {
   }
 
   static Future<String?> _defaultPhoneNumberProvider() async {
-    if (!instance.isRegistered<AccountInfoCubit>()) return null;
-    final account = instance<AccountInfoCubit>().state.accountInfo;
-    if (account == null) return null;
-
-    for (final candidate in <String>[
-      account.username,
-      account.primaryPhoneNumber,
-      account.phoneNumber,
-      ...account.tNs,
-    ]) {
-      if (candidate.trim().isNotEmpty) return candidate;
+    final hasAccountInfoCubit = instance.isRegistered<AccountInfoCubit>();
+    final hasDeviceLimitsCubit = instance.isRegistered<DeviceLimitsCubit>();
+    if (kDebugMode) {
+      debugPrint(
+        'CallLogs phone provider: '
+        'AccountInfoCubit registered=$hasAccountInfoCubit, '
+        'DeviceLimitsCubit registered=$hasDeviceLimitsCubit',
+      );
     }
-    return null;
+
+    if (!hasAccountInfoCubit || !hasDeviceLimitsCubit) {
+      return null;
+    }
+
+    final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
+    final devices = instance<DeviceLimitsCubit>().state.allDeviceLimits;
+    final homePhone = PhoneDropdownHelper.getPrimaryPhone(
+      accountInfo,
+      devices,
+    );
+
+    var digits = homePhone.replaceAll(RegExp(r'\D'), '');
+    if (digits.length == 11 && digits.startsWith('1')) {
+      digits = digits.substring(1);
+    }
+
+    if (kDebugMode) {
+      debugPrint(
+        'CallLogs phone provider account: '
+        'username=${accountInfo?.username}, '
+        'primaryPhoneNumber=${accountInfo?.primaryPhoneNumber}, '
+        'phoneNumber=${accountInfo?.phoneNumber}, '
+        'altPhoneNumber=${accountInfo?.altPhoneNumber}, '
+        'tNs=${accountInfo?.tNs}',
+      );
+      debugPrint('CallLogs phone provider devices: count=${devices.length}');
+      for (var index = 0; index < devices.length; index++) {
+        final device = devices[index];
+        debugPrint(
+          'CallLogs phone provider device[$index]: '
+          'deviceId=${device.deviceId}, '
+          'tn=${device.tn}, '
+          'primaryNumber=${device.primaryNumber}, '
+          'bNumber=${device.bNumber}',
+        );
+      }
+      debugPrint(
+        'CallLogs phone provider result: '
+        'homePhone=$homePhone, normalizedApiPhone=$digits',
+      );
+    }
+
+    return digits.isEmpty ? null : digits;
   }
 
   Map<String, dynamic> _asMap(dynamic value) {
