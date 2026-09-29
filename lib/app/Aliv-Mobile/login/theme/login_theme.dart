@@ -194,6 +194,13 @@ class AuthModuleTextStyles {
     decorationColor: AuthModuleColors.managePassword,
   );
 
+  static const TextStyle privacyPolicyFooterSeparator = TextStyle(
+    color: AuthModuleColors.managePassword,
+    fontSize: 10,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+  );
+
   // Header title style below ALIV logo.
   static const TextStyle welcomeBack = TextStyle(
     fontSize: 17,
