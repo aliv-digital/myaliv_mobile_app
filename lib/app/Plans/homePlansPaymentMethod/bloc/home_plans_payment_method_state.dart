@@ -95,7 +95,7 @@ class HomePlansPaymentMethodState extends Equatable {
       selectedMethodId: null,
       paymentMode: HomePlansPaymentMode.card,
       amount: 5.00,
-      vatNote: 'no vat applied',
+      vatNote: 'no VAT applied',
       selectedItems: [],
       promoCodes: [],
       forceNow: false,

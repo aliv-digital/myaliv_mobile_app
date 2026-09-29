@@ -169,6 +169,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     required ValueChanged<String> onChanged,
     TextStyle? labelStyle,
     bool showCountryArrow = false,
+    TextInputAction? textInputAction,
   }) {
     final Color borderColor = showError
         ? GuestTopUpTheme.errorRed
@@ -197,6 +198,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
           unfocusedBorderColor: borderColor,
           phoneInputStyle: inputStyle,
           onChanged: onChanged,
+          textInputAction: textInputAction,
         ),
         if (showError && (errorText ?? '').isNotEmpty) ...[
           const SizedBox(height: 6),
@@ -211,6 +213,11 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
 
   @override
   Widget build(BuildContext context) {
+    void nextAction() {
+      final currentState = context.read<GuestTopUpBloc>().state;
+      _handleNextPressed(currentState);
+    }
+
     return Scaffold(
       backgroundColor: GuestTopUpTheme.screenBackgroundColor,
       body: SafeArea(
@@ -260,6 +267,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               value: state.phoneNumber,
                               showError: showError,
                               errorText: GuestTopUpTheme.invalidPhoneMessage,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) => context
                                   .read<GuestTopUpBloc>()
                                   .add(GuestActivePrepaidNumberEvent(value)),
@@ -292,6 +300,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               value: state.confirmPhoneNumber,
                               showError: showError,
                               errorText: GuestTopUpTheme.phoneMismatchMessage,
+                              textInputAction: TextInputAction.next,
                               onChanged: (value) =>
                                   context.read<GuestTopUpBloc>().add(
                                     GuestActivePrepaidNumberConfirmEvent(value),
@@ -309,6 +318,8 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                         child: GradientInputField(
                           label: GuestTopUpTheme.amountLabel,
                           hint: GuestTopUpTheme.amountHintText,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) => nextAction(),
                           onChanged: (value) => context
                               .read<GuestTopUpBloc>()
                               .add(GuestTopUpAmountEvent(value)),
@@ -321,11 +332,11 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 43, right: 43),
                         child: BlocBuilder<GuestTopUpBloc, GuestTopUpState>(
-                          builder: (context, state) {
+                          builder: (context, _) {
                             return DefaultButton(
                               height: 40,
                               backgroundColor: HexColor.fromHex('FF645D9C'),
-                              onPressed: () => _handleNextPressed(state),
+                              onPressed: nextAction,
                               textStyle: TextStyle(
                                 color: Colors.white,
                                 fontFamily: AppConstants.defaultFontFamily,

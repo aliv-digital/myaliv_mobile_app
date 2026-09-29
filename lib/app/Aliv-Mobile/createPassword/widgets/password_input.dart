@@ -11,12 +11,16 @@ class PasswordInput extends StatefulWidget {
     required this.obscureText,
     required this.onChanged,
     required this.onToggle,
+    this.textInputAction,
+    this.onSubmitted,
   });
 
   final String hint;
   final bool obscureText;
   final ValueChanged<String> onChanged;
   final VoidCallback onToggle;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   State<PasswordInput> createState() => _PasswordInputState();
@@ -90,6 +94,8 @@ class _PasswordInputState extends State<PasswordInput> {
                   focusNode: _focusNode,
                   obscureText: widget.obscureText,
                   onChanged: widget.onChanged,
+                  textInputAction: widget.textInputAction,
+                  onSubmitted: widget.onSubmitted,
                   style: CreatePasswordTheme.inputText,
                   decoration: InputDecoration(
                     hintText: widget.hint,

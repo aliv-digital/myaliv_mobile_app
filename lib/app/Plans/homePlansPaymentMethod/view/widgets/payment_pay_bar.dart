@@ -25,7 +25,7 @@ class PaymentPayBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultBottomPayBar(
       amountText: state.amountText,
-      isVatExclusive: state.vatNote.toLowerCase().contains('no vat applied'),
+      isVatExclusive: state.vatNote.toLowerCase().contains('no VAT applied'),
       isButtonEnabled: state.isPayNowEnabled,
       isLoading: isSubmitting,
       buttonColor: HomePlansPaymentMethodTheme.payBtnBg,

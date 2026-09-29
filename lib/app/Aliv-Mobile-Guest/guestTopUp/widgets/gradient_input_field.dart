@@ -7,6 +7,8 @@ class GradientInputField extends StatefulWidget {
   final String hint;
   final ValueChanged<String> onChanged;
   final String? initialValue;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   const GradientInputField({
     super.key,
@@ -14,6 +16,8 @@ class GradientInputField extends StatefulWidget {
     required this.hint,
     required this.onChanged,
     this.initialValue,
+    this.textInputAction,
+    this.onSubmitted,
   });
 
   @override
@@ -143,6 +147,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                             keyboardType: const TextInputType.numberWithOptions(
                               decimal: false,
                             ),
+                            textInputAction: widget.textInputAction,
                             textAlign: TextAlign.center,
                             textAlignVertical: TextAlignVertical.center,
                             style: GuestTopUpTheme.amountInput,
@@ -153,6 +158,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                               hintStyle: GuestTopUpTheme.amountHint,
                             ),
                             onChanged: _handleInputChange,
+                            onSubmitted: widget.onSubmitted,
                           ),
                         ),
                       ),

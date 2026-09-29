@@ -53,6 +53,12 @@ class _CreatePasswordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void submit([String? _]) {
+      final bloc = context.read<CreatePasswordBloc>();
+      if (bloc.state.status == CreatePasswordStatus.submitting) return;
+      bloc.add(const SubmitCreatePassword());
+    }
+
     return StripedScaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -97,6 +103,7 @@ class _CreatePasswordView extends StatelessWidget {
                           return PasswordInput(
                             hint: 'enter new password',
                             obscureText: state.obscurePassword,
+                            textInputAction: TextInputAction.next,
                             onChanged: (v) => context
                                 .read<CreatePasswordBloc>()
                                 .add(PasswordChanged(v)),
@@ -115,6 +122,8 @@ class _CreatePasswordView extends StatelessWidget {
                           return PasswordInput(
                             hint: 're-enter password',
                             obscureText: state.obscureConfirm,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: submit,
                             onChanged: (v) => context
                                 .read<CreatePasswordBloc>()
                                 .add(ConfirmPasswordChanged(v)),
@@ -139,9 +148,7 @@ class _CreatePasswordView extends StatelessWidget {
                             label: buttonLabel,
                             isLoading:
                                 state.status == CreatePasswordStatus.submitting,
-                            onPressed: () => context
-                                .read<CreatePasswordBloc>()
-                                .add(const SubmitCreatePassword()),
+                            onPressed: submit,
                           );
                         },
                       ),

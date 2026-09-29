@@ -18,7 +18,7 @@ class MakePaymentPostPaidRepositoryImpl
       title: 'payment',
       paymentDueAmount: r'$ 129.00',
       bottomAmount: r'$ 129.00',
-      bottomSubtitle: 'no vat applied',
+      bottomSubtitle: 'no VAT applied',
     );
   }
 

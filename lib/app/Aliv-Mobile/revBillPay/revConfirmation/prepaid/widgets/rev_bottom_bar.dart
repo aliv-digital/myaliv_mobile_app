@@ -42,7 +42,7 @@ class RevBottomBar extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'vat inclusive',
+                    'VAT inclusive',
                     style: RevConfirmationPrepaidTheme.bottomVat,
                   ),
                 ],

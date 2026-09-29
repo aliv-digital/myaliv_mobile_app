@@ -23,6 +23,7 @@ class CustomCountryPhoneInputSubmitRow extends StatefulWidget {
     this.enableCountryPicker = true,
     this.showCountryArrow = false,
     this.keyboardType = TextInputType.phone,
+    this.textInputAction,
     this.inputFormatters,
     this.controller,
     this.focusNode,
@@ -77,6 +78,7 @@ class CustomCountryPhoneInputSubmitRow extends StatefulWidget {
   final String submitDisabledMessage;
 
   final TextInputType keyboardType;
+  final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -217,12 +219,12 @@ class _CustomCountryPhoneInputSubmitRowState
     return Text(widget.flagEmoji, style: resolvedFlagStyle);
   }
 
-  void _onSubmitTapped() {
+  void _runGuardedSubmit(VoidCallback submitAction) {
     if (widget.submitLoading) {
       return;
     }
     if (widget.submitEnabled) {
-      widget.onSubmit();
+      submitAction();
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
@@ -233,6 +235,16 @@ class _CustomCountryPhoneInputSubmitRowState
         ),
       ),
     );
+  }
+
+  void _onSubmitTapped() {
+    _runGuardedSubmit(widget.onSubmit);
+  }
+
+  void _onFieldSubmitted(String value) {
+    final onSubmitted = widget.onSubmitted;
+    if (onSubmitted == null) return;
+    _runGuardedSubmit(() => onSubmitted(value));
   }
 
   @override
@@ -354,10 +366,9 @@ class _CustomCountryPhoneInputSubmitRowState
                       readOnly: widget.readOnly,
                       style: resolvedPhoneInputStyle,
                       keyboardType: widget.keyboardType,
+                      textInputAction: widget.textInputAction,
                       inputFormatters: widget.inputFormatters,
-                      onSubmitted: (value) {
-                        widget.onSubmitted?.call(value);
-                      },
+                      onSubmitted: _onFieldSubmitted,
                       decoration: InputDecoration(
                         fillColor: widget.backgroundColor,
                         filled: true,

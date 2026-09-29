@@ -6,7 +6,7 @@ class GuestPayBillConfirmTheme {
   static const String appBarTitle = 'confirmation and payment';
   static const String payNowLabel = 'pay now';
   static const String vatExclusiveLabel = 'vat exclusive';
-  static const String termsPrefix = 'By checking this box, I agree to the ';
+  static const String termsPrefix = 'by checking this box, I agree to the ';
   static const String termsLinkText = 'Terms & Conditions.';
   static const String termsValidationMessage =
       'Please check Terms & Conditions first.';

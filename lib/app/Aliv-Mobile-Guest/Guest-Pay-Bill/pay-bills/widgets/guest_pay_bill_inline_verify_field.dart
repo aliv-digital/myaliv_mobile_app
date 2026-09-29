@@ -12,6 +12,8 @@ class GuestPayBillInlineVerifyField extends StatefulWidget {
   final bool loading;
   final ValueChanged<String> onChanged;
   final VoidCallback onSubmit;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   const GuestPayBillInlineVerifyField({
     super.key,
@@ -21,6 +23,8 @@ class GuestPayBillInlineVerifyField extends StatefulWidget {
     required this.loading,
     required this.onChanged,
     required this.onSubmit,
+    this.textInputAction,
+    this.onSubmitted,
   });
 
   @override
@@ -54,6 +58,16 @@ class _GuestPayBillInlineVerifyFieldState
     }
   }
 
+  void _onFieldSubmitted(String value) {
+    final onSubmitted = widget.onSubmitted;
+    if (onSubmitted == null || widget.loading) return;
+    if (widget.enabled) {
+      onSubmitted(value);
+      return;
+    }
+    AppToast.show(message: 'Please enter required details first');
+  }
+
   @override
   Widget build(BuildContext context) {
     return GuestPayBillFocusedInputBorderWrapper(
@@ -71,6 +85,8 @@ class _GuestPayBillInlineVerifyFieldState
               child: TextField(
                 focusNode: _focusNode,
                 keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
+                onSubmitted: _onFieldSubmitted,
                 onChanged: widget.onChanged,
                 style: GuestPayBillTheme.inputTextStyle,
                 textAlignVertical: TextAlignVertical.center,

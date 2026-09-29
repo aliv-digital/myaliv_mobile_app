@@ -97,7 +97,7 @@ class _TermsNoticeState extends State<TermsNotice> {
               TextSpan(
                 children: [
                   TextSpan(
-                    text: 'By checking this box, I agree to the ',
+                    text: 'by checking this box, I agree to the ',
                     style: GuestPurchasePlanConfirmationTheme
                         .termsNoticeBodyTextStyle,
                   ),

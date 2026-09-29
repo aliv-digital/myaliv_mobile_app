@@ -48,6 +48,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
     this.enableCountryPicker = true,
     this.showCountryArrow = false,
     this.keyboardType = TextInputType.phone,
+    this.textInputAction,
     this.inputFormatters,
     this.controller,
     this.focusNode,
@@ -90,6 +91,7 @@ class CustomCountryPhoneInputRow extends StatefulWidget {
   final String hintText;
   final ValueChanged<String> onChanged;
   final TextInputType keyboardType;
+  final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -367,6 +369,7 @@ class _CustomCountryPhoneInputRowState
                 readOnly: widget.readOnly,
                 style: resolvedPhoneInputStyle,
                 keyboardType: widget.keyboardType,
+                textInputAction: widget.textInputAction,
                 inputFormatters: widget.inputFormatters,
                 onSubmitted: widget.onSubmitted,
                 decoration: InputDecoration(

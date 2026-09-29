@@ -73,7 +73,7 @@ class TopUpConfirmTheme {
   static const double termsCheckboxTopOffset = 5;
   static const double termsCheckboxBorderWidth = 1;
   static const double termsCheckboxIconSize = 11;
-  static const String termsLeadText = 'By checking this box, I agree to the ';
+  static const String termsLeadText = 'by checking this box, I agree to the ';
   static const String termsLinkText = 'Terms & Conditions.';
 
   // Breakdown card layout and shape.
@@ -120,8 +120,8 @@ class TopUpConfirmTheme {
   static const double payBarLoadingStroke = 2.4;
   static const double payBarDisabledOpacity = 0.7;
   static const String payNowLabel = 'pay now';
-  static const String vatInclusiveLabel = 'vat inclusive';
-  static const String vatExclusiveLabel = 'vat exclusive';
+  static const String vatInclusiveLabel = 'VAT inclusive';
+  static const String vatExclusiveLabel = 'VAT exclusive';
 
   // Generic amount-pill token set.
   static const Color amountPillBackgroundColor = Color(0xFFFFFFFF);

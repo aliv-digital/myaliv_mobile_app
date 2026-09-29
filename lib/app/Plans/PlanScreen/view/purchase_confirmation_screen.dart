@@ -182,7 +182,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         subscriberType: HomePlansSubscriberType.postpaid,
         phoneNumber: _accountPhoneNumber(),
         amount: plan.planAmountWithVat,
-        vatNote: plan.vatAmount > 0 ? 'vat inclusive' : 'no vat applied',
+        vatNote: plan.vatAmount > 0 ? 'VAT inclusive' : 'no VAT applied',
         forceNow: !widget.showBeginOn,
         selectedBeginDate: widget.showBeginOn ? _selectedBeginDate : null,
         selectedItems: <HomePlansPaymentSelectedItem>[
@@ -431,8 +431,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         ? topUpAmountText
         : formatConfirmationCurrency(total);
     final vatLabel = isSendTopUp || vat <= 0
-        ? 'no vat applied'
-        : ' vat inclusive';
+        ? 'no VAT applied'
+        : ' VAT inclusive';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F2FA),

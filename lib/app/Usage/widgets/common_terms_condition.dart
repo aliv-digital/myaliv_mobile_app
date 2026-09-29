@@ -53,7 +53,7 @@ class TermsAgreement extends StatelessWidget {
             TextSpan(
               children: [
                 const TextSpan(
-                  text: 'By checking this box, I agree to the ',
+                  text: 'by checking this box, I agree to the ',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,

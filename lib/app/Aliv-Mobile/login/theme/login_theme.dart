@@ -62,6 +62,7 @@ class AuthModuleSizes {
   static const double signInToSocialGap = 32;
   static const double socialToBottomGap = 32;
   static const double bottomScrollSafeGap = 113;
+  static const double privacyPolicyBottomGap = 28;
   static const double bottomTextsBottomOffset = 112;
   static const double bottomTextsHorizontalPadding = 41;
 
@@ -182,6 +183,22 @@ class AuthModuleTextStyles {
     fontWeight: FontWeight.w700,
     decoration: TextDecoration.underline,
     decorationColor: Color(0xFF645D9C),
+  );
+
+  static const TextStyle privacyPolicyFooter = TextStyle(
+    color: AuthModuleColors.managePassword,
+    fontSize: 10,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
+    decoration: TextDecoration.underline,
+    decorationColor: AuthModuleColors.managePassword,
+  );
+
+  static const TextStyle privacyPolicyFooterSeparator = TextStyle(
+    color: AuthModuleColors.managePassword,
+    fontSize: 10,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w700,
   );
 
   // Header title style below ALIV logo.

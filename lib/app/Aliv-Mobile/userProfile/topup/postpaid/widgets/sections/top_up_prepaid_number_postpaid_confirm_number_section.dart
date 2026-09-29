@@ -74,7 +74,7 @@ class _TopUpPrepaidNumberPostPaidConfirmNumberSectionState
         CustomCountryPhoneInputRow(
           focusNode: _phoneFocusNode,
           hideUnfocusedInputBorder: false,
-          hintText: 'eg: 242-899-9999',
+          hintText: 'eg: (242)-899-9999',
           flagEmoji: selectedCountry.flagEmoji,
           dialCode: selectedCountry.dialCode,
           countryIsoCode: selectedCountry.isoCode,

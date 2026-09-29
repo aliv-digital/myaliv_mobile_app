@@ -1,0 +1,156 @@
+GUEST PURCHASE A PLAN KEYBOARD BEHAVIOR IMPLEMENTATION REPORT
+
+Summary
+-------
+Implemented keyboard Next/Done behavior only for the "Guest Purchase a Plan"
+bottom sheet. The implementation follows
+guest_purchase_plan_keyboard_behavior_audit.txt and keeps the existing
+Continue validation and navigation behavior as the single source of truth.
+
+
+Files changed
+-------------
+
+Application file:
+
+- lib/app/Aliv-Mobile-Guest/guestSplash/widgets/
+  guest_purchase_plan_bottom_sheet.dart
+
+Targeted test file:
+
+- test/guest_splash/guest_purchase_plan_keyboard_behavior_test.dart
+
+Implementation report:
+
+- guest_purchase_plan_keyboard_behavior_implementation_report.txt
+
+No other application or shared-widget file was modified.
+
+
+Keyboard behavior implemented
+-----------------------------
+
+1. The first "enter mobile number" CustomCountryPhoneInputRow now passes:
+
+   textInputAction: TextInputAction.next
+
+   No onSubmitted handler, manual nextFocus, requestFocus, FocusNode, raw
+   keyboard listener, or onEditingComplete handler was added. Flutter's normal
+   focus traversal moves focus to the following confirm-phone TextField.
+
+2. The "confirm mobile number" CustomCountryPhoneInputRow now passes:
+
+   textInputAction: TextInputAction.done
+   onSubmitted: (_) => continueAction()
+
+   The submitted String is intentionally ignored. Done invokes only the shared
+   screen-local Continue callback.
+
+
+Shared Continue/Done action
+---------------------------
+
+One local function named continueAction is defined inside the existing
+GuestSplashLoadedState builder scope. The prior DefaultButton.onPressed body was
+moved into this function without changing its logic or order.
+
+Both entry points use that same callback:
+
+- DefaultButton.onPressed: continueAction
+- Confirm-phone onSubmitted: (_) => continueAction()
+
+The shared callback preserves the existing sequence exactly:
+
+1. Check whether purchasePhone is empty or _isPhoneInvalid returns true.
+2. Show GuestSplashTheme.invalidPhoneMessage as ToastType.error and return.
+3. Check whether purchaseConfirmPhone is empty or _isMismatch returns true.
+4. Show GuestSplashTheme.phoneMismatchMessage as ToastType.error and return.
+5. Format state.purchasePhone with
+   LoginPhoneNumberHelper.formatBahamasNumberForDisplay.
+6. Push AppRoutes.guestPurchasePlan with the existing extra map key
+   'phoneNumber'.
+
+GuestSplashPurchasePlanSubmitted is not dispatched. The separate BLoC submit
+and bottom-sheet success/pop flow remains untouched.
+
+
+Shared-widget isolation
+-----------------------
+
+lib/resources/widgets/custom_country_phone_input_row.dart was not modified.
+The bottom sheet uses its existing nullable textInputAction and onSubmitted
+hooks at these two call sites only. Defaults and behavior for every other
+CustomCountryPhoneInputRow caller therefore remain unchanged.
+
+No FocusNode lifecycle, formatter, validation helper, country UI, styling, or
+focus-border behavior was changed.
+
+
+Duplicate-submission behavior
+-----------------------------
+
+No loading state, debounce, navigation guard, disabled state, or concurrency
+logic was added. Keyboard Done has the same current synchronous, always-enabled
+semantics as tapping Continue because both invoke continueAction directly.
+
+
+Tests added
+-----------
+
+The targeted widget test covers all requested cases:
+
+1. First field exposes TextInputAction.next.
+2. Confirm field exposes TextInputAction.done.
+3. First-field Next transfers focus to the confirm field.
+4. Valid confirm-field Done follows the existing route and formatted
+   phoneNumber extra.
+5. Invalid first phone through Done shows the existing invalid-phone path and
+   does not navigate.
+6. Confirm-phone mismatch through Done shows the existing mismatch path and
+   does not navigate.
+7. Button tap and keyboard Done produce equivalent navigation extras.
+
+
+Checks run and results
+----------------------
+
+Command:
+
+flutter test test/guest_splash/guest_purchase_plan_keyboard_behavior_test.dart
+
+Result:
+
+- Passed: 7 tests
+- Failed: 0 tests
+- Final output: All tests passed
+
+Command:
+
+flutter analyze \
+  lib/app/Aliv-Mobile-Guest/guestSplash/widgets/guest_purchase_plan_bottom_sheet.dart \
+  test/guest_splash/guest_purchase_plan_keyboard_behavior_test.dart
+
+Result:
+
+- No issues found
+
+Command:
+
+git diff --check
+
+Result:
+
+- Passed with no whitespace errors
+
+
+Non-regression confirmation
+---------------------------
+
+No validation conditions or ordering, digit-normalized matching, Bahamas
+formatting, phone input formatter, live validation, inline errors, toast copy or
+type, BLoC event/state, route, route extra, modal lifecycle, animation, keyboard
+inset handling, SafeArea, layout, styling, API/repository behavior, or any other
+guest/login/top-up/bill-pay flow was changed.
+
+The application change is isolated to the explicitly allowed bottom-sheet file,
+and the only other functional addition is the explicitly allowed targeted test.

@@ -41,7 +41,7 @@ class GuestPaymentMethodPrepaidState extends Equatable {
       methods: [],
       selectedMethodId: null,
       amount: 200.00,
-      vatNote: 'no vat applied',
+      vatNote: 'no VAT applied',
       navTarget: GuestPaymentMethodNavTarget.none,
     );
   }
