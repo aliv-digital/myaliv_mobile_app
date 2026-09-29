@@ -9,6 +9,8 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
     required this.hint,
     required this.keyboardType,
     required this.onChanged,
+    this.textInputAction,
+    this.onSubmitted,
     this.prefix,
     this.style,
   });
@@ -16,6 +18,8 @@ class GuestPayBillFocusedTextField extends StatefulWidget {
   final String hint;
   final TextInputType keyboardType;
   final ValueChanged<String> onChanged;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
   final Widget? prefix;
   final TextStyle? style;
 
@@ -57,6 +61,8 @@ class _GuestPayBillFocusedTextFieldState
       child: TextField(
         focusNode: _focusNode,
         keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        onSubmitted: widget.onSubmitted,
         style: widget.style ?? GuestPayBillTheme.inputTextStyle,
         onChanged: widget.onChanged,
         decoration: GuestPayBillTheme.fieldDecoration(

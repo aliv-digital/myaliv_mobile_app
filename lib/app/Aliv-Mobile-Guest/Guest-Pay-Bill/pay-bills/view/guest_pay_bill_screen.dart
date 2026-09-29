@@ -270,6 +270,9 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
             color: GuestPayBillTheme.errorText,
           )
         : GuestPayBillTheme.inputTextStyle;
+    void verifyAction() {
+      _onVerifyPressed(context);
+    }
 
     return <Widget>[
       Text(
@@ -286,6 +289,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         countryIsoCode: state.selectedCountry.isoCode,
         inputFormatters: phoneFormatters,
         keyboardType: TextInputType.phone,
+        textInputAction: TextInputAction.next,
         onChanged: (value) {
           _onMobileChanged(context, value);
         },
@@ -344,6 +348,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         borderRadius: GuestPayBillTheme.radius,
         borderWidth: GuestPayBillTheme.inputFocusBorderWidth,
         keyboardType: TextInputType.phone,
+        textInputAction: TextInputAction.done,
         phoneInputStyle: confirmInputStyle,
         phoneHintStyle: GuestPayBillTheme.inputHintTextStyle,
         dialCodeStyle: GuestPayBillTheme.inputTextStyle,
@@ -352,9 +357,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         onChanged: (value) {
           _onConfirmMobileChanged(context, value);
         },
-        onSubmit: () {
-          _onVerifyPressed(context);
-        },
+        onSubmit: verifyAction,
+        onSubmitted: (_) => verifyAction(),
       ),
       if (state.showConfirmMobileInvalidError ||
           state.showConfirmMobileMismatchError) ...[
@@ -376,6 +380,10 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
     BuildContext context,
     GuestPayBillState state,
   ) {
+    void verifyAction() {
+      _onVerifyPressed(context);
+    }
+
     return <Widget>[
       Text(state.accountIdentifierLabel, style: GuestPayBillTheme.labelStyle()),
       const SizedBox(height: GuestPayBillTheme.labelToFieldGap),
@@ -384,6 +392,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         keyboardType: state.isAlivFibr
             ? TextInputType.text
             : TextInputType.number,
+        textInputAction: TextInputAction.next,
         onChanged: (value) {
           _onAccountNumberChanged(context, value);
         },
@@ -394,14 +403,14 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       GuestPayBillInlineVerifyField(
         hint: GuestPayBillTheme.nameHintText,
         keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.done,
         loading: state.verifyStatus == GuestPayBillVerifyStatus.loading,
         enabled: state.canVerify,
         onChanged: (value) {
           _onNameChanged(context, value);
         },
-        onSubmit: () {
-          _onVerifyPressed(context);
-        },
+        onSubmit: verifyAction,
+        onSubmitted: (_) => verifyAction(),
       ),
     ];
   }
@@ -443,6 +452,9 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                   builder: (context, state) {
                     if (state.loadStatus == GuestPayBillLoadStatus.loading) {
                       return const Center(child: CircularProgressIndicator());
+                    }
+                    void finalSubmitAction() {
+                      _onSubmitPressed(context, state);
                     }
 
                     return SingleChildScrollView(
@@ -539,6 +551,12 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
                                   ),
+                              textInputAction: TextInputAction.done,
+                              onSubmitted: (_) {
+                                if (state.canSubmit) {
+                                  finalSubmitAction();
+                                }
+                              },
                               prefix: state.amountText.isEmpty
                                   ? null
                                   : Padding(
@@ -566,9 +584,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                               loading:
                                   state.submitStatus ==
                                   GuestPayBillSubmitStatus.loading,
-                              onTap: () {
-                                _onSubmitPressed(context, state);
-                              },
+                              onTap: finalSubmitAction,
                             ),
                           ],
                         ],
