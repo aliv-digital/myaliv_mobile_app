@@ -6,7 +6,7 @@ class TopUpSummaryCard extends StatelessWidget {
     super.key,
     required this.phoneNumber,
     required this.amountText,
-    this.title = 'top-up',
+    this.title = 'guest top-up',
     this.actionLabel = 'top-up',
   });
 
