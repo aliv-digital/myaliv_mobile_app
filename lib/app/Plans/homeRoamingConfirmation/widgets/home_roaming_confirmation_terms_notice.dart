@@ -96,7 +96,7 @@ class _HomeRoamingConfirmationTermsNoticeState
               TextSpan(
                 children: [
                   TextSpan(
-                    text: 'By checking this box, I agree to the ',
+                    text: 'by checking this box, I agree to the ',
                     style:
                         HomeRoamingConfirmationTheme.termsNoticeBodyTextStyle,
                   ),
