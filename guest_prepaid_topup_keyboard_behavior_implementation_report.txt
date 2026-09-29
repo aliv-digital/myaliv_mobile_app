@@ -1,0 +1,145 @@
+GUEST PREPAID TOP-UP KEYBOARD BEHAVIOR IMPLEMENTATION REPORT
+
+Scope
+-----
+
+Implemented isolated keyboard Next/Done behavior for the Guest Module prepaid
+top-up screen. No unrelated application or shared files were modified.
+
+
+Files changed
+-------------
+
+Application files:
+
+1. lib/app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart
+2. lib/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart
+
+Focused test file added:
+
+3. test/guest_top_up/guest_prepaid_topup_keyboard_behavior_test.dart
+
+Report added:
+
+4. guest_prepaid_topup_keyboard_behavior_implementation_report.txt
+
+
+Exact keyboard behavior implemented
+-----------------------------------
+
+1. Prepaid mobile number
+   - TextInputAction.next is passed to the existing
+     CustomCountryPhoneInputRow.
+   - Flutter's standard focus traversal moves focus to Confirm mobile number.
+   - No FocusNode, manual nextFocus/requestFocus call, raw keyboard listener, or
+     onEditingComplete handler was added.
+
+2. Confirm mobile number
+   - TextInputAction.next is passed to the existing
+     CustomCountryPhoneInputRow.
+   - Flutter's standard focus traversal moves focus to the Top-up amount
+     TextField.
+   - Pressing Next does not submit or validate.
+   - No FocusNode or manual focus movement was added.
+
+3. Top-up amount
+   - TextInputAction.done is supplied at the Guest prepaid top-up call site.
+   - Its onSubmitted callback ignores the submitted String and invokes only the
+     shared screen-local Next action.
+
+
+Shared Next action and latest BLoC state
+----------------------------------------
+
+guest_topup_screen.dart now defines one screen-local nextAction callback in the
+existing build scope. Every invocation reads:
+
+  context.read<GuestTopUpBloc>().state
+
+and passes that latest state to the existing _handleNextPressed method.
+
+The same nextAction callback is used by:
+
+- DefaultButton.onPressed
+- GradientInputField.onSubmitted for keyboard Done
+
+Validation and navigation were not copied into the keyboard callback. Both
+entry points therefore retain the exact existing _handleNextPressed sequence:
+
+- first-phone validation and the existing invalid-phone error toast
+- confirm-phone empty/mismatch validation and existing mismatch error toast
+- digit-normalized phone comparison
+- existing amount parsing
+- silent return for invalid or non-positive amounts
+- context.push(AppRoutes.confirmGuestTopUp) with the existing phoneNumber and
+  amount extras
+
+No loading guard, debounce, navigation lock, BLoC event, API call, or other
+submission behavior was introduced. The existing always-enabled Next semantics
+remain unchanged.
+
+
+GradientInputField compatibility
+--------------------------------
+
+GradientInputField received only these two nullable optional properties:
+
+- TextInputAction? textInputAction
+- ValueChanged<String>? onSubmitted
+
+Both default to null and are forwarded unchanged to the existing internal
+TextField. Existing callers that omit them, including the logged-in prepaid
+top-up caller, retain their previous keyboard behavior.
+
+The private controller, sanitization, dollar-prefix display rewrite, cursor
+placement, keyboardType, initialValue behavior, styling, and layout were not
+changed. CustomCountryPhoneInputRow was not modified.
+
+
+Tests and checks
+----------------
+
+Command:
+
+  flutter test test/guest_top_up/guest_prepaid_topup_keyboard_behavior_test.dart
+
+Result: PASS, 11 tests.
+
+Coverage includes:
+
+- first-phone Next action and focus traversal
+- confirm-phone Next action and focus traversal
+- amount Done action
+- equivalent valid navigation for amount Done and button tap
+- invalid first-phone toast path through Done
+- confirm mismatch toast path through Done
+- silent invalid/non-positive amount behavior through Done
+- latest GuestTopUpBloc state usage by both Done and the button
+- unchanged nullable GradientInputField defaults and existing amount formatting
+  behavior for callers that do not use the new hooks
+
+Command:
+
+  flutter analyze
+  lib/app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart
+  lib/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart
+  test/guest_top_up/guest_prepaid_topup_keyboard_behavior_test.dart
+
+Result: PASS, no issues found.
+
+Relevant existing Guest prepaid top-up tests: none were present under test/.
+
+Command:
+
+  git diff --check
+
+Result: PASS, no whitespace errors.
+
+
+Non-regression confirmation
+---------------------------
+
+No phone formatter, validation helper, BLoC/event/state/repository,
+DefaultButton, shared phone widget, route, confirmation/payment/receipt flow,
+country UI, amount parsing/formatting, loading behavior, layout, styling,
+Scaffold, Sliver, or other Guest/App screen was modified.
