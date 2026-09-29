@@ -37,9 +37,9 @@ class GuestPurchasePlanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          GuestPurchasePlanBloc(GuestPurchasePlanRepository())
-            ..add(GuestPurchasePlanStarted()),
+      create: (_) => GuestPurchasePlanBloc(
+        GuestPurchasePlanRepository(phoneNumber: phoneNumber),
+      )..add(GuestPurchasePlanStarted()),
       child: _GuestPurchasePlanView(phoneNumber: phoneNumber),
     );
   }
@@ -52,8 +52,6 @@ class _GuestPurchasePlanView extends StatelessWidget {
 
   static const double _addOnsTabHorizontalPadding = 25;
   static const String _guestFuturePlanStartDate = '01-06-25';
-
-  String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
 
   add_ons_models.ActivePlanSummary _activePlanSummaryForAddOnsTab() {
     // Keep this aligned with the approved add-ons tab screenshot content.
@@ -94,7 +92,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
   }
 
   Map<String, Object?> _roamingConfirmationExtra(
-    PlanModel plan, {
+    GuestPlanDisplayModel plan, {
     required bool showDateField,
     required DateTime beginDate,
   }) {
@@ -104,31 +102,38 @@ class _GuestPurchasePlanView extends StatelessWidget {
       'planName': plan.title,
       'planDuration': plan.subtitle,
       'planPrice': plan.price,
+      'selectedPlan': plan,
+      'benefits': plan.benefits,
+      'destination': plan.destination,
       'beginDate': beginDate,
       'showDateField': showDateField,
       'forceNow': !showDateField,
     };
   }
 
-  GuestPurchasePlanConfirmationRouteArgs _mifiConfirmationArgs(PlanModel plan) {
-    return GuestPurchasePlanConfirmationRouteArgs(
-      phoneNumber: phoneNumber,
-      accountHolderName: 'guest purchase a plan',
-      primaryPlanName: plan.title,
-      primaryPlanPrice: plan.price,
-      flow: GuestPurchasePlanConfirmationEntryFlow.skip,
-      forceNow: true,
-    );
-  }
-
-  GuestPurchasePlanConfirmationRouteArgs _futurePlanConfirmationArgs(
-    PlanModel plan,
+  GuestPurchasePlanConfirmationRouteArgs _mifiConfirmationArgs(
+    GuestPlanDisplayModel plan,
   ) {
     return GuestPurchasePlanConfirmationRouteArgs(
       phoneNumber: phoneNumber,
       accountHolderName: 'guest purchase a plan',
       primaryPlanName: plan.title,
       primaryPlanPrice: plan.price,
+      selectedPlan: plan,
+      flow: GuestPurchasePlanConfirmationEntryFlow.skip,
+      forceNow: true,
+    );
+  }
+
+  GuestPurchasePlanConfirmationRouteArgs _futurePlanConfirmationArgs(
+    GuestPlanDisplayModel plan,
+  ) {
+    return GuestPurchasePlanConfirmationRouteArgs(
+      phoneNumber: phoneNumber,
+      accountHolderName: 'guest purchase a plan',
+      primaryPlanName: plan.title,
+      primaryPlanPrice: plan.price,
+      selectedPlan: plan,
       futurePlanStartDate: _guestFuturePlanStartDate,
       flow: GuestPurchasePlanConfirmationEntryFlow.skip,
       forceNow: false,
@@ -181,7 +186,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
     );
   }
 
-  void _onPurchaseNowPressed(BuildContext context, PlanModel plan) {
+  void _onPurchaseNowPressed(BuildContext context, GuestPlanDisplayModel plan) {
     context.read<GuestPurchasePlanBloc>().add(
       GuestPurchasePlanPurchaseNowPressed(plan),
     );
@@ -249,13 +254,16 @@ class _GuestPurchasePlanView extends StatelessWidget {
                 'it will start when their current plan ends on XXX.',
             planName: plan.title,
             planDurationText: plan.subtitle,
-            planPriceText: _priceText(plan.price),
+            planPriceText: plan.formattedPrice,
             onBackPressed: () => Navigator.of(sheetContext).pop(),
             onActivateNowPressed: () {
               Navigator.of(sheetContext).pop();
               context.push(
                 AppRoutes.guestPurchasePlanAddOns,
-                extra: {'phoneNumber': phoneNumber},
+                extra: GuestPurchasePlanAddOnsRouteArgs(
+                  phoneNumber: phoneNumber,
+                  selectedPlan: plan,
+                ),
               );
             },
             onFuturePlanPressed: () {
@@ -273,7 +281,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
               'the account owner has no current plan, so their new plan will start immediately.',
           planName: plan.title,
           planDurationText: plan.subtitle,
-          planPriceText: _priceText(plan.price),
+          planPriceText: plan.formattedPrice,
           onBackPressed: () => Navigator.of(sheetContext).pop(),
           onActivateNowPressed: () {
             Navigator.of(sheetContext).pop();
@@ -290,7 +298,10 @@ class _GuestPurchasePlanView extends StatelessWidget {
 
             context.push(
               AppRoutes.guestPurchasePlanAddOns,
-              extra: {'phoneNumber': phoneNumber},
+              extra: GuestPurchasePlanAddOnsRouteArgs(
+                phoneNumber: phoneNumber,
+                selectedPlan: plan,
+              ),
             );
           },
         );

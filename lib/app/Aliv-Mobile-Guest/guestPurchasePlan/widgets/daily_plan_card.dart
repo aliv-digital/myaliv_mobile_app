@@ -8,7 +8,7 @@ import '../theme/theme.dart';
 
 // Daily plan card — aligned to MonthlyPlanCard layout
 class DailyPlanCard extends StatelessWidget {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -96,14 +96,14 @@ class DailyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.formattedPrice),
             ],
           ),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // Scrollable benefits row + indicator bar
-          _BenefitsRow(benefits: plan.benefits),
+          _BenefitsRow(benefits: plan.highlights),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
@@ -184,7 +184,7 @@ class DailyPlanCard extends StatelessWidget {
 }
 
 class _PricePill extends StatelessWidget {
-  final double price;
+  final String price;
   const _PricePill({required this.price});
 
   @override
@@ -197,10 +197,7 @@ class _PricePill extends StatelessWidget {
           GuestPurchasePlanTheme.planPricePillRadius,
         ),
       ),
-      child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
-      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
     );
   }
 }

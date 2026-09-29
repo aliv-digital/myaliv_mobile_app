@@ -320,10 +320,10 @@ class BasePlanModel {
   DateTime? get endDateTime => endDate.toLocalApiDate();
 
   // ===== Plan type helpers =====
-  // PlanType codes: P = Primary, S = Stand-alone, A = Add-on.
+  // PlanType codes: P = Primary, S = Secondary/add-on, A = Stand-alone.
   bool get isPrimaryPlan => planType.toUpperCase() == 'P';
-  bool get isStandAlonePlan => planType.toUpperCase() == 'S';
-  bool get isAddOnPlan => planType.toUpperCase() == 'A';
+  bool get isStandAlonePlan => planType.toUpperCase() == 'A';
+  bool get isAddOnPlan => planType.toUpperCase() == 'S';
 
   // ===== Serialization =====
 

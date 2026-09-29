@@ -189,6 +189,12 @@ class Api {
   /// Success when orderId from redirect is > 0.
   static const guestTopUp3DSUrl = '$baseUrl/v1/MyAliv/Guest/top-up';
 
+  /// Guest plan catalogue: POST /Guest/availableplans
+  /// Body: { RedirectURL, ChannelType, Branch, PhoneNumber }
+  /// The endpoint is unauthenticated and returns a JSON plan array.
+  static const guestAvailablePlansUrl =
+      '$baseUrl/v1/myAliv/guest/availableplans';
+
   /// Guest account balance check: POST /Guest/balance
   /// Body: { "ChannelType": "SelfCare", "PhoneNumber": "digits-only" }
   /// Response: { "Balance": 171.38, "AccountStatus": "AC" }

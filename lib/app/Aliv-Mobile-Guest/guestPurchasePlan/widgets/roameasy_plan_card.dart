@@ -7,7 +7,7 @@ import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
 class RoamEasyPlanCard extends StatelessWidget {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails; // toggle expand/collapse
@@ -24,13 +24,10 @@ class RoamEasyPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // same as roaming: prefer data benefit if exists
-    final PlanBenefit? dataBenefit = plan.benefits
-        .where((b) => b.type == PlanBenefitType.data)
-        .cast<PlanBenefit?>()
-        .firstWhere((b) => b != null, orElse: () => null);
-
-    final PlanBenefit center = dataBenefit ?? plan.benefits.first;
+    // The guest mapper places the destination-specific RoamEasy allowance first.
+    final PlanBenefit? center = plan.highlights.isEmpty
+        ? null
+        : plan.highlights.first;
 
     return Container(
       margin: GuestPurchasePlanTheme.planCardOuterMargin,
@@ -103,14 +100,14 @@ class RoamEasyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.formattedPrice),
             ],
           ),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // ===== Center metric (data) =====
-          _CenterMetric(benefit: center),
+          if (center != null) _CenterMetric(benefit: center),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
@@ -191,7 +188,7 @@ class RoamEasyPlanCard extends StatelessWidget {
 }
 
 class _PricePill extends StatelessWidget {
-  final double price;
+  final String price;
   const _PricePill({required this.price});
 
   @override
@@ -204,10 +201,7 @@ class _PricePill extends StatelessWidget {
           GuestPurchasePlanTheme.planPricePillRadius,
         ),
       ),
-      child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
-      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/plan_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
 import 'guest_purchase_plan_event.dart';
 import 'guest_purchase_plan_state.dart';
@@ -119,7 +119,9 @@ class GuestPurchasePlanBloc
       }
 
       // ✅ normal plans
-      final List<PlanModel> plans = await repository.fetchPlans(tab: tab);
+      final List<GuestPlanDisplayModel> plans = await repository.fetchPlans(
+        tab: tab,
+      );
       emit(
         state.copyWith(
           status: GuestPurchasePlanStatus.loaded,
@@ -149,7 +151,9 @@ class GuestPurchasePlanBloc
           errorMessage: null,
         ),
       );
-      final List<PlanModel> plans = await repository.fetchPlans(tab: tab);
+      final List<GuestPlanDisplayModel> plans = await repository.fetchPlans(
+        tab: tab,
+      );
       emit(
         state.copyWith(status: GuestPurchasePlanStatus.loaded, plans: plans),
       );
