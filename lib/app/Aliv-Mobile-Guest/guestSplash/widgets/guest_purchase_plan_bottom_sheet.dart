@@ -184,6 +184,39 @@ class _SheetBody extends StatelessWidget {
             : <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
               ];
+        void continueAction() {
+          if (state.purchasePhone.isEmpty ||
+              _isPhoneInvalid(
+                state.purchasePhone,
+                state.purchaseCountry,
+              )) {
+            AppToast.show(
+              message: GuestSplashTheme.invalidPhoneMessage,
+              type: ToastType.error,
+            );
+            return;
+          }
+          if (state.purchaseConfirmPhone.isEmpty ||
+              _isMismatch(
+                state.purchasePhone,
+                state.purchaseConfirmPhone,
+              )) {
+            AppToast.show(
+              message: GuestSplashTheme.phoneMismatchMessage,
+              type: ToastType.error,
+            );
+            return;
+          }
+          context.push(
+            AppRoutes.guestPurchasePlan,
+            extra: {
+              'phoneNumber':
+                  LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
+                state.purchasePhone,
+              ),
+            },
+          );
+        }
 
         return SafeArea(
           child: Column(
@@ -216,6 +249,7 @@ class _SheetBody extends StatelessWidget {
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
                 countryIsoCode: state.purchaseCountry?.countryCode,
+                textInputAction: TextInputAction.next,
                 onChanged: (v) {
                   context.read<GuestSplashBloc>().add(
                     GuestSplashPurchasePlanPhoneChanged(v),
@@ -290,6 +324,8 @@ class _SheetBody extends StatelessWidget {
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
                 countryIsoCode: state.purchaseCountry?.countryCode,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => continueAction(),
                 onChanged: (v) {
                   context.read<GuestSplashBloc>().add(
                     GuestSplashPurchasePlanConfirmPhoneChanged(v),
@@ -367,39 +403,7 @@ class _SheetBody extends StatelessWidget {
                   ),
                 ),
                 textStyle: GuestSplashTheme.continueButtonText,
-                onPressed: () {
-                  if (state.purchasePhone.isEmpty ||
-                      _isPhoneInvalid(
-                        state.purchasePhone,
-                        state.purchaseCountry,
-                      )) {
-                    AppToast.show(
-                      message: GuestSplashTheme.invalidPhoneMessage,
-                      type: ToastType.error,
-                    );
-                    return;
-                  }
-                  if (state.purchaseConfirmPhone.isEmpty ||
-                      _isMismatch(
-                        state.purchasePhone,
-                        state.purchaseConfirmPhone,
-                      )) {
-                    AppToast.show(
-                      message: GuestSplashTheme.phoneMismatchMessage,
-                      type: ToastType.error,
-                    );
-                    return;
-                  }
-                  context.push(
-                    AppRoutes.guestPurchasePlan,
-                    extra: {
-                      'phoneNumber':
-                          LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
-                            state.purchasePhone,
-                          ),
-                    },
-                  );
-                },
+                onPressed: continueAction,
               ),
               // SizedBox(height: 24,)
             ],
