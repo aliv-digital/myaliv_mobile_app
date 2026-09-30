@@ -41,7 +41,7 @@ class PaymentReceiptBuilder {
           'It will take a few moments for the plan to appear on the account.',
       'leftType': 'service',
       'rightType': state.isPrepaidUser ? 'prepaid' : 'postpaid',
-      'details': _details(state, date, time, phone, email, method),
+      'details': _details(state, date, time, phone, email, method, orderId: state.orderId),
       'subscriberType': state.subscriberType,
       'selectedItems': state.selectedItems,
       'selectedMethodId': state.selectedMethodId,
@@ -57,8 +57,9 @@ class PaymentReceiptBuilder {
     String time,
     String phone,
     String email,
-    String method,
-  ) {
+    String method, {
+    String? orderId,
+  }) {
     final items = <HomePlanPurchaseReceiptDetailItem>[
       for (final item in state.selectedItems)
         HomePlanPurchaseReceiptDetailItem(
@@ -66,6 +67,12 @@ class PaymentReceiptBuilder {
               ? _planTypeLabel(item.planType)
               : item.label,
           value: item.title,
+        ),
+      if (orderId != null && orderId.isNotEmpty)
+        HomePlanPurchaseReceiptDetailItem(
+          label: 'order reference',
+          value: orderId,
+          valueBold: false,
         ),
       HomePlanPurchaseReceiptDetailItem(label: 'date', value: date),
       HomePlanPurchaseReceiptDetailItem(label: 'time', value: time),

@@ -437,6 +437,7 @@ class AppRouter {
           List<String> addOnNames = const <String>[];
           String emailAddress = 'guest';
           String paymentMethod = 'credit card';
+          String? orderId;
 
           final extra = state.extra;
           if (extra is Map) {
@@ -459,6 +460,7 @@ class AppRouter {
             emailAddress = (extra['emailAddress'] as String?) ?? emailAddress;
             paymentMethod =
                 (extra['paymentMethod'] as String?) ?? paymentMethod;
+            orderId = extra['orderId'] as String?;
           }
 
           return GuestPurchasePlanReceiptScreen(
@@ -470,6 +472,7 @@ class AppRouter {
             addOnNames: addOnNames,
             emailAddress: emailAddress,
             paymentMethod: paymentMethod,
+            orderId: orderId,
           );
         },
       ),
@@ -703,6 +706,7 @@ class AppRouter {
             amount: (extra?['amount'] as num?)?.toDouble() ?? 0,
             dateText: extra?['dateText'] as String? ?? '',
             timeText: extra?['timeText'] as String? ?? '',
+            orderId: extra?['orderId'] as String?,
           );
         },
       ),

@@ -122,6 +122,12 @@ class ReceiptSuccessCard extends StatelessWidget {
               value: data.rightType,
               valueBold: false,
             ),
+            if (data.orderId != null && data.orderId!.isNotEmpty)
+              ReceiptDetailRow(
+                label: 'order reference',
+                value: data.orderId!,
+                valueBold: false,
+              ),
             ReceiptDetailRow(
               label: 'date',
               value: data.dateText,

@@ -171,6 +171,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                               );
                               return;
                             }
+                            receiptExtra['orderId'] = success.orderId;
                             navigator.pop();
                             router.push(
                               AppRoutes.guestPurchasePlanReceipt,

@@ -20,6 +20,7 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
     required this.dateText,
     required this.timeText,
     this.paymentMethod = 'credit card',
+    this.orderId,
   });
 
   final String phoneNumber;
@@ -27,6 +28,7 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
   final String dateText;
   final String timeText;
   final String paymentMethod;
+  final String? orderId;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class GuestTopUpReceiptScreen extends StatelessWidget {
       phoneNumber: phoneNumber,
       paymentMethod: paymentMethod,
       amount: amount,
+      orderId: orderId,
     );
 
     return RepositoryProvider(
