@@ -212,6 +212,30 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// Guest plan purchase 3DS envelope: POST /Guest/purchaseplan.
+  static Map<String, dynamic> guestPurchasePlanBodyFor3DS({
+    required int planId,
+    required String phoneNumber,
+    required bool forceNow,
+    DateTime? startDate,
+  }) {
+    final rawPhone = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    return <String, dynamic>{
+      'Bundle': <String, dynamic>{
+        'PrimaryPlans': <int>[planId],
+        'SecondaryPlans': <int>[],
+        'StandalonePlans': <int>[],
+        if (!forceNow && startDate != null)
+          'StartDate': _formatStartDate(startDate),
+      },
+      'ForceNow': forceNow,
+      'ChannelType': 'SelfCare',
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+      'PhoneNumber': rawPhone,
+    };
+  }
+
   static String? _formatStartDate(DateTime? date) {
     if (date == null) return null;
     String two(int v) => v.toString().padLeft(2, '0');

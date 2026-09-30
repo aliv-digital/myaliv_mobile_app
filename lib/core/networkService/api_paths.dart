@@ -216,4 +216,11 @@ class Api {
   /// Body: { "CardPayment": { Amount, PaymentInstrument, CardNumber, CardExpiration, CardSecurityCode, CardHolderName }, "Branch": "branch", "ChannelType": "SelfCare", "FibrAccountID": 407413542 }
   /// Response: { "OrderId": 804441 } — success when OrderId > 0.
   static const guestFibrPayUrl = '$baseUrl/v1/MyAliv/Guest/fibrpay';
+
+  /// Guest plan purchase 3DS: POST /Guest/purchaseplan
+  /// Body: { "Bundle": { "PrimaryPlans": [planId], "SecondaryPlans": [], "StandalonePlans": [], "StartDate"? },
+  ///         "ForceNow", "ChannelType": "SelfCare", "RedirectURL", "Branch", "PhoneNumber" }
+  /// Response: { "html": "..." } — loaded into PaymentIFrameScreen.
+  /// Success when orderId from redirect is > 0.
+  static const guestPurchasePlanUrl = '$baseUrl/v1/MyAliv/Guest/purchaseplan';
 }

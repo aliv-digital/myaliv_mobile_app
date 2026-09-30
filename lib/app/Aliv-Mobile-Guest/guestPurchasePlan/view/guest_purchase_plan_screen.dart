@@ -23,6 +23,7 @@ import '../repository/guest_purchase_plan_repository.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
 import '../widgets/plan_tabs.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer.dart';
 import '../widgets/roam_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
@@ -438,7 +439,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
                 builder: (context, state) {
                   if (state.status == GuestPurchasePlanStatus.loading ||
                       state.status == GuestPurchasePlanStatus.initial) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const PlanCardShimmerList();
                   }
 
                   if (state.status == GuestPurchasePlanStatus.failure) {
