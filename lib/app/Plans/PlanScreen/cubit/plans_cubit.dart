@@ -10,23 +10,9 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_fre
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plans_repository.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_visibility_filter.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'plans_state.dart';
-
-const List<String> _excludedPlanNames = [
-  '3gb bonus roaming data us/can',
-  '1.5gb bonus roaming data us/can',
-  '750mb bonus roaming data',
-  'bmp 1-day',
-  'bmp 7-day',
-  'bmp 30-day',
-  'liberty bonus data2',
-  'freedom bonus data5',
-  'freedom35 bonus data5',
-  'freedom4 bonus data2',
-  'junkanoo5',
-  'test',
-];
 
 /// Cubit for managing plan data with HydratedBloc persistence.
 ///
@@ -610,17 +596,14 @@ class PlansCubit extends HydratedCubit<PlansState> {
         const Duration(hours: 0);
   }
 
-  bool _isExcludedPlanName(String name) {
-    final lower = name.toLowerCase();
-    return _excludedPlanNames.any(lower.contains);
-  }
-
   List<BasePlanModel> _filterBase(List<BasePlanModel> plans) =>
-      plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
+      PlanVisibilityFilter.visibleBasePlans(plans);
 
   List<HomePlansPostPaidPlanModel> _filterPostpaid(
     List<HomePlansPostPaidPlanModel> plans,
-  ) => plans.where((p) => !_isExcludedPlanName(p.planName)).toList();
+  ) => plans
+      .where((plan) => PlanVisibilityFilter.isVisibleName(plan.planName))
+      .toList(growable: false);
 
   String _friendlyErrorMessage(dynamic error) {
     final msg = error.toString().toLowerCase();

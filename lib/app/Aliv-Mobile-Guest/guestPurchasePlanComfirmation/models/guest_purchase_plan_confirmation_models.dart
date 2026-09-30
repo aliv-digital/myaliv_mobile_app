@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
 
 enum PurchaseLineType { primaryPlan, addOn }
 
@@ -28,6 +29,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
   final GuestPurchasePlanConfirmationEntryFlow flow;
   final List<GuestPurchasePlanConfirmationSelectedAddOn> selectedAddOns;
   final bool forceNow;
+  final GuestPlanDisplayModel? selectedPlan;
 
   const GuestPurchasePlanConfirmationRouteArgs({
     required this.phoneNumber,
@@ -38,6 +40,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     this.futurePlanStartDate = '',
     this.selectedAddOns = const <GuestPurchasePlanConfirmationSelectedAddOn>[],
     this.forceNow = true,
+    this.selectedPlan,
   });
 
   bool get defaultTermsChecked =>
@@ -57,6 +60,7 @@ class GuestPurchasePlanConfirmationRouteArgs extends Equatable {
     flow,
     selectedAddOns,
     forceNow,
+    selectedPlan,
   ];
 }
 

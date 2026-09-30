@@ -196,6 +196,12 @@ class Api {
   /// Success when orderId from redirect is > 0.
   static const guestTopUp3DSUrl = '$baseUrl/v1/MyAliv/Guest/top-up';
 
+  /// Guest plan catalogue: POST /Guest/availableplans
+  /// Body: { RedirectURL, ChannelType, Branch, PhoneNumber }
+  /// The endpoint is unauthenticated and returns a JSON plan array.
+  static const guestAvailablePlansUrl =
+      '$baseUrl/v1/myAliv/guest/availableplans';
+
   /// Guest account balance check: POST /Guest/balance
   /// Body: { "ChannelType": "SelfCare", "PhoneNumber": "digits-only" }
   /// Response: { "Balance": 171.38, "AccountStatus": "AC" }
@@ -217,4 +223,11 @@ class Api {
   /// Body: { "CardPayment": { Amount, PaymentInstrument, CardNumber, CardExpiration, CardSecurityCode, CardHolderName }, "Branch": "branch", "ChannelType": "SelfCare", "FibrAccountID": 407413542 }
   /// Response: { "OrderId": 804441 } — success when OrderId > 0.
   static const guestFibrPayUrl = '$baseUrl/v1/MyAliv/Guest/fibrpay';
+
+  /// Guest plan purchase 3DS: POST /Guest/purchaseplan
+  /// Body: { "Bundle": { "PrimaryPlans": [planId], "SecondaryPlans": [], "StandalonePlans": [], "StartDate"? },
+  ///         "ForceNow", "ChannelType": "SelfCare", "RedirectURL", "Branch", "PhoneNumber" }
+  /// Response: { "html": "..." } — loaded into PaymentIFrameScreen.
+  /// Success when orderId from redirect is > 0.
+  static const guestPurchasePlanUrl = '$baseUrl/v1/MyAliv/Guest/purchaseplan';
 }

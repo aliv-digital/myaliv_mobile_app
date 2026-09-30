@@ -43,14 +43,16 @@ class GuestPayBillReceiptScreen extends StatelessWidget {
         create: (ctx) => GuestPayBillReceiptBloc(
           repository: ctx.read<GuestPayBillReceiptRepository>(),
         )..add(GuestPayBillReceiptStarted(receiptData)),
-        child: const _GuestPayBillReceiptView(),
+        child: _GuestPayBillReceiptView(orderId: args.orderId),
       ),
     );
   }
 }
 
 class _GuestPayBillReceiptView extends StatelessWidget {
-  const _GuestPayBillReceiptView();
+  const _GuestPayBillReceiptView({this.orderId});
+
+  final String? orderId;
 
   void _onBackHomePressed(BuildContext context) {
     context.read<GuestPayBillReceiptBloc>().add(
@@ -60,6 +62,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
 
   GuestPurchasePlanReceiptData _toDefaultReceiptData(
     GuestPayBillReceiptData data,
+    String? orderId,
   ) {
     return GuestPurchasePlanReceiptData(
       leftType: data.leftType,
@@ -71,6 +74,8 @@ class _GuestPayBillReceiptView extends StatelessWidget {
       amount: data.amount,
       details: <ReceiptDetailItem>[
         ReceiptDetailItem(label: data.leftType, value: data.rightType),
+        if (orderId != null && orderId.isNotEmpty)
+          ReceiptDetailItem(label: 'order reference', value: orderId, valueBold: false),
         ReceiptDetailItem(label: 'date', value: data.dateText),
         ReceiptDetailItem(label: 'time', value: data.timeText),
         ReceiptDetailItem(label: data.identifierLabel, value: data.phoneNumber),
@@ -127,7 +132,7 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                           if (data == null) return const SizedBox.shrink();
 
                           return DefaultReceiptSuccessCard(
-                            data: _toDefaultReceiptData(data),
+                            data: _toDefaultReceiptData(data, orderId),
                             pageBackground:
                                 GuestPayBillReceiptTheme.screenBackground,
                             statusMessage:

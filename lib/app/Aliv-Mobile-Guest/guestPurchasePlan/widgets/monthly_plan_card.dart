@@ -8,7 +8,7 @@ import '../theme/theme.dart';
 
 // Monthly plan card — keep monthly UI here only
 class MonthlyPlanCard extends StatelessWidget {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -101,14 +101,14 @@ class MonthlyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.formattedPrice),
             ],
           ),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // Scrollable benefits row + indicator bar
-          _BenefitsRow(benefits: plan.benefits),
+          _BenefitsRow(benefits: plan.highlights),
 
           // thin divider line like screenshot
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
@@ -191,7 +191,7 @@ class MonthlyPlanCard extends StatelessWidget {
 }
 
 class _PricePill extends StatelessWidget {
-  final double price;
+  final String price;
   const _PricePill({required this.price});
 
   //static const Color _brand = Color(0xFF5D5A8B);
@@ -206,10 +206,7 @@ class _PricePill extends StatelessWidget {
           GuestPurchasePlanTheme.planPricePillRadius,
         ),
       ),
-      child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
-      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
     );
   }
 }

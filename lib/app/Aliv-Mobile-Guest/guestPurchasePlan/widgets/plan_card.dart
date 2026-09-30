@@ -7,7 +7,7 @@ import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
 class PlanCard extends StatelessWidget {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
@@ -76,7 +76,7 @@ class PlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.formattedPrice),
             ],
           ),
 
@@ -93,7 +93,7 @@ class PlanCard extends StatelessWidget {
           const SizedBox(height: 12),
 
           // ✅ Scrollable benefits row + indicator bar
-          _BenefitsRow(benefits: plan.benefits),
+          _BenefitsRow(benefits: plan.highlights),
 
           // thin divider line like screenshot
           const SizedBox(height: 10),
@@ -169,7 +169,7 @@ class PlanCard extends StatelessWidget {
 }
 
 class _PricePill extends StatelessWidget {
-  final double price;
+  final String price;
   const _PricePill({required this.price});
 
   @override
@@ -182,10 +182,7 @@ class _PricePill extends StatelessWidget {
           GuestPurchasePlanTheme.planPricePillRadius,
         ),
       ),
-      child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
-      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
     );
   }
 }

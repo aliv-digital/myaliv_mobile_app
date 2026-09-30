@@ -1,5 +1,5 @@
-import '../models/plan_model.dart';
 import '../models/add_on_model.dart';
+import '../models/plan_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
 
 enum GuestPurchasePlanStatus { initial, loading, loaded, failure }
@@ -8,7 +8,7 @@ class GuestPurchasePlanState {
   final GuestPurchasePlanStatus status;
   final PlanTab selectedTab;
 
-  final List<PlanModel> plans;
+  final List<GuestPlanDisplayModel> plans;
   final Set<String> expandedPlanIds;
 
   // ✅ AddOns support (new, existing delete kori নাই)
@@ -41,7 +41,7 @@ class GuestPurchasePlanState {
   GuestPurchasePlanState copyWith({
     GuestPurchasePlanStatus? status,
     PlanTab? selectedTab,
-    List<PlanModel>? plans,
+    List<GuestPlanDisplayModel>? plans,
     Set<String>? expandedPlanIds,
 
     // ✅ AddOns

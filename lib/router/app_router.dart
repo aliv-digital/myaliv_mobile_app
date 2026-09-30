@@ -44,6 +44,7 @@ import '../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/view/guest_pay
 import '../app/Aliv-Mobile-Guest/confirmGuestTopUp/view/confirm_guest_top_up_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPaymentMethod/prepaid/view/guest_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlan/view/guest_purchase_plan_screen.dart';
+import '../app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanAddons/view/guest_purchase_plan_add_ons_screen.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import '../app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/view/guest_purchase_plan_confirmation_screen.dart';
@@ -436,6 +437,7 @@ class AppRouter {
           List<String> addOnNames = const <String>[];
           String emailAddress = 'guest';
           String paymentMethod = 'credit card';
+          String? orderId;
 
           final extra = state.extra;
           if (extra is Map) {
@@ -458,6 +460,7 @@ class AppRouter {
             emailAddress = (extra['emailAddress'] as String?) ?? emailAddress;
             paymentMethod =
                 (extra['paymentMethod'] as String?) ?? paymentMethod;
+            orderId = extra['orderId'] as String?;
           }
 
           return GuestPurchasePlanReceiptScreen(
@@ -469,6 +472,7 @@ class AppRouter {
             addOnNames: addOnNames,
             emailAddress: emailAddress,
             paymentMethod: paymentMethod,
+            orderId: orderId,
           );
         },
       ),
@@ -613,10 +617,12 @@ class AppRouter {
         path: AppRoutes.guestPurchasePlanAddOns,
         builder: (context, state) {
           final extra = state.extra;
-          final phoneNumber = extra is Map
-              ? (extra['phoneNumber'] as String? ?? '')
-              : '';
-          return GuestPurchasePlanAddOnsScreen(phoneNumber: phoneNumber);
+          if (extra is! GuestPurchasePlanAddOnsRouteArgs) {
+            return const Scaffold(
+              body: Center(child: Text('missing guest plan context')),
+            );
+          }
+          return GuestPurchasePlanAddOnsScreen(args: extra);
         },
       ),
       GoRoute(
@@ -700,6 +706,7 @@ class AppRouter {
             amount: (extra?['amount'] as num?)?.toDouble() ?? 0,
             dateText: extra?['dateText'] as String? ?? '',
             timeText: extra?['timeText'] as String? ?? '',
+            orderId: extra?['orderId'] as String?,
           );
         },
       ),

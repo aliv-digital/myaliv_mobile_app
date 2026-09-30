@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_presentation_mapper.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/theme.dart';
@@ -240,68 +241,8 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                         children: List.generate(widget.benefits.length, (i) {
                           final BasePlanBucketModel item = widget.benefits[i];
                           Color labelColor;
-                          BucketItemType itemType = BucketItemType.whatsApp;
 
-                          if (item.bucketUnit == 'INS_Data' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit ==
-                                  'INS_Whatsapp_Text_10201' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.whatsApp;
-                          } else if (item.bucketUnit == 'INS_Whatsapp_All' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.whatsApp;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit ==
-                                  'INS_Voice_Only_National' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit ==
-                                  'INS_Voice_Only_National' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit ==
-                                  'INS_SMS_Only_National' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Voice_Onnet' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_SMS_Onnet' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                          } else if (item.bucketUnit == 'INS_Data_MIFI' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_TikTok_10500' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit ==
-                                  'INS_Facebook_MSG_10403' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                          }
+                          final itemType = const PlanPresentationMapper().bucketItemType(item);
 
                           switch (itemType) {
                             case BucketItemType.data:
