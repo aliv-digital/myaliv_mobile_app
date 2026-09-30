@@ -41,6 +41,9 @@ class CallLogsOtpScreen extends StatelessWidget {
         initialMfaToken: initialMfaToken,
         initialPhoneNumber: apiPhoneNumber,
         initialApiPhoneNumber: apiPhoneNumber,
+        preventDuplicateSubmissions: true,
+        offlineVerificationMessage:
+            "We couldn't verify the OTP due to a network error. Please try again later",
       ),
       child: const _CallLogsOtpView(),
     );

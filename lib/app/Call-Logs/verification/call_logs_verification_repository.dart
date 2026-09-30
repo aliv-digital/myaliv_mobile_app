@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/phone_dropdown_helper.dart';
@@ -31,17 +32,24 @@ class CallLogsVerificationRepository {
   CallLogsVerificationRepository({
     NetworkService? networkService,
     AuthManager? authManager,
+    InternetConnection? internetConnection,
     Future<String?> Function()? phoneNumberProvider,
   }) : _networkService = networkService ?? instance<NetworkService>(),
        _authManager = authManager ?? instance<AuthManager>(),
+       _internetConnection = internetConnection ?? InternetConnection(),
        _phoneNumberProvider =
            phoneNumberProvider ?? _defaultPhoneNumberProvider;
 
   final NetworkService _networkService;
   final AuthManager _authManager;
+  final InternetConnection _internetConnection;
   final Future<String?> Function() _phoneNumberProvider;
 
   Future<CallLogsChallenge> requestChallenge() async {
+    if (!await _internetConnection.hasInternetAccess) {
+      throw const CallLogsVerificationException('No internet');
+    }
+
     final apiPhoneNumber = (await _phoneNumberProvider())?.trim() ?? '';
     if (apiPhoneNumber.isEmpty) {
       throw const CallLogsVerificationException(

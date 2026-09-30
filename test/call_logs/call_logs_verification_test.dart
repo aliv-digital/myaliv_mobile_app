@@ -5,7 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/services/auth_completion_service.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_event.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/bloc/login_otp_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_resend_response_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_verify_response_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/repository/base_login_otp_repository.dart';
@@ -30,6 +35,28 @@ class _MockVerificationRepository extends Mock
     implements CallLogsVerificationRepository {}
 
 class _MockOtpRepository extends Mock implements BaseLoginOtpRepository {}
+
+class _FixedInternetConnection extends Fake implements InternetConnection {
+  _FixedInternetConnection(this.isConnected);
+
+  final bool isConnected;
+
+  @override
+  Future<bool> get hasInternetAccess async => isConnected;
+}
+
+class _NoOpAuthCompletionService extends Fake implements AuthCompletionService {
+  @override
+  Future<void> complete({
+    required TokenSession session,
+    required AppUiConfigCubit appUiConfigCubit,
+  }) async {}
+}
+
+class _NoOpAnalyticsService extends Fake implements AnalyticsService {
+  @override
+  Future<void> logLogin() async {}
+}
 
 void main() {
   late _MockNetworkService networkService;
@@ -60,6 +87,7 @@ void main() {
       final repository = CallLogsVerificationRepository(
         networkService: networkService,
         authManager: authManager,
+        internetConnection: _FixedInternetConnection(true),
         phoneNumberProvider: () async => '12425551234',
       );
 
@@ -80,11 +108,40 @@ void main() {
       verifyNever(authManager.refreshIfNeeded);
     });
 
+    test('returns No internet before starting the challenge when offline', () {
+      final repository = CallLogsVerificationRepository(
+        networkService: networkService,
+        authManager: authManager,
+        internetConnection: _FixedInternetConnection(false),
+        phoneNumberProvider: () async => '12425551234',
+      );
+
+      expect(
+        repository.requestChallenge,
+        throwsA(
+          isA<CallLogsVerificationException>().having(
+            (error) => error.message,
+            'message',
+            'No internet',
+          ),
+        ),
+      );
+      verifyNever(authManager.refreshIfNeeded);
+      verifyNever(
+        () => networkService.request<dynamic>(
+          Api.challengeOtpUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+        ),
+      );
+    });
+
     test('does not call challenge API without a signed-in session', () async {
       when(() => authManager.currentSession).thenReturn(null);
       final repository = CallLogsVerificationRepository(
         networkService: networkService,
         authManager: authManager,
+        internetConnection: _FixedInternetConnection(true),
         phoneNumberProvider: () async => '12425551234',
       );
 
@@ -133,6 +190,7 @@ void main() {
       final repository = CallLogsVerificationRepository(
         networkService: networkService,
         authManager: authManager,
+        internetConnection: _FixedInternetConnection(true),
         phoneNumberProvider: () async => '12425551234',
       );
 
@@ -164,6 +222,7 @@ void main() {
       final repository = CallLogsVerificationRepository(
         networkService: networkService,
         authManager: authManager,
+        internetConnection: _FixedInternetConnection(true),
         phoneNumberProvider: () async => '12425551234',
       );
 
@@ -241,6 +300,127 @@ void main() {
       verify(verificationRepository.requestChallenge).called(1);
     });
   });
+
+  test(
+    'Call Logs OTP ignores rapid Verify submissions while one is in flight',
+    () async {
+      final repository = _MockOtpRepository();
+      var verifyCompleter = Completer<LoginOtpVerifyResponse>();
+      when(
+        () => repository.verifyCode(
+          phoneNumber: any(named: 'phoneNumber'),
+          mfaToken: any(named: 'mfaToken'),
+          otpCode: any(named: 'otpCode'),
+        ),
+      ).thenAnswer((_) => verifyCompleter.future);
+      final bloc = LoginOtpBloc(
+        repository: repository,
+        appUiConfigCubit: AppUiConfigCubit(),
+        authCompletionService: _NoOpAuthCompletionService(),
+        internetConnection: _FixedInternetConnection(true),
+        analyticsService: _NoOpAnalyticsService(),
+        initialMfaToken: 'mfa-123',
+        initialPhoneNumber: '2428997955',
+        initialApiPhoneNumber: '2428997955',
+        preventDuplicateSubmissions: true,
+      );
+      addTearDown(bloc.close);
+
+      final codeReady = bloc.stream.firstWhere(
+        (state) => state.code == '123456',
+      );
+      bloc.add(const LoginOtpCodeChanged('123456'));
+      await codeReady;
+
+      final firstLoading = bloc.stream.firstWhere(
+        (state) => state.status == LoginOtpStatus.loading,
+      );
+      bloc
+        ..add(const LoginOtpSubmitted())
+        ..add(const LoginOtpSubmitted())
+        ..add(const LoginOtpSubmitted())
+        ..add(const LoginOtpSubmitted());
+      await firstLoading;
+
+      verify(
+        () => repository.verifyCode(
+          phoneNumber: '2428997955',
+          mfaToken: 'mfa-123',
+          otpCode: '123456',
+        ),
+      ).called(1);
+
+      final firstFailure = bloc.stream.firstWhere(
+        (state) => state.status == LoginOtpStatus.failure,
+      );
+      verifyCompleter.completeError(Exception('Invalid OTP'));
+      await firstFailure;
+
+      verifyCompleter = Completer<LoginOtpVerifyResponse>();
+      final retryLoading = bloc.stream.firstWhere(
+        (state) => state.status == LoginOtpStatus.loading,
+      );
+      bloc.add(const LoginOtpSubmitted());
+      await retryLoading;
+
+      verify(
+        () => repository.verifyCode(
+          phoneNumber: '2428997955',
+          mfaToken: 'mfa-123',
+          otpCode: '123456',
+        ),
+      ).called(1);
+
+      final retryFailure = bloc.stream.firstWhere(
+        (state) => state.status == LoginOtpStatus.failure,
+      );
+      verifyCompleter.completeError(Exception('Invalid OTP'));
+      await retryFailure;
+    },
+  );
+
+  test(
+    'Call Logs OTP uses the dedicated network error message when offline',
+    () async {
+      const networkErrorMessage =
+          "We couldn't verify the OTP due to a network error. Please try again later";
+      final repository = _MockOtpRepository();
+      final bloc = LoginOtpBloc(
+        repository: repository,
+        appUiConfigCubit: AppUiConfigCubit(),
+        authCompletionService: _NoOpAuthCompletionService(),
+        internetConnection: _FixedInternetConnection(false),
+        analyticsService: _NoOpAnalyticsService(),
+        initialMfaToken: 'mfa-123',
+        initialPhoneNumber: '2428997955',
+        initialApiPhoneNumber: '2428997955',
+        preventDuplicateSubmissions: true,
+        offlineVerificationMessage: networkErrorMessage,
+      );
+      addTearDown(bloc.close);
+
+      final codeReady = bloc.stream.firstWhere(
+        (state) => state.code == '123456',
+      );
+      bloc.add(const LoginOtpCodeChanged('123456'));
+      await codeReady;
+
+      final failure = bloc.stream.firstWhere(
+        (state) => state.status == LoginOtpStatus.failure,
+      );
+      bloc.add(const LoginOtpSubmitted());
+      final state = await failure;
+
+      expect(state.errorMessage, networkErrorMessage);
+      verifyNever(
+        () => repository.verifyCode(
+          phoneNumber: any(named: 'phoneNumber'),
+          mfaToken: any(named: 'mfaToken'),
+          otpCode: any(named: 'otpCode'),
+        ),
+      );
+    },
+  );
 
   test(
     'successful Call Logs verification replaces both stored tokens',
