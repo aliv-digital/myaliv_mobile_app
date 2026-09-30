@@ -162,8 +162,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                   backgroundColor: TopUpConfirmTheme.payBarBackgroundColor,
                   buttonColor: TopUpConfirmTheme.payBarButtonColor,
                   onPayNow: () {
-                    final state =
-                        context.read<GuestConfirmTopUpBloc>().state;
+                    final state = context.read<GuestConfirmTopUpBloc>().state;
                     _open3DSPayment(context, state);
                   },
                 );

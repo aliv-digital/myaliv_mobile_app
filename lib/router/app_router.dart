@@ -443,10 +443,7 @@ class AppRouter {
           final extra = state.extra;
           final args = extra is CallLogsOtpRouteArgs
               ? extra
-              : const CallLogsOtpRouteArgs(
-                  mfaToken: '',
-                  apiPhoneNumber: '',
-                );
+              : const CallLogsOtpRouteArgs(mfaToken: '', apiPhoneNumber: '');
           return CallLogsOtpScreen(
             initialMfaToken: args.mfaToken,
             apiPhoneNumber: args.apiPhoneNumber,

@@ -124,9 +124,9 @@ class _GuestPayBillConfirmView extends StatelessWidget {
       amountText: _formatAmount(state.total),
     );
     if (cardDetails == null || !context.mounted) return;
-    _bloc(context).add(
-      GuestPayBillConfirmFibrPayPressed(cardDetails: cardDetails),
-    );
+    _bloc(
+      context,
+    ).add(GuestPayBillConfirmFibrPayPressed(cardDetails: cardDetails));
   }
 
   void _open3DSPayment(BuildContext context, GuestPayBillConfirmState state) {
@@ -238,9 +238,8 @@ class _GuestPayBillConfirmView extends StatelessWidget {
                   backgroundColor: Colors.white,
                   buttonColor: GuestPayBillConfirmTheme.primary,
                   onPayNow: () {
-                    final isAlivFibr = state.args.serviceName
-                            .trim()
-                            .toUpperCase() ==
+                    final isAlivFibr =
+                        state.args.serviceName.trim().toUpperCase() ==
                         'ALIVFIBR';
                     if (isAlivFibr) {
                       _openFibrPayment(context, state);

@@ -89,10 +89,7 @@ void main() {
     await tester.pump();
 
     expect(harness.routeExtras, isEmpty);
-    expect(
-      find.text(GuestSplashTheme.invalidPhoneMessage),
-      findsOneWidget,
-    );
+    expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsOneWidget);
     expect(find.byType(TextField), findsNWidgets(2));
 
     await tester.pump(const Duration(seconds: 4));
@@ -107,20 +104,14 @@ void main() {
     await tester.enterText(_phoneField(1), '2425559999');
     await tester.pump();
 
-    expect(
-      find.text(GuestSplashTheme.phoneMismatchMessage),
-      findsOneWidget,
-    );
+    expect(find.text(GuestSplashTheme.phoneMismatchMessage), findsOneWidget);
 
     await tester.showKeyboard(_phoneField(1));
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
     expect(harness.routeExtras, isEmpty);
-    expect(
-      find.text(GuestSplashTheme.phoneMismatchMessage),
-      findsNWidgets(2),
-    );
+    expect(find.text(GuestSplashTheme.phoneMismatchMessage), findsNWidgets(2));
     expect(find.byType(TextField), findsNWidgets(2));
 
     await tester.pump(const Duration(seconds: 4));
@@ -200,9 +191,7 @@ Future<_BottomSheetHarness> _pumpBottomSheet(WidgetTester tester) async {
         path: AppRoutes.guestPurchasePlan,
         builder: (context, state) {
           routeExtras.add(state.extra);
-          return const Scaffold(
-            body: Text('guest purchase plan destination'),
-          );
+          return const Scaffold(body: Text('guest purchase plan destination'));
         },
       ),
     ],

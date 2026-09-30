@@ -8,7 +8,7 @@ import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 /// deliberately not rerun for this already-authenticated user.
 class CallLogsSessionCompletionService extends AuthCompletionService {
   CallLogsSessionCompletionService({AuthManager? authManager})
-      : _authManager = authManager ?? instance<AuthManager>();
+    : _authManager = authManager ?? instance<AuthManager>();
 
   final AuthManager _authManager;
 

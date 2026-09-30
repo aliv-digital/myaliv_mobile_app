@@ -85,7 +85,9 @@ class _LoginPrivacyPolicyDialogState extends State<LoginPrivacyPolicyDialog> {
                   ),
                 ),
                 const Divider(
-                    height: 1, color: AuthModuleColors.lightGreyBorder),
+                  height: 1,
+                  color: AuthModuleColors.lightGreyBorder,
+                ),
                 Expanded(
                   child: FutureBuilder<PrivacyContent>(
                     future: _privacyContent,

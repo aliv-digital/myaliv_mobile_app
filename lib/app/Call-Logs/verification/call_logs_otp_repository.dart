@@ -11,8 +11,8 @@ class CallLogsOtpRepository implements BaseLoginOtpRepository {
   CallLogsOtpRepository({
     required CallLogsVerificationRepository verificationRepository,
     BaseLoginOtpRepository? verificationDelegate,
-  })  : _verificationRepository = verificationRepository,
-        _verificationDelegate = verificationDelegate ?? LoginOtpRepository();
+  }) : _verificationRepository = verificationRepository,
+       _verificationDelegate = verificationDelegate ?? LoginOtpRepository();
 
   final CallLogsVerificationRepository _verificationRepository;
   final BaseLoginOtpRepository _verificationDelegate;

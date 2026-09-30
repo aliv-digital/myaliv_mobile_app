@@ -54,8 +54,8 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
 
     setState(() => _requestingCallLogsChallenge = true);
     try {
-      final challenge =
-          await instance<CallLogsVerificationRepository>().requestChallenge();
+      final challenge = await instance<CallLogsVerificationRepository>()
+          .requestChallenge();
       if (!mounted) return;
 
       context.push(
@@ -106,8 +106,8 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                 child: DefaultAppBar(
                   title: 'profile',
                   onBack: () => context.read<ProfilePrepaidBloc>().add(
-                        const ProfilePrepaidBackPressed(),
-                      ),
+                    const ProfilePrepaidBackPressed(),
+                  ),
                   showBackArrow: true,
                   onHomeTap: () => context.go(AppRoutes.home),
                 ),
@@ -135,7 +135,8 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                             return ProfileMenuItemTile(
                               title: item.title,
                               enabled: item.enabled,
-                              trailing: item.id == 'call_logs' &&
+                              trailing:
+                                  item.id == 'call_logs' &&
                                       _requestingCallLogsChallenge
                                   ? const SizedBox.square(
                                       dimension: 22,
@@ -166,8 +167,8 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
 
                                 if (item.id == 'call_logs') {
                                   context.read<ProfilePrepaidBloc>().add(
-                                        ProfilePrepaidItemPressed(item),
-                                      );
+                                    ProfilePrepaidItemPressed(item),
+                                  );
                                   await _openCallLogs();
                                   return;
                                 }
@@ -175,8 +176,8 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                                   context.push(AppRoutes.rewardPrepaidScreen);
                                 }
                                 context.read<ProfilePrepaidBloc>().add(
-                                      ProfilePrepaidItemPressed(item),
-                                    );
+                                  ProfilePrepaidItemPressed(item),
+                                );
                               },
                             );
                           }),

@@ -58,8 +58,9 @@ void main() {
     expect(tester.widget<TextField>(confirmField).focusNode!.hasFocus, isTrue);
   });
 
-  testWidgets('ALIV Postpaid confirm uses TextInputAction.done',
-      (tester) async {
+  testWidgets('ALIV Postpaid confirm uses TextInputAction.done', (
+    tester,
+  ) async {
     await _pumpScreen(tester);
 
     expect(
@@ -422,10 +423,7 @@ void _stubFibrPending(
 Response<dynamic> _postpaidResponse() {
   return Response<dynamic>(
     requestOptions: RequestOptions(path: Api.guestBalanceUrl),
-    data: <String, dynamic>{
-      'Balance': 20.0,
-      'AccountStatus': 'active',
-    },
+    data: <String, dynamic>{'Balance': 20.0, 'AccountStatus': 'active'},
   );
 }
 

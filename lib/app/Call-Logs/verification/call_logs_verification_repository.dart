@@ -32,10 +32,10 @@ class CallLogsVerificationRepository {
     NetworkService? networkService,
     AuthManager? authManager,
     Future<String?> Function()? phoneNumberProvider,
-  })  : _networkService = networkService ?? instance<NetworkService>(),
-        _authManager = authManager ?? instance<AuthManager>(),
-        _phoneNumberProvider =
-            phoneNumberProvider ?? _defaultPhoneNumberProvider;
+  }) : _networkService = networkService ?? instance<NetworkService>(),
+       _authManager = authManager ?? instance<AuthManager>(),
+       _phoneNumberProvider =
+           phoneNumberProvider ?? _defaultPhoneNumberProvider;
 
   final NetworkService _networkService;
   final AuthManager _authManager;
@@ -119,10 +119,7 @@ class CallLogsVerificationRepository {
 
     final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
     final devices = instance<DeviceLimitsCubit>().state.allDeviceLimits;
-    final homePhone = PhoneDropdownHelper.getPrimaryPhone(
-      accountInfo,
-      devices,
-    );
+    final homePhone = PhoneDropdownHelper.getPrimaryPhone(accountInfo, devices);
 
     var digits = homePhone.replaceAll(RegExp(r'\D'), '');
     if (digits.length == 11 && digits.startsWith('1')) {

@@ -114,8 +114,9 @@ void main() {
       );
       final refreshedSession = _session(accessToken: 'fresh-access');
       when(() => authManager.currentSession).thenReturn(expiredSession);
-      when(authManager.refreshIfNeeded)
-          .thenAnswer((_) async => refreshedSession);
+      when(
+        authManager.refreshIfNeeded,
+      ).thenAnswer((_) async => refreshedSession);
       when(
         () => networkService.request<dynamic>(
           Api.challengeOtpUrl,
@@ -158,10 +159,7 @@ void main() {
           data: any(named: 'data'),
         ),
       ).thenThrow(
-        ServerException(
-          'An unexpected error occurred.',
-          statusCode: 500,
-        ),
+        ServerException('An unexpected error occurred.', statusCode: 500),
       );
       final repository = CallLogsVerificationRepository(
         networkService: networkService,
@@ -185,38 +183,40 @@ void main() {
   });
 
   group('Call Logs OTP adapter', () {
-    test('verify delegates to the existing OTP verification repository',
-        () async {
-      final verificationRepository = _MockVerificationRepository();
-      final otpDelegate = _MockOtpRepository();
-      final response = LoginOtpVerifyResponse(session: _session());
-      when(
-        () => otpDelegate.verifyCode(
+    test(
+      'verify delegates to the existing OTP verification repository',
+      () async {
+        final verificationRepository = _MockVerificationRepository();
+        final otpDelegate = _MockOtpRepository();
+        final response = LoginOtpVerifyResponse(session: _session());
+        when(
+          () => otpDelegate.verifyCode(
+            phoneNumber: '12425551234',
+            mfaToken: 'mfa-123',
+            otpCode: '123456',
+          ),
+        ).thenAnswer((_) async => response);
+        final repository = CallLogsOtpRepository(
+          verificationRepository: verificationRepository,
+          verificationDelegate: otpDelegate,
+        );
+
+        final result = await repository.verifyCode(
           phoneNumber: '12425551234',
           mfaToken: 'mfa-123',
           otpCode: '123456',
-        ),
-      ).thenAnswer((_) async => response);
-      final repository = CallLogsOtpRepository(
-        verificationRepository: verificationRepository,
-        verificationDelegate: otpDelegate,
-      );
+        );
 
-      final result = await repository.verifyCode(
-        phoneNumber: '12425551234',
-        mfaToken: 'mfa-123',
-        otpCode: '123456',
-      );
-
-      expect(result, same(response));
-      verify(
-        () => otpDelegate.verifyCode(
-          phoneNumber: '12425551234',
-          mfaToken: 'mfa-123',
-          otpCode: '123456',
-        ),
-      ).called(1);
-    });
+        expect(result, same(response));
+        verify(
+          () => otpDelegate.verifyCode(
+            phoneNumber: '12425551234',
+            mfaToken: 'mfa-123',
+            otpCode: '123456',
+          ),
+        ).called(1);
+      },
+    );
 
     test('resend requests a new challenge and returns its MFA token', () async {
       final verificationRepository = _MockVerificationRepository();
@@ -242,22 +242,26 @@ void main() {
     });
   });
 
-  test('successful Call Logs verification replaces both stored tokens',
-      () async {
-    final nextSession = _session(
-      accessToken: 'new-access',
-      refreshToken: 'new-refresh',
-    );
-    when(() => authManager.saveSession(nextSession)).thenAnswer((_) async {});
-    final service = CallLogsSessionCompletionService(authManager: authManager);
+  test(
+    'successful Call Logs verification replaces both stored tokens',
+    () async {
+      final nextSession = _session(
+        accessToken: 'new-access',
+        refreshToken: 'new-refresh',
+      );
+      when(() => authManager.saveSession(nextSession)).thenAnswer((_) async {});
+      final service = CallLogsSessionCompletionService(
+        authManager: authManager,
+      );
 
-    await service.complete(
-      session: nextSession,
-      appUiConfigCubit: AppUiConfigCubit(),
-    );
+      await service.complete(
+        session: nextSession,
+        appUiConfigCubit: AppUiConfigCubit(),
+      );
 
-    verify(() => authManager.saveSession(nextSession)).called(1);
-  });
+      verify(() => authManager.saveSession(nextSession)).called(1);
+    },
+  );
 
   test('verification authorization is memory-only and resettable', () {
     final session = CallLogsVerificationSession();
@@ -275,9 +279,9 @@ void main() {
     (tester) async {
       final repository = _MockVerificationRepository();
       final challengeCompleter = Completer<CallLogsChallenge>();
-      when(repository.requestChallenge).thenAnswer(
-        (_) => challengeCompleter.future,
-      );
+      when(
+        repository.requestChallenge,
+      ).thenAnswer((_) => challengeCompleter.future);
       instance.registerSingleton<CallLogsVerificationRepository>(repository);
       instance.registerSingleton<CallLogsVerificationSession>(
         CallLogsVerificationSession(),

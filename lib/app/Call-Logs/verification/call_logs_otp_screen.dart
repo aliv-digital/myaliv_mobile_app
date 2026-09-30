@@ -68,9 +68,7 @@ class _CallLogsOtpView extends StatelessWidget {
                 message: 'Verification successful.',
                 type: ToastType.success,
               );
-              context.pushReplacement(
-                '${AppRoutes.callLogs}?tab=call_logs',
-              );
+              context.pushReplacement('${AppRoutes.callLogs}?tab=call_logs');
             }
 
             if (state.status == LoginOtpStatus.failure &&

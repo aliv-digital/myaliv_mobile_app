@@ -19,10 +19,12 @@ class ProfileMenuItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleColor =
-        enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
-    final chevronColor =
-        enabled ? ProfilePrepaidTheme.textBlack : ProfilePrepaidTheme.textGrey;
+    final titleColor = enabled
+        ? ProfilePrepaidTheme.textBlack
+        : ProfilePrepaidTheme.textGrey;
+    final chevronColor = enabled
+        ? ProfilePrepaidTheme.textBlack
+        : ProfilePrepaidTheme.textGrey;
 
     return Column(
       children: [
