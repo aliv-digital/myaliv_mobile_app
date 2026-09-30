@@ -96,6 +96,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         _DatesRow(
           activeDate: (activePlan?.startDateTime).formatDdMmYyOrDash(),
           expireDate: (activePlan?.endDateTime).formatDdMmYyOrDash(),
+          expireTime: (activePlan?.endDateTime).formatHmAOrEmpty(),
         ),
         if (showRenewButton) ...[
           const SizedBox(height: 14),
@@ -351,10 +352,15 @@ class _AutoRenewToggleState extends State<_AutoRenewToggle> {
 
 /// Dates row showing active and expire dates
 class _DatesRow extends StatelessWidget {
-  const _DatesRow({required this.activeDate, required this.expireDate});
+  const _DatesRow({
+    required this.activeDate,
+    required this.expireDate,
+    this.expireTime = '',
+  });
 
   final String activeDate;
   final String expireDate;
+  final String expireTime;
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +368,12 @@ class _DatesRow extends StatelessWidget {
       children: [
         _DateBlock(title: 'active', value: activeDate),
         const Spacer(),
-        _DateBlock(title: 'expire', value: expireDate, alignRight: true),
+        _DateBlock(
+          title: 'expire',
+          value: expireDate,
+          subtitle: expireTime,
+          alignRight: true,
+        ),
       ],
     );
   }
@@ -373,11 +384,13 @@ class _DateBlock extends StatelessWidget {
   const _DateBlock({
     required this.title,
     required this.value,
+    this.subtitle = '',
     this.alignRight = false,
   });
 
   final String title;
   final String value;
+  final String subtitle;
   final bool alignRight;
 
   @override
@@ -407,6 +420,18 @@ class _DateBlock extends StatelessWidget {
             letterSpacing: 2.25,
           ),
         ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }

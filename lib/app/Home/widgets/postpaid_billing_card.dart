@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
@@ -120,8 +121,8 @@ class _PostpaidBillingCardContentState
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'balance due',
                         style: TextStyle(
                           color: Colors.black,
@@ -133,8 +134,8 @@ class _PostpaidBillingCardContentState
                         ),
                       ),
                       Text(
-                        'payment is due the 15th of each month',
-                        style: TextStyle(
+                        _balanceDueDate(),
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 11,
                           fontFamily: 'SF Pro',
@@ -200,6 +201,13 @@ class _PostpaidBillingCardContentState
         ),
       ),
     );
+  }
+
+  String _balanceDueDate() {
+    final now = DateTime.now();
+    final due = DateTime(now.year, now.month, 15);
+    final month = DateFormat('MMM').format(due).toLowerCase();
+    return '$month 15, ${due.year}';
   }
 
   Future<void> _onChanged(bool value) async {

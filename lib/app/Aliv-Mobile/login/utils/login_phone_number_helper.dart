@@ -27,14 +27,14 @@ class LoginPhoneNumberHelper {
 
   static const String invalidPhoneNumberMessage = 'invalid phone number';
 
-  /// Normalizes any typed/formatted Bahamas phone value to `(242)-899-9999`.
+  /// Normalizes any typed/formatted Bahamas phone value to `242-555-1234`.
   ///
   /// Input can be `(242)-899-9999`, `2428999999`, or `242 899 9999`.
   /// Returns the trimmed original string if it doesn't contain 10 digits.
   static String formatBahamasNumberForDisplay(String rawInput) {
     final String digits = rawInput.replaceAll(RegExp(r'[^0-9]'), '');
     if (digits.length == 10) {
-      return '(${digits.substring(0, 3)})-'
+      return '${digits.substring(0, 3)}-'
           '${digits.substring(3, 6)}-'
           '${digits.substring(6)}';
     }

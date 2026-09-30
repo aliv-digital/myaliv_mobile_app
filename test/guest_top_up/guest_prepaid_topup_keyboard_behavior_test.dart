@@ -95,7 +95,7 @@ void main() {
 
     expect(buttonHarness.confirmExtras.single, doneExtra);
     expect(doneExtra, <String, Object?>{
-      'phoneNumber': '(242) 555-1234',
+      'phoneNumber': '(242)-555-1234',
       'amount': 15.0,
     });
   });
