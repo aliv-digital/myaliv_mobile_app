@@ -5,11 +5,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/enable_auto_payment_sheet.dart';
-import 'package:myaliv_mobile_app/app/Home/balance/view/balance_amount_text.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class PostpaidBillingCard extends StatelessWidget {
   const PostpaidBillingCard({super.key});
@@ -133,7 +133,7 @@ class _PostpaidBillingCardContentState
                         ),
                       ),
                       Text(
-                        'payment is due the 15th of each\nmonth',
+                        'payment is due the 15th of each month',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 11,
@@ -147,8 +147,16 @@ class _PostpaidBillingCardContentState
                   ),
                 ),
 
-                // Amount (wallet balance shown as "balance due" for postpaid)
-                const BalanceAmountText(type: BalanceType.wallet),
+                // Amount: constrained width so large values scale down instead of
+                // pushing the text column narrow.
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 130),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: const BalanceAmountText(type: BalanceType.wallet),
+                  ),
+                ),
               ],
             ),
 

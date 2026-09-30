@@ -67,6 +67,15 @@ class MpPayWithCardConfirmed extends MakePaymentPostPaidEvent {
   List<Object?> get props => [details];
 }
 
+/// WebView returned a successful 3DS callback — arm nav to receipt.
+class Mp3DSSucceeded extends MakePaymentPostPaidEvent {
+  final String? orderId;
+  const Mp3DSSucceeded({this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}
+
 class MpNavConsumed extends MakePaymentPostPaidEvent {
   const MpNavConsumed();
 }

@@ -186,10 +186,7 @@ class _SheetBody extends StatelessWidget {
               ];
         void continueAction() {
           if (state.purchasePhone.isEmpty ||
-              _isPhoneInvalid(
-                state.purchasePhone,
-                state.purchaseCountry,
-              )) {
+              _isPhoneInvalid(state.purchasePhone, state.purchaseCountry)) {
             AppToast.show(
               message: GuestSplashTheme.invalidPhoneMessage,
               type: ToastType.error,
@@ -197,10 +194,7 @@ class _SheetBody extends StatelessWidget {
             return;
           }
           if (state.purchaseConfirmPhone.isEmpty ||
-              _isMismatch(
-                state.purchasePhone,
-                state.purchaseConfirmPhone,
-              )) {
+              _isMismatch(state.purchasePhone, state.purchaseConfirmPhone)) {
             AppToast.show(
               message: GuestSplashTheme.phoneMismatchMessage,
               type: ToastType.error,
@@ -212,8 +206,8 @@ class _SheetBody extends StatelessWidget {
             extra: {
               'phoneNumber':
                   LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
-                state.purchasePhone,
-              ),
+                    state.purchasePhone,
+                  ),
             },
           );
         }

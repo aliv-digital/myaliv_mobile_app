@@ -160,6 +160,24 @@ class ChangeBundleRequestFactory {
     };
   }
 
+  /// 3DS top-up envelope: POST /Order/top-up/3ds/{PrimaryPhoneNumber}.
+  static Map<String, dynamic> topUpBodyFor3DS({required double amount}) {
+    return <String, dynamic>{
+      'Amount': double.parse(amount.toStringAsFixed(2)),
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+    };
+  }
+
+  /// 3DS postpaid make-payment envelope: POST /Order/3ds/payment.
+  static Map<String, dynamic> orderPaymentBodyFor3DS({required double amount}) {
+    return <String, dynamic>{
+      'Amount': double.parse(amount.toStringAsFixed(2)),
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
+    };
+  }
+
   /// Guest top-up 3DS envelope: POST /Guest/top-up.
   /// Phone number lives in the body (not the URL path).
   static Map<String, dynamic> guestTopUpBodyFor3DS({

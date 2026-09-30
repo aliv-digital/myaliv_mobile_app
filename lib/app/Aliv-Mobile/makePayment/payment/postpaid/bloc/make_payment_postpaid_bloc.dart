@@ -22,6 +22,7 @@ class MakePaymentPostPaidBloc
     on<MpPayNowPressed>(_onPayNow);
     on<MpPaySavedCardConfirmed>(_onPaySavedCardConfirmed);
     on<MpPayWithCardConfirmed>(_onPayWithCardConfirmed);
+    on<Mp3DSSucceeded>(_on3DSSucceeded);
     on<MpNavConsumed>(_onNavConsumed);
   }
 
@@ -194,6 +195,18 @@ class MakePaymentPostPaidBloc
   String _cleanErrorMessage(Object error, {required String fallback}) {
     final message = error.toString().replaceFirst('Exception: ', '').trim();
     return message.isEmpty ? fallback : message;
+  }
+
+  void _on3DSSucceeded(
+    Mp3DSSucceeded event,
+    Emitter<MakePaymentPostPaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        status: MpPaymentStatus.success,
+        navTarget: MpNavTarget.paid,
+      ),
+    );
   }
 
   void _onNavConsumed(

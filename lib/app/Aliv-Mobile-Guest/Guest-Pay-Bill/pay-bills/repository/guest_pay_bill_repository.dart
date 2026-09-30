@@ -32,14 +32,13 @@ class GuestPayBillRepository {
     );
 
     final data = response.data;
-    final balance =
-        (data is Map ? (data['Balance'] ?? data['balance']) : null);
-    final statusRaw =
-        data is Map ? (data['AccountStatus'] ?? data['accountStatus']) : null;
-    final status =
-        (statusRaw is String && statusRaw.trim().isNotEmpty)
-            ? statusRaw.trim()
-            : 'unidentified';
+    final balance = (data is Map ? (data['Balance'] ?? data['balance']) : null);
+    final statusRaw = data is Map
+        ? (data['AccountStatus'] ?? data['accountStatus'])
+        : null;
+    final status = (statusRaw is String && statusRaw.trim().isNotEmpty)
+        ? statusRaw.trim()
+        : 'unidentified';
 
     return PayBillAccountInfo(
       status: status,
@@ -83,8 +82,9 @@ class GuestPayBillRepository {
     final data = response.data;
     final idAcc = data is Map ? (data['id_acc'] ?? data['Id_acc']) : null;
     final balance = data is Map ? (data['Balance'] ?? data['balance']) : null;
-    final statusRaw =
-        data is Map ? (data['AccountStatus'] ?? data['accountStatus']) : null;
+    final statusRaw = data is Map
+        ? (data['AccountStatus'] ?? data['accountStatus'])
+        : null;
 
     return PayBillAccountInfo(
       status: (statusRaw is String && statusRaw.trim().isNotEmpty)

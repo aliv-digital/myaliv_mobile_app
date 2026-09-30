@@ -3,7 +3,8 @@ class GuestPayBillConfirmArgs {
   final String identifierLabel; // e.g. "mobile no.", "Acc #"
   final String identifierValue; // e.g. "242-801-0000", "407413542"
   final double amount; // e.g. 200.00
-  final int? fibrAccountId; // id_acc from /Guest/fibrbalance; required for ALIVFibr payment
+  final int?
+  fibrAccountId; // id_acc from /Guest/fibrbalance; required for ALIVFibr payment
 
   const GuestPayBillConfirmArgs({
     required this.serviceName,

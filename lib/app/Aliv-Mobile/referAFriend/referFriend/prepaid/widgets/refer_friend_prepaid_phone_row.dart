@@ -103,7 +103,7 @@ class _ReferFriendPrepaidPhoneRowState
               focusNode: _phoneFocusNode,
               hideUnfocusedInputBorder: !showPhoneBorderError,
               hintText: isBahamasSelected
-                  ? '(242) 345-4356'
+                  ? '(242)-345-4356'
                   : 'eg: (242)-899-9999',
               flagEmoji: state.selectedCountry.flagEmoji,
               dialCode: state.selectedCountry.dialCode,

@@ -27,9 +27,9 @@ void main() {
     toastCalls = <MethodCall>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(toastChannel, (call) async {
-      toastCalls.add(call);
-      return true;
-    });
+          toastCalls.add(call);
+          return true;
+        });
   });
 
   tearDown(() async {
@@ -159,9 +159,7 @@ void main() {
 }
 
 Future<void> _pumpCreatePasswordScreen(WidgetTester tester) async {
-  await tester.pumpWidget(
-    const MaterialApp(home: CreatePasswordScreen()),
-  );
+  await tester.pumpWidget(const MaterialApp(home: CreatePasswordScreen()));
   await tester.pump();
 }
 

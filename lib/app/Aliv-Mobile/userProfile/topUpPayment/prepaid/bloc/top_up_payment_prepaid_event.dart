@@ -53,6 +53,16 @@ final class PayWithCardConfirmed extends TopUpPaymentPrepaidEvent {
   List<Object?> get props => [details];
 }
 
+/// WebView returned a successful 3DS callback — arm nav to receipt.
+final class Pay3DSSucceeded extends TopUpPaymentPrepaidEvent {
+  final String? orderId;
+
+  const Pay3DSSucceeded({this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}
+
 /// View acknowledges it has pushed the receipt route, clears [navTarget].
 final class PaymentNavConsumed extends TopUpPaymentPrepaidEvent {
   const PaymentNavConsumed();

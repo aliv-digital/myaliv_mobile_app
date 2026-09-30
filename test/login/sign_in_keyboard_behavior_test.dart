@@ -74,10 +74,7 @@ void main() {
     await tester.pump();
 
     expect(tester.widget<TextField>(phoneField).focusNode!.hasFocus, isFalse);
-    expect(
-      tester.widget<TextField>(passwordField).focusNode!.hasFocus,
-      isTrue,
-    );
+    expect(tester.widget<TextField>(passwordField).focusNode!.hasFocus, isTrue);
   });
 
   testWidgets('password Done triggers the existing LoginSubmitted flow', (

@@ -18,6 +18,7 @@ class TopUpPaymentPrepaidBloc
     on<PaySavedCardConfirmed>(_onPaySavedCardConfirmed);
     on<PayPostpaidSavedCard>(_onPayPostpaidSavedCard);
     on<PayWithCardConfirmed>(_onPayWithCardConfirmed);
+    on<Pay3DSSucceeded>(_onPay3DSSucceeded);
     on<PaymentNavConsumed>(_onNavConsumed);
   }
 
@@ -221,6 +222,18 @@ class TopUpPaymentPrepaidBloc
   String _cleanErrorMessage(Object error, {required String fallback}) {
     final message = error.toString().replaceFirst('Exception: ', '').trim();
     return message.isEmpty ? fallback : message;
+  }
+
+  void _onPay3DSSucceeded(
+    Pay3DSSucceeded event,
+    Emitter<TopUpPaymentPrepaidState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        status: TopUpPaymentStatus.success,
+        navTarget: TopUpPaymentNavTarget.paid,
+      ),
+    );
   }
 
   void _onNavConsumed(

@@ -190,9 +190,11 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
       emit(
         state.copyWith(
           verifyStatus: GuestPayBillVerifyStatus.failure,
-          errorMessage: serverMessage ?? (state.isAlivPostpaid
-              ? 'Mobile number mismatch or invalid.'
-              : 'Account not found. Please check details.'),
+          errorMessage:
+              serverMessage ??
+              (state.isAlivPostpaid
+                  ? 'Mobile number mismatch or invalid.'
+                  : 'Account not found. Please check details.'),
           accountInfo: null,
         ),
       );

@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-/// Formats Bahamas local numbers as `(242) 345-4356` while the user types.
+/// Formats Bahamas local numbers as `(242)-345-4356` while the user types.
 ///
 /// This is a presentation-only formatter. The login flow still converts the
 /// value back to raw digits before sending it to the backend.
@@ -88,10 +88,10 @@ class BahamasPhoneInputFormatter extends TextInputFormatter {
     }
 
     if (digits.length <= 6) {
-      return '(${digits.substring(0, 3)}) ${digits.substring(3)}';
+      return '(${digits.substring(0, 3)})-${digits.substring(3)}';
     }
 
-    return '(${digits.substring(0, 3)}) '
+    return '(${digits.substring(0, 3)})-'
         '${digits.substring(3, 6)}-${digits.substring(6)}';
   }
 }

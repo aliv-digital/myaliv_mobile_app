@@ -55,7 +55,9 @@ void main() {
       tester
           .widget<EditableText>(
             find.descendant(
-                of: _amountField(), matching: find.byType(EditableText)),
+              of: _amountField(),
+              matching: find.byType(EditableText),
+            ),
           )
           .focusNode
           .hasFocus,
@@ -92,13 +94,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(buttonHarness.confirmExtras.single, doneExtra);
-    expect(
-      doneExtra,
-      <String, Object?>{
-        'phoneNumber': '(242) 555-1234',
-        'amount': 15.0,
-      },
-    );
+    expect(doneExtra, <String, Object?>{
+      'phoneNumber': '(242) 555-1234',
+      'amount': 15.0,
+    });
   });
 
   testWidgets('invalid first phone via Done preserves invalid-phone behavior', (
@@ -139,36 +138,36 @@ void main() {
     await tester.pump(const Duration(seconds: 4));
   });
 
-  testWidgets('invalid or non-positive amount via Done remains a silent no-op',
-      (
-    tester,
-  ) async {
-    final harness = await _pumpScreen(tester);
-    await tester.enterText(_phoneField(0), '2425551234');
-    await tester.pump();
-    await tester.enterText(_phoneField(1), '2425551234');
-    await tester.pump();
-    await tester.enterText(_amountField(), '0');
-    await tester.pump();
+  testWidgets(
+    'invalid or non-positive amount via Done remains a silent no-op',
+    (tester) async {
+      final harness = await _pumpScreen(tester);
+      await tester.enterText(_phoneField(0), '2425551234');
+      await tester.pump();
+      await tester.enterText(_phoneField(1), '2425551234');
+      await tester.pump();
+      await tester.enterText(_amountField(), '0');
+      await tester.pump();
 
-    await _submitAmount(tester);
-    await tester.pump();
+      await _submitAmount(tester);
+      await tester.pump();
 
-    expect(harness.confirmExtras, isEmpty);
-    expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNothing);
-    expect(find.text(GuestTopUpTheme.phoneMismatchMessage), findsNothing);
-    expect(find.byType(GuestTopUpScreen), findsOneWidget);
+      expect(harness.confirmExtras, isEmpty);
+      expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNothing);
+      expect(find.text(GuestTopUpTheme.phoneMismatchMessage), findsNothing);
+      expect(find.byType(GuestTopUpScreen), findsOneWidget);
 
-    await tester.enterText(_amountField(), 'not-a-number');
-    await tester.pump();
-    await _submitAmount(tester);
-    await tester.pump();
+      await tester.enterText(_amountField(), 'not-a-number');
+      await tester.pump();
+      await _submitAmount(tester);
+      await tester.pump();
 
-    expect(harness.confirmExtras, isEmpty);
-    expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNothing);
-    expect(find.text(GuestTopUpTheme.phoneMismatchMessage), findsNothing);
-    expect(find.byType(GuestTopUpScreen), findsOneWidget);
-  });
+      expect(harness.confirmExtras, isEmpty);
+      expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNothing);
+      expect(find.text(GuestTopUpTheme.phoneMismatchMessage), findsNothing);
+      expect(find.byType(GuestTopUpScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('button and Amount Done both read the latest BLoC state', (
     tester,
@@ -285,10 +284,7 @@ Future<_TopUpHarness> _pumpScreen(WidgetTester tester) async {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const GuestTopUpScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const GuestTopUpScreen()),
       GoRoute(
         path: AppRoutes.confirmGuestTopUp,
         builder: (context, state) {

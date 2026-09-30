@@ -16,6 +16,7 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../../../core/utils/app_session.dart';
 import '../../../../../../resources/widgets/custom_country_phone_input_row.dart';
 import '../../../../../Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
@@ -144,7 +145,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
           hideUnfocusedInputBorder: false,
           labelText: labelText,
           labelStyle: labelStyle,
-          hintText: '(242) 345-4356',
+          hintText: '(242)-345-4356',
           flagEmoji: _selectedCountry.flagEmoji,
           dialCode: _selectedCountry.dialCode,
           countryIsoCode: _selectedCountry.isoCode,

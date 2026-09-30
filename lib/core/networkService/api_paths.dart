@@ -154,10 +154,17 @@ class Api {
   static String topUpUrl(String primaryPhoneNumber) =>
       '$baseUrl/v1/MyAliv/Order/top-up/${Uri.encodeComponent(primaryPhoneNumber.trim())}';
 
+  /// POST /Order/top-up/3ds/{PrimaryPhoneNumber}
+  static String topUp3DSUrl(String primaryPhoneNumber) =>
+      '$baseUrl/v1/MyAliv/Order/top-up/3ds/${Uri.encodeComponent(primaryPhoneNumber.trim())}';
+
   /// Postpaid make-payment endpoint. Same envelope shape as top-up (no
   /// `Bundle` block); account is inferred from the auth context.
   /// POST /Order/payment
   static const orderPaymentUrl = '$baseUrl/v1/MyAliv/Order/payment';
+
+  /// POST /Order/3ds/payment
+  static const orderPayment3DSUrl = '$baseUrl/v1/MyAliv/Order/3ds/payment';
 
   /// Wallet-to-wallet transfer (send top-up):
   /// POST /Order/transfer

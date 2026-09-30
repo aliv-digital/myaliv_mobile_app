@@ -48,8 +48,8 @@ class ChangePasswordPrepaidState extends Equatable {
   bool get isValid {
     final a = newPassword.trim();
     final b = confirmPassword.trim();
-    if (a.length < 4) return false;
-    if (b.length < 4) return false;
+    if (a.length < 8 || a.length > 64) return false;
+    if (b.length < 8 || b.length > 64) return false;
     return a == b;
   }
 

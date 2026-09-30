@@ -66,7 +66,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     this.marketingOptIn = false,
   });
 
-  bool get defaultTermsChecked => flow == HomePlanConfirmationEntryFlow.skip;
+  bool get defaultTermsChecked => false;
 
   /// `true` when the user tapped "future plan", `false` for "activate now".
   bool get isFuture => !forceNow;
