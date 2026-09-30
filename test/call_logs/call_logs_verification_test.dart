@@ -267,6 +267,7 @@ void main() {
     expect(session.isVerified, isTrue);
     session.reset();
     expect(session.isVerified, isFalse);
+    expect(CallLogsVerificationSession().isVerified, isFalse);
   });
 
   testWidgets(
@@ -278,8 +279,12 @@ void main() {
         (_) => challengeCompleter.future,
       );
       instance.registerSingleton<CallLogsVerificationRepository>(repository);
+      instance.registerSingleton<CallLogsVerificationSession>(
+        CallLogsVerificationSession(),
+      );
       addTearDown(() async {
         await instance.unregister<CallLogsVerificationRepository>();
+        await instance.unregister<CallLogsVerificationSession>();
       });
 
       CallLogsOtpRouteArgs? receivedArgs;
@@ -331,6 +336,46 @@ void main() {
       expect(find.text('OTP destination'), findsOneWidget);
       expect(receivedArgs?.mfaToken, 'mfa-from-profile');
       expect(receivedArgs?.apiPhoneNumber, '12425551234');
+    },
+  );
+
+  testWidgets(
+    'profile reopens Call Logs without another challenge after verification',
+    (tester) async {
+      final repository = _MockVerificationRepository();
+      instance.registerSingleton<CallLogsVerificationRepository>(repository);
+      instance.registerSingleton<CallLogsVerificationSession>(
+        CallLogsVerificationSession()..markVerified(),
+      );
+      addTearDown(() async {
+        await instance.unregister<CallLogsVerificationRepository>();
+        await instance.unregister<CallLogsVerificationSession>();
+      });
+
+      final router = GoRouter(
+        initialLocation: '/profile-test',
+        routes: [
+          GoRoute(
+            path: '/profile-test',
+            builder: (context, state) => const ProfilePrepaidScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.callLogs,
+            builder: (context, state) =>
+                const Scaffold(body: Text('Call Logs destination')),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('call logs'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Call Logs destination'), findsOneWidget);
+      verifyNever(repository.requestChallenge);
     },
   );
 

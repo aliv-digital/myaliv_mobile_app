@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -46,9 +47,15 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
   Future<void> _openCallLogs() async {
     if (_requestingCallLogsChallenge) return;
 
+    if (instance<CallLogsVerificationSession>().isVerified) {
+      context.push('${AppRoutes.callLogs}?tab=call_logs');
+      return;
+    }
+
     setState(() => _requestingCallLogsChallenge = true);
     try {
-      final challenge = await instance<CallLogsVerificationRepository>().requestChallenge();
+      final challenge =
+          await instance<CallLogsVerificationRepository>().requestChallenge();
       if (!mounted) return;
 
       context.push(
@@ -128,7 +135,8 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                             return ProfileMenuItemTile(
                               title: item.title,
                               enabled: item.enabled,
-                              trailing: item.id == 'call_logs' && _requestingCallLogsChallenge
+                              trailing: item.id == 'call_logs' &&
+                                      _requestingCallLogsChallenge
                                   ? const SizedBox.square(
                                       dimension: 22,
                                       child: Center(
