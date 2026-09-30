@@ -166,7 +166,10 @@ class _GuestPayBillConfirmView extends StatelessWidget {
               return;
             }
             navigator.pop();
-            final receiptArgs = _buildReceiptArgs(state, orderId: success.orderId);
+            final receiptArgs = _buildReceiptArgs(
+              state,
+              orderId: success.orderId,
+            );
             router.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
           },
           onFailure: (String message) {

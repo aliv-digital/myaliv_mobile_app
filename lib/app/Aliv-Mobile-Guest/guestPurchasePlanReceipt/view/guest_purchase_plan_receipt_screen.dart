@@ -46,7 +46,11 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
       for (final addOn in addOnNames)
         ReceiptDetailItem(label: 'add-on', value: addOn),
       if (orderId != null && orderId!.isNotEmpty)
-        ReceiptDetailItem(label: 'order reference', value: orderId!, valueBold: false),
+        ReceiptDetailItem(
+          label: 'order reference',
+          value: orderId!,
+          valueBold: false,
+        ),
       ReceiptDetailItem(label: 'date', value: dateText),
       ReceiptDetailItem(label: 'time', value: timeText),
       ReceiptDetailItem(label: 'phone no.', value: phoneNumber),

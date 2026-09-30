@@ -18,7 +18,9 @@ class PlanPresentationMapper {
 
     // LDI (Long Distance International) — text unit → international SMS label
     if (id.contains('ldi')) {
-      return unit == 'text' ? BucketItemType.internationalSMS : BucketItemType.call;
+      return unit == 'text'
+          ? BucketItemType.internationalSMS
+          : BucketItemType.call;
     }
 
     // Voice buckets — Text unit means on-net SMS (e.g. INS_Voice_Only_National + Text)
@@ -33,7 +35,9 @@ class PlanPresentationMapper {
     }
 
     // Data buckets — includes social-media app data (TikTok, Facebook)
-    if (id.contains('data') || id.contains('tiktok') || id.contains('facebook')) {
+    if (id.contains('data') ||
+        id.contains('tiktok') ||
+        id.contains('facebook')) {
       return BucketItemType.data;
     }
 

@@ -75,7 +75,11 @@ class _GuestPayBillReceiptView extends StatelessWidget {
       details: <ReceiptDetailItem>[
         ReceiptDetailItem(label: data.leftType, value: data.rightType),
         if (orderId != null && orderId.isNotEmpty)
-          ReceiptDetailItem(label: 'order reference', value: orderId, valueBold: false),
+          ReceiptDetailItem(
+            label: 'order reference',
+            value: orderId,
+            valueBold: false,
+          ),
         ReceiptDetailItem(label: 'date', value: data.dateText),
         ReceiptDetailItem(label: 'time', value: data.timeText),
         ReceiptDetailItem(label: data.identifierLabel, value: data.phoneNumber),

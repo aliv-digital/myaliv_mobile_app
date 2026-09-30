@@ -324,7 +324,8 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                           final BasePlanBucketModel item = widget.benefits[i];
                           Color labelColor;
 
-                          final itemType = const PlanPresentationMapper().bucketItemType(item);
+                          final itemType = const PlanPresentationMapper()
+                              .bucketItemType(item);
 
                           switch (itemType) {
                             case BucketItemType.data:

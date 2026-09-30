@@ -93,11 +93,11 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                     }
 
                     DateTime? futurePlanDate;
-                    if (!args.forceNow &&
-                        args.futurePlanStartDate.isNotEmpty) {
+                    if (!args.forceNow && args.futurePlanStartDate.isNotEmpty) {
                       try {
-                        futurePlanDate = DateFormat('dd-MM-yy')
-                            .parse(args.futurePlanStartDate);
+                        futurePlanDate = DateFormat(
+                          'dd-MM-yy',
+                        ).parse(args.futurePlanStartDate);
                       } catch (_) {
                         futurePlanDate = null;
                       }
@@ -126,22 +126,24 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                     final receiptExtra = <String, Object?>{
                       'phoneNumber': data.phoneNumber,
                       'amount': data.totals.total,
-                      'planName':
-                          primaryPlanName.isEmpty ? null : primaryPlanName,
+                      'planName': primaryPlanName.isEmpty
+                          ? null
+                          : primaryPlanName,
                       'addOnNames': addOnNames,
                       'dateText': DateFormat('MMM d, yyyy').format(now),
-                      'timeText':
-                          DateFormat('h:mm a').format(now).toLowerCase(),
+                      'timeText': DateFormat(
+                        'h:mm a',
+                      ).format(now).toLowerCase(),
                       'emailAddress': 'guest',
                     };
 
                     final body =
                         ChangeBundleRequestFactory.guestPurchasePlanBodyFor3DS(
-                      planId: planId,
-                      phoneNumber: args.phoneNumber,
-                      forceNow: args.forceNow,
-                      startDate: futurePlanDate,
-                    );
+                          planId: planId,
+                          phoneNumber: args.phoneNumber,
+                          forceNow: args.forceNow,
+                          startDate: futurePlanDate,
+                        );
 
                     final request = PaymentRequest(
                       url: Api.guestPurchasePlanUrl,
@@ -160,8 +162,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                           appBarBgColor: Colors.white,
                           title: 'payment',
                           onSuccess: (PaymentSuccess success) {
-                            final orderId =
-                                int.tryParse(success.orderId ?? '');
+                            final orderId = int.tryParse(success.orderId ?? '');
                             if (orderId == null || orderId <= 0) {
                               navigator.pop();
                               AppToast.show(
