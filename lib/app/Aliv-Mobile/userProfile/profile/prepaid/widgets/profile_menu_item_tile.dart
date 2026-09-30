@@ -9,6 +9,7 @@ class ProfileMenuItemTile extends StatelessWidget {
     required this.onTap,
     this.showDivider = true,
     this.trailing,
+    this.isTapEnabled = true,
   });
 
   final String title;
@@ -16,6 +17,7 @@ class ProfileMenuItemTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool showDivider;
   final Widget? trailing;
+  final bool isTapEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,7 @@ class ProfileMenuItemTile extends StatelessWidget {
     return Column(
       children: [
         InkWell(
-          onTap: enabled ? onTap : null,
+          onTap: enabled && isTapEnabled ? onTap : null,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 18, 16, 18),
             child: Row(

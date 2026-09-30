@@ -135,6 +135,9 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                             return ProfileMenuItemTile(
                               title: item.title,
                               enabled: item.enabled,
+                              isTapEnabled:
+                                  item.id != 'call_logs' ||
+                                  !_requestingCallLogsChallenge,
                               trailing:
                                   item.id == 'call_logs' &&
                                       _requestingCallLogsChallenge
@@ -166,6 +169,7 @@ class _ProfilePrepaidViewState extends State<_ProfilePrepaidView> {
                                 }
 
                                 if (item.id == 'call_logs') {
+                                  if (_requestingCallLogsChallenge) return;
                                   context.read<ProfilePrepaidBloc>().add(
                                     ProfilePrepaidItemPressed(item),
                                   );

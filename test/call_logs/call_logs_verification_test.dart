@@ -292,6 +292,7 @@ void main() {
       });
 
       CallLogsOtpRouteArgs? receivedArgs;
+      var otpNavigationCount = 0;
       final router = GoRouter(
         initialLocation: '/profile-test',
         routes: [
@@ -302,6 +303,7 @@ void main() {
           GoRoute(
             path: AppRoutes.callLogsOtp,
             builder: (context, state) {
+              otpNavigationCount++;
               receivedArgs = state.extra! as CallLogsOtpRouteArgs;
               return const Scaffold(body: Text('OTP destination'));
             },
@@ -327,6 +329,16 @@ void main() {
         ),
         findsOneWidget,
       );
+      expect(
+        tester.widget<ProfileMenuItemTile>(callLogsTile).isTapEnabled,
+        isFalse,
+      );
+
+      await tester.tap(find.text('call logs'));
+      await tester.tap(find.text('call logs'));
+      await tester.tap(find.text('call logs'));
+      await tester.pump();
+
       verify(repository.requestChallenge).called(1);
 
       challengeCompleter.complete(
@@ -338,6 +350,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('OTP destination'), findsOneWidget);
+      expect(otpNavigationCount, 1);
       expect(receivedArgs?.mfaToken, 'mfa-from-profile');
       expect(receivedArgs?.apiPhoneNumber, '12425551234');
     },
