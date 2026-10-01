@@ -38,3 +38,15 @@ class LoginCountryChanged extends LoginEvent {
 class LoginSubmitted extends LoginEvent {
   const LoginSubmitted();
 }
+
+class LoginInitialized extends LoginEvent {
+  const LoginInitialized();
+}
+
+class LoginSaveMyPasswordToggled extends LoginEvent {
+  final bool value;
+  const LoginSaveMyPasswordToggled(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}

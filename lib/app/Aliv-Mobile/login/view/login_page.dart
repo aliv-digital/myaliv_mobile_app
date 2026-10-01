@@ -34,7 +34,7 @@ class LoginScreen extends StatelessWidget {
           create: (context) => LoginBloc(
             repository: LoginRepository(),
             appUiConfigCubit: context.read<AppUiConfigCubit>(),
-          ),
+          )..add(const LoginInitialized()),
         ),
         BlocProvider.value(value: instance<FingerFaceSecurityCubit>()),
       ],
@@ -43,14 +43,32 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class _LoginView extends StatelessWidget {
+class _LoginView extends StatefulWidget {
   const _LoginView();
 
   @override
+  State<_LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<_LoginView> {
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  int _lastPrefillVersion = 0;
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _submitLogin() {
+    context.read<LoginBloc>().add(const LoginSubmitted());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    void submitLogin() {
-      context.read<LoginBloc>().add(const LoginSubmitted());
-    }
+    void submitLogin() => _submitLogin();
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -79,9 +97,20 @@ class _LoginView extends StatelessWidget {
             final bool errorToastTriggered =
                 previous.errorToastId != current.errorToastId;
 
-            return loginSuccessChanged || errorToastTriggered;
+            final bool prefillTriggered =
+                previous.prefillVersion != current.prefillVersion;
+
+            return loginSuccessChanged ||
+                errorToastTriggered ||
+                prefillTriggered;
           },
           listener: (context, state) {
+            if (state.prefillVersion != _lastPrefillVersion) {
+              _lastPrefillVersion = state.prefillVersion;
+              _phoneController.text = state.phone;
+              _passwordController.text = state.password;
+            }
+
             if (state.status == LoginStatus.success) {
               // Direct-login path: server returned a Ticket, session already
               // completed by LoginBloc via AuthCompletionService.
@@ -148,17 +177,20 @@ class _LoginView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
-                      const LoginPhoneRow(),
+                      LoginPhoneRow(controller: _phoneController),
                       const SizedBox(
                         height: AuthModuleSizes.phoneToPasswordGap,
                       ),
-                      LoginPasswordField(onSubmitted: submitLogin),
+                      LoginPasswordField(
+                        controller: _passwordController,
+                        onSubmitted: submitLogin,
+                      ),
                       const SizedBox(
                         height: AuthModuleSizes.passwordToErrorRowGap,
                       ),
                       BlocBuilder<LoginBloc, LoginState>(
                         builder: (context, state) {
-                          final hasError =
+                          final hasFieldError =
                               state.status == LoginStatus.failure &&
                               state.errorMessage != null &&
                               (state.phoneFieldError ||
@@ -166,22 +198,62 @@ class _LoginView extends StatelessWidget {
                           return Row(
                             children: [
                               Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Visibility(
-                                    visible: hasError,
-                                    maintainSize: true,
-                                    maintainState: true,
-                                    maintainAnimation: true,
-                                    //child: Text(''),
-                                    child: Text(
-                                      state.errorMessage ??
-                                          'invalid credentials!',
-                                      style: AuthModuleTextStyles
-                                          .invalidCredentials,
-                                    ),
-                                  ),
-                                ),
+                                child: hasFieldError
+                                    ? Text(
+                                        state.errorMessage ??
+                                            'invalid credentials!',
+                                        style: AuthModuleTextStyles
+                                            .invalidCredentials,
+                                      )
+                                    : GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () =>
+                                            context.read<LoginBloc>().add(
+                                              LoginSaveMyPasswordToggled(
+                                                !state.saveMyPassword,
+                                              ),
+                                            ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: Checkbox(
+                                                value: state.saveMyPassword,
+                                                materialTapTargetSize:
+                                                    MaterialTapTargetSize
+                                                        .shrinkWrap,
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                activeColor:
+                                                    AuthModuleColors.alivPurple,
+                                                side: const BorderSide(
+                                                  color: AuthModuleColors
+                                                      .alivPurple,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                onChanged: (val) => context
+                                                    .read<LoginBloc>()
+                                                    .add(
+                                                      LoginSaveMyPasswordToggled(
+                                                        val ?? false,
+                                                      ),
+                                                    ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              'save my password',
+                                              style: AuthModuleTextStyles
+                                                  .saveMyPassword,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                               ),
                               TextButton(
                                 style: AuthModuleButtonStyles.inlineTextLink,

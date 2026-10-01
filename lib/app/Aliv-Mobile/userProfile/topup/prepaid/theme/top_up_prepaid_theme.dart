@@ -119,7 +119,7 @@ class TopUpPrepaidTheme {
   );
 
   static TextStyle amountHint() => TextStyle(
-    color: const Color(0xFF5045A7).withValues(alpha: 0.35),
+    color: const Color(0xFF5045A7),
     fontSize: 40,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,

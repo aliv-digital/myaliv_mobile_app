@@ -154,7 +154,7 @@ class _GradientInputFieldState extends State<GradientInputField> {
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               isCollapsed: true,
-                              hintText: '\$00',
+                              hintText: '\$0.00',
                               hintStyle: GuestTopUpTheme.amountHint,
                             ),
                             onChanged: _handleInputChange,

@@ -177,7 +177,7 @@ class GuestTopUpTheme {
     fontSize: 40,
     fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
-    color: amountValueColor.withValues(alpha: 0.35),
+    color: amountValueColor,
   );
 
   // Helper text below amount field

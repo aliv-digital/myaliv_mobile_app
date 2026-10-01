@@ -9,9 +9,14 @@ import '../theme/login_theme.dart';
 import 'focused_input_border_wrapper.dart';
 
 class LoginPasswordField extends StatefulWidget {
-  const LoginPasswordField({super.key, required this.onSubmitted});
+  const LoginPasswordField({
+    super.key,
+    required this.onSubmitted,
+    this.controller,
+  });
 
   final VoidCallback onSubmitted;
+  final TextEditingController? controller;
 
   @override
   State<LoginPasswordField> createState() => _LoginPasswordFieldState();
@@ -21,6 +26,10 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
   bool _obscure = true;
   final FocusNode _passwordFocusNode = FocusNode();
   bool _hasPasswordFocus = false;
+  TextEditingController? _internalController;
+
+  TextEditingController get _effectiveController =>
+      widget.controller ?? (_internalController ??= TextEditingController());
 
   @override
   void initState() {
@@ -32,6 +41,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
   void dispose() {
     _passwordFocusNode.removeListener(_onPasswordFocusChanged);
     _passwordFocusNode.dispose();
+    _internalController?.dispose();
     super.dispose();
   }
 
@@ -70,6 +80,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
               Expanded(
                 child: TextField(
                   focusNode: _passwordFocusNode,
+                  controller: _effectiveController,
                   obscureText: _obscure,
                   textInputAction: TextInputAction.done,
                   style: AuthModuleTextStyles.fieldValue,

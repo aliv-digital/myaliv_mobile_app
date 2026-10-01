@@ -29,6 +29,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
        super(const LoginState()) {
+    on<LoginInitialized>(_onInitialized);
+    on<LoginSaveMyPasswordToggled>(_onSaveMyPasswordToggled);
     on<LoginPhoneChanged>((event, emit) {
       emit(
         state.copyWith(
@@ -72,6 +74,39 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     });
 
     on<LoginSubmitted>(_onSubmitted);
+  }
+
+  Future<void> _onInitialized(
+    LoginInitialized event,
+    Emitter<LoginState> emit,
+  ) async {
+    final store = CredentialStore();
+    final saveMyPassword = await store.loadSaveMyPasswordPref();
+    if (!saveMyPassword) {
+      emit(state.copyWith(saveMyPassword: false));
+      return;
+    }
+    final creds = await store.load();
+    if (creds == null) {
+      emit(state.copyWith(saveMyPassword: true));
+      return;
+    }
+    emit(
+      state.copyWith(
+        saveMyPassword: true,
+        phone: creds.displayPhone ?? '',
+        password: creds.password,
+        prefillVersion: state.prefillVersion + 1,
+      ),
+    );
+  }
+
+  Future<void> _onSaveMyPasswordToggled(
+    LoginSaveMyPasswordToggled event,
+    Emitter<LoginState> emit,
+  ) async {
+    CredentialStore().saveSaveMyPasswordPref(event.value).ignore();
+    emit(state.copyWith(saveMyPassword: event.value));
   }
 
   /// Emits failure state.
@@ -178,8 +213,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           .save(
             apiPhone: phoneValidationResult.phoneNumberForApi!,
             password: state.password,
+            displayPhone: state.phone,
           )
           .ignore();
+      CredentialStore().saveSaveMyPasswordPref(state.saveMyPassword).ignore();
 
       switch (result) {
         case LoginSuccess(:final session):
