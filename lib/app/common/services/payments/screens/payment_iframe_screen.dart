@@ -40,6 +40,7 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
   bool _fetchingHtml = true;
   bool _webViewLoading = false;
   String? _error;
+
   // Prevents onSuccess/onFailure from firing more than once — some WebView
   // implementations call onNavigationRequest twice for the same redirect URL.
   bool _resultHandled = false;
@@ -128,12 +129,22 @@ class _PaymentIFrameScreenState extends State<PaymentIFrameScreen> {
             orElse: () => const MapEntry('', ''),
           )
           .value;
-      widget.onSuccess(
-        PaymentSuccess(
-          orderId: orderIdRaw.isEmpty ? null : orderIdRaw,
-          queryParams: params,
-        ),
-      );
+      if (orderIdRaw == '0') {
+        final message = params.entries
+            .firstWhere(
+              (e) => e.key.toLowerCase() == 'message',
+              orElse: () => const MapEntry('', ''),
+            )
+            .value;
+        widget.onFailure(message);
+      } else {
+        widget.onSuccess(
+          PaymentSuccess(
+            orderId: orderIdRaw.isEmpty ? null : orderIdRaw,
+            queryParams: params,
+          ),
+        );
+      }
       return NavigationDecision.prevent;
     }
     return NavigationDecision.navigate;

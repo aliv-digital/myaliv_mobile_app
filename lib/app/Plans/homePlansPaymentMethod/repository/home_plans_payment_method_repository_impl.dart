@@ -1,8 +1,10 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/repository/plan_bundle_mapper.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -72,6 +74,7 @@ class HomePlansPaymentMethodRepositoryImpl
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
@@ -79,6 +82,7 @@ class HomePlansPaymentMethodRepositoryImpl
       amount: amount,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
@@ -90,6 +94,7 @@ class HomePlansPaymentMethodRepositoryImpl
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
@@ -99,6 +104,7 @@ class HomePlansPaymentMethodRepositoryImpl
       amount: amount,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
@@ -111,14 +117,20 @@ class HomePlansPaymentMethodRepositoryImpl
     required String cardToken,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
+    final isPostpaid = !instance<AccountInfoCubit>().state.isPrepaid;
     final result = await _service.payWithSavedCard(
       amount: amount,
       cardToken: cardToken,
-      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
+      bundle: PlanBundleMapper.fromSelectedItems(
+        selectedItems,
+        isPostpaid: isPostpaid,
+      ),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
@@ -131,6 +143,7 @@ class HomePlansPaymentMethodRepositoryImpl
     required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
@@ -139,6 +152,7 @@ class HomePlansPaymentMethodRepositoryImpl
       details: details,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );

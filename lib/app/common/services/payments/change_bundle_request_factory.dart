@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_bundle.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 
 /// Builds the request body for `POST /Order/change-bundle`.
@@ -66,6 +67,7 @@ class ChangeBundleRequestFactory {
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -78,7 +80,6 @@ class ChangeBundleRequestFactory {
       'SecondaryPlans': bundle.secondaryPlans,
       'StandalonePlans': bundle.standalonePlans,
     };
-    //Selected start date is required for future plan.
     if (!forceNow) {
       final startDate = _formatStartDate(selectedBeginDate);
       if (startDate == null) {
@@ -87,46 +88,53 @@ class ChangeBundleRequestFactory {
       bundleMap['StartDate'] = startDate;
     }
 
-    // A regular purchase keeps this list empty. When a promo was applied,
-    // convert its readable model into the exact API request fields.
-    final promoCodeMaps = <Map<String, dynamic>>[];
-    for (final promoCode in promoCodes) {
-      promoCodeMaps.add(promoCode.toJson());
-    }
-
     return <String, dynamic>{
       'CardPayment': cardPayment,
       'Bundle': bundleMap,
       'ForceNow': forceNow,
       'SaveCard': false,
       'UseAsRenewalCard': false,
-      'Bonuses': const <Map<String, dynamic>>[],
-      'PromoCodes': promoCodeMaps,
+      'Bonuses': bonuses.map((b) => b.toJson()).toList(),
+      'PromoCodes': promoCodes.map((p) => p.toJson()).toList(),
       'Note': 'Payment',
     };
   }
 
-  /// 3DS change-bundle envelope. Identical to [changeBundleBody] but the
-  /// `CardPayment` contains only the amount (card details are entered in the
-  /// 3DS WebView), and `RedirectURL` + `Branch` are added at the top level.
+  /// 3DS change-bundle envelope: `POST /Order/3ds/change-bundle`.
+  ///
+  /// Differs from [changeBundleBody]: no `CardPayment` block (card details are
+  /// entered in the bank's WebView), no `SaveCard`/`UseAsRenewalCard`, and
+  /// `RedirectURL` + `Branch` are added at the top level.
   static Map<String, dynamic> changeBundleBodyFor3DS({
-    required double amount,
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
-    // Round to 2 dp to avoid floating-point noise in JSON (e.g. 115.999…→116).
-    final roundedAmount = double.parse(amount.toStringAsFixed(2));
-    final base = changeBundleBody(
-      cardPayment: <String, dynamic>{'Amount': roundedAmount},
-      bundle: bundle,
-      promoCodes: promoCodes,
-      forceNow: forceNow,
-      selectedBeginDate: selectedBeginDate,
-    );
+    if (bundle.isEmpty) {
+      throw Exception('No selected plan found for payment.');
+    }
+
+    final bundleMap = <String, dynamic>{
+      'PrimaryPlans': bundle.primaryPlans,
+      'SecondaryPlans': bundle.secondaryPlans,
+      'StandalonePlans': bundle.standalonePlans,
+    };
+    if (!forceNow) {
+      final startDate = _formatStartDate(selectedBeginDate);
+      if (startDate == null) {
+        throw Exception('Selected start date is required for future plan.');
+      }
+      bundleMap['StartDate'] = startDate;
+    }
+
     return <String, dynamic>{
-      ...base,
+      'Bundle': bundleMap,
+      'ForceNow': forceNow,
+      'Bonuses': bonuses.map((b) => b.toJson()).toList(),
+      'PromoCodes': promoCodes.map((p) => p.toJson()).toList(),
+      'Note': 'Payment',
       'RedirectURL': 'myaliv://topup-callback',
       'Branch': 'branch',
     };

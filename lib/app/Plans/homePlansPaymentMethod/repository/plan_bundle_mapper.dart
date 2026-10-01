@@ -8,8 +8,9 @@ class PlanBundleMapper {
   PlanBundleMapper._();
 
   static PlanBundle fromSelectedItems(
-    List<HomePlansPaymentSelectedItem> items,
-  ) {
+    List<HomePlansPaymentSelectedItem> items, {
+    bool isPostpaid = false,
+  }) {
     final primary = <int>[];
     final secondary = <int>[];
     final standalone = <int>[];
@@ -19,16 +20,20 @@ class PlanBundleMapper {
       if (planId == null) {
         throw Exception('Invalid plan id for ${item.title}.');
       }
-      switch (item.planType) {
-        case HomePlansPaymentPlanType.primary:
-          primary.add(planId);
-          break;
-        case HomePlansPaymentPlanType.secondary:
-          secondary.add(planId);
-          break;
-        case HomePlansPaymentPlanType.standalone:
-          standalone.add(planId);
-          break;
+      if (isPostpaid) {
+        standalone.add(planId);
+      } else {
+        switch (item.planType) {
+          case HomePlansPaymentPlanType.primary:
+            primary.add(planId);
+            break;
+          case HomePlansPaymentPlanType.secondary:
+            secondary.add(planId);
+            break;
+          case HomePlansPaymentPlanType.standalone:
+            standalone.add(planId);
+            break;
+        }
       }
     }
 

@@ -1,4 +1,5 @@
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 
 import '../model/home_plans_payment_method_models.dart';
@@ -14,6 +15,7 @@ abstract class HomePlansPaymentMethodRepository {
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   });
@@ -22,6 +24,7 @@ abstract class HomePlansPaymentMethodRepository {
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   });
@@ -31,6 +34,7 @@ abstract class HomePlansPaymentMethodRepository {
     required String cardToken,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   });
@@ -40,6 +44,7 @@ abstract class HomePlansPaymentMethodRepository {
     required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   });
