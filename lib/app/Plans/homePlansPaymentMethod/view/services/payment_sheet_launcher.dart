@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/bottomsheet/wallet_payment_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
@@ -65,37 +66,48 @@ class PaymentSheetLauncher {
     bloc.add(const HomePlansPaySavedCardConfirmed());
   }
 
-  /// Opens the 3DS WebView for "pay with card". The WebView POSTs to
-  /// /Order/3ds/change-bundle, loads the bank's payment page, and fires
-  /// [HomePlans3DSPayWithCardSucceeded] when the redirect-back URL is
-  /// intercepted — triggering the normal navTarget = paid flow.
+  /// Opens the 3DS WebView for "pay with card".
+  /// - Prepaid  → POST /Order/3ds/change-bundle (card funds the bundle directly)
+  /// - Postpaid → POST /Order/3ds/payment       (charge to account, no bundle body)
   static Future<void> openPayWithCard(BuildContext context) async {
     final bloc = context.read<HomePlansPaymentMethodBloc>();
     final state = bloc.state;
     if (state.status == HomePlansPaymentMethodStatus.submitting) return;
 
-    final Map<String, dynamic> body;
-    try {
-      body = ChangeBundleRequestFactory.changeBundleBodyFor3DS(
-        amount: state.amount,
-        bundle: PlanBundleMapper.fromSelectedItems(state.selectedItems),
-        promoCodes: state.promoCodes,
-        forceNow: state.forceNow,
-        selectedBeginDate: state.selectedBeginDate,
-      );
-    } catch (e) {
-      AppToast.show(
-        message: e.toString().replaceFirst('Exception: ', ''),
-        type: ToastType.error,
-      );
-      return;
-    }
+    final isPostpaid = !instance<AccountInfoCubit>().state.isPrepaid;
 
-    final request = PaymentRequest(
-      url: Api.changeBundleDs3Url,
-      body: body,
-      redirectScheme: 'myaliv',
-    );
+    final PaymentRequest request;
+    if (isPostpaid) {
+      request = PaymentRequest(
+        url: Api.orderPayment3DSUrl,
+        body: ChangeBundleRequestFactory.orderPaymentBodyFor3DS(
+          amount: state.amount,
+        ),
+        redirectScheme: 'myaliv',
+      );
+    } else {
+      final Map<String, dynamic> body;
+      try {
+        body = ChangeBundleRequestFactory.changeBundleBodyFor3DS(
+          amount: state.amount,
+          bundle: PlanBundleMapper.fromSelectedItems(state.selectedItems),
+          promoCodes: state.promoCodes,
+          forceNow: state.forceNow,
+          selectedBeginDate: state.selectedBeginDate,
+        );
+      } catch (e) {
+        AppToast.show(
+          message: e.toString().replaceFirst('Exception: ', ''),
+          type: ToastType.error,
+        );
+        return;
+      }
+      request = PaymentRequest(
+        url: Api.changeBundleDs3Url,
+        body: body,
+        redirectScheme: 'myaliv',
+      );
+    }
 
     // Capture navigator before pushing so we can pop the iframe on result.
     final navigator = Navigator.of(context);

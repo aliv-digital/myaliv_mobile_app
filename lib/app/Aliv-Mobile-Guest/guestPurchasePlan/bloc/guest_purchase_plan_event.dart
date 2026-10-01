@@ -1,6 +1,6 @@
 import '../models/add_on_model.dart';
-import '../repository/guest_purchase_plan_repository.dart';
 import '../models/plan_model.dart';
+import '../repository/guest_purchase_plan_repository.dart';
 
 abstract class GuestPurchasePlanEvent {}
 
@@ -17,12 +17,12 @@ class GuestPurchasePlanToggleExpanded extends GuestPurchasePlanEvent {
 }
 
 class GuestPurchasePlanViewDetailsPressed extends GuestPurchasePlanEvent {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   GuestPurchasePlanViewDetailsPressed(this.plan);
 }
 
 class GuestPurchasePlanPurchaseNowPressed extends GuestPurchasePlanEvent {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   GuestPurchasePlanPurchaseNowPressed(this.plan);
 }
 

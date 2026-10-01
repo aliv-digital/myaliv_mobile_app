@@ -3,14 +3,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
-import 'package:myaliv_mobile_app/app/common/services/payments/widgets/checkout_card_bottom_sheet.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/saved_card_payment_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/cards/payment_option_tile.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
@@ -132,10 +135,61 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
 
   Future<void> _onPayNow(BuildContext context) async {
     if (state.paymentMode == TopUpPaymentMode.payWithCard) {
-      await _payWithNewCard(context);
+      _payWith3DS(context);
       return;
     }
     await _payWithSavedCard(context);
+  }
+
+  void _payWith3DS(BuildContext context) {
+    final bloc = context.read<TopUpPaymentPrepaidBloc>();
+    final navigator = Navigator.of(context);
+    final router = GoRouter.of(context);
+
+    final recipientPhone = state.summary.recipientPhone?.trim() ?? '';
+    final account = instance<AccountInfoCubit>().state.accountInfo;
+    final primary = account?.primaryPhoneNumber.trim() ?? '';
+    final phone = recipientPhone.isNotEmpty
+        ? recipientPhone
+        : (primary.isNotEmpty ? primary : (account?.phoneNumber.trim() ?? ''));
+
+    if (phone.isEmpty) {
+      AppToast.show(
+        message: 'Phone number unavailable. Please try again.',
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    final request = PaymentRequest(
+      url: Api.topUp3DSUrl(phone),
+      body: ChangeBundleRequestFactory.topUpBodyFor3DS(
+        amount: state.summary.total,
+      ),
+      redirectScheme: 'myaliv',
+    );
+
+    navigator.push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => PaymentIFrameScreen(
+          request: request,
+          appBarBgColor: TopUpPaymentPrepaidTheme.primary,
+          title: 'payment',
+          onSuccess: (PaymentSuccess success) {
+            navigator.pop();
+            bloc.add(Pay3DSSucceeded(orderId: success.orderId));
+          },
+          onFailure: (String message) {
+            navigator.pop();
+            AppToast.show(message: message, type: ToastType.error);
+          },
+          onHomeTap: () {
+            navigator.pop();
+            router.go(AppRoutes.home);
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _payWithSavedCard(BuildContext context) async {
@@ -163,17 +217,6 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
     if (confirmed != true) return;
 
     bloc.add(const PaySavedCardConfirmed());
-  }
-
-  Future<void> _payWithNewCard(BuildContext context) async {
-    final bloc = context.read<TopUpPaymentPrepaidBloc>();
-    final details = await CheckoutCardBottomSheet.show(
-      context,
-      amountText: _amountText(state.summary.total),
-    );
-    if (details == null) return;
-
-    bloc.add(PayWithCardConfirmed(details));
   }
 
   SavedCardModel? _cardByToken(String token) {

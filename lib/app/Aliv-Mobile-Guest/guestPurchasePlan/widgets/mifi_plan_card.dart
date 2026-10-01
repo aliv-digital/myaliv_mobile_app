@@ -8,7 +8,7 @@ import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
 class MifiPlanCard extends StatelessWidget {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails; // toggle expand/collapse
@@ -26,12 +26,13 @@ class MifiPlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ✅ mifi card center metric: data benefit prefer
-    final PlanBenefit? dataBenefit = plan.benefits
+    final PlanBenefit? dataBenefit = plan.highlights
         .where((b) => b.type == PlanBenefitType.data)
         .cast<PlanBenefit?>()
         .firstWhere((b) => b != null, orElse: () => null);
 
-    final PlanBenefit center = dataBenefit ?? plan.benefits.first;
+    final PlanBenefit? center =
+        dataBenefit ?? (plan.highlights.isEmpty ? null : plan.highlights.first);
 
     return Container(
       margin: GuestPurchasePlanTheme.planCardOuterMargin,
@@ -104,14 +105,14 @@ class MifiPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.formattedPrice),
             ],
           ),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // ===== Center metric (data only) =====
-          _CenterMetric(benefit: center),
+          if (center != null) _CenterMetric(benefit: center),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
@@ -192,7 +193,7 @@ class MifiPlanCard extends StatelessWidget {
 }
 
 class _PricePill extends StatelessWidget {
-  final double price;
+  final String price;
   const _PricePill({required this.price});
 
   @override
@@ -205,10 +206,7 @@ class _PricePill extends StatelessWidget {
           GuestPurchasePlanTheme.planPricePillRadius,
         ),
       ),
-      child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
-      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
     );
   }
 }

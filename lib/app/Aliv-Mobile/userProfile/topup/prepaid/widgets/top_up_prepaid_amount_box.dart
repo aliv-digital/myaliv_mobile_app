@@ -113,7 +113,7 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
-                        hintText: r'$00',
+                        hintText: r'$0.00',
                         hintStyle: TopUpPrepaidTheme.amountHint(),
                       ),
                       onChanged: (raw) {

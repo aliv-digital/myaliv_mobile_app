@@ -9,7 +9,9 @@ import '../utils/bahamas_phone_input_formatter.dart';
 import '../utils/login_phone_number_helper.dart';
 
 class LoginPhoneRow extends StatefulWidget {
-  const LoginPhoneRow({super.key});
+  const LoginPhoneRow({super.key, this.controller});
+
+  final TextEditingController? controller;
 
   @override
   State<LoginPhoneRow> createState() => _LoginPhoneRowState();
@@ -74,6 +76,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
           children: [
             CustomCountryPhoneInputRow(
               focusNode: _phoneFocusNode,
+              controller: widget.controller,
               textInputAction: TextInputAction.next,
               hideUnfocusedInputBorder: false,
               hintText: 'eg: (242)-899-9999',

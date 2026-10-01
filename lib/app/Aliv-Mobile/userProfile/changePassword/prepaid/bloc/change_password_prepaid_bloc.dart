@@ -7,7 +7,8 @@ class ChangePasswordPrepaidBloc
     extends Bloc<ChangePasswordPrepaidEvent, ChangePasswordPrepaidState> {
   final ChangePasswordPrepaidRepository repository;
 
-  static const _minLength = 4;
+  static const _minLength = 8;
+  static const _maxLength = 64;
   static const _lengthError = 'password does not meet the requirement';
   static const _matchError = 'password does not match';
 
@@ -35,7 +36,9 @@ class ChangePasswordPrepaidBloc
     final value = event.value;
     final trimmed = value.trim();
 
-    final newError = (trimmed.isNotEmpty && trimmed.length < _minLength)
+    final newError =
+        (trimmed.isNotEmpty &&
+            (trimmed.length < _minLength || trimmed.length > _maxLength))
         ? _lengthError
         : null;
 
@@ -93,8 +96,10 @@ class ChangePasswordPrepaidBloc
     final a = state.newPassword.trim();
     final b = state.confirmPassword.trim();
 
-    final newErr = a.length < _minLength ? _lengthError : null;
-    final confirmErr = b.length < _minLength
+    final newErr = (a.length < _minLength || a.length > _maxLength)
+        ? _lengthError
+        : null;
+    final confirmErr = (b.length < _minLength || b.length > _maxLength)
         ? _lengthError
         : (a != b ? _matchError : null);
 

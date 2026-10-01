@@ -83,7 +83,10 @@ class _GuestPayBillConfirmView extends StatelessWidget {
     return '\$ ${amount.toStringAsFixed(2)}';
   }
 
-  GuestPayBillReceiptArgs _buildReceiptArgs(GuestPayBillConfirmState state) {
+  GuestPayBillReceiptArgs _buildReceiptArgs(
+    GuestPayBillConfirmState state, {
+    String? orderId,
+  }) {
     final now = DateTime.now();
     return GuestPayBillReceiptArgs(
       serviceName: state.args.serviceName,
@@ -92,6 +95,7 @@ class _GuestPayBillConfirmView extends StatelessWidget {
       amount: state.total,
       dateText: _formatDate(now),
       timeText: _formatTime(now),
+      orderId: orderId,
     );
   }
 
@@ -162,7 +166,10 @@ class _GuestPayBillConfirmView extends StatelessWidget {
               return;
             }
             navigator.pop();
-            final receiptArgs = _buildReceiptArgs(state);
+            final receiptArgs = _buildReceiptArgs(
+              state,
+              orderId: success.orderId,
+            );
             router.push(AppRoutes.guestPayBillReceipt, extra: receiptArgs);
           },
           onFailure: (String message) {

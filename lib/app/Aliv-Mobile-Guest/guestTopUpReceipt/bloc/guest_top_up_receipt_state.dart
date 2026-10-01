@@ -10,6 +10,7 @@ class GuestTopUpReceiptData extends Equatable {
   final String phoneNumber; // 242-801-1616
   final String paymentMethod; // credit card
   final double amount; // 15.00
+  final String? orderId;
 
   const GuestTopUpReceiptData({
     required this.leftType,
@@ -19,6 +20,7 @@ class GuestTopUpReceiptData extends Equatable {
     required this.phoneNumber,
     required this.paymentMethod,
     required this.amount,
+    this.orderId,
   });
 
   @override
@@ -30,6 +32,7 @@ class GuestTopUpReceiptData extends Equatable {
     phoneNumber,
     paymentMethod,
     amount,
+    orderId,
   ];
 }
 

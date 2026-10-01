@@ -7,6 +7,7 @@ import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../Home/widgets/auto_renew_toggle.dart';
 import '../../guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
+import '../../guestPurchasePlan/models/plan_model.dart';
 import '../bloc/guest_purchase_plan_add_ons_bloc.dart';
 import '../bloc/guest_purchase_plan_add_ons_event.dart';
 import '../bloc/guest_purchase_plan_add_ons_state.dart';
@@ -17,9 +18,9 @@ import '../widgets/fair_use_policy_card.dart';
 import '../widgets/plan_red_image_card.dart';
 
 class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
-  const GuestPurchasePlanAddOnsScreen({super.key, this.phoneNumber = ''});
+  const GuestPurchasePlanAddOnsScreen({super.key, required this.args});
 
-  final String phoneNumber;
+  final GuestPurchasePlanAddOnsRouteArgs args;
 
   @override
   Widget build(BuildContext context) {
@@ -29,38 +30,24 @@ class GuestPurchasePlanAddOnsScreen extends StatelessWidget {
         create: (ctx) => GuestPurchasePlanAddOnsBloc(
           repository: ctx.read<GuestPurchasePlanAddOnsRepository>(),
         )..add(const GuestPurchasePlanAddOnsStarted()),
-        child: _GuestPurchasePlanAddOnsView(phoneNumber: phoneNumber),
+        child: _GuestPurchasePlanAddOnsView(args: args),
       ),
     );
   }
 }
 
 class _GuestPurchasePlanAddOnsView extends StatelessWidget {
-  const _GuestPurchasePlanAddOnsView({this.phoneNumber = ''});
+  const _GuestPurchasePlanAddOnsView({required this.args});
 
-  final String phoneNumber;
+  final GuestPurchasePlanAddOnsRouteArgs args;
 
   static const double _contentHorizontalPadding = 25;
   static const String _defaultAccountHolder = 'guest purchase a plan';
-  static const double _defaultPrimaryPlanPrice = 75;
-
-  double _extractPrimaryPlanPrice(String planName) {
-    final match = RegExp(r'(\d+(?:\.\d+)?)').firstMatch(planName);
-    if (match == null) {
-      return _defaultPrimaryPlanPrice;
-    }
-
-    return double.tryParse(match.group(1) ?? '') ?? _defaultPrimaryPlanPrice;
-  }
 
   GuestPurchasePlanConfirmationRouteArgs _routeArgsFromState(
     GuestPurchasePlanAddOnsState state, {
     required GuestPurchasePlanConfirmationEntryFlow flow,
   }) {
-    final activePlan = state.activePlan;
-    final primaryPlanName = activePlan?.name ?? 'liberty70';
-    final primaryPlanPrice = _extractPrimaryPlanPrice(primaryPlanName);
-
     final selectedAddOns = state.addOns
         .where((item) => state.selectedAddOnIds.contains(item.id))
         .map(
@@ -73,12 +60,13 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
         .toList();
 
     return GuestPurchasePlanConfirmationRouteArgs(
-      phoneNumber: phoneNumber,
+      phoneNumber: args.phoneNumber,
       accountHolderName: _defaultAccountHolder,
-      primaryPlanName: primaryPlanName,
-      primaryPlanPrice: primaryPlanPrice,
+      primaryPlanName: args.selectedPlan.title,
+      primaryPlanPrice: args.selectedPlan.price,
       flow: flow,
       selectedAddOns: selectedAddOns,
+      selectedPlan: args.selectedPlan,
       // Skipping add-ons must not turn an activate-now purchase into a future
       // plan; add-on selection and activation timing are separate concerns.
       forceNow: true,

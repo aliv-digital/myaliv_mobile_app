@@ -261,6 +261,14 @@ class AuthModuleTextStyles {
     color: AuthModuleColors.hintGrey,
   );
 
+  // "save my password" checkbox label.
+  static const TextStyle saveMyPassword = TextStyle(
+    fontSize: 13,
+    fontFamily: AppConstants.defaultFontFamily,
+    fontWeight: FontWeight.w500,
+    color: AuthModuleColors.hintGrey,
+  );
+
   // Primary sign-in button label style.
   static const TextStyle signInButton = TextStyle(
     color: Colors.white,

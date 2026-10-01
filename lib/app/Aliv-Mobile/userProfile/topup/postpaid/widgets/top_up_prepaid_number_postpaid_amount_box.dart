@@ -74,14 +74,12 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
   @override
   Widget build(BuildContext context) {
     final amountStyle = TopUpPrepaidNumberPostPaidTheme.amountText();
-    final hintStyle = amountStyle.copyWith(
-      color: amountStyle.color?.withValues(alpha: 0.35),
-    );
+    final hintStyle = amountStyle.copyWith(color: amountStyle.color);
     final isEmpty = _controller.text.isEmpty;
 
     // ✅ measure current typed amount (controller is source of truth while editing).
     // When empty, size to the hint text so the placeholder fits.
-    final currentText = isEmpty ? r'$00' : _controller.text;
+    final currentText = isEmpty ? r'$0.00' : _controller.text;
 
     // ✅ dynamic width so "$" + amount can be perfectly centered
     final textWidth = _measureTextWidth(currentText, amountStyle);
@@ -156,7 +154,7 @@ class _TopUpPrepaidNumberPostPaidAmountBoxState
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
-                        hintText: r'$00',
+                        hintText: r'$0.00',
                         hintStyle: hintStyle,
                       ),
                     ),

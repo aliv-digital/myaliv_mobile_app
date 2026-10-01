@@ -11,6 +11,7 @@ class GuestTopUpTheme {
   static const String phoneHintText = 'eg: (242)-899-9999';
   static const String amountHintText = '00.00';
   static const String nextButtonLabel = 'next';
+  static const String proceedButtonLabel = 'proceed';
   static const String fallbackErrorMessage = 'Something went wrong';
   static const String invalidPhoneMessage = 'invalid phone number';
   static const String phoneMismatchMessage = 'phone numbers do not match';
@@ -177,7 +178,7 @@ class GuestTopUpTheme {
     fontSize: 40,
     fontWeight: FontWeight.w700,
     fontFamily: AppConstants.defaultFontFamily,
-    color: amountValueColor.withValues(alpha: 0.35),
+    color: amountValueColor,
   );
 
   // Helper text below amount field

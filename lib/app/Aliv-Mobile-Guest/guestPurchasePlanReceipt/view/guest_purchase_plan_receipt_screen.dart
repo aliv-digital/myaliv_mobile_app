@@ -24,6 +24,7 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
     this.emailAddress = 'guest',
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
+    this.orderId,
   });
 
   final String phoneNumber;
@@ -35,6 +36,7 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   final List<String> addOnNames;
   final String emailAddress;
   final String statusMessage;
+  final String? orderId;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,12 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
         ReceiptDetailItem(label: 'plan', value: planName!, valueBold: false),
       for (final addOn in addOnNames)
         ReceiptDetailItem(label: 'add-on', value: addOn),
+      if (orderId != null && orderId!.isNotEmpty)
+        ReceiptDetailItem(
+          label: 'order reference',
+          value: orderId!,
+          valueBold: false,
+        ),
       ReceiptDetailItem(label: 'date', value: dateText),
       ReceiptDetailItem(label: 'time', value: timeText),
       ReceiptDetailItem(label: 'phone no.', value: phoneNumber),

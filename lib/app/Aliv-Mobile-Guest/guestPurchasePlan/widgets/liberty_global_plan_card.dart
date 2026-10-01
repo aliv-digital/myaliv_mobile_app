@@ -7,7 +7,7 @@ import '../models/plan_model.dart';
 import '../theme/theme.dart';
 
 class LibertyGlobalPlanCard extends StatelessWidget {
-  final PlanModel plan;
+  final GuestPlanDisplayModel plan;
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails; // toggle expand/collapse
@@ -25,12 +25,13 @@ class LibertyGlobalPlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ✅ liberty global center metric: prefer intl talk benefit
-    final PlanBenefit? intlTalk = plan.benefits
+    final PlanBenefit? intlTalk = plan.highlights
         .where((b) => b.type == PlanBenefitType.intlTalkText)
         .cast<PlanBenefit?>()
         .firstWhere((b) => b != null, orElse: () => null);
 
-    final PlanBenefit center = intlTalk ?? plan.benefits.first;
+    final PlanBenefit? center =
+        intlTalk ?? (plan.highlights.isEmpty ? null : plan.highlights.first);
 
     debugPrint("----- LibertyGlobalPlanCard -----");
     debugPrint("intlTalk: $intlTalk");
@@ -106,14 +107,14 @@ class LibertyGlobalPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              _PricePill(price: plan.price),
+              _PricePill(price: plan.formattedPrice),
             ],
           ),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
           // ===== Center metric (intl talk) =====
-          _CenterMetric(benefit: center),
+          if (center != null) _CenterMetric(benefit: center),
 
           const SizedBox(height: GuestPurchasePlanTheme.planCardSectionSpacing),
 
@@ -194,7 +195,7 @@ class LibertyGlobalPlanCard extends StatelessWidget {
 }
 
 class _PricePill extends StatelessWidget {
-  final double price;
+  final String price;
   const _PricePill({required this.price});
 
   @override
@@ -207,10 +208,7 @@ class _PricePill extends StatelessWidget {
           GuestPurchasePlanTheme.planPricePillRadius,
         ),
       ),
-      child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
-        style: GuestPurchasePlanTheme.planPricePillTextStyle,
-      ),
+      child: Text(price, style: GuestPurchasePlanTheme.planPricePillTextStyle),
     );
   }
 }

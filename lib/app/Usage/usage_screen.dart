@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
-
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_view.dart';
 import 'package:myaliv_mobile_app/app/Usage/current_plan_tab.dart';
 import 'package:myaliv_mobile_app/app/Usage/future_plan_tab.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 
 class UsageScreen extends StatefulWidget {
   const UsageScreen({super.key});
@@ -84,7 +83,7 @@ class _UsageScreenState extends State<UsageScreen>
   // ---------------- CONFIG ----------------
   List<Tab> _tabs(HomeUiConfig config) {
     return [
-      const Tab(text: 'current plan'),
+      const Tab(text: 'current plans'),
       const Tab(text: 'future plans'),
       if (config.isPostpaid) const Tab(text: 'my limits'),
     ];

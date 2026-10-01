@@ -85,8 +85,6 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const ChangePasswordPrepaidHeaderText(),
-                          const SizedBox(height: 18),
                           BlocBuilder<
                             ChangePasswordPrepaidBloc,
                             ChangePasswordPrepaidState
@@ -141,7 +139,9 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                               );
                             },
                           ),
-                          const SizedBox(height: 38),
+                          const SizedBox(height: 10),
+                          const ChangePasswordPrepaidHeaderText(),
+                          const SizedBox(height: 30),
                           BlocBuilder<
                             ChangePasswordPrepaidBloc,
                             ChangePasswordPrepaidState

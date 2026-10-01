@@ -29,6 +29,13 @@ extension NullableDateTimeX on DateTime? {
     if (value == null) return _dashPlaceholder;
     return value.formatDdMmYy();
   }
+
+  /// Returns `hh:mm a` (e.g. `11:59 PM`) or empty string when null.
+  String formatHmAOrEmpty() {
+    final value = this;
+    if (value == null) return '';
+    return DateFormat('hh:mm a').format(value.toDeviceLocal());
+  }
 }
 
 extension ApiDateString on String {

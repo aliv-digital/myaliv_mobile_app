@@ -106,6 +106,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
                 'amount': state.total,
                 'dateText': DateFormat('MMM d, yyyy').format(now),
                 'timeText': DateFormat('h:mm a').format(now).toLowerCase(),
+                'orderId': success.orderId,
               },
             );
           },

@@ -6,6 +6,7 @@ class GuestPayBillReceiptArgs {
   final String dateText;
   final String timeText;
   final String paymentMethod;
+  final String? orderId;
 
   const GuestPayBillReceiptArgs({
     required this.serviceName,
@@ -15,5 +16,6 @@ class GuestPayBillReceiptArgs {
     required this.dateText,
     required this.timeText,
     this.paymentMethod = 'credit card',
+    this.orderId,
   });
 }

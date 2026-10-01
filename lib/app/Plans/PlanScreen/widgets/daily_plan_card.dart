@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_presentation_mapper.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/theme.dart';
@@ -239,103 +240,8 @@ class _PlanBucketsRowState extends State<_PlanBuckets> {
                           final item = widget.benefits[i];
                           Color labelColor;
 
-                          BucketItemType itemType = BucketItemType.whatsApp;
-
-                          if (item.bucketUnit == 'INS_Data' &&
-                              item.unit == 'GB') {
-                            // data icon
-                            // labelColor = HomePlanTheme.dataColor;
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit == 'INS_DATA_UNLIMITED' &&
-                              item.unit == 'GB') {
-                            // data icon
-                            //labelColor = HomePlanTheme.dataColor;
-                            itemType = BucketItemType.data;
-                          } else if (item.bucketUnit ==
-                                  'INS_Whatsapp_Text_10201' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.whatsApp;
-                            // whatsApp icon
-                          } else if (item.bucketUnit == 'INS_Whatsapp_All' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.whatsApp;
-
-                            // whatsapp icon
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
-                              item.unit == 'Minutes') {
-                            //BucketUnit  ==   INS_LDI_US_CANADA && unit == Minutes → call icon
-                            itemType = BucketItemType.call;
-                          } else if (item.bucketUnit == 'INS_LDI_US_CANADA' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                            // BucketUnit  ==   INS_LDI_US_CANADA && unit == Text → message icon
-                          } else if (item.bucketUnit ==
-                                  'INS_Voice_Only_National' &&
-                              item.unit == 'Minutes') {
-                            // BucketUnit  ==   INS_Voice_Only_National && unit == Minutes → call icon
-                            itemType = BucketItemType.call;
-                            // BucketUnit  ==   INS_Voice_Only_National && unit == Minutes → call icon
-                          } else if (item.bucketUnit ==
-                                  'INS_Voice_Only_National' &&
-                              item.unit == 'Text') {
-                            // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
-                            itemType = BucketItemType.sms;
-                            // BucketUnit  ==   INS_Voice_Only_National && unit == Text → sms icon
-                            // Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit ==
-                                  'INS_SMS_Only_National' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                            //BucketUnit  ==  INS_SMS_Only_National && unit == Text → sms icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_SMS_US_Canada' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                            //BucketUnit→  INS_SMS_US_Canada && unit == Text → sms icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_Voice_Nat_US' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                            //
-                            // BucketUnit→  INS_Voice_Nat_US && unit == Minutes → call icon
-                            //  Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_Sms_Nat_US' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                            //BucketUnit→  INS_Sms_Nat_US && unit == Text → sms icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_Voice_Onnet' &&
-                              item.unit == 'Minutes') {
-                            itemType = BucketItemType.call;
-                            //BucketUnit→  INS_Voice_Onnet && unit == Minutes → call icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_SMS_Onnet' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.sms;
-                            //BucketUnit→  INS_SMS_Onnet && unit == Text → sms icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_MMS_Nat_US' &&
-                              item.unit == 'Text') {
-                            itemType = BucketItemType.internationalSMS;
-                            //BucketUnit→  INS_MMS_Nat_US && unit == Text → sms icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_Data_MIFI' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                            //BucketUnit→  INS_Data_MIFI && unit == GB → data icon
-                            //Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit == 'INS_TikTok_10500' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                            //BucketUnit→  INS_TikTok_10500 && unit == GB → data icon
-                            // Unlimited == true → need to show unlimited  else show the amount
-                          } else if (item.bucketUnit ==
-                                  'INS_Facebook_MSG_10403' &&
-                              item.unit == 'GB') {
-                            itemType = BucketItemType.data;
-                            //BucketUnit→  INS_Facebook_MSG_10403 && unit == GB → data icon
-                            // Unlimited == true → need to show unlimited  else show the amount
-                          }
+                          final itemType = const PlanPresentationMapper()
+                              .bucketItemType(item);
 
                           switch (itemType) {
                             case BucketItemType.data:

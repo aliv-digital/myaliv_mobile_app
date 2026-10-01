@@ -13,7 +13,8 @@ class ChangePasswordPrepaidTheme {
   static const TextStyle helper = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    height: 1.35,
+    fontWeight: FontWeight.w400,
     color: mutedText,
   );
 }
