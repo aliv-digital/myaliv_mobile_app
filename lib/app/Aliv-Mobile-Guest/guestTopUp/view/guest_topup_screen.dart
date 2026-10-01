@@ -343,7 +343,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                               ),
-                              label: GuestTopUpTheme.nextButtonLabel,
+                              label: GuestTopUpTheme.proceedButtonLabel,
                               isLoading: false,
                             );
                           },
