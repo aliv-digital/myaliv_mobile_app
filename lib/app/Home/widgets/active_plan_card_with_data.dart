@@ -39,7 +39,7 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         final redCreditCard = isFromHome
             ? AssetConstant.homeRedCardSVG
             : AssetConstant.redCreditCardSVG;
-        final cardHeight = showRenewButton ? 200.0 : 150.0;
+        final cardHeight = showRenewButton ? 216.0 : 166.0;
         final cardPadding = showRenewButton
             ? const EdgeInsets.symmetric(horizontal: 16, vertical: 13)
             : const EdgeInsets.fromLTRB(16, 13, 16, 26);
