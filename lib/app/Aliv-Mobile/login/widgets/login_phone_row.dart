@@ -9,8 +9,15 @@ import '../utils/bahamas_phone_input_formatter.dart';
 import '../utils/login_phone_number_helper.dart';
 
 class LoginPhoneRow extends StatefulWidget {
-  const LoginPhoneRow({super.key, this.controller});
+  const LoginPhoneRow({
+    super.key,
+    required this.focusNode,
+    required this.onNext,
+    this.controller,
+  });
 
+  final FocusNode focusNode;
+  final VoidCallback onNext;
   final TextEditingController? controller;
 
   @override
@@ -20,29 +27,38 @@ class LoginPhoneRow extends StatefulWidget {
 class _LoginPhoneRowState extends State<LoginPhoneRow> {
   final LoginPhoneNumberHelper _phoneNumberHelper =
       const LoginPhoneNumberHelper();
-  final FocusNode _phoneFocusNode = FocusNode();
   bool _hasPhoneFocus = false;
 
   @override
   void initState() {
     super.initState();
-    _phoneFocusNode.addListener(_handlePhoneFocusChange);
+    _hasPhoneFocus = widget.focusNode.hasFocus;
+    widget.focusNode.addListener(_handlePhoneFocusChange);
+  }
+
+  @override
+  void didUpdateWidget(covariant LoginPhoneRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode.removeListener(_handlePhoneFocusChange);
+      widget.focusNode.addListener(_handlePhoneFocusChange);
+      _hasPhoneFocus = widget.focusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _phoneFocusNode.removeListener(_handlePhoneFocusChange);
-    _phoneFocusNode.dispose();
+    widget.focusNode.removeListener(_handlePhoneFocusChange);
     super.dispose();
   }
 
   void _handlePhoneFocusChange() {
-    if (_hasPhoneFocus == _phoneFocusNode.hasFocus) {
+    if (_hasPhoneFocus == widget.focusNode.hasFocus) {
       return;
     }
 
     setState(() {
-      _hasPhoneFocus = _phoneFocusNode.hasFocus;
+      _hasPhoneFocus = widget.focusNode.hasFocus;
     });
   }
 
@@ -75,9 +91,10 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomCountryPhoneInputRow(
-              focusNode: _phoneFocusNode,
+              focusNode: widget.focusNode,
               controller: widget.controller,
-              textInputAction: TextInputAction.next,
+              textInputAction: TextInputAction.unspecified,
+              onSubmitted: (_) => widget.onNext(),
               hideUnfocusedInputBorder: false,
               hintText: 'eg: (242)-899-9999',
               flagEmoji: state.selectedCountry.flagEmoji,
