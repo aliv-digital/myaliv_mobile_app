@@ -88,9 +88,9 @@ void main() {
 
     final buttonHarness = await _pumpScreen(tester);
     await _enterValidDetails(tester);
-    final nextButton = find.widgetWithText(ElevatedButton, 'next');
-    await tester.ensureVisible(nextButton);
-    await tester.tap(nextButton);
+    final proceedButton = _proceedButton();
+    await tester.ensureVisible(proceedButton);
+    await tester.tap(proceedButton);
     await tester.pumpAndSettle();
 
     expect(buttonHarness.confirmExtras.single, doneExtra);
@@ -176,9 +176,11 @@ void main() {
     await _enterValidDetails(tester);
 
     final amountSubmit = tester.widget<TextField>(_amountField()).onSubmitted!;
-    final nextButton = find.widgetWithText(ElevatedButton, 'next');
-    await tester.ensureVisible(nextButton);
-    final buttonPressed = tester.widget<ElevatedButton>(nextButton).onPressed!;
+    final proceedButton = _proceedButton();
+    await tester.ensureVisible(proceedButton);
+    final buttonPressed = tester
+        .widget<ElevatedButton>(proceedButton)
+        .onPressed!;
     final bloc = _bloc(tester);
 
     final invalidPhoneState = bloc.stream.firstWhere(
@@ -255,8 +257,16 @@ Finder _phoneField(int index) {
 }
 
 Finder _amountField() {
-  return find.byWidgetPredicate(
-    (widget) => widget is TextField && widget.decoration?.hintText == r'$00',
+  return find.descendant(
+    of: find.byType(GradientInputField),
+    matching: find.byType(TextField),
+  );
+}
+
+Finder _proceedButton() {
+  return find.widgetWithText(
+    ElevatedButton,
+    GuestTopUpTheme.proceedButtonLabel,
   );
 }
 

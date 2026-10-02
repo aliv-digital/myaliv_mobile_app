@@ -2,11 +2,14 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 enum CallLogsTabType { transactions, callLogs }
 
@@ -47,6 +50,7 @@ class _CallLogsViewState extends State<_CallLogsView>
   static const Color _bg = Color(0xFFF4F6FB);
 
   late final TabController _tabController;
+  bool _openingVerification = false;
 
   @override
   void initState() {
@@ -59,10 +63,26 @@ class _CallLogsViewState extends State<_CallLogsView>
       vsync: this,
       initialIndex: initialIndex,
     );
+    _tabController.addListener(_protectCallLogsTab);
+  }
+
+  void _protectCallLogsTab() {
+    if (_tabController.index != 1 ||
+        instance<CallLogsVerificationSession>().isVerified) {
+      return;
+    }
+
+    _tabController.index = 0;
+    if (_openingVerification) return;
+    _openingVerification = true;
+    context.push(AppRoutes.callLogsVerification).whenComplete(() {
+      _openingVerification = false;
+    });
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_protectCallLogsTab);
     _tabController.dispose();
     super.dispose();
   }
