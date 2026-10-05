@@ -12,10 +12,12 @@ class LoginPasswordField extends StatefulWidget {
   const LoginPasswordField({
     super.key,
     required this.onSubmitted,
+    required this.focusNode,
     this.controller,
   });
 
   final VoidCallback onSubmitted;
+  final FocusNode focusNode;
   final TextEditingController? controller;
 
   @override
@@ -24,7 +26,6 @@ class LoginPasswordField extends StatefulWidget {
 
 class _LoginPasswordFieldState extends State<LoginPasswordField> {
   bool _obscure = true;
-  final FocusNode _passwordFocusNode = FocusNode();
   bool _hasPasswordFocus = false;
   TextEditingController? _internalController;
 
@@ -34,21 +35,31 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
   @override
   void initState() {
     super.initState();
-    _passwordFocusNode.addListener(_onPasswordFocusChanged);
+    _hasPasswordFocus = widget.focusNode.hasFocus;
+    widget.focusNode.addListener(_onPasswordFocusChanged);
+  }
+
+  @override
+  void didUpdateWidget(covariant LoginPasswordField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode.removeListener(_onPasswordFocusChanged);
+      widget.focusNode.addListener(_onPasswordFocusChanged);
+      _hasPasswordFocus = widget.focusNode.hasFocus;
+    }
   }
 
   @override
   void dispose() {
-    _passwordFocusNode.removeListener(_onPasswordFocusChanged);
-    _passwordFocusNode.dispose();
+    widget.focusNode.removeListener(_onPasswordFocusChanged);
     _internalController?.dispose();
     super.dispose();
   }
 
   void _onPasswordFocusChanged() {
-    if (_hasPasswordFocus != _passwordFocusNode.hasFocus) {
+    if (_hasPasswordFocus != widget.focusNode.hasFocus) {
       setState(() {
-        _hasPasswordFocus = _passwordFocusNode.hasFocus;
+        _hasPasswordFocus = widget.focusNode.hasFocus;
       });
     }
   }
@@ -79,7 +90,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
               const SizedBox(width: AuthModuleSizes.lockToInputGap),
               Expanded(
                 child: TextField(
-                  focusNode: _passwordFocusNode,
+                  focusNode: widget.focusNode,
                   controller: _effectiveController,
                   obscureText: _obscure,
                   textInputAction: TextInputAction.done,
