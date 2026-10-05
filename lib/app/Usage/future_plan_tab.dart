@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Usage/repository/usage_repository.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/future_plan_card.dart';
+import 'package:myaliv_mobile_app/app/Usage/widgets/start_future_plan_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
@@ -194,6 +195,32 @@ class _StartPlanButtonState extends State<_StartPlanButton> {
   final UsageRepository _usageRepository = UsageRepository();
 
   bool _isStartingPlan = false;
+  bool _isConfirmingPlan = false;
+
+  Future<void> _confirmStartFuturePlan() async {
+    if (_isConfirmingPlan || _isStartingPlan) {
+      return;
+    }
+
+    setState(() {
+      _isConfirmingPlan = true;
+    });
+
+    try {
+      final confirmed = await StartFuturePlanBottomSheet.show(context);
+      if (!mounted || !confirmed) {
+        return;
+      }
+
+      await _startFuturePlan();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isConfirmingPlan = false;
+        });
+      }
+    }
+  }
 
   Future<void> _startFuturePlan() async {
     if (_isStartingPlan) return;
@@ -263,7 +290,9 @@ class _StartPlanButtonState extends State<_StartPlanButton> {
       width: double.infinity,
       height: 40,
       child: ElevatedButton(
-        onPressed: _isStartingPlan ? null : _startFuturePlan,
+        onPressed: _isStartingPlan || _isConfirmingPlan
+            ? null
+            : _confirmStartFuturePlan,
         style: ElevatedButton.styleFrom(
           backgroundColor: _StartPlanButton.purple,
           disabledBackgroundColor: _StartPlanButton.purple,
