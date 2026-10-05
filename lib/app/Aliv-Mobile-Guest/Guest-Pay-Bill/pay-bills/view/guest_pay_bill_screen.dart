@@ -89,7 +89,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-    AppToast.show(message: message);
+    AppToast.show(message: message, type: ToastType.error);
     // ScaffoldMessenger.of(context).showSnackBar(
     //   SnackBar(
     //     content: Text(
@@ -106,9 +106,9 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
       _showSnackBar(context, errorMessage);
     }
 
-    if (state.submitStatus == GuestPayBillSubmitStatus.success) {
-      // _showSnackBar(context, GuestPayBillTheme.submitSuccessMessage);
-      // you can show toast here in future
+    if (state.submitStatus == GuestPayBillSubmitStatus.loading) {
+      final confirmArgs = _buildConfirmArgs(state);
+      context.push(AppRoutes.guestPayBillConfirm, extra: confirmArgs);
     }
   }
 
@@ -190,12 +190,8 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
     bloc.add(const GuestPayBillVerifyPressed());
   }
 
-  void _onSubmitPressed(BuildContext context, GuestPayBillState state) {
-    final bloc = _bloc(context);
-    bloc.add(const GuestPayBillSubmitPressed());
-
-    final confirmArgs = _buildConfirmArgs(state);
-    context.push(AppRoutes.guestPayBillConfirm, extra: confirmArgs);
+  void _onSubmitPressed(BuildContext context) {
+    _bloc(context).add(const GuestPayBillSubmitPressed());
   }
 
   String _money(double amount) {
@@ -454,7 +450,7 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     void finalSubmitAction() {
-                      _onSubmitPressed(context, state);
+                      _onSubmitPressed(context);
                     }
 
                     return SingleChildScrollView(

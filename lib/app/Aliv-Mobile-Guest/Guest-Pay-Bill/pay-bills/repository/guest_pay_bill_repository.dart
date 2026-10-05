@@ -39,10 +39,14 @@ class GuestPayBillRepository {
     final status = (statusRaw is String && statusRaw.trim().isNotEmpty)
         ? statusRaw.trim()
         : 'unidentified';
+    final paymentOptionRaw = data is Map
+        ? (data['PaymentOption'] ?? data['paymentOption'])
+        : null;
 
     return PayBillAccountInfo(
       status: status,
       balance: balance is num ? balance.toDouble() : null,
+      paymentOption: paymentOptionRaw is String ? paymentOptionRaw.trim() : null,
     );
   }
 

@@ -48,6 +48,7 @@ class _GuestTopUpView extends StatefulWidget {
 }
 
 class _GuestTopUpViewState extends State<_GuestTopUpView> {
+  bool _isChecking = false;
   static const CountryInfo _defaultCountry = CountryInfo(
     flagEmoji: '🇧🇸',
     dialCode: '1',
@@ -86,7 +87,9 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     AppToast.show(message: resolvedMessage.toString(), type: ToastType.error);
   }
 
-  void _handleNextPressed(GuestTopUpState state) {
+  Future<void> _handleNextPressed(GuestTopUpState state) async {
+    if (_isChecking) return;
+
     final bool phoneInvalid = _isPhoneInvalid(state.phoneNumber);
     final bool mismatch = _isMismatch(
       state.phoneNumber,
@@ -114,52 +117,46 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
         double.tryParse(state.amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
     if (parsedAmount <= 0) return;
 
-    context.push(
-      AppRoutes.confirmGuestTopUp,
-      extra: <String, Object?>{
-        'phoneNumber': state.phoneNumber,
-        'amount': parsedAmount,
-      },
-    );
-  }
+    final repo = context.read<GuestTopUpBloc>().repository;
 
-  /* PARKED: country picker disabled to match Login screen behavior.
-     Keep this opener around for an easy revert if multi-country
-     support is restored later.
+    setState(() => _isChecking = true);
+    try {
+      final result = await repo.verifyNumber(state.phoneNumber);
+      if (!mounted) return;
 
-  void _pickCountry() {
-    showCountryPicker(
-      context: context,
-      showPhoneCode: true,
-      customFlagBuilder: (Country country) {
-        final String assetIsoCode = country.countryCode.toUpperCase() == 'AC'
-            ? 'sh'
-            : country.countryCode.toLowerCase();
-
-        return Image.asset(
-          'assets/$assetIsoCode.png',
-          package: 'country_pickers',
-          width: 26,
-          height: 20,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Text(country.flagEmoji,
-                style: const TextStyle(fontSize: 18));
-          },
+      if (result.paymentOption != GuestTopUpTheme.paymentOptionPrePay) {
+        AppToast.show(
+          message: GuestTopUpTheme.notPrepaidErrorMessage,
+          type: ToastType.error,
         );
-      },
-      onSelect: (Country country) {
-        setState(() {
-          _selectedCountry = CountryInfo(
-            flagEmoji: country.flagEmoji,
-            dialCode: country.phoneCode.split(RegExp(r'[\\s-]')).first,
-            isoCode: country.countryCode,
-          );
-        });
-      },
-    );
+        return;
+      }
+
+      if (result.accountStatus != GuestTopUpTheme.accountStatusActive) {
+        AppToast.show(
+          message: GuestTopUpTheme.inactiveAccountErrorMessage,
+          type: ToastType.error,
+        );
+        return;
+      }
+
+      context.push(
+        AppRoutes.confirmGuestTopUp,
+        extra: <String, Object?>{
+          'phoneNumber': state.phoneNumber,
+          'amount': parsedAmount,
+        },
+      );
+    } catch (_) {
+      if (!mounted) return;
+      AppToast.show(
+        message: GuestTopUpTheme.fallbackErrorMessage,
+        type: ToastType.error,
+      );
+    } finally {
+      if (mounted) setState(() => _isChecking = false);
+    }
   }
-  */
 
   Widget _buildPhoneField({
     required String labelText,
@@ -344,7 +341,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                                 fontWeight: FontWeight.w700,
                               ),
                               label: GuestTopUpTheme.proceedButtonLabel,
-                              isLoading: false,
+                              isLoading: _isChecking,
                             );
                           },
                         ),

@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/guest_pay_bill_models.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/theme/guest_pay_bill_theme.dart';
 import '../repository/guest_pay_bill_repository.dart';
 import 'guest_pay_bill_event.dart';
 import 'guest_pay_bill_state.dart';
@@ -206,6 +207,17 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     Emitter<GuestPayBillState> emit,
   ) async {
     if (!state.canSubmit) return;
+
+    if (state.isAlivPostpaid &&
+        state.accountInfo?.paymentOption == GuestPayBillTheme.paymentOptionPrePay) {
+      emit(
+        state.copyWith(
+          submitStatus: GuestPayBillSubmitStatus.failure,
+          errorMessage: GuestPayBillTheme.prepaidNumberErrorMessage,
+        ),
+      );
+      return;
+    }
 
     emit(
       state.copyWith(
