@@ -16,6 +16,19 @@ class BucketUsageSummaryModel extends Equatable {
 
   int get itemCount => items.length;
 
+  factory BucketUsageSummaryModel.fromJson(Map<String, dynamic> json) {
+    final rawItems = json['items'] as List<dynamic>? ?? [];
+    return BucketUsageSummaryModel(
+      items: rawItems
+          .whereType<Map<String, dynamic>>()
+          .map(BucketUsageItem.fromJson)
+          .toList(),
+      fetchedAt: json['fetchedAt'] != null
+          ? DateTime.parse(json['fetchedAt'] as String)
+          : DateTime.now(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'items': items.map((item) => item.toJson()).toList(),

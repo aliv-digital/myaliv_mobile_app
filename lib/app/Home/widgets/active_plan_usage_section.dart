@@ -39,8 +39,9 @@ class ActivePlanUsageSection extends StatelessWidget {
             final isLoading =
                 state.status == BucketUsageSummaryStatus.initial ||
                 state.status == BucketUsageSummaryStatus.loading;
+            final showSkeleton = isLoading && !state.hasSummary;
 
-            if (isLoading) {
+            if (showSkeleton) {
               return const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [_UsageSectionSkeleton(), SizedBox(height: 20)],
