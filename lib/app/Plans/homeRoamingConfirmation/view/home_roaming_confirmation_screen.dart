@@ -333,15 +333,21 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',
-                                            value: AppUtils.formatPrice(data.totals.subTotal),
+                                            value: AppUtils.formatPrice(
+                                              data.totals.subTotal,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value: AppUtils.formatPrice(data.totals.vat),
+                                            value: AppUtils.formatPrice(
+                                              data.totals.vat,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value: AppUtils.formatPrice(data.totals.total),
+                                            value: AppUtils.formatPrice(
+                                              data.totals.total,
+                                            ),
                                           ),
                                         ],
                                       ),

@@ -308,15 +308,21 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                             ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',
-                                            value: AppUtils.formatPrice(state.displayTotals.subTotal),
+                                            value: AppUtils.formatPrice(
+                                              state.displayTotals.subTotal,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value: AppUtils.formatPrice(state.displayTotals.vat),
+                                            value: AppUtils.formatPrice(
+                                              state.displayTotals.vat,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value: AppUtils.formatPrice(state.displayTotals.total),
+                                            value: AppUtils.formatPrice(
+                                              state.displayTotals.total,
+                                            ),
                                           ),
                                         ],
                                       ),

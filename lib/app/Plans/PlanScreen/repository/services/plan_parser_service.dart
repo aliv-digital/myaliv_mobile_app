@@ -97,13 +97,15 @@ class PlanParserService {
       if (list == null || list.isEmpty) continue;
       if (list.first is BasePlanModel) {
         list.sort(
-          (a, b) => (b as BasePlanModel).planAmount
-              .compareTo((a as BasePlanModel).planAmount),
+          (a, b) => (b as BasePlanModel).planAmount.compareTo(
+            (a as BasePlanModel).planAmount,
+          ),
         );
       } else if (list.first is HomePlansPostPaidPlanModel) {
         list.sort(
-          (a, b) => (b as HomePlansPostPaidPlanModel).planAmount
-              .compareTo((a as HomePlansPostPaidPlanModel).planAmount),
+          (a, b) => (b as HomePlansPostPaidPlanModel).planAmount.compareTo(
+            (a as HomePlansPostPaidPlanModel).planAmount,
+          ),
         );
       }
     }

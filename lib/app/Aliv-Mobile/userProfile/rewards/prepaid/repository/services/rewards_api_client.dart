@@ -12,7 +12,9 @@ class RewardsApiClient {
 
   Future<String> fetchRewards(int deviceId) async {
     if (kDebugMode) {
-      debugPrint('RewardsApiClient: Fetching available SUGs for device $deviceId');
+      debugPrint(
+        'RewardsApiClient: Fetching available SUGs for device $deviceId',
+      );
     }
 
     try {
