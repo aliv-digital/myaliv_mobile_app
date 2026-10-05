@@ -1,47 +1,41 @@
 import 'dart:convert';
 
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/repository/services/rewards_api_client.dart';
 
-/// Repository for rewards data.
-///
-/// Handles data fetching and parsing from API.
 class RewardPrepaidRepository {
   RewardPrepaidRepository({RewardsApiClient? apiClient})
     : _apiClient = apiClient ?? RewardsApiClient();
 
   final RewardsApiClient _apiClient;
 
-  /// Fetches all rewards from the API.
-  ///
-  /// Returns a list of [RewardModel] sorted by sortOrder.
   Future<List<RewardModel>> fetchRewards() async {
+    final deviceId = instance<AccountInfoCubit>().state.accountInfo?.idAcc ?? 0;
+
     if (kDebugMode) {
-      debugPrint('RewardPrepaidRepository: Fetching rewards');
+      debugPrint('RewardPrepaidRepository: Fetching SUGs for device $deviceId');
     }
 
-    final rawJson = await _apiClient.fetchRewards();
+    final rawJson = await _apiClient.fetchRewards(deviceId);
     final rewards = _parseRewards(rawJson);
 
     if (kDebugMode) {
-      debugPrint('RewardPrepaidRepository: Parsed ${rewards.length} rewards');
+      debugPrint('RewardPrepaidRepository: Parsed ${rewards.length} SUGs');
     }
 
     return rewards;
   }
 
-  /// Parses JSON response into list of RewardModel.
   List<RewardModel> _parseRewards(String rawJson) {
     final decoded = jsonDecode(rawJson);
 
     if (decoded is List) {
-      final rewards = decoded
+      return decoded
           .map((item) => RewardModel.fromJson(item as Map<String, dynamic>))
           .toList();
-      // Sort by sortOrder
-      rewards.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-      return rewards;
     }
 
     return [];

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 //ewf
 import '../../../../../../router/app_routes.dart';
 
 class WalletTransferReceiptScreen extends StatelessWidget {
   const WalletTransferReceiptScreen({super.key});
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +61,7 @@ class _ReceiptCard extends StatelessWidget {
     required this.total,
   });
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

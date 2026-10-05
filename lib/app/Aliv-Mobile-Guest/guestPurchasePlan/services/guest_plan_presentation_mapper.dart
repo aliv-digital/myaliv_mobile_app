@@ -1,4 +1,5 @@
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 import '../models/plan_model.dart';
 
@@ -26,7 +27,7 @@ class GuestPlanPresentationMapper {
       title: plan.planName,
       subtitle: _duration(plan.frequency),
       price: totalPrice,
-      formattedPrice: '\$${totalPrice.toStringAsFixed(2)}',
+      formattedPrice: AppUtils.formatPrice(totalPrice),
       basePrice: plan.planAmount,
       vatAmount: plan.vatAmount,
       description: _plainText(

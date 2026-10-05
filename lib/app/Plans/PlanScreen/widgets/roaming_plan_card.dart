@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
@@ -283,7 +284,7 @@ class _PricePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
-        '\$ ${finalPrice.toStringAsFixed(2)}',
+        AppUtils.formatPrice(finalPrice),
         style: HomePlanTheme.planPricePillTextStyle,
       ),
     );

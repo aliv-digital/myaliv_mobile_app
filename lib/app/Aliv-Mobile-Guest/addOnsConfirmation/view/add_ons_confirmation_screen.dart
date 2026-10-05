@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/models/add_ons_confirmation_models.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/add_ons_confirmation_bloc.dart';
 import '../bloc/add_ons_confirmation_event.dart';
@@ -114,8 +116,7 @@ class _AddOnsConfirmationView extends StatelessWidget {
                       },
                     );
                   },
-                  amountText:
-                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                  amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );
               },
             ),
@@ -231,18 +232,21 @@ class _AddOnsConfirmationView extends StatelessWidget {
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',
-                                            value:
-                                                '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              data.totals.subTotal,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value:
-                                                '\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              data.totals.vat,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value:
-                                                '\$ ${data.totals.total.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              data.totals.total,
+                                            ),
                                           ),
                                         ],
                                       ),

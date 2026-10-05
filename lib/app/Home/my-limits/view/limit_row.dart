@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/models/consumption_limit_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/animated_usage_progress.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 class LimitRow extends StatelessWidget {
   final ConsumptionLimitModel limit;
@@ -29,8 +30,8 @@ class LimitRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '\$${limit.remainingAmount.toStringAsFixed(2)} of '
-                  '\$${limit.initialAmount.toStringAsFixed(2)} remaining',
+                  '${AppUtils.formatPrice(limit.remainingAmount)} of '
+                  '${AppUtils.formatPrice(limit.initialAmount)} remaining',
                   style: const TextStyle(
                     color: Color(0xFF707070),
                     fontSize: 12,

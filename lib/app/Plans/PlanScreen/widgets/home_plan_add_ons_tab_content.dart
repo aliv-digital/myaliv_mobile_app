@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purc
 import 'package:myaliv_mobile_app/app/Plans/purchasePlanAddOns/widgets/plan_purchase_fair_use_policy_card.dart';
 import 'package:myaliv_mobile_app/app/Usage/widgets/postpaid_current_plan.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -145,7 +146,7 @@ class HomePlanAddOnsBottomPayBar extends StatelessWidget {
     return DefaultBottomPayBar(
       isVatExclusive: false,
       buttonText: 'proceed',
-      amountText: '\$ ${total.toStringAsFixed(2)}',
+      amountText: AppUtils.formatPrice(total),
       isButtonEnabled: state.selectedAddOnIds.isNotEmpty,
       onPayNow: onPayNow,
     );

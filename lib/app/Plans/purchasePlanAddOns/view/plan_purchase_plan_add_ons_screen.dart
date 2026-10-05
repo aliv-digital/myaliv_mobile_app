@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.da
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
@@ -219,7 +220,7 @@ class _PlanPurchaseBottomBar extends StatelessWidget {
         return DefaultBottomPayBar(
           isVatExclusive: false,
           buttonText: 'proceed',
-          amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
+          amountText: AppUtils.formatPrice(state.totalPrice),
           // Add-ons are optional; proceeding with no selection purchases only
           // the primary plan and sends an empty add-ons list to confirmation.
           isButtonEnabled: true,

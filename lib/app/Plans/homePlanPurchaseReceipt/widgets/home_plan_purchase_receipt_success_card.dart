@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/theme/home_plan_purchase_receipt_theme.dart';
 
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
+import 'home_plan_purchase_receipt_back_button.dart';
 import 'home_plan_purchase_receipt_detail_row.dart';
 import 'home_plan_purchase_receipt_ticket_divider.dart';
-import 'home_plan_purchase_receipt_back_button.dart';
 
 class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
   const HomePlanPurchaseReceiptSuccessCard({
@@ -32,7 +34,7 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
   /// is no card to save. Leave null on receipts that should never show it.
   final Widget? saveCardSection;
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

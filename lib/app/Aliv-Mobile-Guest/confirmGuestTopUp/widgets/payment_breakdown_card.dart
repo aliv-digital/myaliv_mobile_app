@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../theme/theme.dart';
 
 class PaymentBreakdownCard extends StatelessWidget {
@@ -20,7 +22,7 @@ class PaymentBreakdownCard extends StatelessWidget {
   final String currencySymbol;
   final Color backgroundColor;
 
-  String _money(double v) => '$currencySymbol ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

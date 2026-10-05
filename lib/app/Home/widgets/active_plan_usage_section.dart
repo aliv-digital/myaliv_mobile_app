@@ -195,6 +195,7 @@ class ActivePlanUsageSection extends StatelessWidget {
 
 class _RoamingEntry {
   const _RoamingEntry({required this.plan, required this.usage});
+
   final BasePlanModel plan;
   final PlanBucketUsage usage;
 }

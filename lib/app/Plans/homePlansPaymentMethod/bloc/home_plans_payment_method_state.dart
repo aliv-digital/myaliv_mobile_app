@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import '../model/home_plans_payment_method_models.dart';
 
 enum HomePlansPaymentMethodStatus {
@@ -110,7 +111,7 @@ class HomePlansPaymentMethodState extends Equatable {
     );
   }
 
-  String get amountText => r'$ ' + amount.toStringAsFixed(2);
+  String get amountText => AppUtils.formatPrice(amount);
 
   bool get isPrepaidUser {
     return subscriberType == HomePlansSubscriberType.prepaid;

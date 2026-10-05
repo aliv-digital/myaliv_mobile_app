@@ -7,11 +7,13 @@ import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_re
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../Aliv-Mobile/revBillPay/revConfirmation/prepaid/theme/rev_confirmation_prepaid_theme.dart';
 import '../bloc/guest_purchase_plan_confirmation_bloc.dart';
@@ -190,135 +192,145 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                       ),
                     );
                   },
-                  amountText:
-                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                  amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );
               },
             ),
         body: SafeArea(
           top: false,
-          child: BlocBuilder<GuestPurchasePlanConfirmationBloc, GuestPurchasePlanConfirmationState>(
-            builder: (context, state) {
-              final data = state.data;
+          child:
+              BlocBuilder<
+                GuestPurchasePlanConfirmationBloc,
+                GuestPurchasePlanConfirmationState
+              >(
+                builder: (context, state) {
+                  final data = state.data;
 
-              return Column(
-                children: [
-                  DefaultAppBar(
-                    height: 63,
-                    title: 'confirmation and payment',
-                    onBack: () => Navigator.of(context).maybePop(),
-                    onHomeTap: () => context.go(AppRoutes.logIn),
-                    showBackArrow: true,
-                    showHome: false,
-                    backgroundColor: GuestPurchasePlanConfirmationTheme.purple,
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 420),
-                        child: data == null
-                            ? const SizedBox.shrink()
-                            : CustomScrollView(
-                                slivers: [
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        29,
-                                        17,
-                                        29,
-                                        0,
-                                      ),
-                                      child: PurchaseSummaryCard(
-                                        data: data,
-                                        onRemoveItem: (id) => context
-                                            .read<
-                                              GuestPurchasePlanConfirmationBloc
-                                            >()
-                                            .add(
-                                              GuestPurchasePlanConfirmationRemoveItemPressed(
-                                                id,
-                                              ),
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        GuestPurchasePlanConfirmationTheme
-                                            .termsNoticeHorizontalPadding,
-                                        GuestPurchasePlanConfirmationTheme
-                                            .termsNoticeTopSpacing,
-                                        GuestPurchasePlanConfirmationTheme
-                                            .termsNoticeHorizontalPadding,
-                                        GuestPurchasePlanConfirmationTheme
-                                            .termsNoticeBottomSpacing,
-                                      ),
-                                      child: TermsNotice(
-                                        isChecked: state.isTermsChecked,
-                                        onToggleChecked: () => context
-                                            .read<
-                                              GuestPurchasePlanConfirmationBloc
-                                            >()
-                                            .add(
-                                              GuestPurchasePlanConfirmationTermsCheckboxToggled(
-                                                !state.isTermsChecked,
-                                              ),
-                                            ),
-                                        onTermsTap: () async {
-                                          await showTermsAndConditionsModal(
-                                            context,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        29,
-                                        0,
-                                        29,
-                                        0,
-                                      ),
-                                      child: CustomPaymentBreakDownCard(
-                                        backgroundColor:
-                                            RevConfirmationPrepaidTheme
-                                                .receiptBg,
-                                        scallopCount: 12,
-                                        input: null,
-                                        items: <CustomPaymentBreakdownLineItem>[
-                                          CustomPaymentBreakdownLineItem(
-                                            label: 'sub total',
-                                            value:
-                                                '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
-                                          ),
-                                          CustomPaymentBreakdownLineItem(
-                                            label: 'vat',
-                                            value:
-                                                '\$ ${data.totals.vat.toStringAsFixed(2)}',
-                                          ),
-                                          CustomPaymentBreakdownLineItem(
-                                            label: 'total',
-                                            value:
-                                                '\$ ${data.totals.total.toStringAsFixed(2)}',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SliverToBoxAdapter(
-                                    child: SizedBox(height: 24),
-                                  ),
-                                ],
-                              ),
+                  return Column(
+                    children: [
+                      DefaultAppBar(
+                        height: 63,
+                        title: 'confirmation and payment',
+                        onBack: () => Navigator.of(context).maybePop(),
+                        onHomeTap: () => context.go(AppRoutes.logIn),
+                        showBackArrow: true,
+                        showHome: false,
+                        backgroundColor:
+                            GuestPurchasePlanConfirmationTheme.purple,
                       ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+                      Expanded(
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            child: data == null
+                                ? const SizedBox.shrink()
+                                : CustomScrollView(
+                                    slivers: [
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            29,
+                                            17,
+                                            29,
+                                            0,
+                                          ),
+                                          child: PurchaseSummaryCard(
+                                            data: data,
+                                            onRemoveItem: (id) => context
+                                                .read<
+                                                  GuestPurchasePlanConfirmationBloc
+                                                >()
+                                                .add(
+                                                  GuestPurchasePlanConfirmationRemoveItemPressed(
+                                                    id,
+                                                  ),
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            GuestPurchasePlanConfirmationTheme
+                                                .termsNoticeHorizontalPadding,
+                                            GuestPurchasePlanConfirmationTheme
+                                                .termsNoticeTopSpacing,
+                                            GuestPurchasePlanConfirmationTheme
+                                                .termsNoticeHorizontalPadding,
+                                            GuestPurchasePlanConfirmationTheme
+                                                .termsNoticeBottomSpacing,
+                                          ),
+                                          child: TermsNotice(
+                                            isChecked: state.isTermsChecked,
+                                            onToggleChecked: () => context
+                                                .read<
+                                                  GuestPurchasePlanConfirmationBloc
+                                                >()
+                                                .add(
+                                                  GuestPurchasePlanConfirmationTermsCheckboxToggled(
+                                                    !state.isTermsChecked,
+                                                  ),
+                                                ),
+                                            onTermsTap: () async {
+                                              await showTermsAndConditionsModal(
+                                                context,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            29,
+                                            0,
+                                            29,
+                                            0,
+                                          ),
+                                          child: CustomPaymentBreakDownCard(
+                                            backgroundColor:
+                                                RevConfirmationPrepaidTheme
+                                                    .receiptBg,
+                                            scallopCount: 12,
+                                            input: null,
+                                            items:
+                                                <
+                                                  CustomPaymentBreakdownLineItem
+                                                >[
+                                                  CustomPaymentBreakdownLineItem(
+                                                    label: 'sub total',
+                                                    value: AppUtils.formatPrice(
+                                                      data.totals.subTotal,
+                                                    ),
+                                                  ),
+                                                  CustomPaymentBreakdownLineItem(
+                                                    label: 'vat',
+                                                    value: AppUtils.formatPrice(
+                                                      data.totals.vat,
+                                                    ),
+                                                  ),
+                                                  CustomPaymentBreakdownLineItem(
+                                                    label: 'total',
+                                                    value: AppUtils.formatPrice(
+                                                      data.totals.total,
+                                                    ),
+                                                  ),
+                                                ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SliverToBoxAdapter(
+                                        child: SizedBox(height: 24),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
         ),
       ),
     );

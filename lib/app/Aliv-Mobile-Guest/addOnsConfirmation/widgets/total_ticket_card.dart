@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../models/add_ons_confirmation_models.dart';
 import '../theme/add_ons_confirmation_theme.dart';
 import 'dashed_divider.dart';
@@ -49,7 +51,7 @@ class TotalTicketCard extends StatelessWidget {
         ),
         const Spacer(),
         Text(
-          '\$ ${value.toStringAsFixed(2)}',
+          AppUtils.formatPrice(value),
           style: AddOnsConfirmationTheme.t(
             13,
             weight: isTotal ? FontWeight.w900 : FontWeight.w800,

@@ -1,6 +1,9 @@
 import 'dart:convert';
+
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_category.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'plan_categorizer_service.dart';
 import 'plan_model_factory.dart';
 
@@ -85,6 +88,23 @@ class PlanParserService {
       // Track unknown plans
       if (category == PlanCategory.unknown) {
         totalUnknown++;
+      }
+    }
+
+    // Sort each category highest → lowest by planAmount
+    for (final category in PlanCategory.values) {
+      final list = categorizedPlans[category];
+      if (list == null || list.isEmpty) continue;
+      if (list.first is BasePlanModel) {
+        list.sort(
+          (a, b) => (b as BasePlanModel).planAmount
+              .compareTo((a as BasePlanModel).planAmount),
+        );
+      } else if (list.first is HomePlansPostPaidPlanModel) {
+        list.sort(
+          (a, b) => (b as HomePlansPostPaidPlanModel).planAmount
+              .compareTo((a as HomePlansPostPaidPlanModel).planAmount),
+        );
       }
     }
 

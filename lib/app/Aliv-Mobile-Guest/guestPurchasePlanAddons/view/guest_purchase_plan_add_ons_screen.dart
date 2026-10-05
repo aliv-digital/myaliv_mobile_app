@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../core/utils/app_session.dart';
 import '../../../../resources/widgets/default_app_bar.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../Home/widgets/auto_renew_toggle.dart';
-import '../../guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import '../../guestPurchasePlan/models/plan_model.dart';
+import '../../guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import '../bloc/guest_purchase_plan_add_ons_bloc.dart';
 import '../bloc/guest_purchase_plan_add_ons_event.dart';
 import '../bloc/guest_purchase_plan_add_ons_state.dart';
@@ -119,7 +121,7 @@ class _GuestPurchasePlanAddOnsView extends StatelessWidget {
                 return DefaultBottomPayBar(
                   isVatExclusive: true,
                   buttonText: 'proceed',
-                  amountText: '\$ ${state.totalPrice.toStringAsFixed(2)}',
+                  amountText: AppUtils.formatPrice(state.totalPrice),
                   onPayNow: () {
                     context.read<GuestPurchasePlanAddOnsBloc>().add(
                       const GuestPurchasePlanAddOnsProceedPressed(),

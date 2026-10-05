@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/dropdowns/saved_card_dropdown.dart';
 import 'auto_topup_amount_grid.dart';
 import 'auto_topup_widgets.dart';
@@ -61,7 +62,7 @@ class AutoTopupThresholdSection extends StatelessWidget {
         if (minThreshold > 0) ...[
           const SizedBox(height: 8),
           Text(
-            'amount must be above \$ ${minThreshold.toStringAsFixed(2)}',
+            'amount must be above ${AppUtils.formatPrice(minThreshold)}',
             style: const TextStyle(
               color: Color(0xFF707070),
               fontSize: 14,
