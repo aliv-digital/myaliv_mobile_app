@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/role_api_client.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
@@ -70,6 +71,18 @@ class AuthCompletionService {
       accountID: primaryDevice.deviceId.toString(),
     );
 
+    final roleId = await instance<RoleApiClient>().fetchRoleId(
+      primaryDevice.deviceId,
+    );
+    final LineRole lineRole;
+    if (accountInfo.parentAccountId == 0) {
+      lineRole = LineRole.parent;
+    } else if (roleId == 4) {
+      lineRole = LineRole.fullAccess;
+    } else {
+      lineRole = LineRole.readOnly;
+    }
+
     appUiConfigCubit.setConfig(
       HomeUiConfig(
         userType: accountInfoCubit.state.isPostpaid
@@ -78,6 +91,7 @@ class AuthCompletionService {
         hasActivePlan: false,
         isFuturePlan: false,
         openMyLimits: false,
+        lineRole: lineRole,
       ),
     );
 

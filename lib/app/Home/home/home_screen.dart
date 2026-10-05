@@ -435,15 +435,16 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           children: [
-            GestureDetector(
-              onTap: () {
-                context.go(AppRoutes.plans);
-              },
-              child: const ActionTile(
-                'assets/icons/ListStarQuick.svg',
-                'buy\nplans',
+            if (!config.isRestricted)
+              GestureDetector(
+                onTap: () {
+                  context.go(AppRoutes.plans);
+                },
+                child: const ActionTile(
+                  'assets/icons/ListStarQuick.svg',
+                  'buy\nplans',
+                ),
               ),
-            ),
             config.userType == UserType.postpaid
                 ? GestureDetector(
                     onTap: () {

@@ -1,7 +1,8 @@
 import 'package:core/core.dart';
-import 'cubit/account_info_cubit.dart';
-import 'repository/account_info_repository.dart';
-import 'repository/services/account_info_api_client.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/account_info_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/account_info_api_client.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/role_api_client.dart';
 
 /// Setup dependency injection for account information feature
 ///
@@ -13,6 +14,10 @@ import 'repository/services/account_info_api_client.dart';
 /// await setupAccountInfoInjection();
 /// ```
 Future<void> setupAccountInfoInjection() async {
+  instance.registerLazySingleton<RoleApiClient>(
+    () => RoleApiClient(instance<NetworkService>()),
+  );
+
   // Register API client
   instance.registerLazySingleton<AccountInfoApiClient>(
     () => AccountInfoApiClient(),

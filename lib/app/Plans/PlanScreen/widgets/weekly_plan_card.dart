@@ -13,7 +13,7 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
   final bool expanded;
   final VoidCallback onToggle;
   final VoidCallback onViewDetails;
-  final VoidCallback onPurchaseNow;
+  final VoidCallback? onPurchaseNow;
 
   const HomePlanWeeklyPlanCard({
     super.key,
@@ -21,7 +21,7 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
     required this.expanded,
     required this.onToggle,
     required this.onViewDetails,
-    required this.onPurchaseNow,
+    this.onPurchaseNow,
   });
 
   @override
@@ -148,23 +148,25 @@ class HomePlanWeeklyPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: HomePlanTheme.planCardActionButtonsGap),
-              Expanded(
-                child: DefaultButton(
-                  label: HomePlanTheme.planCardPurchaseNowLabel,
-                  isLoading: false,
-                  onPressed: onPurchaseNow,
-                  height: HomePlanTheme.planCardActionButtonHeight,
-                  contentPadding:
-                      HomePlanTheme.planCardActionButtonContentPadding,
-                  backgroundColor:
-                      HomePlanTheme.planCardPurchaseNowBackgroundColor,
-                  textStyle: HomePlanTheme.planCardPurchaseNowTextStyle,
-                  borderRadius: BorderRadius.circular(
-                    HomePlanTheme.planCardActionButtonRadius,
+              if (onPurchaseNow != null) ...[
+                const SizedBox(width: HomePlanTheme.planCardActionButtonsGap),
+                Expanded(
+                  child: DefaultButton(
+                    label: HomePlanTheme.planCardPurchaseNowLabel,
+                    isLoading: false,
+                    onPressed: onPurchaseNow,
+                    height: HomePlanTheme.planCardActionButtonHeight,
+                    contentPadding:
+                        HomePlanTheme.planCardActionButtonContentPadding,
+                    backgroundColor:
+                        HomePlanTheme.planCardPurchaseNowBackgroundColor,
+                    textStyle: HomePlanTheme.planCardPurchaseNowTextStyle,
+                    borderRadius: BorderRadius.circular(
+                      HomePlanTheme.planCardActionButtonRadius,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
         ],

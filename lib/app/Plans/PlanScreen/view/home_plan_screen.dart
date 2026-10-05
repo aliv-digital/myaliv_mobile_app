@@ -297,8 +297,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
       );
     }
 
+    final isRestricted = context.read<AppUiConfigCubit>().state.isRestricted;
+
     return HomePlanPlansList(
       state: currentState,
+      isRestricted: isRestricted,
       onToggleExpanded: (planId) {
         context.read<PlansCubit>().toggleExpanded(planId);
       },

@@ -10,13 +10,13 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
     required this.plan,
     required this.expanded,
     required this.onToggle,
-    required this.onPurchaseNow,
+    this.onPurchaseNow,
   });
 
   final HomePlansPostPaidPlanModel plan;
   final bool expanded;
   final VoidCallback onToggle;
-  final VoidCallback onPurchaseNow;
+  final VoidCallback? onPurchaseNow;
 
   @override
   Widget build(BuildContext context) {
@@ -167,25 +167,27 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: onPurchaseNow,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF645D9C),
-                      shape: const StadiumBorder(),
-                    ),
-                    child: const Text(
-                      'purchase now',
-                      style: TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFF1F1F8),
+                if (onPurchaseNow != null) ...[
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onPurchaseNow,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF645D9C),
+                        shape: const StadiumBorder(),
+                      ),
+                      child: const Text(
+                        'purchase now',
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFFF1F1F8),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ],
             ),
           ],

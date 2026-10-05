@@ -16,6 +16,8 @@ analyzer:
     - "**/*.gr.dart"
     - "build/**"
     - ".dart_tool/**"
+    - android/**
+    - ios/**
   errors:
     unused_import: info
     unused_field: info

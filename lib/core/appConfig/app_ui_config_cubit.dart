@@ -73,6 +73,16 @@ class AppUiConfigCubit extends Cubit<HomeUiConfig> {
     );
   }
 
+  void setLineRole(LineRole role) => emit(state.copyWith(lineRole: role));
+
+  void switchToDevice(int deviceId) => emit(
+    state.copyWith(activeDeviceId: deviceId, isViewingChildLine: true),
+  );
+
+  void resetToOwnDevice() => emit(
+    state.copyWith(isViewingChildLine: false, clearActiveDeviceId: true),
+  );
+
   /// Clears one-time navigation intent after the target screen uses it.
   void clearNavigationIntent() {
     if (!state.openMyLimits && !state.isFuturePlan && !state.isCurrentPlan) {
