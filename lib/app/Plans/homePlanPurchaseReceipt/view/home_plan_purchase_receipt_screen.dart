@@ -208,6 +208,7 @@ class _HomePlanPurchaseReceiptViewState
 
                           return HomePlanPurchaseReceiptSuccessCard(
                             data: data,
+                            orderId: widget.orderId,
                             onBackHome: () {
                               if (AppSession.appRoute == 'prepaidPlan' ||
                                   AppSession.appRoute == 'postpaidPlan' ||

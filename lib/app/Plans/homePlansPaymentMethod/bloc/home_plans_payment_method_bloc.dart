@@ -232,10 +232,11 @@ class HomePlansPaymentMethodBloc
   /// Wraps the submit → success/failure transition for any change-bundle call.
   /// Centralises the [HomePlansPaymentMethodStatus.submitting] guard, error
   /// mapping, and nav-target on success so wallet and saved-card paths stay
-  /// in lockstep.
+  /// in lockstep. The [invoke] callback returns the [OrderId] from the API
+  /// (null when the API omits it), which is stored in state for the receipt.
   Future<void> _submitChangeBundle(
     Emitter<HomePlansPaymentMethodState> emit,
-    Future<bool> Function() invoke,
+    Future<int?> Function() invoke,
     String failureFallback,
   ) async {
     if (state.status == HomePlansPaymentMethodStatus.submitting) return;
@@ -248,16 +249,13 @@ class HomePlansPaymentMethodBloc
     );
 
     try {
-      final ok = await invoke();
-      if (ok) await _logPurchaseAnalytics();
+      final orderId = await invoke();
+      await _logPurchaseAnalytics();
       emit(
         state.copyWith(
-          status: ok
-              ? HomePlansPaymentMethodStatus.success
-              : HomePlansPaymentMethodStatus.failure,
-          navTarget: ok
-              ? HomePlansPaymentMethodNavTarget.paid
-              : HomePlansPaymentMethodNavTarget.paymentFailed,
+          status: HomePlansPaymentMethodStatus.success,
+          navTarget: HomePlansPaymentMethodNavTarget.paid,
+          orderId: orderId?.toString(),
         ),
       );
     } catch (error) {

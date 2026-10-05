@@ -15,12 +15,17 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
     this.saveCardSection,
+    this.orderId,
   });
 
   final HomePlanPurchaseReceiptData data;
   final VoidCallback onBackHome;
   final Color pageBackground;
   final String statusMessage;
+
+  /// Order ID returned by the API. When provided, an "order reference" row is
+  /// rendered immediately after the first detail item (primary plan).
+  final String? orderId;
 
   /// Optional widget slot for the "save credit card" affordance. Pass a
   /// [SaveCardOnReceiptSection] here; the section self-hides when there
@@ -138,12 +143,21 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             // - data.details controls how many rows are shown
             // - label/value/valueBold all driven by incoming data
             // need to hide vat showing row here
-            for (final item in data.details)
+            for (int i = 0; i < data.details.length; i++) ...[
               HomePlanPurchaseReceiptDetailRow(
-                label: item.label,
-                value: item.value,
-                valueBold: item.valueBold,
+                label: data.details[i].label,
+                value: data.details[i].value,
+                valueBold: data.details[i].valueBold,
               ),
+              // Inject order reference immediately after the first detail
+              // (primary plan row) so it appears before date/time/phone.
+              if (i == 0 && orderId != null && orderId!.isNotEmpty)
+                HomePlanPurchaseReceiptDetailRow(
+                  label: 'order reference',
+                  value: orderId!,
+                  valueBold: false,
+                ),
+            ],
 
             const SizedBox(height: 6),
 
