@@ -61,7 +61,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.planName,
+                              plan.planName.toLowerCase(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: HomePlanTheme.planCardTitleTextStyle,

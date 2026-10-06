@@ -95,7 +95,9 @@ class PlanParserService {
     for (final category in PlanCategory.values) {
       final list = categorizedPlans[category];
       if (list == null || list.isEmpty) continue;
-      if (list.first is BasePlanModel) {
+      if (category == PlanCategory.mifi && list.first is BasePlanModel) {
+        _sortMifiByGroupThenAmount(list);
+      } else if (list.first is BasePlanModel) {
         list.sort(
           (a, b) => (b as BasePlanModel).planAmount.compareTo(
             (a as BasePlanModel).planAmount,
@@ -151,5 +153,29 @@ class PlanParserService {
     );
 
     return totalCategorized == result.totalProcessed;
+  }
+
+  /// Groups MiFi plans by name prefix (strips trailing digits), sorts
+  /// highest→lowest within each group. Group order follows API insertion order.
+  void _sortMifiByGroupThenAmount(List<dynamic> plans) {
+    String groupKey(dynamic plan) => (plan as BasePlanModel).planName
+        .replaceAll(RegExp(r'\d.*$'), '')
+        .trim()
+        .toLowerCase();
+
+    final groups = <String, List<BasePlanModel>>{};
+    for (final item in plans) {
+      final key = groupKey(item);
+      groups.putIfAbsent(key, () => []).add(item as BasePlanModel);
+    }
+
+    for (final group in groups.values) {
+      group.sort((a, b) => b.planAmount.compareTo(a.planAmount));
+    }
+
+    plans.clear();
+    for (final group in groups.values) {
+      plans.addAll(group);
+    }
   }
 }
