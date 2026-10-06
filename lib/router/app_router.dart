@@ -20,6 +20,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
@@ -118,6 +119,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
+    observers: [historyRouteObserver],
     initialLocation: AppRoutes.splash,
     routes: [
       GoRoute(
@@ -420,15 +422,16 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.callLogs,
         builder: (context, state) {
-          final tabParam = state.uri.queryParameters['tab'];
+          final destination = HistoryDestination.fromTabParameter(
+            state.uri.queryParameters['tab'],
+          );
 
-          final initialTab = tabParam == 'call_logs'
+          final initialTab = destination == HistoryDestination.callLogs
               ? CallLogsTabType.callLogs
               : CallLogsTabType.transactions;
 
-          if (initialTab == CallLogsTabType.callLogs &&
-              !instance<CallLogsVerificationSession>().isVerified) {
-            return const CallLogsVerificationGateScreen();
+          if (!instance<CallLogsVerificationSession>().isVerified) {
+            return CallLogsVerificationGateScreen(destination: destination);
           }
 
           return CallLogsScreen(initialTab: initialTab);
@@ -436,7 +439,13 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.callLogsVerification,
-        builder: (context, state) => const CallLogsVerificationGateScreen(),
+        builder: (context, state) => CallLogsVerificationGateScreen(
+          destination: state.extra is HistoryDestination
+              ? state.extra! as HistoryDestination
+              : state.uri.queryParameters['tab'] == 'transactions'
+              ? HistoryDestination.transactions
+              : HistoryDestination.callLogs,
+        ),
       ),
       GoRoute(
         path: AppRoutes.callLogsOtp,
@@ -448,6 +457,7 @@ class AppRouter {
           return CallLogsOtpScreen(
             initialMfaToken: args.mfaToken,
             apiPhoneNumber: args.apiPhoneNumber,
+            destination: args.destination,
           );
         },
       ),

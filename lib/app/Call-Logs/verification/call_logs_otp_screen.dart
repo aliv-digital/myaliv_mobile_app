@@ -11,9 +11,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_header.da
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import 'call_logs_otp_repository.dart';
+import 'call_logs_otp_route_args.dart';
 import 'call_logs_session_completion_service.dart';
 import 'call_logs_verification_repository.dart';
 import 'call_logs_verification_session.dart';
@@ -23,10 +23,12 @@ class CallLogsOtpScreen extends StatelessWidget {
     super.key,
     required this.initialMfaToken,
     required this.apiPhoneNumber,
+    this.destination = HistoryDestination.callLogs,
   });
 
   final String initialMfaToken;
   final String apiPhoneNumber;
+  final HistoryDestination destination;
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +47,15 @@ class CallLogsOtpScreen extends StatelessWidget {
         offlineVerificationMessage:
             "We couldn't verify the OTP due to a network error. Please try again later",
       ),
-      child: const _CallLogsOtpView(),
+      child: _CallLogsOtpView(destination: destination),
     );
   }
 }
 
 class _CallLogsOtpView extends StatelessWidget {
-  const _CallLogsOtpView();
+  const _CallLogsOtpView({required this.destination});
+
+  final HistoryDestination destination;
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +70,15 @@ class _CallLogsOtpView extends StatelessWidget {
           },
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
+              if (ModalRoute.of(context)?.isCurrent == false) {
+                return;
+              }
               instance<CallLogsVerificationSession>().markVerified();
               AppToast.show(
                 message: 'Verification successful.',
                 type: ToastType.success,
               );
-              context.pushReplacement('${AppRoutes.callLogs}?tab=call_logs');
+              context.pushReplacement(destination.location);
             }
 
             if (state.status == LoginOtpStatus.failure &&

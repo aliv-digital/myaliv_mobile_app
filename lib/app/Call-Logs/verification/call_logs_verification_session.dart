@@ -1,7 +1,8 @@
-/// In-memory authorization for the sensitive Call Logs view.
+/// In-memory authorization for the current shared History visit.
 ///
 /// This is intentionally not persisted: a cold app start requires a new
-/// verification, while repeated visits in the same signed-in session do not.
+/// verification. Leaving History ends authorization; switching its tabs does
+/// not. The History route owner and hard logout reset this flag.
 class CallLogsVerificationSession {
   bool _isVerified = false;
 

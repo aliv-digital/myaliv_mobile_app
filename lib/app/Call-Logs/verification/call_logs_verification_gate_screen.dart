@@ -8,16 +8,19 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'call_logs_otp_route_args.dart';
 import 'call_logs_verification_repository.dart';
 import 'call_logs_verification_session.dart';
+import 'history_route_observer.dart';
 
 class CallLogsVerificationGateScreen extends StatefulWidget {
   const CallLogsVerificationGateScreen({
     super.key,
     this.repository,
     this.verificationSession,
+    this.destination = HistoryDestination.callLogs,
   });
 
   final CallLogsVerificationRepository? repository;
   final CallLogsVerificationSession? verificationSession;
+  final HistoryDestination destination;
 
   @override
   State<CallLogsVerificationGateScreen> createState() =>
@@ -25,8 +28,10 @@ class CallLogsVerificationGateScreen extends StatefulWidget {
 }
 
 class _CallLogsVerificationGateScreenState
-    extends State<CallLogsVerificationGateScreen> {
+    extends State<CallLogsVerificationGateScreen>
+    with RouteAware {
   bool _started = false;
+  PageRoute<dynamic>? _route;
 
   CallLogsVerificationRepository get _repository =>
       widget.repository ?? instance<CallLogsVerificationRepository>();
@@ -37,9 +42,32 @@ class _CallLogsVerificationGateScreenState
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_started) return;
-    _started = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _begin());
+    final route = ModalRoute.of(context);
+    if (route is PageRoute<dynamic> && !identical(route, _route)) {
+      historyRouteObserver.unsubscribe(this);
+      _route = route;
+      historyRouteObserver.subscribe(this, route);
+    }
+    _scheduleBegin();
+  }
+
+  @override
+  void didPopNext() => _scheduleBegin();
+
+  void _scheduleBegin() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _started || _route?.isCurrent == false) {
+        return;
+      }
+      _started = true;
+      _begin();
+    });
+  }
+
+  @override
+  void dispose() {
+    historyRouteObserver.unsubscribe(this);
+    super.dispose();
   }
 
   Future<void> _begin() async {
@@ -51,15 +79,24 @@ class _CallLogsVerificationGateScreenState
     try {
       final challenge = await _repository.requestChallenge();
       if (!mounted) return;
+      if (_route?.isCurrent == false) {
+        _started = false;
+        return;
+      }
       context.pushReplacement(
         AppRoutes.callLogsOtp,
         extra: CallLogsOtpRouteArgs(
           mfaToken: challenge.mfaToken,
           apiPhoneNumber: challenge.apiPhoneNumber,
+          destination: widget.destination,
         ),
       );
     } catch (error) {
       if (!mounted) return;
+      if (_route?.isCurrent == false) {
+        _started = false;
+        return;
+      }
       AppToast.show(message: error.toString(), type: ToastType.error);
       if (context.canPop()) {
         context.pop();
@@ -71,7 +108,7 @@ class _CallLogsVerificationGateScreenState
 
   void _openCallLogs() {
     if (!mounted) return;
-    context.pushReplacement('${AppRoutes.callLogs}?tab=call_logs');
+    context.pushReplacement(widget.destination.location);
   }
 
   @override

@@ -2,18 +2,20 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
+
+import 'verification/call_logs_otp_route_args.dart';
+import 'verification/call_logs_verification_gate_screen.dart';
+import 'verification/history_route_observer.dart';
 
 enum CallLogsTabType { transactions, callLogs }
 
-class CallLogsScreen extends StatelessWidget {
+class CallLogsScreen extends StatefulWidget {
   final CallLogsTabType initialTab;
 
   const CallLogsScreen({
@@ -22,7 +24,66 @@ class CallLogsScreen extends StatelessWidget {
   });
 
   @override
+  State<CallLogsScreen> createState() => _CallLogsScreenState();
+}
+
+class _CallLogsScreenState extends State<CallLogsScreen> with RouteAware {
+  PageRoute<dynamic>? _route;
+  bool _visitEnded = false;
+
+  CallLogsVerificationSession get _session =>
+      instance<CallLogsVerificationSession>();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute<dynamic> && !identical(route, _route)) {
+      historyRouteObserver.unsubscribe(this);
+      _route = route;
+      historyRouteObserver.subscribe(this, route);
+    }
+    if (!_visitEnded && _session.isVerified && _route?.isCurrent == true) {
+      historyRouteObserver.watchVisit(_route!, _endVisit);
+    }
+  }
+
+  void _endVisit() {
+    _session.reset();
+    _visitEnded = true;
+    _refreshAfterNavigation();
+  }
+
+  @override
+  void didPopNext() => _refreshAfterNavigation();
+
+  void _refreshAfterNavigation() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    historyRouteObserver.unsubscribe(this);
+    final route = _route;
+    if (route != null) {
+      historyRouteObserver.endVisit(route);
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_visitEnded || !_session.isVerified) {
+      return CallLogsVerificationGateScreen(
+        destination: widget.initialTab == CallLogsTabType.transactions
+            ? HistoryDestination.transactions
+            : HistoryDestination.callLogs,
+      );
+    }
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<CallLogsCubit>()..fetchUsages()),
@@ -30,7 +91,7 @@ class CallLogsScreen extends StatelessWidget {
           create: (_) => instance<TransactionsCubit>()..fetchTransactions(),
         ),
       ],
-      child: _CallLogsView(initialTab: initialTab),
+      child: _CallLogsView(initialTab: widget.initialTab),
     );
   }
 }
@@ -50,7 +111,6 @@ class _CallLogsViewState extends State<_CallLogsView>
   static const Color _bg = Color(0xFFF4F6FB);
 
   late final TabController _tabController;
-  bool _openingVerification = false;
 
   @override
   void initState() {
@@ -63,26 +123,10 @@ class _CallLogsViewState extends State<_CallLogsView>
       vsync: this,
       initialIndex: initialIndex,
     );
-    _tabController.addListener(_protectCallLogsTab);
-  }
-
-  void _protectCallLogsTab() {
-    if (_tabController.index != 1 ||
-        instance<CallLogsVerificationSession>().isVerified) {
-      return;
-    }
-
-    _tabController.index = 0;
-    if (_openingVerification) return;
-    _openingVerification = true;
-    context.push(AppRoutes.callLogsVerification).whenComplete(() {
-      _openingVerification = false;
-    });
   }
 
   @override
   void dispose() {
-    _tabController.removeListener(_protectCallLogsTab);
     _tabController.dispose();
     super.dispose();
   }
