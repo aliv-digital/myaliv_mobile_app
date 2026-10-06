@@ -21,11 +21,13 @@ class CreatePasswordScreen extends StatelessWidget {
     this.subtitle =
         'Set the new password for your account so you can login and access myaliv app',
     this.buttonLabel = 'continue',
+    this.onBack,
   });
 
   final String title;
   final String subtitle;
   final String buttonLabel;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class CreatePasswordScreen extends StatelessWidget {
         title: title,
         subtitle: subtitle,
         buttonLabel: buttonLabel,
+        onBack: onBack,
       ),
     );
   }
@@ -45,11 +48,13 @@ class _CreatePasswordView extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.buttonLabel,
+    this.onBack,
   });
 
   final String title;
   final String subtitle;
   final String buttonLabel;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +64,12 @@ class _CreatePasswordView extends StatelessWidget {
       bloc.add(const SubmitCreatePassword());
     }
 
-    return StripedScaffold(
+    return PopScope(
+      canPop: onBack == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) onBack?.call();
+      },
+      child: StripedScaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: BlocListener<CreatePasswordBloc, CreatePasswordState>(
@@ -86,7 +96,11 @@ class _CreatePasswordView extends StatelessWidget {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             slivers: [
               SliverToBoxAdapter(
-                child: CreatePasswordHeader(title: title, subtitle: subtitle),
+                child: CreatePasswordHeader(
+                  title: title,
+                  subtitle: subtitle,
+                  onBack: onBack,
+                ),
               ),
               SliverPadding(
                 padding: const EdgeInsets.only(right: 42, left: 42),
@@ -160,6 +174,7 @@ class _CreatePasswordView extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

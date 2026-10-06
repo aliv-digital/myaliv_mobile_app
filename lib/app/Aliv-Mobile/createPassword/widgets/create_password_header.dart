@@ -10,10 +10,12 @@ class CreatePasswordHeader extends StatelessWidget {
     this.title = 'create password',
     this.subtitle =
         'Set the new password for your account so you can login and access myaliv app',
+    this.onBack,
   });
 
   final String title;
   final String subtitle;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class CreatePasswordHeader extends StatelessWidget {
       children: [
         DefaultBackButton(
           padding: const EdgeInsets.only(left: 16, top: 28),
-          onPressed: () => Navigator.of(context).maybePop(),
+          onPressed: onBack ?? () => Navigator.of(context).maybePop(),
         ),
         const SizedBox(height: 62),
         Padding(
