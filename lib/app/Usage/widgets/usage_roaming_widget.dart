@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 
 /// Visual header for the Usage tab's "roaming plan" section. Reads its
@@ -51,7 +52,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
             ),
           ),
           Text(
-            plan.planName.toLowerCase(),
+            PlanNameFormatterService.format(plan.planName).toLowerCase(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 24,

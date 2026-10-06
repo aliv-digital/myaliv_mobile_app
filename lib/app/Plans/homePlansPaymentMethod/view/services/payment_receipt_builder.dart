@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
@@ -65,7 +66,9 @@ class PaymentReceiptBuilder {
           label: item.label.trim().isEmpty
               ? _planTypeLabel(item.planType)
               : item.label,
-          value: item.title,
+          value: item.planType == HomePlansPaymentPlanType.standalone
+              ? PlanNameFormatterService.format(item.title)
+              : item.title,
         ),
       HomePlanPurchaseReceiptDetailItem(label: 'date', value: date),
       HomePlanPurchaseReceiptDetailItem(label: 'time', value: time),

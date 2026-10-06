@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
@@ -110,7 +111,9 @@ class ActivePlanUsageSection extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => context.go(AppRoutes.usage),
                   child: Text(
-                    entry.plan.planName.toLowerCase(),
+                    PlanNameFormatterService.format(
+                      entry.plan.planName,
+                    ).toLowerCase(),
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
