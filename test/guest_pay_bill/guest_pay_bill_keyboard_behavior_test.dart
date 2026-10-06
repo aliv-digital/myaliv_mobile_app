@@ -249,7 +249,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('amount Done does not bypass final submit loading state', (
+  testWidgets('amount Done does not duplicate confirmation while submitting', (
     tester,
   ) async {
     _stubPostpaidSuccess(networkService);
@@ -263,9 +263,16 @@ void main() {
     await tester.pump();
     expect(bloc.state.submitStatus, GuestPayBillSubmitStatus.loading);
 
+    // Develop opens confirmation after local eligibility checks, on loading.
+    // This is not payment completion; Done must not open it a second time.
+    expect(harness.confirmExtras, hasLength(1));
+    final initialConfirmation = harness.confirmExtras.single;
+
     await _submitField(tester, _amountField());
     await tester.pump();
-    expect(harness.confirmExtras, isEmpty);
+    expect(bloc.state.submitStatus, GuestPayBillSubmitStatus.loading);
+    expect(harness.confirmExtras, hasLength(1));
+    expect(harness.confirmExtras.single, same(initialConfirmation));
 
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();

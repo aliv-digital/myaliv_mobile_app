@@ -60,6 +60,12 @@ class GuestPayBillTheme {
   // Used by: success snackbar after submit event.
   static const String submitSuccessMessage = 'Payment submitted';
 
+  // Used by: submit guard in GuestPayBillBloc to detect prepaid accounts.
+  static const String paymentOptionPrePay = 'PrePay';
+
+  // Used by: submit guard error toast when a prepaid number is entered for postpaid bill pay.
+  static const String prepaidNumberErrorMessage = 'number is not postpaid';
+
   // ===== Screen spacing =====
   // Used by: top content padding after app bar in `guest_pay_bill_screen.dart`.
   static const double contentTopGapAfterAppBar = 32;

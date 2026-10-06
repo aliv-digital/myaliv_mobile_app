@@ -78,7 +78,7 @@ class RewardPrepaidCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  reward.shortDesc,
+                  reward.description,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

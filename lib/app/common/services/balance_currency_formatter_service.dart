@@ -1,8 +1,12 @@
+import 'package:intl/intl.dart';
+
 class BalanceCurrencyFormatterService {
   const BalanceCurrencyFormatterService._();
 
+  static final _fmt = NumberFormat('#,##0.00');
+
   static String format(num value) {
-    final formattedValue = value.abs().toStringAsFixed(2);
+    final formattedValue = _fmt.format(value.abs());
     return value < 0 ? '\$($formattedValue)' : '\$$formattedValue';
   }
 

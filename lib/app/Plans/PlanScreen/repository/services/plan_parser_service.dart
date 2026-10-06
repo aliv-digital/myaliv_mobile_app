@@ -1,6 +1,9 @@
 import 'dart:convert';
+
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/enums/plan_category.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/models/plan_categorization_result.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'plan_categorizer_service.dart';
 import 'plan_model_factory.dart';
 
@@ -88,6 +91,27 @@ class PlanParserService {
       }
     }
 
+    // Sort each category highest → lowest by planAmount
+    for (final category in PlanCategory.values) {
+      final list = categorizedPlans[category];
+      if (list == null || list.isEmpty) continue;
+      if (category == PlanCategory.mifi && list.first is BasePlanModel) {
+        _sortMifiByGroupThenAmount(list);
+      } else if (list.first is BasePlanModel) {
+        list.sort(
+          (a, b) => (b as BasePlanModel).planAmount.compareTo(
+            (a as BasePlanModel).planAmount,
+          ),
+        );
+      } else if (list.first is HomePlansPostPaidPlanModel) {
+        list.sort(
+          (a, b) => (b as HomePlansPostPaidPlanModel).planAmount.compareTo(
+            (a as HomePlansPostPaidPlanModel).planAmount,
+          ),
+        );
+      }
+    }
+
     return PlanCategorizationResult(
       categorizedPlans: categorizedPlans,
       timestamp: DateTime.now(),
@@ -129,5 +153,29 @@ class PlanParserService {
     );
 
     return totalCategorized == result.totalProcessed;
+  }
+
+  /// Groups MiFi plans by name prefix (strips trailing digits), sorts
+  /// highest→lowest within each group. Group order follows API insertion order.
+  void _sortMifiByGroupThenAmount(List<dynamic> plans) {
+    String groupKey(dynamic plan) => (plan as BasePlanModel).planName
+        .replaceAll(RegExp(r'\d.*$'), '')
+        .trim()
+        .toLowerCase();
+
+    final groups = <String, List<BasePlanModel>>{};
+    for (final item in plans) {
+      final key = groupKey(item);
+      groups.putIfAbsent(key, () => []).add(item as BasePlanModel);
+    }
+
+    for (final group in groups.values) {
+      group.sort((a, b) => b.planAmount.compareTo(a.planAmount));
+    }
+
+    plans.clear();
+    for (final group in groups.values) {
+      plans.addAll(group);
+    }
   }
 }

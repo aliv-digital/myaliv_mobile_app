@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/models/balance_model.dart';
 
 /// Status enum for Balance state
@@ -149,10 +150,12 @@ class BalanceState {
   double get bonusBalance => balance?.bonusBalance ?? 0.0;
 
   /// Get wallet balance as formatted string
-  String get walletBalanceFormatted => walletBalance.toStringAsFixed(2);
+  String get walletBalanceFormatted =>
+      NumberFormat('#,##0.00').format(walletBalance);
 
   /// Get bonus balance as formatted string
-  String get bonusBalanceFormatted => bonusBalance.toStringAsFixed(2);
+  String get bonusBalanceFormatted =>
+      NumberFormat('#,##0.00').format(bonusBalance);
 
   /// Get number of active bonus items
   int get bonusItemCount => balance?.bonusDetails.length ?? 0;

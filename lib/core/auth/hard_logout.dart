@@ -27,7 +27,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 ///   5. Navigate to the welcome screen
 ///
 /// Safe to call multiple times — every step is idempotent.
-Future<void> performHardLogout() async {
+Future<void> performHardLogout({bool navigate = true}) async {
   if (instance.isRegistered<ReviewInvoiceVerificationSession>()) {
     instance<ReviewInvoiceVerificationSession>().reset();
   }
@@ -72,9 +72,11 @@ Future<void> performHardLogout() async {
     if (kDebugMode) debugPrint('hardLogout: cubit reset failed — $e');
   }
 
-  final ctx = rootNavigatorKey.currentContext;
-  if (ctx != null && ctx.mounted) {
-    ctx.go(AppRoutes.welcome);
+  if (navigate) {
+    final ctx = rootNavigatorKey.currentContext;
+    if (ctx != null && ctx.mounted) {
+      ctx.go(AppRoutes.welcome);
+    }
   }
 
   if (kDebugMode) debugPrint('✅ hardLogout complete');

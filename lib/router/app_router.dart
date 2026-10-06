@@ -66,6 +66,7 @@ import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepa
 import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/otp/prepaid/view/otp_prepaid_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
+import '../core/auth/hard_logout.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
@@ -813,15 +814,24 @@ class AppRouter {
             initialApiPhoneNumber: args.apiPhoneNumber,
             successMessage: 'Code verified.',
             onSuccess: (ctx) {
-              ctx.go(AppRoutes.home);
-              ctx.push(AppRoutes.createPassword);
+              ctx.push(AppRoutes.createPassword, extra: true);
             },
           );
         },
       ),
       GoRoute(
         path: AppRoutes.createPassword,
-        builder: (context, state) => const CreatePasswordScreen(),
+        builder: (context, state) {
+          final fromForgotPassword = state.extra == true;
+          return CreatePasswordScreen(
+            onBack: fromForgotPassword
+                ? () async {
+                    await performHardLogout(navigate: false);
+                    if (context.mounted) context.pop();
+                  }
+                : null,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.guestSplash,

@@ -152,6 +152,31 @@ class BucketUsageSummaryState extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'summary': summary?.toJson(),
+      'lastFetchedAt': lastFetchedAt?.toIso8601String(),
+      'deviceAccountId': deviceAccountId,
+    };
+  }
+
+  static BucketUsageSummaryState fromJson(Map<String, dynamic> json) {
+    final summaryJson = json['summary'] as Map<String, dynamic>?;
+    final lastFetchedAtStr = json['lastFetchedAt'] as String?;
+    return BucketUsageSummaryState(
+      status: summaryJson != null
+          ? BucketUsageSummaryStatus.loaded
+          : BucketUsageSummaryStatus.initial,
+      summary: summaryJson != null
+          ? BucketUsageSummaryModel.fromJson(summaryJson)
+          : null,
+      lastFetchedAt: lastFetchedAtStr != null
+          ? DateTime.tryParse(lastFetchedAtStr)
+          : null,
+      deviceAccountId: json['deviceAccountId'] as int?,
+    );
+  }
+
   /// Cache is valid only for the same device account.
   bool isCacheValidFor(int requestedDeviceAccountId) {
     if (lastFetchedAt == null) {

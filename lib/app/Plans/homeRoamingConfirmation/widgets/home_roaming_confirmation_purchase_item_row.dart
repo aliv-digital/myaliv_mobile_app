@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../models/home_roaming_confirmation_models.dart';
 import '../theme/home_roaming_confirmation_theme.dart';
@@ -36,7 +38,7 @@ class HomeRoamingConfirmationPurchaseItemRow extends StatelessWidget {
                     HomeRoamingConfirmationTheme.purchaseItemLabelToTitleGap,
               ),
               Text(
-                item.title,
+                PlanNameFormatterService.format(item.title),
                 style: HomeRoamingConfirmationTheme.purchaseItemTitleTextStyle,
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,
@@ -70,7 +72,7 @@ class HomeRoamingConfirmationPurchaseItemRow extends StatelessWidget {
             ),
           ),
           child: Text(
-            '\$ ${item.totalPrice.toStringAsFixed(2)}',
+            AppUtils.formatPrice(item.totalPrice),
             style: HomeRoamingConfirmationTheme.purchaseItemAmountChipTextStyle,
           ),
         ),

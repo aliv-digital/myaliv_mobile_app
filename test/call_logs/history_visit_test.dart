@@ -75,6 +75,7 @@ class _Calls extends CallLogsRepository {
 
   @override
   Future<List<UsageModel>> fetchUsages({
+    required int deviceAccountId,
     required DateTime startDate,
     required DateTime endDate,
   }) async {
@@ -126,7 +127,7 @@ class _Harness {
       ),
     );
     instance.registerFactory<CallLogsCubit>(
-      () => CallLogsCubit(repository: calls),
+      () => CallLogsCubit(repository: calls, deviceLimitsCubit: devices),
     );
     instance.registerFactory<TransactionsCubit>(
       () => TransactionsCubit(

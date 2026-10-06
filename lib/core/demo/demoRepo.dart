@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../model/apiResponseModel.dart';
 import '../networkService/app_http_client.dart';
+
 // your ApiResponseModel
 
 /// Demo repository that shows how to use every method in ApiService.

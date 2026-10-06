@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../model/guest_payment_method_prepaid_models.dart';
 
 enum GuestPaymentMethodPrepaidStatus {
@@ -46,7 +48,7 @@ class GuestPaymentMethodPrepaidState extends Equatable {
     );
   }
 
-  String get amountText => r'$ ' + amount.toStringAsFixed(2);
+  String get amountText => AppUtils.formatPrice(amount);
 
   bool get isPayNowEnabled =>
       selectedMethodId != null &&

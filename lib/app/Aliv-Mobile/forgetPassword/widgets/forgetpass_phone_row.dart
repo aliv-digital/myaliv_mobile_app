@@ -8,7 +8,9 @@ import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 
 class ForgetPasswordPhoneRow extends StatefulWidget {
-  const ForgetPasswordPhoneRow({super.key});
+  const ForgetPasswordPhoneRow({super.key, required this.focusNode});
+
+  final FocusNode focusNode;
 
   @override
   State<ForgetPasswordPhoneRow> createState() => _LoginPhoneRowState();
@@ -49,6 +51,7 @@ class _LoginPhoneRowState extends State<ForgetPasswordPhoneRow> {
   @override
   Widget build(BuildContext context) {
     return CustomCountryPhoneInputRow(
+      focusNode: widget.focusNode,
       hintText: 'eg: (242)-899-9999',
       flagEmoji: _flagEmoji,
       dialCode: _dialCode,

@@ -77,39 +77,63 @@ class PaymentSheetLauncher {
     final isPostpaid = !instance<AccountInfoCubit>().state.isPrepaid;
 
     final PaymentRequest request;
-    if (isPostpaid) {
-      request = PaymentRequest(
-        url: Api.orderPayment3DSUrl,
-        body: ChangeBundleRequestFactory.orderPaymentBodyFor3DS(
-          amount: state.amount,
-        ),
-        redirectScheme: 'myaliv',
-      );
-    } else {
-      final Map<String, dynamic> body;
-      try {
-        body = ChangeBundleRequestFactory.changeBundleBodyFor3DS(
-          amount: state.amount,
-          bundle: PlanBundleMapper.fromSelectedItems(state.selectedItems),
-          promoCodes: state.promoCodes,
-          forceNow: state.forceNow,
-          selectedBeginDate: state.selectedBeginDate,
-        );
-      } catch (e) {
-        AppToast.show(
-          message: e.toString().replaceFirst('Exception: ', ''),
-          type: ToastType.error,
-        );
-        return;
-      }
-      request = PaymentRequest(
-        url: Api.changeBundleDs3Url,
-        body: body,
-        redirectScheme: 'myaliv',
-      );
-    }
+    // if (isPostpaid) {
+    //   request = PaymentRequest(
+    //     url: Api.orderPayment3DSUrl,
+    //     body: ChangeBundleRequestFactory.orderPaymentBodyFor3DS(
+    //       amount: state.amount,
+    //     ),
+    //     redirectScheme: 'myaliv',
+    //   );
+    // } else {
+    //   final Map<String, dynamic> body;
+    //   try {
+    //     body = ChangeBundleRequestFactory.changeBundleBodyFor3DS(
+    //       amount: state.amount,
+    //       bundle: PlanBundleMapper.fromSelectedItems(state.selectedItems),
+    //       promoCodes: state.promoCodes,
+    //       forceNow: state.forceNow,
+    //       selectedBeginDate: state.selectedBeginDate,
+    //     );
+    //   } catch (e) {
+    //     AppToast.show(
+    //       message: e.toString().replaceFirst('Exception: ', ''),
+    //       type: ToastType.error,
+    //     );
+    //     return;
+    //   }
+    //   request = PaymentRequest(
+    //     url: Api.changeBundleDs3Url,
+    //     body: body,
+    //     redirectScheme: 'myaliv',
+    //   );
+    // }
 
     // Capture navigator before pushing so we can pop the iframe on result.
+    final Map<String, dynamic> body;
+    try {
+      body = ChangeBundleRequestFactory.changeBundleBodyFor3DS(
+        bundle: PlanBundleMapper.fromSelectedItems(
+          state.selectedItems,
+          isPostpaid: isPostpaid,
+        ),
+        promoCodes: state.promoCodes,
+        bonuses: state.bonuses,
+        forceNow: state.forceNow,
+        selectedBeginDate: state.selectedBeginDate,
+      );
+    } catch (e) {
+      AppToast.show(
+        message: e.toString().replaceFirst('Exception: ', ''),
+        type: ToastType.error,
+      );
+      return;
+    }
+    request = PaymentRequest(
+      url: Api.changeBundleDs3Url,
+      body: body,
+      redirectScheme: 'myaliv',
+    );
     final navigator = Navigator.of(context);
     final router = GoRouter.of(context);
 

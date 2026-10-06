@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/mifi_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/monthly_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roameasy_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roaming_plan_card.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/model/add_on_models.dart'
     as add_ons_models;
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/add_on_tile.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/fair_use_policy_card.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanAddons/widgets/plan_red_image_card.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/models/guest_purchase_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_bottom_payBar.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../bloc/guest_purchase_plan_bloc.dart';
 import '../bloc/guest_purchase_plan_event.dart';
 import '../bloc/guest_purchase_plan_state.dart';
 import '../models/add_on_model.dart';
 import '../models/plan_model.dart';
 import '../repository/guest_purchase_plan_repository.dart';
+import '../theme/theme.dart';
 import '../widgets/daily_plan_card.dart';
 import '../widgets/liberty_global_plan_card.dart';
 import '../widgets/plan_tabs.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/plan_card_shimmer.dart';
 import '../widgets/roam_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_bottom_sheet.dart';
 import '../widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
 import '../widgets/weekly_plan_card.dart';
-import '../theme/theme.dart';
 
 class GuestPurchasePlanScreen extends StatelessWidget {
   const GuestPurchasePlanScreen({super.key, this.phoneNumber = ''});
@@ -333,7 +335,7 @@ class _GuestPurchasePlanView extends StatelessWidget {
               return DefaultBottomPayBar(
                 isVatExclusive: true,
                 buttonText: 'proceed',
-                amountText: '\$ ${total.toStringAsFixed(2)}',
+                amountText: AppUtils.formatPrice(total),
                 onPayNow: () {
                   context.push(
                     AppRoutes.addOnsConfirmation,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/repository/guest_purchase_plan_receipt_repository.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -42,7 +43,11 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final details = <ReceiptDetailItem>[
       if ((planName ?? '').isNotEmpty)
-        ReceiptDetailItem(label: 'plan', value: planName!, valueBold: false),
+        ReceiptDetailItem(
+          label: 'plan',
+          value: PlanNameFormatterService.format(planName!),
+          valueBold: false,
+        ),
       for (final addOn in addOnNames)
         ReceiptDetailItem(label: 'add-on', value: addOn),
       if (orderId != null && orderId!.isNotEmpty)

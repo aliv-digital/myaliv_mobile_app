@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUpReceipt/theme/theme.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../core/utils/app_session.dart';
 import '../bloc/guest_top_up_receipt_state.dart';
+import 'receipt_back_button.dart';
 import 'receipt_detail_row.dart';
 import 'receipt_ticket_divider.dart';
-import 'receipt_back_button.dart';
 
 class ReceiptSuccessCard extends StatelessWidget {
   const ReceiptSuccessCard({
@@ -20,7 +22,7 @@ class ReceiptSuccessCard extends StatelessWidget {
   final VoidCallback onBackHome;
   final Color pageBackground;
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

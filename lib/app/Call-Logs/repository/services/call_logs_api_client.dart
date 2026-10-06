@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
 /// Handles API calls for call logs/usage operations.
 ///
-/// Uses NetworkService which automatically handles Basic Auth from GlobalState.
+/// Uses NetworkService which automatically handles Bearer authentication.
 class CallLogsApiClient {
   CallLogsApiClient({NetworkService? networkService})
     : _networkService = networkService ?? instance<NetworkService>();
@@ -16,18 +17,26 @@ class CallLogsApiClient {
   /// Fetches usage/call logs for the given date range.
   ///
   /// Parameters:
-  /// - [startDate]: Start date in ISO 8601 format
-  /// - [endDate]: End date in ISO 8601 format
+  /// - [deviceAccountId]: DeviceID from the Account/devices response
+  /// - [startDate]: Selected start date, sent as yyyy-MM-ddTHH:mm:ss
+  /// - [endDate]: Selected end date, sent as yyyy-MM-ddTHH:mm:ss
   ///
   /// Returns raw JSON response string on success.
   /// Throws [NetworkException] on errors.
   Future<String> fetchUsages({
+    required int deviceAccountId,
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final startDateStr = startDate.toUtc().toIso8601String();
-    final endDateStr = endDate.toUtc().toIso8601String();
-    final url = '${Api.usages}?startDate=$startDateStr&endDate=$endDateStr';
+    if (deviceAccountId <= 0) {
+      throw Exception('Device account ID unavailable. Please try again.');
+    }
+
+    final dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    final startDateStr = dateFormat.format(startDate);
+    final endDateStr = dateFormat.format(endDate);
+    final url =
+        '${Api.usages}?AccountId=$deviceAccountId&startDate=$startDateStr&endDate=$endDateStr';
 
     if (kDebugMode) {
       debugPrint('CallLogsApiClient: Fetching usages from $url');

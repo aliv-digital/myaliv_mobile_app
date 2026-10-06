@@ -73,7 +73,7 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       decoration: const BoxDecoration(color: RoamingPlanSection._titleBg),
       child: const Text(
-        'my additional  plan',
+        'current standalones',
         style: TextStyle(
           color: Colors.black,
           fontSize: 18,

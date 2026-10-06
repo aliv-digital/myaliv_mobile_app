@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
-import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -272,7 +273,7 @@ PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   );
 }
 
-String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
+String _priceText(double price) => AppUtils.formatPrice(price);
 
 HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   required BasePlanModel? selectedApiPlan,

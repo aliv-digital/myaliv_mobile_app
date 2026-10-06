@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 enum RevConfirmNavTarget { none, continueNext }
 
@@ -62,9 +63,9 @@ class RevConfirmationPrepaidState extends Equatable {
 
   double get total => (subtotal + vat - discount).clamp(0, double.infinity);
 
-  String get subtotalText => r'$ ' + subtotal.toStringAsFixed(2);
-  String get vatText => r'$ ' + vat.toStringAsFixed(2);
-  String get totalText => r'$ ' + total.toStringAsFixed(2);
+  String get subtotalText => AppUtils.formatPrice(subtotal);
+  String get vatText => AppUtils.formatPrice(vat);
+  String get totalText => AppUtils.formatPrice(total);
 
   String get headerAmountPillText => subtotalText;
 

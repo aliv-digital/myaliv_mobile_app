@@ -11,6 +11,7 @@ import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../../../router/app_routes.dart';
 import '../theme/top_up_prepaid_theme.dart';
@@ -166,7 +167,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '\$ ${amount.toStringAsFixed(2)}',
+                      AppUtils.formatPrice(amount),
                       style: const TextStyle(
                         fontFamily: 'CircularPro',
                         fontSize: 18,

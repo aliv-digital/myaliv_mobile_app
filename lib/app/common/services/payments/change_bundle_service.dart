@@ -5,6 +5,7 @@ import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_req
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_bundle.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 
@@ -22,6 +23,7 @@ class ChangeBundleService {
     required double amount,
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -29,6 +31,7 @@ class ChangeBundleService {
       cardPayment: ChangeBundleRequestFactory.walletCardPayment(amount: amount),
       bundle: bundle,
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [wallet]',
@@ -41,6 +44,7 @@ class ChangeBundleService {
     required String cardToken,
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -51,6 +55,7 @@ class ChangeBundleService {
       ),
       bundle: bundle,
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [saved-card]',
@@ -62,6 +67,7 @@ class ChangeBundleService {
     required NewCardDetails details,
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) {
@@ -72,6 +78,7 @@ class ChangeBundleService {
       ),
       bundle: bundle,
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
       logTag: 'change-bundle [new-card]',
@@ -82,6 +89,7 @@ class ChangeBundleService {
     required Map<String, dynamic> cardPayment,
     required PlanBundle bundle,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
     required String logTag,
@@ -93,6 +101,7 @@ class ChangeBundleService {
         cardPayment: cardPayment,
         bundle: bundle,
         promoCodes: promoCodes,
+        bonuses: bonuses,
         forceNow: forceNow,
         selectedBeginDate: selectedBeginDate,
       );

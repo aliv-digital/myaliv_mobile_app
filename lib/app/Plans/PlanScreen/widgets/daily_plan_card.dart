@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/data/plan_bucket_icons.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/services/plan_presentation_mapper.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../theme/theme.dart';
 
@@ -188,7 +189,7 @@ class _PricePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
-        '\$ ${finalPrice.toStringAsFixed(2)}',
+        AppUtils.formatPrice(finalPrice),
         style: HomePlanTheme.planPricePillTextStyle,
       ),
     );

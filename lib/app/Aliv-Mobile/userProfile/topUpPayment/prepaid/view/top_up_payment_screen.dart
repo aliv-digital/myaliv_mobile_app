@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
@@ -125,7 +126,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
 
   const _TopUpPaymentPrepaidScaffold({required this.state});
 
-  String _amountText(double amount) => '\$ ${amount.toStringAsFixed(2)}';
+  String _amountText(double amount) => AppUtils.formatPrice(amount);
 
   double _stickyHeaderHeight(BuildContext context) {
     const double appBarContentHeight = 64.0;

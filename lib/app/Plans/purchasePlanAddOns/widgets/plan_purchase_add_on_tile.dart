@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../PlanScreen/data/plan_icon_assets.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
+import '../../PlanScreen/models/plan_model.dart';
 import '../model/plan_purchase_add_on_models.dart';
 import '../theme/plan_purchase_plan_add_ons_theme.dart';
-import '../../PlanScreen/data/plan_icon_assets.dart';
-import '../../PlanScreen/models/plan_model.dart';
 
 //f ff
 /// PlanPurchaseAddOnTile
@@ -174,7 +177,7 @@ class _PricePill extends StatelessWidget {
         ),
       ),
       child: Text(
-        '$currencySymbol ${totalPrice.toStringAsFixed(2)}',
+        AppUtils.formatPrice(totalPrice),
         style: PlanPurchasePlanAddOnsTheme.addOnPrice,
       ),
     );

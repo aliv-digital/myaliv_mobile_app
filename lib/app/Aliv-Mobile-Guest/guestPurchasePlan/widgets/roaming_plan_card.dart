@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
@@ -72,7 +73,7 @@ class RoamingPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.title,
+                              PlanNameFormatterService.format(plan.title),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style:

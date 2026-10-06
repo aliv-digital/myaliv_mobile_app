@@ -17,6 +17,7 @@ class CallLogsRepository {
   ///
   /// Returns a list of [UsageModel] sorted by date descending.
   Future<List<UsageModel>> fetchUsages({
+    required int deviceAccountId,
     required DateTime startDate,
     required DateTime endDate,
   }) async {
@@ -25,6 +26,7 @@ class CallLogsRepository {
     }
 
     final rawJson = await _apiClient.fetchUsages(
+      deviceAccountId: deviceAccountId,
       startDate: startDate,
       endDate: endDate,
     );

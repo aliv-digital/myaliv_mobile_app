@@ -15,6 +15,10 @@ class GuestTopUpTheme {
   static const String fallbackErrorMessage = 'Something went wrong';
   static const String invalidPhoneMessage = 'invalid phone number';
   static const String phoneMismatchMessage = 'phone numbers do not match';
+  static const String accountStatusActive = 'AC';
+  static const String inactiveAccountErrorMessage = 'number is not active';
+  static const String paymentOptionPrePay = 'PrePay';
+  static const String notPrepaidErrorMessage = 'number is not prepaid';
 
   // Inline validation color for phone field errors.
   static const Color errorRed = Color(0xFFFF3B30);

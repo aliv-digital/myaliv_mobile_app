@@ -45,7 +45,10 @@ Future<void> setupCallLogsInjection() async {
   // Register Call Logs cubit as factory (new instance per screen)
   if (!instance.isRegistered<CallLogsCubit>()) {
     instance.registerFactory<CallLogsCubit>(
-      () => CallLogsCubit(repository: instance<CallLogsRepository>()),
+      () => CallLogsCubit(
+        repository: instance<CallLogsRepository>(),
+        deviceLimitsCubit: instance<DeviceLimitsCubit>(),
+      ),
     );
   }
 

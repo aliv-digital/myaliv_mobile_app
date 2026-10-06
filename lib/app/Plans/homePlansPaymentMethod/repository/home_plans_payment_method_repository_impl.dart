@@ -1,8 +1,10 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/repository/plan_bundle_mapper.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/change_bundle_result.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -68,10 +70,11 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> payFromWallet({
+  Future<int?> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
@@ -79,6 +82,7 @@ class HomePlansPaymentMethodRepositoryImpl
       amount: amount,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
@@ -86,10 +90,11 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> chargeToAccount({
+  Future<int?> chargeToAccount({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
@@ -99,6 +104,7 @@ class HomePlansPaymentMethodRepositoryImpl
       amount: amount,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
@@ -106,19 +112,25 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> payWithSavedCard({
+  Future<int?> payWithSavedCard({
     required double amount,
     required String cardToken,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
+    final isPostpaid = !instance<AccountInfoCubit>().state.isPrepaid;
     final result = await _service.payWithSavedCard(
       amount: amount,
       cardToken: cardToken,
-      bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
+      bundle: PlanBundleMapper.fromSelectedItems(
+        selectedItems,
+        isPostpaid: isPostpaid,
+      ),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
@@ -126,11 +138,12 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> payWithCardDetails({
+  Future<int?> payWithCardDetails({
     required double amount,
     required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
+    required List<PlanPurchaseBonus> bonuses,
     required bool forceNow,
     DateTime? selectedBeginDate,
   }) async {
@@ -139,19 +152,19 @@ class HomePlansPaymentMethodRepositoryImpl
       details: details,
       bundle: PlanBundleMapper.fromSelectedItems(selectedItems),
       promoCodes: promoCodes,
+      bonuses: bonuses,
       forceNow: forceNow,
       selectedBeginDate: selectedBeginDate,
     );
     return _unwrap(result);
   }
 
-  /// Converts the typed service result into the `Future<bool>` the existing
-  /// bloc expects. Failure messages bubble up as exceptions so the bloc's
-  /// `try/catch` continues to surface them on toasts.
-  bool _unwrap(ChangeBundleResult result) {
+  /// Returns the [OrderId] from a successful result, or null when the API did
+  /// not include one. Throws on failure so the bloc's try/catch surfaces it.
+  int? _unwrap(ChangeBundleResult result) {
     switch (result) {
-      case ChangeBundleSuccess():
-        return true;
+      case ChangeBundleSuccess(:final orderId):
+        return orderId;
       case ChangeBundleFailure(:final message):
         throw Exception(message);
     }
