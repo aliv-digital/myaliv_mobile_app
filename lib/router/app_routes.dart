@@ -88,6 +88,7 @@ class AppRoutes {
   static const autoRenewPrepaidScreen = '/auto-renew-prepaid-screen';
 
   static const autoRenewAuthPrepaidScreen = '/auto-renew-auth-prepaid-screen';
+  static const autoRenewAuthorizationOtp = '/auto-renew-authorization-otp';
 
   static const autoPayPostpaidScreen = '/auto-pay-postpaid-screen';
 

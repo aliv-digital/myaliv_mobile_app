@@ -12,6 +12,8 @@ import '../bloc/auto_renew_auth_prepaid_state.dart';
 import '../repository/auto_renew_auth_prepaid_repository.dart';
 import '../theme/auto_renew_auth_prepaid_theme.dart';
 import '../widgets/auth_name_input.dart';
+import '../verification/auto_renew_authorization_verification_coordinator.dart';
+import '../verification/auto_renew_authorization_submission.dart';
 
 class AutoRenewAuthPrepaidScreen extends StatelessWidget {
   final AutoRenewPaymentMethodType paymentMethod;
@@ -27,17 +29,41 @@ class AutoRenewAuthPrepaidScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ownerRoute = ModalRoute.of(context);
     return BlocProvider(
-      create: (_) =>
-          AutoRenewAuthPrepaidBloc(
-            repository: AutoRenewAuthPrepaidRepositoryImpl(),
-          )..add(
-            AutoRenewAuthPrepaidStarted(
-              paymentMethod: paymentMethod,
-              cardToken: cardToken,
-              cardLastDigits: cardLastDigits,
-            ),
+      create: (ownerContext) {
+        final coordinator = AutoRenewAuthorizationVerificationCoordinator();
+        return AutoRenewAuthPrepaidBloc(
+          repository: AutoRenewAuthPrepaidRepositoryImpl(),
+          cancelVerification: coordinator.cancel,
+          verifyAuthorization: (submission) async {
+            final result = await coordinator.verify(
+              paymentMethod: submission.paymentMethod,
+              attemptId: submission.attemptId,
+              isOwnerActive: () =>
+                  ownerContext.mounted && ownerRoute?.isActive == true,
+              openOtp: (args) {
+                if (!ownerContext.mounted || ownerRoute?.isCurrent != true) {
+                  return Future.value(null);
+                }
+                return ownerContext.push<AutoRenewAuthorizationVerifiedResult>(
+                  AppRoutes.autoRenewAuthorizationOtp,
+                  extra: args,
+                );
+              },
+            );
+            return ownerContext.mounted && ownerRoute?.isCurrent == true
+                ? result
+                : null;
+          },
+        )..add(
+          AutoRenewAuthPrepaidStarted(
+            paymentMethod: paymentMethod,
+            cardToken: cardToken,
+            cardLastDigits: cardLastDigits,
           ),
+        );
+      },
       child: const _AutoRenewAuthPrepaidView(),
     );
   }
@@ -212,7 +238,7 @@ class _Body extends StatelessWidget {
         ),
         _SubmitButton(
           enabled: state.canSubmit,
-          loading: state.submitStatus == AutoRenewAuthSubmitStatus.submitting,
+          loading: state.isSubmissionBusy,
           text: content.submitText,
           onTap: onSubmit,
         ),

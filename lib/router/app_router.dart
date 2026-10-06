@@ -61,6 +61,8 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_pl
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_route_args.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/postpaid/view/auto_pay_postpaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
@@ -309,6 +311,23 @@ class AppRouter {
             cardToken: cardToken,
             cardLastDigits: cardLastDigits,
           );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.autoRenewAuthorizationOtp,
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! AutoRenewAuthorizationOtpRouteArgs || !args.isValid) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Verification details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return AutoRenewAuthorizationOtpScreen(args: args);
         },
       ),
       GoRoute(
