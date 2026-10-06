@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 
@@ -51,7 +52,7 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
                         children: <Widget>[
                           Flexible(
                             child: Text(
-                              plan.planName,
+                              PlanNameFormatterService.format(plan.planName),
                               style: const TextStyle(
                                 fontFamily: 'CircularPro',
                                 fontSize: 18,

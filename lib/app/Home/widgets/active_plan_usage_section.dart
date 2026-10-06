@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/logic/plan_bucket_usage.dart';
@@ -70,7 +71,6 @@ class ActivePlanUsageSection extends StatelessWidget {
             );
           },
         ),
-        // need to remove view all
         _roamingSection(context),
       ],
     );
@@ -83,10 +83,8 @@ class ActivePlanUsageSection extends StatelessWidget {
     );
   }
 
-  /// One header + `RoamingCard` per standalone (roaming) plan. The section
-  /// is hidden entirely when no plan has a `roam data us/can` bucket — other
-  /// roaming buckets are intentionally suppressed on this surface, matching
-  /// the prior single-bucket behaviour.
+  /// Current standalone section header, followed by the selected plan's
+  /// name and roaming usage card.
   Widget _roamingSection(BuildContext context) {
     return BlocBuilder<BucketUsageSummaryCubit, BucketUsageSummaryState>(
       buildWhen: (a, b) =>
@@ -99,14 +97,33 @@ class ActivePlanUsageSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _SectionHeader(
+              title: 'current standalones',
+              onTap: () {
+                context.read<AppUiConfigCubit>().showCurrentPlansView();
+                context.go(AppRoutes.usage);
+              },
+            ),
+            const SizedBox(height: 12),
             for (final entry in entries) ...[
-              // fix, remove view all
-              _SectionHeader(
-                isRoamingSection: true,
-                title: entry.plan.planName.toLowerCase(),
-                onTap: () => context.go(AppRoutes.usage),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: GestureDetector(
+                  onTap: () => context.go(AppRoutes.usage),
+                  child: Text(
+                    PlanNameFormatterService.format(
+                      entry.plan.planName,
+                    ).toLowerCase(),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: RoamingCard(
@@ -273,15 +290,10 @@ class _SkeletonBox extends StatelessWidget {
 /// Title row with a trailing "view all" affordance. Both elements share the
 /// same tap target so users can hit either side of the row.
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.title,
-    required this.onTap,
-    this.isRoamingSection = false,
-  });
+  const _SectionHeader({required this.title, required this.onTap});
 
   final String title;
   final VoidCallback onTap;
-  final bool isRoamingSection;
 
   @override
   Widget build(BuildContext context) {
@@ -302,22 +314,20 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          !isRoamingSection
-              ? GestureDetector(
-                  onTap: onTap,
-                  child: const Text(
-                    'view all',
-                    style: TextStyle(
-                      color: Color(0xFF645D9C),
-                      fontSize: 13,
-                      fontFamily: 'CircularPro',
-                      fontWeight: FontWeight.w700,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Color(0xFF645D9C),
-                    ),
-                  ),
-                )
-              : SizedBox.shrink(),
+          GestureDetector(
+            onTap: onTap,
+            child: const Text(
+              'view all',
+              style: TextStyle(
+                color: Color(0xFF645D9C),
+                fontSize: 13,
+                fontFamily: 'CircularPro',
+                fontWeight: FontWeight.w700,
+                decoration: TextDecoration.underline,
+                decorationColor: Color(0xFF645D9C),
+              ),
+            ),
+          ),
         ],
       ),
     );

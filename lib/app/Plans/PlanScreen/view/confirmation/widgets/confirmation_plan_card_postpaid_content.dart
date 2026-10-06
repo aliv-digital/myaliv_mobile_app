@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
@@ -27,7 +28,7 @@ class ConfirmationPlanCardPostpaidContent extends StatelessWidget {
     final accountState = instance<AccountInfoCubit>().state;
     final userName = accountDisplayName(accountState);
     final userNumber = accountPhoneNumber(accountState);
-    final title = planTitleFor(plan);
+    final title = PlanNameFormatterService.format(planTitleFor(plan));
     final price = planPriceFor(plan);
     final typeLabel = planTypeLabelFor(plan);
     final hasBeginDate = showBeginOn == true && date != null;

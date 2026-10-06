@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
@@ -106,7 +107,9 @@ class _StandAloneFuturePlans extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: FuturePlanCard(
-                  title: futurePlans[i].planName,
+                  title: futurePlans[i].isStandAlonePlan
+                      ? PlanNameFormatterService.format(futurePlans[i].planName)
+                      : futurePlans[i].planName,
                   startDate: _formatCardDate(futurePlans[i].startDateTime),
                   endDate: _formatCardDate(futurePlans[i].endDateTime),
                   image: _planImages[i % _planImages.length],

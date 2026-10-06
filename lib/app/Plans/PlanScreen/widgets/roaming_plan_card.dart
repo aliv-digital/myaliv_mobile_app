@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
@@ -62,7 +63,7 @@ class HomePlanRoamingPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.planName,
+                              PlanNameFormatterService.format(plan.planName),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: HomePlanTheme.planCardTitleTextStyle,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../models/roaming_plan_confirmation_models.dart';
@@ -37,7 +38,7 @@ class PurchaseItemRow extends StatelessWidget {
                     RoamingPlanConfirmationTheme.purchaseItemLabelToTitleGap,
               ),
               Text(
-                item.title,
+                PlanNameFormatterService.format(item.title),
                 style: RoamingPlanConfirmationTheme.purchaseItemTitleTextStyle,
                 textHeightBehavior: const TextHeightBehavior(
                   applyHeightToFirstAscent: false,
