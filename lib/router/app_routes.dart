@@ -77,6 +77,7 @@ class AppRoutes {
   static const userProfileReceiptScreen = '/user-profile-receipt-screen';
 
   static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
+  static const reviewInvoiceOtp = '/review-invoice-otp';
   static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
 
   static const enterPasswordReviewInvoicePostpaidScreen =

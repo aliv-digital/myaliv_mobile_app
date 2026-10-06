@@ -9,7 +9,11 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/view/rev_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/view/rev_landing_prepaid_screen.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/Otp/postpaid/view/otp_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_route_observer.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_gate_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_visit_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/view/add_or_edit_cards_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
@@ -71,8 +75,6 @@ import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/success_screen.
 import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_friend_response_prepaid_screen.dart';
 import '../app/Aliv-Mobile/revBillPay/paymentMethod/prepaid/view/rev_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/view/rev_confirmation_prepaid_screen.dart';
-import '../app/Aliv-Mobile/reviewInvoices/enterPassword/postpaid/view/enter_password_postpaid_screen.dart';
-import '../app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/view/review_invoice_postpaid_screen.dart';
 import '../app/Aliv-Mobile/settings/faceIdSecurity/view/face_id_security_screen.dart';
 import '../app/Aliv-Mobile/settings/fingerPrintSecurity/view/fingerprint_security_screen.dart';
 import '../app/Aliv-Mobile/settings/help/view/help_screen.dart';
@@ -119,7 +121,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
-    observers: [historyRouteObserver],
+    observers: [historyRouteObserver, reviewInvoiceRouteObserver],
     initialLocation: AppRoutes.splash,
     routes: [
       GoRoute(
@@ -318,15 +320,28 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.otpReviewInvoicePostPaidScreen,
-        builder: (context, state) => const OtpPostpaidScreen(),
+        redirect: (context, state) => AppRoutes.reviewInvoicePostPaidScreen,
       ),
       GoRoute(
         path: AppRoutes.enterPasswordReviewInvoicePostpaidScreen,
-        builder: (context, state) => const EnterPasswordPostpaidScreen(),
+        redirect: (context, state) => AppRoutes.reviewInvoicePostPaidScreen,
       ),
       GoRoute(
         path: AppRoutes.reviewInvoicePostPaidScreen,
-        builder: (context, state) => const ReviewInvoicePostpaidScreen(),
+        builder: (context, state) => const ReviewInvoiceVisitScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.reviewInvoiceOtp,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! ReviewInvoiceOtpRouteArgs || !extra.isValid) {
+            return const ReviewInvoiceVerificationGateScreen();
+          }
+          return ReviewInvoiceOtpScreen(
+            initialMfaToken: extra.mfaToken,
+            apiPhoneNumber: extra.apiPhoneNumber,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.topUpPaymentPrepaidScreen,

@@ -3,6 +3,9 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/repository/review_invoice_postpaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/repository/services/invoice_api_client.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/repository/services/invoice_pdf_service.dart';
+import 'verification/review_invoice_challenge_cubit.dart';
+import 'verification/review_invoice_verification_repository.dart';
+import 'verification/review_invoice_verification_session.dart';
 
 /// Sets up dependency injection for Review Invoice feature.
 ///
@@ -12,6 +15,28 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/p
 /// - ReviewInvoicePostpaidRepositoryImpl (data layer)
 /// - ReviewInvoicePostpaidCubit (state management)
 Future<void> setupReviewInvoiceInjection() async {
+  if (!instance.isRegistered<ReviewInvoiceVerificationSession>()) {
+    instance.registerLazySingleton<ReviewInvoiceVerificationSession>(
+      () => ReviewInvoiceVerificationSession(),
+      dispose: (session) => session.dispose(),
+    );
+  }
+  if (!instance.isRegistered<ReviewInvoiceVerificationRepository>()) {
+    instance.registerLazySingleton<ReviewInvoiceVerificationRepository>(
+      () => ReviewInvoiceVerificationRepository(
+        networkService: instance<NetworkService>(),
+        authManager: instance<AuthManager>(),
+      ),
+    );
+  }
+  if (!instance.isRegistered<ReviewInvoiceChallengeCubit>()) {
+    instance.registerFactory<ReviewInvoiceChallengeCubit>(
+      () => ReviewInvoiceChallengeCubit(
+        repository: instance<ReviewInvoiceVerificationRepository>(),
+      ),
+    );
+  }
+
   // Register Invoice API client
   if (!instance.isRegistered<InvoiceApiClient>()) {
     instance.registerLazySingleton<InvoiceApiClient>(

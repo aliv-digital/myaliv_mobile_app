@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_session.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
@@ -26,6 +28,12 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 ///
 /// Safe to call multiple times — every step is idempotent.
 Future<void> performHardLogout() async {
+  if (instance.isRegistered<ReviewInvoiceVerificationSession>()) {
+    instance<ReviewInvoiceVerificationSession>().reset();
+  }
+  if (instance.isRegistered<ReviewInvoiceVerificationRepository>()) {
+    instance<ReviewInvoiceVerificationRepository>().reset();
+  }
   if (instance.isRegistered<CallLogsVerificationSession>()) {
     instance<CallLogsVerificationSession>().reset();
   }
