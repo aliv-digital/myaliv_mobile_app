@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import '../repository/auto_renew_auth_prepaid_repository.dart';
 
 extension AutoRenewAuthorizationOtpRequirement on AutoRenewPaymentMethodType {
@@ -21,24 +22,5 @@ class AutoRenewAuthorizationSubmission {
   final String? cardToken;
 }
 
-/// A one-use result issued only after secure session persistence completes.
-class AutoRenewAuthorizationVerifiedResult {
-  AutoRenewAuthorizationVerifiedResult({
-    required this.attemptId,
-    required this.paymentMethod,
-    required bool Function() canConsume,
-  }) : _canConsume = canConsume;
-
-  final Object attemptId;
-  final AutoRenewPaymentMethodType paymentMethod;
-  final bool Function() _canConsume;
-  bool _consumed = false;
-
-  bool consume() {
-    if (_consumed || !_canConsume()) {
-      return false;
-    }
-    _consumed = true;
-    return true;
-  }
-}
+typedef AutoRenewAuthorizationVerifiedResult =
+    ActionVerifiedResult<AutoRenewPaymentMethodType>;

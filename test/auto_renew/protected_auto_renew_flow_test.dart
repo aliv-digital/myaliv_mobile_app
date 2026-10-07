@@ -28,8 +28,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fiel
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -71,8 +70,9 @@ class _Harness {
     instance.registerSingleton<DeviceLimitsCubit>(devices);
     instance.registerSingleton<AccountInfoCubit>(account);
     instance.registerSingleton<CallLogsVerificationRepository>(challenge);
-    instance.registerSingleton<CallLogsVerificationSession>(history);
-    instance.registerSingleton<ReviewInvoiceVerificationSession>(invoices);
+    instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+      history,
+    );
     when(() => auth.currentSession).thenAnswer((_) => current);
     when(() => devices.state).thenAnswer((_) => deviceState);
     when(() => devices.stream).thenAnswer((_) => const Stream.empty());
@@ -180,8 +180,10 @@ class _Harness {
   final cards = _Cards();
   final selection = _Selection();
   final config = AppUiConfigCubit();
-  final history = CallLogsVerificationSession();
-  final invoices = ReviewInvoiceVerificationSession();
+  final history = ProtectedAccountAccessVerificationSession(
+    accountContext: () => 'test-account',
+  );
+  ProtectedAccountAccessVerificationSession get invoices => history;
   TokenSession? current = _session('old');
   DeviceLimitsState deviceState = DeviceLimitsState(
     status: DeviceLimitsStatus.loaded,

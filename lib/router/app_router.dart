@@ -23,7 +23,9 @@ import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
@@ -314,6 +316,24 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.accountActionOtp,
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! ActionOtpRouteArgs<ProtectedAccountAction> ||
+              !args.isValid) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Verification details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return ActionOtpScreen(args: args);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.autoRenewAuthorizationOtp,
         builder: (context, state) {
           final args = state.extra;
@@ -464,10 +484,6 @@ class AppRouter {
           final initialTab = destination == HistoryDestination.callLogs
               ? CallLogsTabType.callLogs
               : CallLogsTabType.transactions;
-
-          if (!instance<CallLogsVerificationSession>().isVerified) {
-            return CallLogsVerificationGateScreen(destination: destination);
-          }
 
           return CallLogsScreen(initialTab: initialTab);
         },

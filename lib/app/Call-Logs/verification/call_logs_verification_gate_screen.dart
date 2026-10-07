@@ -7,7 +7,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import 'call_logs_otp_route_args.dart';
 import 'call_logs_verification_repository.dart';
-import 'call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'history_route_observer.dart';
 
 class CallLogsVerificationGateScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class CallLogsVerificationGateScreen extends StatefulWidget {
   });
 
   final CallLogsVerificationRepository? repository;
-  final CallLogsVerificationSession? verificationSession;
+  final ProtectedAccountAccessVerificationSession? verificationSession;
   final HistoryDestination destination;
 
   @override
@@ -36,8 +36,9 @@ class _CallLogsVerificationGateScreenState
   CallLogsVerificationRepository get _repository =>
       widget.repository ?? instance<CallLogsVerificationRepository>();
 
-  CallLogsVerificationSession get _verificationSession =>
-      widget.verificationSession ?? instance<CallLogsVerificationSession>();
+  ProtectedAccountAccessVerificationSession get _verificationSession =>
+      widget.verificationSession ??
+      instance<ProtectedAccountAccessVerificationSession>();
 
   @override
   void didChangeDependencies() {
@@ -76,9 +77,13 @@ class _CallLogsVerificationGateScreenState
       return;
     }
 
+    final generation = _verificationSession.generation;
     try {
       final challenge = await _repository.requestChallenge();
       if (!mounted) return;
+      if (_verificationSession.generation != generation) {
+        return;
+      }
       if (_route?.isCurrent == false) {
         _started = false;
         return;

@@ -19,7 +19,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_session_completion_service.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/view/profile_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/profile/prepaid/widgets/profile_menu_item_tile.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
@@ -444,14 +444,21 @@ void main() {
   );
 
   test('verification authorization is memory-only and resettable', () {
-    final session = CallLogsVerificationSession();
+    final session = ProtectedAccountAccessVerificationSession(
+      accountContext: () => 'test-account',
+    );
 
     expect(session.isVerified, isFalse);
     session.markVerified();
     expect(session.isVerified, isTrue);
     session.reset();
     expect(session.isVerified, isFalse);
-    expect(CallLogsVerificationSession().isVerified, isFalse);
+    expect(
+      ProtectedAccountAccessVerificationSession(
+        accountContext: () => 'test-account',
+      ).isVerified,
+      isFalse,
+    );
   });
 
   testWidgets(
@@ -463,12 +470,14 @@ void main() {
         repository.requestChallenge,
       ).thenAnswer((_) => challengeCompleter.future);
       instance.registerSingleton<CallLogsVerificationRepository>(repository);
-      instance.registerSingleton<CallLogsVerificationSession>(
-        CallLogsVerificationSession(),
+      instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+        ProtectedAccountAccessVerificationSession(
+          accountContext: () => 'test-account',
+        ),
       );
       addTearDown(() async {
         await instance.unregister<CallLogsVerificationRepository>();
-        await instance.unregister<CallLogsVerificationSession>();
+        await instance.unregister<ProtectedAccountAccessVerificationSession>();
       });
 
       CallLogsOtpRouteArgs? receivedArgs;
@@ -541,12 +550,14 @@ void main() {
     (tester) async {
       final repository = _MockVerificationRepository();
       instance.registerSingleton<CallLogsVerificationRepository>(repository);
-      instance.registerSingleton<CallLogsVerificationSession>(
-        CallLogsVerificationSession()..markVerified(),
+      instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+        ProtectedAccountAccessVerificationSession(
+          accountContext: () => 'test-account',
+        )..markVerified(),
       );
       addTearDown(() async {
         await instance.unregister<CallLogsVerificationRepository>();
-        await instance.unregister<CallLogsVerificationSession>();
+        await instance.unregister<ProtectedAccountAccessVerificationSession>();
       });
 
       final router = GoRouter(
@@ -580,7 +591,9 @@ void main() {
     tester,
   ) async {
     final repository = _MockVerificationRepository();
-    final verificationSession = CallLogsVerificationSession();
+    final verificationSession = ProtectedAccountAccessVerificationSession(
+      accountContext: () => 'test-account',
+    );
     when(repository.requestChallenge).thenAnswer(
       (_) async => const CallLogsChallenge(
         mfaToken: 'mfa-from-challenge',
@@ -608,7 +621,9 @@ void main() {
     tester,
   ) async {
     final repository = _MockVerificationRepository();
-    final verificationSession = CallLogsVerificationSession()..markVerified();
+    final verificationSession = ProtectedAccountAccessVerificationSession(
+      accountContext: () => 'test-account',
+    )..markVerified();
     final router = _gateRouter(
       repository: repository,
       verificationSession: verificationSession,
@@ -640,7 +655,7 @@ TokenSession _session({
 
 GoRouter _gateRouter({
   required CallLogsVerificationRepository repository,
-  required CallLogsVerificationSession verificationSession,
+  required ProtectedAccountAccessVerificationSession verificationSession,
   required ValueChanged<CallLogsOtpRouteArgs> onOtp,
 }) {
   return GoRouter(

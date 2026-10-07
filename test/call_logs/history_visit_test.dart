@@ -28,7 +28,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/transaction_tile_new.dart';
@@ -113,7 +113,9 @@ class _Harness {
   _Harness({bool prepaid = true}) {
     instance.registerSingleton<NetworkService>(network);
     instance.registerSingleton<AuthManager>(auth);
-    instance.registerSingleton<CallLogsVerificationSession>(session);
+    instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+      session,
+    );
     challenge = _Challenge();
     calls = _Calls();
     transactionApi = _TransactionApi();
@@ -179,7 +181,11 @@ class _Harness {
   final network = _Network();
   final auth = _Auth();
   final devices = _Devices();
-  final session = CallLogsVerificationSession();
+  DateTime now = DateTime.utc(2026, 10, 7);
+  late final session = ProtectedAccountAccessVerificationSession(
+    accountContext: () => 'test-account',
+    now: () => now,
+  );
   late final _Challenge challenge;
   late final _Calls calls;
   late final _TransactionApi transactionApi;
@@ -591,7 +597,7 @@ void main() {
     'replacement',
     'removal',
   ]) {
-    historyTest('$exit ends the visit and next entry requires OTP', (
+    historyTest('$exit retains shared access and next entry bypasses OTP', (
       tester,
     ) async {
       final h = _Harness();
@@ -614,22 +620,24 @@ void main() {
           );
       }
       await tester.pumpAndSettle();
-      expect(h.session.isVerified, isFalse);
+      expect(h.session.isVerified, isTrue);
       await h.enter(tester, HistoryDestination.callLogs);
-      expect(h.challenge.requests, 2);
-      expect(find.byType(CallLogsOtpScreen), findsOneWidget);
+      expect(h.challenge.requests, 1);
+      expect(find.byType(CallLogsOtpScreen), findsNothing);
+      expect(find.text('history'), findsOneWidget);
     });
   }
 
   historyTest(
-    'pushed outside page ends visit; return and cancel cannot expose old data',
+    'retained History rechecks expiry on return and OTP cancellation hides data',
     (tester) async {
       final h = _Harness();
       await h.pump(tester);
       await h.authorize(tester, HistoryDestination.transactions);
       h.router.push('/other');
       await tester.pumpAndSettle();
-      expect(h.session.isVerified, isFalse);
+      expect(h.session.isVerified, isTrue);
+      h.now = h.now.add(const Duration(minutes: 20));
       expect(h.challenge.requests, 1);
       h.router.pop();
       await tester.pumpAndSettle();
@@ -731,7 +739,7 @@ void main() {
 
   for (final complete in [false, true]) {
     historyTest(
-      'iOS interactive Back ${complete ? 'completion ends' : 'cancellation retains'} visit',
+      'iOS interactive Back ${complete ? 'completion retains access' : 'cancellation retains'} visit',
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
@@ -750,7 +758,7 @@ void main() {
           await gesture.cancel();
         }
         await tester.pumpAndSettle();
-        expect(h.session.isVerified, !complete);
+        expect(h.session.isVerified, isTrue);
         expect(find.text('history'), complete ? findsNothing : findsOneWidget);
       },
     );
@@ -767,13 +775,12 @@ void main() {
               as PageRoute<dynamic>;
       h.router.push('/other');
       await tester.pumpAndSettle();
-      await h.authorize(tester, HistoryDestination.callLogs);
+      await h.enter(tester, HistoryDestination.callLogs);
       rootNavigatorKey.currentState!.removeRoute(oldRoute);
       await tester.pumpAndSettle();
-      historyRouteObserver.endVisit(oldRoute);
       expect(h.session.isVerified, isTrue);
       expect(find.text('history'), findsOneWidget);
-      expect(h.challenge.requests, 2);
+      expect(h.challenge.requests, 1);
     },
   );
 
@@ -802,58 +809,57 @@ void main() {
   );
 
   test('cold verification session starts unverified', () {
-    final previous = CallLogsVerificationSession()..markVerified();
+    final previous = ProtectedAccountAccessVerificationSession(
+      accountContext: () => 'test-account',
+    )..markVerified();
     expect(previous.isVerified, isTrue);
-    expect(CallLogsVerificationSession().isVerified, isFalse);
+    expect(
+      ProtectedAccountAccessVerificationSession(
+        accountContext: () => 'test-account',
+      ).isVerified,
+      isFalse,
+    );
   });
 
-  test('observer ignores popups and a cancelled interactive Back', () {
-    final observer = HistoryRouteObserver();
-    final history = MaterialPageRoute<void>(builder: (_) => const SizedBox());
-    var ends = 0;
-    observer.watchVisit(history, () => ends++);
-    final popup = _Popup();
-    observer.didPush(popup, history);
-    observer.didPop(popup, history);
-    observer.didStartUserGesture(history, null);
-    observer.didStopUserGesture();
-    expect(ends, 0);
-    observer.didPop(history, null);
-    expect(ends, 1);
-  });
+  historyTest(
+    'active expired History stays visible, but next entry requires OTP',
+    (tester) async {
+      final h = _Harness();
+      await h.pump(tester);
+      await h.authorize(tester, HistoryDestination.transactions);
+      final expiry = h.session.expiresAt;
+      h.now = h.now.add(const Duration(minutes: 20));
+      tester.element(find.byType(CallLogsScreen)).markNeedsBuild();
+      await tester.pumpAndSettle();
+      expect(find.byType(TransactionTileNew), findsWidgets);
+      await tester.tap(find.text('call logs'));
+      await tester.pumpAndSettle();
+      expect(find.byType(CallLogsOtpScreen), findsNothing);
+      expect(h.session.expiresAt, expiry);
+      h.router.pop();
+      await tester.pumpAndSettle();
+      await h.enter(tester, HistoryDestination.transactions);
+      expect(find.byType(CallLogsOtpScreen), findsOneWidget);
+      expect(h.challenge.requests, 2);
+    },
+  );
 
-  test('stale removal/disposal cannot end a newer History visit', () {
-    final observer = HistoryRouteObserver();
-    final old = MaterialPageRoute<void>(builder: (_) => const SizedBox());
-    final outside = MaterialPageRoute<void>(builder: (_) => const SizedBox());
-    final current = MaterialPageRoute<void>(builder: (_) => const SizedBox());
-    var oldEnds = 0;
-    var currentEnds = 0;
-    observer.watchVisit(old, () => oldEnds++);
-    observer.didPush(outside, old);
-    observer.watchVisit(current, () => currentEnds++);
-    observer.didRemove(old, null);
-    observer.endVisit(old);
-    expect(oldEnds, 1);
-    expect(currentEnds, 0);
-    observer.didReplace(oldRoute: current, newRoute: outside);
-    expect(currentEnds, 1);
-  });
-}
-
-class _Popup extends PopupRoute<void> {
-  @override
-  Color? get barrierColor => null;
-  @override
-  bool get barrierDismissible => true;
-  @override
-  String? get barrierLabel => 'test popup';
-  @override
-  Duration get transitionDuration => Duration.zero;
-  @override
-  Widget buildPage(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-  ) => const SizedBox();
+  historyTest(
+    'retained History return within window preserves data and expiry',
+    (tester) async {
+      final h = _Harness();
+      await h.pump(tester);
+      await h.authorize(tester, HistoryDestination.transactions);
+      final expiry = h.session.expiresAt;
+      h.router.push('/other');
+      await tester.pumpAndSettle();
+      h.now = h.now.add(const Duration(minutes: 19));
+      h.router.pop();
+      await tester.pumpAndSettle();
+      expect(find.byType(TransactionTileNew), findsWidgets);
+      expect(find.byType(CallLogsOtpScreen), findsNothing);
+      expect(h.challenge.requests, 1);
+      expect(h.session.expiresAt, expiry);
+    },
+  );
 }

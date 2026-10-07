@@ -5,7 +5,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/p
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/repository/services/invoice_pdf_service.dart';
 import 'verification/review_invoice_challenge_cubit.dart';
 import 'verification/review_invoice_verification_repository.dart';
-import 'verification/review_invoice_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 
 /// Sets up dependency injection for Review Invoice feature.
 ///
@@ -15,9 +15,9 @@ import 'verification/review_invoice_verification_session.dart';
 /// - ReviewInvoicePostpaidRepositoryImpl (data layer)
 /// - ReviewInvoicePostpaidCubit (state management)
 Future<void> setupReviewInvoiceInjection() async {
-  if (!instance.isRegistered<ReviewInvoiceVerificationSession>()) {
-    instance.registerLazySingleton<ReviewInvoiceVerificationSession>(
-      () => ReviewInvoiceVerificationSession(),
+  if (!instance.isRegistered<ProtectedAccountAccessVerificationSession>()) {
+    instance.registerLazySingleton<ProtectedAccountAccessVerificationSession>(
+      () => ProtectedAccountAccessVerificationSession(),
       dispose: (session) => session.dispose(),
     );
   }

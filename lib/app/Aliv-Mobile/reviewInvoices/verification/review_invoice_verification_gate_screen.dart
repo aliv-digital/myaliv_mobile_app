@@ -9,7 +9,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'review_invoice_challenge_cubit.dart';
 import 'review_invoice_otp_route_args.dart';
 import 'review_invoice_route_observer.dart';
-import 'review_invoice_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 
 class ReviewInvoiceVerificationGateScreen extends StatefulWidget {
   const ReviewInvoiceVerificationGateScreen({super.key});
@@ -22,7 +22,7 @@ class ReviewInvoiceVerificationGateScreen extends StatefulWidget {
 class _ReviewInvoiceVerificationGateScreenState
     extends State<ReviewInvoiceVerificationGateScreen>
     with RouteAware {
-  late final ReviewInvoiceVerificationSession _session;
+  late final ProtectedAccountAccessVerificationSession _session;
   late final int _generation;
   late final ReviewInvoiceChallengeCubit _cubit;
   PageRoute<dynamic>? _route;
@@ -31,7 +31,7 @@ class _ReviewInvoiceVerificationGateScreenState
   @override
   void initState() {
     super.initState();
-    _session = instance<ReviewInvoiceVerificationSession>();
+    _session = instance<ProtectedAccountAccessVerificationSession>();
     _generation = _session.generation;
     _cubit = instance<ReviewInvoiceChallengeCubit>();
   }
@@ -56,6 +56,11 @@ class _ReviewInvoiceVerificationGateScreenState
       if (!mounted ||
           _route?.isCurrent != true ||
           _session.generation != _generation) {
+        return;
+      }
+      if (_session.isVerified) {
+        _navigating = true;
+        context.pushReplacement(AppRoutes.reviewInvoicePostPaidScreen);
         return;
       }
       // BlocListener is attached before this post-frame request. A result

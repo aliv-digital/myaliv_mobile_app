@@ -14,9 +14,9 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_repository.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_session_completion_service.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_access_session_completion_service.dart';
 import 'review_invoice_verification_repository.dart';
-import 'review_invoice_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 
 class ReviewInvoiceOtpScreen extends StatelessWidget {
   const ReviewInvoiceOtpScreen({
@@ -37,7 +37,7 @@ class ReviewInvoiceOtpScreen extends StatelessWidget {
               instance<ReviewInvoiceVerificationRepository>(),
         ),
         appUiConfigCubit: context.read<AppUiConfigCubit>(),
-        authCompletionService: CallLogsSessionCompletionService(),
+        authCompletionService: ProtectedAccessSessionCompletionService(),
         analyticsService: _ReviewInvoiceNoOpAnalyticsService(),
         initialMfaToken: initialMfaToken,
         initialPhoneNumber: apiPhoneNumber,
@@ -59,13 +59,13 @@ class _ReviewInvoiceOtpView extends StatefulWidget {
 }
 
 class _ReviewInvoiceOtpViewState extends State<_ReviewInvoiceOtpView> {
-  late final ReviewInvoiceVerificationSession _session;
+  late final ProtectedAccountAccessVerificationSession _session;
   late final int _generation;
 
   @override
   void initState() {
     super.initState();
-    _session = instance<ReviewInvoiceVerificationSession>();
+    _session = instance<ProtectedAccountAccessVerificationSession>();
     _generation = _session.generation;
   }
 
@@ -88,7 +88,6 @@ class _ReviewInvoiceOtpViewState extends State<_ReviewInvoiceOtpView> {
                 return;
               }
               // LoginOtpBloc emits success only after saveSession completes.
-              _session.markVerified();
               AppToast.show(
                 message: 'Verification successful.',
                 type: ToastType.success,

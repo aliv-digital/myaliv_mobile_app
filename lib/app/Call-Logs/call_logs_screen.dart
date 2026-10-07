@@ -6,7 +6,7 @@ import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_access_entry.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
 
 import 'verification/call_logs_otp_route_args.dart';
@@ -27,64 +27,16 @@ class CallLogsScreen extends StatefulWidget {
   State<CallLogsScreen> createState() => _CallLogsScreenState();
 }
 
-class _CallLogsScreenState extends State<CallLogsScreen> with RouteAware {
-  PageRoute<dynamic>? _route;
-  bool _visitEnded = false;
-
-  CallLogsVerificationSession get _session =>
-      instance<CallLogsVerificationSession>();
-
+class _CallLogsScreenState extends State<CallLogsScreen> {
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final route = ModalRoute.of(context);
-    if (route is PageRoute<dynamic> && !identical(route, _route)) {
-      historyRouteObserver.unsubscribe(this);
-      _route = route;
-      historyRouteObserver.subscribe(this, route);
-    }
-    if (!_visitEnded && _session.isVerified && _route?.isCurrent == true) {
-      historyRouteObserver.watchVisit(_route!, _endVisit);
-    }
-  }
-
-  void _endVisit() {
-    _session.reset();
-    _visitEnded = true;
-    _refreshAfterNavigation();
-  }
-
-  @override
-  void didPopNext() => _refreshAfterNavigation();
-
-  void _refreshAfterNavigation() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    historyRouteObserver.unsubscribe(this);
-    final route = _route;
-    if (route != null) {
-      historyRouteObserver.endVisit(route);
-    }
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_visitEnded || !_session.isVerified) {
-      return CallLogsVerificationGateScreen(
-        destination: widget.initialTab == CallLogsTabType.transactions
-            ? HistoryDestination.transactions
-            : HistoryDestination.callLogs,
-      );
-    }
-    return MultiBlocProvider(
+  Widget build(BuildContext context) => ProtectedAccessEntry(
+    observer: historyRouteObserver,
+    gate: CallLogsVerificationGateScreen(
+      destination: widget.initialTab == CallLogsTabType.transactions
+          ? HistoryDestination.transactions
+          : HistoryDestination.callLogs,
+    ),
+    child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<CallLogsCubit>()..fetchUsages()),
         BlocProvider(
@@ -92,8 +44,8 @@ class _CallLogsScreenState extends State<CallLogsScreen> with RouteAware {
         ),
       ],
       child: _CallLogsView(initialTab: widget.initialTab),
-    );
-  }
+    ),
+  );
 }
 
 class _CallLogsView extends StatefulWidget {

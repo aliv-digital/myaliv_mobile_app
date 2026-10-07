@@ -29,14 +29,13 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/re
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_gate_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_visit_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/view/purchase_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
@@ -107,8 +106,9 @@ class _Harness {
   _Harness({bool prepaid = false}) {
     instance.registerSingleton<NetworkService>(network);
     instance.registerSingleton<AuthManager>(auth);
-    instance.registerSingleton<ReviewInvoiceVerificationSession>(session);
-    instance.registerSingleton<CallLogsVerificationSession>(history);
+    instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+      session,
+    );
     when(() => auth.currentSession).thenReturn(_token());
     when(
       () => auth.refreshIfNeeded(),
@@ -190,7 +190,7 @@ class _Harness {
     instance.registerFactory<ReviewInvoicePostpaidCubit>(() {
       constructions++;
       expect(session.isVerified, isTrue);
-      expect(saveCompleted, isTrue);
+      expect(saveCompleted || saves == 0, isTrue);
       return ReviewInvoicePostpaidCubit(
         repository: ReviewInvoicePostpaidRepositoryImpl(
           apiClient: api,
@@ -211,8 +211,12 @@ class _Harness {
   final auth = _Auth();
   final pdf = _Pdf();
   final internet = _Internet(true);
-  final session = ReviewInvoiceVerificationSession();
-  final history = CallLogsVerificationSession();
+  DateTime now = DateTime.utc(2026, 10, 7);
+  late final session = ProtectedAccountAccessVerificationSession(
+    accountContext: () => 'test-account',
+    now: () => now,
+  );
+  ProtectedAccountAccessVerificationSession get history => session;
   late final ReviewInvoiceVerificationRepository repository;
   late final _InvoiceApi api;
   late final AppUiConfigCubit uiConfig;
@@ -277,9 +281,11 @@ class _Harness {
               ),
               GoRoute(
                 path: AppRoutes.callLogs,
-                builder: (_, _) => const CallLogsVerificationGateScreen(
-                  destination: HistoryDestination.transactions,
-                ),
+                builder: (_, _) => session.isVerified
+                    ? const Scaffold(body: Text('verified History'))
+                    : const CallLogsVerificationGateScreen(
+                        destination: HistoryDestination.transactions,
+                      ),
               ),
               GoRoute(
                 path: AppRoutes.callLogsOtp,
@@ -406,7 +412,7 @@ void main() {
       expect(h.saves, 1);
       expect(h.constructions, 1);
       expect(h.api.loads, 1);
-      expect(h.history.isVerified, isFalse);
+      expect(h.history.isVerified, isTrue);
       expect(
         GoRouterState.of(
           tester.element(find.byType(ReviewInvoiceVisitScreen)),
@@ -593,24 +599,26 @@ void main() {
     await h.finish(tester);
   });
 
-  invoiceTest('History verification cannot unlock invoices', (tester) async {
+  invoiceTest('History verification unlocks invoices within the fixed window', (
+    tester,
+  ) async {
     final h = _Harness()..history.markVerified();
     await h.pump(tester);
     await h.enter(tester);
-    expect(find.byType(ReviewInvoiceOtpScreen), findsOneWidget);
-    expect(h.challenges, 1);
-    expect(h.api.loads, 0);
+    expect(find.byType(ReviewInvoiceOtpScreen), findsNothing);
+    expect(h.challenges, 0);
+    expect(h.api.loads, 1);
   });
 
-  invoiceTest('Invoice verification cannot unlock History', (tester) async {
+  invoiceTest('Invoice verification unlocks History', (tester) async {
     final h = _Harness();
     await h.pump(tester);
     await h.authorize(tester);
     h.router.push(HistoryDestination.transactions.location);
     await tester.pumpAndSettle();
-    expect(h.history.isVerified, isFalse);
-    expect(find.byType(CallLogsOtpScreen), findsOneWidget);
-    expect(h.challenges, 2);
+    expect(h.history.isVerified, isTrue);
+    expect(find.byType(CallLogsOtpScreen), findsNothing);
+    expect(h.challenges, 1);
   });
 
   invoiceTest(
@@ -668,7 +676,7 @@ void main() {
     'replacement',
     'removal',
   ]) {
-    invoiceTest('$exit ends invoice visit; next entry requires OTP again', (
+    invoiceTest('$exit retains shared access; next entry needs no OTP', (
       tester,
     ) async {
       final h = _Harness();
@@ -689,25 +697,30 @@ void main() {
               tester.element(find.byType(ReviewInvoiceVisitScreen)),
             )!,
           );
+          // Keep GoRouter's declarative page list in sync with native removal
+          // instead of resurrecting the removed page on the next router push.
+          h.router.go('/other');
       }
       await tester.pumpAndSettle();
-      expect(h.session.isVerified, isFalse);
+      expect(h.session.isVerified, isTrue);
+      final loadsBeforeEntry = h.api.loads;
       await h.enter(tester);
-      expect(h.challenges, 2);
-      expect(find.byType(ReviewInvoiceOtpScreen), findsOneWidget);
-      expect(h.api.loads, 1);
+      expect(h.challenges, 1);
+      expect(find.byType(ReviewInvoiceOtpScreen), findsNothing);
+      expect(h.api.loads, loadsBeforeEntry + 1);
     });
   }
 
   invoiceTest(
-    'outside push invalidates; retained return and OTP cancel cannot expose invoices',
+    'retained invoice entry after expiry requires OTP and cancel hides invoices',
     (tester) async {
       final h = _Harness();
       await h.pump(tester);
       await h.authorize(tester);
       h.router.push('/other');
       await tester.pumpAndSettle();
-      expect(h.session.isVerified, isFalse);
+      expect(h.session.isVerified, isTrue);
+      h.now = h.now.add(const Duration(minutes: 20));
       expect(h.challenges, 1);
       h.router.pop();
       await tester.pumpAndSettle();
@@ -718,6 +731,47 @@ void main() {
       await tester.pumpAndSettle();
       expect(h.session.isVerified, isFalse);
       expect(find.byType(InvoiceTile), findsNothing);
+      expect(h.api.loads, 1);
+    },
+  );
+
+  invoiceTest(
+    'active expiry does not eject invoices, but next entry requires OTP',
+    (tester) async {
+      final h = _Harness();
+      await h.pump(tester);
+      await h.authorize(tester);
+      final expiry = h.session.expiresAt;
+      h.now = h.now.add(const Duration(minutes: 20));
+      tester.element(find.byType(ReviewInvoiceVisitScreen)).markNeedsBuild();
+      await tester.pumpAndSettle();
+      expect(find.byType(InvoiceTile), findsWidgets);
+      expect(find.byType(ReviewInvoiceOtpScreen), findsNothing);
+      expect(h.session.expiresAt, expiry);
+      h.router.pop();
+      await tester.pumpAndSettle();
+      await h.enter(tester);
+      expect(find.byType(ReviewInvoiceOtpScreen), findsOneWidget);
+      expect(h.challenges, 2);
+    },
+  );
+
+  invoiceTest(
+    'retained invoice return within window preserves the grant and data',
+    (tester) async {
+      final h = _Harness();
+      await h.pump(tester);
+      await h.authorize(tester);
+      final expiry = h.session.expiresAt;
+      h.router.push('/other');
+      await tester.pumpAndSettle();
+      h.now = h.now.add(const Duration(minutes: 19));
+      h.router.pop();
+      await tester.pumpAndSettle();
+      expect(find.byType(InvoiceTile), findsWidgets);
+      expect(find.byType(ReviewInvoiceOtpScreen), findsNothing);
+      expect(h.session.expiresAt, expiry);
+      expect(h.challenges, 1);
       expect(h.api.loads, 1);
     },
   );
@@ -756,7 +810,7 @@ void main() {
 
   for (final complete in [false, true]) {
     invoiceTest(
-      'iOS Back gesture ${complete ? 'completion resets' : 'cancellation retains'} authorization',
+      'iOS Back gesture ${complete ? 'completion retains' : 'cancellation retains'} authorization',
       (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
         final h = _Harness();
@@ -774,7 +828,7 @@ void main() {
           await gesture.cancel();
         }
         await tester.pumpAndSettle();
-        expect(h.session.isVerified, !complete);
+        expect(h.session.isVerified, isTrue);
         expect(
           find.byType(ReviewInvoicePostpaidScreen),
           complete ? findsNothing : findsOneWidget,
@@ -794,17 +848,16 @@ void main() {
               as PageRoute<dynamic>;
       h.router.push('/other');
       await tester.pumpAndSettle();
-      await h.authorize(tester);
+      await h.enter(tester);
       rootNavigatorKey.currentState!.removeRoute(old);
       await tester.pumpAndSettle();
-      reviewInvoiceRouteObserver.endVisit(old);
       expect(h.session.isVerified, isTrue);
       expect(find.byType(ReviewInvoicePostpaidScreen), findsOneWidget);
-      expect(h.challenges, 2);
+      expect(h.challenges, 1);
     },
   );
 
-  invoiceTest('hard logout resets invoice and History independently', (
+  invoiceTest('hard logout resets the single shared History/Invoice session', (
     tester,
   ) async {
     final h = _Harness();
@@ -854,33 +907,40 @@ void main() {
     },
   );
 
-  test(
-    'authorization is resettable, memory-only and independent of History',
-    () {
-      final invoices = ReviewInvoiceVerificationSession();
-      final history = CallLogsVerificationSession()..markVerified();
-      expect(invoices.isVerified, isFalse);
-      invoices.markVerified();
-      history.reset();
-      expect(invoices.isVerified, isTrue);
-      invoices.reset();
-      expect(invoices.isVerified, isFalse);
-      final cold = ReviewInvoiceVerificationSession();
-      expect(cold.isVerified, isFalse);
-      invoices.dispose();
-      cold.dispose();
-    },
-  );
+  test('authorization is resettable, memory-only with no disk restoration', () {
+    final invoices = ProtectedAccountAccessVerificationSession(
+      accountContext: () => 'test-account',
+    );
+    final history = invoices..markVerified();
+    expect(invoices.isVerified, isTrue);
+    invoices.markVerified();
+    history.reset();
+    expect(invoices.isVerified, isFalse);
+    invoices.reset();
+    expect(invoices.isVerified, isFalse);
+    final cold = ProtectedAccountAccessVerificationSession(
+      accountContext: () => 'test-account',
+    );
+    expect(cold.isVerified, isFalse);
+    invoices.dispose();
+    cold.dispose();
+  });
 
   test(
-    'injection registers independent Invoice state and short-lived gate Cubits',
+    'injection registers shared access state and short-lived gate Cubits',
     () async {
       instance.registerSingleton<NetworkService>(_Network());
       instance.registerSingleton<AuthManager>(_Auth());
       await setupReviewInvoiceInjection();
       await setupReviewInvoiceInjection();
-      expect(instance<ReviewInvoiceVerificationSession>().isVerified, isFalse);
-      expect(instance.isRegistered<CallLogsVerificationSession>(), isFalse);
+      expect(
+        instance<ProtectedAccountAccessVerificationSession>().isVerified,
+        isFalse,
+      );
+      expect(
+        instance.isRegistered<ProtectedAccountAccessVerificationSession>(),
+        isTrue,
+      );
       final first = instance<ReviewInvoiceChallengeCubit>();
       final second = instance<ReviewInvoiceChallengeCubit>();
       expect(identical(first, second), isFalse);

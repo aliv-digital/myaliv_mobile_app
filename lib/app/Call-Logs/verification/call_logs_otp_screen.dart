@@ -14,9 +14,9 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 import 'call_logs_otp_repository.dart';
 import 'call_logs_otp_route_args.dart';
-import 'call_logs_session_completion_service.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_access_session_completion_service.dart';
 import 'call_logs_verification_repository.dart';
-import 'call_logs_verification_session.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 
 class CallLogsOtpScreen extends StatelessWidget {
   const CallLogsOtpScreen({
@@ -38,7 +38,7 @@ class CallLogsOtpScreen extends StatelessWidget {
           verificationRepository: instance<CallLogsVerificationRepository>(),
         ),
         appUiConfigCubit: context.read<AppUiConfigCubit>(),
-        authCompletionService: CallLogsSessionCompletionService(),
+        authCompletionService: ProtectedAccessSessionCompletionService(),
         analyticsService: _CallLogsNoOpAnalyticsService(),
         initialMfaToken: initialMfaToken,
         initialPhoneNumber: apiPhoneNumber,
@@ -52,10 +52,25 @@ class CallLogsOtpScreen extends StatelessWidget {
   }
 }
 
-class _CallLogsOtpView extends StatelessWidget {
+class _CallLogsOtpView extends StatefulWidget {
   const _CallLogsOtpView({required this.destination});
 
   final HistoryDestination destination;
+
+  @override
+  State<_CallLogsOtpView> createState() => _CallLogsOtpViewState();
+}
+
+class _CallLogsOtpViewState extends State<_CallLogsOtpView> {
+  late final ProtectedAccountAccessVerificationSession _session;
+  late final int _generation;
+
+  @override
+  void initState() {
+    super.initState();
+    _session = instance<ProtectedAccountAccessVerificationSession>();
+    _generation = _session.generation;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +88,14 @@ class _CallLogsOtpView extends StatelessWidget {
               if (ModalRoute.of(context)?.isCurrent == false) {
                 return;
               }
-              instance<CallLogsVerificationSession>().markVerified();
+              if (!_session.isVerified || _session.generation != _generation) {
+                return;
+              }
               AppToast.show(
                 message: 'Verification successful.',
                 type: ToastType.success,
               );
-              context.pushReplacement(destination.location);
+              context.pushReplacement(widget.destination.location);
             }
 
             if (state.status == LoginOtpStatus.failure &&
