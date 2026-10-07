@@ -1,12 +1,9 @@
-import 'dart:async' show unawaited;
-
 import 'package:core/core.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/repository/services/role_api_client.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
@@ -67,9 +64,12 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
       (d) => PhoneDropdownHelper.stripTnSuffix(d.tn) == value,
       orElse: () => devices.first,
     );
-    context.read<AppUiConfigCubit>().switchToDevice(target.deviceId);
+    if (target.parentAccountId == 0) {
+      context.read<AppUiConfigCubit>().resetToOwnDevice();
+    } else {
+      context.read<AppUiConfigCubit>().switchToDevice(target.deviceId);
+    }
     _reloadData(target.deviceId);
-    unawaited(_applyRole(target));
   }
 
   void _reloadData(int deviceId) {
@@ -86,20 +86,6 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
     if (uiConfig.isPostpaid) {
       instance<ConsumptionLimitCubit>().loadLimits(deviceAccountId: deviceId, forceRefresh: true);
     }
-  }
-
-  Future<void> _applyRole(DeviceLimitsModel device) async {
-    final roleId = await instance<RoleApiClient>().fetchRoleId(device.deviceId);
-    if (!mounted) return;
-    final LineRole lineRole;
-    if (device.parentAccountId == 0) {
-      lineRole = LineRole.parent;
-    } else if (roleId == 4) {
-      lineRole = LineRole.fullAccess;
-    } else {
-      lineRole = LineRole.readOnly;
-    }
-    context.read<AppUiConfigCubit>().setLineRole(lineRole);
   }
 
   @override
