@@ -83,12 +83,25 @@ Future<void> showHomePlanPurchaseBottomSheet({
 
       if (hasActivePlan) {
         final endDateText = chainStartDate != null
-            ? ' on ${DateFormat('dd-MM-yy').format(chainStartDate)}'
+            ? ' on ${DateFormat('MM-dd-yy').format(chainStartDate)}'
             : '';
+
+        final standAloneFuturePlanMessage =
+            'you can activate your plan when your current plan ends$endDateText.';
+        final activePlanMessage =
+            'activating now replaces your current plan. '
+            'you can also activate your plan when your current plan ends$endDateText.';
+
+        final hasStandAloneAndFuturePlan =
+            !plansState.hasActivePrimaryPlan &&
+            plansState.standAlonePlans.isNotEmpty &&
+            plansState.hasFuturePlans;
+        final warningText = hasStandAloneAndFuturePlan
+            ? standAloneFuturePlanMessage
+            : activePlanMessage;
+
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
-          warningText: 'activating now replaces your current plan. '
-              'you can also activate your plan '
-              'when your current plan ends$endDateText.',
+          warningText: warningText,
           planName: plan.title,
           planDurationText: plan.subtitle,
           planPriceText: _priceText(plan.price),
