@@ -58,8 +58,9 @@ class HomeUiConfig {
       isCurrentPlan: isCurrentPlan ?? this.isCurrentPlan,
       lineRole: lineRole ?? this.lineRole,
       isViewingChildLine: isViewingChildLine ?? this.isViewingChildLine,
-      activeDeviceId:
-          clearActiveDeviceId ? null : (activeDeviceId ?? this.activeDeviceId),
+      activeDeviceId: clearActiveDeviceId
+          ? null
+          : (activeDeviceId ?? this.activeDeviceId),
     );
   }
 }

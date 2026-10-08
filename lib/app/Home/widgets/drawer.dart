@@ -33,8 +33,7 @@ class AppMenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRestricted =
-        context.read<AppUiConfigCubit>().state.isRestricted;
+    final isRestricted = context.read<AppUiConfigCubit>().state.isRestricted;
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,

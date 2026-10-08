@@ -28,11 +28,15 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
   // Selected TN is derived from AppUiConfigCubit.activeDeviceId — a top-level
   // provider that survives bottom-tab navigation, so no local state is needed.
 
-  String _resolveSelected(HomeUiConfig config, List<DeviceLimitsModel> devices) {
+  String _resolveSelected(
+    HomeUiConfig config,
+    List<DeviceLimitsModel> devices,
+  ) {
     final activeId = config.activeDeviceId;
     if (activeId != null) {
       final matches = devices.where((d) => d.deviceId == activeId);
-      if (matches.isNotEmpty) return PhoneDropdownHelper.stripTnSuffix(matches.first.tn);
+      if (matches.isNotEmpty)
+        return PhoneDropdownHelper.stripTnSuffix(matches.first.tn);
     }
     return PhoneDropdownHelper.getPrimaryPhone(
       instance<AccountInfoCubit>().state.accountInfo,
@@ -45,17 +49,28 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
           context: context,
           builder: (ctx) => AlertDialog(
             title: const Text('switch phone number'),
-            content: const Text('Are you sure you would like to switch phone numbers?'),
+            content: const Text(
+              'Are you sure you would like to switch phone numbers?',
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('no')),
-              ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('yes')),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('no'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('yes'),
+              ),
             ],
           ),
         ) ??
         false;
   }
 
-  Future<void> _onSelected(String value, List<DeviceLimitsModel> devices) async {
+  Future<void> _onSelected(
+    String value,
+    List<DeviceLimitsModel> devices,
+  ) async {
     final config = context.read<AppUiConfigCubit>().state;
     if (value == _resolveSelected(config, devices)) return;
     if (!await _confirmSwitch() || !mounted) return;
@@ -74,8 +89,14 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
 
   void _reloadData(int deviceId) {
     final uiConfig = context.read<AppUiConfigCubit>().state;
-    instance<BalanceCubit>().loadBalances(deviceAccountId: deviceId, forceRefresh: true);
-    instance<PlansCubit>().loadInitialPlans(userType: uiConfig.userType, forceRefresh: true);
+    instance<BalanceCubit>().loadBalances(
+      deviceAccountId: deviceId,
+      forceRefresh: true,
+    );
+    instance<PlansCubit>().loadInitialPlans(
+      userType: uiConfig.userType,
+      forceRefresh: true,
+    );
     final plansState = instance<PlansCubit>().state;
     instance<BucketUsageSummaryCubit>().loadBucketUsageSummary(
       deviceAccountId: deviceId,
@@ -84,7 +105,10 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
       forceRefresh: true,
     );
     if (uiConfig.isPostpaid) {
-      instance<ConsumptionLimitCubit>().loadLimits(deviceAccountId: deviceId, forceRefresh: true);
+      instance<ConsumptionLimitCubit>().loadLimits(
+        deviceAccountId: deviceId,
+        forceRefresh: true,
+      );
     }
   }
 
@@ -96,8 +120,14 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
       builder: (context, deviceState) {
         final accountInfo = instance<AccountInfoCubit>().state.accountInfo;
         final devices = deviceState.allDeviceLimits;
-        final visibleNumbers = PhoneDropdownHelper.getVisibleNumbers(accountInfo, devices);
-        final primaryPhone = PhoneDropdownHelper.getPrimaryPhone(accountInfo, devices);
+        final visibleNumbers = PhoneDropdownHelper.getVisibleNumbers(
+          accountInfo,
+          devices,
+        );
+        final primaryPhone = PhoneDropdownHelper.getPrimaryPhone(
+          accountInfo,
+          devices,
+        );
 
         return BlocBuilder<AppUiConfigCubit, HomeUiConfig>(
           buildWhen: (prev, curr) => prev.activeDeviceId != curr.activeDeviceId,
@@ -124,14 +154,20 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                     menuItemStyleData: MenuItemStyleData(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       selectedMenuItemBuilder: (ctx, child) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         child: PhoneDropdownSelectedItem(
                           number: effectiveSelected,
                           isPrimary: effectiveSelected == primaryPhone,
                         ),
                       ),
                     ),
-                    buttonStyleData: const ButtonStyleData(padding: EdgeInsets.zero, height: 48),
+                    buttonStyleData: const ButtonStyleData(
+                      padding: EdgeInsets.zero,
+                      height: 48,
+                    ),
                     dropdownStyleData: DropdownStyleData(
                       offset: const Offset(-16, -4),
                       maxHeight: 250,
@@ -153,21 +189,28 @@ class _PhoneDropdownState extends State<PhoneDropdown> {
                       fontWeight: FontWeight.w500,
                     ),
                     items: visibleNumbers
-                        .map((n) => DropdownItem<String>(
-                              value: n,
-                              height: 48,
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: PhoneDropdownItem(number: n, isPrimary: n == primaryPhone),
+                        .map(
+                          (n) => DropdownItem<String>(
+                            value: n,
+                            height: 48,
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: PhoneDropdownItem(
+                                number: n,
+                                isPrimary: n == primaryPhone,
                               ),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                     selectedItemBuilder: (context) => visibleNumbers
-                        .map((n) => PhoneDropdownItem(
-                              number: n,
-                              isPrimary: n == primaryPhone,
-                              showTrailing: false,
-                            ))
+                        .map(
+                          (n) => PhoneDropdownItem(
+                            number: n,
+                            isPrimary: n == primaryPhone,
+                            showTrailing: false,
+                          ),
+                        )
                         .toList(),
                     onChanged: (value) {
                       if (value != null) _onSelected(value, devices);
