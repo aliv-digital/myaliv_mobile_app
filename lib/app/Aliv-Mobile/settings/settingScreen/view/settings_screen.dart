@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../../../resources/widgets/default_app_bar.dart';
 import '../bloc/settings_bloc.dart';
 import '../bloc/settings_event.dart';
@@ -102,16 +103,16 @@ class _SettingsView extends StatelessWidget {
                             //       context.read<SettingsBloc>().add(const SecurityPressed());
                             //     }
                             // ),
-                            SettingsNavTile(
-                              iconAsset: AssetConstant.lifeRingIconSVG,
-                              title: 'help',
-                              onTap: () {
-                                context.push(AppRoutes.helpScreen);
-                                context.read<SettingsBloc>().add(
-                                  const HelpPressed(),
-                                );
-                              },
-                            ),
+                            // SettingsNavTile(
+                            //   iconAsset: AssetConstant.lifeRingIconSVG,
+                            //   title: 'help',
+                            //   onTap: () {
+                            //     context.push(AppRoutes.helpScreen);
+                            //     context.read<SettingsBloc>().add(
+                            //       const HelpPressed(),
+                            //     );
+                            //   },
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 14),
