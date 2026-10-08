@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../models/home_roaming_confirmation_models.dart';
 import '../theme/home_roaming_confirmation_theme.dart';
 import 'home_roaming_confirmation_dashed_divider.dart';
@@ -52,7 +54,7 @@ class HomeRoamingConfirmationTotalTicketCard extends StatelessWidget {
         ),
         const Spacer(),
         Text(
-          '\$ ${value.toStringAsFixed(2)}',
+          AppUtils.formatPrice(value),
           style: HomeRoamingConfirmationTheme.t(
             13,
             weight: isTotal ? FontWeight.w900 : FontWeight.w800,

@@ -78,7 +78,7 @@ class InvoiceTile extends StatelessWidget {
                     ),
                   const SizedBox(height: 14),
                   Text(
-                    '${invoice.currencySymbol}${invoice.amount.toStringAsFixed(2)}',
+                    '${invoice.currencySymbol}${NumberFormat('#,##0.00').format(invoice.amount)}',
                     style: ReviewInvoicePostpaidTheme.amountStyle(context),
                   ),
                 ],

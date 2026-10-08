@@ -178,6 +178,34 @@ class PlansState extends Equatable {
     return ends.reduce((a, b) => a.isAfter(b) ? a : b);
   }
 
+  /// Matches the Usage future-plans tab's date-only comparison.
+  bool get hasFuturePlans {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return [...effectivePrimaryPlans, ...standAlonePlans].any((plan) {
+      final start = plan.startDateTime;
+      if (start == null) {
+        return false;
+      }
+      return DateTime(start.year, start.month, start.day).isAfter(today);
+    });
+  }
+
+  /// Future primary plans do not represent a current plan being replaced.
+  bool get hasActivePrimaryPlan {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return effectivePrimaryPlans.any((plan) {
+      final start = plan.startDateTime;
+      if (start != null &&
+          DateTime(start.year, start.month, start.day).isAfter(today)) {
+        return false;
+      }
+      final end = plan.endDateTime;
+      return end == null || end.isAfter(now);
+    });
+  }
+
   /// Secondary plans merged with any optimistic add-ons not yet confirmed by
   /// a real /bundles response. Used by [ActiveAddOnsChips] so purchased
   /// add-ons appear immediately in the Usage tab.

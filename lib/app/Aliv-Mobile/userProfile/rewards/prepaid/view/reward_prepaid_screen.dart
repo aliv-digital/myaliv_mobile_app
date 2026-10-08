@@ -87,16 +87,8 @@ class _RewardPrepaidView extends StatelessWidget {
               );
             }
 
-            if (state.status == RewardPrepaidStatus.failure) {
-              return SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Text(state.errorMessage ?? 'Something went wrong'),
-                ),
-              );
-            }
-
-            if (state.rewards.isEmpty) {
+            if (state.status == RewardPrepaidStatus.failure ||
+                state.rewards.isEmpty) {
               return SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
@@ -131,6 +123,7 @@ class _RewardPrepaidView extends StatelessWidget {
             );
           },
         ),
+        const SliverToBoxAdapter(child: SizedBox(height: 100)),
       ],
     );
   }

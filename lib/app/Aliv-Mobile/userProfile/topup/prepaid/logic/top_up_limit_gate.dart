@@ -1,4 +1,5 @@
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 /// Result of a top-up / send-top-up pre-flight check. `null` message = pass.
 class TopUpGateResult {
@@ -19,10 +20,10 @@ const _caseDMessage =
     'please try again in a few minutes. if this continues, contact support at $_supportPhone';
 
 String _caseBMessage(double perTxLimit) =>
-    'your single top up limit is \$${perTxLimit.toStringAsFixed(2)}. please lower the amount to continue your transaction.';
+    'your single top up limit is ${AppUtils.formatPrice(perTxLimit)}. please lower the amount to continue your transaction.';
 
 String _caseCMessage(double dailyLimit) =>
-    'your daily top up limit is \$${dailyLimit.toStringAsFixed(2)}. please try a smaller amount to complete your transaction.';
+    'your daily top up limit is ${AppUtils.formatPrice(dailyLimit)}. please try a smaller amount to complete your transaction.';
 
 /// My Number tab gate. Applies A/B/C/D per the vendor spec, using the
 /// account-level top-up fields (NOT the transfer money fields).

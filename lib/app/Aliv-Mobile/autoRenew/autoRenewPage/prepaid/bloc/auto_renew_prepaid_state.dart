@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../models/auto_renew_prepaid_models.dart';
 
 enum AutoRenewLoadStatus { initial, loading, ready, failure }
@@ -52,7 +54,7 @@ class AutoRenewPrepaidState extends Equatable {
           isPayWithCardSelected) &&
       !savingSelection;
   String get walletPaymentAmountText =>
-      '\$ ${walletPaymentAmount.toStringAsFixed(2)}';
+      AppUtils.formatPrice(walletPaymentAmount);
 
   AutoRenewPrepaidState copyWith({
     AutoRenewLoadStatus? loadStatus,

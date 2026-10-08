@@ -18,6 +18,7 @@ import '../repository/auth_repository.dart';
 import '../theme/login_theme.dart';
 import '../widgets/login_bottom_texts.dart';
 import '../widgets/login_header.dart';
+import '../widgets/login_keyboard_next_toolbar.dart';
 import '../widgets/login_password_field.dart';
 import '../widgets/login_phone_row.dart';
 import '../widgets/login_privacy_policy_link.dart';
@@ -53,17 +54,25 @@ class _LoginView extends StatefulWidget {
 class _LoginViewState extends State<_LoginView> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _phoneFocusNode = FocusNode(debugLabel: 'loginPhone');
+  final FocusNode _passwordFocusNode = FocusNode(debugLabel: 'loginPassword');
   int _lastPrefillVersion = 0;
 
   @override
   void dispose() {
     _phoneController.dispose();
     _passwordController.dispose();
+    _phoneFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   void _submitLogin() {
     context.read<LoginBloc>().add(const LoginSubmitted());
+  }
+
+  void _focusPassword() {
+    _passwordFocusNode.requestFocus();
   }
 
   @override
@@ -82,7 +91,7 @@ class _LoginViewState extends State<_LoginView> {
       ),
     );
 
-    return StripedScaffold(
+    final page = StripedScaffold(
       // ✅ Keyboard উঠলেও body resize হবে না (BottomStripes নড়বে না)
       resizeToAvoidBottomInset: false,
       stripesReserveSpace: true,
@@ -177,12 +186,17 @@ class _LoginViewState extends State<_LoginView> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: AuthModuleSizes.welcomeToPhoneGap),
-                      LoginPhoneRow(controller: _phoneController),
+                      LoginPhoneRow(
+                        controller: _phoneController,
+                        focusNode: _phoneFocusNode,
+                        onNext: _focusPassword,
+                      ),
                       const SizedBox(
                         height: AuthModuleSizes.phoneToPasswordGap,
                       ),
                       LoginPasswordField(
                         controller: _passwordController,
+                        focusNode: _passwordFocusNode,
                         onSubmitted: submitLogin,
                       ),
                       const SizedBox(
@@ -312,6 +326,12 @@ class _LoginViewState extends State<_LoginView> {
           ),
         ),
       ),
+    );
+
+    return LoginKeyboardNextToolbar(
+      phoneFocusNode: _phoneFocusNode,
+      onNext: _focusPassword,
+      child: page,
     );
   }
 }

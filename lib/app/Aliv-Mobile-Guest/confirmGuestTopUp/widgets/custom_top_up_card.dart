@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../theme/theme.dart';
 
 class CustomTopUpCard extends StatelessWidget {
@@ -56,7 +58,7 @@ class CustomTopUpCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '\$${amount.toStringAsFixed(2)}',
+                    AppUtils.formatPrice(amount),
                     style: TopUpConfirmTheme.customCardAmount,
                   ),
                 ),

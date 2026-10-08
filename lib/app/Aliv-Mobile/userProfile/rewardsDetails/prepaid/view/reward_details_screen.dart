@@ -41,45 +41,33 @@ class RewardDetailsPrepaidScreen extends StatelessWidget {
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 31, 24, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RewardDetailsSection(label: 'name', value: reward!.name),
-          const SizedBox(height: 18),
-          RewardDetailsSection(label: 'category', value: reward!.categoryName),
-          const SizedBox(height: 18),
-          RewardDetailsSection(label: 'level', value: reward!.levelName),
-          const SizedBox(height: 18),
-          RewardDetailsSection(
-            label: 'short description',
-            value: reward!.shortDesc,
-          ),
-          const SizedBox(height: 18),
-          RewardDetailsSection(
-            label: 'full description',
-            value: reward!.fullDesc,
-          ),
-          const SizedBox(height: 18),
-          RewardDetailsSection(
-            label: 'terms & conditions',
-            value: reward!.terms,
-          ),
-          const SizedBox(height: 18),
-          RewardDetailsSection(
-            label: 'start date',
-            value: _formatDate(reward!.startDate),
-          ),
-          const SizedBox(height: 18),
-          RewardDetailsSection(
-            label: 'end date',
-            value: _formatDate(reward!.endDate),
-          ),
-          const SizedBox(height: 18),
-          RewardDetailsSection(
-            label: 'status',
-            value: reward!.isActive ? 'Active' : 'Expired',
-          ),
-        ],
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RewardDetailsSection(label: 'group name', value: reward!.name),
+            const SizedBox(height: 18),
+            RewardDetailsSection(
+              label: 'promo start date',
+              value: _formatDate(reward!.startDate),
+            ),
+            const SizedBox(height: 18),
+            RewardDetailsSection(
+              label: 'duration',
+              value: reward!.duration == 0 ? '-' : reward!.duration.toString(),
+            ),
+            const SizedBox(height: 18),
+            RewardDetailsSection(
+              label: 'limit',
+              value: reward!.limit == 0 ? '-' : reward!.limit.toString(),
+            ),
+            const SizedBox(height: 18),
+            RewardDetailsSection(label: 'offer', value: reward!.offer ?? '-'),
+            const SizedBox(height: 18),
+            RewardDetailsSection(label: 'status', value: reward!.status),
+          ],
+        ),
       ),
     );
   }

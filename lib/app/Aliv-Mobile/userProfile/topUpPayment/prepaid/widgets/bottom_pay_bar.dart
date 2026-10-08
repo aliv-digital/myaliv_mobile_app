@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import '../theme/top_up_payment_prepaid_theme.dart';
 
 class BottomPayBar extends StatelessWidget {
@@ -15,7 +17,7 @@ class BottomPayBar extends StatelessWidget {
     required this.onPayNow,
   });
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

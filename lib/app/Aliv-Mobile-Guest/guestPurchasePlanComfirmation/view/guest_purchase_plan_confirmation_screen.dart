@@ -7,11 +7,13 @@ import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_re
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/screens/payment_iframe_screen.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../../../Aliv-Mobile/revBillPay/revConfirmation/prepaid/theme/rev_confirmation_prepaid_theme.dart';
 import '../bloc/guest_purchase_plan_confirmation_bloc.dart';
@@ -190,8 +192,7 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                       ),
                     );
                   },
-                  amountText:
-                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                  amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );
               },
             ),
@@ -292,23 +293,29 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                                     .receiptBg,
                                             scallopCount: 12,
                                             input: null,
-                                            items: <CustomPaymentBreakdownLineItem>[
-                                              CustomPaymentBreakdownLineItem(
-                                                label: 'sub total',
-                                                value:
-                                                    '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
-                                              ),
-                                              CustomPaymentBreakdownLineItem(
-                                                label: 'vat',
-                                                value:
-                                                    '\$ ${data.totals.vat.toStringAsFixed(2)}',
-                                              ),
-                                              CustomPaymentBreakdownLineItem(
-                                                label: 'total',
-                                                value:
-                                                    '\$ ${data.totals.total.toStringAsFixed(2)}',
-                                              ),
-                                            ],
+                                            items:
+                                                <
+                                                  CustomPaymentBreakdownLineItem
+                                                >[
+                                                  CustomPaymentBreakdownLineItem(
+                                                    label: 'sub total',
+                                                    value: AppUtils.formatPrice(
+                                                      data.totals.subTotal,
+                                                    ),
+                                                  ),
+                                                  CustomPaymentBreakdownLineItem(
+                                                    label: 'vat',
+                                                    value: AppUtils.formatPrice(
+                                                      data.totals.vat,
+                                                    ),
+                                                  ),
+                                                  CustomPaymentBreakdownLineItem(
+                                                    label: 'total',
+                                                    value: AppUtils.formatPrice(
+                                                      data.totals.total,
+                                                    ),
+                                                  ),
+                                                ],
                                           ),
                                         ),
                                       ),

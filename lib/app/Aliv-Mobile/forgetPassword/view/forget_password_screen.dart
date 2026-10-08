@@ -14,6 +14,7 @@ import '../bloc/forget_password_state.dart';
 import '../repository/forgetpassword_repository.dart';
 import '../theme/forget_password_theme.dart';
 import '../widgets/forgetpass_header.dart';
+import '../widgets/forget_password_keyboard_done_toolbar.dart';
 import '../widgets/forgetpass_phone_row.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
@@ -23,13 +24,44 @@ class ForgetPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ForgetPasswordBloc(repository: ForgetPasswordRepository()),
-      child: const _ForgetPasswordScreenView(),
+      child: const _ForgetPasswordKeyboardView(),
+    );
+  }
+}
+
+class _ForgetPasswordKeyboardView extends StatefulWidget {
+  const _ForgetPasswordKeyboardView();
+
+  @override
+  State<_ForgetPasswordKeyboardView> createState() =>
+      _ForgetPasswordKeyboardViewState();
+}
+
+class _ForgetPasswordKeyboardViewState
+    extends State<_ForgetPasswordKeyboardView> {
+  final FocusNode _phoneFocusNode = FocusNode(
+    debugLabel: 'forgetPasswordPhone',
+  );
+
+  @override
+  void dispose() {
+    _phoneFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ForgetPasswordKeyboardDoneToolbar(
+      phoneFocusNode: _phoneFocusNode,
+      child: _ForgetPasswordScreenView(phoneFocusNode: _phoneFocusNode),
     );
   }
 }
 
 class _ForgetPasswordScreenView extends StatelessWidget {
-  const _ForgetPasswordScreenView();
+  const _ForgetPasswordScreenView({required this.phoneFocusNode});
+
+  final FocusNode phoneFocusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +110,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const ForgetPasswordPhoneRow(),
+                      ForgetPasswordPhoneRow(focusNode: phoneFocusNode),
                       const SizedBox(
                         height: ForgetPasswordSizes.phoneToSendGap,
                       ),

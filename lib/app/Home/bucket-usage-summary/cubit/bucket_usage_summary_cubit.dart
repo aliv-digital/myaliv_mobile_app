@@ -1,4 +1,5 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/repository/bucket_usage_summary_exception.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/repository/bucket_usage_summary_repository.dart';
@@ -8,7 +9,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 ///
 /// This follows the same app-wide pattern as BalanceCubit and PlansCubit:
 /// it is registered as a GetIt singleton and exposed from MultiBlocProvider.
-class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
+class BucketUsageSummaryCubit extends HydratedCubit<BucketUsageSummaryState> {
   final BucketUsageSummaryRepository _repository;
 
   BucketUsageSummaryCubit(this._repository)
@@ -138,7 +139,28 @@ class BucketUsageSummaryCubit extends Cubit<BucketUsageSummaryState> {
   }
 
   void reset() {
+    clear();
     emit(BucketUsageSummaryState.initial());
+  }
+
+  @override
+  BucketUsageSummaryState? fromJson(Map<String, dynamic> json) {
+    try {
+      return BucketUsageSummaryState.fromJson(json);
+    } catch (e) {
+      debugPrint('BucketUsageSummaryCubit: Error deserializing state - $e');
+      return null;
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(BucketUsageSummaryState state) {
+    try {
+      return state.toJson();
+    } catch (e) {
+      debugPrint('BucketUsageSummaryCubit: Error serializing state - $e');
+      return null;
+    }
   }
 
   /// Compares two plan lists by `planId` to avoid spurious emits when

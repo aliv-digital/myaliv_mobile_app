@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../theme/guest_pay_bill_confirm_theme.dart';
 
 class GuestPayBillConfirmReceiptCard extends StatelessWidget {
@@ -42,7 +44,7 @@ class GuestPayBillConfirmReceiptCard extends StatelessWidget {
     );
   }
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 }
 
 class _RowLine extends StatelessWidget {

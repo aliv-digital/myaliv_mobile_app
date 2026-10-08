@@ -70,7 +70,7 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> payFromWallet({
+  Future<int?> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
@@ -90,7 +90,7 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> chargeToAccount({
+  Future<int?> chargeToAccount({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
@@ -112,7 +112,7 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> payWithSavedCard({
+  Future<int?> payWithSavedCard({
     required double amount,
     required String cardToken,
     required List<HomePlansPaymentSelectedItem> selectedItems,
@@ -138,7 +138,7 @@ class HomePlansPaymentMethodRepositoryImpl
   }
 
   @override
-  Future<bool> payWithCardDetails({
+  Future<int?> payWithCardDetails({
     required double amount,
     required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,
@@ -159,13 +159,12 @@ class HomePlansPaymentMethodRepositoryImpl
     return _unwrap(result);
   }
 
-  /// Converts the typed service result into the `Future<bool>` the existing
-  /// bloc expects. Failure messages bubble up as exceptions so the bloc's
-  /// `try/catch` continues to surface them on toasts.
-  bool _unwrap(ChangeBundleResult result) {
+  /// Returns the [OrderId] from a successful result, or null when the API did
+  /// not include one. Throws on failure so the bloc's try/catch surfaces it.
+  int? _unwrap(ChangeBundleResult result) {
     switch (result) {
-      case ChangeBundleSuccess():
-        return true;
+      case ChangeBundleSuccess(:final orderId):
+        return orderId;
       case ChangeBundleFailure(:final message):
         throw Exception(message);
     }

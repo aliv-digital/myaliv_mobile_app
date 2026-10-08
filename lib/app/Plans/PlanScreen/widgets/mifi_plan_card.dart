@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import '../data/plan_bucket_icons.dart';
 import '../theme/theme.dart';
@@ -60,7 +61,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                           Flexible(
                             fit: FlexFit.loose,
                             child: Text(
-                              plan.planName,
+                              plan.planName.toLowerCase(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: HomePlanTheme.planCardTitleTextStyle,
@@ -227,7 +228,7 @@ class _PricePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(HomePlanTheme.planPricePillRadius),
       ),
       child: Text(
-        '\$ ${finalPrice.toStringAsFixed(2)}',
+        AppUtils.formatPrice(finalPrice),
         style: HomePlanTheme.planPricePillTextStyle,
       ),
     );

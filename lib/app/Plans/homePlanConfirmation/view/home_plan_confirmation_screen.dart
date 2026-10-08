@@ -6,10 +6,11 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../resources/widgets/default_bottom_payBar.dart';
 import '../bloc/home_plan_confirmation_bloc.dart';
@@ -144,8 +145,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                       ),
                     );
                   },
-                  amountText:
-                      '\$ ${state.displayTotals.total.toStringAsFixed(2)}',
+                  amountText: AppUtils.formatPrice(state.displayTotals.total),
                 );
               },
             ),
@@ -301,25 +301,28 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                                 color: _promoDiscountColor,
                                               ),
                                               value:
-                                                  '- \$ ${state.promoDiscount.toStringAsFixed(2)}',
+                                                  '- ${AppUtils.formatPrice(state.promoDiscount)}',
                                               valueStyle: const TextStyle(
                                                 color: _promoDiscountColor,
                                               ),
                                             ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',
-                                            value:
-                                                '\$ ${state.displayTotals.subTotal.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              state.displayTotals.subTotal,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value:
-                                                '\$ ${state.displayTotals.vat.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              state.displayTotals.vat,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value:
-                                                '\$ ${state.displayTotals.total.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              state.displayTotals.total,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -411,7 +414,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
       return '${_formatPercentage(definition.unitQty)}% off';
     }
 
-    return '\$ ${definition.unitQty.toStringAsFixed(2)} off';
+    return '${AppUtils.formatPrice(definition.unitQty)} off';
   }
 
   String _formatPercentage(double value) {

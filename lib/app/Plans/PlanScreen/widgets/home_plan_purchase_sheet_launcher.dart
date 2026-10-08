@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
-import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -82,13 +83,25 @@ Future<void> showHomePlanPurchaseBottomSheet({
 
       if (hasActivePlan) {
         final endDateText = chainStartDate != null
-            ? DateFormat('dd MMM yyyy').format(chainStartDate)
-            : 'the end of your current plan';
+            ? ' on ${DateFormat('MM-dd-yy').format(chainStartDate)}'
+            : '';
+
+        final standAloneFuturePlanMessage =
+            'you can activate your plan when your current plan ends$endDateText.';
+        final activePlanMessage =
+            'activating now replaces your current plan. '
+            'you can also activate your plan when your current plan ends$endDateText.';
+
+        final hasStandAloneAndFuturePlan =
+            !plansState.hasActivePrimaryPlan &&
+            plansState.standAlonePlans.isNotEmpty &&
+            plansState.hasFuturePlans;
+        final warningText = hasStandAloneAndFuturePlan
+            ? standAloneFuturePlanMessage
+            : activePlanMessage;
+
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
-          warningText:
-              'activating now replaces the account owner current plan, '
-              'you can activate the account owner plan as a future plan and '
-              'it will start when their current plan ends on $endDateText.',
+          warningText: warningText,
           planName: plan.title,
           planDurationText: plan.subtitle,
           planPriceText: _priceText(plan.price),
@@ -272,7 +285,7 @@ PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   );
 }
 
-String _priceText(double price) => '\$ ${price.toStringAsFixed(2)}';
+String _priceText(double price) => AppUtils.formatPrice(price);
 
 HomePlanConfirmationRouteArgs _futurePlanConfirmationRouteArgs({
   required BasePlanModel? selectedApiPlan,

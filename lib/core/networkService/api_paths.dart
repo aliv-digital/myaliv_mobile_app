@@ -32,6 +32,9 @@ class Api {
   static const rewards =
       '$baseUrl/v1/MyAliv/Info/rewards'; // GET - fetch all rewards
 
+  static String availableSugs(int deviceId) =>
+      '$baseUrl/v1/MyAliv/device/$deviceId/available-sugs';
+
   // Auto-renew endpoints
   /// Auto-renew from wallet: PUT /device/{deviceAccountId}/auto-renew?autoRenew={true|false}
   static String deviceAutoRenew(int deviceAccountId) =>

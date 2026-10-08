@@ -9,12 +9,14 @@ class PayBillAccountInfo {
   final String? name; // optional (REV type)
   final double? balance; // optional (REV type)
   final int? fibrAccountId; // id_acc from /Guest/fibrbalance response
+  final String? paymentOption; // e.g. 'PrePay', 'PostPay'
 
   const PayBillAccountInfo({
     required this.status,
     this.name,
     this.balance,
     this.fibrAccountId,
+    this.paymentOption,
   });
 }
 

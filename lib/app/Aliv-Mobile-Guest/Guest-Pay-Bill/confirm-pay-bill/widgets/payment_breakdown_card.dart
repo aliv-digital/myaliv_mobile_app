@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/confirm-pay-bill/theme/guest_pay_bill_confirm_theme.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 class PaymentBreakdownCard extends StatelessWidget {
   const PaymentBreakdownCard({
@@ -36,7 +37,7 @@ class PaymentBreakdownCard extends StatelessWidget {
 
   final int targetCount;
 
-  String _money(double v) => '$currencySymbol ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

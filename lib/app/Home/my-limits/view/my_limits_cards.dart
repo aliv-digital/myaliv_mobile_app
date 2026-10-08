@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
@@ -68,8 +69,8 @@ class MyLimitsCards extends StatelessWidget {
           return UsageCard(
             icon: _getIconForLimit(limit.name),
             title: limit.displayName,
-            totalValue: '\$${limit.remainingAmount.toStringAsFixed(2)}',
-            totalRemaining: '\$${limit.initialAmount.toStringAsFixed(2)}',
+            totalValue: AppUtils.formatPrice(limit.remainingAmount),
+            totalRemaining: AppUtils.formatPrice(limit.initialAmount),
             remainingLabel: 'remaining',
             progress: _calculateProgress(limit),
             color: _getColorForLimit(limit.name),

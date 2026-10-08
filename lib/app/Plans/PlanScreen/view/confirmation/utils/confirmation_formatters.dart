@@ -1,5 +1,7 @@
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 String formatConfirmationCurrency(double value) {
-  return '\$ ${value.toStringAsFixed(2)}';
+  return AppUtils.formatPrice(value);
 }
 
 String formatConfirmationPhone(String phone) {

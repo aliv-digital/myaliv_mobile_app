@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/models/transaction_model.dart';
 
 /// Reusable tile widget for displaying a transaction entry
@@ -105,7 +106,7 @@ class TransactionTileNew extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          '$sign\$${transaction.amount.toStringAsFixed(2)}',
+          '$sign\$${NumberFormat('#,##0.00').format(transaction.amount)}',
           style: TextStyle(
             fontFamily: 'CircularPro',
             fontSize: 14,

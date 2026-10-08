@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 import '../models/user_profile_receipt_data.dart';
 import '../models/user_profile_receipt_variant.dart';
@@ -134,7 +135,7 @@ class _StandardReceiptDetails extends StatelessWidget {
 
   final UserProfileReceiptData data;
 
-  String _money(double value) => '\$ ${value.toStringAsFixed(2)}';
+  String _money(double value) => AppUtils.formatPrice(value);
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +173,7 @@ class _WalletTransferDetails extends StatelessWidget {
 
   final UserProfileReceiptData data;
 
-  String _money(double value) => '\$ ${value.toStringAsFixed(2)}';
+  String _money(double value) => AppUtils.formatPrice(value);
 
   @override
   Widget build(BuildContext context) {

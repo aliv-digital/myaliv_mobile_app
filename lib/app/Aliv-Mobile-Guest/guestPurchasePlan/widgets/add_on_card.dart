@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 // for PlanBenefitType (data icon)
 import '../data/plan_icon_assets.dart';
 import '../models/add_on_model.dart';
@@ -136,7 +138,7 @@ class _PricePill extends StatelessWidget {
         color: GuestPurchasePlanTheme.addOnPricePillBackground,
       ),
       child: Text(
-        '\$ ${price.toStringAsFixed(2)}',
+        AppUtils.formatPrice(price),
         style: GuestPurchasePlanTheme.addOnPrice,
       ),
     );

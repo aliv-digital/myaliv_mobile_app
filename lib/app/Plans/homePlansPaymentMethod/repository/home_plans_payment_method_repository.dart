@@ -11,7 +11,9 @@ abstract class HomePlansPaymentMethodRepository {
 
   Future<void> payNow({required String methodId});
 
-  Future<bool> payFromWallet({
+  /// Returns the [OrderId] from the API response on success, or null if the
+  /// API did not return one. Throws on failure.
+  Future<int?> payFromWallet({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
@@ -20,7 +22,7 @@ abstract class HomePlansPaymentMethodRepository {
     DateTime? selectedBeginDate,
   });
 
-  Future<bool> chargeToAccount({
+  Future<int?> chargeToAccount({
     required double amount,
     required List<HomePlansPaymentSelectedItem> selectedItems,
     required List<PlanPurchasePromoCode> promoCodes,
@@ -29,7 +31,7 @@ abstract class HomePlansPaymentMethodRepository {
     DateTime? selectedBeginDate,
   });
 
-  Future<bool> payWithSavedCard({
+  Future<int?> payWithSavedCard({
     required double amount,
     required String cardToken,
     required List<HomePlansPaymentSelectedItem> selectedItems,
@@ -39,7 +41,7 @@ abstract class HomePlansPaymentMethodRepository {
     DateTime? selectedBeginDate,
   });
 
-  Future<bool> payWithCardDetails({
+  Future<int?> payWithCardDetails({
     required double amount,
     required NewCardDetails details,
     required List<HomePlansPaymentSelectedItem> selectedItems,

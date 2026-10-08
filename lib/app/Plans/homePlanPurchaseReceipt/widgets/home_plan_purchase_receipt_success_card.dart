@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/theme/home_plan_purchase_receipt_theme.dart';
 
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
+import 'home_plan_purchase_receipt_back_button.dart';
 import 'home_plan_purchase_receipt_detail_row.dart';
 import 'home_plan_purchase_receipt_ticket_divider.dart';
-import 'home_plan_purchase_receipt_back_button.dart';
 
 class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
   const HomePlanPurchaseReceiptSuccessCard({
@@ -15,6 +17,7 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
     this.saveCardSection,
+    this.orderId,
   });
 
   final HomePlanPurchaseReceiptData data;
@@ -22,12 +25,16 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
   final Color pageBackground;
   final String statusMessage;
 
+  /// Order ID returned by the API. When provided, an "order reference" row is
+  /// rendered immediately after the first detail item (primary plan).
+  final String? orderId;
+
   /// Optional widget slot for the "save credit card" affordance. Pass a
   /// [SaveCardOnReceiptSection] here; the section self-hides when there
   /// is no card to save. Leave null on receipts that should never show it.
   final Widget? saveCardSection;
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {
@@ -138,12 +145,21 @@ class HomePlanPurchaseReceiptSuccessCard extends StatelessWidget {
             // - data.details controls how many rows are shown
             // - label/value/valueBold all driven by incoming data
             // need to hide vat showing row here
-            for (final item in data.details)
+            for (int i = 0; i < data.details.length; i++) ...[
               HomePlanPurchaseReceiptDetailRow(
-                label: item.label,
-                value: item.value,
-                valueBold: item.valueBold,
+                label: data.details[i].label,
+                value: data.details[i].value,
+                valueBold: data.details[i].valueBold,
               ),
+              // Inject order reference immediately after the first detail
+              // (primary plan row) so it appears before date/time/phone.
+              if (i == 0 && orderId != null && orderId!.isNotEmpty)
+                HomePlanPurchaseReceiptDetailRow(
+                  label: 'order reference',
+                  value: orderId!,
+                  valueBold: false,
+                ),
+            ],
 
             const SizedBox(height: 6),
 

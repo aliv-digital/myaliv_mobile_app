@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
@@ -62,7 +63,7 @@ class _GuestConfirmTopUpView extends StatelessWidget {
   const _GuestConfirmTopUpView();
 
   String _formatCurrency(double amount) {
-    return '\$ ${amount.toStringAsFixed(2)}';
+    return AppUtils.formatPrice(amount);
   }
 
   void _open3DSPayment(BuildContext context, GuestConfirmTopUpState state) {

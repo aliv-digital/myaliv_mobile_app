@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/appConstants.dart';
 
 import '../../app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bill-receipts/widgets/receipt_detail_row.dart';
@@ -21,7 +22,7 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
   final Color pageBackground;
   final String statusMessage;
 
-  String _money(double v) => '\$ ${v.toStringAsFixed(2)}';
+  String _money(double v) => AppUtils.formatPrice(v);
 
   @override
   Widget build(BuildContext context) {

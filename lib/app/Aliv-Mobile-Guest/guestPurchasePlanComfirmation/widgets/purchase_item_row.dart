@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import '../models/guest_purchase_plan_confirmation_models.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
@@ -62,7 +63,7 @@ class PurchaseItemRow extends StatelessWidget {
             ),
           ),
           child: Text(
-            '\$ ${item.price.toStringAsFixed(2)}',
+            AppUtils.formatPrice(item.price),
             style: GuestPurchasePlanConfirmationTheme
                 .purchaseItemAmountChipTextStyle,
           ),

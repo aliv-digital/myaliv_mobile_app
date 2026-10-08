@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../model/add_on_models.dart';
-import '../theme/guest_purchase_plan_add_ons_theme.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+
 import '../../guestPurchasePlan/data/plan_icon_assets.dart';
 import '../../guestPurchasePlan/models/plan_model.dart';
+import '../model/add_on_models.dart';
+import '../theme/guest_purchase_plan_add_ons_theme.dart';
 
 /// AddOnTile
 /// - Selected হলে purple border দেখাবে (Figma screenshot)
@@ -108,7 +110,7 @@ class AddOnTile extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${item.currencySymbol} ${item.price.toStringAsFixed(2)}',
+                        AppUtils.formatPrice(item.price),
                         style: GuestPurchasePlanAddOnsTheme.addOnPrice,
                       ),
                     ),

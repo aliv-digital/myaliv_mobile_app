@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 
 enum RevNavTarget { none, proceed }
 
@@ -61,7 +62,7 @@ class RevPrepaidState extends Equatable {
   // Input display value for custom amount field (no dollar sign in typed text).
   String get amountInputText => amount == 0 ? '' : amount.toStringAsFixed(2);
 
-  String get amountFormatted => r'$ ' + amount.toStringAsFixed(2);
+  String get amountFormatted => AppUtils.formatPrice(amount);
 
   RevPrepaidState copyWith({
     String? title,

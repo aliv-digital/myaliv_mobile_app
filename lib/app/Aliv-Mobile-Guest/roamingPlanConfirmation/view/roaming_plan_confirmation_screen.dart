@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/models/roaming_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
-import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_payment_break_down_card.dart';
+import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/terms_and_conditions_modal.dart';
+import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+
 import '../../../../resources/widgets/default_bottom_payBar.dart';
+import '../../guestPurchasePlan/widgets/roam_bottom_sheet.dart';
 import '../bloc/roaming_plan_confirmation_bloc.dart';
 import '../bloc/roaming_plan_confirmation_event.dart';
 import '../bloc/roaming_plan_confirmation_state.dart';
@@ -17,7 +20,6 @@ import '../theme/roaming_plan_confirmation_theme.dart';
 import '../widgets/begins_on_card.dart';
 import '../widgets/purchase_summary_card.dart';
 import '../widgets/terms_notice.dart';
-import '../../guestPurchasePlan/widgets/roam_bottom_sheet.dart';
 
 class RoamingPlanConfirmationScreen extends StatelessWidget {
   const RoamingPlanConfirmationScreen({
@@ -151,8 +153,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                       },
                     );
                   },
-                  amountText:
-                      '\$ ${state.data!.totals.total.toStringAsFixed(2)}',
+                  amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );
               },
             ),
@@ -295,18 +296,21 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',
-                                            value:
-                                                '\$ ${data.totals.subTotal.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              data.totals.subTotal,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'vat',
-                                            value:
-                                                '\$ ${data.totals.vat.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              data.totals.vat,
+                                            ),
                                           ),
                                           CustomPaymentBreakdownLineItem(
                                             label: 'total',
-                                            value:
-                                                '\$ ${data.totals.total.toStringAsFixed(2)}',
+                                            value: AppUtils.formatPrice(
+                                              data.totals.total,
+                                            ),
                                           ),
                                         ],
                                       ),
