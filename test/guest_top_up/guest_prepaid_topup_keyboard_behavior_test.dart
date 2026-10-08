@@ -1,16 +1,50 @@
+import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/bloc/guest_topup_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/bloc/guest_topup_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/theme/guest_topup_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestTopUp/widgets/gradient_input_field.dart';
+import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
+class _MockNetworkService extends Mock implements NetworkService {}
+
 void main() {
+  late _MockNetworkService networkService;
+
+  setUp(() async {
+    await instance.reset();
+    networkService = _MockNetworkService();
+    instance.registerSingleton<NetworkService>(networkService);
+    when(
+      () => networkService.request<dynamic>(
+        Api.guestBalanceUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer(
+      (_) async => Response<dynamic>(
+        requestOptions: RequestOptions(path: Api.guestBalanceUrl),
+        data: <String, dynamic>{
+          'AccountStatus': 'AC',
+          'PaymentOption': 'PrePay',
+        },
+      ),
+    );
+  });
+
+  tearDown(() async {
+    await instance.reset();
+  });
+
   testWidgets('first phone uses TextInputAction.next', (tester) async {
     await _pumpScreen(tester);
 
@@ -88,9 +122,9 @@ void main() {
 
     final buttonHarness = await _pumpScreen(tester);
     await _enterValidDetails(tester);
-    final nextButton = find.widgetWithText(ElevatedButton, 'next');
-    await tester.ensureVisible(nextButton);
-    await tester.tap(nextButton);
+    final proceedButton = _proceedButton();
+    await tester.ensureVisible(proceedButton);
+    await tester.tap(proceedButton);
     await tester.pumpAndSettle();
 
     expect(buttonHarness.confirmExtras.single, doneExtra);
@@ -98,6 +132,17 @@ void main() {
       'phoneNumber': '(242)-555-1234',
       'amount': 15.0,
     });
+    verify(
+      () => networkService.request<dynamic>(
+        Api.guestBalanceUrl,
+        method: HttpMethod.post,
+        data: <String, dynamic>{
+          'ChannelType': 'SelfCare',
+          'PhoneNumber': '2425551234',
+        },
+        options: any(named: 'options'),
+      ),
+    ).called(2);
   });
 
   testWidgets('invalid first phone via Done preserves invalid-phone behavior', (
@@ -176,9 +221,11 @@ void main() {
     await _enterValidDetails(tester);
 
     final amountSubmit = tester.widget<TextField>(_amountField()).onSubmitted!;
-    final nextButton = find.widgetWithText(ElevatedButton, 'next');
-    await tester.ensureVisible(nextButton);
-    final buttonPressed = tester.widget<ElevatedButton>(nextButton).onPressed!;
+    final proceedButton = _proceedButton();
+    await tester.ensureVisible(proceedButton);
+    final buttonPressed = tester
+        .widget<ElevatedButton>(proceedButton)
+        .onPressed!;
     final bloc = _bloc(tester);
 
     final invalidPhoneState = bloc.stream.firstWhere(
@@ -255,8 +302,16 @@ Finder _phoneField(int index) {
 }
 
 Finder _amountField() {
-  return find.byWidgetPredicate(
-    (widget) => widget is TextField && widget.decoration?.hintText == r'$00',
+  return find.descendant(
+    of: find.byType(GradientInputField),
+    matching: find.byType(TextField),
+  );
+}
+
+Finder _proceedButton() {
+  return find.widgetWithText(
+    ElevatedButton,
+    GuestTopUpTheme.proceedButtonLabel,
   );
 }
 

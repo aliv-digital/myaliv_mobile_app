@@ -70,111 +70,112 @@ class _CreatePasswordView extends StatelessWidget {
         if (!didPop) onBack?.call();
       },
       child: StripedScaffold(
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: BlocListener<CreatePasswordBloc, CreatePasswordState>(
-          listenWhen: (p, c) =>
-              p.status != c.status || p.errorMessage != c.errorMessage,
-          listener: (context, state) {
-            if (state.status == CreatePasswordStatus.success) {
-              AppToast.show(
-                message: 'Password updated successfully.',
-                type: ToastType.success,
-              );
-              context.go(AppRoutes.home);
-            }
-            if (state.status == CreatePasswordStatus.failure &&
-                state.errorMessage != null) {
-              AppToast.show(
-                message: state.errorMessage!,
-                type: ToastType.error,
-              );
-            }
-          },
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              SliverToBoxAdapter(
-                child: CreatePasswordHeader(
-                  title: title,
-                  subtitle: subtitle,
-                  onBack: onBack,
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.only(right: 42, left: 42),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 39),
-                      BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
-                        buildWhen: (p, c) =>
-                            p.obscurePassword != c.obscurePassword ||
-                            p.password != c.password,
-                        builder: (context, state) {
-                          return PasswordInput(
-                            hint: 'enter new password',
-                            obscureText: state.obscurePassword,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (v) => context
-                                .read<CreatePasswordBloc>()
-                                .add(PasswordChanged(v)),
-                            onToggle: () => context
-                                .read<CreatePasswordBloc>()
-                                .add(const TogglePasswordVisibility()),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
-                        buildWhen: (p, c) =>
-                            p.obscureConfirm != c.obscureConfirm ||
-                            p.confirmPassword != c.confirmPassword,
-                        builder: (context, state) {
-                          return PasswordInput(
-                            hint: 're-enter password',
-                            obscureText: state.obscureConfirm,
-                            textInputAction: TextInputAction.done,
-                            onSubmitted: submit,
-                            onChanged: (v) => context
-                                .read<CreatePasswordBloc>()
-                                .add(ConfirmPasswordChanged(v)),
-                            onToggle: () => context
-                                .read<CreatePasswordBloc>()
-                                .add(const ToggleConfirmPasswordVisibility()),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'your password should contain letters and/or\n'
-                        'numbers and be between 8 and 64 characters long.',
-                        textAlign: TextAlign.center,
-                        style: CreatePasswordTheme.helperText,
-                      ),
-                      const SizedBox(height: 30),
-                      BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
-                        buildWhen: (p, c) => p.status != c.status,
-                        builder: (context, state) {
-                          return DefaultButton(
-                            label: buttonLabel,
-                            isLoading:
-                                state.status == CreatePasswordStatus.submitting,
-                            onPressed: submit,
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 181),
-                    ],
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+          child: BlocListener<CreatePasswordBloc, CreatePasswordState>(
+            listenWhen: (p, c) =>
+                p.status != c.status || p.errorMessage != c.errorMessage,
+            listener: (context, state) {
+              if (state.status == CreatePasswordStatus.success) {
+                AppToast.show(
+                  message: 'Password updated successfully.',
+                  type: ToastType.success,
+                );
+                context.go(AppRoutes.home);
+              }
+              if (state.status == CreatePasswordStatus.failure &&
+                  state.errorMessage != null) {
+                AppToast.show(
+                  message: state.errorMessage!,
+                  type: ToastType.error,
+                );
+              }
+            },
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: CreatePasswordHeader(
+                    title: title,
+                    subtitle: subtitle,
+                    onBack: onBack,
                   ),
                 ),
-              ),
-            ],
+                SliverPadding(
+                  padding: const EdgeInsets.only(right: 42, left: 42),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 39),
+                        BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
+                          buildWhen: (p, c) =>
+                              p.obscurePassword != c.obscurePassword ||
+                              p.password != c.password,
+                          builder: (context, state) {
+                            return PasswordInput(
+                              hint: 'enter new password',
+                              obscureText: state.obscurePassword,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (v) => context
+                                  .read<CreatePasswordBloc>()
+                                  .add(PasswordChanged(v)),
+                              onToggle: () => context
+                                  .read<CreatePasswordBloc>()
+                                  .add(const TogglePasswordVisibility()),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                        BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
+                          buildWhen: (p, c) =>
+                              p.obscureConfirm != c.obscureConfirm ||
+                              p.confirmPassword != c.confirmPassword,
+                          builder: (context, state) {
+                            return PasswordInput(
+                              hint: 're-enter password',
+                              obscureText: state.obscureConfirm,
+                              textInputAction: TextInputAction.done,
+                              onSubmitted: submit,
+                              onChanged: (v) => context
+                                  .read<CreatePasswordBloc>()
+                                  .add(ConfirmPasswordChanged(v)),
+                              onToggle: () => context
+                                  .read<CreatePasswordBloc>()
+                                  .add(const ToggleConfirmPasswordVisibility()),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'your password should contain letters and/or\n'
+                          'numbers and be between 8 and 64 characters long.',
+                          textAlign: TextAlign.center,
+                          style: CreatePasswordTheme.helperText,
+                        ),
+                        const SizedBox(height: 30),
+                        BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
+                          buildWhen: (p, c) => p.status != c.status,
+                          builder: (context, state) {
+                            return DefaultButton(
+                              label: buttonLabel,
+                              isLoading:
+                                  state.status ==
+                                  CreatePasswordStatus.submitting,
+                              onPressed: submit,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 181),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

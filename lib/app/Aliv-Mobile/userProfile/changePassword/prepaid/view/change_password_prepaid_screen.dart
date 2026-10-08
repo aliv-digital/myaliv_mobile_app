@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verification_coordinator.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
+import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 
@@ -22,9 +25,20 @@ class ChangePasswordPrepaidScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          ChangePasswordPrepaidBloc(ChangePasswordPrepaidRepository())
-            ..add(const ChangePasswordPrepaidStarted()),
+      create: (_) {
+        final verification =
+            ActionVerificationCoordinator<ProtectedAccountAction>();
+        return ChangePasswordPrepaidBloc(
+          ChangePasswordPrepaidRepository(),
+          verifyAction: (attemptId) => requestAccountActionOtp(
+            context: context,
+            coordinator: verification,
+            purpose: ProtectedAccountAction.changePassword,
+            attemptId: attemptId,
+          ),
+          cancelVerification: verification.cancel,
+        )..add(const ChangePasswordPrepaidStarted());
+      },
       child: const _ChangePasswordPrepaidView(),
     );
   }
@@ -151,7 +165,9 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                             builder: (context, state) {
                               final isLoading =
                                   state.status ==
-                                  ChangePasswordPrepaidStatus.submitting;
+                                      ChangePasswordPrepaidStatus.verifying ||
+                                  state.status ==
+                                      ChangePasswordPrepaidStatus.submitting;
 
                               return ChangePasswordPrepaidSubmitButton(
                                 label: 'change password',

@@ -1,10 +1,13 @@
 import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/call_logs_repository.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/services/call_logs_api_client.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/services/transactions_api_client.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/repository/transactions_repository.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 
 /// Sets up dependency injection for Call Logs feature.
@@ -14,6 +17,24 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 /// - CallLogsRepository, TransactionsRepository (business logic)
 /// - CallLogsCubit, TransactionsCubit (state management)
 Future<void> setupCallLogsInjection() async {
+  if (!instance.isRegistered<ProtectedAccountAccessVerificationSession>()) {
+    instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+      ProtectedAccountAccessVerificationSession(
+        accountChanges: instance<AccountInfoCubit>().stream.map((state) {
+          final account = state.accountInfo;
+          return account == null ? null : (account.idAcc, account.username);
+        }),
+      ),
+      dispose: (session) => session.dispose(),
+    );
+  }
+
+  if (!instance.isRegistered<CallLogsVerificationRepository>()) {
+    instance.registerLazySingleton<CallLogsVerificationRepository>(
+      CallLogsVerificationRepository.new,
+    );
+  }
+
   // Register Call Logs API client
   if (!instance.isRegistered<CallLogsApiClient>()) {
     instance.registerLazySingleton<CallLogsApiClient>(
