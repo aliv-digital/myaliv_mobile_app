@@ -163,6 +163,57 @@ void main() {
     await tester.pump(const Duration(seconds: 4));
   });
 
+  for (final response in <String, Map<String, dynamic>>{
+    'suspended prepaid': {'AccountStatus': 'SU', 'PaymentOption': 'PrePay'},
+    'active postpaid': {'AccountStatus': 'AC', 'PaymentOption': 'PostPay'},
+    'suspended postpaid': {'AccountStatus': 'SU', 'PaymentOption': 'PostPay'},
+    'missing account status': {'PaymentOption': 'PrePay'},
+    'missing payment option': {'AccountStatus': 'AC'},
+  }.entries) {
+    testWidgets('${response.key} shows the active prepaid error toast', (
+      tester,
+    ) async {
+      when(
+        () => networkService.request<dynamic>(
+          Api.guestBalanceUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.guestBalanceUrl),
+          data: response.value,
+        ),
+      );
+      final harness = await _pumpScreen(tester);
+      await _enterValidDetails(tester);
+      await tester.ensureVisible(_proceedButton());
+      await tester.tap(_proceedButton());
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(GuestTopUpTheme.invalidActivePrepaidErrorMessage),
+        findsOneWidget,
+      );
+      expect(harness.confirmExtras, isEmpty);
+      expect(find.byType(GuestTopUpScreen), findsOneWidget);
+      verify(
+        () => networkService.request<dynamic>(
+          Api.guestBalanceUrl,
+          method: HttpMethod.post,
+          data: <String, dynamic>{
+            'ChannelType': 'SelfCare',
+            'PhoneNumber': '2425551234',
+          },
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+
+      await tester.pump(const Duration(seconds: 4));
+    });
+  }
+
   testWidgets('confirm mismatch via Done preserves mismatch behavior', (
     tester,
   ) async {

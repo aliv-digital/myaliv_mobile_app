@@ -124,17 +124,27 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
       final result = await repo.verifyNumber(state.phoneNumber);
       if (!mounted) return;
 
-      if (result.paymentOption != GuestTopUpTheme.paymentOptionPrePay) {
-        AppToast.show(
-          message: GuestTopUpTheme.notPrepaidErrorMessage,
-          type: ToastType.error,
-        );
-        return;
-      }
+      // Previous separate checks retained for reference.
+      // if (result.paymentOption != GuestTopUpTheme.paymentOptionPrePay) {
+      //   AppToast.show(
+      //     message: GuestTopUpTheme.notPrepaidErrorMessage,
+      //     type: ToastType.error,
+      //   );
+      //   return;
+      // }
+      //
+      // if (result.accountStatus != GuestTopUpTheme.accountStatusActive) {
+      //   AppToast.show(
+      //     message: GuestTopUpTheme.inactiveAccountErrorMessage,
+      //     type: ToastType.error,
+      //   );
+      //   return;
+      // }
 
-      if (result.accountStatus != GuestTopUpTheme.accountStatusActive) {
+      if (result.paymentOption != GuestTopUpTheme.paymentOptionPrePay ||
+          result.accountStatus != GuestTopUpTheme.accountStatusActive) {
         AppToast.show(
-          message: GuestTopUpTheme.inactiveAccountErrorMessage,
+          message: GuestTopUpTheme.invalidActivePrepaidErrorMessage,
           type: ToastType.error,
         );
         return;
