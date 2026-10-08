@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
@@ -25,6 +27,13 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 ///
 /// Safe to call multiple times — every step is idempotent.
 Future<void> performHardLogout({bool navigate = true}) async {
+  if (instance.isRegistered<ProtectedAccountAccessVerificationSession>()) {
+    instance<ProtectedAccountAccessVerificationSession>().reset();
+  }
+  if (instance.isRegistered<ReviewInvoiceVerificationRepository>()) {
+    instance<ReviewInvoiceVerificationRepository>().reset();
+  }
+
   try {
     await instance<AuthManager>().clearSession();
   } catch (e) {
@@ -61,7 +70,9 @@ Future<void> performHardLogout({bool navigate = true}) async {
 
   if (navigate) {
     final ctx = rootNavigatorKey.currentContext;
-    if (ctx != null) ctx.go(AppRoutes.welcome);
+    if (ctx != null && ctx.mounted) {
+      ctx.go(AppRoutes.welcome);
+    }
   }
 
   if (kDebugMode) debugPrint('✅ hardLogout complete');

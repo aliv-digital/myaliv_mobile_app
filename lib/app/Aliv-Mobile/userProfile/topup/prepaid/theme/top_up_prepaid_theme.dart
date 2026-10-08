@@ -131,5 +131,4 @@ class TopUpPrepaidTheme {
     fontWeight: FontWeight.w700,
     color: const Color(0xFFF1F1F8),
   );
-
 }

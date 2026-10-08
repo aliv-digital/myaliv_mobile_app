@@ -22,6 +22,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   final AuthCompletionService authCompletionService;
   final InternetConnection _internetConnection;
   final AnalyticsService _analyticsService;
+  final bool preventDuplicateSubmissions;
+  final String offlineVerificationMessage;
+  bool _submissionInProgress = false;
 
   LoginOtpBloc({
     required this.repository,
@@ -32,6 +35,8 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     String initialMfaToken = '',
     String initialPhoneNumber = '',
     String initialApiPhoneNumber = '',
+    this.preventDuplicateSubmissions = false,
+    this.offlineVerificationMessage = 'No Internet Connection',
   }) : authCompletionService =
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
@@ -61,6 +66,20 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   }
 
   Future<void> _onSubmitted(
+    LoginOtpSubmitted event,
+    Emitter<LoginOtpState> emit,
+  ) async {
+    if (preventDuplicateSubmissions && _submissionInProgress) return;
+
+    if (preventDuplicateSubmissions) _submissionInProgress = true;
+    try {
+      await _submit(event, emit);
+    } finally {
+      if (preventDuplicateSubmissions) _submissionInProgress = false;
+    }
+  }
+
+  Future<void> _submit(
     LoginOtpSubmitted event,
     Emitter<LoginOtpState> emit,
   ) async {
@@ -111,7 +130,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           status: LoginOtpStatus.failure,
           errorType: LoginOtpErrorType.unknown,
           codeFieldError: false,
-          errorMessage: 'No Internet Connection',
+          errorMessage: offlineVerificationMessage,
         ),
       );
       return;

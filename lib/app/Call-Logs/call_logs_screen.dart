@@ -6,11 +6,16 @@ import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_access_entry.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
+
+import 'verification/call_logs_otp_route_args.dart';
+import 'verification/call_logs_verification_gate_screen.dart';
+import 'verification/history_route_observer.dart';
 
 enum CallLogsTabType { transactions, callLogs }
 
-class CallLogsScreen extends StatelessWidget {
+class CallLogsScreen extends StatefulWidget {
   final CallLogsTabType initialTab;
 
   const CallLogsScreen({
@@ -19,17 +24,28 @@ class CallLogsScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
+  State<CallLogsScreen> createState() => _CallLogsScreenState();
+}
+
+class _CallLogsScreenState extends State<CallLogsScreen> {
+  @override
+  Widget build(BuildContext context) => ProtectedAccessEntry(
+    observer: historyRouteObserver,
+    gate: CallLogsVerificationGateScreen(
+      destination: widget.initialTab == CallLogsTabType.transactions
+          ? HistoryDestination.transactions
+          : HistoryDestination.callLogs,
+    ),
+    child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<CallLogsCubit>()..fetchUsages()),
         BlocProvider(
           create: (_) => instance<TransactionsCubit>()..fetchTransactions(),
         ),
       ],
-      child: _CallLogsView(initialTab: initialTab),
-    );
-  }
+      child: _CallLogsView(initialTab: widget.initialTab),
+    ),
+  );
 }
 
 class _CallLogsView extends StatefulWidget {

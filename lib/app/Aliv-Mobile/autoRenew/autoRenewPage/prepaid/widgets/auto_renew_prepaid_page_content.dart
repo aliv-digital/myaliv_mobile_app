@@ -11,6 +11,9 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import '../../../autoRenewAuth/prepaid/verification/auto_renew_authorization_submission.dart';
+import '../../../autoRenewAuth/prepaid/verification/auto_renew_authorization_verification_coordinator.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -19,8 +22,34 @@ import '../theme/auto_renew_prepaid_theme.dart';
 import 'auto_renew_payment_method_section.dart';
 import 'auto_renew_prepaid_proceed_action_button.dart';
 
-class AutoRenewPrepaidPageContent extends StatelessWidget {
-  const AutoRenewPrepaidPageContent({super.key});
+class AutoRenewPrepaidPageContent extends StatefulWidget {
+  const AutoRenewPrepaidPageContent({super.key, this.verificationCoordinator});
+
+  final AutoRenewAuthorizationVerificationCoordinator? verificationCoordinator;
+
+  @override
+  State<AutoRenewPrepaidPageContent> createState() =>
+      _AutoRenewPrepaidPageContentState();
+}
+
+class _AutoRenewPrepaidPageContentState
+    extends State<AutoRenewPrepaidPageContent> {
+  late final AutoRenewAuthorizationVerificationCoordinator _verification;
+  bool _walletActionInProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _verification =
+        widget.verificationCoordinator ??
+        AutoRenewAuthorizationVerificationCoordinator();
+  }
+
+  @override
+  void dispose() {
+    _verification.cancel();
+    super.dispose();
+  }
 
   // ==================== Page Scaffold ====================
   // Build the visual shell and bind bloc state to UI.
@@ -172,10 +201,14 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
         AutoRenewPrepaidProceedActionButton(
           isEnabled: autoRenewPrepaidState.canProceed,
           isLoading:
+              _walletActionInProgress ||
               autoRenewPrepaidState.savingSelection ||
               isWalletRenewLoading ||
               isNoRenewLoading,
           onPressed: () async {
+            if (_walletActionInProgress) {
+              return;
+            }
             if (autoRenewPrepaidState.isPayWithCardSelected) {
               context.push(AppRoutes.addOrEditCardsPrepaidScreen);
               return;
@@ -245,6 +278,9 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
   }
 
   Future<void> _enableWalletAutoRenew(BuildContext context) async {
+    if (_walletActionInProgress) {
+      return;
+    }
     final deviceLimitsCubit = instance<DeviceLimitsCubit>();
     final deviceId = deviceLimitsCubit.state.deviceLimits?.deviceId ?? 0;
     if (deviceId <= 0) {
@@ -255,6 +291,53 @@ class AutoRenewPrepaidPageContent extends StatelessWidget {
       return;
     }
 
+    final ownerRoute = ModalRoute.of(context);
+    setState(() => _walletActionInProgress = true);
+    try {
+      final verified = await _verification.verify(
+        paymentMethod: AutoRenewPaymentMethodType.wallet,
+        isOwnerActive: () =>
+            mounted &&
+            context.mounted &&
+            ownerRoute?.isActive == true &&
+            deviceLimitsCubit.state.deviceLimits?.deviceId == deviceId &&
+            context.read<AutoRenewPrepaidBloc>().state.isWalletSelected,
+        openOtp: (args) {
+          if (!context.mounted || ownerRoute?.isCurrent != true) {
+            return Future.value(null);
+          }
+          return context.push<AutoRenewAuthorizationVerifiedResult>(
+            AppRoutes.autoRenewAuthorizationOtp,
+            extra: args,
+          );
+        },
+      );
+      if (!mounted ||
+          !context.mounted ||
+          ownerRoute?.isCurrent != true ||
+          verified == null ||
+          verified.paymentMethod != AutoRenewPaymentMethodType.wallet ||
+          !verified.consume()) {
+        return;
+      }
+
+      await _submitWalletAutoRenew(context, deviceLimitsCubit, deviceId);
+    } on CallLogsVerificationException catch (error) {
+      if (mounted) {
+        AppToast.show(message: error.message, type: ToastType.error);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _walletActionInProgress = false);
+      }
+    }
+  }
+
+  Future<void> _submitWalletAutoRenew(
+    BuildContext context,
+    DeviceLimitsCubit deviceLimitsCubit,
+    int deviceId,
+  ) async {
     // Wallet auto-renew also requires clearing the card-based auto-renew
     // selection server-side. The card endpoint accepts an empty token to
     // signal "no card linked" — mirror of the card flow which calls both

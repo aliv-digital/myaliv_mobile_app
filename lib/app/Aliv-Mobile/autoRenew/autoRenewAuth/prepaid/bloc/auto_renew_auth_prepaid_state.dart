@@ -4,7 +4,7 @@ import '../repository/auto_renew_auth_prepaid_repository.dart';
 
 enum AutoRenewAuthLoadStatus { loading, ready, failure }
 
-enum AutoRenewAuthSubmitStatus { idle, submitting, success, failure }
+enum AutoRenewAuthSubmitStatus { idle, verifying, submitting, success, failure }
 
 enum AutoRenewAuthNavTarget { none, home, success }
 
@@ -54,10 +54,14 @@ class AutoRenewAuthPrepaidState extends Equatable {
   /// Check if entered name matches the displayed name exactly.
   bool get isNameValid => name == expectedName;
 
+  bool get isSubmissionBusy =>
+      submitStatus == AutoRenewAuthSubmitStatus.verifying ||
+      submitStatus == AutoRenewAuthSubmitStatus.submitting;
+
   bool get canSubmit =>
       loadStatus == AutoRenewAuthLoadStatus.ready &&
       name.trim().isNotEmpty &&
-      submitStatus != AutoRenewAuthSubmitStatus.submitting;
+      !isSubmissionBusy;
 
   AutoRenewAuthPrepaidState copyWith({
     AutoRenewAuthLoadStatus? loadStatus,
