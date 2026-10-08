@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
 import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,8 @@ class HomeRoamingConfirmationBloc
     extends Bloc<HomeRoamingConfirmationEvent, HomeRoamingConfirmationState> {
   final HomeRoamingConfirmationRepository repository;
   final AccountInfoCubit accountInfoCubit;
+  // Context edits invalidate pending promo results without cancelling transport.
+  int _promoRevision = 0;
 
   HomeRoamingConfirmationBloc({
     required this.repository,
@@ -31,6 +34,14 @@ class HomeRoamingConfirmationBloc
     HomeRoamingConfirmationStarted event,
     Emitter<HomeRoamingConfirmationState> emit,
   ) async {
+    _promoRevision++;
+    emit(
+      state.copyWith(
+        promoStatus: HomeRoamingConfirmationPromoStatus.idle,
+        promoResponse: null,
+        promoErrorMessage: '',
+      ),
+    );
     emit(
       state.copyWith(
         status: HomeRoamingConfirmationStatus.loading,
@@ -61,6 +72,12 @@ class HomeRoamingConfirmationBloc
     HomeRoamingConfirmationRemoveItemPressed event,
     Emitter<HomeRoamingConfirmationState> emit,
   ) {
+    _promoRevision++;
+    if (state.promoStatus == HomeRoamingConfirmationPromoStatus.applying) {
+      emit(
+        state.copyWith(promoStatus: HomeRoamingConfirmationPromoStatus.idle),
+      );
+    }
     final data = state.data;
     if (data == null) return;
 
@@ -71,8 +88,28 @@ class HomeRoamingConfirmationBloc
       vat: data.totals.vat,
     );
 
+    final response = state.promoResponse;
+    final exceeds =
+        state.promoStatus == HomeRoamingConfirmationPromoStatus.applied &&
+        response != null &&
+        PromoSubtotalValidation.exceedsSubtotal(
+          discount: PromoSubtotalValidation.monetaryDiscount(
+            unitType: response.definition.unitType,
+            unitQty: response.definition.unitQty,
+            subtotal: totals.subTotal,
+          ),
+          subtotal: totals.subTotal,
+        );
+
     emit(
       state.copyWith(
+        promoStatus: exceeds
+            ? HomeRoamingConfirmationPromoStatus.failure
+            : state.promoStatus,
+        promoErrorMessage: exceeds
+            ? PromoSubtotalValidation.errorMessage
+            : state.promoErrorMessage,
+        promoResponse: exceeds ? null : state.promoResponse,
         data: HomeRoamingConfirmationData(
           phoneNumber: data.phoneNumber,
           headerTitle: data.headerTitle,
@@ -88,6 +125,12 @@ class HomeRoamingConfirmationBloc
     HomeRoamingConfirmationBeginDateChanged event,
     Emitter<HomeRoamingConfirmationState> emit,
   ) {
+    _promoRevision++;
+    if (state.promoStatus == HomeRoamingConfirmationPromoStatus.applying) {
+      emit(
+        state.copyWith(promoStatus: HomeRoamingConfirmationPromoStatus.idle),
+      );
+    }
     final routeArgs = state.routeArgs;
     final data = state.data;
     if (routeArgs == null || data == null) return;
@@ -111,6 +154,7 @@ class HomeRoamingConfirmationBloc
     HomeRoamingConfirmationPromoCodeChanged event,
     Emitter<HomeRoamingConfirmationState> emit,
   ) {
+    _promoRevision++;
     emit(
       state.copyWith(
         promoCode: event.value,
@@ -127,6 +171,7 @@ class HomeRoamingConfirmationBloc
   ) async {
     if (!state.canApplyPromo) return;
 
+    final revision = ++_promoRevision;
     final promoCode = state.promoCode.trim();
 
     emit(
@@ -156,6 +201,28 @@ class HomeRoamingConfirmationBloc
         deviceAcId: deviceAccountId,
       );
 
+      if (emit.isDone || revision != _promoRevision) {
+        return;
+      }
+      if (response.isApplied &&
+          PromoSubtotalValidation.exceedsSubtotal(
+            discount: PromoSubtotalValidation.monetaryDiscount(
+              unitType: response.definition.unitType,
+              unitQty: response.definition.unitQty,
+              subtotal: state.data?.totals.subTotal ?? 0,
+            ),
+            subtotal: state.data?.totals.subTotal ?? 0,
+          )) {
+        emit(
+          state.copyWith(
+            promoStatus: HomeRoamingConfirmationPromoStatus.failure,
+            promoErrorMessage: PromoSubtotalValidation.errorMessage,
+            promoResponse: null,
+          ),
+        );
+        return;
+      }
+
       debugPrint('HomeRoamingConfirmationBloc: apply promo response=$response');
       debugPrint(
         'HomeRoamingConfirmationBloc: isApplied=${response.isApplied}',
@@ -171,6 +238,9 @@ class HomeRoamingConfirmationBloc
         ),
       );
     } catch (e) {
+      if (emit.isDone || revision != _promoRevision) {
+        return;
+      }
       emit(
         state.copyWith(
           promoStatus: HomeRoamingConfirmationPromoStatus.failure,

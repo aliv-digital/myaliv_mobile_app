@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,6 +52,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   DateTime? _selectedBeginDate;
   late final NetworkService _networkService = instance<NetworkService>();
   bool _termsAccepted = false;
+  // Context edits invalidate pending promo results without cancelling transport.
+  int _promoRevision = 0;
   String _promoCode = '';
   _ConfirmationPromoStatus _promoStatus = _ConfirmationPromoStatus.idle;
   String _promoErrorMessage = '';
@@ -82,8 +85,33 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   @override
   void didUpdateWidget(covariant ConfirmationScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.beginDate != widget.beginDate ||
+        oldWidget.topUpAmount != widget.topUpAmount ||
+        oldWidget.recipientPhone != widget.recipientPhone) {
+      _promoRevision++;
+      if (_promoStatus == _ConfirmationPromoStatus.applying) {
+        _promoStatus = _ConfirmationPromoStatus.idle;
+      }
+    }
     if (oldWidget.plan != widget.plan) {
+      _promoRevision++;
       _selectedPostpaidPlan = widget.plan;
+      if (_promoStatus == _ConfirmationPromoStatus.applying) {
+        _promoStatus = _ConfirmationPromoStatus.idle;
+      }
+      final response = _promoResponse;
+      if (_promoStatus == _ConfirmationPromoStatus.applied &&
+          response != null &&
+          _promoExceedsSubtotal(response)) {
+        _promoStatus = _ConfirmationPromoStatus.failure;
+        _promoErrorMessage = PromoSubtotalValidation.errorMessage;
+        _promoResponse = null;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _showPromoResultToast();
+          }
+        });
+      }
     }
     if (oldWidget.beginDate != widget.beginDate) {
       _selectedBeginDate = widget.beginDate;
@@ -238,6 +266,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   void _onPromoCodeChanged(String value) {
+    _promoRevision++;
     setState(() {
       _promoCode = value;
       _promoStatus = _ConfirmationPromoStatus.idle;
@@ -250,6 +279,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     if (!_canApplyPromo) return;
 
     FocusScope.of(context).unfocus();
+    final revision = ++_promoRevision;
     final promoCode = _promoCode.trim();
 
     setState(() {
@@ -279,7 +309,19 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       debugPrint('ConfirmationScreen: apply promo response=$response');
       debugPrint('is Applied : ${response.isApplied}');
 
-      if (!mounted) return;
+      if (!mounted || revision != _promoRevision) {
+        return;
+      }
+
+      if (response.isApplied && _promoExceedsSubtotal(response)) {
+        setState(() {
+          _promoStatus = _ConfirmationPromoStatus.failure;
+          _promoErrorMessage = PromoSubtotalValidation.errorMessage;
+          _promoResponse = null;
+        });
+        _showPromoResultToast();
+        return;
+      }
 
       setState(() {
         _promoStatus = response.isApplied
@@ -291,7 +333,9 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
       _showPromoResultToast();
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || revision != _promoRevision) {
+        return;
+      }
 
       setState(() {
         _promoStatus = _ConfirmationPromoStatus.failure;
@@ -300,6 +344,18 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
       _showPromoResultToast();
     }
+  }
+
+  bool _promoExceedsSubtotal(HomePlanPromoResponse response) {
+    final subtotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
+    return PromoSubtotalValidation.exceedsSubtotal(
+      discount: PromoSubtotalValidation.monetaryDiscount(
+        unitType: response.definition.unitType,
+        unitQty: response.definition.unitQty,
+        subtotal: subtotal,
+      ),
+      subtotal: subtotal,
+    );
   }
 
   Future<HomePlanPromoResponse> _requestPromo({
@@ -463,8 +519,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               if (widget.showBeginOn && _selectedBeginDate != null)
                 ConfirmationBeginOnCard(
                   date: _selectedBeginDate!,
-                  onDateChanged: (date) =>
-                      setState(() => _selectedBeginDate = date),
+                  onDateChanged: (date) => setState(() {
+                    _promoRevision++;
+                    if (_promoStatus == _ConfirmationPromoStatus.applying) {
+                      _promoStatus = _ConfirmationPromoStatus.idle;
+                    }
+                    _selectedBeginDate = date;
+                  }),
                 ),
               const SizedBox(height: 16),
               ConfirmationTermsCheckbox(

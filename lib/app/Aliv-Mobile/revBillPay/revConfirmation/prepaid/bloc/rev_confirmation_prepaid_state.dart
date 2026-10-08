@@ -17,6 +17,7 @@ class RevConfirmationPrepaidState extends Equatable {
   final double discount;
 
   final String promoCode;
+  final String promoErrorMessage;
   final RevPromoStatus promoStatus;
 
   final RevConfirmNavTarget navTarget;
@@ -36,6 +37,7 @@ class RevConfirmationPrepaidState extends Equatable {
     required this.vat,
     required this.discount,
     required this.promoCode,
+    this.promoErrorMessage = '',
     required this.promoStatus,
     required this.navTarget,
     required this.termsAccepted,
@@ -84,6 +86,7 @@ class RevConfirmationPrepaidState extends Equatable {
     double? vat,
     double? discount,
     String? promoCode,
+    String? promoErrorMessage,
     RevPromoStatus? promoStatus,
     RevConfirmNavTarget? navTarget,
 
@@ -100,6 +103,7 @@ class RevConfirmationPrepaidState extends Equatable {
       vat: vat ?? this.vat,
       discount: discount ?? this.discount,
       promoCode: promoCode ?? this.promoCode,
+      promoErrorMessage: promoErrorMessage ?? this.promoErrorMessage,
       promoStatus: promoStatus ?? this.promoStatus,
       navTarget: navTarget ?? this.navTarget,
       termsAccepted: termsAccepted ?? this.termsAccepted,
@@ -117,6 +121,7 @@ class RevConfirmationPrepaidState extends Equatable {
     vat,
     discount,
     promoCode,
+    promoErrorMessage,
     promoStatus,
     navTarget,
     termsAccepted,
