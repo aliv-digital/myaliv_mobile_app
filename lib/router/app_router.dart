@@ -9,13 +9,24 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/roamingPlanConfirmation/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/whyAliv/view/why_aliv_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revBill/prepaid/view/rev_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/revBillPay/revLanding/prepaid/view/rev_landing_prepaid_screen.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/Otp/postpaid/view/otp_postpaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_route_observer.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_verification_gate_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/reviewInvoices/verification/review_invoice_visit_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/addOrEditCards/prepaid/view/add_or_edit_cards_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/changePassword/prepaid/view/change_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/enterPassword/prepaid/view/enter_password_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/rewards/prepaid/model/reward_model.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_logs_screen.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/plans_entry_screen.dart';
@@ -52,6 +63,8 @@ import '../app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/view/guest_purchase_pl
 import '../app/Aliv-Mobile-Guest/guestTopUp/view/guest_topup_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_route_args.dart';
+import '../app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/postpaid/view/auto_pay_postpaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
 import '../app/Aliv-Mobile/autoRenew/enterPassword/prepaid/view/enter_password_autoRenew_prepaid_screen.dart';
@@ -67,8 +80,6 @@ import '../app/Aliv-Mobile/referAFriend/referFriend/prepaid/view/success_screen.
 import '../app/Aliv-Mobile/referAFriend/referFriendResponse/prepaid/view/refer_friend_response_prepaid_screen.dart';
 import '../app/Aliv-Mobile/revBillPay/paymentMethod/prepaid/view/rev_payment_method_prepaid_screen.dart';
 import '../app/Aliv-Mobile/revBillPay/revConfirmation/prepaid/view/rev_confirmation_prepaid_screen.dart';
-import '../app/Aliv-Mobile/reviewInvoices/enterPassword/postpaid/view/enter_password_postpaid_screen.dart';
-import '../app/Aliv-Mobile/reviewInvoices/reviewInvoice/postpaid/view/review_invoice_postpaid_screen.dart';
 import '../app/Aliv-Mobile/settings/faceIdSecurity/view/face_id_security_screen.dart';
 import '../app/Aliv-Mobile/settings/fingerPrintSecurity/view/fingerprint_security_screen.dart';
 import '../app/Aliv-Mobile/settings/help/view/help_screen.dart';
@@ -115,6 +126,7 @@ import 'app_routes.dart';
 class AppRouter {
   late final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey, // ✅ REQUIRED
+    observers: [historyRouteObserver, reviewInvoiceRouteObserver],
     initialLocation: AppRoutes.splash,
     routes: [
       GoRoute(
@@ -304,6 +316,41 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.accountActionOtp,
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! ActionOtpRouteArgs<ProtectedAccountAction> ||
+              !args.isValid) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Verification details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return ActionOtpScreen(args: args);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.autoRenewAuthorizationOtp,
+        builder: (context, state) {
+          final args = state.extra;
+          if (args is! AutoRenewAuthorizationOtpRouteArgs || !args.isValid) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Verification details unavailable. Please return and try again.',
+                ),
+              ),
+            );
+          }
+          return AutoRenewAuthorizationOtpScreen(args: args);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.autoRenewPrepaidScreen,
         builder: (context, state) => const AutoRenewPrepaidScreen(),
       ),
@@ -313,15 +360,28 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.otpReviewInvoicePostPaidScreen,
-        builder: (context, state) => const OtpPostpaidScreen(),
+        redirect: (context, state) => AppRoutes.reviewInvoicePostPaidScreen,
       ),
       GoRoute(
         path: AppRoutes.enterPasswordReviewInvoicePostpaidScreen,
-        builder: (context, state) => const EnterPasswordPostpaidScreen(),
+        redirect: (context, state) => AppRoutes.reviewInvoicePostPaidScreen,
       ),
       GoRoute(
         path: AppRoutes.reviewInvoicePostPaidScreen,
-        builder: (context, state) => const ReviewInvoicePostpaidScreen(),
+        builder: (context, state) => const ReviewInvoiceVisitScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.reviewInvoiceOtp,
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is! ReviewInvoiceOtpRouteArgs || !extra.isValid) {
+            return const ReviewInvoiceVerificationGateScreen();
+          }
+          return ReviewInvoiceOtpScreen(
+            initialMfaToken: extra.mfaToken,
+            apiPhoneNumber: extra.apiPhoneNumber,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.topUpPaymentPrepaidScreen,
@@ -417,13 +477,39 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.callLogs,
         builder: (context, state) {
-          final tabParam = state.uri.queryParameters['tab'];
+          final destination = HistoryDestination.fromTabParameter(
+            state.uri.queryParameters['tab'],
+          );
 
-          final initialTab = tabParam == 'call_logs'
+          final initialTab = destination == HistoryDestination.callLogs
               ? CallLogsTabType.callLogs
               : CallLogsTabType.transactions;
 
           return CallLogsScreen(initialTab: initialTab);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.callLogsVerification,
+        builder: (context, state) => CallLogsVerificationGateScreen(
+          destination: state.extra is HistoryDestination
+              ? state.extra! as HistoryDestination
+              : state.uri.queryParameters['tab'] == 'transactions'
+              ? HistoryDestination.transactions
+              : HistoryDestination.callLogs,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.callLogsOtp,
+        builder: (context, state) {
+          final extra = state.extra;
+          final args = extra is CallLogsOtpRouteArgs
+              ? extra
+              : const CallLogsOtpRouteArgs(mfaToken: '', apiPhoneNumber: '');
+          return CallLogsOtpScreen(
+            initialMfaToken: args.mfaToken,
+            apiPhoneNumber: args.apiPhoneNumber,
+            destination: args.destination,
+          );
         },
       ),
       GoRoute(

@@ -46,7 +46,9 @@ class GuestPayBillRepository {
     return PayBillAccountInfo(
       status: status,
       balance: balance is num ? balance.toDouble() : null,
-      paymentOption: paymentOptionRaw is String ? paymentOptionRaw.trim() : null,
+      paymentOption: paymentOptionRaw is String
+          ? paymentOptionRaw.trim()
+          : null,
     );
   }
 

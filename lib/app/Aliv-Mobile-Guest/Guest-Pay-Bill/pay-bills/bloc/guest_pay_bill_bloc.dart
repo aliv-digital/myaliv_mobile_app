@@ -209,7 +209,8 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
     if (!state.canSubmit) return;
 
     if (state.isAlivPostpaid &&
-        state.accountInfo?.paymentOption == GuestPayBillTheme.paymentOptionPrePay) {
+        state.accountInfo?.paymentOption ==
+            GuestPayBillTheme.paymentOptionPrePay) {
       emit(
         state.copyWith(
           submitStatus: GuestPayBillSubmitStatus.failure,

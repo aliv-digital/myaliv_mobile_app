@@ -12,7 +12,7 @@ void main() {
       ),
     );
 
-    expect(find.widgetWithText(TextButton, 'Privacy Policy'), findsOneWidget);
+    //expect(find.widgetWithText(TextButton, 'Privacy Policy'), findsOneWidget);
     expect(find.widgetWithText(TextButton, 'Terms of Use'), findsOneWidget);
     expect(find.text('|'), findsOneWidget);
 

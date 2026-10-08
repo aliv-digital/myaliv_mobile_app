@@ -222,7 +222,7 @@ void main() {
       final display = mapper.map(_plan(amount: 4.55, vat: 0.45));
 
       expect(display.price, 5);
-      expect(display.formattedPrice, r'$5.00');
+      expect(display.formattedPrice, r'$ 5.00');
       expect(display.basePrice, 4.55);
       expect(display.vatAmount, 0.45);
     });

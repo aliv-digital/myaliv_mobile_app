@@ -68,6 +68,8 @@ class AppRoutes {
   static const topUpPrepaidScreen = '/top-up-prepaid-screen';
   static const topUpPrepaidNumberPostpaidScreen = '/top-up-postpaid-screen';
   static const callLogs = '/call_logs';
+  static const callLogsVerification = '/call-logs-verification';
+  static const callLogsOtp = '/call-logs-otp';
 
   static const confirmTopUpPostpaidScreen = '/confirm-top-up-postpaid-screen';
 
@@ -75,6 +77,7 @@ class AppRoutes {
   static const userProfileReceiptScreen = '/user-profile-receipt-screen';
 
   static const reviewInvoicePostPaidScreen = '/review-invoice-postpaid';
+  static const reviewInvoiceOtp = '/review-invoice-otp';
   static const reviewInvoicePrePaidScreen = '/review-invoice-prepaid';
 
   static const enterPasswordReviewInvoicePostpaidScreen =
@@ -85,6 +88,8 @@ class AppRoutes {
   static const autoRenewPrepaidScreen = '/auto-renew-prepaid-screen';
 
   static const autoRenewAuthPrepaidScreen = '/auto-renew-auth-prepaid-screen';
+  static const autoRenewAuthorizationOtp = '/auto-renew-authorization-otp';
+  static const accountActionOtp = '/account-action-otp';
 
   static const autoPayPostpaidScreen = '/auto-pay-postpaid-screen';
 

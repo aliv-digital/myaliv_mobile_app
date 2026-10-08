@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verification_coordinator.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
+import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
+import '../verification/upgrade_credit_limit_submission.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
@@ -28,6 +33,10 @@ class UpgradeCreditLimitScreen extends StatefulWidget {
 
 class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
   bool _agreed = true;
+  bool _verificationPending = false;
+  late final ActionVerificationCoordinator<ProtectedAccountAction>
+  _verification;
+  late final UpgradeCreditLimitSubmission _submission;
 
   final _localTextController = TextEditingController();
   final _localDataController = TextEditingController();
@@ -38,11 +47,17 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
   @override
   void initState() {
     super.initState();
+    _verification = ActionVerificationCoordinator<ProtectedAccountAction>();
+    _submission = UpgradeCreditLimitSubmission(
+      deviceLimitsCubit: instance<DeviceLimitsCubit>(),
+    );
     _loadDeviceLimits();
   }
 
   @override
   void dispose() {
+    _verification.cancel();
+    _submission.close();
     _localTextController.dispose();
     _localDataController.dispose();
     _localVoiceController.dispose();
@@ -77,6 +92,9 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
   }
 
   Future<void> _updateLimits(DeviceLimitsState state) async {
+    if (_verificationPending || state.isUpdating) {
+      return;
+    }
     final deviceId = state.deviceLimits?.deviceId ?? 0;
     if (deviceId <= 0) {
       AppToast.show(
@@ -116,10 +134,33 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
       roaming: _intlRoamingController.text,
     );
 
-    final success = await instance<DeviceLimitsCubit>().updateLimits(
-      deviceAccountId: deviceId,
-      request: request,
-    );
+    bool success = false;
+    setState(() => _verificationPending = true);
+    try {
+      success = await _submission.submit(
+        deviceId: deviceId,
+        request: request,
+        isOwnerActive: () =>
+            mounted && ModalRoute.of(context)?.isCurrent == true,
+        verifyAction: (attemptId) => requestAccountActionOtp(
+          context: context,
+          coordinator: _verification,
+          purpose: ProtectedAccountAction.upgradeCreditLimit,
+          attemptId: attemptId,
+          isOwnerActive: () =>
+              instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ==
+              deviceId,
+        ),
+      );
+    } on CallLogsVerificationException catch (error) {
+      if (mounted) {
+        AppToast.show(message: error.message, type: ToastType.error);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _verificationPending = false);
+      }
+    }
 
     if (success && mounted) {
       instance<ConsumptionLimitCubit>().loadLimits(
@@ -305,7 +346,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 42),
       child: BlocBuilder<DeviceLimitsCubit, DeviceLimitsState>(
         builder: (context, state) {
-          final isUpdating = state.isUpdating;
+          final isUpdating = state.isUpdating || _verificationPending;
           return SizedBox(
             width: double.infinity,
             height: 40,

@@ -1,15 +1,27 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/auto_renew_auth_prepaid_repository.dart';
+import '../verification/auto_renew_authorization_submission.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'auto_renew_auth_prepaid_event.dart';
 import 'auto_renew_auth_prepaid_state.dart';
 
 class AutoRenewAuthPrepaidBloc
     extends Bloc<AutoRenewAuthPrepaidEvent, AutoRenewAuthPrepaidState> {
   final AutoRenewAuthPrepaidRepository repository;
+  final Future<AutoRenewAuthorizationVerifiedResult?> Function(
+    AutoRenewAuthorizationSubmission submission,
+  )
+  verifyAuthorization;
+  final void Function()? cancelVerification;
+  bool _submissionInProgress = false;
+  bool _closing = false;
 
-  AutoRenewAuthPrepaidBloc({required this.repository})
-    : super(AutoRenewAuthPrepaidState.initial()) {
+  AutoRenewAuthPrepaidBloc({
+    required this.repository,
+    required this.verifyAuthorization,
+    this.cancelVerification,
+  }) : super(AutoRenewAuthPrepaidState.initial()) {
     on<AutoRenewAuthPrepaidStarted>(_onStarted);
     on<AutoRenewAuthNameChanged>(_onNameChanged);
     on<AutoRenewAuthSubmitPressed>(_onSubmitPressed);
@@ -61,6 +73,20 @@ class AutoRenewAuthPrepaidBloc
     AutoRenewAuthSubmitPressed event,
     Emitter<AutoRenewAuthPrepaidState> emit,
   ) async {
+    if (_closing ||
+        _submissionInProgress ||
+        state.submitStatus == AutoRenewAuthSubmitStatus.success) {
+      return;
+    }
+    _submissionInProgress = true;
+    try {
+      await _submit(emit);
+    } finally {
+      _submissionInProgress = false;
+    }
+  }
+
+  Future<void> _submit(Emitter<AutoRenewAuthPrepaidState> emit) async {
     final name = state.name;
     if (name.trim().isEmpty) {
       emit(state.copyWith(errorMessage: 'Please enter your name.'));
@@ -78,6 +104,48 @@ class AutoRenewAuthPrepaidBloc
       return;
     }
 
+    final submission = AutoRenewAuthorizationSubmission(
+      name: name,
+      paymentMethod: state.paymentMethod,
+      cardToken: state.cardToken,
+    );
+    emit(
+      state.copyWith(
+        submitStatus: AutoRenewAuthSubmitStatus.verifying,
+        clearError: true,
+      ),
+    );
+    AutoRenewAuthorizationVerifiedResult? verified;
+    try {
+      verified = await verifyAuthorization(submission);
+    } catch (error) {
+      if (!_closing && !isClosed && !emit.isDone) {
+        emit(
+          state.copyWith(
+            submitStatus: AutoRenewAuthSubmitStatus.failure,
+            errorMessage: error is CallLogsVerificationException
+                ? error.message
+                : 'Unable to verify your account. Please try again.',
+          ),
+        );
+      }
+      return;
+    }
+    if (_closing || isClosed || emit.isDone) {
+      return;
+    }
+    if (verified == null ||
+        !identical(verified.attemptId, submission.attemptId) ||
+        verified.paymentMethod != submission.paymentMethod ||
+        state.name != submission.name ||
+        state.paymentMethod != submission.paymentMethod ||
+        state.cardToken != submission.cardToken ||
+        !state.isNameValid ||
+        !verified.consume()) {
+      emit(state.copyWith(submitStatus: AutoRenewAuthSubmitStatus.idle));
+      return;
+    }
+
     emit(
       state.copyWith(
         submitStatus: AutoRenewAuthSubmitStatus.submitting,
@@ -88,9 +156,13 @@ class AutoRenewAuthPrepaidBloc
     try {
       final success = await repository.submitAuthorization(
         name: name,
-        paymentMethod: state.paymentMethod,
-        cardToken: state.cardToken,
+        paymentMethod: submission.paymentMethod,
+        cardToken: submission.cardToken,
       );
+
+      if (_closing || isClosed || emit.isDone) {
+        return;
+      }
 
       if (success) {
         emit(
@@ -108,6 +180,9 @@ class AutoRenewAuthPrepaidBloc
         );
       }
     } catch (_) {
+      if (_closing || isClosed || emit.isDone) {
+        return;
+      }
       emit(
         state.copyWith(
           submitStatus: AutoRenewAuthSubmitStatus.failure,
@@ -115,6 +190,13 @@ class AutoRenewAuthPrepaidBloc
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _closing = true;
+    cancelVerification?.call();
+    return super.close();
   }
 
   void _onHomePressed(

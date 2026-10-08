@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import '../repository/change_password_prepaid_repository.dart';
 import 'change_password_prepaid_event.dart';
 import 'change_password_prepaid_state.dart';
@@ -6,14 +7,22 @@ import 'change_password_prepaid_state.dart';
 class ChangePasswordPrepaidBloc
     extends Bloc<ChangePasswordPrepaidEvent, ChangePasswordPrepaidState> {
   final ChangePasswordPrepaidRepository repository;
+  final Future<ActionVerifiedResult<ProtectedAccountAction>?> Function(Object)
+  verifyAction;
+  final void Function() cancelVerification;
+  bool _pending = false;
+  bool _closing = false;
 
   static const _minLength = 8;
   static const _maxLength = 64;
   static const _lengthError = 'password does not meet the requirement';
   static const _matchError = 'password does not match';
 
-  ChangePasswordPrepaidBloc(this.repository)
-    : super(ChangePasswordPrepaidState.initial()) {
+  ChangePasswordPrepaidBloc(
+    this.repository, {
+    required this.verifyAction,
+    required this.cancelVerification,
+  }) : super(ChangePasswordPrepaidState.initial()) {
     on<ChangePasswordPrepaidStarted>(_onStarted);
     on<ChangePasswordPrepaidNewChanged>(_onNewChanged);
     on<ChangePasswordPrepaidConfirmChanged>(_onConfirmChanged);
@@ -93,6 +102,9 @@ class ChangePasswordPrepaidBloc
     ChangePasswordPrepaidSubmitPressed event,
     Emitter<ChangePasswordPrepaidState> emit,
   ) async {
+    if (_pending || _closing) {
+      return;
+    }
     final a = state.newPassword.trim();
     final b = state.confirmPassword.trim();
 
@@ -114,9 +126,29 @@ class ChangePasswordPrepaidBloc
       return;
     }
 
+    _pending = true;
     try {
+      final attemptId = Object();
+      emit(state.copyWith(status: ChangePasswordPrepaidStatus.verifying));
+      final verified = await verifyAction(attemptId);
+      if (_closing || emit.isDone) {
+        return;
+      }
+      if (verified == null ||
+          !identical(verified.attemptId, attemptId) ||
+          verified.purpose != ProtectedAccountAction.changePassword ||
+          state.newPassword.trim() != a ||
+          state.confirmPassword.trim() != b ||
+          !verified.consume()) {
+        emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
+        return;
+      }
       emit(state.copyWith(status: ChangePasswordPrepaidStatus.submitting));
       final success = await repository.changePassword(newPassword: a);
+
+      if (_closing || emit.isDone) {
+        return;
+      }
 
       if (success) {
         emit(state.copyWith(status: ChangePasswordPrepaidStatus.success));
@@ -129,12 +161,24 @@ class ChangePasswordPrepaidBloc
         );
       }
     } catch (_) {
+      if (_closing || emit.isDone) {
+        return;
+      }
       emit(
         state.copyWith(
           status: ChangePasswordPrepaidStatus.failure,
           errorMessage: 'failed to update password. please try again.',
         ),
       );
+    } finally {
+      _pending = false;
     }
+  }
+
+  @override
+  Future<void> close() {
+    _closing = true;
+    cancelVerification();
+    return super.close();
   }
 }

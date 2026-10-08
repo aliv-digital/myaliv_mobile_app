@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 enum ChangePasswordPrepaidStatus {
   initial,
   ready,
+  verifying,
   submitting,
   success,
   failure,
