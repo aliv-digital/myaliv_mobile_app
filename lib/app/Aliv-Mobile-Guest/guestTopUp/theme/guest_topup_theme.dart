@@ -20,8 +20,8 @@ class GuestTopUpTheme {
   static const String paymentOptionPrePay = 'PrePay';
   // static const String notPrepaidErrorMessage = 'number is not prepaid';
   static const String invalidActivePrepaidErrorMessage =
-      'The number entered is not an active prepaid number.To try again\n'
-      'Please enter a active prepaid number.';
+      'the number entered is not an active prepaid number.to try again\n'
+      'please enter a active prepaid number.';
 
   // Inline validation color for phone field errors.
   static const Color errorRed = Color(0xFFFF3B30);

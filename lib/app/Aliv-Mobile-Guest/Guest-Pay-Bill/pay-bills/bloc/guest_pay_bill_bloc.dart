@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myaliv_mobile_app/core/model/line_status.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/guest_pay_bill_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/theme/guest_pay_bill_theme.dart';
 import '../repository/guest_pay_bill_repository.dart';
@@ -208,13 +209,35 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
   ) async {
     if (!state.canSubmit) return;
 
+    // Previous prepaid-only check retained for reference.
+    // if (state.isAlivPostpaid &&
+    //     state.accountInfo?.paymentOption ==
+    //         GuestPayBillTheme.paymentOptionPrePay) {
+    //   emit(
+    //     state.copyWith(
+    //       submitStatus: GuestPayBillSubmitStatus.failure,
+    //       errorMessage: GuestPayBillTheme.prepaidNumberErrorMessage,
+    //     ),
+    //   );
+    //   return;
+    // }
+
+    final accountInfo = state.accountInfo;
     if (state.isAlivPostpaid &&
-        state.accountInfo?.paymentOption ==
-            GuestPayBillTheme.paymentOptionPrePay) {
+        (!LineStatus.fromCode(accountInfo?.status).isActive ||
+            accountInfo?.paymentOption?.trim().toLowerCase() !=
+                GuestPayBillTheme.paymentOptionPostPay.toLowerCase())) {
+      // Clear a previous rejection so each retry can show the toast again.
+      emit(
+        state.copyWith(
+          submitStatus: GuestPayBillSubmitStatus.idle,
+          errorMessage: null,
+        ),
+      );
       emit(
         state.copyWith(
           submitStatus: GuestPayBillSubmitStatus.failure,
-          errorMessage: GuestPayBillTheme.prepaidNumberErrorMessage,
+          errorMessage: GuestPayBillTheme.invalidActivePostpaidErrorMessage,
         ),
       );
       return;

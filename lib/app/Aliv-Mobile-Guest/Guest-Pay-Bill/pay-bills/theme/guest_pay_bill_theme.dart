@@ -61,10 +61,15 @@ class GuestPayBillTheme {
   static const String submitSuccessMessage = 'Payment submitted';
 
   // Used by: submit guard in GuestPayBillBloc to detect prepaid accounts.
-  static const String paymentOptionPrePay = 'PrePay';
+  // static const String paymentOptionPrePay = 'PrePay';
 
   // Used by: submit guard error toast when a prepaid number is entered for postpaid bill pay.
-  static const String prepaidNumberErrorMessage = 'number is not postpaid';
+  // static const String prepaidNumberErrorMessage = 'number is not postpaid';
+
+  static const String paymentOptionPostPay = 'PostPay';
+  static const String invalidActivePostpaidErrorMessage =
+      'the number entered is not an active postpaid number.. to try again.\n'
+      'please enter a active postpaid number';
 
   // ===== Screen spacing =====
   // Used by: top content padding after app bar in `guest_pay_bill_screen.dart`.
