@@ -149,7 +149,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else if (isPhoneEmpty) {
         validationMessage = 'phone number is required';
       } else {
-        validationMessage = 'password is required';
+        validationMessage = 'enter your password';
       }
       _emitFailure(
         emit,

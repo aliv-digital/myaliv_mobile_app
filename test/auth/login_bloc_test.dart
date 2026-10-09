@@ -104,6 +104,11 @@ void main() {
       expect: () => [
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.failure)
+            .having(
+              (s) => s.errorMessage,
+              'errorMessage',
+              'enter your password',
+            )
             .having((s) => s.phoneFieldError, 'phoneFieldError', false)
             .having((s) => s.passwordFieldError, 'passwordFieldError', true),
       ],
