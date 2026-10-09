@@ -10,6 +10,7 @@ class HomePlanWalletPaymentActivateBottomSheet extends StatelessWidget {
     required this.planPriceText,
     required this.onBackPressed,
     required this.onActivateNowPressed,
+    this.buttonLabel = HomePlanTheme.bottomSheetActivateNowLabel,
   });
 
   final String warningText;
@@ -18,6 +19,7 @@ class HomePlanWalletPaymentActivateBottomSheet extends StatelessWidget {
   final String planPriceText;
   final VoidCallback onBackPressed;
   final VoidCallback onActivateNowPressed;
+  final String buttonLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -96,9 +98,18 @@ class HomePlanWalletPaymentActivateBottomSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: Text(
-                    HomePlanTheme.bottomSheetActivateNowLabel,
-                    style: HomePlanTheme.bottomSheetPrimaryActionSingleStyle,
+                  // Previous fixed label retained for reference.
+                  // child: Text(
+                  //   HomePlanTheme.bottomSheetActivateNowLabel,
+                  //   style: HomePlanTheme.bottomSheetPrimaryActionSingleStyle,
+                  // ),
+                  // A dated label stays on one line on smaller screens.
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      buttonLabel,
+                      style: HomePlanTheme.bottomSheetPrimaryActionSingleStyle,
+                    ),
                   ),
                 ),
               ),

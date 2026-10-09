@@ -206,6 +206,29 @@ class PlansState extends Equatable {
     });
   }
 
+  /// Only this combination uses one dated action instead of the two choices.
+  bool get hasActivePrimaryWithStandaloneAndFuturePlans =>
+      hasActivePrimaryPlan && standAlonePlans.isNotEmpty && hasFuturePlans;
+
+  /// Wait until every purchased plan has ended, including standalone plans
+  /// and add-ons. Keep the primary-only date rule for the other scenarios.
+  DateTime? get latestPurchasedPlanEndDate {
+    DateTime? latestEndDate;
+    final purchasedPlans = [
+      ...effectivePrimaryPlans,
+      ...standAlonePlans,
+      ...effectiveSecondaryPlans,
+    ];
+    for (final plan in purchasedPlans) {
+      final endDate = plan.endDateTime;
+      if (endDate != null &&
+          (latestEndDate == null || endDate.isAfter(latestEndDate))) {
+        latestEndDate = endDate;
+      }
+    }
+    return latestEndDate;
+  }
+
   /// Secondary plans merged with any optimistic add-ons not yet confirmed by
   /// a real /bundles response. Used by [ActiveAddOnsChips] so purchased
   /// add-ons appear immediately in the Usage tab.

@@ -81,6 +81,32 @@ Future<void> showHomePlanPurchaseBottomSheet({
         );
       }
 
+      // Isolate the single scheduled action; all other cases keep their sheet.
+      if (plansState.hasActivePrimaryWithStandaloneAndFuturePlans) {
+        final lastPlanEndDate = plansState.latestPurchasedPlanEndDate;
+        // Do not invent a schedule date if the API supplied no valid end date.
+        if (lastPlanEndDate != null) {
+          final dateText = DateFormat('MM-dd-yy').format(lastPlanEndDate);
+          return HomePlanWalletPaymentActivateBottomSheet(
+            warningText:
+                'you can activate your plan when your current plan ends on $dateText.',
+            buttonLabel: 'activate my new plan on $dateText',
+            planName: plan.title,
+            planDurationText: plan.subtitle,
+            planPriceText: _priceText(plan.price),
+            onBackPressed: () => Navigator.of(sheetContext).pop(),
+            onActivateNowPressed: () => _continueWithFuturePlan(
+              context: context,
+              sheetContext: sheetContext,
+              selectedTab: selectedTab,
+              selectedApiPlan: selectedApiPlan,
+              fallbackPlan: plan,
+              futurePlanStartDate: lastPlanEndDate.toIso8601String(),
+            ),
+          );
+        }
+      }
+
       if (hasActivePlan) {
         final endDateText = chainStartDate != null
             ? ' on ${DateFormat('MM-dd-yy').format(chainStartDate)}'
@@ -135,6 +161,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
               extra: selectedPlanExtra,
             );
           },
+          /* Previous inline future-plan workflow retained for reference.
           onFuturePlanPressed: () {
             // Option A guard: block back-to-back future purchases while the
             // previous /bundles refresh is still in-flight. Without this,
@@ -171,6 +198,15 @@ Future<void> showHomePlanPurchaseBottomSheet({
               ),
             );
           },
+          */
+          onFuturePlanPressed: () => _continueWithFuturePlan(
+            context: context,
+            sheetContext: sheetContext,
+            selectedTab: selectedTab,
+            selectedApiPlan: selectedApiPlan,
+            fallbackPlan: plan,
+            futurePlanStartDate: futurePlanStartDate,
+          ),
         );
       }
 
@@ -213,6 +249,45 @@ Future<void> showHomePlanPurchaseBottomSheet({
         },
       );
     },
+  );
+}
+
+/// Both the dated action and the existing future-plan button use this flow.
+void _continueWithFuturePlan({
+  required BuildContext context,
+  required BuildContext sheetContext,
+  required HomePlanTab selectedTab,
+  required BasePlanModel? selectedApiPlan,
+  required HomePlanModel fallbackPlan,
+  required String futurePlanStartDate,
+}) {
+  // Keep the sheet open while bundles refresh so pending purchases stay intact.
+  if (context.read<PlansCubit>().state.isRefreshingBundles) {
+    AppToast.show(
+      message: 'updating your plans, please try again in a moment',
+      type: ToastType.error,
+    );
+    return;
+  }
+  Navigator.of(sheetContext).pop();
+  if (selectedTab == HomePlanTab.mifi) {
+    _pushMifiAltContact(
+      context: context,
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+      forceNow: false,
+      futurePlanStartDate: futurePlanStartDate,
+    );
+    return;
+  }
+  context.push(
+    AppRoutes.homePlanConfirmationScreen,
+    extra: _futurePlanConfirmationRouteArgs(
+      selectedApiPlan: selectedApiPlan,
+      fallbackPlan: fallbackPlan,
+      forceNow: false,
+      futurePlanStartDate: futurePlanStartDate,
+    ),
   );
 }
 
