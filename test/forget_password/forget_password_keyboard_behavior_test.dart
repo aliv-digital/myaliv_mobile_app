@@ -172,6 +172,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('OTP placeholder'), findsOneWidget);
+      expect(
+        find.text('a verification code has been sent to your number and email'),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.check), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
     },
   );
 

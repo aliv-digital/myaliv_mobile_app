@@ -82,6 +82,11 @@ class _ForgetPasswordScreenView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == ForgetPasswordStatus.success) {
+              AppToast.show(
+                message:
+                    'a verification code has been sent to your number and email',
+                type: ToastType.success,
+              );
               context.push(
                 AppRoutes.forgetPasswordOtp,
                 extra: LoginOtpRouteArgs(
