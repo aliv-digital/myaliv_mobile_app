@@ -93,7 +93,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
             }
 
             if (state.status == ForgetPasswordStatus.failure &&
-                !state.isEmptyNumberError &&
+                !state.hasInlineNumberError &&
                 state.errorMessage != null) {
               AppToast.show(
                 message: state.errorMessage!,
@@ -115,9 +115,12 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                       ForgetPasswordPhoneRow(focusNode: phoneFocusNode),
                       BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
                         buildWhen: (prev, curr) =>
-                            prev.isEmptyNumberError != curr.isEmptyNumberError,
+                            prev.isEmptyNumberError !=
+                                curr.isEmptyNumberError ||
+                            prev.isInvalidNumberLengthError !=
+                                curr.isInvalidNumberLengthError,
                         builder: (context, state) {
-                          if (!state.isEmptyNumberError) {
+                          if (!state.hasInlineNumberError) {
                             return const SizedBox.shrink();
                           }
                           return Padding(

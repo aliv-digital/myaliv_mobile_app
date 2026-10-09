@@ -17,6 +17,7 @@ class ForgetPasswordBloc
           status: ForgetPasswordStatus.initial,
           errorMessage: null,
           isEmptyNumberError: false,
+          isInvalidNumberLengthError: false,
         ),
       );
     });
@@ -41,6 +42,20 @@ class ForgetPasswordBloc
               ? 'enter your mobile number'
               : 'Please enter your phone number.',
           isEmptyNumberError: isEmptyNumber,
+          isInvalidNumberLengthError: false,
+        ),
+      );
+      return;
+    }
+
+    // FPW-002 checks the existing normalized digits before any API request.
+    if (apiPhone.length != 10) {
+      emit(
+        state.copyWith(
+          status: ForgetPasswordStatus.failure,
+          errorMessage: 'enter a valid 10-digit mobile number',
+          isEmptyNumberError: false,
+          isInvalidNumberLengthError: true,
         ),
       );
       return;
@@ -51,6 +66,7 @@ class ForgetPasswordBloc
         status: ForgetPasswordStatus.loading,
         errorMessage: null,
         isEmptyNumberError: false,
+        isInvalidNumberLengthError: false,
       ),
     );
 
@@ -62,6 +78,7 @@ class ForgetPasswordBloc
           mfaToken: mfaToken,
           apiPhoneNumber: apiPhone,
           isEmptyNumberError: false,
+          isInvalidNumberLengthError: false,
         ),
       );
     } catch (e) {
@@ -73,6 +90,7 @@ class ForgetPasswordBloc
           status: ForgetPasswordStatus.failure,
           errorMessage: message,
           isEmptyNumberError: false,
+          isInvalidNumberLengthError: false,
         ),
       );
     }
