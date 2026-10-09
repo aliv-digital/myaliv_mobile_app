@@ -204,6 +204,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
 
 class _SheetScaffold extends StatelessWidget {
   final Widget child;
+
   const _SheetScaffold({required this.child});
 
   @override

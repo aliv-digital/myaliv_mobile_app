@@ -92,12 +92,6 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
       if (!context.mounted) return;
       bloc.add(const AddOrEditCardsPrepaidNavigationConsumed());
 
-      // Step 1: capture expiry before opening the iframe.
-      final expirationDate = await SaveNewCardBottomSheet.showForExpiryCapture(
-        context,
-      );
-      if (!context.mounted || expirationDate == null) return;
-
       final navigator = Navigator.of(context);
       final cubit = context.read<SavedCardsCubit>();
 
@@ -113,6 +107,13 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
             appBarBgColor: AddOrEditCardsPrepaidTheme.primary,
             onSuccess: (PaymentSuccess success) async {
               navigator.pop();
+              FocusManager.instance.primaryFocus?.unfocus();
+
+              if (!context.mounted) return;
+              final expirationDate =
+                  await SaveNewCardBottomSheet.showForExpiryCapture(context);
+              if (!context.mounted || expirationDate == null) return;
+
               final orderId = int.tryParse(success.orderId ?? '');
               if (orderId == null) {
                 AppToast.show(
@@ -123,8 +124,9 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
               }
               final ok = await cubit.saveNewCard(
                 orderId: orderId,
-                expirationDate: expirationDate, // captured before iframe
+                expirationDate: expirationDate,
               );
+              if (!context.mounted) return;
               if (ok) {
                 final serverMsg = success.queryParams['Message']?.trim();
                 AppToast.show(
