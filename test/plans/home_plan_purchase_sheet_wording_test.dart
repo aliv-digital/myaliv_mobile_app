@@ -13,7 +13,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/home_plan_purchase_sheet_launcher.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_bottom_sheet.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
+// import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
 
 class _MockPlansCubit extends MockCubit<PlansState> implements PlansCubit {}
 
@@ -166,7 +166,8 @@ void main() {
   }
 
   testWidgets(
-    'active primary with future standalone keeps replacement wording',
+    // Previous expectation: active primary with future standalone keeps replacement wording.
+    'active primary with future standalone uses the single dated action',
     (tester) async {
       await openSheet(
         tester,
@@ -175,7 +176,15 @@ void main() {
           standAlonePlans: [plan(type: 'A', start: currentEnd, end: futureEnd)],
         ),
       );
-      expect(find.textContaining('activating now replaces'), findsOneWidget);
+      // expect(find.textContaining('activating now replaces'), findsOneWidget);
+      expect(
+        find.text(
+          'you can activate your plan when your current plan ends on '
+          '${DateFormat('MM-dd-yy').format(futureEnd)}.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('future plan'), findsNothing);
     },
   );
 
@@ -207,19 +216,22 @@ void main() {
       ),
     );
     final sheet = tester
-        .widget<HomePlanWalletPaymentActivateOrFutureBottomSheet>(
-          find.byType(HomePlanWalletPaymentActivateOrFutureBottomSheet),
+        // Previous sheet: HomePlanWalletPaymentActivateOrFutureBottomSheet.
+        .widget<HomePlanWalletPaymentActivateBottomSheet>(
+          find.byType(HomePlanWalletPaymentActivateBottomSheet),
         );
     expect(
       sheet.warningText,
-      'activating now replaces your current plan. '
-      'you can also activate your plan when your current plan ends on '
+      // 'activating now replaces your current plan. '
+      // 'you can also activate your plan when your current plan ends on '
+      'you can activate your plan when your current plan ends on '
       '${DateFormat('MM-dd-yy').format(futureEnd)}.',
     );
   });
 
   testWidgets(
-    'active primary takes priority over standalone and future plans',
+    // Previous expectation: active primary takes priority over standalone and future plans.
+    'active primary with standalone and future plans uses the single dated action',
     (tester) async {
       await openSheet(
         tester,
@@ -233,8 +245,9 @@ void main() {
       );
       expect(
         find.text(
-          'activating now replaces your current plan. '
-          'you can also activate your plan when your current plan ends on '
+          // 'activating now replaces your current plan. '
+          // 'you can also activate your plan when your current plan ends on '
+          'you can activate your plan when your current plan ends on '
           '${DateFormat('MM-dd-yy').format(futureEnd)}.',
         ),
         findsOneWidget,
