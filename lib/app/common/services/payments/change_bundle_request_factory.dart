@@ -258,5 +258,4 @@ class ChangeBundleRequestFactory {
         '${two(date.month)}-${two(date.day)} '
         '${two(date.hour)}:${two(date.minute)}';
   }
-
 }
