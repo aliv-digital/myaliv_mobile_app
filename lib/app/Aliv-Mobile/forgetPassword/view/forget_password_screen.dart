@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../router/app_routes.dart';
 import '../../login/widgets/login_privacy_policy_link.dart';
+import '../../login/theme/login_theme.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
@@ -92,6 +93,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
             }
 
             if (state.status == ForgetPasswordStatus.failure &&
+                !state.isEmptyNumberError &&
                 state.errorMessage != null) {
               AppToast.show(
                 message: state.errorMessage!,
@@ -111,6 +113,27 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ForgetPasswordPhoneRow(focusNode: phoneFocusNode),
+                      BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+                        buildWhen: (prev, curr) =>
+                            prev.isEmptyNumberError != curr.isEmptyNumberError,
+                        builder: (context, state) {
+                          if (!state.isEmptyNumberError) {
+                            return const SizedBox.shrink();
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              top: ForgetPasswordSizes.phoneToSendGap / 2,
+                              left:
+                                  ForgetPasswordSizes.countryWidth +
+                                  ForgetPasswordSizes.countryToPhoneGap,
+                            ),
+                            child: Text(
+                              state.errorMessage ?? '',
+                              style: AuthModuleTextStyles.invalidCredentials,
+                            ),
+                          );
+                        },
+                      ),
                       const SizedBox(
                         height: ForgetPasswordSizes.phoneToSendGap,
                       ),

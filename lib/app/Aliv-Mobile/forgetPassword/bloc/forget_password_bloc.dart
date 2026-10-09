@@ -16,6 +16,7 @@ class ForgetPasswordBloc
           phone: event.phone,
           status: ForgetPasswordStatus.initial,
           errorMessage: null,
+          isEmptyNumberError: false,
         ),
       );
     });
@@ -30,17 +31,27 @@ class ForgetPasswordBloc
     final apiPhone = state.phone.replaceAll(RegExp(r'\D'), '');
 
     if (apiPhone.isEmpty) {
+      // FPW-001 applies only to the empty field; other digitless values keep
+      // their existing failure message and toast behavior.
+      final isEmptyNumber = state.phone.isEmpty;
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.failure,
-          errorMessage: 'Please enter your phone number.',
+          errorMessage: isEmptyNumber
+              ? 'enter your mobile number'
+              : 'Please enter your phone number.',
+          isEmptyNumberError: isEmptyNumber,
         ),
       );
       return;
     }
 
     emit(
-      state.copyWith(status: ForgetPasswordStatus.loading, errorMessage: null),
+      state.copyWith(
+        status: ForgetPasswordStatus.loading,
+        errorMessage: null,
+        isEmptyNumberError: false,
+      ),
     );
 
     try {
@@ -50,6 +61,7 @@ class ForgetPasswordBloc
           status: ForgetPasswordStatus.success,
           mfaToken: mfaToken,
           apiPhoneNumber: apiPhone,
+          isEmptyNumberError: false,
         ),
       );
     } catch (e) {
@@ -60,6 +72,7 @@ class ForgetPasswordBloc
         state.copyWith(
           status: ForgetPasswordStatus.failure,
           errorMessage: message,
+          isEmptyNumberError: false,
         ),
       );
     }

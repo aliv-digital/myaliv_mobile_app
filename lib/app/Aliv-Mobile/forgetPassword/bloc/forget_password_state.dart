@@ -8,6 +8,7 @@ class ForgetPasswordState extends Equatable {
   final String apiPhoneNumber;
   final ForgetPasswordStatus status;
   final String? errorMessage;
+  final bool isEmptyNumberError;
   final bool isTermsLoading;
   final bool isPrivacyLoading;
 
@@ -17,6 +18,7 @@ class ForgetPasswordState extends Equatable {
     this.apiPhoneNumber = '',
     this.status = ForgetPasswordStatus.initial,
     this.errorMessage,
+    this.isEmptyNumberError = false,
     this.isTermsLoading = false,
     this.isPrivacyLoading = false,
   });
@@ -27,6 +29,7 @@ class ForgetPasswordState extends Equatable {
     String? apiPhoneNumber,
     ForgetPasswordStatus? status,
     String? errorMessage,
+    bool? isEmptyNumberError,
     bool? isTermsLoading,
     bool? isPrivacyLoading,
   }) {
@@ -36,6 +39,7 @@ class ForgetPasswordState extends Equatable {
       apiPhoneNumber: apiPhoneNumber ?? this.apiPhoneNumber,
       status: status ?? this.status,
       errorMessage: errorMessage,
+      isEmptyNumberError: isEmptyNumberError ?? this.isEmptyNumberError,
       isTermsLoading: isTermsLoading ?? this.isTermsLoading,
       isPrivacyLoading: isPrivacyLoading ?? this.isPrivacyLoading,
     );
@@ -48,6 +52,7 @@ class ForgetPasswordState extends Equatable {
     apiPhoneNumber,
     status,
     errorMessage,
+    isEmptyNumberError,
     isTermsLoading,
     isPrivacyLoading,
   ];
