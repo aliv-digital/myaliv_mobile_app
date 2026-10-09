@@ -117,7 +117,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
           status: LoginOtpStatus.failure,
           errorType: LoginOtpErrorType.incompleteCode,
           codeFieldError: true,
-          errorMessage: 'Please enter the full code',
+          errorMessage: 'enter all 6 digits of your verification code',
         ),
       );
       return;
