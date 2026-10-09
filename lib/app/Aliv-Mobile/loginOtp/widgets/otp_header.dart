@@ -29,7 +29,7 @@ class OtpHeader extends StatelessWidget {
         const Text('verification code', style: LoginOtpTheme.title),
         const SizedBox(height: LoginOtpSizes.titleToSubtitleGap),
         Text(
-          'we have sent a verification code to your email\nand via sms',
+          'verification code — we have sent a verification code to your email and via sms',
           textAlign: TextAlign.center,
           style: LoginOtpTheme.subtitle,
         ),
