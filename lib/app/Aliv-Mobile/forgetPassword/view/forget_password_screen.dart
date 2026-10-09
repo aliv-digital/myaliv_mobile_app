@@ -163,6 +163,16 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                       ),
                       const SizedBox(
                         height: ForgetPasswordSizes.sendToTermsGap,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: ForgetPasswordSizes.phoneToSendGap,
+                          ),
+                          child: Text(
+                            "by pressing the 'send' button you agree to our terms & conditions and privacy policy",
+                            textAlign: TextAlign.center,
+                            style: ForgetPasswordTheme.termsBase,
+                          ),
+                        ),
                       ),
                       const Center(child: LoginPrivacyPolicyLink()),
                     ],

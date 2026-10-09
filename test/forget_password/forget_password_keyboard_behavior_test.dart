@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -11,10 +12,13 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/bloc/forget_pas
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/bloc/forget_password_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/bloc/forget_password_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/repository/forgetpassword_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/theme/forget_password_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/widgets/forget_password_keyboard_done_toolbar.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_phone_row.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_privacy_policy_link.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_terms_of_use_modal.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -39,6 +43,69 @@ void main() {
   tearDown(() async {
     await instance.reset();
   });
+
+  for (final width in [320.0, 430.0]) {
+    testWidgets(
+      'FPW-011 consent and existing links remain usable at width $width',
+      (tester) async {
+        tester.view.physicalSize = Size(width, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        // Measure the existing footer with the app font rather than test Ahem.
+        await (FontLoader('CircularPro')
+              ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
+              ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
+            .load();
+        await _pumpScreen(tester);
+        await tester.pumpAndSettle();
+
+        const message =
+            "by pressing the 'send' button you agree to our terms & conditions and privacy policy";
+        final consent = find.text(message);
+        expect(consent, findsOneWidget);
+        expect(
+          find.descendant(of: find.byType(CustomScrollView), matching: consent),
+          findsOneWidget,
+        );
+        expect(
+          tester.widget<Text>(consent).style,
+          ForgetPasswordTheme.termsBase,
+        );
+        expect(find.byType(Checkbox), findsNothing);
+        expect(
+          tester.widget<DefaultButton>(find.byType(DefaultButton)).onPressed,
+          isNotNull,
+        );
+        expect(
+          tester.getTopLeft(consent).dy,
+          greaterThan(tester.getBottomLeft(find.byType(DefaultButton)).dy),
+        );
+        expect(
+          tester.getBottomLeft(consent).dy,
+          lessThanOrEqualTo(
+            tester.getTopLeft(find.byType(LoginPrivacyPolicyLink)).dy,
+          ),
+        );
+        for (final label in ['Privacy Policy', 'Terms of Use']) {
+          final button = find.ancestor(
+            of: find.text(label),
+            matching: find.byType(TextButton),
+          );
+          expect(tester.widget<TextButton>(button).onPressed, isNotNull);
+        }
+
+        await tester.tap(find.text('Terms of Use'));
+        await tester.pumpAndSettle();
+        expect(find.byType(LoginTermsOfUseDialog), findsOneWidget);
+        await tester.tap(find.byTooltip('Close'));
+        await tester.pumpAndSettle();
+        expect(find.byType(LoginTermsOfUseDialog), findsNothing);
+        verifyZeroInteractions(networkService);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     testWidgets('$platform Done appears with phone focus and only dismisses', (
