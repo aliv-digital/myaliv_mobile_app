@@ -35,6 +35,13 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
             lastAuthResult: result,
           ),
         );
+      } else if (result == BiometricAuthResult.cancelled) {
+        emit(
+          state.copyWith(
+            status: FingerFaceSecurityStatus.cancelled,
+            lastAuthResult: result,
+          ),
+        );
       } else {
         emit(
           state.copyWith(

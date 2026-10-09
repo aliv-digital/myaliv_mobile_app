@@ -8,7 +8,10 @@ class BiometricAuthService {
   static const String _fingerprintEnabledKey = 'biometric_fingerprint_enabled';
   static const String _faceIdEnabledKey = 'biometric_face_enabled';
 
-  final LocalAuthentication _localAuth = LocalAuthentication();
+  BiometricAuthService({LocalAuthentication? localAuth})
+    : _localAuth = localAuth ?? LocalAuthentication();
+
+  final LocalAuthentication _localAuth;
 
   Future<bool> isDeviceSupported() async {
     try {
@@ -108,7 +111,8 @@ class BiometricAuthService {
     } on LocalAuthException catch (e) {
       debugPrint('BiometricAuth: LocalAuthException: ${e.code}');
       return switch (e.code) {
-        LocalAuthExceptionCode.userCanceled ||
+        // Explicit dismissal is informational; failed attempts stay separate.
+        LocalAuthExceptionCode.userCanceled => BiometricAuthResult.cancelled,
         LocalAuthExceptionCode.userRequestedFallback =>
           BiometricAuthResult.failed,
         LocalAuthExceptionCode.noBiometricsEnrolled ||
@@ -275,6 +279,7 @@ enum BiometricAuthResult {
   biometricsNotAvailable,
   biometricsNotEnrolled,
   error,
+  cancelled,
 }
 
 enum BiometricSetupResult {

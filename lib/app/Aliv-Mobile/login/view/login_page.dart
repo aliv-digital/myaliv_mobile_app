@@ -204,6 +204,10 @@ class _LoginViewState extends State<_LoginView> {
                       ),
                       BlocBuilder<LoginBloc, LoginState>(
                         builder: (context, state) {
+                          final biometricInformation = context
+                              .select<FingerFaceSecurityCubit, String?>(
+                                (cubit) => cubit.state.informationalMessage,
+                              );
                           final hasFieldError =
                               state.status == LoginStatus.failure &&
                               state.errorMessage != null &&
@@ -212,12 +216,19 @@ class _LoginViewState extends State<_LoginView> {
                           return Row(
                             children: [
                               Expanded(
-                                child: hasFieldError
+                                child:
+                                    hasFieldError ||
+                                        biometricInformation != null
                                     ? Text(
-                                        state.errorMessage ??
-                                            'invalid credentials!',
-                                        style: AuthModuleTextStyles
-                                            .invalidCredentials,
+                                        hasFieldError
+                                            ? state.errorMessage ??
+                                                  'invalid credentials!'
+                                            : biometricInformation!,
+                                        style: hasFieldError
+                                            ? AuthModuleTextStyles
+                                                  .invalidCredentials
+                                            : AuthModuleTextStyles
+                                                  .saveMyPassword,
                                       )
                                     : GestureDetector(
                                         behavior: HitTestBehavior.opaque,
