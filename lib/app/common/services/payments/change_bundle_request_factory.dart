@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_bundle.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
@@ -10,18 +8,12 @@ import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purch
 /// The endpoint takes the same outer envelope for every payment type; only
 /// the `CardPayment` map differs. One factory per funding source keeps each
 /// call site declarative.
-///
-/// `KountSessionId` is generated fresh per payment (UUID-v4 via
-/// [Random.secure]) — Kount expects one session per attempted transaction.
 class ChangeBundleRequestFactory {
   ChangeBundleRequestFactory._();
-
-  static final Random _rng = Random.secure();
 
   static Map<String, dynamic> walletCardPayment({required double amount}) {
     return <String, dynamic>{
       'Amount': amount,
-      "KountSessionId": "9c61063f-283d-4cdb-80e4-dc36ed57d179",
       'PaymentInstrument': 'Wallet',
       'CardNumber': 'Wallet',
       'CardExpiration': '2027-12',
@@ -36,12 +28,8 @@ class ChangeBundleRequestFactory {
   }) {
     return <String, dynamic>{
       'Amount': amount,
-      "KountSessionId": "9c61063f-283d-4cdb-80e4-dc36ed57d179",
       'PaymentInstrument': 'Token',
       'CardNumber': cardToken,
-      'CardExpiration': '',
-      'CardSecurityCode': '',
-      'CardHolderName': '',
     };
   }
 
@@ -53,7 +41,6 @@ class ChangeBundleRequestFactory {
   }) {
     return <String, dynamic>{
       'Amount': amount,
-      "KountSessionId": "9c61063f-283d-4cdb-80e4-dc36ed57d179",
       'PaymentInstrument': 'Visa',
       'CardNumber': details.cardNumber,
       'CardExpiration': details.cardExpiration,
@@ -97,6 +84,8 @@ class ChangeBundleRequestFactory {
       'Bonuses': bonuses.map((b) => b.toJson()).toList(),
       'PromoCodes': promoCodes.map((p) => p.toJson()).toList(),
       'Note': 'Payment',
+      'RedirectURL': 'myaliv://topup-callback',
+      'Branch': 'branch',
     };
   }
 
@@ -268,20 +257,5 @@ class ChangeBundleRequestFactory {
     return '${date.year.toString().padLeft(4, '0')}-'
         '${two(date.month)}-${two(date.day)} '
         '${two(date.hour)}:${two(date.minute)}';
-  }
-
-  /// RFC-4122 v4 UUID, e.g. `9c61063f-283d-4cdb-80e4-dc36ed57d179`.
-  /// Cryptographically random; collision risk is negligible across payments.
-  static String _newSessionId() {
-    String hex(int len) {
-      final buf = StringBuffer();
-      for (var i = 0; i < len; i++) {
-        buf.write(_rng.nextInt(16).toRadixString(16));
-      }
-      return buf.toString();
-    }
-
-    final variant = (8 + _rng.nextInt(4)).toRadixString(16); // 8, 9, a, or b
-    return '${hex(8)}-${hex(4)}-4${hex(3)}-$variant${hex(3)}-${hex(12)}';
   }
 }

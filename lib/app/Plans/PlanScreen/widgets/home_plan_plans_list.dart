@@ -30,11 +30,13 @@ class HomePlanPlansList extends StatelessWidget {
     this.onRoamEasyPurchaseNow,
     this.onWeeklyPurchaseNow,
     this.onPostpaidRoamingPurchaseNow,
+    this.isRestricted = false,
   });
 
   final PlansState state;
   final ValueChanged<String> onToggleExpanded;
   final ValueChanged<HomePlanModel> onPurchaseNow;
+  final bool isRestricted;
   final IndexedBasePlanCallback? onDailyPurchaseNow;
   final ValueChanged<BasePlanModel>? onLibertyGlobalPurchaseNow;
   final ValueChanged<BasePlanModel>? onMifiPurchaseNow;
@@ -196,12 +198,14 @@ class HomePlanPlansList extends StatelessWidget {
               plan: plan,
               expanded: expanded,
               onToggle: () => onToggleExpanded(plan.planId),
-              onPurchaseNow: () {
-                debugPrint(plan.planGroup);
-                if (onPostpaidRoamingPurchaseNow != null) {
-                  onPostpaidRoamingPurchaseNow!(plan);
-                }
-              },
+              onPurchaseNow: isRestricted
+                  ? null
+                  : () {
+                      debugPrint(plan.planGroup);
+                      if (onPostpaidRoamingPurchaseNow != null) {
+                        onPostpaidRoamingPurchaseNow!(plan);
+                      }
+                    },
             ),
           );
         },
@@ -224,11 +228,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onDailyPurchaseNow != null) {
-          onDailyPurchaseNow!(plan, index);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onDailyPurchaseNow != null) {
+                onDailyPurchaseNow!(plan, index);
+              }
+            },
     );
   }
 
@@ -244,11 +250,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onWeeklyPurchaseNow != null) {
-          onWeeklyPurchaseNow!(plan, index);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onWeeklyPurchaseNow != null) {
+                onWeeklyPurchaseNow!(plan, index);
+              }
+            },
     );
   }
 
@@ -264,11 +272,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onMonthlyPurchaseNow != null) {
-          onMonthlyPurchaseNow!(plan, index);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onMonthlyPurchaseNow != null) {
+                onMonthlyPurchaseNow!(plan, index);
+              }
+            },
     );
   }
 
@@ -283,11 +293,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onRoamingPurchaseNow != null) {
-          onRoamingPurchaseNow!(plan);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onRoamingPurchaseNow != null) {
+                onRoamingPurchaseNow!(plan);
+              }
+            },
     );
   }
 
@@ -302,11 +314,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onRoamEasyPurchaseNow != null) {
-          onRoamEasyPurchaseNow!(plan);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onRoamEasyPurchaseNow != null) {
+                onRoamEasyPurchaseNow!(plan);
+              }
+            },
     );
   }
 
@@ -321,11 +335,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onMifiPurchaseNow != null) {
-          onMifiPurchaseNow!(plan);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onMifiPurchaseNow != null) {
+                onMifiPurchaseNow!(plan);
+              }
+            },
     );
   }
 
@@ -340,11 +356,13 @@ class HomePlanPlansList extends StatelessWidget {
       expanded: expanded,
       onToggle: toggle,
       onViewDetails: toggle,
-      onPurchaseNow: () {
-        if (onLibertyGlobalPurchaseNow != null) {
-          onLibertyGlobalPurchaseNow!(plan);
-        }
-      },
+      onPurchaseNow: isRestricted
+          ? null
+          : () {
+              if (onLibertyGlobalPurchaseNow != null) {
+                onLibertyGlobalPurchaseNow!(plan);
+              }
+            },
     );
   }
 }

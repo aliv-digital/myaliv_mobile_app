@@ -1,35 +1,35 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
-import 'package:myaliv_mobile_app/core/utils/app_session.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_state.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/view/best_plans_view.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/view/limited_offer_view.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/action_tile.dart';
-import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_postpaid.dart';
+import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_usage_section.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/home_header.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/no_active_plan_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/postpaid_billing_card.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/prepaid_balance_card.dart';
-import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/app/Home/limited-time-offer/view/limited_offer_view.dart';
-import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/best-plans/view/best_plans_view.dart';
-import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_state.dart';
-import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_state.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/cubit/consumption_limit_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_cards.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:core/core.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/core/utils/app_session.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -439,15 +439,16 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           children: [
-            GestureDetector(
-              onTap: () {
-                context.go(AppRoutes.plans);
-              },
-              child: const ActionTile(
-                'assets/icons/ListStarQuick.svg',
-                'buy\nplans',
+            if (!config.isRestricted)
+              GestureDetector(
+                onTap: () {
+                  context.go(AppRoutes.plans);
+                },
+                child: const ActionTile(
+                  'assets/icons/ListStarQuick.svg',
+                  'buy\nplans',
+                ),
               ),
-            ),
             config.userType == UserType.postpaid
                 ? GestureDetector(
                     onTap: () {
@@ -461,12 +462,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 : GestureDetector(
                     onTap: () {
-                      context.read<AppUiConfigCubit>().showFuturePlansView();
-                      context.go(AppRoutes.usage);
+                      context.push(AppRoutes.addOrEditCardsPrepaidScreen);
                     },
                     child: const ActionTile(
-                      'assets/icons/ListHeart.svg',
-                      'my\nfuture plans',
+                      'assets/icons/add_credit_card.svg',
+                      'add\ncredit card',
                     ),
                   ),
             GestureDetector(

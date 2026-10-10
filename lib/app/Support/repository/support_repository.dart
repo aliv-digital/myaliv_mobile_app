@@ -21,7 +21,7 @@ class SupportRepository {
       ),
       SupportMenuItem(
         id: 'support',
-        title: 'support',
+        title: 'help & support',
         action: SupportMenuAction.callSupport,
       ),
       SupportMenuItem(

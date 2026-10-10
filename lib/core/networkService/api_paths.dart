@@ -63,6 +63,9 @@ class Api {
   static String balanceThresholdSettings(int deviceAccountId) =>
       '$baseUrl/v1/MyAliv/device/$deviceAccountId/balance-threshold-settings';
 
+  static String deviceRole(int deviceAccountId) =>
+      '$baseUrl/v1/MyAliv/Account/$deviceAccountId/role';
+
   static const faq =
       'https://myalivappuat-api.bealiv.com/api/app-settings/faqs';
   static const privacyPolicy =

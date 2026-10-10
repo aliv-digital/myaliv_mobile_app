@@ -157,11 +157,15 @@ class _HomePlanViewState extends State<_HomePlanView> {
       return;
     }
     debugPrint("=========== bottom sheet opening ============== ");
-    _logSelectedApiPlan(
-      selectedTab: cubit.state.selectedTab,
-      selectedApiPlan: selectedApiPlan,
-      selectedIndex: selectedIndex,
-    );
+    // This scenario needs only the purchased plans' names and dates.
+    if (!cubit.state.hasActivePrimaryWithStandaloneAndFuturePlans) {
+      _logSelectedApiPlan(
+        selectedTab: cubit.state.selectedTab,
+        selectedApiPlan: selectedApiPlan,
+        selectedIndex: selectedIndex,
+      );
+    }
+    _logExistingPlanDates(cubit.state);
 
     cubit.purchaseNowPressed(plan);
     showHomePlanPurchaseBottomSheet(
@@ -174,6 +178,35 @@ class _HomePlanViewState extends State<_HomePlanView> {
       // Clear the modal open flag when bottom sheet is dismissed
       cubit.purchaseModalClosed();
     });
+  }
+
+  void _logExistingPlanDates(PlansState state) {
+    if (!kDebugMode || !state.hasActivePrimaryWithStandaloneAndFuturePlans) {
+      return;
+    }
+
+    // Log purchased plans only, using the same local dates as the warning.
+    // debugPrint('[Plan purchase] Existing plan dates (device local time):');
+    // void logPlans(String group, List<BasePlanModel> ownedPlans) {
+    void logPlans(List<BasePlanModel> ownedPlans) {
+      for (final ownedPlan in ownedPlans) {
+        final start =
+            ownedPlan.startDateTime?.toIso8601String() ?? 'unavailable';
+        final end = ownedPlan.endDateTime?.toIso8601String() ?? 'unavailable';
+        debugPrint(
+          // '[$group] ${ownedPlan.planName} (ID: ${ownedPlan.planId}) '
+          'plan: ${ownedPlan.planName} '
+          '| start: $start | end: $end',
+        );
+      }
+    }
+
+    // logPlans('Primary (current and future)', state.effectivePrimaryPlans);
+    // logPlans('Standalone (current and future)', state.standAlonePlans);
+    // logPlans('Add-on', state.effectiveSecondaryPlans);
+    logPlans(state.effectivePrimaryPlans);
+    logPlans(state.standAlonePlans);
+    logPlans(state.effectiveSecondaryPlans);
   }
 
   void _logSelectedApiPlan({
@@ -297,8 +330,11 @@ class _HomePlanViewState extends State<_HomePlanView> {
       );
     }
 
+    final isRestricted = context.read<AppUiConfigCubit>().state.isRestricted;
+
     return HomePlanPlansList(
       state: currentState,
+      isRestricted: isRestricted,
       onToggleExpanded: (planId) {
         context.read<PlansCubit>().toggleExpanded(planId);
       },

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/extentions/hex_color.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,6 +33,8 @@ class AppMenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isRestricted = context.read<AppUiConfigCubit>().state.isRestricted;
+
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.7,
       child: SafeArea(
@@ -100,22 +103,25 @@ class AppMenuDrawer extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16.0, right: 16),
               child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
             ),
-            _item('assets/icons/purchase.svg', 'purchases', context),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16),
-              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
-            ),
+            if (!isRestricted)
+              _item('assets/icons/purchase.svg', 'purchases', context),
+            if (!isRestricted)
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16),
+                child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+              ),
             _item('assets/icons/refer.svg', 'refer a friend', context),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16),
               child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
             ),
-            // _item('assets/icons/notification.svg', 'notifications', context),
-            _item('assets/icons/bill.svg', 'REV bill pay', context),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16),
-              child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
-            ),
+            if (!isRestricted)
+              _item('assets/icons/bill.svg', 'REV bill pay', context),
+            if (!isRestricted)
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16),
+                child: Divider(height: 1, color: HexColor.fromHex('#E1E1E1')),
+              ),
             _item('assets/icons/settings.svg', 'settings', context),
             Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16),
