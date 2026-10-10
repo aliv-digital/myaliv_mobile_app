@@ -55,7 +55,8 @@ Future<bool> handleAutoRenewToggle(
 
   if (success) {
     AppToast.show(
-      message: 'your account will not auto renew',
+      // AREN-011: shown only after the disable call succeeds.
+      message: 'auto renew has been turned off',
       type: ToastType.success,
     );
   } else {

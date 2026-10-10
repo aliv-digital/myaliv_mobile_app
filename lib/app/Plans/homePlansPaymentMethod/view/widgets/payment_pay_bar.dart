@@ -15,10 +15,14 @@ class PaymentPayBar extends StatelessWidget {
   final HomePlansPaymentMethodState state;
   final bool isSubmitting;
 
+  /// PAY-001: called instead of paying when no usable method is selected.
+  final VoidCallback? onMissingPaymentMethod;
+
   const PaymentPayBar({
     super.key,
     required this.state,
     required this.isSubmitting,
+    this.onMissingPaymentMethod,
   });
 
   @override
@@ -34,6 +38,10 @@ class PaymentPayBar extends StatelessWidget {
   }
 
   void _onPayNow(BuildContext context) {
+    if (!PaymentSheetLauncher.hasValidPaymentMethod(state)) {
+      onMissingPaymentMethod?.call();
+      return;
+    }
     AppSession.appRoute = state.isPrepaidUser ? 'prepaidPlan' : 'postpaidPlan';
 
     switch (state.paymentMode) {

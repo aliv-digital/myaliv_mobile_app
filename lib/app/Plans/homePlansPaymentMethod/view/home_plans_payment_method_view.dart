@@ -13,6 +13,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_pla
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/theme/home_plans_payment_method_theme.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/services/payment_receipt_builder.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/services/payment_sheet_launcher.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_app_bar.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_method_content.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_pay_bar.dart';
@@ -32,6 +33,9 @@ class HomePlansPaymentMethodView extends StatefulWidget {
 class _HomePlansPaymentMethodViewState
     extends State<HomePlansPaymentMethodView> {
   int _lastWalletWarningRequestId = 0;
+
+  /// PAY-001: set when pay now is tapped without a usable payment method.
+  bool _showPaymentMethodError = false;
 
   @override
   void initState() {
@@ -221,6 +225,8 @@ class _HomePlansPaymentMethodViewState
             bottomNavigationBar: PaymentPayBar(
               state: state,
               isSubmitting: isSubmitting,
+              onMissingPaymentMethod: () =>
+                  setState(() => _showPaymentMethodError = true),
             ),
             body: Column(
               children: <Widget>[
@@ -232,9 +238,32 @@ class _HomePlansPaymentMethodViewState
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(29, 24, 29, 20),
                         sliver: SliverToBoxAdapter(
-                          child: PaymentMethodContent(
-                            state: state,
-                            isLoading: isLoading,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PaymentMethodContent(
+                                state: state,
+                                isLoading: isLoading,
+                              ),
+                              // PAY-001 clears once a usable method is chosen.
+                              if (_showPaymentMethodError &&
+                                  !PaymentSheetLauncher.hasValidPaymentMethod(
+                                    state,
+                                  ))
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    'choose a payment method to continue',
+                                    style: TextStyle(
+                                      fontFamily: 'CircularPro',
+                                      fontSize: 12,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),

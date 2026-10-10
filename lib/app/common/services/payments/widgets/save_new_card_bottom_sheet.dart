@@ -28,12 +28,19 @@ class SaveNewCardBottomSheet extends StatefulWidget {
   /// Shows the expiry picker UI and returns the selected date as a "MMYY"
   /// string when the user confirms, or null when dismissed.
   /// The caller is responsible for the POST /CreditCard/savenew call.
-  static Future<String?> showForExpiryCapture(BuildContext context) {
+  ///
+  /// [rejectPastExpiry] (CARD-002) blocks an already-expired month/year with
+  /// an inline error; it is opt-in so other callers keep their behaviour.
+  static Future<String?> showForExpiryCapture(
+    BuildContext context, {
+    bool rejectPastExpiry = false,
+  }) {
     return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const _SaveNewCardExpiryPicker(),
+      builder: (_) =>
+          _SaveNewCardExpiryPicker(rejectPastExpiry: rejectPastExpiry),
     );
   }
 
@@ -378,7 +385,9 @@ class _SaveNewCardBottomSheetState extends State<SaveNewCardBottomSheet> {
 // ---------------------------------------------------------------------------
 
 class _SaveNewCardExpiryPicker extends StatefulWidget {
-  const _SaveNewCardExpiryPicker();
+  const _SaveNewCardExpiryPicker({this.rejectPastExpiry = false});
+
+  final bool rejectPastExpiry;
 
   @override
   State<_SaveNewCardExpiryPicker> createState() =>
@@ -409,6 +418,16 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
   late final ValueNotifier<int> _monthNotifier;
   late final ValueNotifier<int> _yearNotifier;
 
+  /// CARD-002: set when confirm is tapped with an expired month/year.
+  bool _showExpiryError = false;
+
+  /// A card stays valid through the end of its expiry month.
+  bool get _isPastExpiry {
+    final now = DateTime.now();
+    return _selectedYear < now.year ||
+        (_selectedYear == now.year && _selectedMonth < now.month);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -427,6 +446,10 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
   }
 
   void _onConfirm() {
+    if (widget.rejectPastExpiry && _isPastExpiry) {
+      setState(() => _showExpiryError = true);
+      return;
+    }
     final mm = _selectedMonth.toString().padLeft(2, '0');
     final yy = (_selectedYear % 100).toString().padLeft(2, '0');
     Navigator.of(context).pop('$mm$yy');
@@ -511,6 +534,19 @@ class _SaveNewCardExpiryPickerState extends State<_SaveNewCardExpiryPicker> {
               Expanded(child: _buildYearDropdown(years)),
             ],
           ),
+          // CARD-002 clears itself once a current or future date is chosen.
+          if (_showExpiryError && _isPastExpiry)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'enter a valid expiry date',
+                style: TextStyle(
+                  fontFamily: 'CircularPro',
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,

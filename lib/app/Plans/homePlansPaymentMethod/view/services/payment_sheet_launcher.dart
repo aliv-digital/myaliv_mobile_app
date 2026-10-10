@@ -161,6 +161,21 @@ class PaymentSheetLauncher {
     );
   }
 
+  /// PAY-001: whether the current mode has a usable payment method. A saved
+  /// card only counts when it matches one of the user's real saved cards.
+  static bool hasValidPaymentMethod(HomePlansPaymentMethodState state) {
+    switch (state.paymentMode) {
+      case HomePlansPaymentMode.card:
+        final token = state.selectedMethodId?.trim() ?? '';
+        return token.isNotEmpty && _cardByToken(token) != null;
+      case HomePlansPaymentMode.chargeToMyAccount:
+        return state.selectedMethodId != null;
+      case HomePlansPaymentMode.payWithCard:
+      case HomePlansPaymentMode.payFromWallet:
+        return true;
+    }
+  }
+
   static SavedCardModel? _cardByToken(String token) {
     for (final c in instance<SavedCardsCubit>().state.cards) {
       if (c.token == token) return c;

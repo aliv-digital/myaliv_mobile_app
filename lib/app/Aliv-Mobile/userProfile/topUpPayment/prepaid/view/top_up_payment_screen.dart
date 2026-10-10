@@ -57,6 +57,9 @@ class _TopUpPaymentPrepaidView extends StatefulWidget {
 }
 
 class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
+  /// PAY-001: set when pay now is tapped without a payment method.
+  bool _showPaymentMethodError = false;
+
   @override
   void initState() {
     super.initState();
@@ -116,15 +119,28 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
           p.status != c.status ||
           p.navTarget != c.navTarget,
       listener: _onState,
-      builder: (context, state) => _TopUpPaymentPrepaidScaffold(state: state),
+      builder: (context, state) => _TopUpPaymentPrepaidScaffold(
+        state: state,
+        // Clears itself once a card or "pay with card" is selected.
+        showPaymentMethodError:
+            _showPaymentMethodError && !state.hasMethodSelected,
+        onMissingPaymentMethod: () =>
+            setState(() => _showPaymentMethodError = true),
+      ),
     );
   }
 }
 
 class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
   final TopUpPaymentPrepaidState state;
+  final bool showPaymentMethodError;
+  final VoidCallback onMissingPaymentMethod;
 
-  const _TopUpPaymentPrepaidScaffold({required this.state});
+  const _TopUpPaymentPrepaidScaffold({
+    required this.state,
+    required this.showPaymentMethodError,
+    required this.onMissingPaymentMethod,
+  });
 
   String _amountText(double amount) => AppUtils.formatPrice(amount);
 
@@ -135,6 +151,10 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
   }
 
   Future<void> _onPayNow(BuildContext context) async {
+    if (!state.hasMethodSelected) {
+      onMissingPaymentMethod();
+      return;
+    }
     if (state.paymentMode == TopUpPaymentMode.payWithCard) {
       _payWith3DS(context);
       return;
@@ -235,7 +255,8 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         amountText: _amountText(state.summary.total),
         isVatExclusive: !state.summary.vatInclusive,
         isLoading: state.status == TopUpPaymentStatus.paying,
-        isButtonEnabled: state.hasMethodSelected,
+        // Tappable without a method so PAY-001 can explain itself.
+        isButtonEnabled: state.hasMethodSelected || !state.isBusy,
         buttonColor: TopUpPaymentPrepaidTheme.primary,
         onPayNow: () => _onPayNow(context),
       ),
@@ -257,10 +278,27 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
             sliver: SliverToBoxAdapter(
-              child: _PaymentMethodSection(
-                selectedToken: state.selectedMethodId,
-                payWithCardSelected:
-                    state.paymentMode == TopUpPaymentMode.payWithCard,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PaymentMethodSection(
+                    selectedToken: state.selectedMethodId,
+                    payWithCardSelected:
+                        state.paymentMode == TopUpPaymentMode.payWithCard,
+                  ),
+                  if (showPaymentMethodError)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        'choose a payment method to continue',
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

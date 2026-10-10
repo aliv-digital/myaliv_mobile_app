@@ -111,7 +111,10 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
 
               if (!context.mounted) return;
               final expirationDate =
-                  await SaveNewCardBottomSheet.showForExpiryCapture(context);
+                  await SaveNewCardBottomSheet.showForExpiryCapture(
+                    context,
+                    rejectPastExpiry: true,
+                  );
               if (!context.mounted || expirationDate == null) return;
 
               final orderId = int.tryParse(success.orderId ?? '');

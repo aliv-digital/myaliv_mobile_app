@@ -319,8 +319,8 @@ class AutoRenewBottomSheet extends StatelessWidget {
 
 /// Confirmation bottom sheet shown before disabling auto-renew (prepaid).
 ///
-/// Pops with `true` when the user confirms via the "yes" CTA, and `null`
-/// when the user backs out (back arrow / barrier dismiss).
+/// Pops with `true` when the user confirms via the "ok" CTA, and `null`
+/// when the user cancels (cancel / back arrow / barrier dismiss).
 class DisableAutoRenewBottomSheet extends StatelessWidget {
   const DisableAutoRenewBottomSheet({super.key});
 
@@ -373,7 +373,7 @@ class DisableAutoRenewBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'are you sure you want to turn off auto renew',
+              'are you sure you want to turn off auto renew?',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Color(0xFF121212),
@@ -396,9 +396,35 @@ class DisableAutoRenewBottomSheet extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text(
-                  'yes',
+                  'ok',
                   style: TextStyle(
                     color: Color(0xFFF1F1F8),
+                    fontSize: 15,
+                    fontFamily: 'CircularPro',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // AREN-010: explicit cancel dismisses only (pops without `true`).
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    side: const BorderSide(color: Color(0xFF645D9C)),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'cancel',
+                  style: TextStyle(
+                    color: Color(0xFF645D9C),
                     fontSize: 15,
                     fontFamily: 'CircularPro',
                     fontWeight: FontWeight.w700,
