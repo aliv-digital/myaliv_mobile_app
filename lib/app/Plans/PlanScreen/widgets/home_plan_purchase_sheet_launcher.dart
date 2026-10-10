@@ -18,6 +18,7 @@ import '../../mifiAltContact/model/mifi_alt_contact_route_args.dart';
 import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
+import '../repository/enums/plan_group.dart';
 import '../repository/plan_types.dart';
 import 'roam_bottom_sheet.dart';
 import 'wallet_payment_activate_bottom_sheet.dart';
@@ -122,7 +123,18 @@ Future<void> showHomePlanPurchaseBottomSheet({
             !plansState.hasActivePrimaryPlan &&
             plansState.standAlonePlans.isNotEmpty &&
             plansState.hasFuturePlans;
-        final warningText = hasStandAloneAndFuturePlan
+        // MIFI-006: a MiFi purchase over an active MiFi plan. MiFi is the same
+        // PlanGroup rule that builds the MiFi tab; a missing group falls back
+        // to the existing copy.
+        final hasActiveMifiPlan =
+            selectedTab == HomePlanTab.mifi &&
+            plansState.hasActivePrimaryPlan &&
+            PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) ==
+                PlanGroup.mifi;
+        final warningText = hasActiveMifiPlan
+            ? 'you already have an active mifi plan. '
+                  'buying this plan will replace it immediately.'
+            : hasStandAloneAndFuturePlan
             ? standAloneFuturePlanMessage
             : activePlanMessage;
 
