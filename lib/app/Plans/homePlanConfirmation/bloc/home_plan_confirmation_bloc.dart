@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
@@ -10,6 +11,8 @@ class HomePlanConfirmationBloc
     extends Bloc<HomePlanConfirmationEvent, HomePlanConfirmationState> {
   final HomePlanConfirmationRepository repository;
   final DeviceLimitsCubit deviceLimitsCubit;
+  // Context edits invalidate pending promo results without cancelling transport.
+  int _promoRevision = 0;
 
   HomePlanConfirmationBloc({
     required this.repository,
@@ -28,6 +31,14 @@ class HomePlanConfirmationBloc
     HomePlanConfirmationStarted event,
     Emitter<HomePlanConfirmationState> emit,
   ) async {
+    _promoRevision++;
+    emit(
+      state.copyWith(
+        promoStatus: HomePlanConfirmationPromoStatus.idle,
+        promoResponse: null,
+        promoErrorMessage: '',
+      ),
+    );
     emit(state.copyWith(status: HomePlanConfirmationStatus.loading));
 
     try {
@@ -62,6 +73,10 @@ class HomePlanConfirmationBloc
     HomePlanConfirmationRemoveItemPressed event,
     Emitter<HomePlanConfirmationState> emit,
   ) {
+    _promoRevision++;
+    if (state.promoStatus == HomePlanConfirmationPromoStatus.applying) {
+      emit(state.copyWith(promoStatus: HomePlanConfirmationPromoStatus.idle));
+    }
     final data = state.data;
     if (data == null) return;
 
@@ -72,8 +87,28 @@ class HomePlanConfirmationBloc
       vat: updatedItems.fold<double>(0, (s, x) => s + x.vatAmount),
     );
 
+    final response = state.promoResponse;
+    final exceeds =
+        state.promoStatus == HomePlanConfirmationPromoStatus.applied &&
+        response != null &&
+        PromoSubtotalValidation.exceedsSubtotal(
+          discount: PromoSubtotalValidation.monetaryDiscount(
+            unitType: response.definition.unitType,
+            unitQty: response.definition.unitQty,
+            subtotal: totals.subTotal,
+          ),
+          subtotal: totals.subTotal,
+        );
+
     emit(
       state.copyWith(
+        promoStatus: exceeds
+            ? HomePlanConfirmationPromoStatus.failure
+            : state.promoStatus,
+        promoErrorMessage: exceeds
+            ? PromoSubtotalValidation.errorMessage
+            : state.promoErrorMessage,
+        promoResponse: exceeds ? null : state.promoResponse,
         data: HomePlanConfirmationData(
           phoneNumber: data.phoneNumber,
           headerTitle: data.headerTitle,
@@ -89,6 +124,7 @@ class HomePlanConfirmationBloc
     HomePlanConfirmationPromoCodeChanged event,
     Emitter<HomePlanConfirmationState> emit,
   ) {
+    _promoRevision++;
     emit(
       state.copyWith(
         promoCode: event.value,
@@ -105,6 +141,7 @@ class HomePlanConfirmationBloc
   ) async {
     if (!state.canApplyPromo) return;
 
+    final revision = ++_promoRevision;
     final promoCode = state.promoCode.trim();
 
     emit(
@@ -126,6 +163,28 @@ class HomePlanConfirmationBloc
         deviceAcId: deviceId,
       );
 
+      if (emit.isDone || revision != _promoRevision) {
+        return;
+      }
+      if (response.isApplied &&
+          PromoSubtotalValidation.exceedsSubtotal(
+            discount: PromoSubtotalValidation.monetaryDiscount(
+              unitType: response.definition.unitType,
+              unitQty: response.definition.unitQty,
+              subtotal: state.data?.totals.subTotal ?? 0,
+            ),
+            subtotal: state.data?.totals.subTotal ?? 0,
+          )) {
+        emit(
+          state.copyWith(
+            promoStatus: HomePlanConfirmationPromoStatus.failure,
+            promoErrorMessage: PromoSubtotalValidation.errorMessage,
+            promoResponse: null,
+          ),
+        );
+        return;
+      }
+
       debugPrint('HomePlanConfirmationBloc: apply promo response=$response');
 
       debugPrint('is Applied : ${response.isApplied}');
@@ -140,6 +199,9 @@ class HomePlanConfirmationBloc
         ),
       );
     } catch (e) {
+      if (emit.isDone || revision != _promoRevision) {
+        return;
+      }
       emit(
         state.copyWith(
           promoStatus: HomePlanConfirmationPromoStatus.failure,

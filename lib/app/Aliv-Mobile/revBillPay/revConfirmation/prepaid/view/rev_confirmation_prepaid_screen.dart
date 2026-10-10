@@ -25,7 +25,19 @@ class RevConfirmationPrepaidScreen extends StatelessWidget {
       create: (_) => RevConfirmationPrepaidBloc(
         repository: RevConfirmationPrepaidRepositoryImpl(),
       )..add(const RevConfirmationStarted()),
-      child: const _RevConfirmationPrepaidView(),
+      child:
+          BlocListener<RevConfirmationPrepaidBloc, RevConfirmationPrepaidState>(
+            listenWhen: (previous, current) =>
+                previous.promoStatus != current.promoStatus &&
+                current.promoErrorMessage.isNotEmpty,
+            listener: (context, state) {
+              AppToast.show(
+                message: state.promoErrorMessage,
+                type: ToastType.error,
+              );
+            },
+            child: const _RevConfirmationPrepaidView(),
+          ),
     );
   }
 }
