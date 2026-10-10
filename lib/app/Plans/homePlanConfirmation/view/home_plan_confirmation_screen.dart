@@ -80,7 +80,7 @@ class _HomePlanConfirmationViewState extends State<_HomePlanConfirmationView> {
             switch (state.promoStatus) {
               case HomePlanConfirmationPromoStatus.applied:
                 AppToast.show(
-                  message: 'promo applied',
+                  message: 'promo code applied',
                   type: ToastType.success,
                 );
                 break;
