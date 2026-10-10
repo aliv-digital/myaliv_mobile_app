@@ -216,6 +216,18 @@ class _MyNumberTab extends StatefulWidget {
 class _MyNumberTabState extends State<_MyNumberTab> {
   bool _isChecking = false;
 
+  /// TOP-003 inline single-transaction limit error for the amount field.
+  String? _amountError;
+
+  @override
+  void didUpdateWidget(covariant _MyNumberTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Any edit to the amount clears the stale inline error.
+    if (oldWidget.state.amountText != widget.state.amountText) {
+      _amountError = null;
+    }
+  }
+
   static const _caseDMessage =
       'please try again in a few minutes. if this continues, contact support at 1-242-300-2548';
 
@@ -230,7 +242,11 @@ class _MyNumberTabState extends State<_MyNumberTab> {
       limitFetchFailed: state.limitFetchFailed,
     );
     if (gate.blocked) {
-      AppToast.show(message: gate.errorMessage!, type: ToastType.error);
+      if (gate.isPerTransactionLimit) {
+        setState(() => _amountError = gate.errorMessage);
+      } else {
+        AppToast.show(message: gate.errorMessage!, type: ToastType.error);
+      }
       return;
     }
 
@@ -292,6 +308,14 @@ class _MyNumberTabState extends State<_MyNumberTab> {
                 value: state.amountText,
                 onChanged: (v) => bloc.add(TopUpPrepaidAmountChanged(v)),
               ),
+              if (_amountError != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _amountError!,
+                  textAlign: TextAlign.center,
+                  style: TopUpPrepaidTheme.amountError(),
+                ),
+              ],
               const SizedBox(height: 16),
 
               BlocBuilder<BalanceCubit, BalanceState>(

@@ -30,7 +30,7 @@ Same copy on both tabs; field sources differ.
 | Case | Trigger | Message |
 |---|---|---|
 | A | **any** required limit is 0/null (per-tx OR daily ceiling — see below) | *"your top up limit is not set on your account. to process this payment, please contact support at 1-242-300-2548"* |
-| B | `amount > perTxLimit` | *"your single top up limit is $X. please lower the amount…"* |
+| B | `amount > perTxLimit` | My Number (TOP-003, inline under the amount field): *"the maximum top-up amount is $X"* |
 | C | daily bucket exceeded | *"your daily top up limit is $Y. please try a smaller amount…"* |
 | D | fetch failed / data missing | *"please try again in a few minutes. if this continues, contact support at 1-242-300-2548"* |
 
@@ -53,7 +53,7 @@ Same copy on both tabs; field sources differ.
 
 **My Number, Case B**
 > Account: `topUpPerTransLimit=100`, `topUp24HourLimit=200`, `TopUp24HourLimitLeft=200`
-> User enters `150` → **"your single top up limit is $100.00. please lower the amount to continue your transaction."**
+> User enters `150` → **"the maximum top-up amount is $100.00"** (inline)
 
 **My Number, Case C**
 > Account: same as above but `TopUp24HourLimitLeft=50`

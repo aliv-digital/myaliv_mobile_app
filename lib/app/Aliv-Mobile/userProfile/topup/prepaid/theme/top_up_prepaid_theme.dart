@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
 
 class TopUpPrepaidTheme {
   TopUpPrepaidTheme._();
@@ -123,6 +124,14 @@ class TopUpPrepaidTheme {
     fontSize: 40,
     fontFamily: 'CircularPro',
     fontWeight: FontWeight.w700,
+  );
+
+  // Inline amount validation (TOP-003).
+  static TextStyle amountError() => TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: ColorManager.redColor,
   );
 
   static TextStyle buttonText() => const TextStyle(
