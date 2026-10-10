@@ -51,6 +51,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   DateTime? _selectedBeginDate;
   late final NetworkService _networkService = instance<NetworkService>();
   bool _termsAccepted = false;
+  bool _showTermsValidation = false;
   String _promoCode = '';
   _ConfirmationPromoStatus _promoStatus = _ConfirmationPromoStatus.idle;
   String _promoErrorMessage = '';
@@ -109,6 +110,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
      * mistaken for a plan purchase and showing "No postpaid plan selected."
      */
     final config = context.read<AppUiConfigCubit>().state;
+    // PLAN-006 is local to prepaid; postpaid retains its existing terms gate.
+    if (config.isPrepaid && !_termsAccepted) {
+      setState(() => _showTermsValidation = true);
+      return;
+    }
     final hasTopUpAmount = widget.topUpAmount != null;
     final hasRecipientPhone = widget.recipientPhone != null;
 
@@ -419,6 +425,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isPrepaid = context.read<AppUiConfigCubit>().state.isPrepaid;
     final isSendTopUp = widget.topUpAmount != null;
     final topUpAmountText = formatConfirmationCurrency(widget.topUpAmount ?? 0);
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
@@ -443,7 +450,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       bottomNavigationBar: ConfirmationBottomBar(
         totalText: totalText,
         vatLabel: vatLabel,
-        enabled: _termsAccepted,
+        enabled: isPrepaid || _termsAccepted,
         onContinue: _continuePressed,
       ),
       body: SafeArea(
@@ -469,8 +476,25 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
               const SizedBox(height: 16),
               ConfirmationTermsCheckbox(
                 isChecked: _termsAccepted,
-                onChanged: (v) => setState(() => _termsAccepted = v),
+                onChanged: (v) => setState(() {
+                  _termsAccepted = v;
+                  if (v) {
+                    _showTermsValidation = false;
+                  }
+                }),
               ),
+              if (isPrepaid && _showTermsValidation)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, left: 25),
+                  child: Text(
+                    'accept the terms & conditions to continue',
+                    style: TextStyle(
+                      fontFamily: 'CircularPro',
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 16),
               ConfirmationBreakdown(
                 subTotalText: subTotalText,
