@@ -111,6 +111,16 @@ void main() {
       ),
     );
     await settle(tester);
+    // ATOP-002 requires a valid threshold before the card check runs.
+    await tester.enterText(
+      find.byWidgetPredicate(
+        (w) =>
+            w is TextField &&
+            w.decoration?.hintText == 'enter threshold amount',
+      ),
+      '20',
+    );
+    await settle(tester);
   }
 
   Future<void> enterCustomAmount(WidgetTester tester, String value) async {
@@ -152,15 +162,16 @@ void main() {
     );
   });
 
-  testWidgets('missing amount keeps its existing toast first', (tester) async {
+  testWidgets('missing amount (now ATOP-003 inline) is still checked first', (
+    tester,
+  ) async {
     await pumpTab(tester, noCards);
-    await tester.ensureVisible(find.text('apply'));
-    await tester.tap(find.text('apply'));
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('Please select or enter an amount'), findsOneWidget);
+    await apply(tester);
+    expect(
+      find.text('choose a top-up amount or enter a custom amount'),
+      findsOneWidget,
+    );
     expect(find.text(_cardError), findsNothing);
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pumpAndSettle();
   });
 
   testWidgets('add a new card reuses the existing add-card action', (

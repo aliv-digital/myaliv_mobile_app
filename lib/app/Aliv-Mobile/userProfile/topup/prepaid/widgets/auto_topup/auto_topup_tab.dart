@@ -7,8 +7,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_s
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
-import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../../logic/auto_top_up_validation.dart';
 import '../../theme/top_up_prepaid_theme.dart';
 import '../../view/auto_top_up_authorization_screen.dart';
 import 'auto_topup_amount_grid.dart';
@@ -33,6 +33,11 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
 
   /// ATOP-001 inline error; cleared as soon as a card is selected.
   String? _cardError;
+
+  /// ATOP-002 threshold and ATOP-003/004/005 amount inline errors; each
+  /// clears as soon as its own field is edited.
+  String? _thresholdError;
+  String? _amountError;
 
   bool get _hasCustomAmount => _customAmountController.text.isNotEmpty;
 
@@ -143,8 +148,9 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
         children: [
           AutoTopupThresholdSection(
             controller: _thresholdController,
-            onChanged: (_) => setState(() {}),
+            onChanged: (_) => setState(() => _thresholdError = null),
             minThreshold: _minThreshold,
+            errorText: _thresholdError,
           ),
           const SizedBox(height: 26),
           AutoTopupAmountSection(
@@ -152,6 +158,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
             onAmountSelected: (v) => setState(() {
               _selectedAmount = v;
               _customAmountController.clear();
+              _amountError = null;
             }),
             enabled: !_hasCustomAmount,
           ),
@@ -160,10 +167,15 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
           const SizedBox(height: 16),
           AutoTopupCustomAmountSection(
             controller: _customAmountController,
-            onChanged: (v) {
-              if (v.isNotEmpty) setState(() => _selectedAmount = null);
-            },
+            onChanged: (v) => setState(() {
+              if (v.isNotEmpty) _selectedAmount = null;
+              _amountError = null;
+            }),
           ),
+          if (_amountError != null) ...[
+            const SizedBox(height: 8),
+            Text(_amountError!, style: TopUpPrepaidTheme.amountError()),
+          ],
           const SizedBox(height: 32),
           AutoTopupApplyButton(enabled: _anyTimeEnabled, onPressed: _onApply),
         ],
@@ -177,14 +189,33 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
     final threshold =
         double.tryParse(_thresholdController.text) ?? _minThreshold;
 
-    // Custom amount has priority
-    final amount = _hasCustomAmount
-        ? double.tryParse(_customAmountController.text)
-        : _selectedAmount?.toDouble();
-    if (amount == null || amount <= 0) {
-      _showError('Please select or enter an amount');
+    // ATOP-002: threshold first, shown inline on the threshold helper.
+    final thresholdError = validateAutoTopUpThreshold(threshold);
+    if (thresholdError != null) {
+      setState(() {
+        _thresholdError = thresholdError;
+        _amountError = null;
+        _cardError = null;
+      });
       return;
     }
+
+    // Custom amount has priority (ATOP-003/004/005).
+    final customAmount = _hasCustomAmount
+        ? double.tryParse(_customAmountController.text)
+        : null;
+    final amountError = validateAutoTopUpAmount(
+      customAmount: customAmount,
+      presetAmount: _selectedAmount,
+    );
+    if (amountError != null) {
+      setState(() {
+        _amountError = amountError;
+        _cardError = null;
+      });
+      return;
+    }
+    final amount = customAmount ?? _selectedAmount!.toDouble();
 
     // Use selected card token, or existing token from API, or empty string
     final cardToken =
@@ -215,9 +246,5 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
     await context.push(AppRoutes.addOrEditCardsPrepaidScreen);
     if (!mounted) return;
     context.read<SavedCardsCubit>().refreshSavedCards();
-  }
-
-  void _showError(String msg) {
-    AppToast.show(message: msg, type: ToastType.error);
   }
 }

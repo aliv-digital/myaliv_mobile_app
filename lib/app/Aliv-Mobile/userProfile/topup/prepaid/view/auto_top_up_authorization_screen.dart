@@ -58,6 +58,9 @@ class _AutoTopUpAuthorizationScreenState
 
     setState(() => _isSubmitting = true);
 
+    // ATOP-007: read before the update, which refreshes the cubit's state.
+    final isNewActivation = !instance<DeviceLimitsCubit>().state.hasAutoTopUp;
+
     final success = await instance<DeviceLimitsCubit>()
         .updateBalanceThresholdSettings(
           balanceThreshold: widget.balanceThreshold,
@@ -70,8 +73,10 @@ class _AutoTopUpAuthorizationScreenState
 
     if (success) {
       AppToast.show(
-        message:
-            "We're working on it! Auto top-up takes a few minutes to update. Thank you for your patience.",
+        // Updates to existing settings keep their current copy.
+        message: isNewActivation
+            ? 'auto top-up successfully started'
+            : "We're working on it! Auto top-up takes a few minutes to update. Thank you for your patience.",
         type: ToastType.success,
       );
       Future.delayed(const Duration(seconds: 1), () {

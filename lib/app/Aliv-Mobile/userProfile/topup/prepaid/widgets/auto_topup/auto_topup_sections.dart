@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
-import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/dropdowns/saved_card_dropdown.dart';
+import '../../logic/auto_top_up_validation.dart';
 import '../../theme/top_up_prepaid_theme.dart';
 import 'auto_topup_amount_grid.dart';
 import 'auto_topup_widgets.dart';
@@ -66,14 +66,19 @@ class AutoTopupThresholdSection extends StatelessWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
 
-  /// API-provided minimum floor. Shown as helper text when > 0.
+  /// The account's current threshold from the API. No longer drives the
+  /// helper, which now states the fixed ATOP-002 range.
   final double minThreshold;
+
+  /// When set, the ATOP-002 helper is shown as an inline error.
+  final String? errorText;
 
   const AutoTopupThresholdSection({
     super.key,
     this.controller,
     this.onChanged,
     this.minThreshold = 0,
+    this.errorText,
   });
 
   @override
@@ -88,19 +93,21 @@ class AutoTopupThresholdSection extends StatelessWidget {
           controller: controller,
           onChanged: onChanged,
         ),
-        if (minThreshold > 0) ...[
-          const SizedBox(height: 8),
-          Text(
-            'amount must be above ${AppUtils.formatPrice(minThreshold)}',
-            style: const TextStyle(
-              color: Color(0xFF707070),
-              fontSize: 14,
-              fontFamily: 'CircularPro',
-              fontWeight: FontWeight.w500,
-              height: 1.43,
-            ),
+        const SizedBox(height: 8),
+        // ATOP-002: the helper and the inline error share the same copy; an
+        // invalid threshold turns the helper into the error.
+        Text(
+          errorText ?? autoTopUpThresholdRangeMessage,
+          style: TextStyle(
+            color: errorText != null
+                ? TopUpPrepaidTheme.amountError().color
+                : const Color(0xFF707070),
+            fontSize: 14,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w500,
+            height: 1.43,
           ),
-        ],
+        ),
       ],
     );
   }
