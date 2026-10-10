@@ -13,6 +13,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repo
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/widgets/send_top_up_placeholder_tab.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class _SendRepo extends Mock implements SendTopupRepository {}
@@ -24,11 +25,13 @@ class _Balance extends MockCubit<BalanceState> implements BalanceCubit {}
 class _BalanceState extends Mock implements BalanceState {}
 
 const _mismatch = "these numbers don't match. re-enter the number to continue.";
+const _range = r'enter an amount between $5.00 and $100.00';
 
 void main() {
   late _SendRepo sendRepo;
   late _TopUpRepo topUpRepo;
   late _Balance balance;
+  late _BalanceState balanceState;
   late TopUpPrepaidBloc bloc;
   Uri? confirmation;
 
@@ -47,7 +50,7 @@ void main() {
     topUpRepo = _TopUpRepo();
     balance = _Balance();
     confirmation = null;
-    final balanceState = _BalanceState();
+    balanceState = _BalanceState();
     when(() => balanceState.walletBalance).thenReturn(200);
     when(() => balance.state).thenReturn(balanceState);
     when(
@@ -73,6 +76,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final router = GoRouter(
+      navigatorKey: rootNavigatorKey,
       routes: [
         GoRoute(
           path: '/',
@@ -209,5 +213,116 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_mismatch), findsNothing);
     expect(proceedButton(tester).onPressed, isNotNull);
+  });
+
+  for (final amount in ['1', '4.99', '100.01', '150']) {
+    testWidgets('STOP-007 blocks \$$amount inline before any API', (
+      tester,
+    ) async {
+      await pumpTab(tester);
+      await fill(
+        tester,
+        phone: '2428011616',
+        confirm: '2428011616',
+        amount: amount,
+      );
+      expect(find.text(_range), findsNothing);
+      await tester.tap(find.text('proceed'));
+      await tester.pumpAndSettle();
+      expect(find.text(_range), findsOneWidget);
+      expect(find.text(_mismatch), findsNothing);
+      expect(find.text('balance is not sufficient'), findsNothing);
+      expectNoDownstream();
+    });
+  }
+
+  for (final (amount, expected) in [('5', 5.0), ('50', 50.0), ('100', 100.0)]) {
+    testWidgets('STOP-007 allows \$$amount through the existing flow', (
+      tester,
+    ) async {
+      await pumpTab(tester);
+      await fill(
+        tester,
+        phone: '2428011616',
+        confirm: '2428011616',
+        amount: amount,
+      );
+      await tester.tap(find.text('proceed'));
+      await tester.pumpAndSettle();
+      expect(find.text(_range), findsNothing);
+      verify(() => sendRepo.phoneNumberExists('2428011616')).called(1);
+      verify(() => sendRepo.transferIsValid('2428011616')).called(1);
+      verify(() => topUpRepo.canSubmitOrder(amount: expected)).called(1);
+      expect(find.text('existing confirmation'), findsOneWidget);
+      expect(
+        confirmation!.queryParameters['amount'],
+        expected.toStringAsFixed(2),
+      );
+      expect(confirmation!.queryParameters['recipient'], '2428011616');
+    });
+  }
+
+  for (final (invalid, valid) in [('2', '20'), ('150', '100')]) {
+    testWidgets('STOP-007 clears on edit: \$$invalid → \$$valid continues', (
+      tester,
+    ) async {
+      await pumpTab(tester);
+      await fill(
+        tester,
+        phone: '2428011616',
+        confirm: '2428011616',
+        amount: invalid,
+      );
+      await tester.tap(find.text('proceed'));
+      await tester.pumpAndSettle();
+      expect(find.text(_range), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField).at(2), valid);
+      await tester.pumpAndSettle();
+      expect(find.text(_range), findsNothing);
+      await tester.tap(find.text('proceed'));
+      await tester.pumpAndSettle();
+      expect(find.text('existing confirmation'), findsOneWidget);
+      expect(
+        confirmation!.queryParameters['amount'],
+        double.parse(valid).toStringAsFixed(2),
+      );
+    });
+  }
+
+  testWidgets('wallet-insufficient keeps its existing toast for valid range', (
+    tester,
+  ) async {
+    when(() => balanceState.walletBalance).thenReturn(20);
+    await pumpTab(tester);
+    await fill(
+      tester,
+      phone: '2428011616',
+      confirm: '2428011616',
+      amount: '50',
+    );
+    await tester.tap(find.text('proceed'));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('balance is not sufficient'), findsOneWidget);
+    expect(find.text(_range), findsNothing);
+    expectNoDownstream();
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('out-of-range amount does not replace the STOP-004 mismatch', (
+    tester,
+  ) async {
+    await pumpTab(tester);
+    await fill(
+      tester,
+      phone: '2428011616',
+      confirm: '2428011617',
+      amount: '150',
+    );
+    expect(find.text(_mismatch), findsOneWidget);
+    expect(proceedButton(tester).onPressed, isNull);
+    expect(find.text(_range), findsNothing);
+    expectNoDownstream();
   });
 }

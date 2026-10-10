@@ -46,6 +46,18 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   bool _hasConfirmPhoneFocus = false;
   bool _isChecking = false;
 
+  // STOP-007: product-approved Send Top-up range (USD, inclusive). Local to
+  // this flow so My Number / Auto Top-up limits are unaffected.
+  static const double _minSendTopUpAmount = 5;
+  static const double _maxSendTopUpAmount = 100;
+  static final String _amountRangeMessage =
+      'enter an amount between '
+      '${BalanceCurrencyFormatterService.format(_minSendTopUpAmount)} and '
+      '${BalanceCurrencyFormatterService.format(_maxSendTopUpAmount)}';
+
+  /// STOP-007 inline amount error; cleared as soon as the amount is edited.
+  String? _amountError;
+
   bool get _phoneNumbersDoNotMatch {
     if (_confirmPhoneNumber.isEmpty) return false;
     return _digitsOnly(_phoneNumber) != _digitsOnly(_confirmPhoneNumber);
@@ -261,9 +273,19 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 hint: GuestTopUpTheme.amountHintText,
                 initialValue: _amount,
                 onChanged: (value) {
-                  setState(() => _amount = value);
+                  setState(() {
+                    _amount = value;
+                    _amountError = null;
+                  });
                 },
               ),
+              if (_amountError != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  _amountError!,
+                  style: AuthModuleTextStyles.invalidCredentials,
+                ),
+              ],
 
               const SizedBox(height: 30),
               BlocBuilder<BalanceCubit, BalanceState>(
@@ -291,6 +313,11 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                           _confirmPhoneNumber.isEmpty)
                       ? null
                       : () async {
+                          if (_amountValue < _minSendTopUpAmount ||
+                              _amountValue > _maxSendTopUpAmount) {
+                            setState(() => _amountError = _amountRangeMessage);
+                            return;
+                          }
                           final recipientPhone =
                               _validatePhone(_phoneNumber).phoneNumberForApi ??
                               _digitsOnly(_phoneNumber);
