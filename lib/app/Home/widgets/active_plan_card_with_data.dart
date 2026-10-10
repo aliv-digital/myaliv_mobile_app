@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,7 +13,14 @@ import 'package:myaliv_mobile_app/app/Home/widgets/auto_renew_actions.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/theme/theme.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/resources/color_manager.dart';
+
+/// Temporary HOME-006 preview: opt in with --dart-define=debugForcePlanExpiryWarning=true.
+/// Release/profile builds always use the real expiry. Banner styling is shared.
+const bool debugForcePlanExpiryWarning =
+    kDebugMode && bool.fromEnvironment('debugForcePlanExpiryWarning');
 
 /// Active plan card connected to PlansCubit for real-time data.
 ///
@@ -68,7 +78,20 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
         if (!showRenewButton) return card;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: card,
+          child: isFromHome
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!state.isLoading &&
+                        !state.isInitial &&
+                        state.earliestAddOnsPrimaryPlan != null)
+                      _PlanExpiryWarning(
+                        plan: state.earliestAddOnsPrimaryPlan!,
+                      ),
+                    card,
+                  ],
+                )
+              : card,
         );
       },
     );
@@ -114,6 +137,146 @@ class PrepaidActivePlanCardWithData extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// HOME-006 is local to prepaid Home; shared plan validity stays unchanged.
+class _PlanExpiryWarning extends StatefulWidget {
+  const _PlanExpiryWarning({required this.plan});
+
+  final BasePlanModel plan;
+
+  @override
+  State<_PlanExpiryWarning> createState() => _PlanExpiryWarningState();
+}
+
+class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
+  static const _warningWindow = Duration(days: 3);
+  Timer? _updateTimer;
+
+  // In-memory, presentation-only expiry; the plan and its card are untouched.
+  late final DateTime? _debugExpiry = debugForcePlanExpiryWarning
+      ? DateTime.now().add(const Duration(days: 2))
+      : null;
+
+  DateTime? get _warningExpiry => _debugExpiry ?? widget.plan.endDateTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleUpdate();
+  }
+
+  @override
+  void didUpdateWidget(covariant _PlanExpiryWarning oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.plan != widget.plan) {
+      _scheduleUpdate();
+    }
+  }
+
+  void _scheduleUpdate() {
+    _updateTimer?.cancel();
+    final now = DateTime.now();
+    final end = _warningExpiry;
+    if (end == null || !end.isAfter(now)) {
+      return;
+    }
+
+    // Update only at a visibility boundary, without polling or fetching plans.
+    final boundaries = [
+      widget.plan.startDateTime,
+      end.subtract(_warningWindow),
+      end,
+    ].whereType<DateTime>().where((date) => date.isAfter(now)).toList()..sort();
+    _updateTimer = Timer(boundaries.first.difference(now), () {
+      if (mounted) {
+        setState(_scheduleUpdate);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _updateTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final plan = widget.plan;
+    final now = DateTime.now();
+    final start = plan.startDateTime;
+    final end = _warningExpiry;
+    if (end == null ||
+        !end.isAfter(now) ||
+        (start != null && start.isAfter(now)) ||
+        end.difference(now) > _warningWindow ||
+        plan.planName.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Normal and forced-expiry states use the same HOME-006 presentation.
+    final red = ColorManager.primaryRedFF0000;
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 20),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: HomePlanTheme.warningBorder),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.error_outline, color: red, size: 16),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'your ${plan.planName} plan expires on ${end.formatDdMmYy()}. renew to stay connected.',
+                    style: TextStyle(
+                      color: red,
+                      fontSize: 12,
+                      fontFamily: 'CircularPro',
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  InkWell(
+                    onTap: () => _openPlanRenewal(context),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'renew your plan',
+                          style: TextStyle(
+                            color: red,
+                            fontSize: 12,
+                            fontFamily: 'CircularPro',
+                            fontWeight: FontWeight.w500,
+                            height: 1.3,
+                            decoration: TextDecoration.underline,
+                            decorationColor: red,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, color: red, size: 12),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -437,7 +600,19 @@ class _DateBlock extends StatelessWidget {
   }
 }
 
-/// Renew button for active plan card
+/// Existing renewal flow shared by the active-card button and warning link.
+void _openPlanRenewal(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    isDismissible: true,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.5),
+    builder: (_) => const AutoRenewBottomSheet(),
+  );
+}
+
+/// Renew button for active plan card.
 class _RenewPlanButton extends StatelessWidget {
   const _RenewPlanButton();
 
@@ -447,16 +622,7 @@ class _RenewPlanButton extends StatelessWidget {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            isDismissible: true,
-            backgroundColor: Colors.transparent,
-            barrierColor: Colors.black.withValues(alpha: 0.5),
-            builder: (_) => const AutoRenewBottomSheet(),
-          );
-        },
+        onPressed: () => _openPlanRenewal(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFF3F4FA),
           elevation: 0,
