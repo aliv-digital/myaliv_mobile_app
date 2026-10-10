@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan.dart';
@@ -16,6 +17,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/theme/theme.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 /// Temporary HOME-006 preview: opt in with --dart-define=debugForcePlanExpiryWarning=true.
 /// Release/profile builds always use the real expiry. Banner styling is shared.
@@ -209,15 +211,23 @@ class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
     final now = DateTime.now();
     final start = plan.startDateTime;
     final end = _warningExpiry;
-    if (end == null ||
-        !end.isAfter(now) ||
-        (start != null && start.isAfter(now)) ||
-        end.difference(now) > _warningWindow ||
-        plan.planName.trim().isEmpty) {
+    if (end == null || (start != null && start.isAfter(now))) {
       return const SizedBox.shrink();
     }
 
-    // Normal and forced-expiry states use the same HOME-006 presentation.
+    // HOME-007 uses the same banner when the displayed prepaid plan expires.
+    final isExpired = !end.isAfter(now);
+    if (!isExpired &&
+        (end.difference(now) > _warningWindow ||
+            plan.planName.trim().isEmpty)) {
+      return const SizedBox.shrink();
+    }
+    final message = isExpired
+        ? 'your plan expired on ${end.formatDdMmYy()}. renew or buy a new plan to keep using data.'
+        : 'your ${plan.planName} plan expires on ${end.formatDdMmYy()}. renew to stay connected.';
+    final actionText = isExpired ? 'purchase a new plan' : 'renew your plan';
+
+    // Real and debug expiry values share the same production banner UI.
     final red = ColorManager.primaryRedFF0000;
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 20),
@@ -239,7 +249,7 @@ class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'your ${plan.planName} plan expires on ${end.formatDdMmYy()}. renew to stay connected.',
+                    message,
                     style: TextStyle(
                       color: red,
                       fontSize: 12,
@@ -250,12 +260,19 @@ class _PlanExpiryWarningState extends State<_PlanExpiryWarning> {
                   ),
                   const SizedBox(height: 4),
                   InkWell(
-                    onTap: () => _openPlanRenewal(context),
+                    onTap: () {
+                      if (isExpired) {
+                        // Reuse the purchase destination from NoActivePlanCard.
+                        context.go(AppRoutes.plans);
+                      } else {
+                        _openPlanRenewal(context);
+                      }
+                    },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'renew your plan',
+                          actionText,
                           style: TextStyle(
                             color: red,
                             fontSize: 12,

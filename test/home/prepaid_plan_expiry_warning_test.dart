@@ -44,6 +44,55 @@ BasePlanModel _plan({
 });
 
 Finder get _warning => find.textContaining('renew to stay connected.');
+Finder get _expiredWarning =>
+    find.textContaining('renew or buy a new plan to keep using data.');
+
+void _expectWarningAppearance(
+  WidgetTester tester, {
+  required Finder message,
+  required String actionText,
+  required double width,
+}) {
+  final banner = find
+      .ancestor(
+        of: message,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Container && widget.decoration is BoxDecoration,
+        ),
+      )
+      .first;
+  final container = tester.widget<Container>(banner);
+  final decoration = container.decoration! as BoxDecoration;
+  expect(decoration.color, Colors.white);
+  expect(decoration.border, Border.all(color: HomePlanTheme.warningBorder));
+  expect(decoration.borderRadius, BorderRadius.circular(8));
+  expect(container.padding, const EdgeInsets.all(10));
+  final messageStyle = tester.widget<Text>(message).style!;
+  expect(messageStyle.color, ColorManager.primaryRedFF0000);
+  expect(messageStyle.fontFamily, 'CircularPro');
+  expect(messageStyle.fontSize, 12);
+  expect(messageStyle.height, 1.3);
+  final icon = find.byIcon(Icons.error_outline);
+  expect(icon, findsOneWidget);
+  expect(tester.widget<Icon>(icon).size, 16);
+  expect(tester.getTopLeft(icon).dx, tester.getTopLeft(banner).dx + 11);
+  expect(tester.getTopLeft(message).dx - tester.getTopLeft(icon).dx, 26);
+  final link = find.descendant(of: banner, matching: find.text(actionText));
+  expect(tester.widget<Text>(link).style?.decoration, TextDecoration.underline);
+  expect(tester.widget<Text>(link).style?.color, ColorManager.primaryRedFF0000);
+  expect(tester.widget<Text>(link).style?.fontSize, 12);
+  expect(tester.getTopLeft(link).dx, tester.getTopLeft(message).dx);
+  final arrow = find.byIcon(Icons.arrow_forward);
+  expect(tester.widget<Icon>(arrow).size, 12);
+  expect(tester.getTopLeft(arrow).dx - tester.getTopRight(link).dx, 8);
+  expect(tester.getTopLeft(banner), const Offset(24, 16));
+  expect(tester.getSize(banner).width, width - 48);
+  expect(
+    tester.getTopLeft(find.byType(ClipRRect).first).dy -
+        tester.getBottomLeft(banner).dy,
+    20,
+  );
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -168,78 +217,39 @@ void main() {
         ),
         findsOneWidget,
       );
-      final banner = find
-          .ancestor(
-            of: _warning,
-            matching: find.byWidgetPredicate(
-              (widget) =>
-                  widget is Container && widget.decoration is BoxDecoration,
-            ),
-          )
-          .first;
-      final container = tester.widget<Container>(banner);
-      final decoration = container.decoration! as BoxDecoration;
-      expect(decoration.color, Colors.white);
-      expect(decoration.border, Border.all(color: HomePlanTheme.warningBorder));
-      expect(decoration.borderRadius, BorderRadius.circular(8));
-      expect(container.padding, const EdgeInsets.all(10));
-      final messageStyle = tester.widget<Text>(_warning).style!;
-      expect(messageStyle.color, ColorManager.primaryRedFF0000);
-      expect(messageStyle.fontFamily, 'CircularPro');
-      expect(messageStyle.fontSize, 12);
-      expect(messageStyle.height, 1.3);
-      final icon = find.byIcon(Icons.error_outline);
-      expect(icon, findsOneWidget);
-      expect(tester.widget<Icon>(icon).size, 16);
-      expect(tester.getTopLeft(icon).dx, tester.getTopLeft(banner).dx + 11);
-      expect(tester.getTopLeft(_warning).dx - tester.getTopLeft(icon).dx, 26);
-      final link = find.descendant(
-        of: banner,
-        matching: find.text('renew your plan'),
-      );
-      expect(
-        tester.widget<Text>(link).style?.decoration,
-        TextDecoration.underline,
-      );
-      expect(
-        tester.widget<Text>(link).style?.color,
-        ColorManager.primaryRedFF0000,
-      );
-      expect(tester.widget<Text>(link).style?.fontSize, 12);
-      expect(tester.getTopLeft(link).dx, tester.getTopLeft(_warning).dx);
-      final arrow = find.byIcon(Icons.arrow_forward);
-      expect(tester.widget<Icon>(arrow).size, 12);
-      expect(tester.getTopLeft(arrow).dx - tester.getTopRight(link).dx, 8);
-      expect(tester.getTopLeft(banner), const Offset(24, 16));
-      expect(tester.getSize(banner).width, width - 48);
-      expect(
-        tester.getTopLeft(find.byType(ClipRRect).first).dy -
-            tester.getBottomLeft(banner).dy,
-        20,
+      _expectWarningAppearance(
+        tester,
+        message: _warning,
+        actionText: 'renew your plan',
+        width: width,
       );
       expect(tester.takeException(), isNull);
       await disposeCard(tester);
     });
   }
 
-  testWidgets('future, expired, and missing-date plans have no warning', (
-    tester,
-  ) async {
-    final now = DateTime.now();
-    for (final plan in [
-      _plan(
-        start: now.add(const Duration(days: 1)),
-        end: now.add(const Duration(days: 2)),
-      ),
-      _plan(end: now.subtract(const Duration(seconds: 1))),
-      BasePlanModel.fromApiMap({'PlanName': 'No expiry', 'EndDate': 'invalid'}),
-      BasePlanModel.fromApiMap({'PlanName': 'No expiry'}),
-    ]) {
-      await pumpCard(tester, plan: plan);
-      expect(_warning, findsNothing);
-      await disposeCard(tester);
-    }
-  });
+  testWidgets(
+    'future, expired, and missing-date plans have no HOME-006 warning',
+    (tester) async {
+      final now = DateTime.now();
+      for (final plan in [
+        _plan(
+          start: now.add(const Duration(days: 1)),
+          end: now.add(const Duration(days: 2)),
+        ),
+        _plan(end: now.subtract(const Duration(seconds: 1))),
+        BasePlanModel.fromApiMap({
+          'PlanName': 'No expiry',
+          'EndDate': 'invalid',
+        }),
+        BasePlanModel.fromApiMap({'PlanName': 'No expiry'}),
+      ]) {
+        await pumpCard(tester, plan: plan);
+        expect(_warning, findsNothing);
+        await disposeCard(tester);
+      }
+    },
+  );
 
   testWidgets('no plan and loading/initial states retain existing rendering', (
     tester,
@@ -330,11 +340,149 @@ void main() {
       end = DateTime.now().subtract(const Duration(seconds: 1));
       await tester.pump(const Duration(days: 3));
       expect(_warning, findsNothing);
+      expect(_expiredWarning, findsOneWidget);
+      expect(find.text('purchase a new plan'), findsOneWidget);
       verifyNever(() => plans.refreshCurrentTab());
       verifyNever(() => plans.refreshBundlesOnly());
       await disposeCard(tester);
     },
   );
+
+  for (final elapsed in [
+    Duration.zero,
+    const Duration(seconds: 1),
+    const Duration(days: 2),
+  ]) {
+    testWidgets('HOME-007 expired by $elapsed', (tester) async {
+      final end = DateTime.now().subtract(elapsed);
+      final plan = _plan(end: end);
+      await pumpCard(tester, plan: plan);
+      expect(
+        find.text(
+          'your plan expired on ${DateFormat('dd/MM/yy').format(end)}. renew or buy a new plan to keep using data.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('purchase a new plan'), findsOneWidget);
+      expect(_warning, findsNothing);
+      expect(plan.endDateTime, end);
+      expect(find.text(plan.planName), findsOneWidget);
+      expect(tester.getSize(find.byType(ClipRRect).first).height, 216);
+      verifyNever(() => plans.refreshCurrentTab());
+      verifyNever(() => plans.refreshBundlesOnly());
+      expect(tester.takeException(), isNull);
+      await disposeCard(tester);
+    });
+  }
+
+  for (final width in [320.0, 360.0, 430.0]) {
+    testWidgets('HOME-007 reference banner at width $width', (tester) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await pumpCard(
+        tester,
+        plan: _plan(end: DateTime.now().subtract(const Duration(days: 1))),
+      );
+      _expectWarningAppearance(
+        tester,
+        message: _expiredWarning,
+        actionText: 'purchase a new plan',
+        width: width,
+      );
+      expect(tester.takeException(), isNull);
+      await disposeCard(tester);
+    });
+  }
+
+  testWidgets('HOME-007 stays hidden for unresolved or unrelated states', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    for (final plan in [
+      _plan(end: now.add(const Duration(days: 2))),
+      _plan(end: now.add(const Duration(days: 7))),
+      _plan(
+        start: now.add(const Duration(days: 1)),
+        end: now.add(const Duration(days: 2)),
+      ),
+      BasePlanModel.fromApiMap({
+        'PlanName': 'Invalid expiry',
+        'EndDate': 'invalid',
+      }),
+      BasePlanModel.fromApiMap({'PlanName': 'Missing expiry'}),
+    ]) {
+      await pumpCard(tester, plan: plan);
+      expect(_expiredWarning, findsNothing);
+      expect(find.text('purchase a new plan'), findsNothing);
+      await disposeCard(tester);
+    }
+    final expiredPlan = _plan(end: now.subtract(const Duration(days: 1)));
+    for (final status in [PlansStatus.initial, PlansStatus.loading]) {
+      await pumpCard(tester, plan: expiredPlan, status: status);
+      expect(_expiredWarning, findsNothing);
+      expect(find.byType(ActivePlanCardSkeleton), findsOneWidget);
+      await disposeCard(tester);
+    }
+    for (final showRenew in [true, false]) {
+      await pumpCard(
+        tester,
+        plan: expiredPlan,
+        isFromHome: false,
+        showRenewButton: showRenew,
+      );
+      expect(_expiredWarning, findsNothing);
+      await disposeCard(tester);
+    }
+    await pumpCard(tester, plan: expiredPlan, postpaid: true);
+    expect(_expiredWarning, findsNothing);
+    expect(find.text('purchase a new plan'), findsNothing);
+    await disposeCard(tester);
+  });
+
+  testWidgets('HOME-007 purchase CTA opens the existing Plans destination', (
+    tester,
+  ) async {
+    when(() => plans.state).thenReturn(
+      PlansState(
+        status: PlansStatus.success,
+        addOnsApiPrimaryPlans: [
+          _plan(end: DateTime.now().subtract(const Duration(days: 1))),
+        ],
+      ),
+    );
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(
+            body: PrepaidActivePlanCardWithData(isFromHome: true),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.plans,
+          builder: (_, _) =>
+              const Scaffold(body: Text('existing plan purchase destination')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      BlocProvider<PlansCubit>.value(
+        value: plans,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.tap(find.text('purchase a new plan'));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, AppRoutes.plans);
+    expect(find.text('existing plan purchase destination'), findsOneWidget);
+    expect(find.byType(AutoRenewBottomSheet), findsNothing);
+    verifyNever(() => plans.refreshCurrentTab());
+    verifyNever(() => plans.refreshBundlesOnly());
+    await disposeCard(tester);
+  });
 
   for (final useBanner in [false, true]) {
     testWidgets('renew CTA uses existing flow (banner: $useBanner)', (
