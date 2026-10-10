@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_state.dart';
 import 'package:myaliv_mobile_app/app/Home/limited-time-offer/widgets/animated_timer_box.dart';
+import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 
 /// Self-contained Limited Time Offer widget
 ///
@@ -21,13 +22,38 @@ import 'package:myaliv_mobile_app/app/Home/limited-time-offer/widgets/animated_t
 /// // In build method:
 /// LimitedOfferView(),
 /// ```
-class LimitedOfferView extends StatelessWidget {
-  const LimitedOfferView({super.key});
+class LimitedOfferView extends StatefulWidget {
+  const LimitedOfferView({super.key, this.onSeeCurrentOffers});
+
+  /// Supplied only by prepaid Home, using its existing ALIV deals action.
+  final VoidCallback? onSeeCurrentOffers;
+
+  @override
+  State<LimitedOfferView> createState() => _LimitedOfferViewState();
+}
+
+class _LimitedOfferViewState extends State<LimitedOfferView> {
+  bool _hasExpiredOffer = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LimitedOfferCubit, LimitedOfferState>(
       builder: (context, state) {
+        final offer = state.currentOffer;
+        final timeRemaining = offer?.timeRemaining;
+
+        // Retain the prepaid ended card during the existing automatic refresh.
+        // A new offer or session reset clears this presentation-only state.
+        if (widget.onSeeCurrentOffers == null ||
+            state.status == LimitedOfferStatus.initial) {
+          _hasExpiredOffer = false;
+        } else if (offer != null) {
+          _hasExpiredOffer =
+              offer.isPrepaid &&
+              offer.status == 'active' &&
+              timeRemaining!.inSeconds <= 0;
+        }
+
         // Reduced logging to avoid spam (timer updates every second)
         // Uncomment for debugging:
         // debugPrint('🖼️ LIMITED OFFER VIEW: Rebuilding (status: ${state.status})');
@@ -36,19 +62,19 @@ class LimitedOfferView extends StatelessWidget {
         // - No offer available
         // - Still loading
         // - State is empty
-        if (!state.hasOffer || state.isLoading || state.isEmpty) {
+        if (!_hasExpiredOffer &&
+            (!state.hasOffer || state.isLoading || state.isEmpty)) {
           return const SizedBox.shrink();
         }
-
-        final offer = state.currentOffer!;
-        final timeRemaining = offer.timeRemaining;
 
         return Container(
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 11, 24, 0),
             child: GestureDetector(
-              onTap: () => _handleTap(context, offer.link),
+              onTap: _hasExpiredOffer
+                  ? null
+                  : () => _handleTap(context, offer!.link),
               child: Container(
                 width: double.infinity,
                 height: 112,
@@ -59,6 +85,10 @@ class LimitedOfferView extends StatelessWidget {
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    if (_hasExpiredOffer) {
+                      return _buildExpiredOffer();
+                    }
+
                     final timerGap = constraints.maxWidth < 320 ? 4.0 : 6.0;
 
                     return Row(
@@ -72,7 +102,7 @@ class LimitedOfferView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                offer.title,
+                                offer!.title,
                                 style: const TextStyle(
                                   color: Color(0xFF101828),
                                   fontSize: 20,
@@ -110,7 +140,7 @@ class LimitedOfferView extends StatelessWidget {
                               // Days
                               Expanded(
                                 child: AnimatedTimerBox(
-                                  _formatTimerValue(timeRemaining.inDays),
+                                  _formatTimerValue(timeRemaining!.inDays),
                                   'Days',
                                   compact: true,
                                 ),
@@ -161,6 +191,31 @@ class LimitedOfferView extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildExpiredOffer() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'this offer has ended',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF101828),
+            fontSize: 20,
+            fontFamily: 'CircularPro',
+            fontWeight: FontWeight.w700,
+            height: 1.05,
+          ),
+        ),
+        const SizedBox(height: 4),
+        DefaultButton(
+          label: 'see current offers',
+          isLoading: false,
+          onPressed: widget.onSeeCurrentOffers,
+        ),
+      ],
     );
   }
 

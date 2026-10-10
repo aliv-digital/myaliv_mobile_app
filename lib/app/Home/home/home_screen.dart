@@ -317,7 +317,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 24),
                         //count down , yellow limited offers
-                        const LimitedOfferView(),
+                        LimitedOfferView(
+                          onSeeCurrentOffers: config.userType.isPrepaid
+                              ? _openAlivDeals
+                              : null,
+                        ),
                       ],
                     ),
                   ),
@@ -481,17 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             GestureDetector(
-              onTap: () async {
-                ///https://www.bealiv.com/deals/
-                final uri = Uri.parse('https://www.bealiv.com/deals/');
-
-                if (!await launchUrl(
-                  uri,
-                  mode: LaunchMode.externalApplication,
-                )) {
-                  throw 'Could not open store locator';
-                }
-              },
+              onTap: _openAlivDeals,
               child: const ActionTile(
                 'assets/icons/aliv_quick.svg',
                 'ALIV deals',
@@ -511,6 +505,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       color: null,
     );
+  }
+
+  Future<void> _openAlivDeals() async {
+    final uri = Uri.parse('https://www.bealiv.com/deals/');
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'Could not open store locator';
+    }
   }
 
   Widget _section({
