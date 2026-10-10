@@ -80,17 +80,37 @@ class _HomePlansPaymentMethodViewState
           type: ToastType.success,
         );
       }
+      // Roaming confirmation is the only prepaid flow that sends standalone
+      // (PlanType A) lines, and it never mixes them with plans or add-ons.
+      final isRoamingPurchase =
+          state.selectedItems.isNotEmpty &&
+          state.selectedItems.every(
+            (item) => item.planType == HomePlansPaymentPlanType.standalone,
+          );
+      // ROAM-007 confirms an immediately activated roaming plan.
+      if (state.status == HomePlansPaymentMethodStatus.success &&
+          state.isPrepaidUser &&
+          state.forceNow &&
+          isRoamingPurchase) {
+        AppToast.show(
+          message: 'your roaming plan has started successfully',
+          type: ToastType.success,
+        );
+      }
       final scheduledStart = state.selectedBeginDate;
       // PLAN-013 uses the accepted scheduling date, never a fallback date.
+      // ROAM-008 replaces its copy for roaming so only one toast shows.
       if (state.status == HomePlansPaymentMethodStatus.success &&
           state.isPrepaidUser &&
           !state.forceNow &&
           state.selectedItems.isNotEmpty &&
           scheduledStart != null &&
           scheduledStart.isAfter(DateTime.now())) {
+        final startText = DateFormat('dd-MM-yy').format(scheduledStart);
         AppToast.show(
-          message:
-              'your plan is scheduled to start on ${DateFormat('dd-MM-yy').format(scheduledStart)}',
+          message: isRoamingPurchase
+              ? 'your roaming plan is scheduled to start on $startText'
+              : 'your plan is scheduled to start on $startText',
           type: ToastType.success,
         );
       }
