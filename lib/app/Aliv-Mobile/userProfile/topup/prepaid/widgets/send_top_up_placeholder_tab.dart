@@ -51,6 +51,12 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
     return _digitsOnly(_phoneNumber) != _digitsOnly(_confirmPhoneNumber);
   }
 
+  // STOP-004 only shows once the recipient number passes its own validation,
+  // so it never competes with that field's error. Proceed still uses
+  // [_phoneNumbersDoNotMatch], so a mismatch can never be submitted.
+  bool get _showPhoneMismatch =>
+      _phoneNumbersDoNotMatch && _validatePhone(_phoneNumber).isValid;
+
   bool get _hasPhoneValidationError =>
       _phoneNumberHelper.hasLiveValidationError(
         rawPhoneNumber: _phoneNumber,
@@ -238,11 +244,11 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               _buildLoginStylePhoneField(
                 labelText: GuestTopUpTheme.confirmMobileLabel,
                 value: _confirmPhoneNumber,
-                forceError: _phoneNumbersDoNotMatch,
+                forceError: _showPhoneMismatch,
                 hasFocus: _hasConfirmPhoneFocus,
                 focusNode: _confirmPhoneFocusNode,
-                validationMessage: _phoneNumbersDoNotMatch
-                    ? 'Phone number do not match'
+                validationMessage: _showPhoneMismatch
+                    ? "these numbers don't match. re-enter the number to continue."
                     : null,
                 onChanged: (value) {
                   setState(() => _confirmPhoneNumber = value);

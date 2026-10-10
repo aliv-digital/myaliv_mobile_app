@@ -3,6 +3,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_m
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/dropdowns/saved_card_dropdown.dart';
+import '../../theme/top_up_prepaid_theme.dart';
 import 'auto_topup_amount_grid.dart';
 import 'auto_topup_widgets.dart';
 
@@ -11,14 +12,21 @@ class AutoTopupCardSection extends StatelessWidget {
   final SavedCardModel? selectedCard;
   final ValueChanged<SavedCardModel?> onCardSelected;
 
+  /// ATOP-001 inline error, with an add-card action beneath it.
+  final String? errorText;
+  final VoidCallback? onAddNewCard;
+
   const AutoTopupCardSection({
     super.key,
     required this.selectedCard,
     required this.onCardSelected,
+    this.errorText,
+    this.onAddNewCard,
   });
 
   @override
   Widget build(BuildContext context) {
+    final error = errorText;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,6 +35,27 @@ class AutoTopupCardSection extends StatelessWidget {
           selectedCard: selectedCard,
           onCardSelected: onCardSelected,
         ),
+        if (error != null) ...[
+          const SizedBox(height: 8),
+          Text(error, style: TopUpPrepaidTheme.amountError()),
+          if (onAddNewCard != null)
+            TextButton(
+              onPressed: onAddNewCard,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                foregroundColor: TopUpPrepaidTheme.purple,
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  'add a new card',
+                  style: TextStyle(fontFamily: 'CircularPro', fontSize: 15),
+                ),
+              ),
+            ),
+        ],
       ],
     );
   }

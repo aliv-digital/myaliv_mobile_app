@@ -1,12 +1,14 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../theme/top_up_prepaid_theme.dart';
 import '../../view/auto_top_up_authorization_screen.dart';
 import 'auto_topup_amount_grid.dart';
@@ -28,6 +30,9 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   final _customAmountController = TextEditingController();
   bool _initialValuesSet = false;
   double _minThreshold = 0;
+
+  /// ATOP-001 inline error; cleared as soon as a card is selected.
+  String? _cardError;
 
   bool get _hasCustomAmount => _customAmountController.text.isNotEmpty;
 
@@ -109,7 +114,12 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
           children: [
             AutoTopupCardSection(
               selectedCard: _selectedCard,
-              onCardSelected: (c) => setState(() => _selectedCard = c),
+              onCardSelected: (c) => setState(() {
+                _selectedCard = c;
+                _cardError = null;
+              }),
+              errorText: _cardError,
+              onAddNewCard: _onAddNewCard,
             ),
             const SizedBox(height: 20),
             AutoTopupAnyTimeToggle(
@@ -181,6 +191,13 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
         _selectedCard?.token ??
         instance<DeviceLimitsCubit>().state.autoTopUpCardToken;
 
+    // ATOP-001: only a loaded list with no selected or existing card counts;
+    // loading and load-failure states keep their existing behaviour.
+    if (cardToken.isEmpty && context.read<SavedCardsCubit>().state.isSuccess) {
+      setState(() => _cardError = 'select a card to continue');
+      return;
+    }
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AutoTopUpAuthorizationScreen(
@@ -191,6 +208,13 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
         ),
       ),
     );
+  }
+
+  /// Same action as the dropdown's own "add new card" entry.
+  Future<void> _onAddNewCard() async {
+    await context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+    if (!mounted) return;
+    context.read<SavedCardsCubit>().refreshSavedCards();
   }
 
   void _showError(String msg) {
