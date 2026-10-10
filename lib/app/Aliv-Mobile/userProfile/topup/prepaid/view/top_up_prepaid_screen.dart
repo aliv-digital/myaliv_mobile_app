@@ -242,7 +242,7 @@ class _MyNumberTabState extends State<_MyNumberTab> {
       limitFetchFailed: state.limitFetchFailed,
     );
     if (gate.blocked) {
-      if (gate.isPerTransactionLimit) {
+      if (gate.isBelowMinimum || gate.isPerTransactionLimit) {
         setState(() => _amountError = gate.errorMessage);
       } else {
         AppToast.show(message: gate.errorMessage!, type: ToastType.error);

@@ -29,6 +29,7 @@ Same copy on both tabs; field sources differ.
 
 | Case | Trigger | Message |
 |---|---|---|
+| Min | My Number only, checked first: `amount < $5.00` (TOP-002, product-approved) | inline under the amount field: *"the minimum top-up amount is $5.00"* |
 | A | **any** required limit is 0/null (per-tx OR daily ceiling — see below) | *"your top up limit is not set on your account. to process this payment, please contact support at 1-242-300-2548"* |
 | B | `amount > perTxLimit` | My Number (TOP-003, inline under the amount field): *"the maximum top-up amount is $X"* |
 | C | daily bucket exceeded | *"your daily top up limit is $Y. please try a smaller amount…"* |

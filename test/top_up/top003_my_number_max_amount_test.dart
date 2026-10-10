@@ -30,6 +30,7 @@ const _caseA =
     'your top up limit is not set on your account. to process this payment, please contact support at 1-242-300-2548';
 const _caseD =
     'please try again in a few minutes. if this continues, contact support at 1-242-300-2548';
+const _minimum = r'the minimum top-up amount is $5.00';
 const _caseC200 =
     'your daily top up limit is \$ 200.00. please try a smaller amount to complete your transaction.';
 
@@ -92,6 +93,42 @@ void main() {
         expect(result.errorMessage, _caseD);
         expect(result.isPerTransactionLimit, isFalse);
       }
+    });
+
+    for (final amount in [1.0, 2.5, 4.99]) {
+      test('TOP-002 blocks $amount below the \$5.00 minimum', () {
+        final result = gate(amount);
+        expect(result.errorMessage, _minimum);
+        expect(result.isBelowMinimum, isTrue);
+        expect(result.isPerTransactionLimit, isFalse);
+      });
+    }
+
+    for (final amount in [5.0, 10.0]) {
+      test('TOP-002 allows $amount', () {
+        final result = gate(amount);
+        expect(result.blocked, isFalse);
+        expect(result.isBelowMinimum, isFalse);
+      });
+    }
+
+    test('TOP-002 is checked before every existing limit case', () {
+      for (final result in [
+        gate(2, failed: true),
+        gate(2, hasAccount: false),
+        gate(2, perTx: 0),
+        gate(2, limitLeft: 1),
+      ]) {
+        expect(result.errorMessage, _minimum);
+        expect(result.isBelowMinimum, isTrue);
+      }
+    });
+
+    test('TOP-003 still applies above the minimum', () {
+      final result = gate(101);
+      expect(result.errorMessage, r'the maximum top-up amount is $100.00');
+      expect(result.isBelowMinimum, isFalse);
+      expect(result.isPerTransactionLimit, isTrue);
     });
   });
 
@@ -221,6 +258,78 @@ void main() {
     }
 
     Finder maxError() => find.textContaining('the maximum top-up amount is');
+
+    Finder minError() => find.text(_minimum);
+
+    for (final amount in ['1', '4.99']) {
+      testWidgets('TOP-002 inline error blocks $amount', (tester) async {
+        givenLimits();
+        await pumpScreen(tester);
+        await enterAmount(tester, amount);
+        await proceed(tester);
+        await tester.pumpAndSettle();
+        expect(minError(), findsOneWidget);
+        expect(maxError(), findsNothing);
+        verifyNoOrderCheck();
+        await dismissToasts(tester);
+        // Inline, not a toast: it stays until the amount changes.
+        expect(minError(), findsOneWidget);
+      });
+    }
+
+    for (final (amount, expected) in [('5', '5.00'), ('10', '10.00')]) {
+      testWidgets('TOP-002 allows $amount through the existing flow', (
+        tester,
+      ) async {
+        givenLimits();
+        await pumpScreen(tester);
+        await enterAmount(tester, amount);
+        await proceed(tester);
+        await tester.pumpAndSettle();
+        expect(minError(), findsNothing);
+        expect(maxError(), findsNothing);
+        expect(find.text('existing confirmation'), findsOneWidget);
+        expect(confirmationAmount, expected);
+      });
+    }
+
+    testWidgets('TOP-002 error clears on edit and a valid amount continues', (
+      tester,
+    ) async {
+      givenLimits();
+      await pumpScreen(tester);
+      await enterAmount(tester, '2');
+      await proceed(tester);
+      await tester.pumpAndSettle();
+      expect(minError(), findsOneWidget);
+
+      await enterAmount(tester, '25');
+      expect(minError(), findsNothing);
+      await proceed(tester);
+      await tester.pumpAndSettle();
+      expect(find.text('existing confirmation'), findsOneWidget);
+      expect(confirmationAmount, '25.00');
+    });
+
+    testWidgets('min and max errors never show together', (tester) async {
+      givenLimits();
+      await pumpScreen(tester);
+      await enterAmount(tester, '2');
+      await proceed(tester);
+      await tester.pumpAndSettle();
+      expect(minError(), findsOneWidget);
+      expect(maxError(), findsNothing);
+
+      await enterAmount(tester, '150');
+      await proceed(tester);
+      await tester.pumpAndSettle();
+      expect(minError(), findsNothing);
+      expect(
+        find.text(r'the maximum top-up amount is $100.00'),
+        findsOneWidget,
+      );
+      verifyNoOrderCheck();
+    });
 
     for (final (perTx, text) in [
       (100.0, r'the maximum top-up amount is $100.00'),

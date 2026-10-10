@@ -9,9 +9,13 @@ class TopUpGateResult {
   /// Case B (TOP-003) is shown inline on the amount field; others are toasts.
   final bool isPerTransactionLimit;
 
+  /// TOP-002 minimum amount, also shown inline on the amount field.
+  final bool isBelowMinimum;
+
   const TopUpGateResult(
     this.errorMessage, {
     this.isPerTransactionLimit = false,
+    this.isBelowMinimum = false,
   });
 
   static const TopUpGateResult pass = TopUpGateResult(null);
@@ -26,6 +30,12 @@ const _caseAMessage =
 
 const _caseDMessage =
     'please try again in a few minutes. if this continues, contact support at $_supportPhone';
+
+/// TOP-002: product-approved minimum for a My Number top-up (USD).
+const double minimumMyNumberTopUpAmount = 5.0;
+
+final _minimumMessage =
+    'the minimum top-up amount is ${BalanceCurrencyFormatterService.format(minimumMyNumberTopUpAmount)}';
 
 // TOP-003: the limit stays the account's `topUpPerTransLimit`.
 String _caseBMessage(double perTxLimit) =>
@@ -50,6 +60,11 @@ TopUpGateResult evaluateMyNumberTopUpGate({
   required double? limitLeft,
   required bool limitFetchFailed,
 }) {
+  // TOP-002 runs before every limit case so a too-small amount never
+  // reaches the order check, whatever the account data looks like.
+  if (amount < minimumMyNumberTopUpAmount) {
+    return TopUpGateResult(_minimumMessage, isBelowMinimum: true);
+  }
   if (account == null || limitFetchFailed || limitLeft == null) {
     return const TopUpGateResult(_caseDMessage);
   }
