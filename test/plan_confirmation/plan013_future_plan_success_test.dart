@@ -54,6 +54,17 @@ const _items = [
   ),
 ];
 
+const _addOnItems = [
+  HomePlansPaymentSelectedItem(
+    id: '789',
+    label: 'add-on',
+    title: 'liberty data 1',
+    subtitle: 'begins immediately',
+    price: 100,
+    planType: HomePlansPaymentPlanType.secondary,
+  ),
+];
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late _Repository repository;
@@ -376,6 +387,176 @@ void main() {
           bonuses: const [],
           forceNow: false,
           selectedBeginDate: DateTime(2099, 11, 23),
+        ),
+      );
+      await disposeScreen(tester);
+    },
+  );
+
+  for (final method in ['wallet', 'saved card', '3DS']) {
+    testWidgets(
+      'ADD-006 $method success preserves add-on payment and receipt',
+      (tester) async {
+        await pumpScreen(tester, items: _addOnItems, forceNow: true);
+        expect(
+          find.text('your add-on has been added to your plan'),
+          findsNothing,
+        );
+        if (method == '3DS') {
+          bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '7890'));
+        } else {
+          if (method == 'wallet') {
+            bloc.add(const HomePlansPayFromWalletConfirmed(walletBalance: 200));
+          } else {
+            bloc.add(const HomePlansPaymentMethodSelected('saved-token'));
+            await tester.pump();
+            bloc.add(const HomePlansPaySavedCardConfirmed());
+          }
+          await tester.pump();
+          expect(bloc.state.status, HomePlansPaymentMethodStatus.submitting);
+          expect(
+            find.text('your add-on has been added to your plan'),
+            findsNothing,
+          );
+          payment.complete(7890);
+        }
+        await tester.pumpAndSettle();
+        expect(
+          find.text('your add-on has been added to your plan'),
+          findsOneWidget,
+        );
+        expect(find.byIcon(Icons.check), findsOneWidget);
+        expect(scheduledToast(), findsNothing);
+        expect(find.text('existing success receipt'), findsOneWidget);
+        expect(receipt!['selectedItems'], _addOnItems);
+        expect(receipt!['amount'], 110);
+        expect(receipt!['orderId'], '7890');
+        expect(receiptVisits, 1);
+        expect(bloc.state.forceNow, isTrue);
+        expect(bloc.state.selectedItems, _addOnItems);
+        await tester.pump(const Duration(seconds: 4));
+        expect(
+          find.text('your add-on has been added to your plan'),
+          findsNothing,
+        );
+        expect(receiptVisits, 1);
+        await disposeScreen(tester);
+      },
+    );
+  }
+
+  testWidgets(
+    'ADD-006 includes an add-on purchased with an immediate primary plan',
+    (tester) async {
+      final items = [..._items, ..._addOnItems];
+      await pumpScreen(tester, items: items, forceNow: true);
+      bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '7890'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('your add-on has been added to your plan'),
+        findsOneWidget,
+      );
+      expect(scheduledToast(), findsNothing);
+      expect(find.text('existing success receipt'), findsOneWidget);
+      expect(receipt!['selectedItems'], items);
+      expect(receipt!['amount'], 110);
+      expect(receiptVisits, 1);
+      await disposeScreen(tester);
+    },
+  );
+
+  for (final scenario in [
+    'primary',
+    'standalone',
+    'postpaid',
+    'empty',
+    'scheduled',
+  ]) {
+    testWidgets('ADD-006 excludes $scenario success', (tester) async {
+      final items = switch (scenario) {
+        'primary' => _items,
+        'empty' => const <HomePlansPaymentSelectedItem>[],
+        'standalone' => const [
+          HomePlansPaymentSelectedItem(
+            id: '555',
+            label: 'standalone',
+            title: 'travel plan',
+            subtitle: '',
+            price: 100,
+            planType: HomePlansPaymentPlanType.standalone,
+          ),
+        ],
+        _ => _addOnItems,
+      };
+      await pumpScreen(
+        tester,
+        items: items,
+        forceNow: scenario != 'scheduled',
+        startDate: scenario == 'scheduled' ? DateTime(2099, 11, 23) : null,
+        subscriberType: scenario == 'postpaid'
+            ? HomePlansSubscriberType.postpaid
+            : HomePlansSubscriberType.prepaid,
+      );
+      bloc.add(const HomePlans3DSPayWithCardSucceeded(orderId: '7890'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('your add-on has been added to your plan'),
+        findsNothing,
+      );
+      expect(find.text('existing success receipt'), findsOneWidget);
+      if (scenario == 'scheduled') {
+        expect(
+          find.text('your plan is scheduled to start on 23-11-99'),
+          findsOneWidget,
+        );
+      }
+      await disposeScreen(tester);
+    });
+  }
+
+  testWidgets('ADD-006 rejected add-on purchase preserves failure receipt', (
+    tester,
+  ) async {
+    await pumpScreen(tester, items: _addOnItems, forceNow: true);
+    bloc.add(const HomePlansPayFromWalletConfirmed(walletBalance: 200));
+    await tester.pump();
+    payment.completeError(Exception('Purchase rejected'));
+    await tester.pumpAndSettle();
+    expect(find.text('your add-on has been added to your plan'), findsNothing);
+    expect(find.text('existing failure receipt'), findsOneWidget);
+    expect(receipt, {'isPaymentFailed': true, 'phoneNumber': '242-801-1616'});
+    await disposeScreen(tester);
+  });
+
+  testWidgets(
+    'ADD-006 cancelled add-on payment does not submit or show success',
+    (tester) async {
+      await pumpScreen(tester, items: _addOnItems, forceNow: true);
+      final context = tester.element(find.byType(HomePlansPaymentMethodView));
+      final sheet = PaymentSheetLauncher.openWallet(
+        context,
+        walletBalance: 200,
+        walletBalanceText: r'$ 200.00',
+        amountText: r'$ 110.00',
+      );
+      await tester.pumpAndSettle();
+      Navigator.of(context).pop();
+      await sheet;
+      await tester.pumpAndSettle();
+      expect(bloc.state.status, HomePlansPaymentMethodStatus.ready);
+      expect(
+        find.text('your add-on has been added to your plan'),
+        findsNothing,
+      );
+      expect(receipt, isNull);
+      verifyNever(
+        () => repository.payFromWallet(
+          amount: 110,
+          selectedItems: _addOnItems,
+          promoCodes: const [],
+          bonuses: const [],
+          forceNow: true,
+          selectedBeginDate: null,
         ),
       );
       await disposeScreen(tester);

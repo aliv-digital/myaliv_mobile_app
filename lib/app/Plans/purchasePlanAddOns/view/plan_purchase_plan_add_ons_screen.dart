@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Home/best-plans/best_plan_injection.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/widgets/active_plan_card_with_data.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/models/home_plan_confirmation_models.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -270,6 +271,20 @@ class _ReadyContent extends StatelessWidget {
       return const _ErrorState(message: 'Failed to load');
     }
 
+    // ADD-001 changes only the guidance for an existing prepaid primary plan.
+    final showActivePlanGuidance =
+        instance<AccountInfoCubit>().state.isPrepaid &&
+        state.activePlan != null &&
+        context.read<PlansCubit>().state.hasActivePrimaryPlan &&
+        state.selectedApiPlan?.isStandAlonePlan != true;
+    final displayedPolicy = showActivePlanGuidance
+        ? PlanPurchaseFairUsePolicy(
+            title: fairUsePolicy.title,
+            description:
+                "add-ons can only be added to your active primary plan and expire when it ends. if you don't want an add-on, select skip.",
+          )
+        : fairUsePolicy;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         _horizontalPadding,
@@ -281,7 +296,7 @@ class _ReadyContent extends StatelessWidget {
         _ActivePlanCard(state: state),
         const SizedBox(height: 16),
         PlanPurchaseFairUsePolicyCard(
-          policy: fairUsePolicy,
+          policy: displayedPolicy,
           onTap: _openFairUsePolicy,
         ),
         const SizedBox(height: 16),

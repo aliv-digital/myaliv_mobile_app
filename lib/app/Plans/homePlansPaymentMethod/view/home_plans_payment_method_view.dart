@@ -67,6 +67,19 @@ class _HomePlansPaymentMethodViewState
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
+      // ADD-006 confirms purchased add-ons; scheduled purchases retain PLAN-013.
+      if (state.status == HomePlansPaymentMethodStatus.success &&
+          state.isPrepaidUser &&
+          state.forceNow &&
+          state.selectedItems.isNotEmpty &&
+          state.selectedItems.any(
+            (item) => item.planType == HomePlansPaymentPlanType.secondary,
+          )) {
+        AppToast.show(
+          message: 'your add-on has been added to your plan',
+          type: ToastType.success,
+        );
+      }
       final scheduledStart = state.selectedBeginDate;
       // PLAN-013 uses the accepted scheduling date, never a fallback date.
       if (state.status == HomePlansPaymentMethodStatus.success &&

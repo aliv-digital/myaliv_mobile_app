@@ -8,7 +8,8 @@ class HomePlanRoamBottomSheet extends StatefulWidget {
   const HomePlanRoamBottomSheet({
     super.key,
     this.title = HomePlanTheme.roamBottomSheetTitle,
-    this.warningText = HomePlanTheme.roamBottomSheetWarningText,
+    this.warningText =
+        '${HomePlanTheme.roamBottomSheetTitle} — ${HomePlanTheme.roamBottomSheetWarningText}',
     this.startFromLabel = HomePlanTheme.roamBottomSheetStartFromLabel,
     this.initialDate,
     required this.onBackPressed,
@@ -86,16 +87,16 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                 height: HomePlanTheme.roamBottomSheetTitleToWarningGap,
               ),
 
-              // Warning box.
+              // ROAM-001 is neutral guidance; shared warning styles stay intact.
               Container(
                 padding: HomePlanTheme.bottomSheetWarningPadding,
                 decoration: BoxDecoration(
-                  color: HomePlanTheme.roamBottomSheetWarningBackgroundColor,
+                  color: HomePlanTheme.roamBottomSheetDateFieldBackgroundColor,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.bottomSheetWarningRadius,
                   ),
                   border: Border.all(
-                    color: HomePlanTheme.warningBorder,
+                    color: HomePlanTheme.roamBottomSheetOrDividerColor,
                     width: HomePlanTheme.bottomSheetWarningBorderWidth,
                   ),
                 ),
@@ -103,7 +104,8 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                   width: HomePlanTheme.roamBottomSheetWarningTextWidth,
                   child: Text(
                     widget.warningText,
-                    style: HomePlanTheme.roamBottomSheetWarningTextStyle,
+                    style: HomePlanTheme.roamBottomSheetWarningTextStyle
+                        .copyWith(color: HomePlanTheme.subtitleColor),
                   ),
                 ),
               ),
