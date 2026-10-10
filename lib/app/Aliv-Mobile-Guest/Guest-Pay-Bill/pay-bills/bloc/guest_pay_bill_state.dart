@@ -3,6 +3,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_sele
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 
 import '../model/guest_pay_bill_models.dart';
+import '../theme/guest_pay_bill_theme.dart';
 
 enum GuestPayBillLoadStatus { initial, loading, ready, failure }
 
@@ -132,10 +133,18 @@ class GuestPayBillState extends Equatable {
     return accountNumber.trim().isNotEmpty && name.trim().isNotEmpty;
   }
 
+  /// BILL-009: a positive ALIV postpaid amount below the approved minimum.
+  /// Empty / non-numeric input parses to 0 and keeps its existing handling.
+  bool get isBelowMinimumPayment =>
+      isAlivPostpaid &&
+      amountValue > 0 &&
+      amountValue < GuestPayBillTheme.minimumPaymentAmount;
+
   bool get canSubmit {
     return selectedService != null &&
         accountInfo != null &&
         amountValue > 0 &&
+        !isBelowMinimumPayment &&
         submitStatus != GuestPayBillSubmitStatus.loading;
   }
 

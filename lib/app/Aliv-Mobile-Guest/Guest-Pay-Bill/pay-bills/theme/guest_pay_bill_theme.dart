@@ -23,8 +23,16 @@ class GuestPayBillTheme {
   static const String phoneHintText = 'eg: (242)-899-9999';
 
   // Used by: inline validation error under phone fields.
-  static const String invalidPhoneErrorMessage = 'invalid phone number';
-  static const String mobileMismatchErrorMessage = 'phone number do not match';
+  // BILL-003 / BILL-004 inline copy.
+  static const String invalidPhoneErrorMessage =
+      'enter a valid 10-digit mobile number';
+  static const String mobileMismatchErrorMessage =
+      "these numbers don't match. re-enter the number to continue.";
+
+  // BILL-009: product-approved ALIV postpaid bill-pay minimum (USD, inclusive).
+  static const double minimumPaymentAmount = 5;
+  static const String minimumPaymentErrorMessage =
+      r'the minimum payment amount is $5.00';
 
   static const Color errorText = Color(0xFFD92D20);
 

@@ -265,7 +265,8 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     if (!context.mounted) return;
     if (cubit.state.errorMessage == null) {
       AppToast.show(
-        message: 'your card has been saved successfully removed',
+        // CARD-010: only after the removal call succeeds.
+        message: 'your card has been successfully removed',
         type: ToastType.success,
       );
     }
