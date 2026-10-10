@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
@@ -66,6 +67,20 @@ class _HomePlansPaymentMethodViewState
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
+      final scheduledStart = state.selectedBeginDate;
+      // PLAN-013 uses the accepted scheduling date, never a fallback date.
+      if (state.status == HomePlansPaymentMethodStatus.success &&
+          state.isPrepaidUser &&
+          !state.forceNow &&
+          state.selectedItems.isNotEmpty &&
+          scheduledStart != null &&
+          scheduledStart.isAfter(DateTime.now())) {
+        AppToast.show(
+          message:
+              'your plan is scheduled to start on ${DateFormat('dd-MM-yy').format(scheduledStart)}',
+          type: ToastType.success,
+        );
+      }
       _injectOptimisticActivePlan(context, state);
       context.push(
         AppRoutes.homePlanPurchaseReceiptScreen,
