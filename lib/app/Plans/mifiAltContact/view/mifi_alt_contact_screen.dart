@@ -39,6 +39,13 @@ class _MifiAltContactView extends StatefulWidget {
 class _MifiAltContactViewState extends State<_MifiAltContactView> {
   static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
 
+  static const String _emptyPhoneMessage =
+      'enter a mobile number we can reach you on';
+  static const String _invalidPhoneMessage =
+      'enter a valid 10-digit mobile number';
+  static const String _sameAsMifiMessage =
+      "enter a number that's different from your mifi number";
+
   late final TextEditingController _phoneController;
   final FocusNode _phoneFocusNode = FocusNode();
 
@@ -47,6 +54,9 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
   String _rawPhone = '';
   bool? _marketingOptIn;
   bool _hasPhoneFocus = false;
+
+  /// Inline error from the last continue tap; cleared as soon as the user edits.
+  String? _submitError;
 
   @override
   void initState() {
@@ -74,12 +84,51 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
         selectedCountry: _selectedCountry,
       );
 
-  bool get _canContinue => _validation.isValid && _marketingOptIn != null;
+  // The phone number is validated on tap so empty/invalid input can explain
+  // itself inline; the offers choice still gates the button.
+  bool get _canContinue => _marketingOptIn != null;
+
+  /// MIFI-002 (empty) → MIFI-003 (format) → MIFI-005 (same as MiFi line).
+  String? _phoneError(LoginPhoneValidationResult v) {
+    if (_rawPhone.replaceAll(RegExp(r'\D'), '').isEmpty) {
+      return _emptyPhoneMessage;
+    }
+    if (!v.isValid) return _invalidPhoneMessage;
+
+    // Both numbers go through the same helper so formatting differences
+    // (e.g. `242-801-1616` vs `2428011616`) cannot hide a match.
+    final mifiNumber = _phoneHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: MifiAltContactArgsBuilder.accountPhoneNumber(
+        instance<AccountInfoCubit>().state,
+      ),
+      selectedCountry: _selectedCountry,
+    );
+    if (mifiNumber.isValid &&
+        mifiNumber.phoneNumberForApi == v.phoneNumberForApi) {
+      return _sameAsMifiMessage;
+    }
+    return null;
+  }
+
+  String? get _visiblePhoneError {
+    if (_submitError != null) return _submitError;
+    final hasLiveError = _phoneHelper.hasLiveValidationError(
+      rawPhoneNumber: _rawPhone,
+      selectedCountry: _selectedCountry,
+    );
+    return hasLiveError ? _invalidPhoneMessage : null;
+  }
 
   void _onContinuePressed() {
     final v = _validation;
     final isOptedIn = _marketingOptIn;
-    if (!v.isValid || isOptedIn == null) return;
+    if (isOptedIn == null) return;
+
+    final phoneError = _phoneError(v);
+    if (phoneError != null) {
+      setState(() => _submitError = phoneError);
+      return;
+    }
 
     context.read<AltNumberValidationCubit>().submit(
       altNumber: v.phoneNumberForApi ?? '',
@@ -117,7 +166,11 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
           rawPhone: _rawPhone,
           hasFocus: _hasPhoneFocus,
           readOnly: readOnly,
-          onChanged: (value) => setState(() => _rawPhone = value),
+          errorText: _visiblePhoneError,
+          onChanged: (value) => setState(() {
+            _rawPhone = value;
+            _submitError = null;
+          }),
         ),
       ),
     );
