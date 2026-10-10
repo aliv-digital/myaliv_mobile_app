@@ -101,7 +101,11 @@ class _GuestPayBillReceiptView extends StatelessWidget {
             AppSession.resetAppRoute();
             context.go(AppRoutes.home);
           } else {
-            context.go(AppRoutes.logIn);
+            // BILL-018: a guest returns to the guest home, rebuilt on top of
+            // welcome exactly as it was first opened, so its back arrow works.
+            GoRouter.of(context)
+              ..go(AppRoutes.welcome)
+              ..push(AppRoutes.guestSplash);
           }
         }
       },
@@ -141,6 +145,8 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                                 GuestPayBillReceiptTheme.screenBackground,
                             statusMessage:
                                 'It will take a few moments for the payment to appear on the account.',
+                            // BILL-018: always "home" for bill payments.
+                            backButtonText: 'back to home page',
                             onBackHome: () {
                               _onBackHomePressed(context);
                             },

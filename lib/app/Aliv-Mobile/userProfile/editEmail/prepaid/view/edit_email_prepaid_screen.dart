@@ -48,7 +48,8 @@ class _EditEmailPrepaidView extends StatelessWidget {
           listener: (context, state) {
             if (state.status == EditEmailPrepaidStatus.success) {
               AppToast.show(
-                message: 'email address updated successfully',
+                // PROF-005: shown only after the update call succeeds.
+                message: 'your email has been successfully updated',
                 type: ToastType.success,
               );
               context.pop();
