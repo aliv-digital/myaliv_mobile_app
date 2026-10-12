@@ -38,6 +38,13 @@ class PaymentPayBar extends StatelessWidget {
   }
 
   void _onPayNow(BuildContext context) {
+    if (state.isPrepaidUser &&
+        state.paymentMode == HomePlansPaymentMode.payFromWallet &&
+        state.hasInsufficientWalletBalance(
+          context.read<BalanceCubit>().state.walletBalance,
+        )) {
+      return;
+    }
     if (!PaymentSheetLauncher.hasValidPaymentMethod(state)) {
       onMissingPaymentMethod?.call();
       return;

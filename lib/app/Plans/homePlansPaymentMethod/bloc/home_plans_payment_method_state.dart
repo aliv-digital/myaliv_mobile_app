@@ -117,6 +117,12 @@ class HomePlansPaymentMethodState extends Equatable {
     return subscriberType == HomePlansSubscriberType.prepaid;
   }
 
+  bool hasInsufficientWalletBalance(double walletBalance) {
+    return isPrepaidUser &&
+        paymentMode == HomePlansPaymentMode.payFromWallet &&
+        walletBalance < amount;
+  }
+
   bool get isPayNowEnabled {
     if (status == HomePlansPaymentMethodStatus.submitting) return false;
     switch (paymentMode) {
