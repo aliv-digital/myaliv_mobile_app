@@ -157,8 +157,10 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
   /// `subId` is the active plan's `MTSubscriptionID` resolved from
   /// [PlansCubit]; skipped if missing or non-numeric.
   void _fireSubscriptionAutoRenewSilently({required bool enable}) {
-    final mtSubIdString =
-        instance<PlansCubit>().state.earliestAddOnsPrimaryPlan?.mtSubscriptionId;
+    final mtSubIdString = instance<PlansCubit>()
+        .state
+        .earliestAddOnsPrimaryPlan
+        ?.mtSubscriptionId;
     final subId = int.tryParse(mtSubIdString ?? '');
     if (subId == null || subId <= 0) return;
 

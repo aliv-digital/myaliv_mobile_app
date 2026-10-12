@@ -18,7 +18,12 @@ class WelcomeBloc extends Bloc<WelcomeEvent, WelcomeState> {
     try {
       final data = await repository.loadData();
       if (data.isLoaded) {
-        emit(WelcomeLoadedState(isLoaded: true, mobileImageUrl: data.mobileImageUrl));
+        emit(
+          WelcomeLoadedState(
+            isLoaded: true,
+            mobileImageUrl: data.mobileImageUrl,
+          ),
+        );
       } else {
         emit(WelcomeInitial());
       }

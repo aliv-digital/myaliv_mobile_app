@@ -120,7 +120,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => AppUiConfigCubit(initialConfig: widget.initialUiConfig),
+          create: (_) =>
+              AppUiConfigCubit(initialConfig: widget.initialUiConfig),
         ),
         BlocProvider.value(value: instance<AccountInfoCubit>()),
         BlocProvider.value(value: instance<PlansCubit>()),

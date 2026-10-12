@@ -22,9 +22,8 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WelcomeBloc(
-        repository: WelcomeRepository(),
-      )..add(WelcomeLoaded()),
+      create: (context) =>
+          WelcomeBloc(repository: WelcomeRepository())..add(WelcomeLoaded()),
       child: const WelcomeView(),
     );
   }
