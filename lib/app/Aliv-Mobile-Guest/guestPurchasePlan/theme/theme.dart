@@ -548,7 +548,7 @@ class GuestPurchasePlanTheme {
   static const String roamBottomSheetTitle = 'when to start?';
   static const String roamBottomSheetStartFromLabel = 'start from';
   static const String roamBottomSheetWarningText =
-      'your standalone plan can start immediately, or on a date of your choice.';
+      'the account owner standalone plan can start immediately, or on a date of choice.';
 
   // Roam warning box visual style (used only in roam_bottom_sheet.dart).
   static final Color roamBottomSheetWarningBackgroundColor = HexColor.fromHex(

@@ -210,6 +210,27 @@ class PlansState extends Equatable {
   bool get hasActivePrimaryWithStandaloneAndFuturePlans =>
       hasActivePrimaryPlan && standAlonePlans.isNotEmpty && hasFuturePlans;
 
+  /// Primary-only counterpart of [hasFuturePlans]: standalone plans never
+  /// decide how another primary purchase is offered.
+  bool get hasFuturePrimaryPlans {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return effectivePrimaryPlans.any((plan) {
+      final start = plan.startDateTime;
+      if (start == null) return false;
+      return DateTime(start.year, start.month, start.day).isAfter(today);
+    });
+  }
+
+  /// Purchase sheet row 4: replace the active primary now or schedule it.
+  bool get hasActivePrimaryWithoutFuturePrimaryPlans =>
+      hasActivePrimaryPlan && !hasFuturePrimaryPlans;
+
+  /// Purchase sheet row 5: a primary is already queued, so a new primary can
+  /// only be scheduled. Standalone plans do not affect this.
+  bool get hasActivePrimaryWithFuturePrimaryPlans =>
+      hasActivePrimaryPlan && hasFuturePrimaryPlans;
+
   /// Wait until every purchased plan has ended, including standalone plans
   /// and add-ons. Keep the primary-only date rule for the other scenarios.
   DateTime? get latestPurchasedPlanEndDate {
