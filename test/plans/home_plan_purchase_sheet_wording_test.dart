@@ -223,8 +223,9 @@ void main() {
   }
 
   testWidgets(
-    // Previous expectation: active primary with future standalone keeps replacement wording.
-    'active primary with future standalone uses the single dated action',
+    // Previous expectation: a future standalone produced the single dated
+    // action. Rows 4/5 now depend on future primary plans only.
+    'active primary with only a future standalone keeps replacement choices',
     (tester) async {
       await openSheet(
         tester,
@@ -233,15 +234,17 @@ void main() {
           standAlonePlans: [plan(type: 'A', start: currentEnd, end: futureEnd)],
         ),
       );
-      // expect(find.textContaining('activating now replaces'), findsOneWidget);
       expect(
         find.text(
-          'you can activate your plan when your current plan ends on '
-          '${DateFormat('MM-dd-yy').format(futureEnd)}.',
+          'activating now replaces your current plan. '
+          'you can also activate your plan when your current plan ends on '
+          '${DateFormat('MM-dd-yy').format(currentEnd)}.',
         ),
         findsOneWidget,
       );
-      expect(find.text('future plan'), findsNothing);
+      expect(find.text('activate now'), findsOneWidget);
+      expect(find.text('future plan'), findsOneWidget);
+      expect(find.textContaining('activate my new plan on'), findsNothing);
     },
   );
 

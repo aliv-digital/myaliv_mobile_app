@@ -261,21 +261,97 @@ void main() {
     expect(args.futurePlanStartDate, lastFutureEnd.toIso8601String());
   });
 
-  testWidgets('active primary and future without standalone keep two actions', (
-    tester,
-  ) async {
-    final state = scheduledState().copyWith(standAlonePlans: []);
-    final extras = await openSheet(tester, state);
-    expect(find.text('activate now'), findsOneWidget);
-    expect(find.text('future plan'), findsOneWidget);
-    expect(find.textContaining('activating now replaces'), findsOneWidget);
-    await tester.tap(find.text('future plan'));
-    await tester.pumpAndSettle();
-    expect(
-      (extras.single as HomePlanConfirmationRouteArgs).futurePlanStartDate,
-      lastFutureEnd.toIso8601String(),
-    );
-  });
+  // Rows 4/5 decision table: only primary plans decide the branch.
+  final noStandalone = <BasePlanModel>[];
+  List<BasePlanModel> activeStandalone() => [
+    _plan(id: 'standalone', type: 'A', start: today, end: currentEnd),
+  ];
+  List<BasePlanModel> futureStandalone() => [
+    _plan(id: 'standalone', type: 'A', start: currentEnd, end: firstFutureEnd),
+  ];
+
+  for (final (label, standalone) in [
+    ('no standalone', () => noStandalone),
+    ('active standalone', activeStandalone),
+    ('future-dated standalone only', futureStandalone),
+  ]) {
+    testWidgets('row 4: active primary + no future primary + $label', (
+      tester,
+    ) async {
+      final state = PlansState(
+        addOnsApiPrimaryPlans: [
+          _plan(id: 'current', start: today, end: currentEnd),
+        ],
+        standAlonePlans: standalone(),
+      );
+      expect(state.hasActivePrimaryWithoutFuturePrimaryPlans, isTrue);
+      expect(state.hasActivePrimaryWithFuturePrimaryPlans, isFalse);
+      final extras = await openSheet(tester, state);
+
+      expect(
+        find.text(
+          'activating now replaces your current plan. '
+          'you can also activate your plan when your current plan ends on '
+          '${DateFormat('MM-dd-yy').format(currentEnd)}.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('activate now'), findsOneWidget);
+      expect(find.text('future plan'), findsOneWidget);
+      expect(find.textContaining('activate my new plan on'), findsNothing);
+
+      await tester.tap(find.text('future plan'));
+      await tester.pumpAndSettle();
+      final args = extras.single as HomePlanConfirmationRouteArgs;
+      expect(args.forceNow, isFalse);
+      expect(args.futurePlanStartDate, currentEnd.toIso8601String());
+    });
+  }
+
+  for (final multipleFuture in [false, true]) {
+    for (final withStandalone in [false, true]) {
+      testWidgets(
+        'row 5: active primary + ${multipleFuture ? 'multiple' : 'one'} '
+        'future primary + ${withStandalone ? 'standalone' : 'no standalone'}',
+        (tester) async {
+          final futureEnd = multipleFuture ? lastFutureEnd : firstFutureEnd;
+          final state = PlansState(
+            addOnsApiPrimaryPlans: [
+              _plan(id: 'current', start: today, end: currentEnd),
+              _plan(id: 'future1', start: currentEnd, end: firstFutureEnd),
+              if (multipleFuture)
+                _plan(id: 'future2', start: firstFutureEnd, end: lastFutureEnd),
+            ],
+            standAlonePlans: withStandalone ? activeStandalone() : noStandalone,
+          );
+          expect(state.hasActivePrimaryWithFuturePrimaryPlans, isTrue);
+          final extras = await openSheet(tester, state);
+
+          final dateText = DateFormat('MM-dd-yy').format(futureEnd);
+          expect(
+            find.text(
+              'you can activate your plan when your current plan ends on '
+              '$dateText.',
+            ),
+            findsOneWidget,
+          );
+          expect(
+            find.text('activate my new plan on $dateText'),
+            findsOneWidget,
+          );
+          expect(find.text('activate now'), findsNothing);
+          expect(find.text('future plan'), findsNothing);
+          expect(find.textContaining('activating now replaces'), findsNothing);
+
+          await tester.tap(_scheduledButton());
+          await tester.pumpAndSettle();
+          final args = extras.single as HomePlanConfirmationRouteArgs;
+          expect(args.forceNow, isFalse);
+          expect(args.futurePlanStartDate, futureEnd.toIso8601String());
+        },
+      );
+    }
+  }
 
   testWidgets('no valid end date retains the existing undated choices', (
     tester,

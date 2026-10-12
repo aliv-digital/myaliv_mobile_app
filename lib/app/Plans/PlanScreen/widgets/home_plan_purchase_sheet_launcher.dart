@@ -81,8 +81,9 @@ Future<void> showHomePlanPurchaseBottomSheet({
         );
       }
 
-      // Isolate the single scheduled action; all other cases keep their sheet.
-      if (plansState.hasActivePrimaryWithStandaloneAndFuturePlans) {
+      // Row 5: active primary + 1+ future primary → schedule only, whether or
+      // not a standalone exists. All other cases keep their sheet.
+      if (plansState.hasActivePrimaryWithFuturePrimaryPlans) {
         final lastPlanEndDate = plansState.latestPurchasedPlanEndDate;
         // Do not invent a schedule date if the API supplied no valid end date.
         if (lastPlanEndDate != null) {
@@ -122,9 +123,15 @@ Future<void> showHomePlanPurchaseBottomSheet({
             !plansState.hasActivePrimaryPlan &&
             plansState.standAlonePlans.isNotEmpty &&
             plansState.hasFuturePlans;
-        final warningText = hasStandAloneAndFuturePlan
-            ? standAloneFuturePlanMessage
-            : activePlanMessage;
+        final String warningText;
+        if (plansState.hasActivePrimaryWithoutFuturePrimaryPlans) {
+          // Row 4: active primary + no future primary → replace or schedule.
+          warningText = activePlanMessage;
+        } else {
+          warningText = hasStandAloneAndFuturePlan
+              ? standAloneFuturePlanMessage
+              : activePlanMessage;
+        }
 
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
           warningText: warningText,
