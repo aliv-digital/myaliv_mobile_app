@@ -118,10 +118,19 @@ class _GuestSplashPurchasePlanSheetView extends StatelessWidget {
   }
 }
 
-class _SheetBody extends StatelessWidget {
+class _SheetBody extends StatefulWidget {
   const _SheetBody();
 
+  @override
+  State<_SheetBody> createState() => _SheetBodyState();
+}
+
+class _SheetBodyState extends State<_SheetBody> {
   static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
+
+  // Set only by a Continue/Done attempt with an empty mobile number; cleared
+  // as soon as the user edits that field.
+  bool _showEmptyPhoneError = false;
 
   LoginCountrySelection _loginCountry(Country? country) {
     if (country == null) return LoginCountrySelection.defaultBahamas;
@@ -155,10 +164,9 @@ class _SheetBody extends StatelessWidget {
 
         final bool isBahamas =
             (state.purchaseCountry?.countryCode ?? '').toUpperCase() == 'BS';
-        final bool showPhoneError = _isPhoneInvalid(
-          state.purchasePhone,
-          state.purchaseCountry,
-        );
+        final bool showPhoneError =
+            _showEmptyPhoneError ||
+            _isPhoneInvalid(state.purchasePhone, state.purchaseCountry);
         final bool showConfirmError = _isMismatch(
           state.purchasePhone,
           state.purchaseConfirmPhone,
@@ -185,8 +193,11 @@ class _SheetBody extends StatelessWidget {
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
               ];
         void continueAction() {
-          if (state.purchasePhone.isEmpty ||
-              _isPhoneInvalid(state.purchasePhone, state.purchaseCountry)) {
+          if (state.purchasePhone.isEmpty) {
+            setState(() => _showEmptyPhoneError = true);
+            return;
+          }
+          if (_isPhoneInvalid(state.purchasePhone, state.purchaseCountry)) {
             AppToast.show(
               message: GuestSplashTheme.invalidPhoneMessage,
               type: ToastType.error,
@@ -245,6 +256,9 @@ class _SheetBody extends StatelessWidget {
                 countryIsoCode: state.purchaseCountry?.countryCode,
                 textInputAction: TextInputAction.next,
                 onChanged: (v) {
+                  if (_showEmptyPhoneError) {
+                    setState(() => _showEmptyPhoneError = false);
+                  }
                   context.read<GuestSplashBloc>().add(
                     GuestSplashPurchasePlanPhoneChanged(v),
                   );
@@ -291,8 +305,10 @@ class _SheetBody extends StatelessWidget {
               ),
               if (showPhoneError) ...[
                 const SizedBox(height: 6),
-                const Text(
-                  GuestSplashTheme.invalidPhoneMessage,
+                Text(
+                  _showEmptyPhoneError
+                      ? GuestSplashTheme.emptyPhoneMessage
+                      : GuestSplashTheme.invalidPhoneMessage,
                   style: GuestSplashTheme.errorText,
                 ),
               ],
