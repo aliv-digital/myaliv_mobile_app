@@ -110,8 +110,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
      * mistaken for a plan purchase and showing "No postpaid plan selected."
      */
     final config = context.read<AppUiConfigCubit>().state;
-    // PLAN-006 is local to prepaid; postpaid retains its existing terms gate.
-    if (config.isPrepaid && !_termsAccepted) {
+    // PLAN-006: terms are validated first for prepaid and postpaid alike.
+    if (!_termsAccepted) {
       setState(() => _showTermsValidation = true);
       return;
     }
@@ -425,7 +425,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isPrepaid = context.read<AppUiConfigCubit>().state.isPrepaid;
     final isSendTopUp = widget.topUpAmount != null;
     final topUpAmountText = formatConfirmationCurrency(widget.topUpAmount ?? 0);
     final subTotal = _selectedPostpaidPlan?.planAmount ?? 18.18;
@@ -450,7 +449,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       bottomNavigationBar: ConfirmationBottomBar(
         totalText: totalText,
         vatLabel: vatLabel,
-        enabled: isPrepaid || _termsAccepted,
+        // Stays tappable so an unchecked submit can show PLAN-006 inline.
+        enabled: true,
         onContinue: _continuePressed,
       ),
       body: SafeArea(
@@ -483,7 +483,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                   }
                 }),
               ),
-              if (isPrepaid && _showTermsValidation)
+              if (_showTermsValidation)
                 Padding(
                   padding: const EdgeInsets.only(top: 6, left: 25),
                   child: Text(

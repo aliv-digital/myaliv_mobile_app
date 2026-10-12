@@ -11,8 +11,10 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/widgets/confirmation_bottom_bar.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/widgets/confirmation_terms_checkbox.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/bloc/home_plan_confirmation_bloc.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/bloc/home_plan_confirmation_event.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanConfirmation/bloc/home_plan_confirmation_state.dart';
@@ -90,6 +92,7 @@ void main() {
     required bool planPurchase,
     bool postpaid = false,
     bool topUp = true,
+    HomePlansPostPaidPlanModel? postpaidPlan,
     void Function(HomePlansPaymentMethodRouteArgs)? onPayment,
   }) async {
     config.setUserType(postpaid ? UserType.postpaid : UserType.prepaid);
@@ -100,7 +103,10 @@ void main() {
           path: '/',
           builder: (_, _) => planPurchase
               ? const HomePlanConfirmationScreen(args: _planArgs)
-              : ConfirmationScreen(topUpAmount: topUp ? 25 : null),
+              : ConfirmationScreen(
+                  topUpAmount: topUp ? 25 : null,
+                  plan: postpaidPlan,
+                ),
         ),
         GoRoute(
           path: AppRoutes.homePlansPaymentMethodScreen,
@@ -263,21 +269,93 @@ void main() {
     );
   }
 
-  testWidgets('postpaid unchecked terms retain the disabled button', (
-    tester,
-  ) async {
-    final router = await pumpConfirmation(
-      tester,
-      planPurchase: false,
-      postpaid: true,
+  for (final topUp in [true, false]) {
+    testWidgets(
+      'postpaid unchecked terms keep continue active and show PLAN-006 '
+      '(top-up: $topUp)',
+      (tester) async {
+        final router = await pumpConfirmation(
+          tester,
+          planPurchase: false,
+          postpaid: true,
+          topUp: topUp,
+        );
+        final bar = tester.widget<ConfirmationBottomBar>(
+          find.byType(ConfirmationBottomBar),
+        );
+        expect(bar.enabled, isTrue);
+        expect(find.text(_message), findsNothing);
+
+        await tester.tap(find.text('continue'));
+        await tester.pumpAndSettle();
+        expect(find.text(_message), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(SingleChildScrollView),
+            matching: find.text(_message),
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(SnackBar), findsNothing);
+        // Terms are checked before the missing-plan toast and any navigation.
+        expect(find.text('No postpaid plan selected.'), findsNothing);
+        expect(router.routeInformationProvider.value.uri.path, '/');
+        expect(find.text('existing plan payment'), findsNothing);
+        expect(find.text('existing top-up payment'), findsNothing);
+
+        await toggleTerms(tester, false);
+        expect(find.text(_message), findsNothing);
+        await toggleTerms(tester, false);
+        expect(find.text(_message), findsNothing);
+
+        await tester.tap(find.text('continue'));
+        await tester.pumpAndSettle();
+        expect(find.text(_message), findsOneWidget);
+        expect(router.routeInformationProvider.value.uri.path, '/');
+        verifyZeroInteractions(network);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
     );
-    await tester.tap(find.text('continue'));
-    await tester.pumpAndSettle();
-    expect(router.routeInformationProvider.value.uri.path, '/');
-    expect(find.text(_message), findsNothing);
-    verifyZeroInteractions(network);
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+  }
+
+  testWidgets(
+    'postpaid accepted terms preserve the existing plan payment route',
+    (tester) async {
+      HomePlansPaymentMethodRouteArgs? paymentArgs;
+      final plan = HomePlansPostPaidPlanModel.fromApiMap({
+        'PlanID': 'pp-1',
+        'PlanName': 'roam usa',
+        'PlanAmount': 20,
+        'VATAmount': 2,
+        'PlanType': 'S',
+      });
+      await pumpConfirmation(
+        tester,
+        planPurchase: false,
+        postpaid: true,
+        topUp: false,
+        postpaidPlan: plan,
+        onPayment: (args) => paymentArgs = args,
+      );
+      await tester.tap(find.text('continue'));
+      await tester.pumpAndSettle();
+      expect(find.text(_message), findsOneWidget);
+
+      await toggleTerms(tester, false);
+      expect(find.text(_message), findsNothing);
+      await tester.tap(find.text('continue'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('existing plan payment'), findsOneWidget);
+      expect(paymentArgs!.subscriberType, HomePlansSubscriberType.postpaid);
+      expect(paymentArgs!.amount, 22);
+      expect(paymentArgs!.selectedItems.single.id, 'pp-1');
+      expect(paymentArgs!.forceNow, isTrue);
+      verifyZeroInteractions(network);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   testWidgets('postpaid missing-plan validation retains its existing toast', (
     tester,
