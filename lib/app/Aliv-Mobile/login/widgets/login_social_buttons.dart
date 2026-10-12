@@ -20,16 +20,15 @@ class LoginSocialButtons extends StatefulWidget {
 }
 
 class _LoginSocialButtonsState extends State<LoginSocialButtons> {
-  bool _loading = false;
+  bool _loadingFaceId = false;
+  bool _loadingFingerprint = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FingerFaceSecurityCubit, FingerFaceSecurityState>(
       builder: (context, state) {
-        final showFingerprint = state.fingerprintEnabled;
-        final showFaceId = state.faceIdEnabled;
-
-        if (!showFingerprint && !showFaceId) return const SizedBox.shrink();
+        final faceIdActive = state.faceIdEnabled;
+        final fingerprintActive = state.fingerprintEnabled;
 
         return Column(
           children: [
@@ -37,25 +36,23 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
             const SizedBox(height: AuthModuleSizes.dividerToButtonsGap),
             Row(
               children: [
-                if (showFaceId) ...[
-                  Expanded(
-                    child: _SocialButton(
-                      label: 'face id',
-                      loading: _loading,
-                      onTap: () => _authenticate(context, isFace: true),
-                    ),
+                Expanded(
+                  child: _SocialButton(
+                    label: 'face id',
+                    loading: _loadingFaceId,
+                    active: faceIdActive,
+                    onTap: () => _authenticate(context, isFace: true),
                   ),
-                  if (showFingerprint)
-                    const SizedBox(width: AuthModuleSizes.socialButtonsGap),
-                ],
-                if (showFingerprint)
-                  Expanded(
-                    child: _SocialButton(
-                      label: 'fingerprint',
-                      loading: _loading,
-                      onTap: () => _authenticate(context, isFace: false),
-                    ),
+                ),
+                const SizedBox(width: AuthModuleSizes.socialButtonsGap),
+                Expanded(
+                  child: _SocialButton(
+                    label: 'fingerprint',
+                    loading: _loadingFingerprint,
+                    active: fingerprintActive,
+                    onTap: () => _authenticate(context, isFace: false),
                   ),
+                ),
               ],
             ),
           ],
@@ -68,7 +65,7 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     BuildContext context, {
     required bool isFace,
   }) async {
-    if (_loading) return;
+    if (_loadingFaceId || _loadingFingerprint) return;
 
     final cubit = context.read<FingerFaceSecurityCubit>();
     await cubit.authenticate(
@@ -95,7 +92,7 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
       return;
     }
 
-    setState(() => _loading = true);
+    setState(() => isFace ? _loadingFaceId = true : _loadingFingerprint = true);
     try {
       final result = await LoginRepository().login(
         username: creds.apiPhone,
@@ -133,7 +130,10 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
           const SnackBar(content: Text('Sign-in failed. Please try again.')),
         );
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted)
+        setState(
+          () => isFace ? _loadingFaceId = false : _loadingFingerprint = false,
+        );
     }
   }
 }
@@ -143,30 +143,38 @@ class _SocialButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.loading = false,
+    this.active = true,
   });
 
   final String label;
   final VoidCallback onTap;
   final bool loading;
+  final bool active;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: AuthModuleSizes.socialButtonHeight,
-      child: OutlinedButton(
-        style: AuthModuleButtonStyles.socialOutlined,
-        onPressed: loading ? null : onTap,
-        child: loading
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : Text(
-                label,
-                textAlign: TextAlign.center,
-                style: AuthModuleTextStyles.socialMediaButton,
-              ),
+    return IgnorePointer(
+      ignoring: !active,
+      child: Opacity(
+        opacity: active ? 1.0 : 0.5,
+        child: SizedBox(
+          height: AuthModuleSizes.socialButtonHeight,
+          child: OutlinedButton(
+            style: AuthModuleButtonStyles.socialOutlined,
+            onPressed: loading ? null : onTap,
+            child: loading
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: AuthModuleTextStyles.socialMediaButton,
+                  ),
+          ),
+        ),
       ),
     );
   }

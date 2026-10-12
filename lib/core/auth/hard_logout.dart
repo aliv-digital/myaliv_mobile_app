@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,7 +50,9 @@ Future<void> performHardLogout({bool navigate = true}) async {
   }
 
   try {
-    await LocalStorage.clearAll();
+    await LocalStorage.clearAllExcept(
+      BiometricAuthService.devicePreferenceKeys,
+    );
   } catch (e) {
     if (kDebugMode) debugPrint('hardLogout: LocalStorage.clearAll failed — $e');
   }

@@ -116,6 +116,15 @@ class LocalStorage {
     await prefs.clear();
   }
 
+  // Clear all stored data except the specified keys
+  static Future<void> clearAllExcept(Set<String> keysToPreserve) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final keysToRemove = prefs.getKeys().difference(keysToPreserve);
+    for (final key in keysToRemove) {
+      await prefs.remove(key);
+    }
+  }
+
   static Map<String, dynamic> _decodeJsonMap(String? raw) {
     if (raw == null || raw.trim().isEmpty) return <String, dynamic>{};
     try {
