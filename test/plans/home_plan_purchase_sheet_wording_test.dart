@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/home_plan_purchase_sheet_launcher.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/roam_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_bottom_sheet.dart';
 
 // import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
@@ -48,7 +49,11 @@ void main() {
     'EndDate': end?.toUtc().toIso8601String() ?? '',
   });
 
-  Future<void> openSheet(WidgetTester tester, PlansState state) async {
+  Future<void> openSheet(
+    WidgetTester tester,
+    PlansState state, {
+    HomePlanTab tab = HomePlanTab.monthly,
+  }) async {
     when(() => plans.state).thenReturn(state);
     await tester.pumpWidget(
       BlocProvider<PlansCubit>.value(
@@ -60,7 +65,7 @@ void main() {
                 onPressed: () => unawaited(
                   showHomePlanPurchaseBottomSheet(
                     context: context,
-                    selectedTab: HomePlanTab.monthly,
+                    selectedTab: tab,
                     plan: const HomePlanModel(
                       id: 'liberty120',
                       title: 'liberty120',
@@ -98,7 +103,7 @@ void main() {
       );
       expect(
         find.text(
-          'you have no current plans, so your new plan will start immediately.',
+          'you have no active plan, so your new plan will start immediately.',
         ),
         findsOneWidget,
       );
@@ -135,6 +140,57 @@ void main() {
       expect(find.text('future plan'), findsOneWidget);
       expect(find.text('activate now'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('standalone without any primary still uses no-active-plan copy', (
+    tester,
+  ) async {
+    await openSheet(
+      tester,
+      PlansState(
+        standAlonePlans: [plan(type: 'A', start: today, end: currentEnd)],
+      ),
+    );
+
+    expect(
+      find.byType(HomePlanWalletPaymentActivateBottomSheet),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'you have no active plan, so your new plan will start immediately.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('activating now replaces'), findsNothing);
+    expect(find.text('activate now'), findsOneWidget);
+    expect(find.text('future plan'), findsNothing);
+  });
+
+  for (final standalone in [false, true]) {
+    testWidgets('standalone sheet keeps account owner copy (existing standalone: '
+        '$standalone)', (tester) async {
+      await openSheet(
+        tester,
+        PlansState(
+          standAlonePlans: standalone
+              ? [plan(type: 'A', start: today, end: currentEnd)]
+              : const [],
+        ),
+        tab: HomePlanTab.roaming,
+      );
+
+      expect(find.byType(HomePlanRoamBottomSheet), findsOneWidget);
+      expect(
+        find.text(
+          'your standalone plan can start immediately, or on a date of your choice.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('the account owner'), findsNothing);
+      expect(find.text('start from'), findsOneWidget);
+      expect(find.text('activate now'), findsOneWidget);
     });
   }
 

@@ -212,7 +212,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
 
       return HomePlanWalletPaymentActivateBottomSheet(
         warningText:
-            'you have no current plans, so your new plan will start immediately.',
+            'you have no active plan, so your new plan will start immediately.',
         planName: plan.title,
         planDurationText: plan.subtitle,
         planPriceText: _priceText(plan.price),
