@@ -14,6 +14,10 @@ class GuestTopUpTheme {
   static const String proceedButtonLabel = 'proceed';
   static const String fallbackErrorMessage = 'Something went wrong';
   static const String invalidPhoneMessage = 'invalid phone number';
+  static const String emptyPhoneMessage =
+      'enter an active prepaid number to top up';
+  static const String amountRangeMessage =
+      r'enter an amount between $5.00 and $100.00';
   static const String phoneMismatchMessage = 'phone numbers do not match';
   static const String accountStatusActive = 'AC';
   // static const String inactiveAccountErrorMessage = 'number is not active';

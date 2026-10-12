@@ -228,7 +228,13 @@ class ReferFriendPrepaidBloc
     ReferFriendPrepaidRedeemCodeChanged event,
     Emitter<ReferFriendPrepaidState> emit,
   ) {
-    emit(state.copyWith(redeemCode: event.value, errorMessage: null));
+    emit(
+      state.copyWith(
+        redeemCode: event.value,
+        redeemCodeFieldError: false,
+        errorMessage: null,
+      ),
+    );
   }
 
   Future<void> _onRedeemPressed(
@@ -236,6 +242,13 @@ class ReferFriendPrepaidBloc
     Emitter<ReferFriendPrepaidState> emit,
   ) async {
     if (state.redeemStatus == ReferFriendPrepaidSubmitStatus.submitting) {
+      return;
+    }
+
+    // Empty input is caught locally and shown inline; it never reaches the
+    // redeem API or the backend invalid-code messaging.
+    if (state.redeemCode.trim().isEmpty) {
+      emit(state.copyWith(redeemCodeFieldError: true, errorMessage: null));
       return;
     }
 

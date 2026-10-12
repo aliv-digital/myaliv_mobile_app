@@ -49,6 +49,16 @@ class _GuestTopUpView extends StatefulWidget {
 
 class _GuestTopUpViewState extends State<_GuestTopUpView> {
   bool _isChecking = false;
+  // Set only by a Next/Done attempt with an empty first number; cleared as
+  // soon as the user edits that field.
+  bool _showEmptyPhoneError = false;
+  // GST-004: product-approved Guest Top-up range (USD, inclusive). Local to
+  // this flow so logged-in Top-up limits are unaffected.
+  static const double _minGuestTopUpAmount = 5;
+  static const double _maxGuestTopUpAmount = 100;
+  // Set only by a Next/Done attempt with an out-of-range amount; cleared as
+  // soon as the user edits the amount.
+  bool _showAmountRangeError = false;
   static const CountryInfo _defaultCountry = CountryInfo(
     flagEmoji: '🇧🇸',
     dialCode: '1',
@@ -97,7 +107,12 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
     );
     final bool confirmEmpty = state.confirmPhoneNumber.isEmpty;
 
-    if (state.phoneNumber.isEmpty || phoneInvalid) {
+    if (state.phoneNumber.isEmpty) {
+      setState(() => _showEmptyPhoneError = true);
+      return;
+    }
+
+    if (phoneInvalid) {
       AppToast.show(
         message: GuestTopUpTheme.invalidPhoneMessage,
         type: ToastType.error,
@@ -115,7 +130,11 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
 
     final double parsedAmount =
         double.tryParse(state.amount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
-    if (parsedAmount <= 0) return;
+    if (parsedAmount < _minGuestTopUpAmount ||
+        parsedAmount > _maxGuestTopUpAmount) {
+      setState(() => _showAmountRangeError = true);
+      return;
+    }
 
     final repo = context.read<GuestTopUpBloc>().repository;
 
@@ -265,19 +284,26 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                           buildWhen: (previous, current) =>
                               previous.phoneNumber != current.phoneNumber,
                           builder: (context, state) {
-                            final bool showError = _isPhoneInvalid(
-                              state.phoneNumber,
-                            );
+                            final bool showError =
+                                _showEmptyPhoneError ||
+                                _isPhoneInvalid(state.phoneNumber);
                             return _buildPhoneField(
                               labelText: GuestTopUpTheme.activePrepaidLabel,
                               labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                               value: state.phoneNumber,
                               showError: showError,
-                              errorText: GuestTopUpTheme.invalidPhoneMessage,
+                              errorText: _showEmptyPhoneError
+                                  ? GuestTopUpTheme.emptyPhoneMessage
+                                  : GuestTopUpTheme.invalidPhoneMessage,
                               textInputAction: TextInputAction.next,
-                              onChanged: (value) => context
-                                  .read<GuestTopUpBloc>()
-                                  .add(GuestActivePrepaidNumberEvent(value)),
+                              onChanged: (value) {
+                                if (_showEmptyPhoneError) {
+                                  setState(() => _showEmptyPhoneError = false);
+                                }
+                                context.read<GuestTopUpBloc>().add(
+                                  GuestActivePrepaidNumberEvent(value),
+                                );
+                              },
                             );
                           },
                         ),
@@ -322,14 +348,31 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 44, bottom: 44),
-                        child: GradientInputField(
-                          label: GuestTopUpTheme.amountLabel,
-                          hint: GuestTopUpTheme.amountHintText,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => nextAction(),
-                          onChanged: (value) => context
-                              .read<GuestTopUpBloc>()
-                              .add(GuestTopUpAmountEvent(value)),
+                        child: Column(
+                          children: [
+                            GradientInputField(
+                              label: GuestTopUpTheme.amountLabel,
+                              hint: GuestTopUpTheme.amountHintText,
+                              textInputAction: TextInputAction.done,
+                              onSubmitted: (_) => nextAction(),
+                              onChanged: (value) {
+                                if (_showAmountRangeError) {
+                                  setState(() => _showAmountRangeError = false);
+                                }
+                                context.read<GuestTopUpBloc>().add(
+                                  GuestTopUpAmountEvent(value),
+                                );
+                              },
+                            ),
+                            if (_showAmountRangeError) ...[
+                              const SizedBox(height: 6),
+                              const Text(
+                                GuestTopUpTheme.amountRangeMessage,
+                                textAlign: TextAlign.center,
+                                style: GuestTopUpTheme.inlineError,
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     ),
