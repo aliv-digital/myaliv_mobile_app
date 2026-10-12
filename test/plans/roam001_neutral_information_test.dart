@@ -73,7 +73,11 @@ void main() {
     await instance.reset();
   });
 
-  Future<void> openSheet(WidgetTester tester, {double width = 390}) async {
+  Future<void> openSheet(
+    WidgetTester tester, {
+    double width = 390,
+    HomePlanTab tab = HomePlanTab.roaming,
+  }) async {
     tester.view.physicalSize = Size(width, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -87,7 +91,7 @@ void main() {
               builder: (context) => TextButton(
                 onPressed: () => showHomePlanPurchaseBottomSheet(
                   context: context,
-                  selectedTab: HomePlanTab.roaming,
+                  selectedTab: tab,
                   selectedApiPlan: selectedPlan,
                   plan: const HomePlanModel(
                     id: '321',
@@ -123,37 +127,59 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  // Monthly purchase sheet warning box: the product colour reference.
+  Future<({Color background, Color border, Color text})> monthlyBoxColors(
+    WidgetTester tester,
+  ) async {
+    await openSheet(tester, tab: HomePlanTab.monthly);
+    const monthlyCopy =
+        'you have no current plans, so your new plan will start immediately.';
+    final colors = boxColors(tester, monthlyCopy);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    return colors;
+  }
+
   for (final width in [320.0, 390.0, 430.0]) {
     testWidgets(
-      'ROAM-001 exact neutral guidance preserves sheet controls at $width',
+      'ROAM-001 exact guidance uses Monthly reddish colours at $width',
       (tester) async {
+        final monthly = await monthlyBoxColors(tester);
         await openSheet(tester, width: width);
         expect(find.text(_copy), findsOneWidget);
         expect(find.text('when to start?'), findsOneWidget);
         expect(find.text('start from'), findsOneWidget);
         expect(find.text('activate now'), findsOneWidget);
+        final colors = boxColors(tester, _copy);
+        expect(colors.background, monthly.background);
+        expect(colors.border, monthly.border);
+        expect(colors.text, monthly.text);
+        expect(colors.background, HomePlanTheme.warningBackground);
+        expect(colors.border, HomePlanTheme.warningBorder);
+        expect(colors.text, HomePlanTheme.warningText);
+        // Typography is unchanged; only colours follow Monthly.
         final text = tester.widget<Text>(find.text(_copy));
-        expect(text.style!.color, HomePlanTheme.subtitleColor);
         expect(text.style!.fontSize, 12);
         expect(text.style!.fontWeight, FontWeight.w400);
-        final container = tester.widget<Container>(
-          find
-              .ancestor(of: find.text(_copy), matching: find.byType(Container))
-              .first,
-        );
-        final decoration = container.decoration! as BoxDecoration;
-        expect(
-          decoration.color,
-          HomePlanTheme.roamBottomSheetDateFieldBackgroundColor,
-        );
-        expect(
-          (decoration.border! as Border).top.color,
-          HomePlanTheme.roamBottomSheetOrDividerColor,
-        );
+        expect(text.style!.height, 1.38);
         expect(confirmation, isNull);
         expect(tester.takeException(), isNull);
       },
     );
+  }
+
+  for (final tab in [HomePlanTab.roameasy, HomePlanTab.libertyGlobal]) {
+    testWidgets('${tab.name} start sheet uses the same Monthly colours', (
+      tester,
+    ) async {
+      final monthly = await monthlyBoxColors(tester);
+      await openSheet(tester, tab: tab);
+      expect(find.byType(HomePlanRoamBottomSheet), findsOneWidget);
+      final colors = boxColors(tester, _copy);
+      expect(colors.background, monthly.background);
+      expect(colors.border, monthly.border);
+      expect(colors.text, monthly.text);
+    });
   }
 
   testWidgets(
@@ -219,5 +245,21 @@ void main() {
       expect(find.byType(CalendarDatePicker), findsNothing);
       expect(confirmation, isNull);
     },
+  );
+}
+
+({Color background, Color border, Color text}) boxColors(
+  WidgetTester tester,
+  String copy,
+) {
+  final text = tester.widget<Text>(find.text(copy));
+  final container = tester.widget<Container>(
+    find.ancestor(of: find.text(copy), matching: find.byType(Container)).first,
+  );
+  final decoration = container.decoration! as BoxDecoration;
+  return (
+    background: decoration.color!,
+    border: (decoration.border! as Border).top.color,
+    text: text.style!.color!,
   );
 }

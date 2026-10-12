@@ -87,16 +87,17 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                 height: HomePlanTheme.roamBottomSheetTitleToWarningGap,
               ),
 
-              // ROAM-001 is neutral guidance; shared warning styles stay intact.
+              // Product: same reddish colours as the Monthly purchase sheet's
+              // warning box; size, weight and spacing stay this sheet's own.
               Container(
                 padding: HomePlanTheme.bottomSheetWarningPadding,
                 decoration: BoxDecoration(
-                  color: HomePlanTheme.roamBottomSheetDateFieldBackgroundColor,
+                  color: HomePlanTheme.warningBackground,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.bottomSheetWarningRadius,
                   ),
                   border: Border.all(
-                    color: HomePlanTheme.roamBottomSheetOrDividerColor,
+                    color: HomePlanTheme.warningBorder,
                     width: HomePlanTheme.bottomSheetWarningBorderWidth,
                   ),
                 ),
@@ -105,7 +106,7 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                   child: Text(
                     widget.warningText,
                     style: HomePlanTheme.roamBottomSheetWarningTextStyle
-                        .copyWith(color: HomePlanTheme.subtitleColor),
+                        .copyWith(color: HomePlanTheme.warningText),
                   ),
                 ),
               ),
