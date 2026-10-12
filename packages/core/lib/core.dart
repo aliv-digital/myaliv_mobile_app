@@ -15,6 +15,7 @@ export 'src/auth/credential_store.dart';
 // App
 export 'src/app/global_state.dart';
 export 'src/app/di.dart';
+export 'src/app/session_timeout_service.dart';
 
 // Time
 export 'src/time/timezone_service.dart';

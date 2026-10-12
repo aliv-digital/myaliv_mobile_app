@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -25,7 +24,6 @@ class WelcomeScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => WelcomeBloc(
         repository: WelcomeRepository(),
-        appUiConfigCubit: context.read<AppUiConfigCubit>(),
       )..add(WelcomeLoaded()),
       child: const WelcomeView(),
     );
