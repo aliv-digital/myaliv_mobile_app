@@ -7,6 +7,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_s
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../logic/auto_top_up_validation.dart';
 import '../../theme/top_up_prepaid_theme.dart';
@@ -129,7 +130,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
             const SizedBox(height: 20),
             AutoTopupAnyTimeToggle(
               value: _anyTimeEnabled,
-              onChanged: (v) => setState(() => _anyTimeEnabled = v),
+              onChanged: _onAnyTimeChanged,
             ),
             const SizedBox(height: 20),
             _buildConfigSection(),
@@ -182,6 +183,34 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
       ),
     ),
   );
+
+  /// OFF → ON keeps the existing immediate local toggle. ON → OFF asks for
+  /// confirmation first (ATOP-010) and then shows ATOP-009 feedback.
+  ///
+  /// This only changes the local toggle; it does not update the backend Auto
+  /// Top-up configuration.
+  Future<void> _onAnyTimeChanged(bool value) async {
+    if (value) {
+      setState(() => _anyTimeEnabled = true);
+      return;
+    }
+
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
+      builder: (_) => const AutoTopupTurnOffBottomSheet(),
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _anyTimeEnabled = false);
+    AppToast.show(
+      message: 'auto top-up has been turned off',
+      type: ToastType.success,
+    );
+  }
 
   void _onApply() {
     FocusManager.instance.primaryFocus?.unfocus();
