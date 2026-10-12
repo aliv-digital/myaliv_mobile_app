@@ -290,8 +290,8 @@ void main() {
 
       expect(
         find.text(
-          'activating now replaces your current plan. '
-          'you can also activate your plan when your current plan ends on '
+          'activating now replaces your current plan, '
+          'you can also active your plan when your current plan ends on '
           '${DateFormat('MM-dd-yy').format(currentEnd)}.',
         ),
         findsOneWidget,

@@ -126,7 +126,10 @@ Future<void> showHomePlanPurchaseBottomSheet({
         final String warningText;
         if (plansState.hasActivePrimaryWithoutFuturePrimaryPlans) {
           // Row 4: active primary + no future primary → replace or schedule.
-          warningText = activePlanMessage;
+          // Client chart copy, verbatim (including "active your plan").
+          warningText =
+              'activating now replaces your current plan, '
+              'you can also active your plan when your current plan ends$endDateText.';
         } else {
           warningText = hasStandAloneAndFuturePlan
               ? standAloneFuturePlanMessage

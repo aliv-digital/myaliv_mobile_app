@@ -211,11 +211,18 @@ void main() {
               : [],
         ),
       );
+      final date = DateFormat('MM-dd-yy').format(end);
       expect(
         find.text(
-          'activating now replaces your current plan. '
-          'you can also activate your plan when your current plan ends on '
-          '${DateFormat('MM-dd-yy').format(end)}.',
+          scenario == 'future only'
+              // Not row 4 (no active primary): existing fallback copy.
+              ? 'activating now replaces your current plan. '
+                    'you can also activate your plan when your current plan '
+                    'ends on $date.'
+              // Row 4: client chart copy.
+              : 'activating now replaces your current plan, '
+                    'you can also active your plan when your current plan '
+                    'ends on $date.',
         ),
         findsOneWidget,
       );
@@ -236,8 +243,8 @@ void main() {
       );
       expect(
         find.text(
-          'activating now replaces your current plan. '
-          'you can also activate your plan when your current plan ends on '
+          'activating now replaces your current plan, '
+          'you can also active your plan when your current plan ends on '
           '${DateFormat('MM-dd-yy').format(currentEnd)}.',
         ),
         findsOneWidget,
