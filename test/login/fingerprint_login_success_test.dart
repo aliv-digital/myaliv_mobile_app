@@ -222,69 +222,118 @@ void main() {
     await settle(tester);
   });
 
-  for (final result in [
-    BiometricAuthResult.failed,
-    BiometricAuthResult.cancelled
-  ]) {
-    testWidgets('${result.name} fingerprint does not welcome or call login',
-        (tester) async {
-      await open(tester);
-      when(() => repository.authenticate(reason: any(named: 'reason')))
-          .thenAnswer((_) async => result);
-      await tap(tester);
-      expect(find.text('Welcome!'), findsNothing);
-      expect(find.text('existing home'), findsNothing);
-      expect(biometrics.state.isSessionAuthenticated, isFalse);
-      verifyZeroInteractions(network);
-      verifyZeroInteractions(auth);
-    });
+  for (final face in [false, true]) {
+    for (final result in [
+      BiometricAuthResult.failed,
+      BiometricAuthResult.userRequestedFallback,
+      BiometricAuthResult.cancelled,
+      BiometricAuthResult.error,
+      BiometricAuthResult.biometricsNotAvailable,
+      BiometricAuthResult.biometricsNotEnrolled,
+      BiometricAuthResult.deviceNotSupported,
+    ]) {
+      testWidgets('${result.name} face=$face does not welcome or call login',
+          (tester) async {
+        await open(tester);
+        when(() => repository.authenticate(reason: any(named: 'reason')))
+            .thenAnswer((_) async => result);
+        await tap(tester, face: face);
+        expect(find.text('Welcome!'), findsNothing);
+        expect(find.text('existing home'), findsNothing);
+        expect(biometrics.state.isSessionAuthenticated, isFalse);
+        verifyZeroInteractions(network);
+        verifyZeroInteractions(auth);
+        verifyZeroInteractions(account);
+        verifyZeroInteractions(devices);
+        verifyZeroInteractions(role);
+        expect(
+          find.text('Fingerprint not recognized. Please try again.'),
+          !face && result == BiometricAuthResult.failed
+              ? findsOneWidget
+              : findsNothing,
+        );
+        expect(find.text('Face not detected. Try again.'), findsNothing);
+        expect(
+            find.text(
+                'Too many failed attempts. Please log in with your password.'),
+            findsNothing);
+        if (result == BiometricAuthResult.userRequestedFallback) {
+          expect(find.text('Authentication failed. Please try again.'),
+              findsNothing);
+        }
+        expect(
+            tester
+                .widget<OutlinedButton>(find.widgetWithText(
+                    OutlinedButton, face ? 'face id' : 'fingerprint'))
+                .onPressed,
+            isNotNull);
+        await settle(tester);
+      });
+    }
   }
 
-  testWidgets('Face ID keeps its existing success behaviour', (tester) async {
-    await open(tester);
-    await tap(tester, face: true);
-    completeLogin();
-    sessionSaved.complete();
-    await tester.pumpAndSettle();
-    expect(find.text('Welcome!'), findsNothing);
-    expect(find.text('existing home'), findsOneWidget);
-    expect(biometrics.state.isSessionAuthenticated, isTrue);
-  });
-
-  testWidgets('MFA challenge keeps OTP navigation without an early welcome',
+  testWidgets('Face ID welcomes only after login and session completion',
       (tester) async {
     await open(tester);
-    await tap(tester);
-    completeLogin(mfa: true);
-    await tester.pumpAndSettle();
+    await tap(tester, face: true);
     expect(find.text('Welcome!'), findsNothing);
-    expect(find.text('existing OTP'), findsOneWidget);
-    expect(otpArgs!.mfaToken, 'test-mfa');
-    expect(otpArgs!.apiPhoneNumber, '2428011616');
+    expect(find.text('existing home'), findsNothing);
     expect(biometrics.state.isSessionAuthenticated, isFalse);
-    verifyZeroInteractions(auth);
+    completeLogin();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    verify(() => auth.saveSession(any())).called(1);
+    expect(find.text('Welcome!'), findsNothing);
+    sessionSaved.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Welcome!'), findsOneWidget);
+    expect(find.text('existing home'), findsOneWidget);
+    expect(biometrics.state.isSessionAuthenticated, isTrue);
+    verify(() => account.fetchAccountInfo(forceRefresh: true)).called(1);
+    verify(() => devices.loadDeviceLimits(forceRefresh: true)).called(1);
+    verify(() => role.fetchRoleId(456)).called(1);
+    await tester.pump();
+    expect(find.text('Welcome!'), findsOneWidget);
+    await settle(tester);
   });
 
-  for (final failCompletion in [false, true]) {
-    testWidgets('login/completion failure $failCompletion never welcomes',
+  for (final face in [false, true]) {
+    testWidgets('MFA face=$face keeps OTP navigation without an early welcome',
         (tester) async {
       await open(tester);
-      await tap(tester);
-      if (failCompletion) {
-        when(() => account.fetchAccountInfo(forceRefresh: true))
-            .thenThrow(Exception('account load failed'));
-        completeLogin();
-        sessionSaved.complete();
-      } else {
-        login.completeError(Exception('login failed'));
-      }
+      await tap(tester, face: face);
+      completeLogin(mfa: true);
       await tester.pumpAndSettle();
       expect(find.text('Welcome!'), findsNothing);
-      expect(find.text('existing home'), findsNothing);
-      expect(find.text('Sign-in failed. Please try again.'), findsOneWidget);
+      expect(find.text('existing OTP'), findsOneWidget);
+      expect(otpArgs!.mfaToken, 'test-mfa');
+      expect(otpArgs!.apiPhoneNumber, '2428011616');
       expect(biometrics.state.isSessionAuthenticated, isFalse);
-      await settle(tester);
+      verifyZeroInteractions(auth);
     });
+
+    for (final failCompletion in [false, true]) {
+      testWidgets(
+          'login/completion failure $failCompletion face=$face never welcomes',
+          (tester) async {
+        await open(tester);
+        await tap(tester, face: face);
+        if (failCompletion) {
+          when(() => account.fetchAccountInfo(forceRefresh: true))
+              .thenThrow(Exception('account load failed'));
+          completeLogin();
+          sessionSaved.complete();
+        } else {
+          login.completeError(Exception('login failed'));
+        }
+        await tester.pumpAndSettle();
+        expect(find.text('Welcome!'), findsNothing);
+        expect(find.text('existing home'), findsNothing);
+        expect(find.text('Sign-in failed. Please try again.'), findsOneWidget);
+        expect(biometrics.state.isSessionAuthenticated, isFalse);
+        await settle(tester);
+      });
+    }
   }
 
   testWidgets('missing cached credentials retains password sign-in fallback',

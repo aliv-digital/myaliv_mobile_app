@@ -8,6 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/view/login_page.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockBiometricRepository extends Mock
@@ -35,7 +36,10 @@ void main() {
       final repository = _MockBiometricRepository();
       final network = _MockNetworkService();
       when(() => repository.getBiometricStatus()).thenAnswer(
-        (_) async => const FingerFaceSecurityModel(faceIdEnabled: true),
+        (_) async => const FingerFaceSecurityModel(
+          faceIdEnabled: true,
+          fingerprintEnabled: true,
+        ),
       );
       when(
         () => repository.authenticate(reason: any(named: 'reason')),
@@ -50,6 +54,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          navigatorKey: rootNavigatorKey,
           home: BlocProvider.value(value: config, child: const LoginScreen()),
         ),
       );
@@ -83,6 +88,34 @@ void main() {
         cubit.state.errorMessage,
         'Authentication failed. Please try again.',
       );
+      verifyZeroInteractions(network);
+      when(
+        () => repository.authenticate(reason: any(named: 'reason')),
+      ).thenAnswer((_) async => BiometricAuthResult.userRequestedFallback);
+      for (final action in ['fingerprint', 'face id']) {
+        await tester.tap(find.text(action));
+        await tester.pumpAndSettle();
+        expect(cubit.state.lastAuthResult,
+            BiometricAuthResult.userRequestedFallback);
+        expect(find.text('Fingerprint not recognized. Please try again.'),
+            findsNothing);
+        expect(find.text('Authentication failed. Please try again.'),
+            findsNothing);
+        expect(find.byType(SnackBar), findsNothing);
+        expect(find.byType(Dialog), findsNothing);
+        expect(message, findsNothing);
+        final password = tester.widget<TextField>(find.byType(TextField).last);
+        expect(password.enabled, isNot(false));
+        expect(password.readOnly, isFalse);
+      }
+      await tester.enterText(find.byType(TextField).last, 'test-password');
+      await tester.pumpAndSettle();
+      expect(
+          tester
+              .widget<TextField>(find.byType(TextField).last)
+              .controller!
+              .text,
+          'test-password');
       verifyZeroInteractions(network);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());

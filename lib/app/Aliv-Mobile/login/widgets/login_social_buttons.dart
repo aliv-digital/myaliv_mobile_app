@@ -79,7 +79,15 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     );
 
     if (!context.mounted) return;
-    if (cubit.state.status != FingerFaceSecurityStatus.authenticated) return;
+    if (cubit.state.status != FingerFaceSecurityStatus.authenticated) {
+      if (!isFace && cubit.state.lastAuthResult == BiometricAuthResult.failed) {
+        AppToast.show(
+          message: 'Fingerprint not recognized. Please try again.',
+          type: ToastType.error,
+        );
+      }
+      return;
+    }
 
     // Biometric passed — now replay cached credentials against the API.
     final creds = await CredentialStore().load();
@@ -113,9 +121,7 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
           );
           if (!context.mounted) return;
           cubit.markSessionAuthenticated();
-          if (!isFace) {
-            AppToast.show(message: 'Welcome!', type: ToastType.success);
-          }
+          AppToast.show(message: 'Welcome!', type: ToastType.success);
           context.go(AppRoutes.home);
 
         case LoginMfaChallenge(:final mfaToken):

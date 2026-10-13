@@ -114,7 +114,7 @@ class BiometricAuthService {
         // Explicit dismissal is informational; failed attempts stay separate.
         LocalAuthExceptionCode.userCanceled => BiometricAuthResult.cancelled,
         LocalAuthExceptionCode.userRequestedFallback =>
-          BiometricAuthResult.failed,
+          BiometricAuthResult.userRequestedFallback,
         LocalAuthExceptionCode.noBiometricsEnrolled ||
         LocalAuthExceptionCode.noCredentialsSet =>
           BiometricAuthResult.biometricsNotEnrolled,
@@ -280,6 +280,7 @@ enum BiometricAuthResult {
   biometricsNotEnrolled,
   error,
   cancelled,
+  userRequestedFallback,
 }
 
 enum BiometricSetupResult {

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _TestLocalAuthentication extends LocalAuthentication {
   _TestLocalAuthentication({this.result = true, this.exceptionCode});
@@ -75,10 +76,19 @@ void main() {
   group('BIO-005 service mapping', () {
     for (final entry in {
       LocalAuthExceptionCode.userCanceled: BiometricAuthResult.cancelled,
-      LocalAuthExceptionCode.userRequestedFallback: BiometricAuthResult.failed,
+      LocalAuthExceptionCode.userRequestedFallback:
+          BiometricAuthResult.userRequestedFallback,
       LocalAuthExceptionCode.systemCanceled: BiometricAuthResult.error,
       LocalAuthExceptionCode.temporaryLockout: BiometricAuthResult.error,
       LocalAuthExceptionCode.biometricLockout: BiometricAuthResult.error,
+      LocalAuthExceptionCode.noBiometricsEnrolled:
+          BiometricAuthResult.biometricsNotEnrolled,
+      LocalAuthExceptionCode.noCredentialsSet:
+          BiometricAuthResult.biometricsNotEnrolled,
+      LocalAuthExceptionCode.noBiometricHardware:
+          BiometricAuthResult.biometricsNotAvailable,
+      LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable:
+          BiometricAuthResult.biometricsNotAvailable,
     }.entries) {
       test('${entry.key.name} maps to ${entry.value.name}', () async {
         final service = BiometricAuthService(
@@ -103,9 +113,75 @@ void main() {
     }
   });
 
+  test(
+      'rejection and password fallback stay distinct through repository and Cubit',
+      () async {
+    final outcomes = <FingerFaceSecurityState>[];
+    for (final code in [null, LocalAuthExceptionCode.userRequestedFallback]) {
+      final cubit = FingerFaceSecurityCubit(
+        FingerFaceSecurityRepositoryImpl(
+          service: BiometricAuthService(
+            localAuth:
+                _TestLocalAuthentication(result: false, exceptionCode: code),
+          ),
+        ),
+      );
+      addTearDown(cubit.close);
+      await cubit.authenticate();
+      outcomes.add(cubit.state);
+    }
+    expect(outcomes[0].lastAuthResult, BiometricAuthResult.failed);
+    expect(
+        outcomes[1].lastAuthResult, BiometricAuthResult.userRequestedFallback);
+    expect(outcomes[0].lastAuthResult, isNot(outcomes[1].lastAuthResult));
+    for (final state in outcomes) {
+      expect(state.status, FingerFaceSecurityStatus.failure);
+      expect(state.errorMessage, 'Authentication failed. Please try again.');
+      expect(state.isSessionAuthenticated, isFalse);
+    }
+  });
+
+  for (final kind in ['fingerprint', 'face', 'general']) {
+    for (final code in [null, LocalAuthExceptionCode.userRequestedFallback]) {
+      test('$kind setup preserves failure behavior for $code', () async {
+        SharedPreferences.setMockInitialValues({});
+        final cubit = FingerFaceSecurityCubit(
+          FingerFaceSecurityRepositoryImpl(
+            service: BiometricAuthService(
+              localAuth:
+                  _TestLocalAuthentication(result: false, exceptionCode: code),
+            ),
+          ),
+        );
+        addTearDown(cubit.close);
+        await cubit.loadBiometricStatus();
+        final before = cubit.state.data;
+        switch (kind) {
+          case 'fingerprint':
+            await cubit.enableFingerprintBiometric();
+          case 'face':
+            await cubit.enableFaceIdBiometric();
+          case 'general':
+            await cubit.enableBiometric();
+        }
+        expect(cubit.state.status, FingerFaceSecurityStatus.failure);
+        expect(cubit.state.errorMessage,
+            'Authentication failed. Please try again.');
+        expect(cubit.state.data, before);
+        expect(cubit.state.isSessionAuthenticated, isFalse);
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getBool('biometric_enabled'), isNull);
+        expect(prefs.getBool('biometric_setup_completed'), isNull);
+        expect(prefs.getBool('biometric_fingerprint_enabled'), isNull);
+        expect(prefs.getBool('biometric_face_enabled'), isNull);
+      });
+    }
+  }
+
   for (final result in [
     BiometricAuthResult.cancelled,
     BiometricAuthResult.failed,
+    BiometricAuthResult.userRequestedFallback,
     BiometricAuthResult.success,
   ]) {
     test('Cubit preserves the distinct ${result.name} outcome', () async {
@@ -131,6 +207,7 @@ void main() {
             'enter your password to continue',
           );
         case BiometricAuthResult.failed:
+        case BiometricAuthResult.userRequestedFallback:
           expect(cubit.state.isFailure, isTrue);
           expect(cubit.state.informationalMessage, isNull);
           expect(
@@ -206,6 +283,7 @@ void main() {
           expect(haptics, isEmpty);
           expect(successCallbacks, 0);
         case BiometricAuthResult.failed:
+        case BiometricAuthResult.userRequestedFallback:
           expect(
             find.text('Authentication failed. Please try again.'),
             findsOneWidget,

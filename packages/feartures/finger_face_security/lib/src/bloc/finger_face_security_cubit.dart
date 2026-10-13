@@ -218,7 +218,8 @@ class FingerFaceSecurityCubit extends Cubit<FingerFaceSecurityState> {
   }
 
   String _authResultMessage(BiometricAuthResult result) => switch (result) {
-    BiometricAuthResult.failed => 'Authentication failed. Please try again.',
+    BiometricAuthResult.failed || BiometricAuthResult.userRequestedFallback =>
+      'Authentication failed. Please try again.',
     BiometricAuthResult.biometricsNotEnrolled =>
       'No biometric data found. Please set up biometrics in device settings.',
     BiometricAuthResult.biometricsNotAvailable =>
