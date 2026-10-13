@@ -200,6 +200,13 @@ class _LogoutBottomSheetState extends State<LogoutBottomSheet> {
                                       logoutAllDevices: _logoutAllDevices,
                                     );
 
+                            if (res) {
+                              AppToast.show(
+                                message: 'Logout successful!',
+                                type: ToastType.success,
+                              );
+                            }
+
                             if (!context.mounted) return;
 
                             if (res) {

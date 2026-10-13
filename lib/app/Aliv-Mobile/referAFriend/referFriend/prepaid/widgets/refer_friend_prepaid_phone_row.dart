@@ -149,14 +149,18 @@ class _ReferFriendPrepaidPhoneRowState
               phoneHintStyle: ReferFriendPrepaidTheme.fieldHint,
               labelStyle: ReferFriendPrepaidTheme.label,
             ),
-            if (showLivePhoneValidationError) ...[
+            if (showLivePhoneValidationError ||
+                (state.friendPhoneFieldError &&
+                    state.friendPhone.trim().isEmpty)) ...[
               const SizedBox(height: 6),
               // Keep the message aligned with the phone field, not the picker.
               Padding(
                 padding: EdgeInsets.only(left: phoneErrorLeftPadding),
                 // REF-002 copy; the shared sign-in message is left unchanged.
-                child: const Text(
-                  'invalid Format',
+                child: Text(
+                  state.friendPhone.trim().isEmpty
+                      ? "Please enter your referral's number."
+                      : 'invalid Format',
                   style: ReferFriendPrepaidTheme.fieldError,
                 ),
               ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +115,7 @@ void main() {
         expect(find.text(_title), findsOneWidget);
         expect(find.text(_yes), findsOneWidget);
         expect(find.text(_no), findsOneWidget);
+        expect(find.text('Logout successful!'), findsNothing);
         verifyZeroInteractions(network);
         verifyZeroInteractions(auth);
       });
@@ -187,8 +190,35 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(localLogoutCalls, 1);
+      expect(find.text('Logout successful!'), findsOneWidget);
       expect(find.text(_welcome), findsOneWidget);
       expect(find.byType(LogoutBottomSheet), findsNothing);
+      await tester.pump(const Duration(seconds: 4));
+    });
+
+    testWidgets('logout success waits for completion after welcome navigation',
+        (
+      tester,
+    ) async {
+      final completion = Completer<void>();
+      when(() => auth.currentSession).thenReturn(null);
+      final repo = LogoutRepository(
+        networkService: network,
+        authManager: auth,
+        performLocalLogout: () async {
+          GoRouter.of(rootNavigatorKey.currentContext!).go(AppRoutes.welcome);
+          await completion.future;
+        },
+      );
+      await pumpSheet(tester, repo);
+      await tester.tap(find.text(_yes));
+      await tester.pumpAndSettle();
+      expect(find.text(_welcome), findsOneWidget);
+      expect(find.text('Logout successful!'), findsNothing);
+      completion.complete();
+      await tester.pumpAndSettle();
+      expect(find.text('Logout successful!'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
     });
 
     testWidgets('failed logout keeps the existing error handling', (
@@ -205,6 +235,7 @@ void main() {
 
       verify(() => repo.logout(logoutAllDevices: false)).called(1);
       expect(find.text('Logout failed. Please try again.'), findsOneWidget);
+      expect(find.text('Logout successful!'), findsNothing);
       expect(find.text(_welcome), findsNothing);
       await tester.pump(const Duration(seconds: 4));
       await tester.pumpAndSettle();

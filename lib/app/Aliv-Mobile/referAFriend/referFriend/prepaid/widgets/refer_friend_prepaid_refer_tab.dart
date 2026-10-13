@@ -61,8 +61,9 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                     value: state.friendEmail,
                     showError: showEmailError,
                     highlightInputAsError: showLiveEmailValidationError,
-                    errorText:
-                        ReferFriendPrepaidEmailHelper.invalidEmailMessage,
+                    errorText: state.friendEmail.trim().isEmpty
+                        ? "Please enter your referral's email address."
+                        : ReferFriendPrepaidEmailHelper.invalidEmailMessage,
                     // Email stays borderless in the neutral idle state.
                     showUnfocusedBorder: false,
                     onChanged: (v) => context
@@ -84,7 +85,7 @@ class ReferFriendPrepaidReferTab extends StatelessWidget {
                     builder: (context, buttonState) {
                       return ReferFriendPrepaidPrimaryButton(
                         label: 'share',
-                        enabled: buttonState.canShare && !buttonState.loading,
+                        enabled: !buttonState.loading,
                         isLoading: buttonState.loading,
                         onTap: () => context.read<ReferFriendPrepaidBloc>().add(
                           const ReferFriendPrepaidSharePressed(),
