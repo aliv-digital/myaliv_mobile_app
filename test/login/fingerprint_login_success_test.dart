@@ -56,6 +56,7 @@ void main() {
   late Completer<Response<dynamic>> login;
   late Completer<void> sessionSaved;
   late Map<String, String> credentials;
+  late List<String> credentialReads;
   LoginOtpRouteArgs? otpArgs;
 
   setUpAll(() async {
@@ -74,13 +75,19 @@ void main() {
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+    credentialReads = [];
     credentials = {
       'auth.login_api_phone': '2428011616',
       'auth.login_password': 'test-password',
     };
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(storageChannel, (call) async {
-      return call.method == 'read' ? credentials[call.arguments['key']] : null;
+      if (call.method == 'read') {
+        final key = call.arguments['key'] as String;
+        credentialReads.add(key);
+        return credentials[key];
+      }
+      return null;
     });
     repository = _Biometrics();
     when(() => repository.getBiometricStatus()).thenAnswer((_) async =>
@@ -241,6 +248,7 @@ void main() {
         expect(find.text('Welcome!'), findsNothing);
         expect(find.text('existing home'), findsNothing);
         expect(biometrics.state.isSessionAuthenticated, isFalse);
+        expect(credentialReads, isEmpty);
         verifyZeroInteractions(network);
         verifyZeroInteractions(auth);
         verifyZeroInteractions(account);
@@ -252,7 +260,12 @@ void main() {
               ? findsOneWidget
               : findsNothing,
         );
-        expect(find.text('Face not detected. Try again.'), findsNothing);
+        expect(
+          find.text('Face not detected. Try again.'),
+          face && result == BiometricAuthResult.failed
+              ? findsOneWidget
+              : findsNothing,
+        );
         expect(
             find.text(
                 'Too many failed attempts. Please log in with your password.'),

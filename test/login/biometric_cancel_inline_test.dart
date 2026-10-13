@@ -73,9 +73,10 @@ void main() {
       expect(cubit.state.isFailure, isFalse);
       expect(find.byType(SnackBar), findsNothing);
       expect(find.byType(Dialog), findsNothing);
+      expect(find.text('Face not detected. Try again.'), findsNothing);
       verifyZeroInteractions(network);
 
-      // A later failed attempt retains the original Login fallback behavior.
+      // Ordinary Face ID rejection uses its own copy and keeps password login.
       when(
         () => repository.authenticate(reason: any(named: 'reason')),
       ).thenAnswer((_) async => BiometricAuthResult.failed);
@@ -84,11 +85,25 @@ void main() {
       expect(message, findsNothing);
       expect(find.text('save my password'), findsOneWidget);
       expect(cubit.state.isFailure, isTrue);
+      expect(find.text('Face not detected. Try again.'), findsOneWidget);
+      expect(find.text('Fingerprint not recognized. Please try again.'),
+          findsNothing);
+      final password = tester.widget<TextField>(find.byType(TextField).last);
+      expect(password.enabled, isNot(false));
+      expect(password.readOnly, isFalse);
+      expect(
+          tester
+              .widget<ElevatedButton>(
+                  find.widgetWithText(ElevatedButton, 'sign in'))
+              .onPressed,
+          isNotNull);
       expect(
         cubit.state.errorMessage,
         'Authentication failed. Please try again.',
       );
       verifyZeroInteractions(network);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
       when(
         () => repository.authenticate(reason: any(named: 'reason')),
       ).thenAnswer((_) async => BiometricAuthResult.userRequestedFallback);
@@ -99,6 +114,7 @@ void main() {
             BiometricAuthResult.userRequestedFallback);
         expect(find.text('Fingerprint not recognized. Please try again.'),
             findsNothing);
+        expect(find.text('Face not detected. Try again.'), findsNothing);
         expect(find.text('Authentication failed. Please try again.'),
             findsNothing);
         expect(find.byType(SnackBar), findsNothing);

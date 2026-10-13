@@ -23,7 +23,13 @@ class MakePaymentPostPaidSideEffects {
 
   static void _showErrorToast(String? message) {
     if (message == null || message.isEmpty) return;
-    AppToast.show(message: message, type: ToastType.error);
+    AppToast.show(
+      message:
+          message == 'Unable to process payment, please check card information'
+              ? 'Unable to process payment. Please check card information.'
+              : message,
+      type: ToastType.error,
+    );
   }
 
   static void _handlePaidNav(
@@ -35,6 +41,8 @@ class MakePaymentPostPaidSideEffects {
     PostpaidReceiptNavigator.push(
       context,
       amount: resolveMpAmountToCharge(state),
+      message:
+          'Thank you for your payment! Confirmation has been sent to your email.',
       method: state.paymentMode == MpPaymentMode.payWithCard
           ? PostpaidPaymentMethod.newCard
           : PostpaidPaymentMethod.savedCard,

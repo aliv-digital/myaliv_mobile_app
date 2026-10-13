@@ -100,7 +100,13 @@ class MakePaymentPostPaidPayFlow {
           },
           onFailure: (String message) {
             navigator.pop();
-            AppToast.show(message: message, type: ToastType.error);
+            AppToast.show(
+              message: message ==
+                      'Unable to process payment, please check card information'
+                  ? 'Unable to process payment. Please check card information.'
+                  : message,
+              type: ToastType.error,
+            );
           },
           onHomeTap: () {
             navigator.pop();

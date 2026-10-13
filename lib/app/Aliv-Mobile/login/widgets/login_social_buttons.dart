@@ -80,9 +80,11 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
 
     if (!context.mounted) return;
     if (cubit.state.status != FingerFaceSecurityStatus.authenticated) {
-      if (!isFace && cubit.state.lastAuthResult == BiometricAuthResult.failed) {
+      if (cubit.state.lastAuthResult == BiometricAuthResult.failed) {
         AppToast.show(
-          message: 'Fingerprint not recognized. Please try again.',
+          message: isFace
+              ? 'Face not detected. Try again.'
+              : 'Fingerprint not recognized. Please try again.',
           type: ToastType.error,
         );
       }
