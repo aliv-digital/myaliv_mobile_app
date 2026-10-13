@@ -33,6 +33,15 @@ class MakePaymentPostPaidPayFlow {
     BuildContext context,
     MakePaymentPostPaidState state,
   ) async {
+    if (state.amountOption == MpAmountOption.other &&
+        double.tryParse(state.customAmount.trim()) == 0) {
+      AppToast.show(
+        message: r'Payment cannot be $0. Please try again.',
+        type: ToastType.error,
+      );
+      return;
+    }
+
     if (state.paymentMode == MpPaymentMode.payWithCard) {
       _payWithNewCard(context, state);
       return;

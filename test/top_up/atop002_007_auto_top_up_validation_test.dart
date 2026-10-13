@@ -425,6 +425,94 @@ void main() {
       await tester.pumpAndSettle();
     }
 
+    for (final name in [
+      ' John',
+      'John ',
+      ' John ',
+      'John123',
+      '12345',
+      'John!',
+      'John@Doe',
+      'John_Doe',
+      'John#Doe',
+      'John-Doe',
+      "O'Neil",
+    ]) {
+      testWidgets('signature format rejects "$name" before activation', (
+        tester,
+      ) async {
+        await submit(
+          tester,
+          alreadyConfigured: false,
+          succeeds: true,
+          name: name,
+        );
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          name,
+        );
+        expect(
+          find.text("Please check your signature's format and try again."),
+          findsOneWidget,
+        );
+        verifyNever(
+          () => devices.updateBalanceThresholdSettings(
+            balanceThreshold: any(named: 'balanceThreshold'),
+            autoTopUpAmount: any(named: 'autoTopUpAmount'),
+            cardToken: any(named: 'cardToken'),
+          ),
+        );
+        expect(find.text(_started), findsNothing);
+        await finish(tester);
+        expect(find.text('home'), findsNothing);
+      });
+    }
+
+    for (final name in ['', '   ']) {
+      testWidgets('empty signature "$name" preserves required validation', (
+        tester,
+      ) async {
+        await submit(
+          tester,
+          alreadyConfigured: false,
+          succeeds: true,
+          name: name,
+        );
+        expect(find.text('Please enter your name.'), findsOneWidget);
+        verifyNever(
+          () => devices.updateBalanceThresholdSettings(
+            balanceThreshold: any(named: 'balanceThreshold'),
+            autoTopUpAmount: any(named: 'autoTopUpAmount'),
+            cardToken: any(named: 'cardToken'),
+          ),
+        );
+        await finish(tester);
+        expect(find.text('home'), findsNothing);
+      });
+    }
+
+    testWidgets('matching full name with internal space still activates', (
+      tester,
+    ) async {
+      when(() => deviceState.fullName).thenReturn('John Doe');
+      await submit(
+        tester,
+        alreadyConfigured: false,
+        succeeds: true,
+        name: 'John Doe',
+      );
+      expect(find.text(_started), findsOneWidget);
+      verify(
+        () => devices.updateBalanceThresholdSettings(
+          balanceThreshold: 20,
+          autoTopUpAmount: 25,
+          cardToken: 'tok-1234',
+        ),
+      ).called(1);
+      await finish(tester);
+      expect(find.text('home'), findsOneWidget);
+    });
+
     testWidgets('new activation shows the started toast after success', (
       tester,
     ) async {
@@ -470,6 +558,12 @@ void main() {
         alreadyConfigured: false,
         succeeds: true,
         name: 'Someone',
+      );
+      expect(
+        find.text(
+          'Name does not match. Please enter your name exactly as displayed.',
+        ),
+        findsOneWidget,
       );
       expect(find.text(_started), findsNothing);
       verifyNever(

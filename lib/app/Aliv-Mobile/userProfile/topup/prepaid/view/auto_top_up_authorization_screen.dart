@@ -49,6 +49,11 @@ class _AutoTopUpAuthorizationScreenState
       _showError('Please enter your name.');
       return;
     }
+    if (_nameController.text != name ||
+        RegExp(r'[^\p{L} ]', unicode: true).hasMatch(name)) {
+      _showError("Please check your signature's format and try again.");
+      return;
+    }
     if (!_isNameValid) {
       _showError(
         'Name does not match. Please enter your name exactly as displayed.',
