@@ -167,9 +167,11 @@ void main() {
       await tester.pumpAndSettle();
 
       await _enterValidMatchingNumbers(tester);
+      expect(find.text('The plan was purchased successfully.'), findsNothing);
       await tester.tap(continueButton());
       await tester.pumpAndSettle();
 
+      expect(find.text('The plan was purchased successfully.'), findsNothing);
       expect(harness.routeExtras, <Object?>[
         <String, String>{'phoneNumber': '242-555-1234'},
       ]);

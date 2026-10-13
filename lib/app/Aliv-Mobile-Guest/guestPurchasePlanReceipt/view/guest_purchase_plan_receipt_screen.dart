@@ -80,7 +80,11 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
         create: (ctx) => GuestPurchasePlanReceiptBloc(
           repository: ctx.read<GuestPurchasePlanReceiptRepository>(),
         )..add(GuestPurchasePlanReceiptStarted(receiptData)),
-        child: _GuestPurchasePlanReceiptView(statusMessage: statusMessage),
+        child: _GuestPurchasePlanReceiptView(
+          statusMessage: (int.tryParse(orderId ?? '') ?? 0) > 0
+              ? 'The plan was purchased successfully.'
+              : statusMessage,
+        ),
       ),
     );
   }
