@@ -93,6 +93,16 @@ class AutoRenewAuthPrepaidBloc
       return;
     }
 
+    if (RegExp(r'[^\p{L} ]', unicode: true).hasMatch(name)) {
+      emit(
+        state.copyWith(
+          errorMessage:
+              'Only alphabetical characheters are allowed. Try again.',
+        ),
+      );
+      return;
+    }
+
     // Validate the exact displayed name before calling the API.
     if (!state.isNameValid) {
       emit(

@@ -92,8 +92,9 @@ class _AutoRenewAuthPrepaidView extends StatelessWidget {
 
         if (state.navTarget == AutoRenewAuthNavTarget.success) {
           AppToast.show(
-            message:
-                "We're working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+            // Previous success copy:
+            // "We're working on it! Auto renew takes a few minutes to update. Thank you for your patience."
+            message: 'Your signature has been accepted.',
             type: ToastType.success,
           );
           bloc.add(const AutoRenewAuthNavigationConsumed());
