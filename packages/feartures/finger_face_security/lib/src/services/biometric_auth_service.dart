@@ -122,7 +122,8 @@ class BiometricAuthService {
         LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable =>
           BiometricAuthResult.biometricsNotAvailable,
         LocalAuthExceptionCode.temporaryLockout ||
-        LocalAuthExceptionCode.biometricLockout => BiometricAuthResult.error,
+        LocalAuthExceptionCode.biometricLockout =>
+          BiometricAuthResult.lockedOut,
         _ => BiometricAuthResult.error,
       };
     } catch (e) {
@@ -281,6 +282,7 @@ enum BiometricAuthResult {
   error,
   cancelled,
   userRequestedFallback,
+  lockedOut,
 }
 
 enum BiometricSetupResult {

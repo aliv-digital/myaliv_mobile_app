@@ -80,7 +80,14 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
 
     if (!context.mounted) return;
     if (cubit.state.status != FingerFaceSecurityStatus.authenticated) {
-      if (cubit.state.lastAuthResult == BiometricAuthResult.failed) {
+      if (!isFace &&
+          cubit.state.lastAuthResult == BiometricAuthResult.lockedOut) {
+        AppToast.show(
+          message:
+              'Too many failed attempts. Please log in with your password.',
+          type: ToastType.error,
+        );
+      } else if (cubit.state.lastAuthResult == BiometricAuthResult.failed) {
         AppToast.show(
           message: isFace
               ? 'Face not detected. Try again.'

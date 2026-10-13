@@ -79,8 +79,8 @@ void main() {
       LocalAuthExceptionCode.userRequestedFallback:
           BiometricAuthResult.userRequestedFallback,
       LocalAuthExceptionCode.systemCanceled: BiometricAuthResult.error,
-      LocalAuthExceptionCode.temporaryLockout: BiometricAuthResult.error,
-      LocalAuthExceptionCode.biometricLockout: BiometricAuthResult.error,
+      LocalAuthExceptionCode.temporaryLockout: BiometricAuthResult.lockedOut,
+      LocalAuthExceptionCode.biometricLockout: BiometricAuthResult.lockedOut,
       LocalAuthExceptionCode.noBiometricsEnrolled:
           BiometricAuthResult.biometricsNotEnrolled,
       LocalAuthExceptionCode.noCredentialsSet:
@@ -142,7 +142,12 @@ void main() {
   });
 
   for (final kind in ['fingerprint', 'face', 'general']) {
-    for (final code in [null, LocalAuthExceptionCode.userRequestedFallback]) {
+    for (final code in [
+      null,
+      LocalAuthExceptionCode.userRequestedFallback,
+      LocalAuthExceptionCode.temporaryLockout,
+      LocalAuthExceptionCode.biometricLockout,
+    ]) {
       test('$kind setup preserves failure behavior for $code', () async {
         SharedPreferences.setMockInitialValues({});
         final cubit = FingerFaceSecurityCubit(
@@ -183,6 +188,7 @@ void main() {
     BiometricAuthResult.failed,
     BiometricAuthResult.userRequestedFallback,
     BiometricAuthResult.success,
+    BiometricAuthResult.lockedOut,
   ]) {
     test('Cubit preserves the distinct ${result.name} outcome', () async {
       final cubit = FingerFaceSecurityCubit(_TestBiometricRepository(result));
@@ -218,6 +224,13 @@ void main() {
           expect(cubit.state.status, FingerFaceSecurityStatus.authenticated);
           expect(cubit.state.errorMessage, isNull);
           expect(cubit.state.informationalMessage, isNull);
+        case BiometricAuthResult.lockedOut:
+          expect(cubit.state.isFailure, isTrue);
+          expect(cubit.state.informationalMessage, isNull);
+          expect(
+            cubit.state.errorMessage,
+            'An authentication error occurred. Please try again.',
+          );
         default:
           fail('Unexpected test result');
       }
@@ -294,6 +307,19 @@ void main() {
           expect(find.text('Authentication successful!'), findsOneWidget);
           expect(haptics, ['HapticFeedbackType.lightImpact']);
           expect(successCallbacks, 1);
+        case BiometricAuthResult.lockedOut:
+          expect(
+            find.text('An authentication error occurred. Please try again.'),
+            findsOneWidget,
+          );
+          expect(
+            find.text(
+              'Too many failed attempts. Please log in with your password.',
+            ),
+            findsNothing,
+          );
+          expect(haptics, ['HapticFeedbackType.heavyImpact']);
+          expect(successCallbacks, 0);
         default:
           fail('Unexpected test result');
       }
