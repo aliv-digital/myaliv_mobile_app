@@ -95,12 +95,50 @@ void main() {
       expect(challenges, 0);
       expect(
         bloc.state.newPasswordError,
-        'password does not meet the requirement',
+        'New password is required.',
       );
       verifyNever(
         () => repository.changePassword(newPassword: any(named: 'newPassword')),
       );
     });
+
+    for (final length in [3, 4, 7, 65]) {
+      test('existing 8–64 policy rejects length $length before OTP', () async {
+        final password = 'a' * length;
+        bloc.add(ChangePasswordPrepaidNewChanged(password));
+        bloc.add(ChangePasswordPrepaidConfirmChanged(password));
+        await _flush();
+        bloc.add(const ChangePasswordPrepaidSubmitPressed());
+        await _flush();
+        expect(bloc.state.newPasswordError,
+            'password does not meet the requirement');
+        expect(bloc.state.isValid, isFalse);
+        expect(challenges, 0);
+        verifyZeroInteractions(repository);
+      });
+    }
+
+    for (final password in [
+      'abcdefgh',
+      'a' * 64,
+      '12345678',
+      '!@#\$%^&*',
+      '  abcdefgh  '
+    ]) {
+      test(
+          'existing valid password is submitted trimmed at length ${password.length}',
+          () async {
+        bloc.add(ChangePasswordPrepaidNewChanged(password));
+        bloc.add(ChangePasswordPrepaidConfirmChanged(password));
+        await _flush();
+        bloc.add(const ChangePasswordPrepaidSubmitPressed());
+        await _flush();
+        expect(challenges, 1);
+        expect(bloc.state.status, ChangePasswordPrepaidStatus.success);
+        verify(() => repository.changePassword(newPassword: password.trim()))
+            .called(1);
+      });
+    }
 
     test(
       'waits for verification; password remains form-local; rapid taps submit once',
