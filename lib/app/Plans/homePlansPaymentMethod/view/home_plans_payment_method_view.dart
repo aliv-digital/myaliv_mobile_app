@@ -36,6 +36,27 @@ class _HomePlansPaymentMethodViewState
 
   /// PAY-001: set when pay now is tapped without a usable payment method.
   bool _showPaymentMethodError = false;
+  bool _purchaseCancellationShown = false;
+
+  void _showPurchaseCancellation() {
+    if (_purchaseCancellationShown) {
+      return;
+    }
+    final state = context.read<HomePlansPaymentMethodBloc>().state;
+    final planTitle = state.replacementPrimaryPlanTitle;
+    if (planTitle == null ||
+        state.hasConfirmed3DSPayment ||
+        (state.status != HomePlansPaymentMethodStatus.ready &&
+            state.status != HomePlansPaymentMethodStatus.loading) ||
+        state.navTarget != HomePlansPaymentMethodNavTarget.none) {
+      return;
+    }
+    _purchaseCancellationShown = true;
+    AppToast.show(
+      message: 'Your $planTitle was not added',
+      type: ToastType.error,
+    );
+  }
 
   @override
   void initState() {
@@ -230,7 +251,7 @@ class _HomePlansPaymentMethodViewState
             ),
             body: Column(
               children: <Widget>[
-                const PaymentAppBar(),
+                PaymentAppBar(onPopped: _showPurchaseCancellation),
                 Expanded(
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),

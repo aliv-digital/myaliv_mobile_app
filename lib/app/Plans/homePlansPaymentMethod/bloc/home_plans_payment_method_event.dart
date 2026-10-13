@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
@@ -20,6 +21,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
   final List<PlanPurchasePromoCode> promoCodes;
   final List<PlanPurchaseBonus> bonuses;
   final bool forceNow;
+  final PlanPurchaseContext purchaseContext;
   final DateTime? selectedBeginDate;
 
   const HomePlansPaymentMethodStarted({
@@ -31,6 +33,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
     this.promoCodes = const <PlanPurchasePromoCode>[],
     this.bonuses = const <PlanPurchaseBonus>[],
     this.forceNow = false,
+    this.purchaseContext = PlanPurchaseContext.regular,
     this.selectedBeginDate,
   });
 
@@ -44,6 +47,7 @@ class HomePlansPaymentMethodStarted extends HomePlansPaymentMethodEvent {
     promoCodes,
     bonuses,
     forceNow,
+    purchaseContext,
     selectedBeginDate,
   ];
 }

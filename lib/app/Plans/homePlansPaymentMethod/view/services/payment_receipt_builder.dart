@@ -24,6 +24,7 @@ class PaymentReceiptBuilder {
     final phone = _phoneNumber(state, account);
     final email = _firstNonEmpty([account?.email]);
     final method = _paymentMethodLabel(state);
+    final replacementPlanTitle = state.replacementPrimaryPlanTitle;
 
     // Only carry the card into the receipt when the user just entered a
     // new one — saved-card / wallet / charge-to-my-account paths have no
@@ -39,7 +40,10 @@ class PaymentReceiptBuilder {
       'timeText': time,
       'paymentMethod': method,
       'statusMessage':
-          'It will take a few moments for the plan to appear on the account.',
+          state.status == HomePlansPaymentMethodStatus.success &&
+              replacementPlanTitle != null
+          ? 'Your $replacementPlanTitle was added successfully.'
+          : 'It will take a few moments for the plan to appear on the account.',
       'leftType': 'service',
       'rightType': state.isPrepaidUser ? 'prepaid' : 'postpaid',
       'details': _details(state, date, time, phone, email, method),

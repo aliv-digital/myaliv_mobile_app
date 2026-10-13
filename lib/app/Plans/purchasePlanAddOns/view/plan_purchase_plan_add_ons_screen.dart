@@ -21,6 +21,7 @@ import '../bloc/plan_purchase_plan_add_ons_event.dart';
 import '../bloc/plan_purchase_plan_add_ons_state.dart';
 import '../model/plan_purchase_add_on_models.dart';
 import '../model/plan_purchase_plan_add_ons_route_args.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
 import '../repository/plan_purchase_plan_add_ons_repository.dart';
 import '../theme/plan_purchase_plan_add_ons_theme.dart';
 import '../widgets/plan_purchase_add_on_tile.dart';
@@ -148,6 +149,8 @@ class _PlanPurchasePlanAddOnsView extends StatelessWidget {
           ? _selectedAddOns(state)
           : const <HomePlanConfirmationSelectedAddOn>[],
       forceNow: state.routeArgs?.forceNow ?? false,
+      purchaseContext:
+          state.routeArgs?.purchaseContext ?? PlanPurchaseContext.regular,
     );
   }
 

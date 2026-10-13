@@ -43,6 +43,8 @@ class HomePlansPaymentMethodBloc
         promoCodes: event.promoCodes,
         bonuses: event.bonuses,
         forceNow: event.forceNow,
+        purchaseContext: event.purchaseContext,
+        hasConfirmed3DSPayment: false,
         selectedBeginDate: event.selectedBeginDate,
       ),
     );
@@ -322,6 +324,9 @@ class HomePlansPaymentMethodBloc
     HomePlans3DSPayWithCardSucceeded event,
     Emitter<HomePlansPaymentMethodState> emit,
   ) async {
+    if (state.replacementPrimaryPlanTitle != null) {
+      emit(state.copyWith(hasConfirmed3DSPayment: true));
+    }
     await _logPurchaseAnalytics();
     emit(
       state.copyWith(

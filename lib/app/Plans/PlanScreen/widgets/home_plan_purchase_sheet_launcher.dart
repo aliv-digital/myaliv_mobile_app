@@ -18,6 +18,7 @@ import '../../mifiAltContact/model/mifi_alt_contact_route_args.dart';
 import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
+import '../models/plan_purchase_context.dart';
 import '../repository/enums/plan_group.dart';
 import '../repository/plan_types.dart';
 import 'roam_bottom_sheet.dart';
@@ -42,6 +43,17 @@ Future<void> showHomePlanPurchaseBottomSheet({
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
     activePrimaryPlan: plansState.earliestAddOnsPrimaryPlan,
+    purchaseContext:
+        (selectedTab == HomePlanTab.daily ||
+                selectedTab == HomePlanTab.weekly ||
+                selectedTab == HomePlanTab.monthly) &&
+            selectedApiPlan?.planType.trim().toUpperCase() == 'P' &&
+            plansState.hasActivePrimaryPlan &&
+            PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) !=
+                PlanGroup.mifi &&
+            instance<AccountInfoCubit>().state.isPrepaid
+        ? PlanPurchaseContext.prepaidImmediatePrimaryReplacement
+        : PlanPurchaseContext.regular,
   );
 
   return showModalBottomSheet<void>(
@@ -363,12 +375,14 @@ PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   required BasePlanModel? selectedApiPlan,
   required int? selectedIndex,
   required BasePlanModel? activePrimaryPlan,
+  required PlanPurchaseContext purchaseContext,
 }) {
   return PlanPurchasePlanAddOnsRouteArgs(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
     forceNow: true,
     activePrimaryPlan: activePrimaryPlan,
+    purchaseContext: purchaseContext,
   );
 }
 

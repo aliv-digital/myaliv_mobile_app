@@ -138,6 +138,7 @@ class _HomePlanConfirmationViewState extends State<_HomePlanConfirmationView> {
                             : 'no VAT applied',
                         promoCodes: promoCodes,
                         forceNow: state.forceNow,
+                        purchaseContext: state.purchaseContext,
                         selectedBeginDate: state.selectedBeginDate,
                         marketingOptIn: state.marketingOptIn,
                         selectedItems: state.data!.items
