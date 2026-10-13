@@ -78,7 +78,7 @@ class _CreatePasswordView extends StatelessWidget {
             listener: (context, state) {
               if (state.status == CreatePasswordStatus.success) {
                 AppToast.show(
-                  message: 'Password updated successfully.',
+                  message: 'Password reset successful!',
                   type: ToastType.success,
                 );
                 context.go(AppRoutes.home);
