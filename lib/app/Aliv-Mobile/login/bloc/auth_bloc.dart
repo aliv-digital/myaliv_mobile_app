@@ -169,9 +169,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         phoneValidationResult.phoneNumberForApi == null) {
       _emitFailure(
         emit,
-        message:
-            phoneValidationResult.errorMessage ??
-            LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+        message: 'invalid Format',
         phoneFieldError: true,
         passwordFieldError: false,
       );

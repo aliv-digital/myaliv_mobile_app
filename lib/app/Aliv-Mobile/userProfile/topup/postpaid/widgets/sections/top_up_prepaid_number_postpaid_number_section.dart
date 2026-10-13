@@ -110,7 +110,7 @@ class _TopUpPrepaidNumberPostPaidNumberSectionState
           Padding(
             padding: EdgeInsets.only(left: phoneErrorLeftPadding),
             child: const Text(
-              LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+              'invalid Format',
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),

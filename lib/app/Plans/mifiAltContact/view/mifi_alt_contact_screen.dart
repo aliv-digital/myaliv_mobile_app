@@ -41,8 +41,7 @@ class _MifiAltContactViewState extends State<_MifiAltContactView> {
 
   static const String _emptyPhoneMessage =
       'enter a mobile number we can reach you on';
-  static const String _invalidPhoneMessage =
-      'enter a valid 10-digit mobile number';
+  static const String _invalidPhoneMessage = 'invalid Format';
   static const String _sameAsMifiMessage =
       "enter a number that's different from your mifi number";
 

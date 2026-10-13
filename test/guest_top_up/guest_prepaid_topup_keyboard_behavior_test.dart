@@ -228,13 +228,15 @@ void main() {
       await tester.enterText(_phoneField(0), '123');
       await tester.pump();
       expect(find.text(GuestTopUpTheme.emptyPhoneMessage), findsNothing);
-      expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsOneWidget);
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNothing);
 
       await tester.tap(_proceedButton());
       await tester.pump();
 
       // Existing behavior: live inline error plus the invalid-phone toast.
-      expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNWidgets(2));
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsOneWidget);
       expect(find.text(GuestTopUpTheme.emptyPhoneMessage), findsNothing);
       expect(harness.confirmExtras, isEmpty);
       await tester.pump(const Duration(seconds: 4));
@@ -510,7 +512,8 @@ void main() {
     await tester.pump();
 
     expect(harness.confirmExtras, isEmpty);
-    expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsNWidgets(2));
+    expect(find.text('invalid Format'), findsOneWidget);
+    expect(find.text(GuestTopUpTheme.invalidPhoneMessage), findsOneWidget);
     await tester.pump(const Duration(seconds: 4));
 
     final restoredPhoneState = bloc.stream.firstWhere(

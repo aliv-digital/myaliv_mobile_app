@@ -78,6 +78,17 @@ void main() {
     expect(tester.widget<TextField>(passwordField).focusNode!.hasFocus, isTrue);
   });
 
+  testWidgets('local phone format failure shows invalid Format inline', (
+    tester,
+  ) async {
+    bloc.add(const LoginPhoneChanged('24255'));
+    await tester.pump();
+    await _pumpHarness(tester, bloc);
+
+    expect(find.text('invalid Format'), findsOneWidget);
+    expect(find.text('invalid phone number'), findsNothing);
+  });
+
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     testWidgets('$platform phone toolbar Next focuses password only', (
       tester,

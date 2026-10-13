@@ -243,6 +243,7 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 hasFocus: _hasPhoneFocus,
                 focusNode: _phoneFocusNode,
                 highlightInvalidInput: true,
+                validationMessage: 'invalid Format',
                 onChanged: (value) {
                   setState(() => _phoneNumber = value);
                 },

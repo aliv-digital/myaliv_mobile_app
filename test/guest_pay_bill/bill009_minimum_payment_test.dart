@@ -18,7 +18,7 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 class _Network extends Mock implements NetworkService {}
 
 const _minimum = r'the minimum payment amount is $5.00';
-const _invalidNumber = 'enter a valid 10-digit mobile number';
+const _invalidNumber = 'invalid Format';
 const _mismatch = "these numbers don't match. re-enter the number to continue.";
 
 void main() {

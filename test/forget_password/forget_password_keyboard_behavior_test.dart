@@ -203,7 +203,7 @@ void main() {
       await tester.enterText(_phoneField(), '242');
       await tester.tap(find.text('send'));
       await tester.pump();
-      expect(find.text('enter a valid 10-digit mobile number'), findsOneWidget);
+      expect(find.text('invalid Format'), findsOneWidget);
       verifyZeroInteractions(networkService);
 
       await tester.enterText(_phoneField(), '2425550101');
@@ -213,7 +213,7 @@ void main() {
       final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
       expect(bloc.state.status, ForgetPasswordStatus.loading);
       expect(bloc.state.hasInlineNumberError, isFalse);
-      expect(find.text('enter a valid 10-digit mobile number'), findsNothing);
+      expect(find.text('invalid Format'), findsNothing);
       expect(
         tester.widget<DefaultButton>(find.byType(DefaultButton)).isLoading,
         isTrue,
@@ -308,7 +308,7 @@ void main() {
       await tester.pump();
 
       final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
-      const message = 'enter a valid 10-digit mobile number';
+      const message = 'invalid Format';
       expect(bloc.state.status, ForgetPasswordStatus.failure);
       expect(bloc.state.isEmptyNumberError, isFalse);
       expect(bloc.state.isInvalidNumberLengthError, isTrue);
@@ -385,9 +385,7 @@ void main() {
         await tester.pump();
         expect(
           find.text(
-            priorInput.isEmpty
-                ? 'enter your mobile number'
-                : 'enter a valid 10-digit mobile number',
+            priorInput.isEmpty ? 'enter your mobile number' : 'invalid Format',
           ),
           findsOneWidget,
         );
@@ -405,7 +403,7 @@ void main() {
         expect(find.text(backendMessage), findsOneWidget);
         expect(find.byIcon(Icons.close), findsOneWidget);
         expect(find.text('enter your mobile number'), findsNothing);
-        expect(find.text('enter a valid 10-digit mobile number'), findsNothing);
+        expect(find.text('invalid Format'), findsNothing);
         verify(
           () => networkService.request<dynamic>(
             Api.forgotPasswordUrl,

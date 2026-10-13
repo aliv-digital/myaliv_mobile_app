@@ -156,7 +156,7 @@ class _ReferFriendPrepaidPhoneRowState
                 padding: EdgeInsets.only(left: phoneErrorLeftPadding),
                 // REF-002 copy; the shared sign-in message is left unchanged.
                 child: const Text(
-                  'enter a valid 10-digit mobile number',
+                  'invalid Format',
                   style: ReferFriendPrepaidTheme.fieldError,
                 ),
               ),

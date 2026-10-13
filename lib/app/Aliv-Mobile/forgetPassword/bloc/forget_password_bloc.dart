@@ -53,7 +53,7 @@ class ForgetPasswordBloc
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.failure,
-          errorMessage: 'enter a valid 10-digit mobile number',
+          errorMessage: 'invalid Format',
           isEmptyNumberError: false,
           isInvalidNumberLengthError: true,
         ),

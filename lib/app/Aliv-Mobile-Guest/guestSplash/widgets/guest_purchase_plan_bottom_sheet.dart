@@ -308,7 +308,7 @@ class _SheetBodyState extends State<_SheetBody> {
                 Text(
                   _showEmptyPhoneError
                       ? GuestSplashTheme.emptyPhoneMessage
-                      : GuestSplashTheme.invalidPhoneMessage,
+                      : 'invalid Format',
                   style: GuestSplashTheme.errorText,
                 ),
               ],

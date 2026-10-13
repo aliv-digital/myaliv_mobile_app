@@ -146,12 +146,14 @@ void main() {
       await tester.enterText(_phoneField(0), '123');
       await tester.pump();
       expect(find.text(emptyCopy), findsNothing);
-      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsOneWidget);
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsNothing);
 
       await tester.tap(continueButton());
       await tester.pump();
 
-      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsNWidgets(2));
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsOneWidget);
       expect(find.text(emptyCopy), findsNothing);
       expect(harness.routeExtras, isEmpty);
       await tester.pump(const Duration(seconds: 4));

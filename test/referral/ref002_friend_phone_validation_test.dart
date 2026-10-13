@@ -29,7 +29,7 @@ class _DeviceState extends Mock implements DeviceLimitsState {}
 
 class _Device extends Mock implements DeviceLimitsModel {}
 
-const _invalid = 'enter a valid 10-digit mobile number';
+const _invalid = 'invalid Format';
 
 void main() {
   late _Repository repository;

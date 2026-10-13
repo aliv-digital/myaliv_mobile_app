@@ -294,7 +294,7 @@ class _GuestTopUpViewState extends State<_GuestTopUpView> {
                               showError: showError,
                               errorText: _showEmptyPhoneError
                                   ? GuestTopUpTheme.emptyPhoneMessage
-                                  : GuestTopUpTheme.invalidPhoneMessage,
+                                  : 'invalid Format',
                               textInputAction: TextInputAction.next,
                               onChanged: (value) {
                                 if (_showEmptyPhoneError) {

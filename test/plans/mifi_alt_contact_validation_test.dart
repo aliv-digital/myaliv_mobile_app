@@ -31,7 +31,7 @@ class _Devices extends MockCubit<DeviceLimitsState>
     implements DeviceLimitsCubit {}
 
 const _empty = 'enter a mobile number we can reach you on';
-const _invalid = 'enter a valid 10-digit mobile number';
+const _invalid = 'invalid Format';
 const _sameAsMifi = "enter a number that's different from your mifi number";
 const _allMessages = [_empty, _invalid, _sameAsMifi];
 

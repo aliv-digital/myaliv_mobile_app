@@ -172,7 +172,7 @@ void main() {
   ) async {
     await pumpTab(tester);
     await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
-    expect(find.text('invalid phone number'), findsOneWidget);
+    expect(find.text('invalid Format'), findsOneWidget);
     expect(find.text(_mismatch), findsNothing);
     expect(proceedButton(tester).onPressed, isNull);
     expectNoDownstream();
