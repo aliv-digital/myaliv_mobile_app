@@ -20,7 +20,12 @@ class LoginOtpSubmitted extends LoginOtpEvent {
 }
 
 class LoginOtpResendRequested extends LoginOtpEvent {
-  const LoginOtpResendRequested();
+  const LoginOtpResendRequested({this.clearCode = false});
+
+  final bool clearCode;
+
+  @override
+  List<Object?> get props => [clearCode];
 }
 
 class PrintStorage extends LoginOtpEvent {

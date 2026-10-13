@@ -7,7 +7,14 @@ import '../bloc/login_otp_event.dart';
 import '../theme/login_otp_theme.dart';
 
 class OtpBottomActions extends StatelessWidget {
-  const OtpBottomActions({super.key});
+  const OtpBottomActions({
+    super.key,
+    this.onResendPressed,
+    this.clearCodeOnResend = false,
+  });
+
+  final VoidCallback? onResendPressed;
+  final bool clearCodeOnResend;
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +54,14 @@ class OtpBottomActions extends StatelessWidget {
                 GestureDetector(
                   onTap: resendLoading
                       ? null
-                      : () => context.read<LoginOtpBloc>().add(
-                          const LoginOtpResendRequested(),
-                        ),
+                      : () {
+                          onResendPressed?.call();
+                          context.read<LoginOtpBloc>().add(
+                            LoginOtpResendRequested(
+                              clearCode: clearCodeOnResend,
+                            ),
+                          );
+                        },
                   child: Text(
                     resendLoading ? 'sending...' : 'resend code',
                     style: LoginOtpTheme.resendText,

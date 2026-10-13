@@ -23,6 +23,7 @@ class LoginOtpScreen extends StatelessWidget {
     this.initialApiPhoneNumber = '',
     this.onSuccess,
     this.successMessage,
+    this.clearCodeOnResend = false,
   });
 
   /// mfa_token issued by the login endpoint; seeded into the bloc so the
@@ -41,6 +42,9 @@ class LoginOtpScreen extends StatelessWidget {
   /// Optional toast message shown on success. Defaults to 'Logged in successfully'.
   final String? successMessage;
 
+  /// Opt-in for password login; other OTP flows retain their input.
+  final bool clearCodeOnResend;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -54,16 +58,30 @@ class LoginOtpScreen extends StatelessWidget {
       child: _LoginOtpView(
         onSuccess: onSuccess,
         successMessage: successMessage,
+        clearCodeOnResend: clearCodeOnResend,
       ),
     );
   }
 }
 
-class _LoginOtpView extends StatelessWidget {
-  const _LoginOtpView({this.onSuccess, this.successMessage});
+class _LoginOtpView extends StatefulWidget {
+  const _LoginOtpView({
+    this.onSuccess,
+    this.successMessage,
+    required this.clearCodeOnResend,
+  });
 
   final void Function(BuildContext context)? onSuccess;
   final String? successMessage;
+
+  final bool clearCodeOnResend;
+
+  @override
+  State<_LoginOtpView> createState() => _LoginOtpViewState();
+}
+
+class _LoginOtpViewState extends State<_LoginOtpView> {
+  final _codeFieldsKey = GlobalKey<OtpCodeFieldsState>();
 
   @override
   Widget build(BuildContext context) {
@@ -79,12 +97,12 @@ class _LoginOtpView extends StatelessWidget {
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
               AppToast.show(
-                message: successMessage ?? 'Logged in successfully',
+                message: widget.successMessage ?? 'Logged in successfully',
                 type: ToastType.success,
               );
               instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
-              if (onSuccess != null) {
-                onSuccess!(context);
+              if (widget.onSuccess != null) {
+                widget.onSuccess!(context);
               } else {
                 context.go(AppRoutes.home);
               }
@@ -126,9 +144,14 @@ class _LoginOtpView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       SizedBox(height: LoginOtpSizes.contentTopGap),
-                      OtpCodeFields(),
+                      OtpCodeFields(key: _codeFieldsKey),
                       SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
-                      OtpBottomActions(),
+                      OtpBottomActions(
+                        clearCodeOnResend: widget.clearCodeOnResend,
+                        onResendPressed: widget.clearCodeOnResend
+                            ? () => _codeFieldsKey.currentState?.clearCode()
+                            : null,
+                      ),
                       SizedBox(height: 85),
                       _ChangePhoneNumberAction(),
                       SizedBox(height: 113),
