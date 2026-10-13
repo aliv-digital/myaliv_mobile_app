@@ -170,7 +170,7 @@ class _EditEmailPrepaidView extends StatelessWidget {
 
                           return EditEmailPrepaidSaveButton(
                             isLoading: isLoading,
-                            enabled: state.isEmailValid && !isLoading,
+                            enabled: state.data != null && !isLoading,
                             onTap: () => context
                                 .read<EditEmailPrepaidBloc>()
                                 .add(const EditEmailPrepaidSavePressed()),

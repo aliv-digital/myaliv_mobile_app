@@ -131,11 +131,8 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
               );
               if (!context.mounted) return;
               if (ok) {
-                final serverMsg = success.queryParams['Message']?.trim();
                 AppToast.show(
-                  message: (serverMsg != null && serverMsg.isNotEmpty)
-                      ? serverMsg
-                      : 'your card has been added successfully',
+                  message: 'Payment method added successfully!',
                   type: ToastType.success,
                 );
               } else {

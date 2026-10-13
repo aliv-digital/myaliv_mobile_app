@@ -81,7 +81,9 @@ class EditEmailPrepaidBloc
       emit(
         state.copyWith(
           status: EditEmailPrepaidStatus.failure,
-          errorMessage: 'Invalid email',
+          errorMessage: state.email.trim().isEmpty
+              ? 'Email address is required.'
+              : 'Invalid email address format.',
         ),
       );
       emit(

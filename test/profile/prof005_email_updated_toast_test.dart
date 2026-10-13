@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/bloc/edit_email_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/view/edit_email_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/widgets/edit_email_prepaid_email_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/editEmail/prepaid/widgets/edit_email_prepaid_save_button.dart';
@@ -113,6 +117,7 @@ void main() {
     await tester.pump();
     final save = find.byType(EditEmailPrepaidSaveButton);
     await tester.ensureVisible(save);
+    expect(tester.widget<EditEmailPrepaidSaveButton>(save).enabled, isTrue);
     await tester.tap(save);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
@@ -122,6 +127,18 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('Save is unavailable until email data has loaded',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: EditEmailPrepaidScreen()),
+    );
+    final save = find.byType(EditEmailPrepaidSaveButton);
+    expect(save, findsNothing);
+    await tester.pumpAndSettle();
+    expect(tester.widget<EditEmailPrepaidSaveButton>(save).enabled, isTrue);
+    verifyZeroInteractions(network);
+  });
 
   testWidgets('PROF-005 successful update shows the exact toast', (
     tester,
@@ -137,6 +154,7 @@ void main() {
       ),
     ).called(1);
     verify(() => account.updateEmailLocally('new@example.com')).called(1);
+    verify(() => account.fetchAccountInfo(forceRefresh: true)).called(1);
     await settleToasts(tester);
     // Existing behaviour: the screen closes after success.
     expect(find.text('my profile'), findsOneWidget);
@@ -147,6 +165,10 @@ void main() {
     await openAndSave(tester, 'new@example.com');
     expect(find.text(_success), findsNothing);
     expect(find.text('Failed to save'), findsOneWidget);
+    expect(
+      find.text('This email is already in use. Please enter a different one.'),
+      findsNothing,
+    );
     await settleToasts(tester);
   });
 
@@ -154,6 +176,7 @@ void main() {
     respond(success: true, throws: true);
     await openAndSave(tester, 'new@example.com');
     expect(find.text(_success), findsNothing);
+    expect(find.text('Failed to save'), findsOneWidget);
     await settleToasts(tester);
   });
 
@@ -161,9 +184,110 @@ void main() {
     respond(success: true);
     await openAndSave(tester, 'not-an-email');
     expect(find.text(_success), findsNothing);
+    expect(find.text('Invalid email address format.'), findsOneWidget);
+    expect(find.text('Email address is required.'), findsNothing);
     verifyNever(
       () => network.request<dynamic>(any(), method: any(named: 'method')),
     );
     await settleToasts(tester);
+  });
+
+  for (final email in ['', '   ']) {
+    testWidgets('empty or whitespace email "$email" shows required feedback', (
+      tester,
+    ) async {
+      await openAndSave(tester, email);
+      expect(find.text('Email address is required.'), findsOneWidget);
+      expect(find.text('Invalid email address format.'), findsNothing);
+      expect(find.text(_success), findsNothing);
+      verifyZeroInteractions(network);
+      verifyNever(() => account.updateEmailLocally(any()));
+      expect(find.byType(EditEmailPrepaidScreen), findsOneWidget);
+      await settleToasts(tester);
+    });
+  }
+
+  testWidgets('valid email keeps existing trimming and update behaviour', (
+    tester,
+  ) async {
+    respond(success: true);
+    await openAndSave(tester, '  new@example.com  ');
+    expect(find.text(_success), findsOneWidget);
+    verify(
+      () => network.request<dynamic>(
+        '/v1/MyAliv/Account/UpdateEmailAddress?Email=new%40example.com',
+        method: HttpMethod.put,
+      ),
+    ).called(1);
+    verify(() => account.updateEmailLocally('new@example.com')).called(1);
+    await settleToasts(tester);
+    expect(find.text('my profile'), findsOneWidget);
+  });
+
+  testWidgets('editing and submitting replaces local feedback without an API', (
+    tester,
+  ) async {
+    await openAndSave(tester, '');
+    expect(find.text('Email address is required.'), findsOneWidget);
+    final input = find.descendant(
+      of: find.byType(EditEmailPrepaidEmailInput),
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(input, 'not-an-email');
+    await tester.pump();
+    final bloc = tester.element(input).read<EditEmailPrepaidBloc>();
+    expect(bloc.state.email, 'not-an-email');
+    expect(bloc.state.errorMessage, isNull);
+    await tester.tap(find.byType(EditEmailPrepaidSaveButton));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Invalid email address format.'), findsOneWidget);
+    expect(find.text('Email address is required.'), findsNothing);
+    await tester.enterText(input, 'new@example.com');
+    await tester.pump();
+    expect(bloc.state.isEmailValid, isTrue);
+    expect(bloc.state.errorMessage, isNull);
+    verifyZeroInteractions(network);
+    await settleToasts(tester);
+    expect(find.text('Invalid email address format.'), findsNothing);
+  });
+
+  testWidgets('pending update protects Save and waits for backend success', (
+    tester,
+  ) async {
+    final response = Completer<Response<dynamic>>();
+    when(
+      () => network.request<dynamic>(any(), method: any(named: 'method')),
+    ).thenAnswer((_) => response.future);
+    await openAndSave(tester, 'new@example.com');
+    final save = find.byType(EditEmailPrepaidSaveButton);
+    expect(tester.widget<EditEmailPrepaidSaveButton>(save).enabled, isFalse);
+    expect(tester.widget<EditEmailPrepaidSaveButton>(save).isLoading, isTrue);
+    expect(
+      tester
+          .widget<EditEmailPrepaidEmailInput>(
+            find.byType(EditEmailPrepaidEmailInput),
+          )
+          .enabled,
+      isFalse,
+    );
+    expect(find.text(_success), findsNothing);
+    verifyNever(() => account.updateEmailLocally(any()));
+    response.complete(
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: ''),
+        data: <String, dynamic>{'Success': true},
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text(_success), findsOneWidget);
+    verify(
+      () => network.request<dynamic>(any(), method: any(named: 'method')),
+    ).called(1);
+    verify(() => account.updateEmailLocally('new@example.com')).called(1);
+    verify(() => account.fetchAccountInfo(forceRefresh: true)).called(1);
+    await settleToasts(tester);
+    expect(find.text('my profile'), findsOneWidget);
   });
 }
