@@ -169,7 +169,7 @@ class _UpgradeCreditLimitScreenState extends State<UpgradeCreditLimitScreen> {
       );
 
       AppToast.show(
-        message: 'success! your credit limit has been upgraded',
+        message: 'Your request has been submitted successfully.',
         type: ToastType.success,
       );
       context.go(AppRoutes.home);

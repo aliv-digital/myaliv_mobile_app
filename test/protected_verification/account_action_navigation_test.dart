@@ -313,6 +313,12 @@ void main() {
             if (outcome == 'success') {
               expect(order, ['save', 'mutation']);
               expect(find.text('home destination'), findsOneWidget);
+              if (action == ProtectedAccountAction.upgradeCreditLimit) {
+                expect(
+                  find.text('Your request has been submitted successfully.'),
+                  findsOneWidget,
+                );
+              }
             }
             await tester.pump(const Duration(seconds: 4));
             await tester.pumpAndSettle();
