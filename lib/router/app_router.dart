@@ -915,6 +915,7 @@ class AppRouter {
               showFaceId: cubit.state.faceIdEnabled,
               onAuthSuccess: () {
                 cubit.markSessionAuthenticated();
+                SessionTimeoutService().markActive();
                 router.go(AppRoutes.home);
               },
             ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,37 +82,59 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final _sessionTimeoutService = SessionTimeoutService();
+  Timer? _activityHeartbeat;
+
+  // Refresh the "last active" timestamp this often while the app is in
+  // foreground. Keeps hot restarts (dev) and in-app periods of use from
+  // appearing as "20 min idle" because paused never fired.
+  static const _heartbeatInterval = Duration(minutes: 1);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _startHeartbeat();
   }
 
   @override
   void dispose() {
+    _activityHeartbeat?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _startHeartbeat() {
+    _activityHeartbeat?.cancel();
+    _activityHeartbeat = Timer.periodic(_heartbeatInterval, (_) {
+      _sessionTimeoutService.markActive();
+    });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
+      _activityHeartbeat?.cancel();
       _sessionTimeoutService.markActive();
     } else if (state == AppLifecycleState.resumed) {
       // Only enforce timeout for already-logged-in users. Skip during
       // ongoing login/OTP flows where no session exists yet — otherwise
       // switching to Messages for an SMS code bounces user to Welcome.
       final session = instance<AuthManager>().currentSession;
-      if (session == null || session.refreshExpired) return;
+      if (session == null || session.refreshExpired) {
+        _startHeartbeat();
+        return;
+      }
 
       _sessionTimeoutService.hasTimedOut().then((timedOut) {
-        if (!timedOut || !mounted) return;
-        final biometricEnabled =
-            instance<FingerFaceSecurityCubit>().state.isAnyEnabled;
-        widget.appRouter.router.go(
-          biometricEnabled ? AppRoutes.biometricLock : AppRoutes.welcome,
-        );
+        if (!mounted) return;
+        if (timedOut) {
+          final biometricEnabled =
+              instance<FingerFaceSecurityCubit>().state.isAnyEnabled;
+          widget.appRouter.router.go(
+            biometricEnabled ? AppRoutes.biometricLock : AppRoutes.welcome,
+          );
+        }
+        _startHeartbeat();
       });
     }
   }
