@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -144,7 +145,10 @@ class _GuestPayBillReceiptView extends StatelessWidget {
                             pageBackground:
                                 GuestPayBillReceiptTheme.screenBackground,
                             statusMessage:
-                                'It will take a few moments for the payment to appear on the account.',
+                                data.rightType.trim().toUpperCase() == 'ALIVFIBR'
+                                ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
+                                      'has been successfully processed for account ${data.phoneNumber}'
+                                : 'It will take a few moments for the payment to appear on the account.',
                             // BILL-018: always "home" for bill payments.
                             backButtonText: 'back to home page',
                             onBackHome: () {
