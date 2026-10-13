@@ -48,6 +48,13 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 /// the user's total entitlement (e.g. per-period quota vs accumulated
 /// allowance), so we render nothing rather than something misleading.
 ///
+/// [apiNameOverrideKeys] lets a caller opt specific normalized plan-bucket
+/// keys into using the matched API item's `freeUnitTypeName` as the row
+/// label instead of the plan-declared name. Used by the Usage tab's
+/// standalone roaming cards so the `"roaming data"` row renders as e.g.
+/// `"US/Can/UK roaming data"`. Only takes effect when an API item was
+/// matched; unmatched/unlimited rows keep the plan name.
+///
 /// Unlimited rules:
 ///  - Plan-marked unlimited (any contributing `bucket.unlimited` wins).
 ///  - Effectively unlimited: API has remaining but no initial allowance
@@ -56,6 +63,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
   required List<BasePlanModel> activePlans,
   required List<BucketUsageItem> items,
   Set<String> excludePlanIds = const <String>{},
+  Set<String> apiNameOverrideKeys = const <String>{},
 }) {
   if (activePlans.isEmpty || items.isEmpty) {
     return const <PlanBucketUsage>[];
@@ -245,10 +253,18 @@ List<PlanBucketUsage> computePlanBucketUsage({
     final initial = toDisplayUnit(adjustedInitialRaw, unitType);
     final remaining = toDisplayUnit(rawRemaining, unitType);
 
+    // Caller may opt specific keys into using the API's region-qualified
+    // name (e.g. standalone roaming cards show "US/Can/UK roaming data"
+    // instead of the plan-side "roaming data"). Only applies when an API
+    // item was matched — otherwise there's nothing to borrow from.
+    final displayName = apiNameOverrideKeys.contains(key)
+        ? matchedItem.freeUnitTypeName
+        : meta.displayName;
+
     // Effectively unlimited: API reports a balance but no initial allowance
     // (e.g. promotional bucket like "whatsapp full").
     if (initial <= 0 && remaining > 0) {
-      result.add(_unlimitedRow(meta.displayName, meta.bucketUnit, unitLabel));
+      result.add(_unlimitedRow(displayName, meta.bucketUnit, unitLabel));
       continue;
     }
 
@@ -257,7 +273,7 @@ List<PlanBucketUsage> computePlanBucketUsage({
 
     result.add(
       PlanBucketUsage(
-        bucketName: meta.displayName,
+        bucketName: displayName,
         bucketUnit: meta.bucketUnit,
         unitLabel: unitLabel,
         isUnlimited: false,
