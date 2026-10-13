@@ -8,6 +8,8 @@ import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
@@ -60,6 +62,29 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
   /// PAY-001: set when pay now is tapped without a payment method.
   bool _showPaymentMethodError = false;
 
+  // Message-only snapshot; never replace it with a post-payment live balance.
+  ({double balanceBefore, double amount})? _ownNumberTopUp;
+
+  void _captureOwnNumberTopUp(double amount) {
+    if (!mounted) {
+      return;
+    }
+    final paymentState = context.read<TopUpPaymentPrepaidBloc>().state;
+    if (paymentState.status == TopUpPaymentStatus.paying) {
+      return;
+    }
+    final recipient = paymentState.summary.recipientPhone?.trim() ?? '';
+    _ownNumberTopUp = null;
+    if (!context.read<AppUiConfigCubit>().state.isPrepaid ||
+        (recipient.isNotEmpty && recipient.toLowerCase() != 'null')) {
+      return;
+    }
+    final balance = instance<BalanceCubit>().state;
+    if (balance.hasBalance) {
+      _ownNumberTopUp = (balanceBefore: balance.walletBalance, amount: amount);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -80,10 +105,15 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
     }
 
     if (state.navTarget == TopUpPaymentNavTarget.paid) {
+      final ownNumberTopUp = _ownNumberTopUp;
       context.push(
         AppRoutes.userProfileReceiptScreen,
         extra: UserProfileReceiptRouteArgs(
           amount: state.summary.total,
+          message: ownNumberTopUp == null
+              ? null
+              : 'Top-up complete! Your balance is now '
+                  '${BalanceCurrencyFormatterService.format(ownNumberTopUp.balanceBefore + ownNumberTopUp.amount)}.',
           recipientPhone: _receiptPhone(state.summary.recipientPhone),
           paymentMethod: state.paymentMode == TopUpPaymentMode.payWithCard
               ? 'visa'
@@ -126,6 +156,7 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
             _showPaymentMethodError && !state.hasMethodSelected,
         onMissingPaymentMethod: () =>
             setState(() => _showPaymentMethodError = true),
+        onPaymentStarted: _captureOwnNumberTopUp,
       ),
     );
   }
@@ -135,11 +166,13 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
   final TopUpPaymentPrepaidState state;
   final bool showPaymentMethodError;
   final VoidCallback onMissingPaymentMethod;
+  final ValueChanged<double> onPaymentStarted;
 
   const _TopUpPaymentPrepaidScaffold({
     required this.state,
     required this.showPaymentMethodError,
     required this.onMissingPaymentMethod,
+    required this.onPaymentStarted,
   });
 
   String _amountText(double amount) => AppUtils.formatPrice(amount);
@@ -190,6 +223,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
       redirectScheme: 'myaliv',
     );
 
+    onPaymentStarted((request.body['Amount'] as num).toDouble());
     navigator.push<void>(
       MaterialPageRoute<void>(
         builder: (_) => PaymentIFrameScreen(
@@ -237,6 +271,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
     );
     if (confirmed != true) return;
 
+    onPaymentStarted(state.summary.total);
     bloc.add(const PaySavedCardConfirmed());
   }
 
