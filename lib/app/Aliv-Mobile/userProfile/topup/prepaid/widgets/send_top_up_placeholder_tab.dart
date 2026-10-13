@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
@@ -239,11 +240,14 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 labelText: GuestTopUpTheme.activePrepaidLabel,
                 labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                 value: _phoneNumber,
-                forceError: _hasPhoneValidationError,
+                forceError:
+                    _phoneNumber.trim().isEmpty || _hasPhoneValidationError,
                 hasFocus: _hasPhoneFocus,
                 focusNode: _phoneFocusNode,
                 highlightInvalidInput: true,
-                validationMessage: 'invalid Format',
+                validationMessage: _phoneNumber.trim().isEmpty
+                    ? 'Phone number is required.'
+                    : 'Invalid phone number. Please enter a 10-digit phone number.',
                 onChanged: (value) {
                   setState(() => _phoneNumber = value);
                 },
@@ -314,6 +318,28 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                           _confirmPhoneNumber.isEmpty)
                       ? null
                       : () async {
+                          final account = context
+                              .read<AccountInfoCubit>()
+                              .state
+                              .accountInfo;
+                          final primaryPhone =
+                              account?.primaryPhoneNumber.trim() ?? '';
+                          final ownPhone = _validatePhone(
+                            primaryPhone.isNotEmpty
+                                ? primaryPhone
+                                : account?.phoneNumber.trim() ?? '',
+                          );
+                          if (ownPhone.isValid &&
+                              ownPhone.phoneNumberForApi ==
+                                  _validatePhone(_phoneNumber)
+                                      .phoneNumberForApi) {
+                            AppToast.show(
+                              message:
+                                  'You cannot send a top-up to your own number.',
+                              type: ToastType.error,
+                            );
+                            return;
+                          }
                           if (_amountValue < _minSendTopUpAmount ||
                               _amountValue > _maxSendTopUpAmount) {
                             setState(() => _amountError = _amountRangeMessage);

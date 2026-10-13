@@ -6,6 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc/top_up_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/can_submit_order_result.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/repository/send_topup_repository.dart';
@@ -22,6 +25,9 @@ class _TopUpRepo extends Mock implements TopUpPrepaidRepository {}
 
 class _Balance extends MockCubit<BalanceState> implements BalanceCubit {}
 
+class _Account extends MockCubit<AccountInfoState>
+    implements AccountInfoCubit {}
+
 class _BalanceState extends Mock implements BalanceState {}
 
 const _mismatch = "these numbers don't match. re-enter the number to continue.";
@@ -31,6 +37,8 @@ void main() {
   late _SendRepo sendRepo;
   late _TopUpRepo topUpRepo;
   late _Balance balance;
+  late _Account account;
+  late AccountInfoState accountState;
   late _BalanceState balanceState;
   late TopUpPrepaidBloc bloc;
   Uri? confirmation;
@@ -49,6 +57,11 @@ void main() {
     sendRepo = _SendRepo();
     topUpRepo = _TopUpRepo();
     balance = _Balance();
+    account = _Account();
+    accountState = const AccountInfoState(
+      accountInfo: AccountInfoModel(primaryPhoneNumber: '2428999999'),
+    );
+    when(() => account.state).thenAnswer((_) => accountState);
     confirmation = null;
     balanceState = _BalanceState();
     when(() => balanceState.walletBalance).thenReturn(200);
@@ -67,6 +80,7 @@ void main() {
   tearDown(() async {
     await bloc.close();
     await balance.close();
+    await account.close();
     await instance.reset();
   });
 
@@ -97,6 +111,7 @@ void main() {
         providers: [
           BlocProvider<TopUpPrepaidBloc>.value(value: bloc),
           BlocProvider<BalanceCubit>.value(value: balance),
+          BlocProvider<AccountInfoCubit>.value(value: account),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),
@@ -172,7 +187,10 @@ void main() {
   ) async {
     await pumpTab(tester);
     await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
-    expect(find.text('invalid Format'), findsOneWidget);
+    expect(
+      find.text('Invalid phone number. Please enter a 10-digit phone number.'),
+      findsOneWidget,
+    );
     expect(find.text(_mismatch), findsNothing);
     expect(proceedButton(tester).onPressed, isNull);
     expectNoDownstream();
@@ -183,9 +201,73 @@ void main() {
   ) async {
     await pumpTab(tester);
     await fill(tester, confirm: '2428011616', amount: '10');
+    expect(find.text('Phone number is required.'), findsOneWidget);
     expect(find.text(_mismatch), findsNothing);
     expect(proceedButton(tester).onPressed, isNull);
     expectNoDownstream();
+  });
+
+  for (final (own, recipient) in [
+    ('2428011616', '2428011616'),
+    ('(242)-801-1616', '8011616'),
+    ('8011616', '2428011616'),
+  ]) {
+    testWidgets('own number $own matches canonical recipient $recipient', (
+      tester,
+    ) async {
+      accountState = AccountInfoState(
+        accountInfo: AccountInfoModel(primaryPhoneNumber: own),
+      );
+      await pumpTab(tester);
+      await fill(tester, phone: recipient, confirm: recipient, amount: '10');
+      await tester.tap(find.text('proceed'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('You cannot send a top-up to your own number.'),
+        findsOneWidget,
+      );
+      expectNoDownstream();
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+    });
+  }
+
+  testWidgets('own number uses the existing phone fallback', (tester) async {
+    accountState = const AccountInfoState(
+      accountInfo: AccountInfoModel(phoneNumber: '2428011616'),
+    );
+    await pumpTab(tester);
+    await fill(tester,
+        phone: '2428011616', confirm: '2428011616', amount: '10');
+    await tester.tap(find.text('proceed'));
+    await tester.pumpAndSettle();
+    expect(find.text('You cannot send a top-up to your own number.'),
+        findsOneWidget);
+    expectNoDownstream();
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('editing clears required/format errors and seven digits proceed',
+      (
+    tester,
+  ) async {
+    await pumpTab(tester);
+    expect(find.text('Phone number is required.'), findsOneWidget);
+    await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
+    expect(find.text('Phone number is required.'), findsNothing);
+    expectNoDownstream();
+    await fill(tester, phone: '8011616', confirm: '8011616', amount: '10');
+    expect(find.text('Phone number is required.'), findsNothing);
+    expect(
+      find.text('Invalid phone number. Please enter a 10-digit phone number.'),
+      findsNothing,
+    );
+    await tester.tap(find.text('proceed'));
+    await tester.pumpAndSettle();
+    verify(() => sendRepo.phoneNumberExists('2428011616')).called(1);
+    expect(confirmation!.queryParameters['recipient'], '2428011616');
+    expect(confirmation!.queryParameters['amount'], '10.00');
   });
 
   testWidgets('empty confirmation shows no mismatch and stays blocked', (

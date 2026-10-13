@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../loginOtp/model/login_otp_route_args.dart';
@@ -112,6 +113,9 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
           );
           if (!context.mounted) return;
           cubit.markSessionAuthenticated();
+          if (!isFace) {
+            AppToast.show(message: 'Welcome!', type: ToastType.success);
+          }
           context.go(AppRoutes.home);
 
         case LoginMfaChallenge(:final mfaToken):
