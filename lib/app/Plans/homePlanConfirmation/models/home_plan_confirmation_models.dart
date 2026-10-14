@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
 
 enum PurchaseLineType { primaryPlan, addOn }
 
@@ -35,6 +36,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
   final HomePlanConfirmationEntryFlow flow;
   final List<HomePlanConfirmationSelectedAddOn> selectedAddOns;
   final bool forceNow;
+  final PlanPurchaseContext purchaseContext;
 
   /// When `true`, the primary plan is treated as already-active context:
   /// it is omitted from charged line items and excluded from totals.
@@ -62,6 +64,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     this.selectedAddOns = const <HomePlanConfirmationSelectedAddOn>[],
     this.isPrimaryPlanActive = false,
     this.forceNow = false,
+    this.purchaseContext = PlanPurchaseContext.regular,
     this.altContactNumber = '',
     this.marketingOptIn = false,
   });
@@ -85,6 +88,7 @@ class HomePlanConfirmationRouteArgs extends Equatable {
     selectedAddOns,
     isPrimaryPlanActive,
     forceNow,
+    purchaseContext,
     altContactNumber,
     marketingOptIn,
   ];

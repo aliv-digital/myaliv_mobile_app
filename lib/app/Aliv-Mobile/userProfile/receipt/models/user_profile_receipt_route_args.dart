@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 
 import 'user_profile_receipt_variant.dart';
 
@@ -23,6 +24,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
   /// it saves via [SavedCardsCubit.addCard]. Null for wallet / saved-card
   /// payments where there is nothing new to save.
   final NewCardDetails? cardToSave;
+  final WalletPaymentSuccess? walletPaymentSuccess;
 
   const UserProfileReceiptRouteArgs({
     required this.amount,
@@ -35,6 +37,7 @@ class UserProfileReceiptRouteArgs extends Equatable {
     this.recipientPhone,
     this.variant = UserProfileReceiptVariant.standard,
     this.cardToSave,
+    this.walletPaymentSuccess,
   });
 
   bool get isPostpaidPayment => topUpType.trim().toLowerCase() == 'postpaid';
@@ -78,5 +81,6 @@ class UserProfileReceiptRouteArgs extends Equatable {
     title,
     message,
     variant,
+    walletPaymentSuccess,
   ];
 }

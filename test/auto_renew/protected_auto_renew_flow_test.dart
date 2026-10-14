@@ -595,6 +595,55 @@ void main() {
     expect(h.trace, ['disable']);
     expect(find.text('home-destination'), findsOneWidget);
   });
+  for (final mode in [
+    AutoRenewPaymentMethodType.card,
+    AutoRenewPaymentMethodType.postpaidInvoice,
+  ]) {
+    flowTest('$mode invalid-character toast blocks OTP and activation', (
+      tester,
+      h,
+    ) async {
+      await h.pump(tester, formMode: mode);
+      for (final name in ['John123', 'John!', '12345']) {
+        await tester.enterText(find.byType(TextField), name);
+        await tester.pump();
+        expect(
+          tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          name,
+        );
+        expect(
+          tester
+              .element(find.byType(TextField))
+              .read<AutoRenewAuthPrepaidBloc>()
+              .state
+              .errorMessage,
+          isNull,
+        );
+        await tester.ensureVisible(find.text('submit'));
+        await tester.tap(find.text('submit'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Only alphabetical characheters are allowed. Try again.'),
+          findsOneWidget,
+        );
+        expect(find.text('Your signature has been accepted.'), findsNothing);
+        expect(h.challenges, 0);
+        expect(h.verifies, 0);
+        expect(h.saves, 0);
+        h.noMutations();
+        expect(find.byType(OtpCodeFields), findsNothing);
+        expect(find.text('home-destination'), findsNothing);
+      }
+      await tester.enterText(find.byType(TextField), 'Test Subscriber');
+      await tester.pump();
+      await tester.ensureVisible(find.text('submit'));
+      await tester.tap(find.text('submit'));
+      await tester.pumpAndSettle();
+      expect(h.challenges, 1);
+      expect(find.byType(OtpCodeFields), findsOneWidget);
+      h.noMutations();
+    });
+  }
   for (final mode in AutoRenewPaymentMethodType.values) {
     flowTest(
       '$mode authorization form validates then persists OTP before original submission',
@@ -607,10 +656,20 @@ void main() {
         await tester.tap(find.text('submit'));
         await tester.pumpAndSettle();
         expect(h.challenges, 1);
+        expect(find.text('Your signature has been accepted.'), findsNothing);
         h.noMutations();
         await h.submitOtp(tester);
+        expect(find.text('Your signature has been accepted.'), findsNothing);
         h.noMutations();
         h.saveGate!.complete();
+        await tester.pumpAndSettle();
+        expect(find.text('Your signature has been accepted.'), findsOneWidget);
+        expect(
+          find.text(
+            "We're working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
+          ),
+          findsNothing,
+        );
         await h.finish(tester);
         expect(h.trace.take(4), ['challenge', 'verify', 'save-start', 'saved']);
         switch (mode) {
@@ -642,6 +701,7 @@ void main() {
         h.router.pop();
         await tester.pumpAndSettle();
         h.noMutations();
+        expect(find.text('Your signature has been accepted.'), findsNothing);
         expect(
           tester.widget<TextField>(find.byType(TextField)).controller!.text,
           'Test Subscriber',
@@ -699,6 +759,8 @@ void main() {
         if (failure != 'challenge') {
           await h.submitOtp(tester);
         }
+        await tester.pumpAndSettle();
+        expect(find.text('Your signature has been accepted.'), findsNothing);
         await h.finish(tester);
         if (failure == 'business') {
           expect(

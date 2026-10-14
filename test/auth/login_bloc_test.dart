@@ -61,11 +61,18 @@ void main() {
     blocTest<LoginBloc, LoginState>(
       'LoginPhoneChanged updates phone and clears errors',
       build: () => _buildBloc(repository: repository),
+      seed: () => const LoginState(
+        phone: '24255',
+        status: LoginStatus.failure,
+        errorMessage: 'invalid Format',
+        phoneFieldError: true,
+      ),
       act: (bloc) => bloc.add(const LoginPhoneChanged('2427654321')),
       expect: () => [
         isA<LoginState>()
             .having((s) => s.phone, 'phone', '2427654321')
             .having((s) => s.status, 'status', LoginStatus.initial)
+            .having((s) => s.errorMessage, 'errorMessage', isNull)
             .having((s) => s.phoneFieldError, 'phoneFieldError', false),
       ],
     );
@@ -83,6 +90,26 @@ void main() {
   });
 
   group('LoginBloc — field validation on submit', () {
+    blocTest<LoginBloc, LoginState>(
+      'local phone format failure uses invalid Format without authentication',
+      build: () => _buildBloc(repository: repository),
+      seed: () => const LoginState(phone: '24255', password: 'secret'),
+      act: (bloc) => bloc.add(const LoginSubmitted()),
+      expect: () => [
+        isA<LoginState>()
+            .having((s) => s.status, 'status', LoginStatus.failure)
+            .having((s) => s.errorMessage, 'errorMessage', 'invalid Format')
+            .having((s) => s.phoneFieldError, 'phoneFieldError', true)
+            .having((s) => s.passwordFieldError, 'passwordFieldError', false),
+      ],
+      verify: (_) => verifyNever(
+        () => repository.login(
+          username: any(named: 'username'),
+          password: any(named: 'password'),
+        ),
+      ),
+    );
+
     blocTest<LoginBloc, LoginState>(
       'emits failure with phone error when phone is empty',
       build: () => _buildBloc(repository: repository),
@@ -104,6 +131,11 @@ void main() {
       expect: () => [
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.failure)
+            .having(
+              (s) => s.errorMessage,
+              'errorMessage',
+              'enter your password',
+            )
             .having((s) => s.phoneFieldError, 'phoneFieldError', false)
             .having((s) => s.passwordFieldError, 'passwordFieldError', true),
       ],

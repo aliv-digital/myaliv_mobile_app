@@ -149,7 +149,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       } else if (isPhoneEmpty) {
         validationMessage = 'phone number is required';
       } else {
-        validationMessage = 'password is required';
+        validationMessage = 'enter your password';
       }
       _emitFailure(
         emit,
@@ -169,9 +169,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         phoneValidationResult.phoneNumberForApi == null) {
       _emitFailure(
         emit,
-        message:
-            phoneValidationResult.errorMessage ??
-            LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+        message: 'invalid Format',
         phoneFieldError: true,
         passwordFieldError: false,
       );

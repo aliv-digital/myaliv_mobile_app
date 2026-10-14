@@ -13,6 +13,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/bloc/guest_pay_bill_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/model/guest_pay_bill_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/view/guest_pay_bill_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/Guest-Pay-Bill/pay-bills/widgets/guest_pay_bill_primary_submit_button.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -287,6 +288,96 @@ void main() {
     expect(find.byType(TextField), findsNothing);
     expect(find.text('continue to pay'), findsOneWidget);
   });
+
+  for (final response in <String, dynamic>{
+    'suspended postpaid': {'AccountStatus': 'SU', 'PaymentOption': 'PostPay'},
+    'active prepaid': {'AccountStatus': 'AC', 'PaymentOption': 'PrePay'},
+    'suspended prepaid': {'AccountStatus': 'SU', 'PaymentOption': 'PrePay'},
+    'unknown status': {'AccountStatus': 'unknown', 'PaymentOption': 'PostPay'},
+    'unknown payment option': {'AccountStatus': 'AC', 'PaymentOption': 'other'},
+    'missing status': {'PaymentOption': 'PostPay'},
+    'missing payment option': {'AccountStatus': 'AC'},
+    'empty response': <String, dynamic>{},
+    'malformed response': null,
+  }.entries) {
+    testWidgets('${response.key} shows error only on bottom submit', (
+      tester,
+    ) async {
+      when(
+        () => networkService.request<dynamic>(
+          Api.guestBalanceUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.guestBalanceUrl),
+          data: response.value,
+        ),
+      );
+      final harness = await _pumpScreen(tester);
+      await _enterValidPostpaidNumbers(tester);
+      await tester.tap(find.widgetWithText(ElevatedButton, 'submit').first);
+      await tester.pumpAndSettle();
+
+      const errorMessage =
+          'The number entered is not an active postpaid number.. to try again.\n'
+          'Please enter a active postpaid number';
+      expect(find.text(errorMessage), findsNothing);
+      expect(
+        _bloc(tester).state.verifyStatus,
+        GuestPayBillVerifyStatus.success,
+      );
+      await tester.enterText(_amountField(), '16');
+      await tester.pump();
+      final bottomSubmit = find.descendant(
+        of: find.byType(GuestPayBillPrimarySubmitButton),
+        matching: find.byType(ElevatedButton),
+      );
+      await tester.ensureVisible(bottomSubmit);
+      await tester.tap(bottomSubmit);
+      await tester.pumpAndSettle();
+
+      expect(find.text(errorMessage), findsOneWidget);
+      expect(
+        _bloc(tester).state.submitStatus,
+        GuestPayBillSubmitStatus.failure,
+      );
+      expect(harness.confirmExtras, isEmpty);
+      await tester.pump(const Duration(seconds: 4));
+
+      await tester.tap(bottomSubmit);
+      await tester.pumpAndSettle();
+      expect(find.text(errorMessage), findsOneWidget);
+      expect(harness.confirmExtras, isEmpty);
+      _verifyPostpaidLookup(networkService, called: 1);
+      await tester.pump(const Duration(seconds: 4));
+    });
+  }
+
+  testWidgets('active postpaid proceeds from bottom submit', (tester) async {
+    _stubPostpaidSuccess(networkService);
+    final harness = await _pumpScreen(tester);
+    await _verifyValidPostpaidAccount(tester);
+    await tester.enterText(_amountField(), '16');
+    await tester.pump();
+    final bottomSubmit = find.descendant(
+      of: find.byType(GuestPayBillPrimarySubmitButton),
+      matching: find.byType(ElevatedButton),
+    );
+    await tester.ensureVisible(bottomSubmit);
+    await tester.tap(bottomSubmit);
+    await tester.pump();
+
+    expect(harness.confirmExtras, hasLength(1));
+    expect(
+      (harness.confirmExtras.single as GuestPayBillConfirmArgs).amount,
+      16,
+    );
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+  });
 }
 
 Finder _phoneField(int index) {
@@ -430,7 +521,13 @@ void _stubFibrPending(
 Response<dynamic> _postpaidResponse() {
   return Response<dynamic>(
     requestOptions: RequestOptions(path: Api.guestBalanceUrl),
-    data: <String, dynamic>{'Balance': 20.0, 'AccountStatus': 'active'},
+    // Previous fixture retained for reference.
+    // data: <String, dynamic>{'Balance': 20.0, 'AccountStatus': 'active'},
+    data: <String, dynamic>{
+      'Balance': 20.0,
+      'AccountStatus': 'AC',
+      'PaymentOption': 'PostPay',
+    },
   );
 }
 

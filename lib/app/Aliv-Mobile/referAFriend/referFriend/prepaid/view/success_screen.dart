@@ -217,9 +217,13 @@ class _ReferralCodeBox extends StatelessWidget {
             const SizedBox(width: 12),
             InkWell(
               borderRadius: BorderRadius.circular(100),
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: code));
-                AppToast.show(message: 'Copied', type: ToastType.success);
+              onTap: () async {
+                if (code.trim().isEmpty) return;
+                await Clipboard.setData(ClipboardData(text: code));
+                AppToast.show(
+                  message: 'referral code copied',
+                  type: ToastType.success,
+                );
                 // ScaffoldMessenger.of(
                 //   context,
                 // ).showSnackBar(const SnackBar(content: Text('Copied')));

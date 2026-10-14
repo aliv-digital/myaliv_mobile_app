@@ -169,7 +169,7 @@ void main() {
   });
 
   for (final standalone in [false, true]) {
-    testWidgets('standalone sheet keeps account owner copy (existing standalone: '
+    testWidgets('standalone sheet keeps authenticated copy (existing standalone: '
         '$standalone)', (tester) async {
       await openSheet(
         tester,
@@ -184,7 +184,7 @@ void main() {
       expect(find.byType(HomePlanRoamBottomSheet), findsOneWidget);
       expect(
         find.text(
-          'your standalone plan can start immediately, or on a date of your choice.',
+          'when to start? — your standalone plan can start immediately, or on a date of your choice.',
         ),
         findsOneWidget,
       );

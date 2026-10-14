@@ -33,6 +33,15 @@ class MakePaymentPostPaidPayFlow {
     BuildContext context,
     MakePaymentPostPaidState state,
   ) async {
+    if (state.amountOption == MpAmountOption.other &&
+        double.tryParse(state.customAmount.trim()) == 0) {
+      AppToast.show(
+        message: r'Payment cannot be $0. Please try again.',
+        type: ToastType.error,
+      );
+      return;
+    }
+
     if (state.paymentMode == MpPaymentMode.payWithCard) {
       _payWithNewCard(context, state);
       return;
@@ -91,7 +100,14 @@ class MakePaymentPostPaidPayFlow {
           },
           onFailure: (String message) {
             navigator.pop();
-            AppToast.show(message: message, type: ToastType.error);
+            AppToast.show(
+              message:
+                  message ==
+                      'Unable to process payment, please check card information'
+                  ? 'Unable to process payment. Please check card information.'
+                  : message,
+              type: ToastType.error,
+            );
           },
           onHomeTap: () {
             navigator.pop();

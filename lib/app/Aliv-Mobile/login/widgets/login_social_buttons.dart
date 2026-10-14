@@ -76,7 +76,24 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     );
 
     if (!context.mounted) return;
-    if (cubit.state.status != FingerFaceSecurityStatus.authenticated) return;
+    if (cubit.state.status != FingerFaceSecurityStatus.authenticated) {
+      if (!isFace &&
+          cubit.state.lastAuthResult == BiometricAuthResult.lockedOut) {
+        AppToast.show(
+          message:
+              'Too many failed attempts. Please log in with your password.',
+          type: ToastType.error,
+        );
+      } else if (cubit.state.lastAuthResult == BiometricAuthResult.failed) {
+        AppToast.show(
+          message: isFace
+              ? 'Face not detected. Try again.'
+              : 'Fingerprint not recognized. Please try again.',
+          type: ToastType.error,
+        );
+      }
+      return;
+    }
 
     // Fast path — if valid JWT tokens are still cached (session not
     // refresh-expired), skip the login API entirely. Avoids re-triggering
@@ -119,6 +136,7 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
           );
           if (!context.mounted) return;
           cubit.markSessionAuthenticated();
+          AppToast.show(message: 'Welcome!', type: ToastType.success);
           context.go(AppRoutes.home);
 
         case LoginMfaChallenge(:final mfaToken):

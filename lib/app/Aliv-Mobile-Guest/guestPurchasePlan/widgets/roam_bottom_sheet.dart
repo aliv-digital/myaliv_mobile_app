@@ -101,17 +101,18 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                 height: GuestPurchasePlanTheme.roamBottomSheetTitleToWarningGap,
               ),
 
-              // Warning box.
+              // GST-013 is neutral guidance (mirrors ROAM-001); shared warning
+              // styles stay intact.
               Container(
                 padding: GuestPurchasePlanTheme.bottomSheetWarningPadding,
                 decoration: BoxDecoration(
                   color: GuestPurchasePlanTheme
-                      .roamBottomSheetWarningBackgroundColor,
+                      .roamBottomSheetDateFieldBackgroundColor,
                   borderRadius: BorderRadius.circular(
                     GuestPurchasePlanTheme.bottomSheetWarningRadius,
                   ),
                   border: Border.all(
-                    color: GuestPurchasePlanTheme.warningBorder,
+                    color: GuestPurchasePlanTheme.roamBottomSheetOrDividerColor,
                     width: GuestPurchasePlanTheme.bottomSheetWarningBorderWidth,
                   ),
                 ),
@@ -119,8 +120,9 @@ class _RoamBottomSheetState extends State<RoamBottomSheet> {
                   width: GuestPurchasePlanTheme.roamBottomSheetWarningTextWidth,
                   child: Text(
                     widget.warningText,
-                    style:
-                        GuestPurchasePlanTheme.roamBottomSheetWarningTextStyle,
+                    style: GuestPurchasePlanTheme
+                        .roamBottomSheetWarningTextStyle
+                        .copyWith(color: GuestPurchasePlanTheme.subtitleColor),
                   ),
                 ),
               ),

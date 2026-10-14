@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
 import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 
 class MifiAltPhoneField extends StatelessWidget {
@@ -15,6 +14,7 @@ class MifiAltPhoneField extends StatelessWidget {
     required this.hasFocus,
     required this.readOnly,
     required this.onChanged,
+    this.errorText,
   });
 
   final TextEditingController controller;
@@ -25,14 +25,13 @@ class MifiAltPhoneField extends StatelessWidget {
   final bool readOnly;
   final ValueChanged<String> onChanged;
 
-  static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
+  /// The single inline validation message to show, if any.
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
-    final bool showLiveError = _phoneHelper.hasLiveValidationError(
-      rawPhoneNumber: rawPhone,
-      selectedCountry: country,
-    );
+    final String? message = errorText;
+    final bool showLiveError = message != null;
     final bool showBorderError = !hasFocus && showLiveError;
     final Color borderColor = showBorderError
         ? AuthModuleColors.errorRed
@@ -90,8 +89,8 @@ class MifiAltPhoneField extends StatelessWidget {
           const SizedBox(height: 6),
           Padding(
             padding: EdgeInsets.only(left: errorLeftPad),
-            child: const Text(
-              LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+            child: Text(
+              message,
               style: AuthModuleTextStyles.invalidCredentials,
             ),
           ),

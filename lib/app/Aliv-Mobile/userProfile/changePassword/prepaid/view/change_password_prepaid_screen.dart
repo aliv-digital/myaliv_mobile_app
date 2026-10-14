@@ -63,7 +63,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
           listener: (context, state) {
             if (state.status == ChangePasswordPrepaidStatus.success) {
               AppToast.show(
-                message: 'password updated successfully',
+                message: 'Your password has been changed successfully.',
                 type: ToastType.success,
               );
               context.go(AppRoutes.home);
@@ -171,7 +171,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
 
                               return ChangePasswordPrepaidSubmitButton(
                                 label: 'change password',
-                                enabled: !isLoading && state.isValid,
+                                enabled: !isLoading,
                                 isLoading: isLoading,
                                 onTap: () {
                                   context.read<ChangePasswordPrepaidBloc>().add(

@@ -6,18 +6,27 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 /// Top bar for the payment screen: title + back + home.
 class PaymentAppBar extends StatelessWidget {
-  const PaymentAppBar({super.key});
+  const PaymentAppBar({super.key, this.onPopped});
+
+  final VoidCallback? onPopped;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultAppBar(
-      title: 'payment',
-      height: HomePlansPaymentMethodTheme.appBarHeight,
-      backgroundColor: HomePlansPaymentMethodTheme.appBarBg,
-      showBackArrow: true,
-      showHome: true,
-      onBack: () => context.pop(),
-      onHomeTap: () => context.go(AppRoutes.home),
+    return PopScope<Object?>(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          onPopped?.call();
+        }
+      },
+      child: DefaultAppBar(
+        title: 'payment',
+        height: HomePlansPaymentMethodTheme.appBarHeight,
+        backgroundColor: HomePlansPaymentMethodTheme.appBarBg,
+        showBackArrow: true,
+        showHome: true,
+        onBack: () => context.pop(),
+        onHomeTap: () => context.go(AppRoutes.home),
+      ),
     );
   }
 }

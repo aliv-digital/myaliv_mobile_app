@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/bahamas_phone_input_formatter.dart';
@@ -46,10 +47,28 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
   bool _hasConfirmPhoneFocus = false;
   bool _isChecking = false;
 
+  // STOP-007: product-approved Send Top-up range (USD, inclusive). Local to
+  // this flow so My Number / Auto Top-up limits are unaffected.
+  static const double _minSendTopUpAmount = 5;
+  static const double _maxSendTopUpAmount = 100;
+  static final String _amountRangeMessage =
+      'enter an amount between '
+      '${BalanceCurrencyFormatterService.format(_minSendTopUpAmount)} and '
+      '${BalanceCurrencyFormatterService.format(_maxSendTopUpAmount)}';
+
+  /// STOP-007 inline amount error; cleared as soon as the amount is edited.
+  String? _amountError;
+
   bool get _phoneNumbersDoNotMatch {
     if (_confirmPhoneNumber.isEmpty) return false;
     return _digitsOnly(_phoneNumber) != _digitsOnly(_confirmPhoneNumber);
   }
+
+  // STOP-004 only shows once the recipient number passes its own validation,
+  // so it never competes with that field's error. Proceed still uses
+  // [_phoneNumbersDoNotMatch], so a mismatch can never be submitted.
+  bool get _showPhoneMismatch =>
+      _phoneNumbersDoNotMatch && _validatePhone(_phoneNumber).isValid;
 
   bool get _hasPhoneValidationError =>
       _phoneNumberHelper.hasLiveValidationError(
@@ -221,10 +240,14 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 labelText: GuestTopUpTheme.activePrepaidLabel,
                 labelStyle: GuestTopUpTheme.activePrepaidPrompt,
                 value: _phoneNumber,
-                forceError: _hasPhoneValidationError,
+                forceError:
+                    _phoneNumber.trim().isEmpty || _hasPhoneValidationError,
                 hasFocus: _hasPhoneFocus,
                 focusNode: _phoneFocusNode,
                 highlightInvalidInput: true,
+                validationMessage: _phoneNumber.trim().isEmpty
+                    ? 'Phone number is required.'
+                    : 'Invalid phone number. Please enter a 10-digit phone number.',
                 onChanged: (value) {
                   setState(() => _phoneNumber = value);
                 },
@@ -238,11 +261,11 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
               _buildLoginStylePhoneField(
                 labelText: GuestTopUpTheme.confirmMobileLabel,
                 value: _confirmPhoneNumber,
-                forceError: _phoneNumbersDoNotMatch,
+                forceError: _showPhoneMismatch,
                 hasFocus: _hasConfirmPhoneFocus,
                 focusNode: _confirmPhoneFocusNode,
-                validationMessage: _phoneNumbersDoNotMatch
-                    ? 'Phone number do not match'
+                validationMessage: _showPhoneMismatch
+                    ? "these numbers don't match. re-enter the number to continue."
                     : null,
                 onChanged: (value) {
                   setState(() => _confirmPhoneNumber = value);
@@ -255,9 +278,19 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                 hint: GuestTopUpTheme.amountHintText,
                 initialValue: _amount,
                 onChanged: (value) {
-                  setState(() => _amount = value);
+                  setState(() {
+                    _amount = value;
+                    _amountError = null;
+                  });
                 },
               ),
+              if (_amountError != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  _amountError!,
+                  style: AuthModuleTextStyles.invalidCredentials,
+                ),
+              ],
 
               const SizedBox(height: 30),
               BlocBuilder<BalanceCubit, BalanceState>(
@@ -285,6 +318,34 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                           _confirmPhoneNumber.isEmpty)
                       ? null
                       : () async {
+                          final account = context
+                              .read<AccountInfoCubit>()
+                              .state
+                              .accountInfo;
+                          final primaryPhone =
+                              account?.primaryPhoneNumber.trim() ?? '';
+                          final ownPhone = _validatePhone(
+                            primaryPhone.isNotEmpty
+                                ? primaryPhone
+                                : account?.phoneNumber.trim() ?? '',
+                          );
+                          if (ownPhone.isValid &&
+                              ownPhone.phoneNumberForApi ==
+                                  _validatePhone(
+                                    _phoneNumber,
+                                  ).phoneNumberForApi) {
+                            AppToast.show(
+                              message:
+                                  'You cannot send a top-up to your own number.',
+                              type: ToastType.error,
+                            );
+                            return;
+                          }
+                          if (_amountValue < _minSendTopUpAmount ||
+                              _amountValue > _maxSendTopUpAmount) {
+                            setState(() => _amountError = _amountRangeMessage);
+                            return;
+                          }
                           final recipientPhone =
                               _validatePhone(_phoneNumber).phoneNumberForApi ??
                               _digitsOnly(_phoneNumber);

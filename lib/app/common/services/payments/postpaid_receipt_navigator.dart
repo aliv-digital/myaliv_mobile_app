@@ -24,6 +24,7 @@ class PostpaidReceiptNavigator {
     required double amount,
     required PostpaidPaymentMethod method,
     NewCardDetails? cardToSave,
+    String? message,
   }) {
     context.push(
       AppRoutes.userProfileReceiptScreen,
@@ -33,6 +34,7 @@ class PostpaidReceiptNavigator {
         recipientPhone: _accountPrimaryPhone(),
         paymentMethod: method.label,
         cardToSave: cardToSave,
+        message: message,
       ),
     );
   }

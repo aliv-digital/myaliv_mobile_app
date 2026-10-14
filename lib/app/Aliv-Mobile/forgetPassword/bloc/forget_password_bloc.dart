@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../login/model/login_country_selection.dart';
+import '../../login/utils/login_phone_number_helper.dart';
+
 import '../repository/forgetpassword_repository.dart';
 import 'forget_password_event.dart';
 import 'forget_password_state.dart';
@@ -7,6 +10,7 @@ import 'forget_password_state.dart';
 class ForgetPasswordBloc
     extends Bloc<ForgetPasswordEvent, ForgetPasswordState> {
   final ForgetPasswordRepository repository;
+  static const _phoneNumberHelper = LoginPhoneNumberHelper();
 
   ForgetPasswordBloc({required this.repository})
     : super(const ForgetPasswordState()) {
@@ -16,6 +20,8 @@ class ForgetPasswordBloc
           phone: event.phone,
           status: ForgetPasswordStatus.initial,
           errorMessage: null,
+          isEmptyNumberError: false,
+          isInvalidNumberLengthError: false,
         ),
       );
     });
@@ -30,26 +36,59 @@ class ForgetPasswordBloc
     final apiPhone = state.phone.replaceAll(RegExp(r'\D'), '');
 
     if (apiPhone.isEmpty) {
+      // FPW-001 applies only to the empty field; other digitless values keep
+      // their existing failure message and toast behavior.
+      final isEmptyNumber = state.phone.isEmpty;
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.failure,
-          errorMessage: 'Please enter your phone number.',
+          errorMessage: isEmptyNumber
+              ? 'enter your mobile number'
+              : 'Please enter your phone number.',
+          isEmptyNumberError: isEmptyNumber,
+          isInvalidNumberLengthError: false,
+        ),
+      );
+      return;
+    }
+
+    final phoneValidation = _phoneNumberHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: state.phone,
+      selectedCountry: LoginCountrySelection.defaultBahamas,
+    );
+    if (!phoneValidation.isValid || phoneValidation.phoneNumberForApi == null) {
+      emit(
+        state.copyWith(
+          status: ForgetPasswordStatus.failure,
+          errorMessage: 'invalid Format',
+          isEmptyNumberError: false,
+          isInvalidNumberLengthError: true,
         ),
       );
       return;
     }
 
     emit(
-      state.copyWith(status: ForgetPasswordStatus.loading, errorMessage: null),
+      state.copyWith(
+        status: ForgetPasswordStatus.loading,
+        errorMessage: null,
+        isEmptyNumberError: false,
+        isInvalidNumberLengthError: false,
+      ),
     );
 
     try {
-      final mfaToken = await repository.sendRequest(apiPhone: apiPhone);
+      final validatedApiPhone = phoneValidation.phoneNumberForApi!;
+      final mfaToken = await repository.sendRequest(
+        apiPhone: validatedApiPhone,
+      );
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.success,
           mfaToken: mfaToken,
-          apiPhoneNumber: apiPhone,
+          apiPhoneNumber: validatedApiPhone,
+          isEmptyNumberError: false,
+          isInvalidNumberLengthError: false,
         ),
       );
     } catch (e) {
@@ -60,6 +99,8 @@ class ForgetPasswordBloc
         state.copyWith(
           status: ForgetPasswordStatus.failure,
           errorMessage: message,
+          isEmptyNumberError: false,
+          isInvalidNumberLengthError: false,
         ),
       );
     }

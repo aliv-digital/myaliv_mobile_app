@@ -362,9 +362,10 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
         Padding(
           padding: EdgeInsets.only(left: confirmErrorLeftPadding),
           child: Text(
-            state.showConfirmMobileMismatchError
-                ? GuestPayBillTheme.mobileMismatchErrorMessage
-                : GuestPayBillTheme.invalidPhoneErrorMessage,
+            // BILL-004: the confirm number's own format error comes first.
+            state.showConfirmMobileInvalidError
+                ? GuestPayBillTheme.invalidPhoneErrorMessage
+                : GuestPayBillTheme.mobileMismatchErrorMessage,
             style: GuestPayBillTheme.inlineErrorTextStyle,
           ),
         ),
@@ -572,6 +573,13 @@ class _GuestPayBillViewState extends State<_GuestPayBillView> {
                                 _onAmountChanged(context, value);
                               },
                             ),
+                            if (state.isBelowMinimumPayment) ...[
+                              const SizedBox(height: 6),
+                              const Text(
+                                GuestPayBillTheme.minimumPaymentErrorMessage,
+                                style: GuestPayBillTheme.inlineErrorTextStyle,
+                              ),
+                            ],
                             const SizedBox(
                               height: GuestPayBillTheme.submitTopGap,
                             ),

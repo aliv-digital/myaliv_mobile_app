@@ -15,12 +15,16 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
     required this.pageBackground,
     this.statusMessage =
         'It will take a few moments for the plan to appears on the account.',
+    this.backButtonText,
   });
 
   final GuestPurchasePlanReceiptData data;
   final VoidCallback onBackHome;
   final Color pageBackground;
   final String statusMessage;
+
+  /// Optional CTA label; `null` keeps the existing session-based label.
+  final String? backButtonText;
 
   String _money(double v) => AppUtils.formatPrice(v);
 
@@ -162,7 +166,7 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
             const Divider(height: 1, thickness: 1, color: Color(0xFFE9E9EE)),
             const SizedBox(height: 32),
 
-            _BackToLoginButton(onTap: onBackHome),
+            _BackToLoginButton(onTap: onBackHome, text: backButtonText),
             const SizedBox(height: 52),
           ],
         ),
@@ -172,9 +176,10 @@ class DefaultReceiptSuccessCard extends StatelessWidget {
 }
 
 class _BackToLoginButton extends StatelessWidget {
-  const _BackToLoginButton({required this.onTap});
+  const _BackToLoginButton({required this.onTap, this.text});
 
   final VoidCallback onTap;
+  final String? text;
 
   @override
   Widget build(BuildContext context) {
@@ -197,11 +202,12 @@ class _BackToLoginButton extends StatelessWidget {
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  (AppSession.appRoute == 'prepaidPlan' ||
-                          AppSession.appRoute == 'addOnsPrepaid' ||
-                          AppSession.appRoute == 'postpaidPayment')
-                      ? 'back to home page'
-                      : 'back to login page',
+                  text ??
+                      ((AppSession.appRoute == 'prepaidPlan' ||
+                              AppSession.appRoute == 'addOnsPrepaid' ||
+                              AppSession.appRoute == 'postpaidPayment')
+                          ? 'back to home page'
+                          : 'back to login page'),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   style: const TextStyle(

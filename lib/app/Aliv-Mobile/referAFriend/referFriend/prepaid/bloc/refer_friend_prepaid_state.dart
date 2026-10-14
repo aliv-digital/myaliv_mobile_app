@@ -26,6 +26,7 @@ class ReferFriendPrepaidState extends Equatable {
   final bool friendEmailFieldError;
 
   final String redeemCode;
+  final bool redeemCodeFieldError;
 
   final ReferFriendPrepaidSubmitStatus shareStatus;
   final ReferFriendPrepaidSubmitStatus redeemStatus;
@@ -47,6 +48,7 @@ class ReferFriendPrepaidState extends Equatable {
     this.friendPhoneFieldError = false,
     this.friendEmailFieldError = false,
     this.redeemCode = '',
+    this.redeemCodeFieldError = false,
     this.shareStatus = ReferFriendPrepaidSubmitStatus.idle,
     this.redeemStatus = ReferFriendPrepaidSubmitStatus.idle,
     this.referralCode = '',
@@ -71,6 +73,7 @@ class ReferFriendPrepaidState extends Equatable {
     bool? friendPhoneFieldError,
     bool? friendEmailFieldError,
     String? redeemCode,
+    bool? redeemCodeFieldError,
     ReferFriendPrepaidSubmitStatus? shareStatus,
     ReferFriendPrepaidSubmitStatus? redeemStatus,
     String? referralCode,
@@ -91,6 +94,7 @@ class ReferFriendPrepaidState extends Equatable {
       friendEmailFieldError:
           friendEmailFieldError ?? this.friendEmailFieldError,
       redeemCode: redeemCode ?? this.redeemCode,
+      redeemCodeFieldError: redeemCodeFieldError ?? this.redeemCodeFieldError,
       shareStatus: shareStatus ?? this.shareStatus,
       redeemStatus: redeemStatus ?? this.redeemStatus,
       referralCode: referralCode ?? this.referralCode,
@@ -117,6 +121,7 @@ class ReferFriendPrepaidState extends Equatable {
     friendPhoneFieldError,
     friendEmailFieldError,
     redeemCode,
+    redeemCodeFieldError,
     shareStatus,
     redeemStatus,
     referralCode,

@@ -15,7 +15,10 @@ class BiometricAuthService {
     _faceIdEnabledKey,
   };
 
-  final LocalAuthentication _localAuth = LocalAuthentication();
+  BiometricAuthService({LocalAuthentication? localAuth})
+    : _localAuth = localAuth ?? LocalAuthentication();
+
+  final LocalAuthentication _localAuth;
 
   Future<bool> isDeviceSupported() async {
     try {
@@ -115,9 +118,10 @@ class BiometricAuthService {
     } on LocalAuthException catch (e) {
       debugPrint('BiometricAuth: LocalAuthException: ${e.code}');
       return switch (e.code) {
-        LocalAuthExceptionCode.userCanceled ||
+        // Explicit dismissal is informational; failed attempts stay separate.
+        LocalAuthExceptionCode.userCanceled => BiometricAuthResult.cancelled,
         LocalAuthExceptionCode.userRequestedFallback =>
-          BiometricAuthResult.failed,
+          BiometricAuthResult.userRequestedFallback,
         LocalAuthExceptionCode.noBiometricsEnrolled ||
         LocalAuthExceptionCode.noCredentialsSet =>
           BiometricAuthResult.biometricsNotEnrolled,
@@ -125,7 +129,8 @@ class BiometricAuthService {
         LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable =>
           BiometricAuthResult.biometricsNotAvailable,
         LocalAuthExceptionCode.temporaryLockout ||
-        LocalAuthExceptionCode.biometricLockout => BiometricAuthResult.error,
+        LocalAuthExceptionCode.biometricLockout =>
+          BiometricAuthResult.lockedOut,
         _ => BiometricAuthResult.error,
       };
     } catch (e) {
@@ -282,6 +287,9 @@ enum BiometricAuthResult {
   biometricsNotAvailable,
   biometricsNotEnrolled,
   error,
+  cancelled,
+  userRequestedFallback,
+  lockedOut,
 }
 
 enum BiometricSetupResult {

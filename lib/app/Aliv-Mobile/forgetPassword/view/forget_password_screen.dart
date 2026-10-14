@@ -8,6 +8,7 @@ import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../../../../router/app_routes.dart';
 import '../../login/widgets/login_privacy_policy_link.dart';
+import '../../login/theme/login_theme.dart';
 import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
@@ -81,6 +82,11 @@ class _ForgetPasswordScreenView extends StatelessWidget {
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
             if (state.status == ForgetPasswordStatus.success) {
+              AppToast.show(
+                message:
+                    'a verification code has been sent to your number and email',
+                type: ToastType.success,
+              );
               context.push(
                 AppRoutes.forgetPasswordOtp,
                 extra: LoginOtpRouteArgs(
@@ -92,6 +98,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
             }
 
             if (state.status == ForgetPasswordStatus.failure &&
+                !state.hasInlineNumberError &&
                 state.errorMessage != null) {
               AppToast.show(
                 message: state.errorMessage!,
@@ -111,6 +118,30 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ForgetPasswordPhoneRow(focusNode: phoneFocusNode),
+                      BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
+                        buildWhen: (prev, curr) =>
+                            prev.isEmptyNumberError !=
+                                curr.isEmptyNumberError ||
+                            prev.isInvalidNumberLengthError !=
+                                curr.isInvalidNumberLengthError,
+                        builder: (context, state) {
+                          if (!state.isEmptyNumberError) {
+                            return const SizedBox.shrink();
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              top: ForgetPasswordSizes.phoneToSendGap / 2,
+                              left:
+                                  ForgetPasswordSizes.countryWidth +
+                                  ForgetPasswordSizes.countryToPhoneGap,
+                            ),
+                            child: Text(
+                              state.errorMessage ?? '',
+                              style: AuthModuleTextStyles.invalidCredentials,
+                            ),
+                          );
+                        },
+                      ),
                       const SizedBox(
                         height: ForgetPasswordSizes.phoneToSendGap,
                       ),
@@ -132,6 +163,16 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                       ),
                       const SizedBox(
                         height: ForgetPasswordSizes.sendToTermsGap,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: ForgetPasswordSizes.phoneToSendGap,
+                          ),
+                          child: Text(
+                            "by pressing the 'send' button you agree to our terms & conditions and privacy policy",
+                            textAlign: TextAlign.center,
+                            style: ForgetPasswordTheme.termsBase,
+                          ),
+                        ),
                       ),
                       const Center(child: LoginPrivacyPolicyLink()),
                     ],

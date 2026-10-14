@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/core/utils/app_session.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -11,6 +12,7 @@ import '../bloc/user_profile_receipt_bloc.dart';
 import '../bloc/user_profile_receipt_event.dart';
 import '../bloc/user_profile_receipt_state.dart';
 import '../models/user_profile_receipt_route_args.dart';
+import '../models/user_profile_receipt_variant.dart';
 import '../repository/user_profile_receipt_repository.dart';
 import '../theme/user_profile_receipt_theme.dart';
 import '../widgets/user_profile_receipt_success_card.dart';
@@ -28,7 +30,14 @@ class UserProfileReceiptScreen extends StatelessWidget {
         create: (ctx) => UserProfileReceiptBloc(
           repository: ctx.read<UserProfileReceiptRepository>(),
         )..add(UserProfileReceiptStarted(args)),
-        child: _UserProfileReceiptView(cardToSave: args.cardToSave),
+        child: WalletPaymentSuccessReceipt(
+          success:
+              args.variant == UserProfileReceiptVariant.walletTransfer &&
+                  args.paymentMethod == 'wallet'
+              ? args.walletPaymentSuccess
+              : null,
+          child: _UserProfileReceiptView(cardToSave: args.cardToSave),
+        ),
       ),
     );
   }

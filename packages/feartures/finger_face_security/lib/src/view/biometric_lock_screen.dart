@@ -129,6 +129,12 @@ class _BiometricLockScreenState extends State<BiometricLockScreen>
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) widget.onAuthSuccess?.call();
         });
+      case FingerFaceSecurityStatus.cancelled:
+        // Reuse the neutral status text without failure haptics or callbacks.
+        setState(() {
+          _isAuthenticating = false;
+          _statusMessage = state.informationalMessage!;
+        });
       case FingerFaceSecurityStatus.failure:
         HapticFeedback.heavyImpact();
         setState(() {

@@ -105,7 +105,7 @@ void main() {
     expect(toastCalls.single.method, 'showToast');
     expect(
       (toastCalls.single.arguments as Map<Object?, Object?>)['msg'],
-      'Password must be at least 8 characters.',
+      'Password must be 8 characters long',
     );
     verifyNever(
       () => networkService.request<dynamic>(

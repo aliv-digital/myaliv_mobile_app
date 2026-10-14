@@ -49,6 +49,7 @@ class HomePlanConfirmationBloc
           data: data,
           isTermsChecked: event.args.defaultTermsChecked,
           forceNow: event.args.forceNow,
+          purchaseContext: event.args.purchaseContext,
           selectedBeginDate: _parseDate(event.args.futurePlanStartDate),
           marketingOptIn: event.args.marketingOptIn,
         ),

@@ -14,11 +14,18 @@ class GuestTopUpTheme {
   static const String proceedButtonLabel = 'proceed';
   static const String fallbackErrorMessage = 'Something went wrong';
   static const String invalidPhoneMessage = 'invalid phone number';
+  static const String emptyPhoneMessage =
+      'enter an active prepaid number to top up';
+  static const String amountRangeMessage =
+      r'enter an amount between $5.00 and $100.00';
   static const String phoneMismatchMessage = 'phone numbers do not match';
   static const String accountStatusActive = 'AC';
-  static const String inactiveAccountErrorMessage = 'number is not active';
+  // static const String inactiveAccountErrorMessage = 'number is not active';
   static const String paymentOptionPrePay = 'PrePay';
-  static const String notPrepaidErrorMessage = 'number is not prepaid';
+  // static const String notPrepaidErrorMessage = 'number is not prepaid';
+  static const String invalidActivePrepaidErrorMessage =
+      'the number entered is not an active prepaid number.to try again\n'
+      'please enter a active prepaid number.';
 
   // Inline validation color for phone field errors.
   static const Color errorRed = Color(0xFFFF3B30);

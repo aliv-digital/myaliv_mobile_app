@@ -37,6 +37,9 @@ class _AutoRenewPrepaidPageContentState
   late final AutoRenewAuthorizationVerificationCoordinator _verification;
   bool _walletActionInProgress = false;
 
+  /// AREN-002: set when continue is tapped with no card or wallet selected.
+  bool _showMethodRequiredError = false;
+
   @override
   void initState() {
     super.initState();
@@ -197,9 +200,28 @@ class _AutoRenewPrepaidPageContentState
             );
           },
         ),
+        // AREN-002 clears itself once any payment option is selected.
+        if (_showMethodRequiredError &&
+            !autoRenewPrepaidState.canProceed &&
+            !autoRenewPrepaidState.savingSelection)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'select a card or wallet to continue',
+              style: TextStyle(
+                fontFamily: 'CircularPro',
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ),
         const SizedBox(height: AutoRenewPrepaidTheme.dashedToActionGap),
         AutoRenewPrepaidProceedActionButton(
-          isEnabled: autoRenewPrepaidState.canProceed,
+          // Tappable with no selection so AREN-002 can explain itself; still
+          // disabled while a selection is being saved.
+          isEnabled:
+              autoRenewPrepaidState.canProceed ||
+              !autoRenewPrepaidState.savingSelection,
           isLoading:
               _walletActionInProgress ||
               autoRenewPrepaidState.savingSelection ||
@@ -222,6 +244,7 @@ class _AutoRenewPrepaidPageContentState
             final selectedCard = autoRenewPrepaidState.selectedCard;
             final isWalletSelected = autoRenewPrepaidState.isWalletSelected;
             if (selectedCard == null && !isWalletSelected) {
+              setState(() => _showMethodRequiredError = true);
               return;
             }
 

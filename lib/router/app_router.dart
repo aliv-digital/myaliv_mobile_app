@@ -37,6 +37,7 @@ import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/model/mifi_alt_contac
 import 'package:myaliv_mobile_app/app/Plans/mifiAltContact/view/mifi_alt_contact_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/view/home_plan_purchase_receipt_screen.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_screen.dart';
@@ -579,6 +580,7 @@ class AppRouter {
           List<HomePlanPurchaseReceiptDetailItem>? details;
           NewCardDetails? cardToSave;
           String? orderId;
+          WalletPaymentSuccess? walletPaymentSuccess;
 
           if (extra is Map<String, dynamic>) {
             // Payment failure — show failure ticket, skip all other fields.
@@ -598,6 +600,11 @@ class AppRouter {
             final dynamic cardToSaveValue = extra['cardToSave'];
             if (cardToSaveValue is NewCardDetails) {
               cardToSave = cardToSaveValue;
+            }
+
+            final success = extra['walletPaymentSuccess'];
+            if (success is WalletPaymentSuccess) {
+              walletPaymentSuccess = success;
             }
 
             final dynamic orderIdValue = extra['orderId'];
@@ -668,6 +675,7 @@ class AppRouter {
             rightType: rightType,
             details: details,
             cardToSave: cardToSave,
+            walletPaymentSuccess: walletPaymentSuccess,
             orderId: orderId,
           );
         },

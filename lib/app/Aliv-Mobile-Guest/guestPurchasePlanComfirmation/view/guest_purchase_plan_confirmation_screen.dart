@@ -44,10 +44,21 @@ class GuestPurchasePlanConfirmationScreen extends StatelessWidget {
   }
 }
 
-class _GuestPurchasePlanConfirmationView extends StatelessWidget {
+class _GuestPurchasePlanConfirmationView extends StatefulWidget {
   const _GuestPurchasePlanConfirmationView({required this.args});
 
   final GuestPurchasePlanConfirmationRouteArgs args;
+
+  @override
+  State<_GuestPurchasePlanConfirmationView> createState() =>
+      _GuestPurchasePlanConfirmationViewState();
+}
+
+class _GuestPurchasePlanConfirmationViewState
+    extends State<_GuestPurchasePlanConfirmationView> {
+  bool _showTermsValidation = false;
+
+  GuestPurchasePlanConfirmationRouteArgs get args => widget.args;
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +93,14 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
 
                 return DefaultBottomPayBar(
                   isVatExclusive: true,
-                  isButtonEnabled: state.isTermsChecked,
+                  isButtonEnabled: true,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    if (!state.isTermsChecked) {
+                      setState(() => _showTermsValidation = true);
+                      return;
+                    }
+
                     final planId = int.tryParse(args.selectedPlan?.id ?? '');
                     if (planId == null) {
                       AppToast.show(
@@ -260,22 +276,9 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
                                             GuestPurchasePlanConfirmationTheme
                                                 .termsNoticeBottomSpacing,
                                           ),
-                                          child: TermsNotice(
-                                            isChecked: state.isTermsChecked,
-                                            onToggleChecked: () => context
-                                                .read<
-                                                  GuestPurchasePlanConfirmationBloc
-                                                >()
-                                                .add(
-                                                  GuestPurchasePlanConfirmationTermsCheckboxToggled(
-                                                    !state.isTermsChecked,
-                                                  ),
-                                                ),
-                                            onTermsTap: () async {
-                                              await showTermsAndConditionsModal(
-                                                context,
-                                              );
-                                            },
+                                          child: _buildTermsNotice(
+                                            context,
+                                            state,
                                           ),
                                         ),
                                       ),
@@ -333,6 +336,51 @@ class _GuestPurchasePlanConfirmationView extends StatelessWidget {
               ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTermsNotice(
+    BuildContext context,
+    GuestPurchasePlanConfirmationState state,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TermsNotice(
+          isChecked: state.isTermsChecked,
+          onToggleChecked: () {
+            if (!state.isTermsChecked) {
+              setState(() => _showTermsValidation = false);
+            }
+            context.read<GuestPurchasePlanConfirmationBloc>().add(
+              GuestPurchasePlanConfirmationTermsCheckboxToggled(
+                !state.isTermsChecked,
+              ),
+            );
+          },
+          onTermsTap: () async {
+            await showTermsAndConditionsModal(context);
+          },
+        ),
+        if (_showTermsValidation && !state.isTermsChecked)
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 6,
+              left:
+                  GuestPurchasePlanConfirmationTheme.termsNoticeCheckboxSize +
+                  GuestPurchasePlanConfirmationTheme
+                      .termsNoticeCheckboxToTextGap,
+            ),
+            child: Text(
+              'accept the terms & conditions to continue',
+              style: GuestPurchasePlanConfirmationTheme.termsNoticeBodyTextStyle
+                  .copyWith(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+            ),
+          ),
+      ],
     );
   }
 }

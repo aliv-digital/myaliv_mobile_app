@@ -77,7 +77,7 @@ void main() {
     expect(find.text('guest purchase plan destination'), findsOneWidget);
   });
 
-  testWidgets('invalid first phone via Done preserves invalid-phone path', (
+  testWidgets('empty first phone via Done shows the GST-005 inline error', (
     tester,
   ) async {
     final harness = await _pumpBottomSheet(tester);
@@ -89,10 +89,93 @@ void main() {
     await tester.pump();
 
     expect(harness.routeExtras, isEmpty);
-    expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsOneWidget);
+    expect(find.text(GuestSplashTheme.emptyPhoneMessage), findsOneWidget);
+    expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsNothing);
     expect(find.byType(TextField), findsNWidgets(2));
+  });
 
-    await tester.pump(const Duration(seconds: 4));
+  group('GST-005 empty mobile number', () {
+    const emptyCopy = 'enter your mobile number';
+    Finder continueButton() => find.widgetWithText(ElevatedButton, 'continue');
+
+    testWidgets('no inline error before continue is tapped', (tester) async {
+      await _pumpBottomSheet(tester);
+      expect(find.text(emptyCopy), findsNothing);
+      // Continue stays tappable so the empty state can be validated.
+      expect(
+        tester.widget<ElevatedButton>(continueButton()).onPressed,
+        isNotNull,
+      );
+    });
+
+    testWidgets('continue with empty number shows exact inline copy only', (
+      tester,
+    ) async {
+      final harness = await _pumpBottomSheet(tester);
+      await tester.tap(continueButton());
+      await tester.pumpAndSettle();
+
+      expect(find.text(emptyCopy), findsOneWidget);
+      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsNothing);
+      expect(find.text(GuestSplashTheme.phoneMismatchMessage), findsNothing);
+      expect(harness.routeExtras, isEmpty);
+      expect(find.text('guest purchase plan destination'), findsNothing);
+      // Sheet stays open on the same screen.
+      expect(find.byType(TextField), findsNWidgets(2));
+    });
+
+    testWidgets('typing a number clears the stale empty error', (tester) async {
+      await _pumpBottomSheet(tester);
+      await tester.tap(continueButton());
+      await tester.pumpAndSettle();
+      expect(find.text(emptyCopy), findsOneWidget);
+
+      await tester.enterText(_phoneField(0), '2');
+      await tester.pump();
+
+      expect(find.text(emptyCopy), findsNothing);
+    });
+
+    testWidgets('invalid number keeps the existing inline error and toast', (
+      tester,
+    ) async {
+      final harness = await _pumpBottomSheet(tester);
+      await tester.tap(continueButton());
+      await tester.pumpAndSettle();
+
+      await tester.enterText(_phoneField(0), '123');
+      await tester.pump();
+      expect(find.text(emptyCopy), findsNothing);
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsNothing);
+
+      await tester.tap(continueButton());
+      await tester.pump();
+
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.text(GuestSplashTheme.invalidPhoneMessage), findsOneWidget);
+      expect(find.text(emptyCopy), findsNothing);
+      expect(harness.routeExtras, isEmpty);
+      await tester.pump(const Duration(seconds: 4));
+    });
+
+    testWidgets('valid numbers after empty error follow the same flow', (
+      tester,
+    ) async {
+      final harness = await _pumpBottomSheet(tester);
+      await tester.tap(continueButton());
+      await tester.pumpAndSettle();
+
+      await _enterValidMatchingNumbers(tester);
+      expect(find.text('The plan was purchased successfully.'), findsNothing);
+      await tester.tap(continueButton());
+      await tester.pumpAndSettle();
+
+      expect(find.text('The plan was purchased successfully.'), findsNothing);
+      expect(harness.routeExtras, <Object?>[
+        <String, String>{'phoneNumber': '242-555-1234'},
+      ]);
+    });
   });
 
   testWidgets('confirm-phone mismatch via Done preserves mismatch path', (
