@@ -20,6 +20,10 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
+import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart';
+import 'helpers/auto_top_up_otp_fixture.dart';
 
 class _Cards extends MockCubit<SavedCardsState> implements SavedCardsCubit {}
 
@@ -52,6 +56,12 @@ Future<void> _loadFonts() async {
 }
 
 void main() {
+  late AutoTopUpOtpFixture otp;
+  setUp(() => otp = AutoTopUpOtpFixture());
+  tearDown(() async {
+    await otp.dispose();
+    await instance.reset();
+  });
   group('Auto Top-up rules', () {
     for (final value in [5.0, 10.0, 100.0, 150.0]) {
       test('ATOP-002 threshold $value is invalid', () {
@@ -362,8 +372,14 @@ void main() {
       deviceState = _DeviceState();
       account = _Account();
       when(() => deviceState.fullName).thenReturn(null);
+      when(() => deviceState.isUpdating).thenReturn(false);
+      when(
+        () => deviceState.deviceLimits,
+      ).thenReturn(DeviceLimitsModel.fromJson({'DeviceID': 123}));
       when(() => devices.state).thenReturn(deviceState);
-      when(() => account.state).thenReturn(const AccountInfoState());
+      when(() => account.state).thenReturn(
+        const AccountInfoState(accountInfo: AccountInfoModel(idAcc: 42)),
+      );
       instance.registerSingleton<DeviceLimitsCubit>(devices);
       instance.registerSingleton<AccountInfoCubit>(account);
     });
@@ -379,7 +395,7 @@ void main() {
       required bool alreadyConfigured,
       required bool succeeds,
       String name = 'User',
-    }) async {
+    }) => autoTopUpOnline(() async {
       when(() => deviceState.hasAutoTopUp).thenReturn(alreadyConfigured);
       when(
         () => devices.updateBalanceThresholdSettings(
@@ -408,17 +424,25 @@ void main() {
             path: AppRoutes.home,
             builder: (_, _) => const Scaffold(body: Text('home')),
           ),
+          otp.otpRoute,
         ],
       );
       addTearDown(router.dispose);
-      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpWidget(
+        otp.wrap(MaterialApp.router(routerConfig: router)),
+      );
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), name);
       await tester.ensureVisible(find.text('submit'));
       await tester.tap(find.text('submit'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-    }
+      if (find.byType(OtpCodeFields).evaluate().isNotEmpty) {
+        await otp.verify(tester);
+        await tester.pump(const Duration(milliseconds: 1600));
+        await tester.pump();
+      }
+    });
 
     Future<void> finish(WidgetTester tester) async {
       await tester.pump(const Duration(seconds: 5));

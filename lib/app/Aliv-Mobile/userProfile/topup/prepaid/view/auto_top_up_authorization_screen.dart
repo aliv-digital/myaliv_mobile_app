@@ -5,9 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/theme/top_up_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
+import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verification_coordinator.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import '../verification/auto_top_up_submission.dart';
 
 class AutoTopUpAuthorizationScreen extends StatefulWidget {
   final double balanceThreshold;
@@ -32,6 +37,18 @@ class _AutoTopUpAuthorizationScreenState
     extends State<AutoTopUpAuthorizationScreen> {
   final _nameController = TextEditingController();
   bool _isSubmitting = false;
+  late final ActionVerificationCoordinator<ProtectedAccountAction>
+  _verification;
+  late final AutoTopUpSubmission _submission;
+
+  @override
+  void initState() {
+    super.initState();
+    _verification = ActionVerificationCoordinator<ProtectedAccountAction>();
+    _submission = AutoTopUpSubmission(
+      deviceLimitsCubit: instance<DeviceLimitsCubit>(),
+    );
+  }
 
   String get _expectedName => resolveUserDisplayName();
 
@@ -39,11 +56,16 @@ class _AutoTopUpAuthorizationScreenState
 
   @override
   void dispose() {
+    _verification.cancel();
+    _submission.close();
     _nameController.dispose();
     super.dispose();
   }
 
   Future<void> _onSubmit() async {
+    if (_isSubmitting) {
+      return;
+    }
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       _showError('Please enter your name.');
@@ -66,15 +88,52 @@ class _AutoTopUpAuthorizationScreenState
     // ATOP-007: read before the update, which refreshes the cubit's state.
     final isNewActivation = !instance<DeviceLimitsCubit>().state.hasAutoTopUp;
 
-    final success = await instance<DeviceLimitsCubit>()
-        .updateBalanceThresholdSettings(
-          balanceThreshold: widget.balanceThreshold,
-          autoTopUpAmount: widget.autoTopUpAmount,
-          cardToken: widget.cardToken,
-        );
+    bool? success;
+    try {
+      final snapshot = AutoTopUpSubmissionSnapshot(
+        deviceId:
+            instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0,
+        balanceThreshold: widget.balanceThreshold,
+        autoTopUpAmount: widget.autoTopUpAmount,
+        cardToken: widget.cardToken,
+        signature: name,
+      );
+      success = await _submission.submit(
+        snapshot: snapshot,
+        isCurrent: (pending) =>
+            mounted &&
+            ModalRoute.of(context)?.isCurrent == true &&
+            widget.balanceThreshold == pending.balanceThreshold &&
+            widget.autoTopUpAmount == pending.autoTopUpAmount &&
+            widget.cardToken == pending.cardToken &&
+            _nameController.text == pending.signature &&
+            _isNameValid,
+        verifyAction: (pending) => requestAccountActionOtp(
+          context: context,
+          coordinator: _verification,
+          purpose: ProtectedAccountAction.autoTopUp,
+          attemptId: pending.attemptId,
+        ),
+      );
+    } on CallLogsVerificationException catch (error) {
+      if (mounted) {
+        _showError(error.message);
+      }
+      return;
+    } catch (_) {
+      if (mounted) {
+        _showError('Failed to update settings. Please try again.');
+      }
+      return;
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
 
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
+    if (!mounted || success == null) {
+      return;
+    }
 
     if (success) {
       AppToast.show(
