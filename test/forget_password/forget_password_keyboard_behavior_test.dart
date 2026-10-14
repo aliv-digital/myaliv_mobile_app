@@ -17,6 +17,10 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/view/forget_pas
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/widgets/forget_password_keyboard_done_toolbar.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_phone_row.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_privacy_policy_link.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_terms_of_use_modal.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
@@ -292,7 +296,7 @@ void main() {
     expect(find.text('enter your mobile number'), findsNothing);
   });
 
-  for (var digitCount = 1; digitCount < 10; digitCount++) {
+  for (final digitCount in [1, 2, 3, 4, 5, 6, 8, 9]) {
     testWidgets('$digitCount digits show FPW-002 inline without an API call', (
       tester,
     ) async {
@@ -301,6 +305,9 @@ void main() {
         _phoneField(),
         '2425550101'.substring(0, digitCount),
       );
+      await tester.pump();
+      expect(find.text('invalid Format'), findsOneWidget);
+      verifyZeroInteractions(networkService);
       final focusNode = tester.widget<TextField>(_phoneField()).focusNode!;
       final hadFocus = focusNode.hasFocus;
 
@@ -331,6 +338,203 @@ void main() {
       expect(find.text(message), findsNothing);
     });
   }
+
+  for (final width in [320.0, 430.0]) {
+    testWidgets('live phone feedback matches Login at width $width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await _pumpScreen(tester);
+      expect(find.text('invalid Format'), findsNothing);
+
+      await tester.enterText(_phoneField(), '24255');
+      await tester.pump();
+      final inlineError = find.descendant(
+        of: find.byType(ForgetPasswordPhoneRow),
+        matching: find.text('invalid Format'),
+      );
+      expect(inlineError, findsOneWidget);
+      expect(
+        tester.widget<Text>(inlineError).style,
+        AuthModuleTextStyles.invalidCredentials,
+      );
+      final row = tester.widget<CustomCountryPhoneInputRow>(
+        find.byType(CustomCountryPhoneInputRow),
+      );
+      expect(row.phoneInputStyle!.color, AuthModuleColors.errorRed);
+      expect(row.unfocusedBorderColor, AuthModuleColors.errorRed);
+      expect(row.enableCountryPicker, isFalse);
+      expect(row.countryIsoCode, 'BS');
+      expect(row.dialCode, '1');
+      expect(
+        tester.getTopLeft(inlineError).dy -
+            tester.getBottomLeft(find.byType(CustomCountryPhoneInputRow)).dy,
+        6,
+      );
+      expect(
+        tester.getTopLeft(inlineError).dx,
+        closeTo(
+          tester.getTopLeft(_phoneField()).dx,
+          ForgetPasswordSizes.fieldBorderWidth,
+        ),
+      );
+      expect(find.byIcon(Icons.close), findsNothing);
+      verifyZeroInteractions(networkService);
+
+      // Keeping the error after blur matches Login; its unfocused border is red.
+      tester.widget<TextField>(_phoneField()).focusNode!.unfocus();
+      await tester.pump();
+      expect(inlineError, findsOneWidget);
+      await tester.enterText(_phoneField(), '2428997955');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsNothing);
+      expect(_phoneText(tester), '(242)-899-7955');
+      expect(
+        tester
+            .widget<CustomCountryPhoneInputRow>(
+              find.byType(CustomCountryPhoneInputRow),
+            )
+            .phoneInputStyle,
+        ForgetPasswordTheme.phoneInput,
+      );
+      await tester.enterText(_phoneField(), '');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsNothing);
+      verifyZeroInteractions(networkService);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('typing uses Login validity including seven digits and prefix', (
+    tester,
+  ) async {
+    await _pumpScreen(tester);
+    const helper = LoginPhoneNumberHelper();
+    for (final input in [
+      '',
+      '2',
+      '24255',
+      '8997955',
+      '24289979',
+      '2428997955',
+      '3058997955',
+    ]) {
+      await tester.enterText(_phoneField(), input);
+      await tester.pump();
+      final expectedError = helper.hasLiveValidationError(
+        rawPhoneNumber: _phoneText(tester),
+        selectedCountry: LoginCountrySelection.defaultBahamas,
+      );
+      expect(
+        find.text('invalid Format'),
+        expectedError ? findsOneWidget : findsNothing,
+        reason: 'Forgot Password must match Login for $input',
+      );
+      verifyZeroInteractions(networkService);
+    }
+  });
+
+  testWidgets('ten digits with a non-Bahamas prefix block Send', (
+    tester,
+  ) async {
+    await _pumpScreen(tester);
+    await tester.enterText(_phoneField(), '3058997955');
+    await tester.pump();
+    expect(find.text('invalid Format'), findsOneWidget);
+    await tester.tap(find.text('send'));
+    await tester.pump();
+    expect(find.text('invalid Format'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing);
+    verifyZeroInteractions(networkService);
+  });
+
+  testWidgets(
+    'seven-digit Login-valid input sends the canonical Bahamas username',
+    (tester) async {
+      LoginOtpRouteArgs? otp;
+      when(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+          data: {'mfa_token': 'test-mfa-token'},
+        ),
+      );
+      await _pumpScreen(tester, onOtp: (args) => otp = args);
+      await tester.enterText(_phoneField(), '8997955');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsNothing);
+      verifyZeroInteractions(networkService);
+      await tester.tap(find.text('send'));
+      await tester.pumpAndSettle();
+      verify(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: {'Username': '2428997955', 'Channel': 'SelfCare'},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+      expect(find.text('OTP placeholder'), findsOneWidget);
+      expect(otp!.apiPhoneNumber, '2428997955');
+      expect(otp!.mfaToken, 'test-mfa-token');
+      await tester.pump(const Duration(seconds: 3));
+    },
+  );
+
+  testWidgets(
+    'live format feedback remains separate from an in-flight backend failure',
+    (tester) async {
+      final pending = Completer<Response<dynamic>>();
+      when(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      await _pumpScreen(tester);
+      await tester.enterText(_phoneField(), '2428997955');
+      await tester.tap(find.text('send'));
+      await tester.pump();
+      await tester.enterText(_phoneField(), '242');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsOneWidget);
+      pending.completeError(
+        DioException(
+          requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+          response: Response<dynamic>(
+            requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+            statusCode: 400,
+            data: {'Message': 'Existing recovery failure'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Existing recovery failure'), findsOneWidget);
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.byIcon(Icons.close), findsOneWidget);
+      verify(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: {'Username': '2428997955', 'Channel': 'SelfCare'},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+      await tester.pump(const Duration(seconds: 3));
+    },
+  );
 
   testWidgets('non-empty digitless value retains its original error toast', (
     tester,
@@ -504,6 +708,7 @@ String _phoneText(WidgetTester tester) => tester
 Future<void> _pumpScreen(
   WidgetTester tester, {
   TargetPlatform? platform,
+  void Function(LoginOtpRouteArgs)? onOtp,
 }) async {
   final router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -517,6 +722,7 @@ Future<void> _pumpScreen(
         path: AppRoutes.forgetPasswordOtp,
         builder: (context, state) {
           expect(state.extra, isA<LoginOtpRouteArgs>());
+          onOtp?.call(state.extra! as LoginOtpRouteArgs);
           return const Scaffold(body: Text('OTP placeholder'));
         },
       ),

@@ -125,7 +125,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                             prev.isInvalidNumberLengthError !=
                                 curr.isInvalidNumberLengthError,
                         builder: (context, state) {
-                          if (!state.hasInlineNumberError) {
+                          if (!state.isEmptyNumberError) {
                             return const SizedBox.shrink();
                           }
                           return Padding(

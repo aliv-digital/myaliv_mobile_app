@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../login/model/login_country_selection.dart';
+import '../../login/utils/login_phone_number_helper.dart';
+
 import '../repository/forgetpassword_repository.dart';
 import 'forget_password_event.dart';
 import 'forget_password_state.dart';
@@ -7,6 +10,7 @@ import 'forget_password_state.dart';
 class ForgetPasswordBloc
     extends Bloc<ForgetPasswordEvent, ForgetPasswordState> {
   final ForgetPasswordRepository repository;
+  static const _phoneNumberHelper = LoginPhoneNumberHelper();
 
   ForgetPasswordBloc({required this.repository})
     : super(const ForgetPasswordState()) {
@@ -48,8 +52,11 @@ class ForgetPasswordBloc
       return;
     }
 
-    // FPW-002 checks the existing normalized digits before any API request.
-    if (apiPhone.length != 10) {
+    final phoneValidation = _phoneNumberHelper.validateAndBuildApiUsername(
+      rawPhoneNumber: state.phone,
+      selectedCountry: LoginCountrySelection.defaultBahamas,
+    );
+    if (!phoneValidation.isValid || phoneValidation.phoneNumberForApi == null) {
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.failure,
@@ -71,12 +78,15 @@ class ForgetPasswordBloc
     );
 
     try {
-      final mfaToken = await repository.sendRequest(apiPhone: apiPhone);
+      final validatedApiPhone = phoneValidation.phoneNumberForApi!;
+      final mfaToken = await repository.sendRequest(
+        apiPhone: validatedApiPhone,
+      );
       emit(
         state.copyWith(
           status: ForgetPasswordStatus.success,
           mfaToken: mfaToken,
-          apiPhoneNumber: apiPhone,
+          apiPhoneNumber: validatedApiPhone,
           isEmptyNumberError: false,
           isInvalidNumberLengthError: false,
         ),
