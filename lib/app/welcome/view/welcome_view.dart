@@ -35,7 +35,7 @@ class WelcomeView extends StatelessWidget {
   static const double _horizontal = 25;
 
   // ✅ Figma-like image crop/zoom
-  static const double _imageZoom = 1.14;
+  static const double _imageZoom = 1.0;
 
   // ✅ Bottom panel sizing (device independent feel)
   // - ratio-based but clamped so it never becomes too tall/too short
@@ -85,7 +85,6 @@ class WelcomeView extends StatelessWidget {
 
               return Column(
                 children: [
-                  // -------- Top image area (fixed by calculation) --------
                   SizedBox(
                     height: topH,
                     width: w,
@@ -93,29 +92,17 @@ class WelcomeView extends StatelessWidget {
                       children: [
                         Positioned.fill(
                           child: ClipRect(
-                            child: Transform.scale(
-                              scale: _imageZoom,
-                              // ✅ Slightly up for nicer crop like Figma
-                              alignment: const Alignment(0, -0.05),
-                              child: _WelcomeHeroImage(imageUrl: imageUrl),
-                            ),
+                            child: _WelcomeHeroImage(imageUrl: imageUrl),
                           ),
                         ),
-
-                        // ✅ Logo placement responsive (no magic bottom pixels)
                         Align(
                           alignment: const Alignment(0, 0.62),
-                          child: SvgPicture.asset(
-                            AssetConstant.splashLogoSVG,
-                            width: 192,
-                            height: 98,
-                          ),
+                          child: SvgPicture.asset(AssetConstant.splashLogoSVG),
                         ),
                       ],
                     ),
                   ),
 
-                  // -------- Bottom purple panel (fixed by calculation) --------
                   SizedBox(
                     height: bottomH,
                     width: double.infinity,
@@ -212,9 +199,7 @@ class _WelcomeHeroImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: resolvedImageUrl,
       fit: BoxFit.cover,
-      placeholder: (context, url) => _fallbackImage(),
       errorWidget: (context, url, error) {
-        debugPrint('WelcomeHeroImage load failed: $url -> $error');
         return _fallbackImage();
       },
     );
