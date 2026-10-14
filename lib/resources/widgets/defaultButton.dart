@@ -31,6 +31,10 @@ class DefaultButton extends StatelessWidget {
   /// Overrides border radius. Default: pill shape.
   final BorderRadiusGeometry borderRadius;
 
+  /// Scales the label down to fit on one line instead of wrapping. Opt-in so
+  /// existing call-sites keep their current behavior.
+  final bool fitLabel;
+
   const DefaultButton({
     super.key,
     required this.label,
@@ -46,6 +50,7 @@ class DefaultButton extends StatelessWidget {
     this.contentPadding,
     this.textStyle,
     this.borderRadius = const BorderRadius.all(Radius.circular(100)),
+    this.fitLabel = false,
   });
 
   @override
@@ -92,6 +97,16 @@ class DefaultButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : fitLabel
+            ? FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  style: resolvedTextStyle,
+                  maxLines: 1,
+                  softWrap: false,
                 ),
               )
             : Text(label, style: resolvedTextStyle),

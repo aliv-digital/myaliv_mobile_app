@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:myaliv_mobile_app/app/common/services/phone_number_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
@@ -138,13 +139,8 @@ class PaymentReceiptBuilder {
       account?.primaryPhoneNumber,
       account?.username,
     ]);
-    final digits = raw.replaceAll(RegExp(r'\D'), '');
-    if (digits.length == 10) {
-      return '${digits.substring(0, 3)}-'
-          '${digits.substring(3, 6)}-'
-          '${digits.substring(6)}';
-    }
-    return raw;
+    if (raw.isEmpty) return raw;
+    return PhoneNumberFormatterService.format(raw);
   }
 
   static String _firstNonEmpty(List<String?> values) {
