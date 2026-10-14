@@ -159,6 +159,7 @@ class _LoginViewState extends State<_LoginView> {
               context.push(
                 AppRoutes.loginOtp,
                 extra: LoginOtpRouteArgs(
+                  clearCodeOnResend: true,
                   mfaToken: mfaToken,
                   phoneNumber: state.phone.trim(),
                   apiPhoneNumber: apiPhoneNumber,

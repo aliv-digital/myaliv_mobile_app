@@ -823,6 +823,7 @@ class AppRouter {
                 );
 
           return LoginOtpScreen(
+            clearCodeOnResend: args.clearCodeOnResend,
             initialMfaToken: args.mfaToken,
             initialPhoneNumber: args.phoneNumber,
             initialApiPhoneNumber: args.apiPhoneNumber,
