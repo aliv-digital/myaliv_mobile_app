@@ -130,18 +130,21 @@ void main() {
 
   Future<void> enter(WidgetTester tester, String value) async {
     await tester.enterText(find.byType(TextField), value);
-    expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
-        value);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      value,
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     await tester.pumpAndSettle();
     expect(bloc.state.customAmount, value);
     expect(
-        tester
-            .widget<MpPayBottomBar>(find.byType(MpPayBottomBar))
-            .state
-            .customAmount,
-        value);
+      tester
+          .widget<MpPayBottomBar>(find.byType(MpPayBottomBar))
+          .state
+          .customAmount,
+      value,
+    );
   }
 
   Future<void> pay(WidgetTester tester) async {

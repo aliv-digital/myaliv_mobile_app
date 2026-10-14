@@ -191,119 +191,139 @@ void main() {
 
   for (final forceNow in [true, false]) {
     testWidgets(
-        'confirmed Guest purchase shows one success (forceNow: $forceNow)', (
-      tester,
-    ) async {
-      final router = await pumpScreen(tester, forceNow: forceNow);
-      final payment = await startPayment(tester);
-      payment
-          .onSuccess(const PaymentSuccess(orderId: '804441', queryParams: {}));
-      await tester.pumpAndSettle();
-      expect(router.routerDelegate.currentConfiguration.last.route.path,
-          AppRoutes.guestPurchasePlanReceipt);
-      expect(find.text(_purchased), findsOneWidget);
-      expect(
+      'confirmed Guest purchase shows one success (forceNow: $forceNow)',
+      (tester) async {
+        final router = await pumpScreen(tester, forceNow: forceNow);
+        final payment = await startPayment(tester);
+        payment.onSuccess(
+          const PaymentSuccess(orderId: '804441', queryParams: {}),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          router.routerDelegate.currentConfiguration.last.route.path,
+          AppRoutes.guestPurchasePlanReceipt,
+        );
+        expect(find.text(_purchased), findsOneWidget);
+        expect(
           find.text(
-              'It will take a few moments for the plan to appears on the account.'),
-          findsNothing);
-      expect(find.byType(PaymentIFrameScreen), findsNothing);
-      final receipt = tester.widget<GuestPurchasePlanReceiptScreen>(
-          find.byType(GuestPurchasePlanReceiptScreen));
-      expect(receipt.orderId, '804441');
-      expect(receipt.phoneNumber, '242-801-1616');
-      expect(receipt.amount, 75);
-      expect(receipt.planName, 'liberty70');
-      expect(receipt.addOnNames, ['liberty data 1']);
-      verify(() => network.request<dynamic>(Api.guestPurchasePlanUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-          options: any(named: 'options'))).called(1);
-      await tester.ensureVisible(find.text('back to login page'));
-      await tester.tap(find.text('back to login page'));
-      await tester.pumpAndSettle();
-      expect(router.routeInformationProvider.value.uri.path, AppRoutes.logIn);
-      expect(find.text('login'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+            'It will take a few moments for the plan to appears on the account.',
+          ),
+          findsNothing,
+        );
+        expect(find.byType(PaymentIFrameScreen), findsNothing);
+        final receipt = tester.widget<GuestPurchasePlanReceiptScreen>(
+          find.byType(GuestPurchasePlanReceiptScreen),
+        );
+        expect(receipt.orderId, '804441');
+        expect(receipt.phoneNumber, '242-801-1616');
+        expect(receipt.amount, 75);
+        expect(receipt.planName, 'liberty70');
+        expect(receipt.addOnNames, ['liberty data 1']);
+        verify(
+          () => network.request<dynamic>(
+            Api.guestPurchasePlanUrl,
+            method: HttpMethod.post,
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          ),
+        ).called(1);
+        await tester.ensureVisible(find.text('back to login page'));
+        await tester.tap(find.text('back to login page'));
+        await tester.pumpAndSettle();
+        expect(router.routeInformationProvider.value.uri.path, AppRoutes.logIn);
+        expect(find.text('login'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
   }
 
   for (final orderId in [null, '', '0', '-1', 'invalid']) {
     testWidgets(
-        'unconfirmed Guest order "$orderId" never reports purchase success', (
-      tester,
-    ) async {
-      final router = await pumpScreen(tester);
-      final payment = await startPayment(tester);
-      payment
-          .onSuccess(PaymentSuccess(orderId: orderId, queryParams: const {}));
-      await tester.pumpAndSettle();
-      expect(find.text('Payment could not be confirmed. Please try again.'),
-          findsOneWidget);
-      expect(find.text(_purchased), findsNothing);
-      expect(find.byType(GuestPurchasePlanReceiptScreen), findsNothing);
-      expect(router.routeInformationProvider.value.uri.path, '/');
-      await tester.pump(const Duration(seconds: 4));
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+      'unconfirmed Guest order "$orderId" never reports purchase success',
+      (tester) async {
+        final router = await pumpScreen(tester);
+        final payment = await startPayment(tester);
+        payment.onSuccess(
+          PaymentSuccess(orderId: orderId, queryParams: const {}),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Payment could not be confirmed. Please try again.'),
+          findsOneWidget,
+        );
+        expect(find.text(_purchased), findsNothing);
+        expect(find.byType(GuestPurchasePlanReceiptScreen), findsNothing);
+        expect(router.routeInformationProvider.value.uri.path, '/');
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
   }
 
   for (final failure in [
     'Payment declined',
     'Purchase failed',
-    'Network unavailable'
+    'Network unavailable',
   ]) {
     testWidgets(
-        'Guest failure "$failure" preserves its message without success', (
-      tester,
-    ) async {
-      final router = await pumpScreen(tester);
-      final payment = await startPayment(tester);
-      payment.onFailure(failure);
-      await tester.pumpAndSettle();
-      expect(find.text(failure), findsOneWidget);
-      expect(find.text(_purchased), findsNothing);
-      expect(find.text('The number you entered is invalid'), findsNothing);
-      expect(find.byType(GuestPurchasePlanReceiptScreen), findsNothing);
-      expect(router.routeInformationProvider.value.uri.path, '/');
-      await tester.pump(const Duration(seconds: 4));
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+      'Guest failure "$failure" preserves its message without success',
+      (tester) async {
+        final router = await pumpScreen(tester);
+        final payment = await startPayment(tester);
+        payment.onFailure(failure);
+        await tester.pumpAndSettle();
+        expect(find.text(failure), findsOneWidget);
+        expect(find.text(_purchased), findsNothing);
+        expect(find.text('The number you entered is invalid'), findsNothing);
+        expect(find.byType(GuestPurchasePlanReceiptScreen), findsNothing);
+        expect(router.routeInformationProvider.value.uri.path, '/');
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
   }
 
   for (final orderId in [null, '0']) {
     testWidgets(
-        'receipt without confirmed order "$orderId" keeps its prior copy', (
-      tester,
-    ) async {
-      await tester.pumpWidget(MaterialApp(
-          home: GuestPurchasePlanReceiptScreen(
-        phoneNumber: '242-801-1616',
-        amount: 75,
-        dateText: 'Oct 13, 2026',
-        timeText: '10:00 am',
-        orderId: orderId,
-      )));
-      await tester.pumpAndSettle();
-      expect(find.text(_purchased), findsNothing);
-      expect(
+      'receipt without confirmed order "$orderId" keeps its prior copy',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: GuestPurchasePlanReceiptScreen(
+              phoneNumber: '242-801-1616',
+              amount: 75,
+              dateText: 'Oct 13, 2026',
+              timeText: '10:00 am',
+              orderId: orderId,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(_purchased), findsNothing);
+        expect(
           find.text(
-              'It will take a few moments for the plan to appears on the account.'),
-          findsOneWidget);
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+            'It will take a few moments for the plan to appears on the account.',
+          ),
+          findsOneWidget,
+        );
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+    );
   }
 
   testWidgets(
-      'catalogue loading and plan selection never report purchase success', (
-    tester,
-  ) async {
-    when(() => network.request<dynamic>(
+    'catalogue loading and plan selection never report purchase success',
+    (tester) async {
+      when(
+        () => network.request<dynamic>(
           Api.guestAvailablePlansUrl,
           method: HttpMethod.post,
           data: any(named: 'data'),
           options: any(named: 'options'),
-        )).thenAnswer((_) async => Response<dynamic>(
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
           requestOptions: RequestOptions(path: Api.guestAvailablePlansUrl),
           statusCode: 200,
           data: [
@@ -318,30 +338,37 @@ void main() {
               'PaymentOption': 'PrePay',
               'PlanGroup': '',
               'PlanBuckets': <Map<String, dynamic>>[],
-            }
+            },
           ],
-        ));
-    tester.view.physicalSize = const Size(390, 1000);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    await tester.pumpWidget(const MaterialApp(
-        home: GuestPurchasePlanScreen(phoneNumber: '242-801-1616')));
-    await tester.pumpAndSettle();
-    expect(find.text(_purchased), findsNothing);
-    await tester.ensureVisible(find.text('purchase now'));
-    await tester.tap(find.text('purchase now'));
-    await tester.pumpAndSettle();
-    expect(find.text('activate now'), findsOneWidget);
-    expect(find.text(_purchased), findsNothing);
-    verifyNever(() => network.request<dynamic>(
+        ),
+      );
+      tester.view.physicalSize = const Size(390, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: GuestPurchasePlanScreen(phoneNumber: '242-801-1616'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(_purchased), findsNothing);
+      await tester.ensureVisible(find.text('purchase now'));
+      await tester.tap(find.text('purchase now'));
+      await tester.pumpAndSettle();
+      expect(find.text('activate now'), findsOneWidget);
+      expect(find.text(_purchased), findsNothing);
+      verifyNever(
+        () => network.request<dynamic>(
           Api.guestPurchasePlanUrl,
           method: HttpMethod.post,
           data: any(named: 'data'),
           options: any(named: 'options'),
-        ));
-    await tester.pumpWidget(const SizedBox.shrink());
-  });
+        ),
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   for (final width in [320.0, 390.0, 430.0]) {
     testWidgets('Guest inline terms validation and clearing at $width', (

@@ -181,19 +181,19 @@ class ReferFriendPrepaidBloc
     try {
       final accountInfo = _readReferralAccountInfo();
 
-      final ownEmail = instance<AccountInfoCubit>()
-              .state
-              .accountInfo
-              ?.email
+      final ownEmail =
+          instance<AccountInfoCubit>().state.accountInfo?.email
               .trim()
               .toLowerCase() ??
           '';
       if (ownEmail.isNotEmpty &&
           state.friendEmail.trim().toLowerCase() == ownEmail) {
-        emit(state.copyWith(
-          shareStatus: ReferFriendPrepaidSubmitStatus.idle,
-          errorMessage: 'You cannot reffer your own email address.',
-        ));
+        emit(
+          state.copyWith(
+            shareStatus: ReferFriendPrepaidSubmitStatus.idle,
+            errorMessage: 'You cannot reffer your own email address.',
+          ),
+        );
         return;
       }
 
@@ -204,10 +204,12 @@ class ReferFriendPrepaidBloc
       if (ownPhone.isValid &&
           ownPhone.phoneNumberForApi ==
               phoneValidationResult.phoneNumberForApi) {
-        emit(state.copyWith(
-          shareStatus: ReferFriendPrepaidSubmitStatus.idle,
-          errorMessage: 'You cannot refer your own phone number.',
-        ));
+        emit(
+          state.copyWith(
+            shareStatus: ReferFriendPrepaidSubmitStatus.idle,
+            errorMessage: 'You cannot refer your own phone number.',
+          ),
+        );
         return;
       }
 

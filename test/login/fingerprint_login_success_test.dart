@@ -43,8 +43,9 @@ class _Role extends Mock implements RoleApiClient {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const storageChannel =
-      MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
+  const storageChannel = MethodChannel(
+    'plugins.it_nomads.com/flutter_secure_storage',
+  );
   late _Biometrics repository;
   late FingerFaceSecurityCubit biometrics;
   late _Network network;
@@ -61,12 +62,14 @@ void main() {
 
   setUpAll(() async {
     registerFallbackValue(HttpMethod.post);
-    registerFallbackValue(TokenSession(
-      accessToken: 'test-access',
-      refreshToken: 'test-refresh',
-      accessExpiresAt: DateTime(2030),
-      refreshExpiresAt: DateTime(2031),
-    ));
+    registerFallbackValue(
+      TokenSession(
+        accessToken: 'test-access',
+        refreshToken: 'test-refresh',
+        accessExpiresAt: DateTime(2030),
+        refreshExpiresAt: DateTime(2031),
+      ),
+    );
     await (FontLoader('CircularPro')
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
@@ -82,19 +85,23 @@ void main() {
     };
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(storageChannel, (call) async {
-      if (call.method == 'read') {
-        final key = call.arguments['key'] as String;
-        credentialReads.add(key);
-        return credentials[key];
-      }
-      return null;
-    });
+          if (call.method == 'read') {
+            final key = call.arguments['key'] as String;
+            credentialReads.add(key);
+            return credentials[key];
+          }
+          return null;
+        });
     repository = _Biometrics();
-    when(() => repository.getBiometricStatus()).thenAnswer((_) async =>
-        const FingerFaceSecurityModel(
-            fingerprintEnabled: true, faceIdEnabled: true));
-    when(() => repository.authenticate(reason: any(named: 'reason')))
-        .thenAnswer((_) async => BiometricAuthResult.success);
+    when(() => repository.getBiometricStatus()).thenAnswer(
+      (_) async => const FingerFaceSecurityModel(
+        fingerprintEnabled: true,
+        faceIdEnabled: true,
+      ),
+    );
+    when(
+      () => repository.authenticate(reason: any(named: 'reason')),
+    ).thenAnswer((_) async => BiometricAuthResult.success);
     biometrics = FingerFaceSecurityCubit(repository);
     network = _Network();
     auth = _Auth();
@@ -103,20 +110,26 @@ void main() {
     role = _Role();
     config = AppUiConfigCubit();
     otpArgs = null;
-    when(() => account.state).thenReturn(const AccountInfoState(
-      status: AccountInfoStatus.success,
-      accountInfo: AccountInfoModel(idAcc: 123, paymentOption: 'PrePay'),
-    ));
-    when(() => account.fetchAccountInfo(forceRefresh: true))
-        .thenAnswer((_) async {});
+    when(() => account.state).thenReturn(
+      const AccountInfoState(
+        status: AccountInfoStatus.success,
+        accountInfo: AccountInfoModel(idAcc: 123, paymentOption: 'PrePay'),
+      ),
+    );
+    when(
+      () => account.fetchAccountInfo(forceRefresh: true),
+    ).thenAnswer((_) async {});
     final device = _Device();
     when(() => device.deviceId).thenReturn(456);
-    when(() => devices.state).thenReturn(DeviceLimitsState(
-      status: DeviceLimitsStatus.loaded,
-      allDeviceLimits: [device],
-    ));
-    when(() => devices.loadDeviceLimits(forceRefresh: true))
-        .thenAnswer((_) async {});
+    when(() => devices.state).thenReturn(
+      DeviceLimitsState(
+        status: DeviceLimitsStatus.loaded,
+        allDeviceLimits: [device],
+      ),
+    );
+    when(
+      () => devices.loadDeviceLimits(forceRefresh: true),
+    ).thenAnswer((_) async {});
     when(() => role.fetchRoleId(456)).thenAnswer((_) async => 1);
     instance.registerSingleton<NetworkService>(network);
     instance.registerSingleton<AuthManager>(auth);
@@ -142,12 +155,14 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     login = Completer<Response<dynamic>>();
     sessionSaved = Completer<void>();
-    when(() => network.request<dynamic>(
-          Api.loginUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        )).thenAnswer((_) => login.future);
+    when(
+      () => network.request<dynamic>(
+        Api.loginUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer((_) => login.future);
     when(() => auth.saveSession(any())).thenAnswer((_) => sessionSaved.future);
     await biometrics.loadBiometricStatus();
     final router = GoRouter(
@@ -155,27 +170,32 @@ void main() {
       initialLocation: AppRoutes.logIn,
       routes: [
         GoRoute(
-            path: AppRoutes.logIn,
-            builder: (_, _) => const Scaffold(body: LoginSocialButtons())),
+          path: AppRoutes.logIn,
+          builder: (_, _) => const Scaffold(body: LoginSocialButtons()),
+        ),
         GoRoute(
-            path: AppRoutes.home,
-            builder: (_, _) => const Scaffold(body: Text('existing home'))),
+          path: AppRoutes.home,
+          builder: (_, _) => const Scaffold(body: Text('existing home')),
+        ),
         GoRoute(
-            path: AppRoutes.loginOtp,
-            builder: (_, state) {
-              otpArgs = state.extra as LoginOtpRouteArgs;
-              return const Scaffold(body: Text('existing OTP'));
-            }),
+          path: AppRoutes.loginOtp,
+          builder: (_, state) {
+            otpArgs = state.extra as LoginOtpRouteArgs;
+            return const Scaffold(body: Text('existing OTP'));
+          },
+        ),
       ],
     );
     addTearDown(router.dispose);
-    await tester.pumpWidget(MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: biometrics),
-        BlocProvider.value(value: config),
-      ],
-      child: MaterialApp.router(routerConfig: router),
-    ));
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: biometrics),
+          BlocProvider.value(value: config),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -186,17 +206,19 @@ void main() {
   }
 
   void completeLogin({bool mfa = false}) {
-    login.complete(Response<dynamic>(
-      requestOptions: RequestOptions(path: Api.loginUrl),
-      data: mfa
-          ? {'mfa_token': 'test-mfa'}
-          : {
-              'access_token': 'test-access',
-              'refresh_token': 'test-refresh',
-              'expires_in': 3600,
-              'refresh_expires_in': 86400,
-            },
-    ));
+    login.complete(
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: Api.loginUrl),
+        data: mfa
+            ? {'mfa_token': 'test-mfa'}
+            : {
+                'access_token': 'test-access',
+                'refresh_token': 'test-refresh',
+                'expires_in': 3600,
+                'refresh_expires_in': 86400,
+              },
+      ),
+    );
   }
 
   Future<void> settle(WidgetTester tester) async {
@@ -204,8 +226,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('fingerprint welcomes only after login and session completion',
-      (tester) async {
+  testWidgets('fingerprint welcomes only after login and session completion', (
+    tester,
+  ) async {
     await open(tester);
     await tap(tester);
     expect(find.text('Welcome!'), findsNothing);
@@ -239,11 +262,13 @@ void main() {
       BiometricAuthResult.biometricsNotEnrolled,
       BiometricAuthResult.deviceNotSupported,
     ]) {
-      testWidgets('${result.name} face=$face does not welcome or call login',
-          (tester) async {
+      testWidgets('${result.name} face=$face does not welcome or call login', (
+        tester,
+      ) async {
         await open(tester);
-        when(() => repository.authenticate(reason: any(named: 'reason')))
-            .thenAnswer((_) async => result);
+        when(
+          () => repository.authenticate(reason: any(named: 'reason')),
+        ).thenAnswer((_) async => result);
         await tap(tester, face: face);
         expect(find.text('Welcome!'), findsNothing);
         expect(find.text('existing home'), findsNothing);
@@ -267,26 +292,36 @@ void main() {
               : findsNothing,
         );
         expect(
-            find.text(
-                'Too many failed attempts. Please log in with your password.'),
-            findsNothing);
+          find.text(
+            'Too many failed attempts. Please log in with your password.',
+          ),
+          findsNothing,
+        );
         if (result == BiometricAuthResult.userRequestedFallback) {
-          expect(find.text('Authentication failed. Please try again.'),
-              findsNothing);
+          expect(
+            find.text('Authentication failed. Please try again.'),
+            findsNothing,
+          );
         }
         expect(
-            tester
-                .widget<OutlinedButton>(find.widgetWithText(
-                    OutlinedButton, face ? 'face id' : 'fingerprint'))
-                .onPressed,
-            isNotNull);
+          tester
+              .widget<OutlinedButton>(
+                find.widgetWithText(
+                  OutlinedButton,
+                  face ? 'face id' : 'fingerprint',
+                ),
+              )
+              .onPressed,
+          isNotNull,
+        );
         await settle(tester);
       });
     }
   }
 
-  testWidgets('Face ID welcomes only after login and session completion',
-      (tester) async {
+  testWidgets('Face ID welcomes only after login and session completion', (
+    tester,
+  ) async {
     await open(tester);
     await tap(tester, face: true);
     expect(find.text('Welcome!'), findsNothing);
@@ -311,51 +346,61 @@ void main() {
   });
 
   for (final face in [false, true]) {
-    testWidgets('MFA face=$face keeps OTP navigation without an early welcome',
-        (tester) async {
-      await open(tester);
-      await tap(tester, face: face);
-      completeLogin(mfa: true);
-      await tester.pumpAndSettle();
-      expect(find.text('Welcome!'), findsNothing);
-      expect(find.text('existing OTP'), findsOneWidget);
-      expect(otpArgs!.mfaToken, 'test-mfa');
-      expect(otpArgs!.apiPhoneNumber, '2428011616');
-      expect(biometrics.state.isSessionAuthenticated, isFalse);
-      verifyZeroInteractions(auth);
-    });
+    testWidgets(
+      'MFA face=$face keeps OTP navigation without an early welcome',
+      (tester) async {
+        await open(tester);
+        await tap(tester, face: face);
+        completeLogin(mfa: true);
+        await tester.pumpAndSettle();
+        expect(find.text('Welcome!'), findsNothing);
+        expect(find.text('existing OTP'), findsOneWidget);
+        expect(otpArgs!.mfaToken, 'test-mfa');
+        expect(otpArgs!.apiPhoneNumber, '2428011616');
+        expect(biometrics.state.isSessionAuthenticated, isFalse);
+        verifyZeroInteractions(auth);
+      },
+    );
 
     for (final failCompletion in [false, true]) {
       testWidgets(
-          'login/completion failure $failCompletion face=$face never welcomes',
-          (tester) async {
-        await open(tester);
-        await tap(tester, face: face);
-        if (failCompletion) {
-          when(() => account.fetchAccountInfo(forceRefresh: true))
-              .thenThrow(Exception('account load failed'));
-          completeLogin();
-          sessionSaved.complete();
-        } else {
-          login.completeError(Exception('login failed'));
-        }
-        await tester.pumpAndSettle();
-        expect(find.text('Welcome!'), findsNothing);
-        expect(find.text('existing home'), findsNothing);
-        expect(find.text('Sign-in failed. Please try again.'), findsOneWidget);
-        expect(biometrics.state.isSessionAuthenticated, isFalse);
-        await settle(tester);
-      });
+        'login/completion failure $failCompletion face=$face never welcomes',
+        (tester) async {
+          await open(tester);
+          await tap(tester, face: face);
+          if (failCompletion) {
+            when(
+              () => account.fetchAccountInfo(forceRefresh: true),
+            ).thenThrow(Exception('account load failed'));
+            completeLogin();
+            sessionSaved.complete();
+          } else {
+            login.completeError(Exception('login failed'));
+          }
+          await tester.pumpAndSettle();
+          expect(find.text('Welcome!'), findsNothing);
+          expect(find.text('existing home'), findsNothing);
+          expect(
+            find.text('Sign-in failed. Please try again.'),
+            findsOneWidget,
+          );
+          expect(biometrics.state.isSessionAuthenticated, isFalse);
+          await settle(tester);
+        },
+      );
     }
   }
 
-  testWidgets('missing cached credentials retains password sign-in fallback',
-      (tester) async {
+  testWidgets('missing cached credentials retains password sign-in fallback', (
+    tester,
+  ) async {
     credentials.clear();
     await open(tester);
     await tap(tester);
     expect(
-        find.text('Please sign in with your password first.'), findsOneWidget);
+      find.text('Please sign in with your password first.'),
+      findsOneWidget,
+    );
     expect(find.text('Welcome!'), findsNothing);
     verifyZeroInteractions(network);
     verifyZeroInteractions(auth);

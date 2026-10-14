@@ -86,17 +86,21 @@ void main() {
       expect(find.text('save my password'), findsOneWidget);
       expect(cubit.state.isFailure, isTrue);
       expect(find.text('Face not detected. Try again.'), findsOneWidget);
-      expect(find.text('Fingerprint not recognized. Please try again.'),
-          findsNothing);
+      expect(
+        find.text('Fingerprint not recognized. Please try again.'),
+        findsNothing,
+      );
       final password = tester.widget<TextField>(find.byType(TextField).last);
       expect(password.enabled, isNot(false));
       expect(password.readOnly, isFalse);
       expect(
-          tester
-              .widget<ElevatedButton>(
-                  find.widgetWithText(ElevatedButton, 'sign in'))
-              .onPressed,
-          isNotNull);
+        tester
+            .widget<ElevatedButton>(
+              find.widgetWithText(ElevatedButton, 'sign in'),
+            )
+            .onPressed,
+        isNotNull,
+      );
       expect(
         cubit.state.errorMessage,
         'Authentication failed. Please try again.',
@@ -110,13 +114,19 @@ void main() {
       for (final action in ['fingerprint', 'face id']) {
         await tester.tap(find.text(action));
         await tester.pumpAndSettle();
-        expect(cubit.state.lastAuthResult,
-            BiometricAuthResult.userRequestedFallback);
-        expect(find.text('Fingerprint not recognized. Please try again.'),
-            findsNothing);
+        expect(
+          cubit.state.lastAuthResult,
+          BiometricAuthResult.userRequestedFallback,
+        );
+        expect(
+          find.text('Fingerprint not recognized. Please try again.'),
+          findsNothing,
+        );
         expect(find.text('Face not detected. Try again.'), findsNothing);
-        expect(find.text('Authentication failed. Please try again.'),
-            findsNothing);
+        expect(
+          find.text('Authentication failed. Please try again.'),
+          findsNothing,
+        );
         expect(find.byType(SnackBar), findsNothing);
         expect(find.byType(Dialog), findsNothing);
         expect(message, findsNothing);
@@ -127,11 +137,9 @@ void main() {
       await tester.enterText(find.byType(TextField).last, 'test-password');
       await tester.pumpAndSettle();
       expect(
-          tester
-              .widget<TextField>(find.byType(TextField).last)
-              .controller!
-              .text,
-          'test-password');
+        tester.widget<TextField>(find.byType(TextField).last).controller!.text,
+        'test-password',
+      );
       verifyZeroInteractions(network);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());

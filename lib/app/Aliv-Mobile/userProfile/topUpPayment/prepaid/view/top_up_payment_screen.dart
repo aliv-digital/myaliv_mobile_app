@@ -113,7 +113,7 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
           message: ownNumberTopUp == null
               ? null
               : 'Top-up complete! Your balance is now '
-                  '${BalanceCurrencyFormatterService.format(ownNumberTopUp.balanceBefore + ownNumberTopUp.amount)}.',
+                    '${BalanceCurrencyFormatterService.format(ownNumberTopUp.balanceBefore + ownNumberTopUp.amount)}.',
           recipientPhone: _receiptPhone(state.summary.recipientPhone),
           paymentMethod: state.paymentMode == TopUpPaymentMode.payWithCard
               ? 'visa'

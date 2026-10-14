@@ -54,25 +54,33 @@ void main() {
     AppSession.resetAppRoute();
     instance.registerSingleton<NetworkService>(network);
     instance.registerSingleton<AnalyticsService>(analytics);
-    when(() => analytics.logBillPayment(
-          amount: any(named: 'amount'),
-          paymentMethod: any(named: 'paymentMethod'),
-        )).thenAnswer((_) async {});
-    when(() => network.request<dynamic>(
-          Api.guestFibrBalanceUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        )).thenAnswer((_) async => Response<dynamic>(
-          requestOptions: RequestOptions(path: Api.guestFibrBalanceUrl),
-          data: {'id_acc': 77, 'Balance': 250.0, 'AccountStatus': 'active'},
-        ));
-    when(() => network.request<dynamic>(
-          Api.guestFibrPayUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        )).thenAnswer((invocation) {
+    when(
+      () => analytics.logBillPayment(
+        amount: any(named: 'amount'),
+        paymentMethod: any(named: 'paymentMethod'),
+      ),
+    ).thenAnswer((_) async {});
+    when(
+      () => network.request<dynamic>(
+        Api.guestFibrBalanceUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer(
+      (_) async => Response<dynamic>(
+        requestOptions: RequestOptions(path: Api.guestFibrBalanceUrl),
+        data: {'id_acc': 77, 'Balance': 250.0, 'AccountStatus': 'active'},
+      ),
+    );
+    when(
+      () => network.request<dynamic>(
+        Api.guestFibrPayUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer((invocation) {
       submitted = invocation.namedArguments[#data] as Map<String, dynamic>;
       return payment.future;
     });
@@ -85,8 +93,8 @@ void main() {
   });
 
   Finder field(String hint) => find.byWidgetPredicate(
-        (widget) => widget is TextField && widget.decoration?.hintText == hint,
-      );
+    (widget) => widget is TextField && widget.decoration?.hintText == hint,
+  );
   Finder success() => find.textContaining('Your payment of');
 
   Future<void> open(WidgetTester tester, {double width = 390}) async {
@@ -100,31 +108,36 @@ void main() {
       initialLocation: AppRoutes.guestPayBill,
       routes: [
         GoRoute(
-            path: AppRoutes.guestPayBill,
-            builder: (_, _) => const GuestPayBillScreen()),
+          path: AppRoutes.guestPayBill,
+          builder: (_, _) => const GuestPayBillScreen(),
+        ),
         GoRoute(
-            path: AppRoutes.guestPayBillConfirm,
-            builder: (_, state) {
-              confirmation = state.extra! as GuestPayBillConfirmArgs;
-              return GuestPayBillConfirmScreen(args: confirmation!);
-            }),
+          path: AppRoutes.guestPayBillConfirm,
+          builder: (_, state) {
+            confirmation = state.extra! as GuestPayBillConfirmArgs;
+            return GuestPayBillConfirmScreen(args: confirmation!);
+          },
+        ),
         GoRoute(
-            path: AppRoutes.guestPayBillReceipt,
-            builder: (_, state) {
-              receipts++;
-              receipt = state.extra! as GuestPayBillReceiptArgs;
-              return GuestPayBillReceiptScreen(args: receipt!);
-            }),
+          path: AppRoutes.guestPayBillReceipt,
+          builder: (_, state) {
+            receipts++;
+            receipt = state.extra! as GuestPayBillReceiptArgs;
+            return GuestPayBillReceiptScreen(args: receipt!);
+          },
+        ),
         GoRoute(
-            path: AppRoutes.welcome,
-            builder: (_, _) => const Scaffold(body: Text('welcome'))),
+          path: AppRoutes.welcome,
+          builder: (_, _) => const Scaffold(body: Text('welcome')),
+        ),
         GoRoute(
-            path: AppRoutes.guestSplash,
-            builder: (_, _) =>
-                const Scaffold(body: Text('existing guest home'))),
+          path: AppRoutes.guestSplash,
+          builder: (_, _) => const Scaffold(body: Text('existing guest home')),
+        ),
         GoRoute(
-            path: AppRoutes.home,
-            builder: (_, _) => const Scaffold(body: Text('existing home'))),
+          path: AppRoutes.home,
+          builder: (_, _) => const Scaffold(body: Text('existing home')),
+        ),
       ],
     );
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
@@ -154,8 +167,9 @@ void main() {
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
     final submit = find.descendant(
-        of: find.byType(GuestPayBillPrimarySubmitButton),
-        matching: find.byType(ElevatedButton));
+      of: find.byType(GuestPayBillPrimarySubmitButton),
+      matching: find.byType(ElevatedButton),
+    );
     await tester.ensureVisible(submit);
     await tester.tap(submit);
     await tester.pump();
@@ -192,10 +206,12 @@ void main() {
   }
 
   Future<void> finish(WidgetTester tester, Object? data) async {
-    payment.complete(Response<dynamic>(
-      requestOptions: RequestOptions(path: Api.guestFibrPayUrl),
-      data: data,
-    ));
+    payment.complete(
+      Response<dynamic>(
+        requestOptions: RequestOptions(path: Api.guestFibrPayUrl),
+        data: data,
+      ),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
@@ -206,32 +222,39 @@ void main() {
     ('123456789', '12.50', r'$12.50'),
     ('fibr-user', '100.00', r'$100.00'),
   ]) {
-    testWidgets('ALIVFibr $account pays custom $amount instead of amount due',
-        (tester) async {
+    testWidgets('ALIVFibr $account pays custom $amount instead of amount due', (
+      tester,
+    ) async {
       await open(tester, width: amount == '12.50' ? 320 : 390);
       await lookup(tester, ' $account ');
-      verify(() => network.request<dynamic>(
-            Api.guestFibrBalanceUrl,
-            method: HttpMethod.post,
-            data: {
-              'ChannelType': 'SelfCare',
-              'FibrName': 'JANE DOE',
-              'FibrAccountID': account,
-            },
-            options: any(named: 'options'),
-          )).called(1);
+      verify(
+        () => network.request<dynamic>(
+          Api.guestFibrBalanceUrl,
+          method: HttpMethod.post,
+          data: {
+            'ChannelType': 'SelfCare',
+            'FibrName': 'JANE DOE',
+            'FibrAccountID': account,
+          },
+          options: any(named: 'options'),
+        ),
+      ).called(1);
       await confirm(tester, amount);
       expect(confirmation!.identifierValue, account);
       expect(confirmation!.amount, double.parse(amount));
       await pay(tester);
       expect(submitted!['FibrAccountID'], 77);
       expect(
-          (submitted!['CardPayment'] as Map)['Amount'], double.parse(amount));
+        (submitted!['CardPayment'] as Map)['Amount'],
+        double.parse(amount),
+      );
       await finish(tester, {'OrderId': 123});
       expect(
-          find.text(
-              'Your payment of $formatted has been successfully processed for account $account'),
-          findsOneWidget);
+        find.text(
+          'Your payment of $formatted has been successfully processed for account $account',
+        ),
+        findsOneWidget,
+      );
       expect(find.text(_pending), findsNothing);
       expect(receipt!.identifierValue, account);
       expect(receipt!.amount, (submitted!['CardPayment'] as Map)['Amount']);
@@ -250,10 +273,11 @@ void main() {
     {},
     {'OrderId': 0},
     {'OrderId': -1},
-    {'OrderId': '123'}
+    {'OrderId': '123'},
   ]) {
-    testWidgets('ALIVFibr invalid payment response $response keeps failure',
-        (tester) async {
+    testWidgets('ALIVFibr invalid payment response $response keeps failure', (
+      tester,
+    ) async {
       await open(tester);
       await lookup(tester, '123456789');
       await confirm(tester, '12.50');
@@ -267,8 +291,9 @@ void main() {
     });
   }
 
-  testWidgets('ALIVFibr payment API error keeps the existing failure',
-      (tester) async {
+  testWidgets('ALIVFibr payment API error keeps the existing failure', (
+    tester,
+  ) async {
     await open(tester);
     await lookup(tester, '123456789');
     await confirm(tester, '12.50');
@@ -284,29 +309,34 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('ALIVFibr checkout cancellation does not submit or show success',
-      (tester) async {
-    await open(tester);
-    await lookup(tester, '123456789');
-    await confirm(tester, '12.50');
-    Navigator.of(tester.element(field('name on card'))).pop();
-    await tester.pumpAndSettle();
-    expect(submitted, isNull);
-    expect(success(), findsNothing);
-    expect(receipts, 0);
-  });
+  testWidgets(
+    'ALIVFibr checkout cancellation does not submit or show success',
+    (tester) async {
+      await open(tester);
+      await lookup(tester, '123456789');
+      await confirm(tester, '12.50');
+      Navigator.of(tester.element(field('name on card'))).pop();
+      await tester.pumpAndSettle();
+      expect(submitted, isNull);
+      expect(success(), findsNothing);
+      expect(receipts, 0);
+    },
+  );
 
   for (final amount in ['', '0']) {
-    testWidgets('ALIVFibr amount "$amount" retains disabled submit',
-        (tester) async {
+    testWidgets('ALIVFibr amount "$amount" retains disabled submit', (
+      tester,
+    ) async {
       await open(tester);
       await lookup(tester, '123456789');
       await tester.enterText(field(r'$ 0.00'), amount);
       await tester.pumpAndSettle();
-      final submit = tester.widget<ElevatedButton>(find.descendant(
-        of: find.byType(GuestPayBillPrimarySubmitButton),
-        matching: find.byType(ElevatedButton),
-      ));
+      final submit = tester.widget<ElevatedButton>(
+        find.descendant(
+          of: find.byType(GuestPayBillPrimarySubmitButton),
+          matching: find.byType(ElevatedButton),
+        ),
+      );
       expect(submit.onPressed, isNull);
       expect(confirmation, isNull);
       expect(submitted, isNull);
@@ -315,27 +345,32 @@ void main() {
   }
 
   testWidgets(
-      'ALIVFibr failed lookup retains its error and blocks continuation',
-      (tester) async {
-    when(() => network.request<dynamic>(
+    'ALIVFibr failed lookup retains its error and blocks continuation',
+    (tester) async {
+      when(
+        () => network.request<dynamic>(
           Api.guestFibrBalanceUrl,
           method: HttpMethod.post,
           data: any(named: 'data'),
           options: any(named: 'options'),
-        )).thenThrow(Exception('Account not found'));
-    await open(tester);
-    await tester.enterText(field('enter ID'), 'invalid-account');
-    await tester.enterText(field('enter name'), 'Jane Doe');
-    await tester.pump();
-    await tester.showKeyboard(field('enter name'));
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
-    expect(
-        find.text('Account not found. Please check details.'), findsOneWidget);
-    expect(confirmation, isNull);
-    expect(submitted, isNull);
-    expect(success(), findsNothing);
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pumpAndSettle();
-  });
+        ),
+      ).thenThrow(Exception('Account not found'));
+      await open(tester);
+      await tester.enterText(field('enter ID'), 'invalid-account');
+      await tester.enterText(field('enter name'), 'Jane Doe');
+      await tester.pump();
+      await tester.showKeyboard(field('enter name'));
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Account not found. Please check details.'),
+        findsOneWidget,
+      );
+      expect(confirmation, isNull);
+      expect(submitted, isNull);
+      expect(success(), findsNothing);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+    },
+  );
 }

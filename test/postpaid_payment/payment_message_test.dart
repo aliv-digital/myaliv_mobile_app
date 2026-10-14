@@ -72,15 +72,19 @@ void main() {
     final balanceState = _BalanceState();
     when(() => balanceState.walletBalance).thenReturn(42);
     when(() => balance.state).thenReturn(balanceState);
-    when(() => account.state).thenReturn(const AccountInfoState(
-      status: AccountInfoStatus.success,
-      accountInfo: AccountInfoModel(primaryPhoneNumber: '2425551234'),
-    ));
-    when(() => cardService.fetch3DSHtml(
-          url: any(named: 'url'),
-          body: any(named: 'body'),
-          skipAuth: any(named: 'skipAuth'),
-        )).thenAnswer((_) => Completer<String?>().future);
+    when(() => account.state).thenReturn(
+      const AccountInfoState(
+        status: AccountInfoStatus.success,
+        accountInfo: AccountInfoModel(primaryPhoneNumber: '2425551234'),
+      ),
+    );
+    when(
+      () => cardService.fetch3DSHtml(
+        url: any(named: 'url'),
+        body: any(named: 'body'),
+        skipAuth: any(named: 'skipAuth'),
+      ),
+    ).thenAnswer((_) => Completer<String?>().future);
     instance.registerSingleton<AccountInfoCubit>(account);
     instance.registerSingleton<BalanceCubit>(balance);
     instance.registerSingleton<CardPaymentService>(cardService);
@@ -105,9 +109,11 @@ void main() {
     bloc.add(const MpAmountOptionChanged(MpAmountOption.other));
     bloc.add(const MpCustomAmountChanged('25.50'));
     bloc.add(const MpTermsToggled(true));
-    bloc.add(newCard
-        ? const MpPayWithCardSelected()
-        : const MpPaymentMethodSelected('saved-token'));
+    bloc.add(
+      newCard
+          ? const MpPayWithCardSelected()
+          : const MpPaymentMethodSelected('saved-token'),
+    );
     router = GoRouter(
       navigatorKey: rootNavigatorKey,
       initialLocation: AppRoutes.makePaymentPostpaidScreen,
@@ -118,16 +124,16 @@ void main() {
             value: bloc,
             child:
                 BlocConsumer<MakePaymentPostPaidBloc, MakePaymentPostPaidState>(
-              listenWhen: (previous, current) =>
-                  previous.navTarget != current.navTarget ||
-                  previous.errorMessage != current.errorMessage ||
-                  previous.status != current.status,
-              listener: MakePaymentPostPaidSideEffects.onState,
-              builder: (context, state) {
-                paymentContext = context;
-                return const Scaffold(body: Text('payment form'));
-              },
-            ),
+                  listenWhen: (previous, current) =>
+                      previous.navTarget != current.navTarget ||
+                      previous.errorMessage != current.errorMessage ||
+                      previous.status != current.status,
+                  listener: MakePaymentPostPaidSideEffects.onState,
+                  builder: (context, state) {
+                    paymentContext = context;
+                    return const Scaffold(body: Text('payment form'));
+                  },
+                ),
           ),
         ),
         GoRoute(
@@ -139,76 +145,91 @@ void main() {
           },
         ),
         GoRoute(
-            path: AppRoutes.home,
-            builder: (_, _) => const Scaffold(body: Text('existing home'))),
+          path: AppRoutes.home,
+          builder: (_, _) => const Scaffold(body: Text('existing home')),
+        ),
       ],
     );
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
     await tester.pumpAndSettle();
   }
 
-  testWidgets('saved-card success copy follows API success once and keeps Home',
-      (tester) async {
-    final result = Completer<bool>();
-    when(() => repository.payWithSavedCard(
-        amount: 25.50,
-        cardToken: 'saved-token')).thenAnswer((_) => result.future);
-    await open(tester);
-    expect(find.text(_success), findsNothing);
-    bloc.add(const MpPaySavedCardConfirmed());
-    await tester.pump();
-    expect(bloc.state.status, MpPaymentStatus.paying);
-    expect(find.text(_success), findsNothing);
-    expect(receiptPushes, 0);
-    result.complete(true);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.pumpAndSettle();
-    expect(bloc.state.status, MpPaymentStatus.success,
-        reason: bloc.state.errorMessage);
-    expect(receiptArgs, isNotNull);
-    expect(find.text(_success), findsOneWidget);
-    expect(find.text('Payment Success!'), findsOneWidget);
-    expect(receiptPushes, 1);
-    expect(receiptArgs!.amount, 25.50);
-    expect(receiptArgs!.recipientPhone, '2425551234');
-    expect(receiptArgs!.paymentMethod, 'credit card');
-    expect(bloc.state.navTarget, MpNavTarget.none);
-    bloc.add(const MpTermsToggled(false));
-    await tester.pumpAndSettle();
-    expect(receiptPushes, 1);
-    await tester.ensureVisible(find.text('back to home page'));
-    await tester.tap(find.text('back to home page'));
-    await tester.pumpAndSettle();
-    expect(find.text('existing home'), findsOneWidget);
-    verify(() => repository.payWithSavedCard(
-        amount: 25.50, cardToken: 'saved-token')).called(1);
-  });
+  testWidgets(
+    'saved-card success copy follows API success once and keeps Home',
+    (tester) async {
+      final result = Completer<bool>();
+      when(
+        () => repository.payWithSavedCard(
+          amount: 25.50,
+          cardToken: 'saved-token',
+        ),
+      ).thenAnswer((_) => result.future);
+      await open(tester);
+      expect(find.text(_success), findsNothing);
+      bloc.add(const MpPaySavedCardConfirmed());
+      await tester.pump();
+      expect(bloc.state.status, MpPaymentStatus.paying);
+      expect(find.text(_success), findsNothing);
+      expect(receiptPushes, 0);
+      result.complete(true);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+      expect(
+        bloc.state.status,
+        MpPaymentStatus.success,
+        reason: bloc.state.errorMessage,
+      );
+      expect(receiptArgs, isNotNull);
+      expect(find.text(_success), findsOneWidget);
+      expect(find.text('Payment Success!'), findsOneWidget);
+      expect(receiptPushes, 1);
+      expect(receiptArgs!.amount, 25.50);
+      expect(receiptArgs!.recipientPhone, '2425551234');
+      expect(receiptArgs!.paymentMethod, 'credit card');
+      expect(bloc.state.navTarget, MpNavTarget.none);
+      bloc.add(const MpTermsToggled(false));
+      await tester.pumpAndSettle();
+      expect(receiptPushes, 1);
+      await tester.ensureVisible(find.text('back to home page'));
+      await tester.tap(find.text('back to home page'));
+      await tester.pumpAndSettle();
+      expect(find.text('existing home'), findsOneWidget);
+      verify(
+        () => repository.payWithSavedCard(
+          amount: 25.50,
+          cardToken: 'saved-token',
+        ),
+      ).called(1);
+    },
+  );
 
   testWidgets(
-      '3DS opens without success; existing success callback shows receipt',
-      (tester) async {
-    await open(tester, newCard: true);
-    await MakePaymentPostPaidPayFlow.onPayNow(paymentContext, bloc.state);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text(_success), findsNothing);
-    expect(receiptPushes, 0);
-    tester
-        .widget<PaymentIFrameScreen>(find.byType(PaymentIFrameScreen))
-        .onSuccess(const PaymentSuccess(orderId: '123', queryParams: {}));
-    await tester.pumpAndSettle();
-    expect(find.text(_success), findsOneWidget);
-    expect(receiptArgs!.paymentMethod, 'visa');
-    expect(receiptArgs!.amount, 25.50);
-    expect(receiptPushes, 1);
-    verifyZeroInteractions(repository);
-  });
+    '3DS opens without success; existing success callback shows receipt',
+    (tester) async {
+      await open(tester, newCard: true);
+      await MakePaymentPostPaidPayFlow.onPayNow(paymentContext, bloc.state);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text(_success), findsNothing);
+      expect(receiptPushes, 0);
+      tester
+          .widget<PaymentIFrameScreen>(find.byType(PaymentIFrameScreen))
+          .onSuccess(const PaymentSuccess(orderId: '123', queryParams: {}));
+      await tester.pumpAndSettle();
+      expect(find.text(_success), findsOneWidget);
+      expect(receiptArgs!.paymentMethod, 'visa');
+      expect(receiptArgs!.amount, 25.50);
+      expect(receiptPushes, 1);
+      verifyZeroInteractions(repository);
+    },
+  );
 
   testWidgets('failed payment never opens the success receipt', (tester) async {
-    when(() => repository.payWithSavedCard(
-        amount: 25.50,
-        cardToken: 'saved-token')).thenAnswer((_) async => false);
+    when(
+      () =>
+          repository.payWithSavedCard(amount: 25.50, cardToken: 'saved-token'),
+    ).thenAnswer((_) async => false);
     await open(tester);
     bloc.add(const MpPaySavedCardConfirmed());
     await tester.pumpAndSettle();
@@ -224,14 +245,17 @@ void main() {
     for (final message in [
       _oldInvalid,
       'Backend unavailable',
-      'Request timeout. Please try again.'
+      'Request timeout. Please try again.',
     ]) {
-      testWidgets('newCard=$newCard presents "$message" and preserves retry',
-          (tester) async {
-        when(() => repository.payWithSavedCard(
-              amount: 25.50,
-              cardToken: 'saved-token',
-            )).thenThrow(Exception(message));
+      testWidgets('newCard=$newCard presents "$message" and preserves retry', (
+        tester,
+      ) async {
+        when(
+          () => repository.payWithSavedCard(
+            amount: 25.50,
+            cardToken: 'saved-token',
+          ),
+        ).thenThrow(Exception(message));
         await open(tester, newCard: newCard);
         if (newCard) {
           await MakePaymentPostPaidPayFlow.onPayNow(paymentContext, bloc.state);
@@ -244,8 +268,10 @@ void main() {
           bloc.add(const MpPaySavedCardConfirmed());
         }
         await tester.pumpAndSettle();
-        expect(find.text(message == _oldInvalid ? _invalid : message),
-            findsOneWidget);
+        expect(
+          find.text(message == _oldInvalid ? _invalid : message),
+          findsOneWidget,
+        );
         expect(find.text(_oldInvalid), findsNothing);
         expect(find.text(_success), findsNothing);
         expect(find.text('payment form'), findsOneWidget);
@@ -266,33 +292,44 @@ void main() {
               .onSuccess(const PaymentSuccess(orderId: '123', queryParams: {}));
           verifyZeroInteractions(repository);
         } else {
-          when(() => repository.payWithSavedCard(
-                amount: 25.50,
-                cardToken: 'saved-token',
-              )).thenAnswer((_) async => true);
+          when(
+            () => repository.payWithSavedCard(
+              amount: 25.50,
+              cardToken: 'saved-token',
+            ),
+          ).thenAnswer((_) async => true);
           bloc.add(const MpPaySavedCardConfirmed());
         }
         await tester.pumpAndSettle();
         expect(find.text(_success), findsOneWidget);
         expect(receiptPushes, 1);
         if (!newCard) {
-          verify(() => repository.payWithSavedCard(
-                amount: 25.50,
-                cardToken: 'saved-token',
-              )).called(2);
+          verify(
+            () => repository.payWithSavedCard(
+              amount: 25.50,
+              cardToken: 'saved-token',
+            ),
+          ).called(2);
         }
       });
     }
   }
 
-  testWidgets('other navigator consumers retain their default receipt message',
-      (tester) async {
-    await open(tester);
-    PostpaidReceiptNavigator.push(paymentContext,
-        amount: 25.50, method: PostpaidPaymentMethod.newCard);
-    await tester.pumpAndSettle();
-    expect(find.text(UserProfileReceiptRouteArgs.postpaidPaymentPendingMessage),
-        findsOneWidget);
-    expect(find.text(_success), findsNothing);
-  });
+  testWidgets(
+    'other navigator consumers retain their default receipt message',
+    (tester) async {
+      await open(tester);
+      PostpaidReceiptNavigator.push(
+        paymentContext,
+        amount: 25.50,
+        method: PostpaidPaymentMethod.newCard,
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text(UserProfileReceiptRouteArgs.postpaidPaymentPendingMessage),
+        findsOneWidget,
+      );
+      expect(find.text(_success), findsNothing);
+    },
+  );
 }

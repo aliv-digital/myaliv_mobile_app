@@ -131,32 +131,28 @@ class _GuestPayBillReceiptView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: GuestPayBillReceiptTheme.contentPadding,
-                  child:
-                      BlocBuilder<
-                        GuestPayBillReceiptBloc,
-                        GuestPayBillReceiptState
-                      >(
-                        builder: (context, state) {
-                          final data = state.data;
-                          if (data == null) return const SizedBox.shrink();
+                  child: BlocBuilder<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
+                    builder: (context, state) {
+                      final data = state.data;
+                      if (data == null) return const SizedBox.shrink();
 
-                          return DefaultReceiptSuccessCard(
-                            data: _toDefaultReceiptData(data, orderId),
-                            pageBackground:
-                                GuestPayBillReceiptTheme.screenBackground,
-                            statusMessage:
-                                data.rightType.trim().toUpperCase() == 'ALIVFIBR'
-                                ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
-                                      'has been successfully processed for account ${data.phoneNumber}'
-                                : 'It will take a few moments for the payment to appear on the account.',
-                            // BILL-018: always "home" for bill payments.
-                            backButtonText: 'back to home page',
-                            onBackHome: () {
-                              _onBackHomePressed(context);
-                            },
-                          );
+                      return DefaultReceiptSuccessCard(
+                        data: _toDefaultReceiptData(data, orderId),
+                        pageBackground:
+                            GuestPayBillReceiptTheme.screenBackground,
+                        statusMessage:
+                            data.rightType.trim().toUpperCase() == 'ALIVFIBR'
+                            ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
+                                  'has been successfully processed for account ${data.phoneNumber}'
+                            : 'It will take a few moments for the payment to appear on the account.',
+                        // BILL-018: always "home" for bill payments.
+                        backButtonText: 'back to home page',
+                        onBackHome: () {
+                          _onBackHomePressed(context);
                         },
-                      ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],

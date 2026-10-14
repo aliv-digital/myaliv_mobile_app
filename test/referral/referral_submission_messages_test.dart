@@ -175,22 +175,29 @@ void main() {
       tester,
     ) async {
       await openAndShare(tester, email: email);
-      expect(find.text("Please enter your referral's email address."),
-          findsOneWidget);
+      expect(
+        find.text("Please enter your referral's email address."),
+        findsOneWidget,
+      );
       expect(find.text('invalid email address'), findsNothing);
       expect(successNavigations, 0);
       verifyNoReferralRequests();
     });
   }
 
-  testWidgets('malformed email keeps its existing inline error',
-      (tester) async {
+  testWidgets('malformed email keeps its existing inline error', (
+    tester,
+  ) async {
     await openAndShare(tester, email: 'not-an-email');
     expect(find.text('invalid email address'), findsOneWidget);
     expect(
-        find.text("Please enter your referral's email address."), findsNothing);
+      find.text("Please enter your referral's email address."),
+      findsNothing,
+    );
     expect(
-        find.text('You cannot reffer your own email address.'), findsNothing);
+      find.text('You cannot reffer your own email address.'),
+      findsNothing,
+    );
     verifyNoReferralRequests();
   });
 
@@ -199,8 +206,10 @@ void main() {
       tester,
     ) async {
       await openAndShare(tester, email: email);
-      expect(find.text('You cannot reffer your own email address.'),
-          findsOneWidget);
+      expect(
+        find.text('You cannot reffer your own email address.'),
+        findsOneWidget,
+      );
       expect(find.text('invalid email address'), findsNothing);
       expect(find.text(_success), findsNothing);
       expect(successNavigations, 0);
@@ -235,8 +244,10 @@ void main() {
   ) async {
     await openAndShare(tester, phone: '', email: '');
     expect(find.text("Please enter your referral's number."), findsOneWidget);
-    expect(find.text("Please enter your referral's email address."),
-        findsOneWidget);
+    expect(
+      find.text("Please enter your referral's email address."),
+      findsOneWidget,
+    );
     verifyNoReferralRequests();
   });
 
@@ -246,7 +257,9 @@ void main() {
     ) async {
       await openAndShare(tester, phone: phone);
       expect(
-          find.text('You cannot refer your own phone number.'), findsOneWidget);
+        find.text('You cannot refer your own phone number.'),
+        findsOneWidget,
+      );
       expect(find.text('invalid Format'), findsNothing);
       expect(find.text(_success), findsNothing);
       expect(successNavigations, 0);

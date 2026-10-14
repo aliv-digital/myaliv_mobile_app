@@ -331,8 +331,9 @@ class _SendTopUpPlaceholderTabState extends State<SendTopUpPlaceholderTab> {
                           );
                           if (ownPhone.isValid &&
                               ownPhone.phoneNumberForApi ==
-                                  _validatePhone(_phoneNumber)
-                                      .phoneNumberForApi) {
+                                  _validatePhone(
+                                    _phoneNumber,
+                                  ).phoneNumberForApi) {
                             AppToast.show(
                               message:
                                   'You cannot send a top-up to your own number.',

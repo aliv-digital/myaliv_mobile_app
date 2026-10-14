@@ -49,14 +49,14 @@ const _prefix = 'Top-up complete! Your balance is now ';
 const _ownPhone = '2428011616';
 
 BalanceState _balanceState(double amount) => BalanceState(
-      status: BalanceStatus.loaded,
-      balance: BalanceModel(
-        walletBalance: amount,
-        bonusBalance: 50,
-        bonusDetails: const [],
-        fetchedAt: DateTime(2026, 10, 13),
-      ),
-    );
+  status: BalanceStatus.loaded,
+  balance: BalanceModel(
+    walletBalance: amount,
+    bonusBalance: 50,
+    bonusDetails: const [],
+    fetchedAt: DateTime(2026, 10, 13),
+  ),
+);
 
 void main() {
   late _Account account;
@@ -75,9 +75,9 @@ void main() {
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
         .load();
-    await (FontLoader('MaterialIcons')
-          ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf')))
-        .load();
+    await (FontLoader(
+      'MaterialIcons',
+    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
   setUp(() {
@@ -119,9 +119,9 @@ void main() {
   }) async {
     payment = Completer<ChangeBundleResult>();
     final html = Completer<String?>();
-    when(() => balance.state).thenReturn(
-      hasBalance ? _balanceState(before) : BalanceState.initial(),
-    );
+    when(
+      () => balance.state,
+    ).thenReturn(hasBalance ? _balanceState(before) : BalanceState.initial());
     when(
       () => topUp.payWithSavedCard(
         amount: any(named: 'amount'),
@@ -140,8 +140,11 @@ void main() {
     ).thenAnswer((_) => html.future);
     final cardStates = StreamController<SavedCardsState>.broadcast();
     addTearDown(cardStates.close);
-    whenListen(cards, cardStates.stream,
-        initialState: const SavedCardsState(status: SavedCardsStatus.loading));
+    whenListen(
+      cards,
+      cardStates.stream,
+      initialState: const SavedCardsState(status: SavedCardsStatus.loading),
+    );
     final config = AppUiConfigCubit(
       initialConfig: HomeUiConfig(
         userType: userType,
@@ -160,10 +163,8 @@ void main() {
       routes: [
         GoRoute(
           path: AppRoutes.topUpPaymentPrepaidScreen,
-          builder: (_, _) => TopUpPaymentScreen(
-            amount: amount,
-            recipientPhone: recipient,
-          ),
+          builder: (_, _) =>
+              TopUpPaymentScreen(amount: amount, recipientPhone: recipient),
         ),
         GoRoute(
           path: AppRoutes.userProfileReceiptScreen,
@@ -200,8 +201,10 @@ void main() {
     expect(find.textContaining(_prefix), findsNothing);
   }
 
-  Future<void> startSavedPayment(WidgetTester tester,
-      {bool postpaid = false}) async {
+  Future<void> startSavedPayment(
+    WidgetTester tester, {
+    bool postpaid = false,
+  }) async {
     await tester.tap(find.text('pay now'));
     if (postpaid) {
       await tester.pump();
@@ -233,18 +236,26 @@ void main() {
     testWidgets('own saved-card top-up $before + $amount displays $expected', (
       tester,
     ) async {
-      await openPayment(tester,
-          before: before, amount: amount, width: before == 0 ? 320 : 390);
+      await openPayment(
+        tester,
+        before: before,
+        amount: amount,
+        width: before == 0 ? 320 : 390,
+      );
       await startSavedPayment(tester);
-      verify(() => topUp.payWithSavedCard(
-            amount: amount,
-            primaryPhoneNumber: _ownPhone,
-            cardToken: _card.token,
-          )).called(1);
+      verify(
+        () => topUp.payWithSavedCard(
+          amount: amount,
+          primaryPhoneNumber: _ownPhone,
+          cardToken: _card.token,
+        ),
+      ).called(1);
       await succeed(tester);
       expect(find.text('$_prefix$expected.'), findsOneWidget);
-      expect(find.text(UserProfileReceiptRouteArgs.topUpPendingMessage),
-          findsNothing);
+      expect(
+        find.text(UserProfileReceiptRouteArgs.topUpPendingMessage),
+        findsNothing,
+      );
       expect(find.text('Payment Success!'), findsOneWidget);
       expect(receiptArgs!.amount, amount);
       expect(receipts, 1);
@@ -271,15 +282,21 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     when(() => balance.state).thenReturn(_balanceState(25));
     await succeed(tester);
-    expect(find.text(r'Top-up complete! Your balance is now $25.00.'),
-        findsOneWidget);
+    expect(
+      find.text(r'Top-up complete! Your balance is now $25.00.'),
+      findsOneWidget,
+    );
     when(() => balance.state).thenReturn(_balanceState(30));
     tester.element(find.byType(UserProfileReceiptScreen)).markNeedsBuild();
     await tester.pumpAndSettle();
-    expect(find.text(r'Top-up complete! Your balance is now $25.00.'),
-        findsOneWidget);
-    expect(find.text(r'Top-up complete! Your balance is now $30.00.'),
-        findsNothing);
+    expect(
+      find.text(r'Top-up complete! Your balance is now $25.00.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text(r'Top-up complete! Your balance is now $30.00.'),
+      findsNothing,
+    );
     verify(() => balance.state).called(1);
     verifyNoMoreInteractions(balance);
   });
@@ -289,21 +306,27 @@ void main() {
   ) async {
     await openPayment(tester);
     await startSavedPayment(tester);
-    final button = tester.widget<ElevatedButton>(find.descendant(
-      of: find.byType(DefaultBottomPayBar),
-      matching: find.byType(ElevatedButton),
-    ));
+    final button = tester.widget<ElevatedButton>(
+      find.descendant(
+        of: find.byType(DefaultBottomPayBar),
+        matching: find.byType(ElevatedButton),
+      ),
+    );
     expect(button.onPressed, isNull);
     bloc.add(const PaySavedCardConfirmed());
     await tester.pump();
-    verify(() => topUp.payWithSavedCard(
-          amount: 5,
-          primaryPhoneNumber: _ownPhone,
-          cardToken: _card.token,
-        )).called(1);
+    verify(
+      () => topUp.payWithSavedCard(
+        amount: 5,
+        primaryPhoneNumber: _ownPhone,
+        cardToken: _card.token,
+      ),
+    ).called(1);
     await succeed(tester);
-    expect(find.text(r'Top-up complete! Your balance is now $15.00.'),
-        findsOneWidget);
+    expect(
+      find.text(r'Top-up complete! Your balance is now $15.00.'),
+      findsOneWidget,
+    );
     expect(receipts, 1);
   });
 
@@ -320,25 +343,29 @@ void main() {
     payment = Completer<ChangeBundleResult>();
     await startSavedPayment(tester);
     await succeed(tester);
-    expect(find.text(r'Top-up complete! Your balance is now $25.00.'),
-        findsOneWidget);
+    expect(
+      find.text(r'Top-up complete! Your balance is now $25.00.'),
+      findsOneWidget,
+    );
     expect(receipts, 1);
   });
 
   testWidgets(
-      'missing balance preserves the receipt rather than inventing zero', (
-    tester,
-  ) async {
-    await openPayment(tester, hasBalance: false);
-    await startSavedPayment(tester);
-    await succeed(tester);
-    expect(find.textContaining(_prefix), findsNothing);
-    expect(find.text(UserProfileReceiptRouteArgs.topUpPendingMessage),
-        findsOneWidget);
-    expect(receipts, 1);
-    verify(() => balance.state).called(1);
-    verifyNoMoreInteractions(balance);
-  });
+    'missing balance preserves the receipt rather than inventing zero',
+    (tester) async {
+      await openPayment(tester, hasBalance: false);
+      await startSavedPayment(tester);
+      await succeed(tester);
+      expect(find.textContaining(_prefix), findsNothing);
+      expect(
+        find.text(UserProfileReceiptRouteArgs.topUpPendingMessage),
+        findsOneWidget,
+      );
+      expect(receipts, 1);
+      verify(() => balance.state).called(1);
+      verifyNoMoreInteractions(balance);
+    },
+  );
 
   testWidgets('the existing literal null own-number route value is supported', (
     tester,
@@ -346,8 +373,10 @@ void main() {
     await openPayment(tester, recipient: 'null');
     await startSavedPayment(tester);
     await succeed(tester);
-    expect(find.text(r'Top-up complete! Your balance is now $15.00.'),
-        findsOneWidget);
+    expect(
+      find.text(r'Top-up complete! Your balance is now $15.00.'),
+      findsOneWidget,
+    );
     expect(receiptArgs!.recipientPhone, _ownPhone);
   });
 
@@ -356,28 +385,30 @@ void main() {
     Exception('network unavailable'),
   ]) {
     testWidgets(
-        'failed top-up preserves its error without a success receipt: $failure',
-        (
-      tester,
-    ) async {
-      await openPayment(tester);
-      await startSavedPayment(tester);
-      if (failure is ChangeBundleResult) {
-        payment.complete(failure);
-      } else {
-        payment.completeError(failure);
-      }
-      await tester.pumpAndSettle();
-      expect(find.textContaining(_prefix), findsNothing);
-      expect(receipts, 0);
-      expect(
-          find.text(failure is ChangeBundleFailure
-              ? failure.message
-              : 'network unavailable'),
-          findsOneWidget);
-      await tester.pump(const Duration(seconds: 5));
-      await tester.pumpAndSettle();
-    });
+      'failed top-up preserves its error without a success receipt: $failure',
+      (tester) async {
+        await openPayment(tester);
+        await startSavedPayment(tester);
+        if (failure is ChangeBundleResult) {
+          payment.complete(failure);
+        } else {
+          payment.completeError(failure);
+        }
+        await tester.pumpAndSettle();
+        expect(find.textContaining(_prefix), findsNothing);
+        expect(receipts, 0);
+        expect(
+          find.text(
+            failure is ChangeBundleFailure
+                ? failure.message
+                : 'network unavailable',
+          ),
+          findsOneWidget,
+        );
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pumpAndSettle();
+      },
+    );
   }
 
   testWidgets('cancelled saved-card confirmation makes no request or message', (
@@ -412,8 +443,10 @@ void main() {
         await succeed(tester);
       }
       expect(find.textContaining(_prefix), findsNothing);
-      expect(find.text(UserProfileReceiptRouteArgs.topUpPendingMessage),
-          findsOneWidget);
+      expect(
+        find.text(UserProfileReceiptRouteArgs.topUpPendingMessage),
+        findsOneWidget,
+      );
       expect(receipts, 1);
       verifyZeroInteractions(balance);
     });
@@ -443,8 +476,10 @@ void main() {
       }
       await tester.pumpAndSettle();
       if (success) {
-        expect(find.text(r'Top-up complete! Your balance is now $15.00.'),
-            findsOneWidget);
+        expect(
+          find.text(r'Top-up complete! Your balance is now $15.00.'),
+          findsOneWidget,
+        );
         expect(receipts, 1);
       } else {
         expect(find.textContaining(_prefix), findsNothing);

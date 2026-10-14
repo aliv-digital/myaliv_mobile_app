@@ -55,18 +55,22 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     saved = Completer<bool>();
-    when(() => cards.saveNewCard(
-          orderId: any(named: 'orderId'),
-          expirationDate: any(named: 'expirationDate'),
-        )).thenAnswer((_) => saved.future);
+    when(
+      () => cards.saveNewCard(
+        orderId: any(named: 'orderId'),
+        expirationDate: any(named: 'expirationDate'),
+      ),
+    ).thenAnswer((_) => saved.future);
     final payment = _Payment();
     // Exercise the production callback owner without loading a platform WebView.
     final html = Completer<String?>();
-    when(() => payment.fetch3DSHtml(
-          url: any(named: 'url'),
-          body: any(named: 'body'),
-          skipAuth: any(named: 'skipAuth'),
-        )).thenAnswer((_) => html.future);
+    when(
+      () => payment.fetch3DSHtml(
+        url: any(named: 'url'),
+        body: any(named: 'body'),
+        skipAuth: any(named: 'skipAuth'),
+      ),
+    ).thenAnswer((_) => html.future);
     instance.registerSingleton<CardPaymentService>(payment);
     router = GoRouter(
       navigatorKey: rootNavigatorKey,
@@ -94,12 +98,15 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text(_success), findsNothing);
-    verifyNever(() => cards.saveNewCard(
-          orderId: any(named: 'orderId'),
-          expirationDate: any(named: 'expirationDate'),
-        ));
-    final hosted =
-        tester.widget<PaymentIFrameScreen>(find.byType(PaymentIFrameScreen));
+    verifyNever(
+      () => cards.saveNewCard(
+        orderId: any(named: 'orderId'),
+        expirationDate: any(named: 'expirationDate'),
+      ),
+    );
+    final hosted = tester.widget<PaymentIFrameScreen>(
+      find.byType(PaymentIFrameScreen),
+    );
     expect(hosted.request.url, Api.addCreditCard);
     return hosted;
   }
@@ -110,10 +117,12 @@ void main() {
     String? orderId = '123',
     String? message,
   }) async {
-    hosted.onSuccess(PaymentSuccess(
-      orderId: orderId,
-      queryParams: message == null ? const {} : {'Message': message},
-    ));
+    hosted.onSuccess(
+      PaymentSuccess(
+        orderId: orderId,
+        queryParams: message == null ? const {} : {'Message': message},
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('confirm expiration date'), findsOneWidget);
     expect(find.text(_success), findsNothing);
@@ -127,68 +136,83 @@ void main() {
   Future<void> expectCardManagement(WidgetTester tester) async {
     expect(find.byType(AddOrEditCardsPrepaidScreen), findsOneWidget);
     expect(find.byType(PaymentIFrameScreen), findsNothing);
-    expect(router.routeInformationProvider.value.uri.path,
-        AppRoutes.addOrEditCardsPrepaidScreen);
+    expect(
+      router.routeInformationProvider.value.uri.path,
+      AppRoutes.addOrEditCardsPrepaidScreen,
+    );
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
   }
 
   for (final message in [null, 'Gateway-specific success']) {
     testWidgets(
-        'successful save uses QA copy despite redirect Message $message',
-        (tester) async {
-      final hosted = await openHosted(tester);
-      await redirect(tester, hosted, message: message);
-      await confirmExpiry(tester);
-      expect(find.text(_success), findsNothing);
-      final now = DateTime.now();
-      verify(() => cards.saveNewCard(
+      'successful save uses QA copy despite redirect Message $message',
+      (tester) async {
+        final hosted = await openHosted(tester);
+        await redirect(tester, hosted, message: message);
+        await confirmExpiry(tester);
+        expect(find.text(_success), findsNothing);
+        final now = DateTime.now();
+        verify(
+          () => cards.saveNewCard(
             orderId: 123,
             expirationDate:
                 '${now.month.toString().padLeft(2, '0')}${(now.year % 100).toString().padLeft(2, '0')}',
-          )).called(1);
-      saved.complete(true);
-      await tester.pumpAndSettle();
-      expect(find.text(_success), findsOneWidget);
-      expect(find.text('your card has been added successfully'), findsNothing);
-      if (message != null) expect(find.text(message), findsNothing);
-      await expectCardManagement(tester);
-    });
+          ),
+        ).called(1);
+        saved.complete(true);
+        await tester.pumpAndSettle();
+        expect(find.text(_success), findsOneWidget);
+        expect(
+          find.text('your card has been added successfully'),
+          findsNothing,
+        );
+        if (message != null) expect(find.text(message), findsNothing);
+        await expectCardManagement(tester);
+      },
+    );
   }
 
   for (final orderId in [null, 'not-an-order']) {
-    testWidgets('missing or invalid order ID $orderId shows no success',
-        (tester) async {
+    testWidgets('missing or invalid order ID $orderId shows no success', (
+      tester,
+    ) async {
       final hosted = await openHosted(tester);
       await redirect(tester, hosted, orderId: orderId);
       await confirmExpiry(tester);
       expect(find.text(_success), findsNothing);
       expect(find.text('Failed to save card. Try again.'), findsOneWidget);
-      verifyNever(() => cards.saveNewCard(
-            orderId: any(named: 'orderId'),
-            expirationDate: any(named: 'expirationDate'),
-          ));
+      verifyNever(
+        () => cards.saveNewCard(
+          orderId: any(named: 'orderId'),
+          expirationDate: any(named: 'expirationDate'),
+        ),
+      );
       await expectCardManagement(tester);
     });
   }
 
-  testWidgets('expiry cancellation never saves or shows success',
-      (tester) async {
+  testWidgets('expiry cancellation never saves or shows success', (
+    tester,
+  ) async {
     final hosted = await openHosted(tester);
     await redirect(tester, hosted);
     await tester.tap(find.byIcon(Icons.close));
     await tester.pumpAndSettle();
     expect(find.text(_success), findsNothing);
-    verifyNever(() => cards.saveNewCard(
-          orderId: any(named: 'orderId'),
-          expirationDate: any(named: 'expirationDate'),
-        ));
+    verifyNever(
+      () => cards.saveNewCard(
+        orderId: any(named: 'orderId'),
+        expirationDate: any(named: 'expirationDate'),
+      ),
+    );
     await expectCardManagement(tester);
   });
 
   for (final error in [null, 'Existing save failure']) {
-    testWidgets('save failure preserves existing message $error',
-        (tester) async {
+    testWidgets('save failure preserves existing message $error', (
+      tester,
+    ) async {
       final hosted = await openHosted(tester);
       await redirect(tester, hosted);
       await confirmExpiry(tester);
@@ -196,23 +220,28 @@ void main() {
       saved.complete(false);
       await tester.pumpAndSettle();
       expect(find.text(_success), findsNothing);
-      expect(find.text(error ?? 'Failed to save card. Try again.'),
-          findsOneWidget);
+      expect(
+        find.text(error ?? 'Failed to save card. Try again.'),
+        findsOneWidget,
+      );
       await expectCardManagement(tester);
     });
   }
 
-  testWidgets('hosted failure preserves existing error and never saves',
-      (tester) async {
+  testWidgets('hosted failure preserves existing error and never saves', (
+    tester,
+  ) async {
     final hosted = await openHosted(tester);
     hosted.onFailure('Hosted card failure');
     await tester.pumpAndSettle();
     expect(find.text('Hosted card failure'), findsOneWidget);
     expect(find.text(_success), findsNothing);
-    verifyNever(() => cards.saveNewCard(
-          orderId: any(named: 'orderId'),
-          expirationDate: any(named: 'expirationDate'),
-        ));
+    verifyNever(
+      () => cards.saveNewCard(
+        orderId: any(named: 'orderId'),
+        expirationDate: any(named: 'expirationDate'),
+      ),
+    );
     await expectCardManagement(tester);
   });
 }

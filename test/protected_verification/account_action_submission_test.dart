@@ -93,10 +93,7 @@ void main() {
       bloc.add(const ChangePasswordPrepaidSubmitPressed());
       await _flush();
       expect(challenges, 0);
-      expect(
-        bloc.state.newPasswordError,
-        'New password is required.',
-      );
+      expect(bloc.state.newPasswordError, 'New password is required.');
       verifyNever(
         () => repository.changePassword(newPassword: any(named: 'newPassword')),
       );
@@ -110,8 +107,10 @@ void main() {
         await _flush();
         bloc.add(const ChangePasswordPrepaidSubmitPressed());
         await _flush();
-        expect(bloc.state.newPasswordError,
-            'password does not meet the requirement');
+        expect(
+          bloc.state.newPasswordError,
+          'password does not meet the requirement',
+        );
         expect(bloc.state.isValid, isFalse);
         expect(challenges, 0);
         verifyZeroInteractions(repository);
@@ -123,21 +122,23 @@ void main() {
       'a' * 64,
       '12345678',
       '!@#\$%^&*',
-      '  abcdefgh  '
+      '  abcdefgh  ',
     ]) {
       test(
-          'existing valid password is submitted trimmed at length ${password.length}',
-          () async {
-        bloc.add(ChangePasswordPrepaidNewChanged(password));
-        bloc.add(ChangePasswordPrepaidConfirmChanged(password));
-        await _flush();
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        await _flush();
-        expect(challenges, 1);
-        expect(bloc.state.status, ChangePasswordPrepaidStatus.success);
-        verify(() => repository.changePassword(newPassword: password.trim()))
-            .called(1);
-      });
+        'existing valid password is submitted trimmed at length ${password.length}',
+        () async {
+          bloc.add(ChangePasswordPrepaidNewChanged(password));
+          bloc.add(ChangePasswordPrepaidConfirmChanged(password));
+          await _flush();
+          bloc.add(const ChangePasswordPrepaidSubmitPressed());
+          await _flush();
+          expect(challenges, 1);
+          expect(bloc.state.status, ChangePasswordPrepaidStatus.success);
+          verify(
+            () => repository.changePassword(newPassword: password.trim()),
+          ).called(1);
+        },
+      );
     }
 
     test(

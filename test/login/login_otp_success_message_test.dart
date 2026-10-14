@@ -41,12 +41,14 @@ class _Analytics extends Mock implements AnalyticsService {}
 
 void main() {
   setUpAll(() async {
-    registerFallbackValue(TokenSession(
-      accessToken: 'test-access',
-      refreshToken: 'test-refresh',
-      accessExpiresAt: DateTime.utc(2030),
-      refreshExpiresAt: DateTime.utc(2031),
-    ));
+    registerFallbackValue(
+      TokenSession(
+        accessToken: 'test-access',
+        refreshToken: 'test-refresh',
+        accessExpiresAt: DateTime.utc(2030),
+        refreshExpiresAt: DateTime.utc(2031),
+      ),
+    );
     await (FontLoader('CircularPro')
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
           ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
@@ -59,10 +61,11 @@ void main() {
     'invalid OTP',
     'API failure',
     'session failure',
-    'resend'
+    'resend',
   ]) {
-    testWidgets('OTP $outcome preserves success timing and continuation',
-        (tester) async {
+    testWidgets('OTP $outcome preserves success timing and continuation', (
+      tester,
+    ) async {
       await http.runWithClient(() async {
         SharedPreferences.setMockInitialValues({});
         await tester.binding.setSurfaceSize(const Size(430, 1000));
@@ -77,37 +80,50 @@ void main() {
         final config = AppUiConfigCubit();
         final response = Completer<Response<dynamic>>();
         final sessionSaved = Completer<void>();
-        when(() => network.request<dynamic>(
-              Api.verifyOtpUrl,
-              method: HttpMethod.post,
-              data: any(named: 'data'),
-              options: any(named: 'options'),
-            )).thenAnswer((_) => response.future);
-        when(() => network.request<dynamic>(
-              Api.resendOtpUrl,
-              method: HttpMethod.post,
-              data: any(named: 'data'),
-              options: any(named: 'options'),
-            )).thenAnswer((_) async => Response<dynamic>(
-              requestOptions: RequestOptions(path: Api.resendOtpUrl),
-              data: {'mfa_token': 'replacement-token'},
-            ));
-        when(() => auth.saveSession(any()))
-            .thenAnswer((_) => sessionSaved.future);
-        when(() => account.fetchAccountInfo(forceRefresh: true))
-            .thenAnswer((_) async {});
-        when(() => account.state).thenReturn(const AccountInfoState(
-          status: AccountInfoStatus.success,
-          accountInfo: AccountInfoModel(idAcc: 1, paymentOption: 'PrePay'),
-        ));
-        when(() => devices.loadDeviceLimits(forceRefresh: true))
-            .thenAnswer((_) async {});
-        when(() => devices.state).thenReturn(DeviceLimitsState(
-          status: DeviceLimitsStatus.loaded,
-          allDeviceLimits: [
-            DeviceLimitsModel.fromJson({'DeviceID': 123})
-          ],
-        ));
+        when(
+          () => network.request<dynamic>(
+            Api.verifyOtpUrl,
+            method: HttpMethod.post,
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          ),
+        ).thenAnswer((_) => response.future);
+        when(
+          () => network.request<dynamic>(
+            Api.resendOtpUrl,
+            method: HttpMethod.post,
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          ),
+        ).thenAnswer(
+          (_) async => Response<dynamic>(
+            requestOptions: RequestOptions(path: Api.resendOtpUrl),
+            data: {'mfa_token': 'replacement-token'},
+          ),
+        );
+        when(
+          () => auth.saveSession(any()),
+        ).thenAnswer((_) => sessionSaved.future);
+        when(
+          () => account.fetchAccountInfo(forceRefresh: true),
+        ).thenAnswer((_) async {});
+        when(() => account.state).thenReturn(
+          const AccountInfoState(
+            status: AccountInfoStatus.success,
+            accountInfo: AccountInfoModel(idAcc: 1, paymentOption: 'PrePay'),
+          ),
+        );
+        when(
+          () => devices.loadDeviceLimits(forceRefresh: true),
+        ).thenAnswer((_) async {});
+        when(() => devices.state).thenReturn(
+          DeviceLimitsState(
+            status: DeviceLimitsStatus.loaded,
+            allDeviceLimits: [
+              DeviceLimitsModel.fromJson({'DeviceID': 123}),
+            ],
+          ),
+        );
         when(() => role.fetchRoleId(123)).thenAnswer((_) async => 1);
         when(() => analytics.logLogin()).thenAnswer((_) async {});
         instance.registerSingleton<NetworkService>(network);
@@ -123,27 +139,29 @@ void main() {
           initialLocation: AppRoutes.loginOtp,
           routes: [
             GoRoute(
-                path: AppRoutes.loginOtp,
-                builder: (_, _) => LoginOtpScreen(
-                      initialMfaToken: 'test-mfa',
-                      initialPhoneNumber: '2425550100',
-                      initialApiPhoneNumber: '2425550100',
-                      successMessage: recovery ? 'Code verified.' : null,
-                      onSuccess: recovery
-                          ? (context) => context.push(AppRoutes.createPassword,
-                              extra: true)
-                          : null,
-                    )),
+              path: AppRoutes.loginOtp,
+              builder: (_, _) => LoginOtpScreen(
+                initialMfaToken: 'test-mfa',
+                initialPhoneNumber: '2425550100',
+                initialApiPhoneNumber: '2425550100',
+                successMessage: recovery ? 'Code verified.' : null,
+                onSuccess: recovery
+                    ? (context) =>
+                          context.push(AppRoutes.createPassword, extra: true)
+                    : null,
+              ),
+            ),
             GoRoute(
-                path: AppRoutes.home,
-                builder: (_, _) =>
-                    const Scaffold(body: Text('home destination'))),
+              path: AppRoutes.home,
+              builder: (_, _) => const Scaffold(body: Text('home destination')),
+            ),
             GoRoute(
-                path: AppRoutes.createPassword,
-                builder: (_, state) {
-                  expect(state.extra, isTrue);
-                  return const Scaffold(body: Text('reset destination'));
-                }),
+              path: AppRoutes.createPassword,
+              builder: (_, state) {
+                expect(state.extra, isTrue);
+                return const Scaffold(body: Text('reset destination'));
+              },
+            ),
           ],
         );
         addTearDown(() async {
@@ -153,18 +171,22 @@ void main() {
           await config.close();
           await instance.reset();
         });
-        await tester.pumpWidget(BlocProvider.value(
-          value: config,
-          child: MaterialApp.router(routerConfig: router),
-        ));
+        await tester.pumpWidget(
+          BlocProvider.value(
+            value: config,
+            child: MaterialApp.router(routerConfig: router),
+          ),
+        );
         try {
           await tester.pumpAndSettle();
           expect(find.text('OTP verified successfully.'), findsNothing);
           if (outcome == 'resend') {
             await tester.tap(find.text('resend code'));
             await tester.pumpAndSettle();
-            expect(find.text('Verification code resent successfully.'),
-                findsOneWidget);
+            expect(
+              find.text('Verification code resent successfully.'),
+              findsOneWidget,
+            );
             expect(find.text('OTP verified successfully.'), findsNothing);
             verifyNever(() => auth.saveSession(any()));
             expect(find.byType(LoginOtpScreen), findsOneWidget);
@@ -176,21 +198,27 @@ void main() {
           await tester.pump();
           expect(find.text('OTP verified successfully.'), findsNothing);
           expect(find.text('home destination'), findsNothing);
-          verify(() => network.request<dynamic>(
-                Api.verifyOtpUrl,
-                method: HttpMethod.post,
-                data: {
-                  'PhoneNumber': '2425550100',
-                  'mfa_token': 'test-mfa',
-                  'otp_code': '123456',
-                  'Channel': kAuthChannel
-                },
-                options: any(named: 'options'),
-              )).called(1);
+          verify(
+            () => network.request<dynamic>(
+              Api.verifyOtpUrl,
+              method: HttpMethod.post,
+              data: {
+                'PhoneNumber': '2425550100',
+                'mfa_token': 'test-mfa',
+                'otp_code': '123456',
+                'Channel': kAuthChannel,
+              },
+              options: any(named: 'options'),
+            ),
+          ).called(1);
           if (outcome == 'invalid OTP' || outcome == 'API failure') {
-            response.completeError(Exception(outcome == 'invalid OTP'
-                ? 'Invalid OTP'
-                : 'network unavailable'));
+            response.completeError(
+              Exception(
+                outcome == 'invalid OTP'
+                    ? 'Invalid OTP'
+                    : 'network unavailable',
+              ),
+            );
             await tester.pumpAndSettle();
             expect(find.text('OTP verified successfully.'), findsNothing);
             expect(find.byType(LoginOtpScreen), findsOneWidget);
@@ -198,15 +226,17 @@ void main() {
             verifyNever(() => biometrics.markSessionAuthenticated());
             return;
           }
-          response.complete(Response<dynamic>(
-            requestOptions: RequestOptions(path: Api.verifyOtpUrl),
-            data: {
-              'access_token': 'test-access',
-              'refresh_token': 'test-refresh',
-              'expires_in': 3600,
-              'refresh_expires_in': 86400
-            },
-          ));
+          response.complete(
+            Response<dynamic>(
+              requestOptions: RequestOptions(path: Api.verifyOtpUrl),
+              data: {
+                'access_token': 'test-access',
+                'refresh_token': 'test-refresh',
+                'expires_in': 3600,
+                'refresh_expires_in': 86400,
+              },
+            ),
+          );
           await tester.pump();
           expect(find.text('OTP verified successfully.'), findsNothing);
           expect(find.text('Code verified.'), findsNothing);
@@ -225,11 +255,15 @@ void main() {
           await tester.pump(const Duration(seconds: 2));
           await tester.pumpAndSettle();
           expect(
-              find.text(
-                  recovery ? 'Code verified.' : 'OTP verified successfully.'),
-              findsOneWidget);
-          expect(find.text(recovery ? 'reset destination' : 'home destination'),
-              findsOneWidget);
+            find.text(
+              recovery ? 'Code verified.' : 'OTP verified successfully.',
+            ),
+            findsOneWidget,
+          );
+          expect(
+            find.text(recovery ? 'reset destination' : 'home destination'),
+            findsOneWidget,
+          );
           verify(() => biometrics.markSessionAuthenticated()).called(1);
           verify(() => analytics.logLogin()).called(1);
           expect(find.text('Logged in successfully'), findsNothing);

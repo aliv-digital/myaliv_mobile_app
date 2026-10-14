@@ -128,11 +128,10 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Save is unavailable until email data has loaded',
-      (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(home: EditEmailPrepaidScreen()),
-    );
+  testWidgets('Save is unavailable until email data has loaded', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: EditEmailPrepaidScreen()));
     final save = find.byType(EditEmailPrepaidSaveButton);
     expect(save, findsNothing);
     await tester.pumpAndSettle();

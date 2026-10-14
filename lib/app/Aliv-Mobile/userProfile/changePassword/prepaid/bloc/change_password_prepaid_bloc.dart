@@ -111,15 +111,15 @@ class ChangePasswordPrepaidBloc
     final newErr = a.isEmpty
         ? 'New password is required.'
         : (a.length < _minLength || a.length > _maxLength)
-            ? _lengthError
-            : null;
+        ? _lengthError
+        : null;
     final confirmErr = b.isEmpty
         ? 'Please re-enter your password.'
         : a != b
-            ? _matchError
-            : (b.length < _minLength || b.length > _maxLength)
-                ? _lengthError
-                : null;
+        ? _matchError
+        : (b.length < _minLength || b.length > _maxLength)
+        ? _lengthError
+        : null;
 
     if (newErr != null || confirmErr != null) {
       emit(

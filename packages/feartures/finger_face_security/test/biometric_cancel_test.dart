@@ -114,32 +114,37 @@ void main() {
   });
 
   test(
-      'rejection and password fallback stay distinct through repository and Cubit',
-      () async {
-    final outcomes = <FingerFaceSecurityState>[];
-    for (final code in [null, LocalAuthExceptionCode.userRequestedFallback]) {
-      final cubit = FingerFaceSecurityCubit(
-        FingerFaceSecurityRepositoryImpl(
-          service: BiometricAuthService(
-            localAuth:
-                _TestLocalAuthentication(result: false, exceptionCode: code),
+    'rejection and password fallback stay distinct through repository and Cubit',
+    () async {
+      final outcomes = <FingerFaceSecurityState>[];
+      for (final code in [null, LocalAuthExceptionCode.userRequestedFallback]) {
+        final cubit = FingerFaceSecurityCubit(
+          FingerFaceSecurityRepositoryImpl(
+            service: BiometricAuthService(
+              localAuth: _TestLocalAuthentication(
+                result: false,
+                exceptionCode: code,
+              ),
+            ),
           ),
-        ),
+        );
+        addTearDown(cubit.close);
+        await cubit.authenticate();
+        outcomes.add(cubit.state);
+      }
+      expect(outcomes[0].lastAuthResult, BiometricAuthResult.failed);
+      expect(
+        outcomes[1].lastAuthResult,
+        BiometricAuthResult.userRequestedFallback,
       );
-      addTearDown(cubit.close);
-      await cubit.authenticate();
-      outcomes.add(cubit.state);
-    }
-    expect(outcomes[0].lastAuthResult, BiometricAuthResult.failed);
-    expect(
-        outcomes[1].lastAuthResult, BiometricAuthResult.userRequestedFallback);
-    expect(outcomes[0].lastAuthResult, isNot(outcomes[1].lastAuthResult));
-    for (final state in outcomes) {
-      expect(state.status, FingerFaceSecurityStatus.failure);
-      expect(state.errorMessage, 'Authentication failed. Please try again.');
-      expect(state.isSessionAuthenticated, isFalse);
-    }
-  });
+      expect(outcomes[0].lastAuthResult, isNot(outcomes[1].lastAuthResult));
+      for (final state in outcomes) {
+        expect(state.status, FingerFaceSecurityStatus.failure);
+        expect(state.errorMessage, 'Authentication failed. Please try again.');
+        expect(state.isSessionAuthenticated, isFalse);
+      }
+    },
+  );
 
   for (final kind in ['fingerprint', 'face', 'general']) {
     for (final code in [
@@ -153,8 +158,10 @@ void main() {
         final cubit = FingerFaceSecurityCubit(
           FingerFaceSecurityRepositoryImpl(
             service: BiometricAuthService(
-              localAuth:
-                  _TestLocalAuthentication(result: false, exceptionCode: code),
+              localAuth: _TestLocalAuthentication(
+                result: false,
+                exceptionCode: code,
+              ),
             ),
           ),
         );
@@ -170,8 +177,10 @@ void main() {
             await cubit.enableBiometric();
         }
         expect(cubit.state.status, FingerFaceSecurityStatus.failure);
-        expect(cubit.state.errorMessage,
-            'Authentication failed. Please try again.');
+        expect(
+          cubit.state.errorMessage,
+          'Authentication failed. Please try again.',
+        );
         expect(cubit.state.data, before);
         expect(cubit.state.isSessionAuthenticated, isFalse);
         final prefs = await SharedPreferences.getInstance();

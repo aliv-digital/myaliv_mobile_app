@@ -444,25 +444,27 @@ void main() {
         'John\tDoe',
         'John\n',
       ]) {
-        test('$mode rejects invalid characters in "$name" before OTP',
-            () async {
-          var verifies = 0;
-          await start(mode, (_) async {
-            verifies++;
-            return null;
-          });
-          bloc!.add(AutoRenewAuthNameChanged(name));
-          await flush();
-          bloc!.add(const AutoRenewAuthSubmitPressed());
-          await flush();
-          expect(
-            bloc!.state.errorMessage,
-            'Only alphabetical characheters are allowed. Try again.',
-          );
-          expect(verifies, 0);
-          expect(repository.submissions, isEmpty);
-          expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.none);
-        });
+        test(
+          '$mode rejects invalid characters in "$name" before OTP',
+          () async {
+            var verifies = 0;
+            await start(mode, (_) async {
+              verifies++;
+              return null;
+            });
+            bloc!.add(AutoRenewAuthNameChanged(name));
+            await flush();
+            bloc!.add(const AutoRenewAuthSubmitPressed());
+            await flush();
+            expect(
+              bloc!.state.errorMessage,
+              'Only alphabetical characheters are allowed. Try again.',
+            );
+            expect(verifies, 0);
+            expect(repository.submissions, isEmpty);
+            expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.none);
+          },
+        );
       }
     }
     for (final (mode, name) in [

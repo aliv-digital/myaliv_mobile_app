@@ -237,38 +237,46 @@ void main() {
       accountInfo: AccountInfoModel(phoneNumber: '2428011616'),
     );
     await pumpTab(tester);
-    await fill(tester,
-        phone: '2428011616', confirm: '2428011616', amount: '10');
+    await fill(
+      tester,
+      phone: '2428011616',
+      confirm: '2428011616',
+      amount: '10',
+    );
     await tester.tap(find.text('proceed'));
     await tester.pumpAndSettle();
-    expect(find.text('You cannot send a top-up to your own number.'),
-        findsOneWidget);
+    expect(
+      find.text('You cannot send a top-up to your own number.'),
+      findsOneWidget,
+    );
     expectNoDownstream();
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
   });
 
-  testWidgets('editing clears required/format errors and seven digits proceed',
-      (
-    tester,
-  ) async {
-    await pumpTab(tester);
-    expect(find.text('Phone number is required.'), findsOneWidget);
-    await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
-    expect(find.text('Phone number is required.'), findsNothing);
-    expectNoDownstream();
-    await fill(tester, phone: '8011616', confirm: '8011616', amount: '10');
-    expect(find.text('Phone number is required.'), findsNothing);
-    expect(
-      find.text('Invalid phone number. Please enter a 10-digit phone number.'),
-      findsNothing,
-    );
-    await tester.tap(find.text('proceed'));
-    await tester.pumpAndSettle();
-    verify(() => sendRepo.phoneNumberExists('2428011616')).called(1);
-    expect(confirmation!.queryParameters['recipient'], '2428011616');
-    expect(confirmation!.queryParameters['amount'], '10.00');
-  });
+  testWidgets(
+    'editing clears required/format errors and seven digits proceed',
+    (tester) async {
+      await pumpTab(tester);
+      expect(find.text('Phone number is required.'), findsOneWidget);
+      await fill(tester, phone: '24280', confirm: '2428011616', amount: '10');
+      expect(find.text('Phone number is required.'), findsNothing);
+      expectNoDownstream();
+      await fill(tester, phone: '8011616', confirm: '8011616', amount: '10');
+      expect(find.text('Phone number is required.'), findsNothing);
+      expect(
+        find.text(
+          'Invalid phone number. Please enter a 10-digit phone number.',
+        ),
+        findsNothing,
+      );
+      await tester.tap(find.text('proceed'));
+      await tester.pumpAndSettle();
+      verify(() => sendRepo.phoneNumberExists('2428011616')).called(1);
+      expect(confirmation!.queryParameters['recipient'], '2428011616');
+      expect(confirmation!.queryParameters['amount'], '10.00');
+    },
+  );
 
   testWidgets('empty confirmation shows no mismatch and stays blocked', (
     tester,
