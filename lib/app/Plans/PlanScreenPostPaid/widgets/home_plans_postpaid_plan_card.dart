@@ -158,13 +158,18 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
                       shape: const StadiumBorder(),
                       side: const BorderSide(color: Color(0xFFF1F1F8)),
                     ),
-                    child: Text(
-                      expanded ? 'hide details' : 'view details',
-                      style: const TextStyle(
-                        fontFamily: 'CircularPro',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        color: Color(0xFF645D9C),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        expanded ? 'hide details' : 'view details',
+                        maxLines: 1,
+                        softWrap: false,
+                        style: const TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          color: Color(0xFF645D9C),
+                        ),
                       ),
                     ),
                   ),
@@ -178,13 +183,18 @@ class HomePlansPostPaidPlanCard extends StatelessWidget {
                         backgroundColor: const Color(0xFF645D9C),
                         shape: const StadiumBorder(),
                       ),
-                      child: const Text(
-                        'purchase now',
-                        style: TextStyle(
-                          fontFamily: 'CircularPro',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFF1F1F8),
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'purchase now',
+                          maxLines: 1,
+                          softWrap: false,
+                          style: TextStyle(
+                            fontFamily: 'CircularPro',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFF1F1F8),
+                          ),
                         ),
                       ),
                     ),

@@ -29,8 +29,8 @@ class SplashPage extends StatelessWidget {
           listener: (context, state) {
             if (state is LoggedIn) {
               context.go(AppRoutes.home);
-            } else if (state is BiometricLockRequired) {
-              context.go(AppRoutes.biometricLock);
+            } else if (state is SessionTimedOut) {
+              context.go(AppRoutes.logIn);
             } else if (state is SplashLoaded || state is SplashError) {
               context.go(AppRoutes.welcome);
             }

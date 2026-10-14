@@ -132,6 +132,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                       : HomePlanTheme.planCardViewDetailsLabel,
                   isLoading: false,
                   onPressed: onViewDetails,
+                  fitLabel: true,
                   height: HomePlanTheme.planCardActionButtonHeight,
                   contentPadding:
                       HomePlanTheme.planCardActionButtonContentPadding,
@@ -153,6 +154,7 @@ class HomePlanMifiPlanCard extends StatelessWidget {
                     label: HomePlanTheme.planCardPurchaseNowLabel,
                     isLoading: false,
                     onPressed: onPurchaseNow,
+                    fitLabel: true,
                     height: HomePlanTheme.planCardActionButtonHeight,
                     contentPadding:
                         HomePlanTheme.planCardActionButtonContentPadding,

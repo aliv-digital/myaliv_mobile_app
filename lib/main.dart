@@ -128,11 +128,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       _sessionTimeoutService.hasTimedOut().then((timedOut) {
         if (!mounted) return;
         if (timedOut) {
-          final biometricEnabled =
-              instance<FingerFaceSecurityCubit>().state.isAnyEnabled;
-          widget.appRouter.router.go(
-            biometricEnabled ? AppRoutes.biometricLock : AppRoutes.welcome,
-          );
+          widget.appRouter.router.go(AppRoutes.logIn);
+        } else {
+          // Still within the 20-min window — refresh the stamp so an
+          // immediate hot-restart (or back-to-back resumes) can't fall
+          // off the boundary into a false timeout.
+          _sessionTimeoutService.markActive();
         }
         _startHeartbeat();
       });

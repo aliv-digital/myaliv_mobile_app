@@ -130,6 +130,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                       : HomePlanTheme.planCardViewDetailsLabel,
                   isLoading: false,
                   onPressed: onViewDetails,
+                  fitLabel: true,
                   height: HomePlanTheme.planCardActionButtonHeight,
                   contentPadding:
                       HomePlanTheme.planCardActionButtonContentPadding,
@@ -151,6 +152,7 @@ class HomePlanMonthlyPlanCard extends StatelessWidget {
                     label: HomePlanTheme.planCardPurchaseNowLabel,
                     isLoading: false,
                     onPressed: onPurchaseNow,
+                    fitLabel: true,
                     height: HomePlanTheme.planCardActionButtonHeight,
                     contentPadding:
                         HomePlanTheme.planCardActionButtonContentPadding,
