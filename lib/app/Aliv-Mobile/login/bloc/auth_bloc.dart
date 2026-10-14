@@ -207,8 +207,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: state.password,
       );
 
-      // Cache credentials for biometric re-login. Fire-and-forget — a save
-      // failure must not block the login success path.
+      // Cache credentials for biometric re-login. Saved unconditionally
+      // because biometric auto-login depends on these creds; the
+      // `saveMyPassword` pref only governs field prefill in _onInitialized.
       CredentialStore()
           .save(
             apiPhone: phoneValidationResult.phoneNumberForApi!,

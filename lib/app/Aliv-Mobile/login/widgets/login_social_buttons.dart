@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../loginOtp/model/login_otp_route_args.dart';
@@ -82,13 +83,10 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     if (!context.mounted) return;
 
     if (creds == null) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('Please sign in with your password first.'),
-          ),
-        );
+      AppToast.show(
+        message: 'Please sign in with your password first.',
+        type: ToastType.error,
+      );
       return;
     }
 
@@ -124,11 +122,10 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
       }
     } catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(content: Text('Sign-in failed. Please try again.')),
-        );
+      AppToast.show(
+        message: 'Sign-in failed. Please try again.',
+        type: ToastType.error,
+      );
     } finally {
       if (mounted)
         setState(
