@@ -10,10 +10,10 @@ class OtpCodeFields extends StatefulWidget {
   const OtpCodeFields({super.key});
 
   @override
-  State<OtpCodeFields> createState() => _OtpCodeFieldsState();
+  State<OtpCodeFields> createState() => OtpCodeFieldsState();
 }
 
-class _OtpCodeFieldsState extends State<OtpCodeFields> {
+class OtpCodeFieldsState extends State<OtpCodeFields> {
   /// 6-digit PIN dispatched by the JWT auth API's 2FA flow.
   static const int _otpLength = 6;
 
@@ -44,6 +44,12 @@ class _OtpCodeFieldsState extends State<OtpCodeFields> {
       f.dispose();
     }
     super.dispose();
+  }
+
+  void clearCode() {
+    for (final controller in _controllers) {
+      controller.clear();
+    }
   }
 
   void _onChanged(int index, String value) {

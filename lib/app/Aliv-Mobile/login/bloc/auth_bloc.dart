@@ -205,8 +205,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: state.password,
       );
 
-      // Cache credentials for biometric re-login. Fire-and-forget — a save
-      // failure must not block the login success path.
+      // Cache credentials for biometric re-login. Saved unconditionally
+      // because biometric auto-login depends on these creds; the
+      // `saveMyPassword` pref only governs field prefill in _onInitialized.
       CredentialStore()
           .save(
             apiPhone: phoneValidationResult.phoneNumberForApi!,
@@ -256,18 +257,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } catch (e) {
       final message = _extractErrorMessage(e);
       debugPrint('Login error: $message, $e');
-      if (message.toString() == "FailedSimpleValidation") {
+      if (message.toString() == "FailedUsernameIsLocked") {
         _emitFailure(
           emit,
-          message: 'The number you entered is invalid',
+          message: "your account is locked out, please try again in 15 minutes",
           phoneFieldError: false,
           passwordFieldError: false,
           showToast: true,
         );
-      } else if (message.toString() == "FailedUsernameIsLocked") {
+      } else if (message.toString() == "FailedSimpleValidation") {
         _emitFailure(
           emit,
-          message: "your account is locked out, please try again in 15 minutes",
+          message: 'The number you entered is invalid',
           phoneFieldError: false,
           passwordFieldError: false,
           showToast: true,

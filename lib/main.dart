@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +18,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_c
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'main_injection_container.dart';
@@ -52,10 +55,6 @@ void main() async {
   // Load biometric status so the GoRouter redirect can read it synchronously
   await instance<FingerFaceSecurityCubit>().loadBiometricStatus();
 
-  // Seed AppUiConfigCubit from persisted AccountInfoCubit state so a cold
-  // start with a valid JWT session renders the correct prepaid/postpaid
-  // shell immediately, instead of flashing the default until a login/OTP/
-  // welcome path re-populates it.
   final accountState = instance<AccountInfoCubit>().state;
   final initialUiConfig = !accountState.hasAccount
       ? null
@@ -71,18 +70,82 @@ void main() async {
   runApp(MyApp(appRouter: appRouter, initialUiConfig: initialUiConfig));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final AppRouter appRouter;
   final HomeUiConfig? initialUiConfig;
 
   const MyApp({super.key, required this.appRouter, this.initialUiConfig});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final _sessionTimeoutService = SessionTimeoutService();
+  Timer? _activityHeartbeat;
+
+  // Refresh the "last active" timestamp this often while the app is in
+  // foreground. Keeps hot restarts (dev) and in-app periods of use from
+  // appearing as "20 min idle" because paused never fired.
+  static const _heartbeatInterval = Duration(minutes: 1);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _startHeartbeat();
+  }
+
+  @override
+  void dispose() {
+    _activityHeartbeat?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _startHeartbeat() {
+    _activityHeartbeat?.cancel();
+    _activityHeartbeat = Timer.periodic(_heartbeatInterval, (_) {
+      _sessionTimeoutService.markActive();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _activityHeartbeat?.cancel();
+      _sessionTimeoutService.markActive();
+    } else if (state == AppLifecycleState.resumed) {
+      // Only enforce timeout for already-logged-in users. Skip during
+      // ongoing login/OTP flows where no session exists yet — otherwise
+      // switching to Messages for an SMS code bounces user to Welcome.
+      final session = instance<AuthManager>().currentSession;
+      if (session == null || session.refreshExpired) {
+        _startHeartbeat();
+        return;
+      }
+
+      _sessionTimeoutService.hasTimedOut().then((timedOut) {
+        if (!mounted) return;
+        if (timedOut) {
+          final biometricEnabled =
+              instance<FingerFaceSecurityCubit>().state.isAnyEnabled;
+          widget.appRouter.router.go(
+            biometricEnabled ? AppRoutes.biometricLock : AppRoutes.welcome,
+          );
+        }
+        _startHeartbeat();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => AppUiConfigCubit(initialConfig: initialUiConfig),
+          create: (_) =>
+              AppUiConfigCubit(initialConfig: widget.initialUiConfig),
         ),
         BlocProvider.value(value: instance<AccountInfoCubit>()),
         BlocProvider.value(value: instance<PlansCubit>()),
@@ -95,7 +158,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'My Aliv',
-        routerConfig: appRouter.router,
+        routerConfig: widget.appRouter.router,
         theme: ThemeData(
           useMaterial3: true,
           appBarTheme: const AppBarTheme(

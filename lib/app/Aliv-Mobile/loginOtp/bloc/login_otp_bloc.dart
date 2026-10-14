@@ -212,6 +212,9 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     LoginOtpResendRequested event,
     Emitter<LoginOtpState> emit,
   ) async {
+    if (event.clearCode) {
+      emit(state.copyWith(code: '', errorMessage: state.errorMessage));
+    }
     final apiPhoneNumber = state.apiPhoneNumber.trim();
     final mfaToken = state.mfaToken.trim();
 

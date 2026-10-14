@@ -30,7 +30,7 @@ class _Account extends MockCubit<AccountInfoState>
 const _mifiWarning =
     'you already have an active mifi plan. buying this plan will replace it immediately.';
 const _noPlanWarning =
-    'you have no current plans, so your new plan will start immediately.';
+    'you have no active plan, so your new plan will start immediately.';
 
 void main() {
   late _Plans plans;
@@ -217,7 +217,7 @@ void main() {
       );
       expect(find.text(_mifiWarning), findsNothing);
       expect(
-        find.textContaining('activating now replaces your current plan.'),
+        find.textContaining('activating now replaces your current plan,'),
         findsOneWidget,
       );
     });
@@ -245,7 +245,7 @@ void main() {
     );
     expect(find.text(_mifiWarning), findsNothing);
     expect(
-      find.textContaining('activating now replaces your current plan.'),
+      find.textContaining('activating now replaces your current plan,'),
       findsOneWidget,
     );
     await tester.tap(find.text('activate now'));

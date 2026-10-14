@@ -449,26 +449,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   'buy\nplans',
                 ),
               ),
-            config.userType == UserType.postpaid
-                ? GestureDetector(
-                    onTap: () {
-                      context.read<AppUiConfigCubit>().showMyLimitsView();
-                      context.go(AppRoutes.usage);
-                    },
-                    child: const ActionTile(
-                      'assets/icons/SortDescending.svg',
-                      'update\ncredit limit',
+            if (!config.isRestricted)
+              config.userType == UserType.postpaid
+                  ? GestureDetector(
+                      onTap: () {
+                        context.read<AppUiConfigCubit>().showMyLimitsView();
+                        context.go(AppRoutes.usage);
+                      },
+                      child: const ActionTile(
+                        'assets/icons/SortDescending.svg',
+                        'update\ncredit limit',
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: () {
+                        context.push(AppRoutes.addOrEditCardsPrepaidScreen);
+                      },
+                      child: const ActionTile(
+                        'assets/icons/add_credit_card.svg',
+                        'add\ncredit card',
+                      ),
                     ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      context.push(AppRoutes.addOrEditCardsPrepaidScreen);
-                    },
-                    child: const ActionTile(
-                      'assets/icons/add_credit_card.svg',
-                      'add\ncredit card',
-                    ),
-                  ),
             GestureDetector(
               onTap: () {
                 context.push(AppRoutes.myProfilePrepaidScreen);

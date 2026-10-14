@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
@@ -5,6 +8,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/balanc
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/update_limits_request.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_api_service.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/repository/device_limits_repository.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 
 /// Cubit for managing Device Limits state
 ///
@@ -148,12 +152,34 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
 
   // ============ Auto-Renew Methods ============
 
+  /// Fires `PUT /device/subscription/{subId}/auto-renew` alongside the device-
+  /// level call. Silent: no state emits, no toasts — the device call owns UX.
+  /// `subId` is the active plan's `MTSubscriptionID` resolved from
+  /// [PlansCubit]; skipped if missing or non-numeric.
+  void _fireSubscriptionAutoRenewSilently({required bool enable}) {
+    final mtSubIdString = instance<PlansCubit>()
+        .state
+        .earliestAddOnsPrimaryPlan
+        ?.mtSubscriptionId;
+    final subId = int.tryParse(mtSubIdString ?? '');
+    if (subId == null || subId <= 0) return;
+
+    unawaited(
+      _repository.toggleSubscriptionAutoRenewSilently(
+        subId: subId,
+        enable: enable,
+      ),
+    );
+  }
+
   /// Enable auto-renew from wallet balance
   ///
   /// [deviceAccountId] - The device account ID
   /// Returns true if auto-renew was enabled successfully
   Future<bool> enableAutoRenewWallet(int deviceAccountId) async {
     if (state.isTogglingAutoRenew) return false;
+
+    _fireSubscriptionAutoRenewSilently(enable: true);
 
     emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
 
@@ -211,6 +237,8 @@ class DeviceLimitsCubit extends Cubit<DeviceLimitsState> {
   /// Returns true if auto-renew was disabled successfully
   Future<bool> disableAutoRenew(int deviceAccountId) async {
     if (state.isTogglingAutoRenew) return false;
+
+    _fireSubscriptionAutoRenewSilently(enable: false);
 
     emit(state.copyWith(isTogglingAutoRenew: true, clearError: true));
 

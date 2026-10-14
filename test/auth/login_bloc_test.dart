@@ -289,7 +289,15 @@ void main() {
         ),
         isA<LoginState>()
             .having((s) => s.status, 'status', LoginStatus.failure)
-            .having((s) => s.errorMessage, 'errorMessage', contains('locked')),
+            .having(
+              (s) => s.errorMessage,
+              'errorMessage',
+              'your account is locked out, please try again in 15 minutes',
+            )
+            .having((s) => s.outcome, 'outcome', LoginOutcome.none)
+            .having((s) => s.phoneFieldError, 'phoneFieldError', false)
+            .having((s) => s.passwordFieldError, 'passwordFieldError', false)
+            .having((s) => s.errorToastId, 'errorToastId', 1),
       ],
     );
   });

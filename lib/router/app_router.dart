@@ -831,6 +831,7 @@ class AppRouter {
                 );
 
           return LoginOtpScreen(
+            clearCodeOnResend: args.clearCodeOnResend,
             initialMfaToken: args.mfaToken,
             initialPhoneNumber: args.phoneNumber,
             initialApiPhoneNumber: args.apiPhoneNumber,
@@ -923,6 +924,7 @@ class AppRouter {
               showFaceId: cubit.state.faceIdEnabled,
               onAuthSuccess: () {
                 cubit.markSessionAuthenticated();
+                SessionTimeoutService().markActive();
                 router.go(AppRoutes.home);
               },
             ),

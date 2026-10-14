@@ -279,9 +279,13 @@ class _GuestPurchasePlanView extends StatelessWidget {
           );
         }
 
+        // No guest API exposes the account owner's plans yet, so primary
+        // purchases outside the liberty70 case use the no-active-plan copy.
+        // TODO: Implement Guest Row 4/5 warning selection when account-owner
+        // active/future plan state is available from the backend.
         return WalletPaymentActivateBottomSheet(
           warningText:
-              'the account owner has no current plan, so their new plan will start immediately.',
+              'the account owner has no active plan, so their new plan will start immediately.',
           planName: plan.title,
           planDurationText: plan.subtitle,
           planPriceText: plan.formattedPrice,

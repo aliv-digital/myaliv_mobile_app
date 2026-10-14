@@ -7,35 +7,40 @@ import 'login_terms_of_use_modal.dart';
 class LoginPrivacyPolicyLink extends StatelessWidget {
   const LoginPrivacyPolicyLink({super.key});
 
+  static final _linkStyle = AuthModuleTextStyles.privacyPolicyFooter.copyWith(
+    decoration: TextDecoration.none,
+  );
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextButton(
-          style: AuthModuleButtonStyles.inlineTextLink,
-          onPressed: () => showLoginPrivacyPolicyModal(context),
-          child: const Text(
-            'Privacy Policy',
-            style: AuthModuleTextStyles.privacyPolicyFooter,
-          ),
+    return DecoratedBox(
+      // A continuous underline matches the reference across both links and gaps.
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AuthModuleColors.managePassword),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 3),
-          child: Text(
-            '|',
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          TextButton(
+            style: AuthModuleButtonStyles.inlineTextLink,
+            onPressed: () => showLoginPrivacyPolicyModal(context),
+            child: Text('Privacy Policy', style: _linkStyle),
+          ),
+          const Text(
+            ' | ',
             style: AuthModuleTextStyles.privacyPolicyFooterSeparator,
           ),
-        ),
-        TextButton(
-          style: AuthModuleButtonStyles.inlineTextLink,
-          onPressed: () => showLoginTermsOfUseModal(context),
-          child: const Text(
-            'Terms of Use',
-            style: AuthModuleTextStyles.privacyPolicyFooter,
+          TextButton(
+            style: AuthModuleButtonStyles.inlineTextLink,
+            onPressed: () => showLoginTermsOfUseModal(context),
+            child: Text('Terms of Use', style: _linkStyle),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

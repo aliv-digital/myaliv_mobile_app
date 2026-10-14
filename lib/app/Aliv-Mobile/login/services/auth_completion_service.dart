@@ -37,6 +37,7 @@ class AuthCompletionService {
     required AppUiConfigCubit appUiConfigCubit,
   }) async {
     await instance<AuthManager>().saveSession(session);
+    await SessionTimeoutService().markActive();
 
     final accountInfoCubit = instance<AccountInfoCubit>();
     await accountInfoCubit.fetchAccountInfo(forceRefresh: true);

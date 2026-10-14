@@ -156,6 +156,22 @@ class DeviceLimitsApiService {
     }
   }
 
+  /// Toggle per-subscription auto-renew. Fire-and-forget: never throws, never
+  /// surfaces errors — callers rely on the device-level call for UX feedback.
+  ///
+  /// PUT /device/subscription/{subId}/auto-renew?autoRenew={enable}
+  Future<void> toggleSubscriptionAutoRenewSilently({
+    required int subId,
+    required bool enable,
+  }) async {
+    final url = '${Api.subscriptionAutoRenew(subId)}?autoRenew=$enable';
+    try {
+      await _networkService.request<dynamic>(url, method: HttpMethod.put);
+    } catch (_) {
+      // Intentionally silent.
+    }
+  }
+
   /// Update balance threshold settings for auto top-up
   ///
   /// PUT /device/{deviceAccountId}/balance-threshold-settings

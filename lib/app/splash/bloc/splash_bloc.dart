@@ -9,20 +9,25 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     on<SplashStarted>((event, emit) async {
       try {
         await Future<void>.delayed(const Duration(seconds: 1));
-        // AuthManager.loadSession() already ran in CoreInjection, so
-        // currentSession reflects persisted JWT state at this point.
+
         final session = instance<AuthManager>().currentSession;
-        if (session != null && !session.refreshExpired) {
-          final biometricCubit = instance<FingerFaceSecurityCubit>();
-          if (biometricCubit.state.isAnyEnabled &&
-              !biometricCubit.state.isSessionAuthenticated) {
-            emit(BiometricLockRequired());
-          } else {
-            emit(LoggedIn());
-          }
-        } else {
+
+        if (session == null || session.refreshExpired) {
           emit(SplashLoaded());
+          return;
         }
+
+        final timedOut = await SessionTimeoutService().hasTimedOut();
+        if (!timedOut) {
+          emit(LoggedIn());
+          return;
+        }
+
+        // Session is valid but user has been away >= 20 min.
+        // Require biometric re-auth if enabled; otherwise fall back to Welcome.
+        final biometricEnabled =
+            instance<FingerFaceSecurityCubit>().state.isAnyEnabled;
+        emit(biometricEnabled ? BiometricLockRequired() : SplashLoaded());
       } catch (_) {
         emit(SplashError());
       }

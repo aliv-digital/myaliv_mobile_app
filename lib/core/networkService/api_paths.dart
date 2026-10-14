@@ -42,6 +42,11 @@ class Api {
   static String deviceAutoRenew(int deviceAccountId) =>
       '$baseUrl/v1/MyAliv/device/$deviceAccountId/auto-renew';
 
+  /// Per-subscription auto-renew: PUT /device/subscription/{subId}/auto-renew?autoRenew={true|false}
+  /// `subId` is the active plan's `MTSubscriptionID`.
+  static String subscriptionAutoRenew(int subId) =>
+      '$baseUrl/v1/MyAliv/device/subscription/$subId/auto-renew';
+
   /// Auto-renew from credit card: PUT /CreditCard/auto-renew
   /// Body: `{ "Token": "...", "AgreementText": "I agree to automatic renewal" }`
   /// Also supports GET to read the currently saved auto-renew token (prepaid):

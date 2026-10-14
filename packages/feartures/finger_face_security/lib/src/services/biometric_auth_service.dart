@@ -8,6 +8,13 @@ class BiometricAuthService {
   static const String _fingerprintEnabledKey = 'biometric_fingerprint_enabled';
   static const String _faceIdEnabledKey = 'biometric_face_enabled';
 
+  /// SharedPreferences keys that must survive logout (device-level preferences).
+  static const Set<String> devicePreferenceKeys = {
+    _biometricEnabledKey,
+    _fingerprintEnabledKey,
+    _faceIdEnabledKey,
+  };
+
   BiometricAuthService({LocalAuthentication? localAuth})
     : _localAuth = localAuth ?? LocalAuthentication();
 

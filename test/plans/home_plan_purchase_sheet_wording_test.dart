@@ -12,6 +12,7 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/base_plan_model.da
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/repository/plan_types.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/home_plan_purchase_sheet_launcher.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/roam_bottom_sheet.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_bottom_sheet.dart';
 
 // import 'package:myaliv_mobile_app/app/Plans/PlanScreen/widgets/wallet_payment_activate_or_future_bottom_sheet.dart';
@@ -48,7 +49,11 @@ void main() {
     'EndDate': end?.toUtc().toIso8601String() ?? '',
   });
 
-  Future<void> openSheet(WidgetTester tester, PlansState state) async {
+  Future<void> openSheet(
+    WidgetTester tester,
+    PlansState state, {
+    HomePlanTab tab = HomePlanTab.monthly,
+  }) async {
     when(() => plans.state).thenReturn(state);
     await tester.pumpWidget(
       BlocProvider<PlansCubit>.value(
@@ -60,7 +65,7 @@ void main() {
                 onPressed: () => unawaited(
                   showHomePlanPurchaseBottomSheet(
                     context: context,
-                    selectedTab: HomePlanTab.monthly,
+                    selectedTab: tab,
                     plan: const HomePlanModel(
                       id: 'liberty120',
                       title: 'liberty120',
@@ -98,7 +103,7 @@ void main() {
       );
       expect(
         find.text(
-          'you have no current plans, so your new plan will start immediately.',
+          'you have no active plan, so your new plan will start immediately.',
         ),
         findsOneWidget,
       );
@@ -138,6 +143,57 @@ void main() {
     });
   }
 
+  testWidgets('standalone without any primary still uses no-active-plan copy', (
+    tester,
+  ) async {
+    await openSheet(
+      tester,
+      PlansState(
+        standAlonePlans: [plan(type: 'A', start: today, end: currentEnd)],
+      ),
+    );
+
+    expect(
+      find.byType(HomePlanWalletPaymentActivateBottomSheet),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'you have no active plan, so your new plan will start immediately.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('activating now replaces'), findsNothing);
+    expect(find.text('activate now'), findsOneWidget);
+    expect(find.text('future plan'), findsNothing);
+  });
+
+  for (final standalone in [false, true]) {
+    testWidgets('standalone sheet keeps authenticated copy (existing standalone: '
+        '$standalone)', (tester) async {
+      await openSheet(
+        tester,
+        PlansState(
+          standAlonePlans: standalone
+              ? [plan(type: 'A', start: today, end: currentEnd)]
+              : const [],
+        ),
+        tab: HomePlanTab.roaming,
+      );
+
+      expect(find.byType(HomePlanRoamBottomSheet), findsOneWidget);
+      expect(
+        find.text(
+          'when to start? — your standalone plan can start immediately, or on a date of your choice.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('the account owner'), findsNothing);
+      expect(find.text('start from'), findsOneWidget);
+      expect(find.text('activate now'), findsOneWidget);
+    });
+  }
+
   for (final scenario in ['primary only', 'future only', 'standalone only']) {
     testWidgets('$scenario keeps replacement wording', (tester) async {
       final end = scenario == 'future only' ? futureEnd : currentEnd;
@@ -155,11 +211,18 @@ void main() {
               : [],
         ),
       );
+      final date = DateFormat('MM-dd-yy').format(end);
       expect(
         find.text(
-          'activating now replaces your current plan. '
-          'you can also activate your plan when your current plan ends on '
-          '${DateFormat('MM-dd-yy').format(end)}.',
+          scenario == 'future only'
+              // Not row 4 (no active primary): existing fallback copy.
+              ? 'activating now replaces your current plan. '
+                    'you can also activate your plan when your current plan '
+                    'ends on $date.'
+              // Row 4: client chart copy.
+              : 'activating now replaces your current plan, '
+                    'you can also active your plan when your current plan '
+                    'ends on $date.',
         ),
         findsOneWidget,
       );
@@ -167,8 +230,9 @@ void main() {
   }
 
   testWidgets(
-    // Previous expectation: active primary with future standalone keeps replacement wording.
-    'active primary with future standalone uses the single dated action',
+    // Previous expectation: a future standalone produced the single dated
+    // action. Rows 4/5 now depend on future primary plans only.
+    'active primary with only a future standalone keeps replacement choices',
     (tester) async {
       await openSheet(
         tester,
@@ -177,15 +241,17 @@ void main() {
           standAlonePlans: [plan(type: 'A', start: currentEnd, end: futureEnd)],
         ),
       );
-      // expect(find.textContaining('activating now replaces'), findsOneWidget);
       expect(
         find.text(
-          'you can activate your plan when your current plan ends on '
-          '${DateFormat('MM-dd-yy').format(futureEnd)}.',
+          'activating now replaces your current plan, '
+          'you can also active your plan when your current plan ends on '
+          '${DateFormat('MM-dd-yy').format(currentEnd)}.',
         ),
         findsOneWidget,
       );
-      expect(find.text('future plan'), findsNothing);
+      expect(find.text('activate now'), findsOneWidget);
+      expect(find.text('future plan'), findsOneWidget);
+      expect(find.textContaining('activate my new plan on'), findsNothing);
     },
   );
 

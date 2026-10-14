@@ -5,10 +5,12 @@ class LoginOtpRouteArgs {
   final String mfaToken;
   final String phoneNumber;
   final String apiPhoneNumber;
+  final bool clearCodeOnResend;
 
   const LoginOtpRouteArgs({
     required this.mfaToken,
     required this.phoneNumber,
     required this.apiPhoneNumber,
+    this.clearCodeOnResend = false,
   });
 }

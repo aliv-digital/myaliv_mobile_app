@@ -1,3 +1,4 @@
+import 'package:myaliv_mobile_app/app/common/services/payments/promo_subtotal_validation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/rev_confirmation_prepaid_repository.dart';
@@ -7,6 +8,8 @@ import 'rev_confirmation_prepaid_state.dart';
 class RevConfirmationPrepaidBloc
     extends Bloc<RevConfirmationPrepaidEvent, RevConfirmationPrepaidState> {
   final RevConfirmationPrepaidRepository repository;
+  // Context edits invalidate pending promo results without cancelling transport.
+  int _promoRevision = 0;
 
   RevConfirmationPrepaidBloc({required this.repository})
     : super(RevConfirmationPrepaidState.initial()) {
@@ -25,6 +28,10 @@ class RevConfirmationPrepaidBloc
     RevConfirmationStarted event,
     Emitter<RevConfirmationPrepaidState> emit,
   ) async {
+    _promoRevision++;
+    emit(
+      state.copyWith(promoStatus: RevPromoStatus.idle, promoErrorMessage: ''),
+    );
     final data = await repository.fetchConfirmation();
 
     emit(
@@ -46,8 +53,10 @@ class RevConfirmationPrepaidBloc
     RevPromoCodeChanged event,
     Emitter<RevConfirmationPrepaidState> emit,
   ) {
+    _promoRevision++;
     emit(
       state.copyWith(
+        promoErrorMessage: '',
         promoCode: event.value,
         promoStatus: RevPromoStatus.idle,
         discount: 0, // reset discount when code changes
@@ -61,13 +70,36 @@ class RevConfirmationPrepaidBloc
   ) async {
     if (!state.canApplyPromo) return;
 
-    emit(state.copyWith(promoStatus: RevPromoStatus.applying));
+    final revision = ++_promoRevision;
+    emit(
+      state.copyWith(
+        promoStatus: RevPromoStatus.applying,
+        promoErrorMessage: '',
+      ),
+    );
 
     final result = await repository.applyPromo(
       code: state.promoCode,
       subtotal: state.subtotal,
     );
 
+    if (emit.isDone || revision != _promoRevision) {
+      return;
+    }
+    if (result.discount > 0 &&
+        PromoSubtotalValidation.exceedsSubtotal(
+          discount: result.discount,
+          subtotal: state.subtotal,
+        )) {
+      emit(
+        state.copyWith(
+          discount: 0,
+          promoStatus: RevPromoStatus.invalid,
+          promoErrorMessage: PromoSubtotalValidation.errorMessage,
+        ),
+      );
+      return;
+    }
     if (result.discount > 0) {
       emit(
         state.copyWith(

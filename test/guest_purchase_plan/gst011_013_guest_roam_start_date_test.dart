@@ -5,7 +5,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/theme/
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/widgets/roam_bottom_sheet.dart';
 
 const _info =
-    'your standalone plan can start immediately, or on a date of your choice.';
+    'the account owner standalone plan can start immediately, or on a date of choice.';
 const _noDateError = 'choose a start date to continue';
 const _oldRed = Color(0xFFF30F0F);
 

@@ -133,7 +133,7 @@ void main() {
   ) async {
     await openSheet(tester, tab: HomePlanTab.monthly);
     const monthlyCopy =
-        'you have no current plans, so your new plan will start immediately.';
+        'you have no active plan, so your new plan will start immediately.';
     final colors = boxColors(tester, monthlyCopy);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpAndSettle();

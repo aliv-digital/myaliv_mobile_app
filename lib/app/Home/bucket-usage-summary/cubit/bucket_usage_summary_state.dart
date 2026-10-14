@@ -149,6 +149,11 @@ class BucketUsageSummaryState extends Equatable {
       activePlans: [plan],
       items: items,
       excludePlanIds: activePlanIds.union(otherStandAloneIds),
+      // Standalone roaming cards surface the API's region-qualified name
+      // for the "roaming data" row (e.g. "US/Can/UK roaming data") so the
+      // user can see which region the allowance applies to. Other rows
+      // keep their plan-side labels.
+      apiNameOverrideKeys: const <String>{'roaming data'},
     );
   }
 

@@ -88,6 +88,17 @@ class DeviceLimitsRepository {
     return _apiService.disableAutoRenew(deviceAccountId);
   }
 
+  /// Silent per-subscription auto-renew toggle. Never throws; result ignored.
+  Future<void> toggleSubscriptionAutoRenewSilently({
+    required int subId,
+    required bool enable,
+  }) {
+    return _apiService.toggleSubscriptionAutoRenewSilently(
+      subId: subId,
+      enable: enable,
+    );
+  }
+
   /// Enable auto-renew from credit card
   ///
   /// [token] - Saved card token to charge on renewal

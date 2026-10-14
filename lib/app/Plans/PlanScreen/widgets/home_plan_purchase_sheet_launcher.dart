@@ -94,8 +94,9 @@ Future<void> showHomePlanPurchaseBottomSheet({
         );
       }
 
-      // Isolate the single scheduled action; all other cases keep their sheet.
-      if (plansState.hasActivePrimaryWithStandaloneAndFuturePlans) {
+      // Row 5: active primary + 1+ future primary → schedule only, whether or
+      // not a standalone exists. All other cases keep their sheet.
+      if (plansState.hasActivePrimaryWithFuturePrimaryPlans) {
         final lastPlanEndDate = plansState.latestPurchasedPlanEndDate;
         // Do not invent a schedule date if the API supplied no valid end date.
         if (lastPlanEndDate != null) {
@@ -143,12 +144,22 @@ Future<void> showHomePlanPurchaseBottomSheet({
             plansState.hasActivePrimaryPlan &&
             PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) ==
                 PlanGroup.mifi;
-        final warningText = hasActiveMifiPlan
-            ? 'you already have an active mifi plan. '
-                  'buying this plan will replace it immediately.'
-            : hasStandAloneAndFuturePlan
-            ? standAloneFuturePlanMessage
-            : activePlanMessage;
+        final String warningText;
+        if (hasActiveMifiPlan) {
+          warningText =
+              'you already have an active mifi plan. '
+              'buying this plan will replace it immediately.';
+        } else if (plansState.hasActivePrimaryWithoutFuturePrimaryPlans) {
+          // Row 4: active primary + no future primary → replace or schedule.
+          // Client chart copy, verbatim (including "active your plan").
+          warningText =
+              'activating now replaces your current plan, '
+              'you can also active your plan when your current plan ends$endDateText.';
+        } else {
+          warningText = hasStandAloneAndFuturePlan
+              ? standAloneFuturePlanMessage
+              : activePlanMessage;
+        }
 
         return HomePlanWalletPaymentActivateOrFutureBottomSheet(
           warningText: warningText,
@@ -236,7 +247,7 @@ Future<void> showHomePlanPurchaseBottomSheet({
 
       return HomePlanWalletPaymentActivateBottomSheet(
         warningText:
-            'you have no current plans, so your new plan will start immediately.',
+            'you have no active plan, so your new plan will start immediately.',
         planName: plan.title,
         planDurationText: plan.subtitle,
         planPriceText: _priceText(plan.price),
