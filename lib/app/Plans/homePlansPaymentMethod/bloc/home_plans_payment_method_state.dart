@@ -73,6 +73,9 @@ class HomePlansPaymentMethodState extends Equatable {
   /// so the receipt can offer the save-card affordance via /CreditCard/savenew.
   final String? orderId;
 
+  /// Confirmed funding source, independent of later payment-radio changes.
+  final bool walletPaymentSucceeded;
+
   const HomePlansPaymentMethodState({
     required this.status,
     required this.errorMessage,
@@ -95,6 +98,7 @@ class HomePlansPaymentMethodState extends Equatable {
     this.orderId,
     this.purchaseContext = PlanPurchaseContext.regular,
     this.hasConfirmed3DSPayment = false,
+    this.walletPaymentSucceeded = false,
   });
 
   factory HomePlansPaymentMethodState.initial() {
@@ -183,6 +187,7 @@ class HomePlansPaymentMethodState extends Equatable {
     bool clearLastNewCardDetails = false,
     String? orderId,
     bool clearOrderId = false,
+    bool? walletPaymentSucceeded,
   }) {
     return HomePlansPaymentMethodState(
       status: status ?? this.status,
@@ -210,6 +215,8 @@ class HomePlansPaymentMethodState extends Equatable {
           ? null
           : (lastNewCardDetails ?? this.lastNewCardDetails),
       orderId: clearOrderId ? null : (orderId ?? this.orderId),
+      walletPaymentSucceeded:
+          walletPaymentSucceeded ?? this.walletPaymentSucceeded,
     );
   }
 
@@ -236,5 +243,6 @@ class HomePlansPaymentMethodState extends Equatable {
     walletWarningRequestId,
     lastNewCardDetails,
     orderId,
+    walletPaymentSucceeded,
   ];
 }

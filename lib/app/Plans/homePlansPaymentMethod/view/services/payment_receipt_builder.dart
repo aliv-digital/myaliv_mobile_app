@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_plan_purchase_receipt_state.dart';
@@ -53,6 +54,12 @@ class PaymentReceiptBuilder {
       'paymentMethods': state.methods,
       'cardToSave': ?cardToSave,
       if (state.orderId != null) 'orderId': state.orderId,
+      if (state.walletPaymentSucceeded &&
+          state.status == HomePlansPaymentMethodStatus.success &&
+          state.navTarget == HomePlansPaymentMethodNavTarget.paid)
+        'walletPaymentSuccess': WalletPaymentSuccess.fromCurrentUser(
+          account: context.read<AccountInfoCubit>().state,
+        ),
     };
   }
 

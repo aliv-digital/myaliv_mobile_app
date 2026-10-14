@@ -6,6 +6,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/bloc/home_pl
 import 'package:myaliv_mobile_app/app/Plans/homePlanPurchaseReceipt/repository/home_plan_purchase_receipt_repository.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
@@ -33,6 +34,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
     this.cardToSave,
     this.orderId,
     this.isPaymentFailed = false,
+    this.walletPaymentSuccess,
   });
 
   final String phoneNumber;
@@ -57,6 +59,7 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
   /// When true the failure ticket is shown instead of the success card.
   /// The bloc is not created in this case.
   final bool isPaymentFailed;
+  final WalletPaymentSuccess? walletPaymentSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -115,10 +118,13 @@ class HomePlanPurchaseReceiptScreen extends StatelessWidget {
         create: (ctx) => HomePlanPurchaseReceiptBloc(
           repository: ctx.read<HomePlanPurchaseReceiptRepository>(),
         )..add(HomePlanPurchaseReceiptStarted(receiptData)),
-        child: _HomePlanPurchaseReceiptView(
-          statusMessage: statusMessage,
-          cardToSave: cardToSave,
-          orderId: orderId,
+        child: WalletPaymentSuccessReceipt(
+          success: walletPaymentSuccess,
+          child: _HomePlanPurchaseReceiptView(
+            statusMessage: statusMessage,
+            cardToSave: cardToSave,
+            orderId: orderId,
+          ),
         ),
       ),
     );

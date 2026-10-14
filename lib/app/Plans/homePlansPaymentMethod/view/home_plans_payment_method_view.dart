@@ -37,6 +37,7 @@ class _HomePlansPaymentMethodViewState
   /// PAY-001: set when pay now is tapped without a usable payment method.
   bool _showPaymentMethodError = false;
   bool _purchaseCancellationShown = false;
+  bool _walletReceiptOpened = false;
 
   void _showPurchaseCancellation() {
     if (_purchaseCancellationShown) {
@@ -79,6 +80,9 @@ class _HomePlansPaymentMethodViewState
   }
 
   void _onState(BuildContext context, HomePlansPaymentMethodState state) {
+    if (state.status == HomePlansPaymentMethodStatus.submitting) {
+      _walletReceiptOpened = false;
+    }
     _maybeShowWalletWarning(state);
 
     // Show a toast only for non-navigable failures (e.g. loading payment methods).
@@ -92,6 +96,15 @@ class _HomePlansPaymentMethodViewState
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
+      if (state.walletPaymentSucceeded) {
+        if (_walletReceiptOpened) {
+          context.read<HomePlansPaymentMethodBloc>().add(
+            const HomePlansPaymentNavConsumed(),
+          );
+          return;
+        }
+        _walletReceiptOpened = true;
+      }
       // ADD-006 confirms purchased add-ons; scheduled purchases retain PLAN-013.
       if (state.status == HomePlansPaymentMethodStatus.success &&
           state.isPrepaidUser &&
@@ -230,7 +243,9 @@ class _HomePlansPaymentMethodViewState
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget ||
           p.errorMessage != c.errorMessage ||
-          p.walletWarningRequestId != c.walletWarningRequestId,
+          p.walletWarningRequestId != c.walletWarningRequestId ||
+          (p.status != c.status &&
+              c.status == HomePlansPaymentMethodStatus.submitting),
       listener: _onState,
       builder: (context, state) {
         final isLoading = state.status == HomePlansPaymentMethodStatus.loading;

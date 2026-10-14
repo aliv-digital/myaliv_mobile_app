@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/bloc
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_state.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
+import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
 import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -49,6 +50,8 @@ class _PayFromWalletSheetView extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
           child: BlocConsumer<PayFromWalletCubit, PayFromWalletState>(
+            listenWhen: (previous, current) =>
+                !previous.isSuccess || !current.isSuccess,
             listener: (context, state) {
               if (state.isSuccess) {
                 Navigator.pop(context); // close bottom sheet
@@ -253,6 +256,7 @@ class _PayFromWalletSheetView extends StatelessWidget {
         title: 'Wallet Transfer Successful!',
         message: 'It may take a few moments before the order is processed.',
         variant: UserProfileReceiptVariant.walletTransfer,
+        walletPaymentSuccess: WalletPaymentSuccess.fromCurrentUser(),
       ),
     );
   }

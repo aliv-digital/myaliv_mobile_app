@@ -45,6 +45,7 @@ class HomePlansPaymentMethodBloc
         forceNow: event.forceNow,
         purchaseContext: event.purchaseContext,
         hasConfirmed3DSPayment: false,
+        walletPaymentSucceeded: false,
         selectedBeginDate: event.selectedBeginDate,
       ),
     );
@@ -153,6 +154,7 @@ class HomePlansPaymentMethodBloc
         selectedBeginDate: state.selectedBeginDate,
       ),
       'Wallet payment failed. Try again.',
+      walletPayment: state.isPrepaidUser,
     );
   }
 
@@ -239,14 +241,16 @@ class HomePlansPaymentMethodBloc
   Future<void> _submitChangeBundle(
     Emitter<HomePlansPaymentMethodState> emit,
     Future<int?> Function() invoke,
-    String failureFallback,
-  ) async {
+    String failureFallback, {
+    bool walletPayment = false,
+  }) async {
     if (state.status == HomePlansPaymentMethodStatus.submitting) return;
 
     emit(
       state.copyWith(
         status: HomePlansPaymentMethodStatus.submitting,
         errorMessage: null,
+        walletPaymentSucceeded: false,
       ),
     );
 
@@ -258,6 +262,7 @@ class HomePlansPaymentMethodBloc
           status: HomePlansPaymentMethodStatus.success,
           navTarget: HomePlansPaymentMethodNavTarget.paid,
           orderId: orderId?.toString(),
+          walletPaymentSucceeded: walletPayment,
         ),
       );
     } catch (error) {
@@ -290,6 +295,7 @@ class HomePlansPaymentMethodBloc
       state.copyWith(
         status: HomePlansPaymentMethodStatus.submitting,
         errorMessage: null,
+        walletPaymentSucceeded: false,
       ),
     );
 
@@ -333,6 +339,7 @@ class HomePlansPaymentMethodBloc
         status: HomePlansPaymentMethodStatus.success,
         navTarget: HomePlansPaymentMethodNavTarget.paid,
         orderId: event.orderId,
+        walletPaymentSucceeded: false,
       ),
     );
   }
