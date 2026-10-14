@@ -78,7 +78,19 @@ class _LoginSocialButtonsState extends State<LoginSocialButtons> {
     if (!context.mounted) return;
     if (cubit.state.status != FingerFaceSecurityStatus.authenticated) return;
 
-    // Biometric passed — now replay cached credentials against the API.
+    // Fast path — if valid JWT tokens are still cached (session not
+    // refresh-expired), skip the login API entirely. Avoids re-triggering
+    // MFA/OTP for the common 20-min-idle case where tokens are still fresh.
+    final existingSession = instance<AuthManager>().currentSession;
+    if (existingSession != null && !existingSession.refreshExpired) {
+      cubit.markSessionAuthenticated();
+      await SessionTimeoutService().markActive();
+      if (!context.mounted) return;
+      context.go(AppRoutes.home);
+      return;
+    }
+
+    // No valid session — fall back to replaying cached credentials.
     final creds = await CredentialStore().load();
     if (!context.mounted) return;
 
