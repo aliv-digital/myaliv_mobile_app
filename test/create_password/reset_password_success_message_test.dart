@@ -95,7 +95,7 @@ void main() {
           expect(validationMessages, [
             outcome == 'mismatch'
                 ? 'Passwords do not match.'
-                : 'Password must be at least 8 characters.'
+                : 'Password must be 8 characters long'
           ]);
           verifyZeroInteractions(network);
           expect(find.byType(CreatePasswordScreen), findsOneWidget);

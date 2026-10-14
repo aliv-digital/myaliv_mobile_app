@@ -54,7 +54,7 @@ class CreatePasswordBloc
     final pass = state.password.trim();
     final confirm = state.confirmPassword.trim();
     if (pass.length < 8) {
-      AppUtils.showWarningToast('Password must be at least 8 characters.');
+      AppUtils.showWarningToast('Password must be 8 characters long');
       return;
     }
     if (pass.length > 64) {
