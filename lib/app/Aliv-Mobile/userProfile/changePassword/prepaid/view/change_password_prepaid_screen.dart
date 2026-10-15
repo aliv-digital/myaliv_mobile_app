@@ -241,7 +241,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(28, 26, 28, 18),
+                padding: const EdgeInsets.fromLTRB(28, 32, 28, 18),
                 sliver: SliverToBoxAdapter(
                   child: Center(
                     child: ConstrainedBox(
@@ -249,6 +249,8 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          const ChangePasswordPrepaidHeaderText(),
+                          const SizedBox(height: 20),
                           BlocBuilder<
                             ChangePasswordPrepaidBloc,
                             ChangePasswordPrepaidState
@@ -274,7 +276,7 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                               );
                             },
                           ),
-                          const SizedBox(height: 15),
+                          const SizedBox(height: 16),
                           BlocBuilder<
                             ChangePasswordPrepaidBloc,
                             ChangePasswordPrepaidState
@@ -303,33 +305,34 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                               );
                             },
                           ),
-                          const SizedBox(height: 10),
-                          const ChangePasswordPrepaidHeaderText(),
-                          const SizedBox(height: 30),
-                          BlocBuilder<
-                            ChangePasswordPrepaidBloc,
-                            ChangePasswordPrepaidState
-                          >(
-                            buildWhen: (p, c) =>
-                                p.status != c.status || p.isValid != c.isValid,
-                            builder: (context, state) {
-                              final isLoading =
-                                  state.status ==
-                                      ChangePasswordPrepaidStatus.verifying ||
-                                  state.status ==
-                                      ChangePasswordPrepaidStatus.submitting;
+                          const SizedBox(height: 40),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: BlocBuilder<ChangePasswordPrepaidBloc,
+                                ChangePasswordPrepaidState>(
+                              buildWhen: (p, c) =>
+                                  p.status != c.status ||
+                                  p.isValid != c.isValid,
+                              builder: (context, state) {
+                                final isLoading = state.status ==
+                                        ChangePasswordPrepaidStatus.verifying ||
+                                    state.status ==
+                                        ChangePasswordPrepaidStatus.submitting;
 
-                              return ChangePasswordPrepaidSubmitButton(
-                                label: 'change password',
-                                enabled: !isLoading,
-                                isLoading: isLoading,
-                                onTap: () {
-                                  context.read<ChangePasswordPrepaidBloc>().add(
-                                    const ChangePasswordPrepaidSubmitPressed(),
-                                  );
-                                },
-                              );
-                            },
+                                return ChangePasswordPrepaidSubmitButton(
+                                  label: 'change password',
+                                  enabled: !isLoading,
+                                  isLoading: isLoading,
+                                  onTap: () {
+                                    context
+                                        .read<ChangePasswordPrepaidBloc>()
+                                        .add(
+                                          const ChangePasswordPrepaidSubmitPressed(),
+                                        );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                           const SizedBox(height: 260),
                         ],
