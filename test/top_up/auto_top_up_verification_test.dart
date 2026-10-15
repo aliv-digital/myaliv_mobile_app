@@ -395,33 +395,28 @@ void main() {
     );
   }
 
-  flow(
-    'iOS mixed navigation success returns to the authorization owner',
-    (tester, h) async {
-      await h.submit(tester);
-      expect(h.mutations, 0);
-      await h.otp.verify(tester);
-      await h.finish(tester);
-      expect(h.mutations, 1);
-      expect(find.text('home destination'), findsOneWidget);
-    },
-    platform: TargetPlatform.iOS,
-  );
-  flow(
-    'iOS mixed navigation cancel retains the same form',
-    (tester, h) async {
-      await h.submit(tester);
-      h.router.pop();
-      await tester.pumpAndSettle();
-      expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
-      expect(
-        tester.widget<TextField>(find.byType(TextField)).controller!.text,
-        'Test Subscriber',
-      );
-      expect(h.mutations, 0);
-    },
-    platform: TargetPlatform.iOS,
-  );
+  flow('iOS mixed navigation success returns to the authorization owner', (
+    tester,
+    h,
+  ) async {
+    await h.submit(tester);
+    expect(h.mutations, 0);
+    await h.otp.verify(tester);
+    await h.finish(tester);
+    expect(h.mutations, 1);
+    expect(find.text('home destination'), findsOneWidget);
+  }, platform: TargetPlatform.iOS);
+  flow('iOS mixed navigation cancel retains the same form', (tester, h) async {
+    await h.submit(tester);
+    h.router.pop();
+    await tester.pumpAndSettle();
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'Test Subscriber',
+    );
+    expect(h.mutations, 0);
+  }, platform: TargetPlatform.iOS);
 
   for (final change in ['threshold', 'amount', 'card']) {
     flow(
