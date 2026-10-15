@@ -24,6 +24,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
   final AnalyticsService _analyticsService;
   final bool preventDuplicateSubmissions;
   final String offlineVerificationMessage;
+  final bool resetValidationOnResend;
   bool _submissionInProgress = false;
 
   LoginOtpBloc({
@@ -37,6 +38,7 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     String initialApiPhoneNumber = '',
     this.preventDuplicateSubmissions = false,
     this.offlineVerificationMessage = 'No Internet Connection',
+    this.resetValidationOnResend = false,
   }) : authCompletionService =
            authCompletionService ?? const AuthCompletionService(),
        _internetConnection = internetConnection ?? InternetConnection(),
@@ -212,7 +214,17 @@ class LoginOtpBloc extends Bloc<LoginOtpEvent, LoginOtpState> {
     LoginOtpResendRequested event,
     Emitter<LoginOtpState> emit,
   ) async {
-    if (event.clearCode) {
+    if (resetValidationOnResend) {
+      emit(
+        state.copyWith(
+          code: event.clearCode ? '' : state.code,
+          status: LoginOtpStatus.initial,
+          errorType: LoginOtpErrorType.none,
+          codeFieldError: false,
+          errorMessage: null,
+        ),
+      );
+    } else if (event.clearCode) {
       emit(state.copyWith(code: '', errorMessage: state.errorMessage));
     }
     final apiPhoneNumber = state.apiPhoneNumber.trim();

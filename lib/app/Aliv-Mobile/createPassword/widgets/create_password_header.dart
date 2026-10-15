@@ -9,7 +9,7 @@ class CreatePasswordHeader extends StatelessWidget {
     super.key,
     this.title = 'create password',
     this.subtitle =
-        'Set the new password for your account so you can login and access myaliv app',
+        'set the new password for your account so you can login and access myaliv app',
     this.onBack,
   });
 

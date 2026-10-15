@@ -10,6 +10,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/createPassword/bloc/create_password_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/createPassword/bloc/create_password_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/createPassword/view/create_password_page.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 
 class _MockNetworkService extends Mock implements NetworkService {}
 
@@ -87,6 +88,8 @@ void main() {
         data: {'CurrentPassword': null, 'NewPassword': 'password1'},
       ),
     ).called(1);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   testWidgets('invalid input through Done follows existing validation path', (
@@ -101,11 +104,16 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
-    expect(toastCalls, hasLength(1));
-    expect(toastCalls.single.method, 'showToast');
+    expect(toastCalls, isEmpty);
+    expect(find.byIcon(Icons.close), findsOneWidget);
     expect(
-      (toastCalls.single.arguments as Map<Object?, Object?>)['msg'],
-      'Password must be 8 characters long',
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Text &&
+            widget.data == 'Password must be 8 characters long' &&
+            widget.style?.color == Colors.white,
+      ),
+      findsOneWidget,
     );
     verifyNever(
       () => networkService.request<dynamic>(
@@ -114,7 +122,8 @@ void main() {
         data: any(named: 'data'),
       ),
     );
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   testWidgets('Done does not submit again while already submitting', (
@@ -155,11 +164,18 @@ void main() {
 
     pendingRequest.completeError(Exception('expected test failure'));
     await tester.pump();
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 }
 
 Future<void> _pumpCreatePasswordScreen(WidgetTester tester) async {
-  await tester.pumpWidget(const MaterialApp(home: CreatePasswordScreen()));
+  await tester.pumpWidget(
+    MaterialApp(
+      navigatorKey: rootNavigatorKey,
+      home: const CreatePasswordScreen(),
+    ),
+  );
   await tester.pump();
 }
 

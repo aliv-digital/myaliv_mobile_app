@@ -24,6 +24,7 @@ class LoginOtpScreen extends StatelessWidget {
     this.onSuccess,
     this.successMessage,
     this.clearCodeOnResend = false,
+    this.resetValidationOnResend = false,
   });
 
   /// mfa_token issued by the login endpoint; seeded into the bloc so the
@@ -42,19 +43,26 @@ class LoginOtpScreen extends StatelessWidget {
   /// Optional toast message shown on success. Defaults to 'OTP verified successfully.'.
   final String? successMessage;
 
-  /// Opt-in for password login; other OTP flows retain their input.
+  /// Clears entered digits on resend for flows that opt in.
   final bool clearCodeOnResend;
+
+  /// Forgot Password clears previous verification errors when requesting a code.
+  final bool resetValidationOnResend;
+
+  @protected
+  LoginOtpBloc createBloc(BuildContext context) => LoginOtpBloc(
+    repository: LoginOtpRepository(),
+    appUiConfigCubit: context.read<AppUiConfigCubit>(),
+    initialMfaToken: initialMfaToken,
+    initialPhoneNumber: initialPhoneNumber,
+    initialApiPhoneNumber: initialApiPhoneNumber,
+    resetValidationOnResend: resetValidationOnResend,
+  );
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginOtpBloc(
-        repository: LoginOtpRepository(),
-        appUiConfigCubit: context.read<AppUiConfigCubit>(),
-        initialMfaToken: initialMfaToken,
-        initialPhoneNumber: initialPhoneNumber,
-        initialApiPhoneNumber: initialApiPhoneNumber,
-      ),
+      create: createBloc,
       child: _LoginOtpView(
         onSuccess: onSuccess,
         successMessage: successMessage,
@@ -87,6 +95,7 @@ class _LoginOtpViewState extends State<_LoginOtpView> {
   Widget build(BuildContext context) {
     return StripedScaffold(
       resizeToAvoidBottomInset: true,
+      stripesReserveSpace: true,
       body: SafeArea(
         child: BlocListener<LoginOtpBloc, LoginOtpState>(
           listenWhen: (previous, current) {
@@ -132,32 +141,50 @@ class _LoginOtpViewState extends State<_LoginOtpView> {
               );
             }
           },
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              const SliverToBoxAdapter(child: OtpHeader()),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: LoginOtpPaddings.contentHorizontal,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: LoginOtpSizes.contentTopGap),
-                      OtpCodeFields(key: _codeFieldsKey),
-                      SizedBox(height: LoginOtpSizes.otpToBottomActionsGap),
-                      OtpBottomActions(
-                        clearCodeOnResend: widget.clearCodeOnResend,
-                        onResendPressed: widget.clearCodeOnResend
-                            ? () => _codeFieldsKey.currentState?.clearCode()
-                            : null,
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  slivers: [
+                    const SliverToBoxAdapter(child: OtpHeader()),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: LoginOtpPaddings.contentHorizontal,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(height: LoginOtpSizes.contentTopGap),
+                            OtpCodeFields(key: _codeFieldsKey),
+                            SizedBox(
+                              height: LoginOtpSizes.otpToBottomActionsGap,
+                            ),
+                            OtpBottomActions(
+                              clearCodeOnResend: widget.clearCodeOnResend,
+                              onResendPressed: widget.clearCodeOnResend
+                                  ? () =>
+                                        _codeFieldsKey.currentState?.clearCode()
+                                  : null,
+                            ),
+                            SizedBox(height: LoginOtpSizes.contentBottomGap),
+                          ],
+                        ),
                       ),
-                      SizedBox(height: 85),
-                      _ChangePhoneNumberAction(),
-                      SizedBox(height: 113),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
+              // Keep the action outside the scrollable form and above stripes.
+              const Padding(
+                padding: EdgeInsets.fromLTRB(
+                  LoginOtpSizes.contentHorizontalPadding,
+                  LoginOtpSizes.contentBottomGap,
+                  LoginOtpSizes.contentHorizontalPadding,
+                  LoginOtpSizes.changePhoneBottomOffset,
+                ),
+                child: _ChangePhoneNumberAction(),
               ),
             ],
           ),
