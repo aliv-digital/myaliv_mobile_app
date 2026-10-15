@@ -17,16 +17,14 @@ class GuestPayBillPrimarySubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = enabled
-        ? GuestPayBillTheme.submitButtonColor
-        : GuestPayBillTheme.disabledBtn;
-
     return SizedBox(
       height: 48,
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor,
+          backgroundColor: GuestPayBillTheme.submitButtonColor,
+          disabledBackgroundColor: GuestPayBillTheme.disabledBtn,
+          disabledForegroundColor: Colors.white70,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),

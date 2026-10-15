@@ -180,8 +180,8 @@ class GuestPayBillTheme {
   static const Color focusedInputBorderPink = Color(0xFFFF9BB1);
   static const Color focusedInputBorderOrange = Color(0xFFFF6C36);
 
-  // Used by: disabled submit button background.
-  static const Color disabledBtn = Color(0xFFCDCDDD);
+  // Used by: disabled submit button background (#645D9C @ 30% opacity from Figma).
+  static const Color disabledBtn = Color(0x4D645D9C);
 
   // Used by: text/icons shown over primary background.
   static const Color chipTextOnPrimary = Colors.white;
