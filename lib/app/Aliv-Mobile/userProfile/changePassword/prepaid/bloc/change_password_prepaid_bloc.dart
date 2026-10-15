@@ -8,8 +8,11 @@ class ChangePasswordPrepaidBloc
     extends Bloc<ChangePasswordPrepaidEvent, ChangePasswordPrepaidState> {
   final ChangePasswordPrepaidRepository repository;
   final Future<ActionVerifiedResult<ProtectedAccountAction>?> Function(Object)
-  verifyAction;
+      verifyAction;
   final void Function() cancelVerification;
+  final bool Function() isAuthorizationCurrent;
+  ActionVerifiedResult<ProtectedAccountAction>? _authorization;
+  bool _started = false;
   bool _pending = false;
   bool _closing = false;
 
@@ -22,8 +25,10 @@ class ChangePasswordPrepaidBloc
     this.repository, {
     required this.verifyAction,
     required this.cancelVerification,
+    required this.isAuthorizationCurrent,
   }) : super(ChangePasswordPrepaidState.initial()) {
     on<ChangePasswordPrepaidStarted>(_onStarted);
+    on<ChangePasswordPrepaidAuthorizationInvalidated>(_onInvalidated);
     on<ChangePasswordPrepaidNewChanged>(_onNewChanged);
     on<ChangePasswordPrepaidConfirmChanged>(_onConfirmChanged);
     on<ChangePasswordPrepaidToggleNewVisibility>(_onToggleNew);
@@ -31,11 +36,55 @@ class ChangePasswordPrepaidBloc
     on<ChangePasswordPrepaidSubmitPressed>(_onSubmit);
   }
 
-  void _onStarted(
+  Future<void> _onStarted(
     ChangePasswordPrepaidStarted event,
     Emitter<ChangePasswordPrepaidState> emit,
+  ) async {
+    if (_started || _closing) {
+      return;
+    }
+    _started = true;
+    _pending = true;
+    emit(state.copyWith(status: ChangePasswordPrepaidStatus.verifying));
+    try {
+      final attemptId = Object();
+      final verified = await verifyAction(attemptId);
+      if (_closing || emit.isDone) {
+        return;
+      }
+      if (verified == null ||
+          !identical(verified.attemptId, attemptId) ||
+          verified.purpose != ProtectedAccountAction.changePassword ||
+          !verified.isValid ||
+          !isAuthorizationCurrent()) {
+        emit(state.copyWith(
+            status: ChangePasswordPrepaidStatus.verificationCancelled));
+        return;
+      }
+      // Retain the coordinator-issued capability privately until valid Submit.
+      // It is neither route data nor a cached verification flag.
+      _authorization = verified;
+      emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
+    } catch (error) {
+      if (!_closing && !emit.isDone) {
+        emit(state.copyWith(
+          status: ChangePasswordPrepaidStatus.verificationCancelled,
+          errorMessage: error.toString(),
+        ));
+      }
+    } finally {
+      _pending = false;
+    }
+  }
+
+  void _onInvalidated(
+    ChangePasswordPrepaidAuthorizationInvalidated event,
+    Emitter<ChangePasswordPrepaidState> emit,
   ) {
-    emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
+    _authorization = null;
+    cancelVerification();
+    emit(state.copyWith(
+        status: ChangePasswordPrepaidStatus.verificationCancelled));
   }
 
   void _onNewChanged(
@@ -102,7 +151,15 @@ class ChangePasswordPrepaidBloc
     ChangePasswordPrepaidSubmitPressed event,
     Emitter<ChangePasswordPrepaidState> emit,
   ) async {
-    if (_pending || _closing) {
+    if (_pending ||
+        _closing ||
+        state.status == ChangePasswordPrepaidStatus.success) {
+      return;
+    }
+    if (_authorization == null || !isAuthorizationCurrent()) {
+      _authorization = null;
+      emit(state.copyWith(
+          status: ChangePasswordPrepaidStatus.verificationCancelled));
       return;
     }
     final a = state.newPassword.trim();
@@ -134,25 +191,20 @@ class ChangePasswordPrepaidBloc
 
     _pending = true;
     try {
-      final attemptId = Object();
-      emit(state.copyWith(status: ChangePasswordPrepaidStatus.verifying));
-      final verified = await verifyAction(attemptId);
-      if (_closing || emit.isDone) {
-        return;
-      }
-      if (verified == null ||
-          !identical(verified.attemptId, attemptId) ||
-          verified.purpose != ProtectedAccountAction.changePassword ||
-          state.newPassword.trim() != a ||
-          state.confirmPassword.trim() != b ||
-          !verified.consume()) {
-        emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
+      final verified = _authorization;
+      _authorization = null;
+      if (verified == null || !verified.consume()) {
+        emit(state.copyWith(
+            status: ChangePasswordPrepaidStatus.verificationCancelled));
         return;
       }
       emit(state.copyWith(status: ChangePasswordPrepaidStatus.submitting));
       final success = await repository.changePassword(newPassword: a);
 
-      if (_closing || emit.isDone) {
+      if (_closing ||
+          emit.isDone ||
+          state.status == ChangePasswordPrepaidStatus.verificationCancelled ||
+          !isAuthorizationCurrent()) {
         return;
       }
 
@@ -167,7 +219,10 @@ class ChangePasswordPrepaidBloc
         );
       }
     } catch (_) {
-      if (_closing || emit.isDone) {
+      if (_closing ||
+          emit.isDone ||
+          state.status == ChangePasswordPrepaidStatus.verificationCancelled ||
+          !isAuthorizationCurrent()) {
         return;
       }
       emit(
@@ -184,6 +239,7 @@ class ChangePasswordPrepaidBloc
   @override
   Future<void> close() {
     _closing = true;
+    _authorization = null;
     cancelVerification();
     return super.close();
   }

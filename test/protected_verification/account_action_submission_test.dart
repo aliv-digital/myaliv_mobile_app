@@ -43,22 +43,25 @@ const _request = UpdateLimitsRequest(
 
 void main() {
   setUpAll(() => registerFallbackValue(_request));
-  group('Change Password action gate', () {
+  group('Change Password single-use entry authorization', () {
     late _PasswordRepository repository;
     late ChangePasswordPrepaidBloc bloc;
     Completer<ActionVerifiedResult<ProtectedAccountAction>?>? pending;
     late Object attempt;
     int challenges = 0;
-    String outcome = 'success';
     int cancellations = 0;
+    bool contextCurrent = true;
+    bool capabilityCurrent = true;
+    String outcome = 'success';
     setUp(() {
       repository = _PasswordRepository();
       pending = null;
       challenges = cancellations = 0;
+      contextCurrent = capabilityCurrent = true;
       outcome = 'success';
-      when(
-        () => repository.changePassword(newPassword: any(named: 'newPassword')),
-      ).thenAnswer((_) async => true);
+      when(() =>
+              repository.changePassword(newPassword: any(named: 'newPassword')))
+          .thenAnswer((_) async => true);
       bloc = ChangePasswordPrepaidBloc(
         repository,
         verifyAction: (id) async {
@@ -70,12 +73,19 @@ void main() {
           if (outcome == 'challenge failure' || outcome == 'save failure') {
             throw StateError('synthetic verification failure');
           }
-          if (outcome != 'success') {
+          if (outcome == 'cancel' || outcome == 'invalid OTP') {
             return null;
           }
-          return _verified(id, ProtectedAccountAction.changePassword);
+          return ActionVerifiedResult(
+            attemptId: outcome == 'wrong attempt' ? Object() : id,
+            paymentMethod: outcome == 'wrong purpose'
+                ? ProtectedAccountAction.upgradeCreditLimit
+                : ProtectedAccountAction.changePassword,
+            canConsume: () => capabilityCurrent,
+          );
         },
         cancelVerification: () => cancellations++,
+        isAuthorizationCurrent: () => contextCurrent,
       );
     });
     tearDown(() async {
@@ -83,37 +93,94 @@ void main() {
         await bloc.close();
       }
     });
-    Future<void> valid() async {
-      bloc.add(const ChangePasswordPrepaidNewChanged('Synthetic123!'));
-      bloc.add(const ChangePasswordPrepaidConfirmChanged('Synthetic123!'));
+    Future<void> start() async {
+      bloc.add(const ChangePasswordPrepaidStarted());
       await _flush();
     }
 
-    test('existing validation runs before any challenge', () async {
+    Future<void> values(
+        [String password = 'Synthetic123!', String? confirm]) async {
+      bloc.add(ChangePasswordPrepaidNewChanged(password));
+      bloc.add(ChangePasswordPrepaidConfirmChanged(confirm ?? password));
+      await _flush();
+    }
+
+    Future<void> submit() async {
       bloc.add(const ChangePasswordPrepaidSubmitPressed());
       await _flush();
+    }
+
+    test('unverified Submit cannot update or initiate a second OTP', () async {
+      await values();
+      await submit();
+      verifyZeroInteractions(repository);
       expect(challenges, 0);
-      expect(bloc.state.newPasswordError, 'New password is required.');
-      verifyNever(
-        () => repository.changePassword(newPassword: any(named: 'newPassword')),
-      );
+      expect(
+          bloc.state.status, ChangePasswordPrepaidStatus.verificationCancelled);
     });
 
-    for (final length in [3, 4, 7, 65]) {
-      test('existing 8–64 policy rejects length $length before OTP', () async {
-        final password = 'a' * length;
-        bloc.add(ChangePasswordPrepaidNewChanged(password));
-        bloc.add(ChangePasswordPrepaidConfirmChanged(password));
-        await _flush();
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        await _flush();
-        expect(
-          bloc.state.newPasswordError,
-          'password does not meet the requirement',
-        );
-        expect(bloc.state.isValid, isFalse);
-        expect(challenges, 0);
+    test('duplicate Started and Submit wait for one entry verification',
+        () async {
+      pending = Completer();
+      await start();
+      await start();
+      await values();
+      await submit();
+      expect(challenges, 1);
+      expect(bloc.state.status, ChangePasswordPrepaidStatus.verifying);
+      verifyZeroInteractions(repository);
+      pending!
+          .complete(_verified(attempt, ProtectedAccountAction.changePassword));
+      await _flush();
+      expect(bloc.state.status, ChangePasswordPrepaidStatus.ready);
+      verifyZeroInteractions(repository);
+      bloc.add(const ChangePasswordPrepaidSubmitPressed());
+      bloc.add(const ChangePasswordPrepaidSubmitPressed());
+      await _flush();
+      expect(challenges, 1);
+      verify(() => repository.changePassword(newPassword: 'Synthetic123!'))
+          .called(1);
+      await submit();
+      verifyNoMoreInteractions(repository);
+    });
+
+    for (final scenario in [
+      (password: '', confirm: '', error: 'New password is required.'),
+      (
+        password: 'abc',
+        confirm: 'abc',
+        error: 'password does not meet the requirement'
+      ),
+      (
+        password: 'a' * 65,
+        confirm: 'a' * 65,
+        error: 'password does not meet the requirement'
+      ),
+      (
+        password: 'abcdefgh',
+        confirm: '',
+        error: 'Please re-enter your password.'
+      ),
+      (
+        password: 'abcdefgh',
+        confirm: 'abcdEfgh',
+        error: 'Passwords do not match. Try again.'
+      ),
+    ]) {
+      test('validation retains the entry capability: ${scenario.error}',
+          () async {
+        await start();
+        await values(scenario.password, scenario.confirm);
+        await submit();
+        expect([bloc.state.newPasswordError, bloc.state.confirmPasswordError],
+            contains(scenario.error));
+        expect(bloc.state.status, ChangePasswordPrepaidStatus.ready);
         verifyZeroInteractions(repository);
+        await values();
+        await submit();
+        expect(challenges, 1);
+        verify(() => repository.changePassword(newPassword: 'Synthetic123!'))
+            .called(1);
       });
     }
 
@@ -122,138 +189,97 @@ void main() {
       'a' * 64,
       '12345678',
       '!@#\$%^&*',
-      '  abcdefgh  ',
+      '  abcdefgh  '
     ]) {
-      test(
-        'existing valid password is submitted trimmed at length ${password.length}',
-        () async {
-          bloc.add(ChangePasswordPrepaidNewChanged(password));
-          bloc.add(ChangePasswordPrepaidConfirmChanged(password));
-          await _flush();
-          bloc.add(const ChangePasswordPrepaidSubmitPressed());
-          await _flush();
-          expect(challenges, 1);
-          expect(bloc.state.status, ChangePasswordPrepaidStatus.success);
-          verify(
-            () => repository.changePassword(newPassword: password.trim()),
-          ).called(1);
-        },
-      );
-    }
-
-    test(
-      'waits for verification; password remains form-local; rapid taps submit once',
-      () async {
-        pending = Completer();
-        await valid();
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        await _flush();
-        expect(bloc.state.status, ChangePasswordPrepaidStatus.verifying);
+      test('existing accepted password length ${password.length} is trimmed',
+          () async {
+        await start();
+        await values(password);
+        await submit();
         expect(challenges, 1);
-        verifyNever(
-          () =>
-              repository.changePassword(newPassword: any(named: 'newPassword')),
-        );
-        pending!.complete(
-          _verified(attempt, ProtectedAccountAction.changePassword),
-        );
-        await _flush();
         expect(bloc.state.status, ChangePasswordPrepaidStatus.success);
-        verify(
-          () => repository.changePassword(newPassword: 'Synthetic123!'),
-        ).called(1);
-      },
-    );
-
-    test(
-      'immediate second submission requires a new verified attempt',
-      () async {
-        await valid();
-        for (var i = 0; i < 2; i++) {
-          bloc.add(const ChangePasswordPrepaidSubmitPressed());
-          await _flush();
-        }
-        expect(challenges, 2);
-        verify(
-          () => repository.changePassword(newPassword: 'Synthetic123!'),
-        ).called(2);
-      },
-    );
-
-    for (final failure in [
-      'challenge failure',
-      'invalid OTP',
-      'save failure',
-      'cancel',
-    ]) {
-      test('$failure: no password mutation', () async {
-        outcome = failure;
-        await valid();
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        await _flush();
-        expect(challenges, 1);
-        verifyNever(
-          () =>
-              repository.changePassword(newPassword: any(named: 'newPassword')),
-        );
+        verify(() => repository.changePassword(newPassword: password.trim()))
+            .called(1);
       });
     }
 
-    test(
-      'changed form values invalidate the pending password snapshot',
-      () async {
-        pending = Completer();
-        await valid();
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        await _flush();
-        bloc.add(const ChangePasswordPrepaidNewChanged('Different123!'));
-        await _flush();
-        pending!.complete(
-          _verified(attempt, ProtectedAccountAction.changePassword),
-        );
-        await _flush();
-        verifyNever(
-          () =>
-              repository.changePassword(newPassword: any(named: 'newPassword')),
-        );
-        expect(bloc.state.status, ChangePasswordPrepaidStatus.ready);
-      },
-    );
+    for (final failure in [
+      'challenge failure',
+      'save failure',
+      'invalid OTP',
+      'cancel',
+      'wrong attempt',
+      'wrong purpose'
+    ]) {
+      test('$failure cannot authorize entry or mutation', () async {
+        outcome = failure;
+        await start();
+        expect(bloc.state.status,
+            ChangePasswordPrepaidStatus.verificationCancelled);
+        await values();
+        await submit();
+        verifyZeroInteractions(repository);
+        expect(challenges, 1);
+      });
+    }
 
-    test('backend failure keeps existing error wording', () async {
-      when(
-        () => repository.changePassword(newPassword: any(named: 'newPassword')),
-      ).thenAnswer((_) async => false);
-      await valid();
-      bloc.add(const ChangePasswordPrepaidSubmitPressed());
-      await _flush();
-      expect(
-        bloc.state.errorMessage,
-        'failed to update password. please try again.',
-      );
-      expect(bloc.state.status, ChangePasswordPrepaidStatus.failure);
+    for (final invalidation in ['context', 'capability', 'explicit reset']) {
+      test('$invalidation invalidation prevents deferred consumption',
+          () async {
+        await start();
+        await values();
+        if (invalidation == 'context') {
+          contextCurrent = false;
+        }
+        if (invalidation == 'capability') {
+          capabilityCurrent = false;
+        }
+        if (invalidation == 'explicit reset') {
+          bloc.add(const ChangePasswordPrepaidAuthorizationInvalidated());
+          await _flush();
+        }
+        await submit();
+        verifyZeroInteractions(repository);
+        expect(challenges, 1);
+        expect(bloc.state.status,
+            ChangePasswordPrepaidStatus.verificationCancelled);
+      });
+    }
+
+    for (final throwsError in [false, true]) {
+      test(
+          'update failure consumes authorization and keeps existing error (throws=$throwsError)',
+          () async {
+        when(() => repository.changePassword(
+            newPassword: any(named: 'newPassword'))).thenAnswer((_) async {
+          if (throwsError) {
+            throw StateError('synthetic update failure');
+          }
+          return false;
+        });
+        await start();
+        await values();
+        await submit();
+        expect(bloc.state.status, ChangePasswordPrepaidStatus.failure);
+        expect(bloc.state.errorMessage,
+            'failed to update password. please try again.');
+        await submit();
+        verify(() => repository.changePassword(newPassword: 'Synthetic123!'))
+            .called(1);
+        expect(challenges, 1);
+      });
+    }
+
+    test('disposed entry ignores a late verified result', () async {
+      pending = Completer();
+      await start();
+      final closing = bloc.close();
+      pending!
+          .complete(_verified(attempt, ProtectedAccountAction.changePassword));
+      await closing;
+      expect(cancellations, 1);
+      verifyZeroInteractions(repository);
     });
-
-    test(
-      'disposed form cancels verification and ignores late result',
-      () async {
-        pending = Completer();
-        await valid();
-        bloc.add(const ChangePasswordPrepaidSubmitPressed());
-        await _flush();
-        final closing = bloc.close();
-        pending!.complete(
-          _verified(attempt, ProtectedAccountAction.changePassword),
-        );
-        await closing;
-        expect(cancellations, 1);
-        verifyNever(
-          () =>
-              repository.changePassword(newPassword: any(named: 'newPassword')),
-        );
-      },
-    );
   });
 
   group('Upgrade Credit Limit action gate', () {

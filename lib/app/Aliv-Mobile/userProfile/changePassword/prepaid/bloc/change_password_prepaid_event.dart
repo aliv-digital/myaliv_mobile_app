@@ -10,6 +10,11 @@ class ChangePasswordPrepaidStarted extends ChangePasswordPrepaidEvent {
   const ChangePasswordPrepaidStarted();
 }
 
+class ChangePasswordPrepaidAuthorizationInvalidated
+    extends ChangePasswordPrepaidEvent {
+  const ChangePasswordPrepaidAuthorizationInvalidated();
+}
+
 class ChangePasswordPrepaidNewChanged extends ChangePasswordPrepaidEvent {
   final String value;
   const ChangePasswordPrepaidNewChanged(this.value);

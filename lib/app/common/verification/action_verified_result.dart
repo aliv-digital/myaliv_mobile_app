@@ -18,6 +18,9 @@ class ActionVerifiedResult<T extends Object> {
   final bool Function() _canConsume;
   bool _consumed = false;
 
+  /// Allows a retained capability to gate form entry without consuming it.
+  bool get isValid => !_consumed && _canConsume();
+
   bool consume() {
     if (_consumed || !_canConsume()) {
       return false;

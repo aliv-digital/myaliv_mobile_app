@@ -29,6 +29,27 @@ Future<void> _flush() async {
 }
 
 void main() {
+  test(
+      'retained capability validity is read-only and consumption remains one-use',
+      () {
+    var current = true;
+    final result = ActionVerifiedResult<ProtectedAccountAction>(
+      attemptId: Object(),
+      paymentMethod: ProtectedAccountAction.changePassword,
+      canConsume: () => current,
+    );
+    expect(result.isValid, isTrue);
+    expect(result.isValid, isTrue);
+    current = false;
+    expect(result.isValid, isFalse);
+    expect(result.consume(), isFalse);
+    current = true;
+    expect(result.isValid, isTrue);
+    expect(result.consume(), isTrue);
+    expect(result.isValid, isFalse);
+    expect(result.consume(), isFalse);
+  });
+
   setUpAll(() => registerFallbackValue(_token(0)));
   for (final purpose in <Object>[
     ...AutoRenewPaymentMethodType.values,
