@@ -243,7 +243,7 @@ void main() {
     final args = harness.confirmExtras.single as GuestPayBillConfirmArgs;
     expect(args.serviceName, 'ALIV Postpaid');
     expect(args.identifierLabel, 'phone no.');
-    expect(args.identifierValue, '242-555-1234');
+    expect(args.identifierValue, '(242)-555-1234');
     expect(args.amount, 15.50);
 
     await tester.pump(const Duration(seconds: 1));

@@ -81,7 +81,7 @@ class ConfirmationPlanCardPostpaidContent extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     Text(
                       title,
                       style: const TextStyle(

@@ -522,8 +522,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                 topUpAmount: widget.topUpAmount,
                 recipientPhone: widget.recipientPhone,
               ),
-              const SizedBox(height: 16),
-              if (widget.showBeginOn && _selectedBeginDate != null)
+              if (widget.showBeginOn && _selectedBeginDate != null) ...[
+                const SizedBox(height: 16),
                 ConfirmationBeginOnCard(
                   date: _selectedBeginDate!,
                   onDateChanged: (date) => setState(() {
@@ -534,7 +534,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                     _selectedBeginDate = date;
                   }),
                 ),
-              const SizedBox(height: 16),
+              ],
+              const SizedBox(height: 17),
               ConfirmationTermsCheckbox(
                 isChecked: _termsAccepted,
                 onChanged: (v) => setState(() {

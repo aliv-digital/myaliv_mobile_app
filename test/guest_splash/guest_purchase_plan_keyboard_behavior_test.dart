@@ -72,7 +72,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(harness.routeExtras, <Object?>[
-      <String, String>{'phoneNumber': '242-555-1234'},
+      <String, String>{'phoneNumber': '(242)-555-1234'},
     ]);
     expect(find.text('guest purchase plan destination'), findsOneWidget);
   });
@@ -173,7 +173,7 @@ void main() {
 
       expect(find.text('The plan was purchased successfully.'), findsNothing);
       expect(harness.routeExtras, <Object?>[
-        <String, String>{'phoneNumber': '242-555-1234'},
+        <String, String>{'phoneNumber': '(242)-555-1234'},
       ]);
     });
   });
