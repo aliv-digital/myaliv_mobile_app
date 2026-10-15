@@ -47,7 +47,7 @@ class _LogoTitle extends StatelessWidget {
         SizedBox(
           width: ForgetPasswordSizes.subtitleWidth,
           child: Text(
-            'please enter your mobile to create your new password',
+            'please enter your mobile number to create your new password',
             textAlign: TextAlign.center,
             style: ForgetPasswordTheme.subtitle,
           ),

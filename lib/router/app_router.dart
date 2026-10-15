@@ -848,6 +848,8 @@ class AppRouter {
             initialMfaToken: args.mfaToken,
             initialPhoneNumber: args.phoneNumber,
             initialApiPhoneNumber: args.apiPhoneNumber,
+            clearCodeOnResend: true,
+            resetValidationOnResend: true,
             successMessage: 'Code verified.',
             onSuccess: (ctx) {
               ctx.push(AppRoutes.createPassword, extra: true);

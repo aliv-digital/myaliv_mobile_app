@@ -24,6 +24,7 @@ class LoginOtpScreen extends StatelessWidget {
     this.onSuccess,
     this.successMessage,
     this.clearCodeOnResend = false,
+    this.resetValidationOnResend = false,
   });
 
   /// mfa_token issued by the login endpoint; seeded into the bloc so the
@@ -42,8 +43,11 @@ class LoginOtpScreen extends StatelessWidget {
   /// Optional toast message shown on success. Defaults to 'Logged in successfully'.
   final String? successMessage;
 
-  /// Opt-in for password login; other OTP flows retain their input.
+  /// Clears entered digits on resend for flows that opt in.
   final bool clearCodeOnResend;
+
+  /// Forgot Password clears previous verification errors when requesting a code.
+  final bool resetValidationOnResend;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +58,7 @@ class LoginOtpScreen extends StatelessWidget {
         initialMfaToken: initialMfaToken,
         initialPhoneNumber: initialPhoneNumber,
         initialApiPhoneNumber: initialApiPhoneNumber,
+        resetValidationOnResend: resetValidationOnResend,
       ),
       child: _LoginOtpView(
         onSuccess: onSuccess,
