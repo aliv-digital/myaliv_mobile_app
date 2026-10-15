@@ -1,5 +1,5 @@
 /// Policy B purposes. No temporary-access authorization is created.
-enum ProtectedAccountAction { changePassword, upgradeCreditLimit }
+enum ProtectedAccountAction { changePassword, upgradeCreditLimit, autoTopUp }
 
 /// One-use capability issued only after successful secure persistence.
 class ActionVerifiedResult<T extends Object> {

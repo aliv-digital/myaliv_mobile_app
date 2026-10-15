@@ -19,6 +19,7 @@ import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'helpers/auto_top_up_otp_fixture.dart';
 
 class _Cards extends MockCubit<SavedCardsState> implements SavedCardsCubit {}
 
@@ -37,6 +38,7 @@ void main() {
   late _Devices devices;
   late _Account account;
   late StreamController<SavedCardsState> cardStates;
+  late AutoTopUpOtpFixture otp;
   var addCardVisits = 0;
   // A loading spinner never settles, so that case pumps fixed frames.
   var spinnerVisible = false;
@@ -52,6 +54,7 @@ void main() {
   });
 
   setUp(() {
+    otp = AutoTopUpOtpFixture();
     cards = _Cards();
     devices = _Devices();
     account = _Account();
@@ -72,6 +75,7 @@ void main() {
   });
 
   tearDown(() async {
+    await otp.dispose();
     await cardStates.close();
     await cards.close();
     await devices.close();
