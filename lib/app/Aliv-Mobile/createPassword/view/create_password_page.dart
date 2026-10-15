@@ -112,10 +112,12 @@ class _CreatePasswordView extends StatelessWidget {
                         BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                           buildWhen: (p, c) =>
                               p.obscurePassword != c.obscurePassword ||
-                              p.password != c.password,
+                              p.password != c.password ||
+                              p.passwordError != c.passwordError,
                           builder: (context, state) {
                             return PasswordInput(
                               hint: 'enter new password',
+                              errorText: state.passwordError,
                               obscureText: state.obscurePassword,
                               textInputAction: TextInputAction.next,
                               onChanged: (v) => context
@@ -131,10 +133,12 @@ class _CreatePasswordView extends StatelessWidget {
                         BlocBuilder<CreatePasswordBloc, CreatePasswordState>(
                           buildWhen: (p, c) =>
                               p.obscureConfirm != c.obscureConfirm ||
-                              p.confirmPassword != c.confirmPassword,
+                              p.confirmPassword != c.confirmPassword ||
+                              p.confirmPasswordError != c.confirmPasswordError,
                           builder: (context, state) {
                             return PasswordInput(
                               hint: 're-enter password',
+                              errorText: state.confirmPasswordError,
                               obscureText: state.obscureConfirm,
                               textInputAction: TextInputAction.done,
                               onSubmitted: submit,

@@ -98,11 +98,20 @@ void main() {
           expect(find.text('Password reset successful!'), findsNothing);
           expect(find.text('home destination'), findsNothing);
           if (outcome == 'mismatch' || outcome == 'short password') {
-            expect(validationMessages, [
-              outcome == 'mismatch'
-                  ? 'Passwords do not match.'
-                  : 'Password must be 8 characters long',
-            ]);
+            expect(validationMessages, isEmpty);
+            final validationMessage = outcome == 'mismatch'
+                ? 'Passwords do not match.'
+                : 'Password must be 8 characters long';
+            expect(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is Text &&
+                    widget.data == validationMessage &&
+                    widget.style?.color == Colors.white,
+              ),
+              findsOneWidget,
+            );
+            expect(find.byIcon(Icons.close), findsOneWidget);
             verifyZeroInteractions(network);
             expect(find.byType(CreatePasswordScreen), findsOneWidget);
             return;

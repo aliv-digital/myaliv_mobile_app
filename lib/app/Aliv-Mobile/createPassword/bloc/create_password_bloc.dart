@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import '../repository/create_password_repository.dart';
 import 'create_password_event.dart';
 import 'create_password_state.dart';
@@ -21,7 +21,11 @@ class CreatePasswordBloc
     PasswordChanged e,
     Emitter<CreatePasswordState> emit,
   ) {
-    final next = state.copyWith(password: e.value, errorMessage: null);
+    final next = state.copyWith(
+      password: e.value,
+      hasEditedPassword: true,
+      errorMessage: null,
+    );
     emit(_validate(next));
   }
 
@@ -29,7 +33,11 @@ class CreatePasswordBloc
     ConfirmPasswordChanged e,
     Emitter<CreatePasswordState> emit,
   ) {
-    final next = state.copyWith(confirmPassword: e.value, errorMessage: null);
+    final next = state.copyWith(
+      confirmPassword: e.value,
+      hasEditedConfirmation: true,
+      errorMessage: null,
+    );
     emit(_validate(next));
   }
 
@@ -52,17 +60,10 @@ class CreatePasswordBloc
     Emitter<CreatePasswordState> emit,
   ) async {
     final pass = state.password.trim();
-    final confirm = state.confirmPassword.trim();
-    if (pass.length < 8) {
-      AppUtils.showWarningToast('Password must be 8 characters long');
-      return;
-    }
-    if (pass.length > 64) {
-      AppUtils.showWarningToast('Password must be 64 characters or fewer.');
-      return;
-    }
-    if (pass != confirm) {
-      AppUtils.showWarningToast('Passwords do not match.');
+    final validationError =
+        state.passwordValidationError ?? state.confirmationValidationError;
+    if (validationError != null) {
+      AppToast.show(message: validationError, type: ToastType.error);
       return;
     }
     emit(
