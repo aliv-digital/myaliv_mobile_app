@@ -39,6 +39,6 @@ class ForgetPasswordOtpScreen extends LoginOtpScreen {
   );
 
   static void _continueToPasswordReset(BuildContext context) {
-    context.push(AppRoutes.createPassword, extra: true);
+    context.pushReplacement(AppRoutes.createPassword, extra: true);
   }
 }
