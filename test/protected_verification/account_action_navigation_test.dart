@@ -71,6 +71,10 @@ void main() {
   for (final action in ProtectedAccountAction.values) {
     for (final outcome in [
       'success',
+      if (action == ProtectedAccountAction.changePassword) ...[
+        'backend failure',
+        'network failure',
+      ],
       'invalid OTP',
       'save failure',
       'cancel',
@@ -99,6 +103,7 @@ void main() {
             int saves = 0;
             int mutations = 0;
             final order = <String>[];
+            final passwordSuccess = Completer<Response<dynamic>>();
             when(() => auth.currentSession).thenAnswer((_) => current);
             when(() => auth.saveSession(any())).thenAnswer((invocation) async {
               saves++;
@@ -187,9 +192,15 @@ void main() {
               );
               mutations++;
               order.add('mutation');
+              if (outcome == 'network failure') {
+                throw StateError('synthetic network failure');
+              }
+              if (outcome == 'success') {
+                return passwordSuccess.future;
+              }
               return Response<dynamic>(
                 requestOptions: RequestOptions(path: Api.updatePasswordUrl),
-                data: {'Success': true},
+                data: {'Success': false},
               );
             });
             instance.registerSingleton<AuthManager>(auth);
@@ -281,6 +292,10 @@ void main() {
             await tester.pumpAndSettle();
             expect(challenges, 1);
             expect(mutations, 0);
+            expect(
+              find.text('Your password has been changed successfully.'),
+              findsNothing,
+            );
             if (outcome == 'challenge failure') {
               expect(find.byType(ActionOtpScreen), findsNothing);
             } else {
@@ -302,17 +317,68 @@ void main() {
                 }
                 await tester.pump(const Duration(seconds: 2));
               }
+              if (action == ProtectedAccountAction.changePassword &&
+                  outcome == 'success') {
+                expect(mutations, 1);
+                expect(
+                  router.routeInformationProvider.value.uri.path,
+                  AppRoutes.changePasswordPrepaidScreen,
+                );
+                expect(
+                  find.text('Your password has been changed successfully.'),
+                  findsNothing,
+                );
+                passwordSuccess.complete(
+                  Response<dynamic>(
+                    requestOptions: RequestOptions(path: Api.updatePasswordUrl),
+                    data: {'Success': true},
+                  ),
+                );
+              }
               await tester.pumpAndSettle();
             }
-            expect(mutations, outcome == 'success' ? 1 : 0);
+            final mutationAttempted =
+                outcome == 'success' ||
+                outcome == 'backend failure' ||
+                outcome == 'network failure';
+            expect(mutations, mutationAttempted ? 1 : 0);
             expect(
               saves,
-              outcome == 'success' || outcome == 'save failure' ? 1 : 0,
+              mutationAttempted || outcome == 'save failure' ? 1 : 0,
             );
             expect(access.expiresAt, expiry);
             if (outcome == 'success') {
               expect(order, ['save', 'mutation']);
               expect(find.text('home destination'), findsOneWidget);
+              if (action == ProtectedAccountAction.changePassword) {
+                expect(
+                  find.text('Your password has been changed successfully.'),
+                  findsOneWidget,
+                );
+                expect(
+                  find.text('password updated successfully'),
+                  findsNothing,
+                );
+              }
+              if (action == ProtectedAccountAction.upgradeCreditLimit) {
+                expect(
+                  find.text('Your request has been submitted successfully.'),
+                  findsOneWidget,
+                );
+              }
+            } else if (action == ProtectedAccountAction.changePassword) {
+              expect(
+                find.text('Your password has been changed successfully.'),
+                findsNothing,
+              );
+              expect(find.text('home destination'), findsNothing);
+              if (outcome == 'backend failure' ||
+                  outcome == 'network failure') {
+                expect(
+                  find.text('failed to update password. please try again.'),
+                  findsOneWidget,
+                );
+              }
             }
             await tester.pump(const Duration(seconds: 4));
             await tester.pumpAndSettle();

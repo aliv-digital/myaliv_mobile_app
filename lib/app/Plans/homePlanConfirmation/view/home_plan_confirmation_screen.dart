@@ -42,10 +42,17 @@ class HomePlanConfirmationScreen extends StatelessWidget {
   }
 }
 
-class _HomePlanConfirmationView extends StatelessWidget {
+class _HomePlanConfirmationView extends StatefulWidget {
   const _HomePlanConfirmationView();
 
+  @override
+  State<_HomePlanConfirmationView> createState() =>
+      _HomePlanConfirmationViewState();
+}
+
+class _HomePlanConfirmationViewState extends State<_HomePlanConfirmationView> {
   static const Color _promoDiscountColor = Color(0xFF4DDBC0);
+  bool _showTermsValidation = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +80,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
             switch (state.promoStatus) {
               case HomePlanConfirmationPromoStatus.applied:
                 AppToast.show(
-                  message: 'promo applied',
+                  message: 'promo code applied',
                   type: ToastType.success,
                 );
                 break;
@@ -105,9 +112,14 @@ class _HomePlanConfirmationView extends StatelessWidget {
                 return DefaultBottomPayBar(
                   buttonText: 'continue',
                   isVatExclusive: false,
-                  isButtonEnabled: state.isTermsChecked,
+                  // Allow a tap to show PLAN-006 without changing the pay bar.
+                  isButtonEnabled: true,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    if (!state.isTermsChecked) {
+                      setState(() => _showTermsValidation = true);
+                      return;
+                    }
                     // A successful promo changes the amount charged and adds
                     // its details to the existing plan-purchase request.
                     final paymentAmount = _paymentAmount(state);
@@ -126,6 +138,7 @@ class _HomePlanConfirmationView extends StatelessWidget {
                             : 'no VAT applied',
                         promoCodes: promoCodes,
                         forceNow: state.forceNow,
+                        purchaseContext: state.purchaseContext,
                         selectedBeginDate: state.selectedBeginDate,
                         marketingOptIn: state.marketingOptIn,
                         selectedItems: state.data!.items
@@ -219,21 +232,60 @@ class _HomePlanConfirmationView extends StatelessWidget {
                                         HomePlanConfirmationTheme
                                             .termsNoticeBottomSpacing,
                                       ),
-                                      child: TermsNotice(
-                                        isChecked: state.isTermsChecked,
-                                        onToggleChecked: () => context
-                                            .read<HomePlanConfirmationBloc>()
-                                            .add(
-                                              HomePlanConfirmationTermsCheckboxToggled(
-                                                !state.isTermsChecked,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TermsNotice(
+                                            isChecked: state.isTermsChecked,
+                                            onToggleChecked: () {
+                                              if (!state.isTermsChecked) {
+                                                setState(
+                                                  () => _showTermsValidation =
+                                                      false,
+                                                );
+                                              }
+                                              context
+                                                  .read<
+                                                    HomePlanConfirmationBloc
+                                                  >()
+                                                  .add(
+                                                    HomePlanConfirmationTermsCheckboxToggled(
+                                                      !state.isTermsChecked,
+                                                    ),
+                                                  );
+                                            },
+                                            onTermsTap: () async {
+                                              debugPrint("--");
+                                              await showTermsAndConditionsModal(
+                                                context,
+                                              );
+                                            },
+                                          ),
+                                          if (_showTermsValidation &&
+                                              !state.isTermsChecked)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 6,
+                                                left:
+                                                    HomePlanConfirmationTheme
+                                                        .termsNoticeCheckboxSize +
+                                                    HomePlanConfirmationTheme
+                                                        .termsNoticeCheckboxToTextGap,
+                                              ),
+                                              child: Text(
+                                                'accept the terms & conditions to continue',
+                                                style: HomePlanConfirmationTheme
+                                                    .termsNoticeBodyTextStyle
+                                                    .copyWith(
+                                                      fontSize: 12,
+                                                      color: Theme.of(
+                                                        context,
+                                                      ).colorScheme.error,
+                                                    ),
                                               ),
                                             ),
-                                        onTermsTap: () async {
-                                          debugPrint("--");
-                                          await showTermsAndConditionsModal(
-                                            context,
-                                          );
-                                        },
+                                        ],
                                       ),
                                     ),
                                   ),

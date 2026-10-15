@@ -23,8 +23,15 @@ class GuestPayBillTheme {
   static const String phoneHintText = 'eg: (242)-899-9999';
 
   // Used by: inline validation error under phone fields.
-  static const String invalidPhoneErrorMessage = 'invalid phone number';
-  static const String mobileMismatchErrorMessage = 'phone number do not match';
+  // BILL-003 / BILL-004 inline copy.
+  static const String invalidPhoneErrorMessage = 'invalid Format';
+  static const String mobileMismatchErrorMessage =
+      "these numbers don't match. re-enter the number to continue.";
+
+  // BILL-009: product-approved ALIV postpaid bill-pay minimum (USD, inclusive).
+  static const double minimumPaymentAmount = 5;
+  static const String minimumPaymentErrorMessage =
+      r'the minimum payment amount is $5.00';
 
   static const Color errorText = Color(0xFFD92D20);
 
@@ -61,10 +68,15 @@ class GuestPayBillTheme {
   static const String submitSuccessMessage = 'Payment submitted';
 
   // Used by: submit guard in GuestPayBillBloc to detect prepaid accounts.
-  static const String paymentOptionPrePay = 'PrePay';
+  // static const String paymentOptionPrePay = 'PrePay';
 
   // Used by: submit guard error toast when a prepaid number is entered for postpaid bill pay.
-  static const String prepaidNumberErrorMessage = 'number is not postpaid';
+  // static const String prepaidNumberErrorMessage = 'number is not postpaid';
+
+  static const String paymentOptionPostPay = 'PostPay';
+  static const String invalidActivePostpaidErrorMessage =
+      'the number entered is not an active postpaid number.. to try again.\n'
+      'please enter a active postpaid number';
 
   // ===== Screen spacing =====
   // Used by: top content padding after app bar in `guest_pay_bill_screen.dart`.

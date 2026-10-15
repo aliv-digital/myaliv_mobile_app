@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
@@ -12,6 +13,7 @@ import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/bloc/home_pla
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/model/home_plans_payment_method_models.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/theme/home_plans_payment_method_theme.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/services/payment_receipt_builder.dart';
+import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/services/payment_sheet_launcher.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_app_bar.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_method_content.dart';
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/widgets/payment_pay_bar.dart';
@@ -31,6 +33,31 @@ class HomePlansPaymentMethodView extends StatefulWidget {
 class _HomePlansPaymentMethodViewState
     extends State<HomePlansPaymentMethodView> {
   int _lastWalletWarningRequestId = 0;
+
+  /// PAY-001: set when pay now is tapped without a usable payment method.
+  bool _showPaymentMethodError = false;
+  bool _purchaseCancellationShown = false;
+  bool _walletReceiptOpened = false;
+
+  void _showPurchaseCancellation() {
+    if (_purchaseCancellationShown) {
+      return;
+    }
+    final state = context.read<HomePlansPaymentMethodBloc>().state;
+    final planTitle = state.replacementPrimaryPlanTitle;
+    if (planTitle == null ||
+        state.hasConfirmed3DSPayment ||
+        (state.status != HomePlansPaymentMethodStatus.ready &&
+            state.status != HomePlansPaymentMethodStatus.loading) ||
+        state.navTarget != HomePlansPaymentMethodNavTarget.none) {
+      return;
+    }
+    _purchaseCancellationShown = true;
+    AppToast.show(
+      message: 'Your $planTitle was not added',
+      type: ToastType.error,
+    );
+  }
 
   @override
   void initState() {
@@ -53,6 +80,9 @@ class _HomePlansPaymentMethodViewState
   }
 
   void _onState(BuildContext context, HomePlansPaymentMethodState state) {
+    if (state.status == HomePlansPaymentMethodStatus.submitting) {
+      _walletReceiptOpened = false;
+    }
     _maybeShowWalletWarning(state);
 
     // Show a toast only for non-navigable failures (e.g. loading payment methods).
@@ -66,6 +96,62 @@ class _HomePlansPaymentMethodViewState
     if (state.navTarget == HomePlansPaymentMethodNavTarget.none) return;
 
     if (state.navTarget == HomePlansPaymentMethodNavTarget.paid) {
+      if (state.walletPaymentSucceeded) {
+        if (_walletReceiptOpened) {
+          context.read<HomePlansPaymentMethodBloc>().add(
+            const HomePlansPaymentNavConsumed(),
+          );
+          return;
+        }
+        _walletReceiptOpened = true;
+      }
+      // ADD-006 confirms purchased add-ons; scheduled purchases retain PLAN-013.
+      if (state.status == HomePlansPaymentMethodStatus.success &&
+          state.isPrepaidUser &&
+          state.forceNow &&
+          state.selectedItems.isNotEmpty &&
+          state.selectedItems.any(
+            (item) => item.planType == HomePlansPaymentPlanType.secondary,
+          )) {
+        AppToast.show(
+          message: 'your add-on has been added to your plan',
+          type: ToastType.success,
+        );
+      }
+      // Roaming confirmation is the only prepaid flow that sends standalone
+      // (PlanType A) lines, and it never mixes them with plans or add-ons.
+      final isRoamingPurchase =
+          state.selectedItems.isNotEmpty &&
+          state.selectedItems.every(
+            (item) => item.planType == HomePlansPaymentPlanType.standalone,
+          );
+      // ROAM-007 confirms an immediately activated roaming plan.
+      if (state.status == HomePlansPaymentMethodStatus.success &&
+          state.isPrepaidUser &&
+          state.forceNow &&
+          isRoamingPurchase) {
+        AppToast.show(
+          message: 'your roaming plan has started successfully',
+          type: ToastType.success,
+        );
+      }
+      final scheduledStart = state.selectedBeginDate;
+      // PLAN-013 uses the accepted scheduling date, never a fallback date.
+      // ROAM-008 replaces its copy for roaming so only one toast shows.
+      if (state.status == HomePlansPaymentMethodStatus.success &&
+          state.isPrepaidUser &&
+          !state.forceNow &&
+          state.selectedItems.isNotEmpty &&
+          scheduledStart != null &&
+          scheduledStart.isAfter(DateTime.now())) {
+        final startText = DateFormat('dd-MM-yy').format(scheduledStart);
+        AppToast.show(
+          message: isRoamingPurchase
+              ? 'your roaming plan is scheduled to start on $startText'
+              : 'your plan is scheduled to start on $startText',
+          type: ToastType.success,
+        );
+      }
       _injectOptimisticActivePlan(context, state);
       context.push(
         AppRoutes.homePlanPurchaseReceiptScreen,
@@ -157,7 +243,9 @@ class _HomePlansPaymentMethodViewState
       listenWhen: (p, c) =>
           p.navTarget != c.navTarget ||
           p.errorMessage != c.errorMessage ||
-          p.walletWarningRequestId != c.walletWarningRequestId,
+          p.walletWarningRequestId != c.walletWarningRequestId ||
+          (p.status != c.status &&
+              c.status == HomePlansPaymentMethodStatus.submitting),
       listener: _onState,
       builder: (context, state) {
         final isLoading = state.status == HomePlansPaymentMethodStatus.loading;
@@ -173,10 +261,12 @@ class _HomePlansPaymentMethodViewState
             bottomNavigationBar: PaymentPayBar(
               state: state,
               isSubmitting: isSubmitting,
+              onMissingPaymentMethod: () =>
+                  setState(() => _showPaymentMethodError = true),
             ),
             body: Column(
               children: <Widget>[
-                const PaymentAppBar(),
+                PaymentAppBar(onPopped: _showPurchaseCancellation),
                 Expanded(
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -184,9 +274,32 @@ class _HomePlansPaymentMethodViewState
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(29, 24, 29, 20),
                         sliver: SliverToBoxAdapter(
-                          child: PaymentMethodContent(
-                            state: state,
-                            isLoading: isLoading,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PaymentMethodContent(
+                                state: state,
+                                isLoading: isLoading,
+                              ),
+                              // PAY-001 clears once a usable method is chosen.
+                              if (_showPaymentMethodError &&
+                                  !PaymentSheetLauncher.hasValidPaymentMethod(
+                                    state,
+                                  ))
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Text(
+                                    'choose a payment method to continue',
+                                    style: TextStyle(
+                                      fontFamily: 'CircularPro',
+                                      fontSize: 12,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),

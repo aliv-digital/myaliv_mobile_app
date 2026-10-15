@@ -134,7 +134,7 @@ class _LoginPhoneRowState extends State<LoginPhoneRow> {
               Padding(
                 padding: EdgeInsets.only(left: phoneErrorLeftPadding),
                 child: const Text(
-                  LoginPhoneNumberHelper.invalidPhoneNumberMessage,
+                  'invalid Format',
                   style: AuthModuleTextStyles.invalidCredentials,
                 ),
               ),

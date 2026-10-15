@@ -15,7 +15,7 @@ void main() {
 
     expect(find.widgetWithText(TextButton, 'Privacy Policy'), findsOneWidget);
     expect(find.widgetWithText(TextButton, 'Terms of Use'), findsOneWidget);
-    expect(find.text('|'), findsOneWidget);
+    expect(find.text(' | '), findsOneWidget);
 
     await tester.tap(find.widgetWithText(TextButton, 'Terms of Use'));
     await tester.pumpAndSettle();
@@ -63,7 +63,7 @@ void main() {
           );
           expect(tester.takeException(), isNull);
           expect(find.byType(TextButton), findsNWidgets(2));
-          expect(find.text('|'), findsOneWidget);
+          expect(find.text(' | '), findsOneWidget);
           final group = find.descendant(
             of: find.byType(LoginPrivacyPolicyLink),
             matching: find.byType(Row),

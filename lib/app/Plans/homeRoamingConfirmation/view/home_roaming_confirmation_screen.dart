@@ -42,10 +42,19 @@ class HomeRoamingConfirmationScreen extends StatelessWidget {
   }
 }
 
-class _HomeRoamingConfirmationView extends StatelessWidget {
+class _HomeRoamingConfirmationView extends StatefulWidget {
   const _HomeRoamingConfirmationView({required this.showDateField});
 
   final bool showDateField;
+
+  @override
+  State<_HomeRoamingConfirmationView> createState() =>
+      _HomeRoamingConfirmationViewState();
+}
+
+class _HomeRoamingConfirmationViewState
+    extends State<_HomeRoamingConfirmationView> {
+  bool _showTermsValidation = false;
 
   Future<void> _openCalendarPickerSheet(
     BuildContext context,
@@ -130,9 +139,14 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                 return DefaultBottomPayBar(
                   buttonText: 'continue',
                   isVatExclusive: false,
-                  isButtonEnabled: state.isTermsChecked,
+                  // Allow a tap to show TOP-004 without changing the pay bar.
+                  isButtonEnabled: true,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    if (!state.isTermsChecked) {
+                      setState(() => _showTermsValidation = true);
+                      return;
+                    }
                     context.read<HomeRoamingConfirmationBloc>().add(
                       const HomeRoamingConfirmationPayNowPressed(),
                     );
@@ -211,7 +225,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                         0,
                                       ),
                                       child: HomeRoamingConfirmationPurchaseSummaryCard(
-                                        showDateField: showDateField,
+                                        showDateField: widget.showDateField,
                                         data: data,
                                         onRemoveItem: (id) => context
                                             .read<HomeRoamingConfirmationBloc>()
@@ -224,7 +238,7 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                     ),
                                   ),
 
-                                  if (showDateField)
+                                  if (widget.showDateField)
                                     /// Begins-on info card (optional via navigation flag)
                                     SliverToBoxAdapter(
                                       child: Padding(
@@ -263,20 +277,60 @@ class _HomeRoamingConfirmationView extends StatelessWidget {
                                         HomeRoamingConfirmationTheme
                                             .termsNoticeBottomSpacing,
                                       ),
-                                      child: HomeRoamingConfirmationTermsNotice(
-                                        isChecked: state.isTermsChecked,
-                                        onToggleChecked: () => context
-                                            .read<HomeRoamingConfirmationBloc>()
-                                            .add(
-                                              HomeRoamingConfirmationTermsCheckboxToggled(
-                                                !state.isTermsChecked,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          HomeRoamingConfirmationTermsNotice(
+                                            isChecked: state.isTermsChecked,
+                                            onToggleChecked: () {
+                                              if (!state.isTermsChecked) {
+                                                setState(
+                                                  () => _showTermsValidation =
+                                                      false,
+                                                );
+                                              }
+                                              context
+                                                  .read<
+                                                    HomeRoamingConfirmationBloc
+                                                  >()
+                                                  .add(
+                                                    HomeRoamingConfirmationTermsCheckboxToggled(
+                                                      !state.isTermsChecked,
+                                                    ),
+                                                  );
+                                            },
+                                            onTermsTap: () async {
+                                              await showTermsAndConditionsModal(
+                                                context,
+                                              );
+                                            },
+                                          ),
+                                          if (_showTermsValidation &&
+                                              !state.isTermsChecked)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 6,
+                                                left:
+                                                    HomeRoamingConfirmationTheme
+                                                        .termsNoticeCheckboxSize +
+                                                    HomeRoamingConfirmationTheme
+                                                        .termsNoticeCheckboxToTextGap,
+                                              ),
+                                              child: Text(
+                                                'accept the terms & conditions to continue',
+                                                style:
+                                                    HomeRoamingConfirmationTheme
+                                                        .termsNoticeBodyTextStyle
+                                                        .copyWith(
+                                                          fontSize: 12,
+                                                          color: Theme.of(
+                                                            context,
+                                                          ).colorScheme.error,
+                                                        ),
                                               ),
                                             ),
-                                        onTermsTap: () async {
-                                          await showTermsAndConditionsModal(
-                                            context,
-                                          );
-                                        },
+                                        ],
                                       ),
                                     ),
                                   ),

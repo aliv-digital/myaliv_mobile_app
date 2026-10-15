@@ -3,19 +3,29 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/bloc/forget_password_bloc.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/bloc/forget_password_event.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/bloc/forget_password_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/repository/forgetpassword_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/theme/forget_password_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/widgets/forget_password_keyboard_done_toolbar.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/forgetPassword/widgets/forgetpass_phone_row.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/model/login_country_selection.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/theme/login_theme.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/utils/login_phone_number_helper.dart';
+import 'package:myaliv_mobile_app/resources/widgets/custom_country_phone_input_row.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_privacy_policy_link.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_terms_of_use_modal.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class _MockNetworkService extends Mock implements NetworkService {}
@@ -37,6 +47,69 @@ void main() {
   tearDown(() async {
     await instance.reset();
   });
+
+  for (final width in [320.0, 430.0]) {
+    testWidgets(
+      'FPW-011 consent and existing links remain usable at width $width',
+      (tester) async {
+        tester.view.physicalSize = Size(width, 900);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        // Measure the existing footer with the app font rather than test Ahem.
+        await (FontLoader('CircularPro')
+              ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
+              ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
+            .load();
+        await _pumpScreen(tester);
+        await tester.pumpAndSettle();
+
+        const message =
+            "by pressing the 'send' button you agree to our terms & conditions and privacy policy";
+        final consent = find.text(message);
+        expect(consent, findsOneWidget);
+        expect(
+          find.descendant(of: find.byType(CustomScrollView), matching: consent),
+          findsOneWidget,
+        );
+        expect(
+          tester.widget<Text>(consent).style,
+          ForgetPasswordTheme.termsBase,
+        );
+        expect(find.byType(Checkbox), findsNothing);
+        expect(
+          tester.widget<DefaultButton>(find.byType(DefaultButton)).onPressed,
+          isNotNull,
+        );
+        expect(
+          tester.getTopLeft(consent).dy,
+          greaterThan(tester.getBottomLeft(find.byType(DefaultButton)).dy),
+        );
+        expect(
+          tester.getBottomLeft(consent).dy,
+          lessThanOrEqualTo(
+            tester.getTopLeft(find.byType(LoginPrivacyPolicyLink)).dy,
+          ),
+        );
+        for (final label in ['Privacy Policy', 'Terms of Use']) {
+          final button = find.ancestor(
+            of: find.text(label),
+            matching: find.byType(TextButton),
+          );
+          expect(tester.widget<TextButton>(button).onPressed, isNotNull);
+        }
+
+        await tester.tap(find.text('Terms of Use'));
+        await tester.pumpAndSettle();
+        expect(find.byType(LoginTermsOfUseDialog), findsOneWidget);
+        await tester.tap(find.byTooltip('Close'));
+        await tester.pumpAndSettle();
+        expect(find.byType(LoginTermsOfUseDialog), findsNothing);
+        verifyZeroInteractions(networkService);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     testWidgets('$platform Done appears with phone focus and only dismisses', (
@@ -117,54 +190,69 @@ void main() {
     expect(find.text('Done'), findsNothing);
   });
 
-  testWidgets('Send retains its API request and loading disable', (
-    tester,
-  ) async {
-    final pendingResponse = Completer<Response<dynamic>>();
-    when(
-      () => networkService.request<dynamic>(
-        Api.forgotPasswordUrl,
-        method: HttpMethod.post,
-        data: any(named: 'data'),
-        options: any(named: 'options'),
-      ),
-    ).thenAnswer((_) => pendingResponse.future);
-    await _pumpScreen(tester);
+  testWidgets(
+    'valid Send after FPW-002 retains its API request and loading disable',
+    (tester) async {
+      final pendingResponse = Completer<Response<dynamic>>();
+      when(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) => pendingResponse.future);
+      await _pumpScreen(tester);
 
-    await tester.enterText(_phoneField(), '2425550101');
-    await tester.tap(find.text('send'));
-    await tester.pump();
+      await tester.enterText(_phoneField(), '242');
+      await tester.tap(find.text('send'));
+      await tester.pump();
+      expect(find.text('invalid Format'), findsOneWidget);
+      verifyZeroInteractions(networkService);
 
-    final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
-    expect(bloc.state.status, ForgetPasswordStatus.loading);
-    expect(
-      tester.widget<DefaultButton>(find.byType(DefaultButton)).isLoading,
-      isTrue,
-    );
-    expect(
-      tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed,
-      isNull,
-    );
-    verify(
-      () => networkService.request<dynamic>(
-        Api.forgotPasswordUrl,
-        method: HttpMethod.post,
-        data: {'Username': '2425550101', 'Channel': 'SelfCare'},
-        options: any(named: 'options'),
-      ),
-    ).called(1);
+      await tester.enterText(_phoneField(), '2425550101');
+      await tester.tap(find.text('send'));
+      await tester.pump();
 
-    pendingResponse.complete(
-      Response<dynamic>(
-        requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
-        data: {'mfa_token': 'test-mfa-token'},
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('OTP placeholder'), findsOneWidget);
-  });
+      final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
+      expect(bloc.state.status, ForgetPasswordStatus.loading);
+      expect(bloc.state.hasInlineNumberError, isFalse);
+      expect(find.text('invalid Format'), findsNothing);
+      expect(
+        tester.widget<DefaultButton>(find.byType(DefaultButton)).isLoading,
+        isTrue,
+      );
+      expect(
+        tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed,
+        isNull,
+      );
+      verify(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: {'Username': '2425550101', 'Channel': 'SelfCare'},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
 
-  testWidgets('empty Send retains existing validation without an API call', (
+      pendingResponse.complete(
+        Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+          data: {'mfa_token': 'test-mfa-token'},
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('OTP placeholder'), findsOneWidget);
+      expect(
+        find.text('a verification code has been sent to your number and email'),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.check), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+    },
+  );
+
+  testWidgets('empty Send shows FPW-001 inline without a toast or API call', (
     tester,
   ) async {
     await _pumpScreen(tester);
@@ -174,7 +262,19 @@ void main() {
 
     final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
     expect(bloc.state.status, ForgetPasswordStatus.failure);
-    expect(bloc.state.errorMessage, 'Please enter your phone number.');
+    expect(bloc.state.errorMessage, 'enter your mobile number');
+    expect(bloc.state.isEmptyNumberError, isTrue);
+    expect(bloc.state.isInvalidNumberLengthError, isFalse);
+    expect(
+      find.descendant(
+        of: find.byType(CustomScrollView),
+        matching: find.text('enter your mobile number'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('enter your mobile number'), findsOneWidget);
+    expect(find.text('Please enter your phone number.'), findsNothing);
+    expect(find.byIcon(Icons.close), findsNothing);
     verifyNever(
       () => networkService.request<dynamic>(
         Api.forgotPasswordUrl,
@@ -183,7 +283,343 @@ void main() {
         options: any(named: 'options'),
       ),
     );
+
+    await tester.tap(find.text('send'));
+    await tester.pump();
+    expect(find.text('enter your mobile number'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing);
+    verifyZeroInteractions(networkService);
+
+    await tester.enterText(_phoneField(), '242');
+    await tester.pump();
+    expect(bloc.state.isEmptyNumberError, isFalse);
+    expect(find.text('enter your mobile number'), findsNothing);
   });
+
+  for (final digitCount in [1, 2, 3, 4, 5, 6, 8, 9]) {
+    testWidgets('$digitCount digits show FPW-002 inline without an API call', (
+      tester,
+    ) async {
+      await _pumpScreen(tester);
+      await tester.enterText(
+        _phoneField(),
+        '2425550101'.substring(0, digitCount),
+      );
+      await tester.pump();
+      expect(find.text('invalid Format'), findsOneWidget);
+      verifyZeroInteractions(networkService);
+      final focusNode = tester.widget<TextField>(_phoneField()).focusNode!;
+      final hadFocus = focusNode.hasFocus;
+
+      await tester.tap(find.text('send'));
+      await tester.pump();
+
+      final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
+      const message = 'invalid Format';
+      expect(bloc.state.status, ForgetPasswordStatus.failure);
+      expect(bloc.state.isEmptyNumberError, isFalse);
+      expect(bloc.state.isInvalidNumberLengthError, isTrue);
+      expect(bloc.state.errorMessage, message);
+      expect(
+        find.descendant(
+          of: find.byType(CustomScrollView),
+          matching: find.text(message),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text(message), findsOneWidget);
+      expect(find.byIcon(Icons.close), findsNothing);
+      expect(focusNode.hasFocus, hadFocus);
+      verifyZeroInteractions(networkService);
+
+      await tester.enterText(_phoneField(), '2425550101');
+      await tester.pump();
+      expect(bloc.state.hasInlineNumberError, isFalse);
+      expect(find.text(message), findsNothing);
+    });
+  }
+
+  for (final width in [320.0, 430.0]) {
+    testWidgets('live phone feedback matches Login at width $width', (
+      tester,
+    ) async {
+      tester.view.physicalSize = Size(width, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await _pumpScreen(tester);
+      expect(find.text('invalid Format'), findsNothing);
+
+      await tester.enterText(_phoneField(), '24255');
+      await tester.pump();
+      final inlineError = find.descendant(
+        of: find.byType(ForgetPasswordPhoneRow),
+        matching: find.text('invalid Format'),
+      );
+      expect(inlineError, findsOneWidget);
+      expect(
+        tester.widget<Text>(inlineError).style,
+        AuthModuleTextStyles.invalidCredentials,
+      );
+      final row = tester.widget<CustomCountryPhoneInputRow>(
+        find.byType(CustomCountryPhoneInputRow),
+      );
+      expect(row.phoneInputStyle!.color, AuthModuleColors.errorRed);
+      expect(row.unfocusedBorderColor, AuthModuleColors.errorRed);
+      expect(row.enableCountryPicker, isFalse);
+      expect(row.countryIsoCode, 'BS');
+      expect(row.dialCode, '1');
+      expect(
+        tester.getTopLeft(inlineError).dy -
+            tester.getBottomLeft(find.byType(CustomCountryPhoneInputRow)).dy,
+        6,
+      );
+      expect(
+        tester.getTopLeft(inlineError).dx,
+        closeTo(
+          tester.getTopLeft(_phoneField()).dx,
+          ForgetPasswordSizes.fieldBorderWidth,
+        ),
+      );
+      expect(find.byIcon(Icons.close), findsNothing);
+      verifyZeroInteractions(networkService);
+
+      // Keeping the error after blur matches Login; its unfocused border is red.
+      tester.widget<TextField>(_phoneField()).focusNode!.unfocus();
+      await tester.pump();
+      expect(inlineError, findsOneWidget);
+      await tester.enterText(_phoneField(), '2428997955');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsNothing);
+      expect(_phoneText(tester), '(242)-899-7955');
+      expect(
+        tester
+            .widget<CustomCountryPhoneInputRow>(
+              find.byType(CustomCountryPhoneInputRow),
+            )
+            .phoneInputStyle,
+        ForgetPasswordTheme.phoneInput,
+      );
+      await tester.enterText(_phoneField(), '');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsNothing);
+      verifyZeroInteractions(networkService);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('typing uses Login validity including seven digits and prefix', (
+    tester,
+  ) async {
+    await _pumpScreen(tester);
+    const helper = LoginPhoneNumberHelper();
+    for (final input in [
+      '',
+      '2',
+      '24255',
+      '8997955',
+      '24289979',
+      '2428997955',
+      '3058997955',
+    ]) {
+      await tester.enterText(_phoneField(), input);
+      await tester.pump();
+      final expectedError = helper.hasLiveValidationError(
+        rawPhoneNumber: _phoneText(tester),
+        selectedCountry: LoginCountrySelection.defaultBahamas,
+      );
+      expect(
+        find.text('invalid Format'),
+        expectedError ? findsOneWidget : findsNothing,
+        reason: 'Forgot Password must match Login for $input',
+      );
+      verifyZeroInteractions(networkService);
+    }
+  });
+
+  testWidgets('ten digits with a non-Bahamas prefix block Send', (
+    tester,
+  ) async {
+    await _pumpScreen(tester);
+    await tester.enterText(_phoneField(), '3058997955');
+    await tester.pump();
+    expect(find.text('invalid Format'), findsOneWidget);
+    await tester.tap(find.text('send'));
+    await tester.pump();
+    expect(find.text('invalid Format'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing);
+    verifyZeroInteractions(networkService);
+  });
+
+  testWidgets(
+    'seven-digit Login-valid input sends the canonical Bahamas username',
+    (tester) async {
+      LoginOtpRouteArgs? otp;
+      when(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response<dynamic>(
+          requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+          data: {'mfa_token': 'test-mfa-token'},
+        ),
+      );
+      await _pumpScreen(tester, onOtp: (args) => otp = args);
+      await tester.enterText(_phoneField(), '8997955');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsNothing);
+      verifyZeroInteractions(networkService);
+      await tester.tap(find.text('send'));
+      await tester.pumpAndSettle();
+      verify(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: {'Username': '2428997955', 'Channel': 'SelfCare'},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+      expect(find.text('OTP placeholder'), findsOneWidget);
+      expect(otp!.apiPhoneNumber, '2428997955');
+      expect(otp!.mfaToken, 'test-mfa-token');
+      await tester.pump(const Duration(seconds: 3));
+    },
+  );
+
+  testWidgets(
+    'live format feedback remains separate from an in-flight backend failure',
+    (tester) async {
+      final pending = Completer<Response<dynamic>>();
+      when(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) => pending.future);
+      await _pumpScreen(tester);
+      await tester.enterText(_phoneField(), '2428997955');
+      await tester.tap(find.text('send'));
+      await tester.pump();
+      await tester.enterText(_phoneField(), '242');
+      await tester.pump();
+      expect(find.text('invalid Format'), findsOneWidget);
+      pending.completeError(
+        DioException(
+          requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+          response: Response<dynamic>(
+            requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+            statusCode: 400,
+            data: {'Message': 'Existing recovery failure'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Existing recovery failure'), findsOneWidget);
+      expect(find.text('invalid Format'), findsOneWidget);
+      expect(find.byIcon(Icons.close), findsOneWidget);
+      verify(
+        () => networkService.request<dynamic>(
+          Api.forgotPasswordUrl,
+          method: HttpMethod.post,
+          data: {'Username': '2428997955', 'Channel': 'SelfCare'},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+      await tester.pump(const Duration(seconds: 3));
+    },
+  );
+
+  testWidgets('non-empty digitless value retains its original error toast', (
+    tester,
+  ) async {
+    await _pumpScreen(tester);
+    final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
+    bloc.add(const ForgetPasswordPhoneChanged('abc'));
+    await tester.pump();
+
+    await tester.tap(find.text('send'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(bloc.state.isEmptyNumberError, isFalse);
+    expect(bloc.state.errorMessage, 'Please enter your phone number.');
+    expect(find.text('Please enter your phone number.'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.text('enter your mobile number'), findsNothing);
+    verifyZeroInteractions(networkService);
+    // Let the existing toast expire before disposing its overlay.
+    await tester.pump(const Duration(seconds: 3));
+  });
+
+  for (final priorInput in ['', '242']) {
+    testWidgets(
+      'API failure after ${priorInput.isEmpty ? 'FPW-001' : 'FPW-002'} still shows its existing error toast',
+      (tester) async {
+        const backendMessage = 'The number you entered is invalid';
+        when(
+          () => networkService.request<dynamic>(
+            Api.forgotPasswordUrl,
+            method: HttpMethod.post,
+            data: any(named: 'data'),
+            options: any(named: 'options'),
+          ),
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+            response: Response<dynamic>(
+              requestOptions: RequestOptions(path: Api.forgotPasswordUrl),
+              statusCode: 400,
+              data: {'Message': backendMessage},
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+        await _pumpScreen(tester);
+        if (priorInput.isNotEmpty) {
+          await tester.enterText(_phoneField(), priorInput);
+        }
+        await tester.tap(find.text('send'));
+        await tester.pump();
+        expect(
+          find.text(
+            priorInput.isEmpty ? 'enter your mobile number' : 'invalid Format',
+          ),
+          findsOneWidget,
+        );
+
+        await tester.enterText(_phoneField(), '2425550101');
+        await tester.tap(find.text('send'));
+        await tester.pump();
+        await tester.pump();
+
+        final bloc = tester.element(_phoneField()).read<ForgetPasswordBloc>();
+        expect(bloc.state.status, ForgetPasswordStatus.failure);
+        expect(bloc.state.isEmptyNumberError, isFalse);
+        expect(bloc.state.isInvalidNumberLengthError, isFalse);
+        expect(bloc.state.errorMessage, backendMessage);
+        expect(find.text(backendMessage), findsOneWidget);
+        expect(find.byIcon(Icons.close), findsOneWidget);
+        expect(find.text('enter your mobile number'), findsNothing);
+        expect(find.text('invalid Format'), findsNothing);
+        verify(
+          () => networkService.request<dynamic>(
+            Api.forgotPasswordUrl,
+            method: HttpMethod.post,
+            data: {'Username': '2425550101', 'Channel': 'SelfCare'},
+            options: any(named: 'options'),
+          ),
+        ).called(1);
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
+  }
 
   testWidgets('phone row and toolbar do not dispose the parent FocusNode', (
     tester,
@@ -218,6 +654,42 @@ void main() {
     expect(() => phoneFocusNode.addListener(listener), returnsNormally);
     phoneFocusNode.removeListener(listener);
   });
+
+  for (final priorInput in ['', '242']) {
+    test(
+      'an in-flight API failure cannot inherit the ${priorInput.isEmpty ? 'FPW-001' : 'FPW-002'} inline flag',
+      () async {
+        final repository = _MockForgetPasswordRepository();
+        final pendingResponse = Completer<String>();
+        when(
+          () => repository.sendRequest(apiPhone: '2425550101'),
+        ).thenAnswer((_) => pendingResponse.future);
+        final bloc = ForgetPasswordBloc(repository: repository);
+        addTearDown(bloc.close);
+
+        bloc.add(const ForgetPasswordPhoneChanged('2425550101'));
+        await bloc.stream.firstWhere((state) => state.phone == '2425550101');
+        bloc.add(const ForgetPasswordSubmitted());
+        await bloc.stream.firstWhere(
+          (state) => state.status == ForgetPasswordStatus.loading,
+        );
+
+        bloc.add(ForgetPasswordPhoneChanged(priorInput));
+        await bloc.stream.firstWhere((state) => state.phone == priorInput);
+        bloc.add(const ForgetPasswordSubmitted());
+        await bloc.stream.firstWhere((state) => state.hasInlineNumberError);
+
+        pendingResponse.completeError(Exception('Existing API failure'));
+        final failure = await bloc.stream.firstWhere(
+          (state) => state.errorMessage == 'Existing API failure',
+        );
+        expect(failure.status, ForgetPasswordStatus.failure);
+        expect(failure.isEmptyNumberError, isFalse);
+        expect(failure.isInvalidNumberLengthError, isFalse);
+        verify(() => repository.sendRequest(apiPhone: '2425550101')).called(1);
+      },
+    );
+  }
 }
 
 Finder _phoneField() => find.byWidgetPredicate(
@@ -236,8 +708,10 @@ String _phoneText(WidgetTester tester) => tester
 Future<void> _pumpScreen(
   WidgetTester tester, {
   TargetPlatform? platform,
+  void Function(LoginOtpRouteArgs)? onOtp,
 }) async {
   final router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.forgetPassword,
     routes: [
       GoRoute(
@@ -248,6 +722,7 @@ Future<void> _pumpScreen(
         path: AppRoutes.forgetPasswordOtp,
         builder: (context, state) {
           expect(state.extra, isA<LoginOtpRouteArgs>());
+          onOtp?.call(state.extra! as LoginOtpRouteArgs);
           return const Scaffold(body: Text('OTP placeholder'));
         },
       ),

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
 
 enum HomePlansCardBrand { visa, mastercard, unknown }
@@ -102,6 +103,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
   final List<PlanPurchasePromoCode> promoCodes;
 
   final bool forceNow;
+  final PlanPurchaseContext purchaseContext;
   final DateTime? selectedBeginDate;
 
   /// Forwarded from the MiFi alt-contact screen's marketing opt-in radio.
@@ -116,6 +118,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     this.selectedItems = const <HomePlansPaymentSelectedItem>[],
     this.promoCodes = const <PlanPurchasePromoCode>[],
     this.forceNow = false,
+    this.purchaseContext = PlanPurchaseContext.regular,
     this.selectedBeginDate,
     this.marketingOptIn = false,
   });
@@ -132,6 +135,7 @@ class HomePlansPaymentMethodRouteArgs extends Equatable {
     selectedItems,
     promoCodes,
     forceNow,
+    purchaseContext,
     selectedBeginDate,
     marketingOptIn,
   ];

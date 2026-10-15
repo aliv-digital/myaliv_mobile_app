@@ -18,7 +18,7 @@ class MifiAltContactArgsBuilder {
     final fallbackPlan = routeArgs.fallbackPlan;
 
     return HomePlanConfirmationRouteArgs(
-      phoneNumber: _accountPhoneNumber(accountState),
+      phoneNumber: accountPhoneNumber(accountState),
       accountHolderName: resolveUserDisplayName(account: accountState),
       primaryPlanId: selectedApiPlan?.planId.trim() ?? fallbackPlan.id,
       primaryPlanName: _planName(
@@ -36,7 +36,8 @@ class MifiAltContactArgsBuilder {
     );
   }
 
-  static String _accountPhoneNumber(AccountInfoState accountState) {
+  /// The MiFi line the plan is purchased for.
+  static String accountPhoneNumber(AccountInfoState accountState) {
     final accountInfo = accountState.accountInfo;
     final primaryPhone = accountInfo?.primaryPhoneNumber.trim() ?? '';
     if (primaryPhone.isNotEmpty) return primaryPhone;

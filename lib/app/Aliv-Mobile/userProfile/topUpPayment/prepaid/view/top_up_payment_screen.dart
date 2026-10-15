@@ -8,6 +8,8 @@ import 'package:myaliv_mobile_app/core/utils/appUtils.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/receipt/models/user_profile_receipt_route_args.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/change_bundle_request_factory.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_request.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/payment_success.dart';
@@ -57,6 +59,32 @@ class _TopUpPaymentPrepaidView extends StatefulWidget {
 }
 
 class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
+  /// PAY-001: set when pay now is tapped without a payment method.
+  bool _showPaymentMethodError = false;
+
+  // Message-only snapshot; never replace it with a post-payment live balance.
+  ({double balanceBefore, double amount})? _ownNumberTopUp;
+
+  void _captureOwnNumberTopUp(double amount) {
+    if (!mounted) {
+      return;
+    }
+    final paymentState = context.read<TopUpPaymentPrepaidBloc>().state;
+    if (paymentState.status == TopUpPaymentStatus.paying) {
+      return;
+    }
+    final recipient = paymentState.summary.recipientPhone?.trim() ?? '';
+    _ownNumberTopUp = null;
+    if (!context.read<AppUiConfigCubit>().state.isPrepaid ||
+        (recipient.isNotEmpty && recipient.toLowerCase() != 'null')) {
+      return;
+    }
+    final balance = instance<BalanceCubit>().state;
+    if (balance.hasBalance) {
+      _ownNumberTopUp = (balanceBefore: balance.walletBalance, amount: amount);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -77,10 +105,15 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
     }
 
     if (state.navTarget == TopUpPaymentNavTarget.paid) {
+      final ownNumberTopUp = _ownNumberTopUp;
       context.push(
         AppRoutes.userProfileReceiptScreen,
         extra: UserProfileReceiptRouteArgs(
           amount: state.summary.total,
+          message: ownNumberTopUp == null
+              ? null
+              : 'Top-up complete! Your balance is now '
+                    '${BalanceCurrencyFormatterService.format(ownNumberTopUp.balanceBefore + ownNumberTopUp.amount)}.',
           recipientPhone: _receiptPhone(state.summary.recipientPhone),
           paymentMethod: state.paymentMode == TopUpPaymentMode.payWithCard
               ? 'visa'
@@ -116,15 +149,31 @@ class _TopUpPaymentPrepaidViewState extends State<_TopUpPaymentPrepaidView> {
           p.status != c.status ||
           p.navTarget != c.navTarget,
       listener: _onState,
-      builder: (context, state) => _TopUpPaymentPrepaidScaffold(state: state),
+      builder: (context, state) => _TopUpPaymentPrepaidScaffold(
+        state: state,
+        // Clears itself once a card or "pay with card" is selected.
+        showPaymentMethodError:
+            _showPaymentMethodError && !state.hasMethodSelected,
+        onMissingPaymentMethod: () =>
+            setState(() => _showPaymentMethodError = true),
+        onPaymentStarted: _captureOwnNumberTopUp,
+      ),
     );
   }
 }
 
 class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
   final TopUpPaymentPrepaidState state;
+  final bool showPaymentMethodError;
+  final VoidCallback onMissingPaymentMethod;
+  final ValueChanged<double> onPaymentStarted;
 
-  const _TopUpPaymentPrepaidScaffold({required this.state});
+  const _TopUpPaymentPrepaidScaffold({
+    required this.state,
+    required this.showPaymentMethodError,
+    required this.onMissingPaymentMethod,
+    required this.onPaymentStarted,
+  });
 
   String _amountText(double amount) => AppUtils.formatPrice(amount);
 
@@ -135,6 +184,10 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
   }
 
   Future<void> _onPayNow(BuildContext context) async {
+    if (!state.hasMethodSelected) {
+      onMissingPaymentMethod();
+      return;
+    }
     if (state.paymentMode == TopUpPaymentMode.payWithCard) {
       _payWith3DS(context);
       return;
@@ -170,6 +223,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
       redirectScheme: 'myaliv',
     );
 
+    onPaymentStarted((request.body['Amount'] as num).toDouble());
     navigator.push<void>(
       MaterialPageRoute<void>(
         builder: (_) => PaymentIFrameScreen(
@@ -217,6 +271,7 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
     );
     if (confirmed != true) return;
 
+    onPaymentStarted(state.summary.total);
     bloc.add(const PaySavedCardConfirmed());
   }
 
@@ -235,7 +290,8 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
         amountText: _amountText(state.summary.total),
         isVatExclusive: !state.summary.vatInclusive,
         isLoading: state.status == TopUpPaymentStatus.paying,
-        isButtonEnabled: state.hasMethodSelected,
+        // Tappable without a method so PAY-001 can explain itself.
+        isButtonEnabled: state.hasMethodSelected || !state.isBusy,
         buttonColor: TopUpPaymentPrepaidTheme.primary,
         onPayNow: () => _onPayNow(context),
       ),
@@ -257,10 +313,27 @@ class _TopUpPaymentPrepaidScaffold extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
             sliver: SliverToBoxAdapter(
-              child: _PaymentMethodSection(
-                selectedToken: state.selectedMethodId,
-                payWithCardSelected:
-                    state.paymentMode == TopUpPaymentMode.payWithCard,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PaymentMethodSection(
+                    selectedToken: state.selectedMethodId,
+                    payWithCardSelected:
+                        state.paymentMode == TopUpPaymentMode.payWithCard,
+                  ),
+                  if (showPaymentMethodError)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        'choose a payment method to continue',
+                        style: TextStyle(
+                          fontFamily: 'CircularPro',
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

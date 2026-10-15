@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_state.dart';
+import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_receipt_success_card.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -101,7 +102,11 @@ class _GuestPayBillReceiptView extends StatelessWidget {
             AppSession.resetAppRoute();
             context.go(AppRoutes.home);
           } else {
-            context.go(AppRoutes.logIn);
+            // BILL-018: a guest returns to the guest home, rebuilt on top of
+            // welcome exactly as it was first opened, so its back arrow works.
+            GoRouter.of(context)
+              ..go(AppRoutes.welcome)
+              ..push(AppRoutes.guestSplash);
           }
         }
       },
@@ -126,27 +131,28 @@ class _GuestPayBillReceiptView extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: GuestPayBillReceiptTheme.contentPadding,
-                  child:
-                      BlocBuilder<
-                        GuestPayBillReceiptBloc,
-                        GuestPayBillReceiptState
-                      >(
-                        builder: (context, state) {
-                          final data = state.data;
-                          if (data == null) return const SizedBox.shrink();
+                  child: BlocBuilder<GuestPayBillReceiptBloc, GuestPayBillReceiptState>(
+                    builder: (context, state) {
+                      final data = state.data;
+                      if (data == null) return const SizedBox.shrink();
 
-                          return DefaultReceiptSuccessCard(
-                            data: _toDefaultReceiptData(data, orderId),
-                            pageBackground:
-                                GuestPayBillReceiptTheme.screenBackground,
-                            statusMessage:
-                                'It will take a few moments for the payment to appear on the account.',
-                            onBackHome: () {
-                              _onBackHomePressed(context);
-                            },
-                          );
+                      return DefaultReceiptSuccessCard(
+                        data: _toDefaultReceiptData(data, orderId),
+                        pageBackground:
+                            GuestPayBillReceiptTheme.screenBackground,
+                        statusMessage:
+                            data.rightType.trim().toUpperCase() == 'ALIVFIBR'
+                            ? 'Your payment of ${BalanceCurrencyFormatterService.format(data.amount)} '
+                                  'has been successfully processed for account ${data.phoneNumber}'
+                            : 'It will take a few moments for the payment to appear on the account.',
+                        // BILL-018: always "home" for bill payments.
+                        backButtonText: 'back to home page',
+                        onBackHome: () {
+                          _onBackHomePressed(context);
                         },
-                      ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],

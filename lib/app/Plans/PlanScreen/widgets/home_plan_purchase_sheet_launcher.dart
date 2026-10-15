@@ -18,6 +18,8 @@ import '../../mifiAltContact/model/mifi_alt_contact_route_args.dart';
 import '../../purchasePlanAddOns/model/plan_purchase_plan_add_ons_route_args.dart';
 import '../models/base_plan_model.dart';
 import '../models/plan_model.dart';
+import '../models/plan_purchase_context.dart';
+import '../repository/enums/plan_group.dart';
 import '../repository/plan_types.dart';
 import 'roam_bottom_sheet.dart';
 import 'wallet_payment_activate_bottom_sheet.dart';
@@ -41,6 +43,17 @@ Future<void> showHomePlanPurchaseBottomSheet({
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
     activePrimaryPlan: plansState.earliestAddOnsPrimaryPlan,
+    purchaseContext:
+        (selectedTab == HomePlanTab.daily ||
+                selectedTab == HomePlanTab.weekly ||
+                selectedTab == HomePlanTab.monthly) &&
+            selectedApiPlan?.planType.trim().toUpperCase() == 'P' &&
+            plansState.hasActivePrimaryPlan &&
+            PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) !=
+                PlanGroup.mifi &&
+            instance<AccountInfoCubit>().state.isPrepaid
+        ? PlanPurchaseContext.prepaidImmediatePrimaryReplacement
+        : PlanPurchaseContext.regular,
   );
 
   return showModalBottomSheet<void>(
@@ -123,8 +136,20 @@ Future<void> showHomePlanPurchaseBottomSheet({
             !plansState.hasActivePrimaryPlan &&
             plansState.standAlonePlans.isNotEmpty &&
             plansState.hasFuturePlans;
+        // MIFI-006: a MiFi purchase over an active MiFi plan. MiFi is the same
+        // PlanGroup rule that builds the MiFi tab; a missing group falls back
+        // to the existing copy.
+        final hasActiveMifiPlan =
+            selectedTab == HomePlanTab.mifi &&
+            plansState.hasActivePrimaryPlan &&
+            PlanGroup.parse(plansState.earliestAddOnsPrimaryPlan?.planGroup) ==
+                PlanGroup.mifi;
         final String warningText;
-        if (plansState.hasActivePrimaryWithoutFuturePrimaryPlans) {
+        if (hasActiveMifiPlan) {
+          warningText =
+              'you already have an active mifi plan. '
+              'buying this plan will replace it immediately.';
+        } else if (plansState.hasActivePrimaryWithoutFuturePrimaryPlans) {
           // Row 4: active primary + no future primary → replace or schedule.
           // Client chart copy, verbatim (including "active your plan").
           warningText =
@@ -361,12 +386,14 @@ PlanPurchasePlanAddOnsRouteArgs _selectedPlanRouteExtra({
   required BasePlanModel? selectedApiPlan,
   required int? selectedIndex,
   required BasePlanModel? activePrimaryPlan,
+  required PlanPurchaseContext purchaseContext,
 }) {
   return PlanPurchasePlanAddOnsRouteArgs(
     selectedApiPlan: selectedApiPlan,
     selectedIndex: selectedIndex,
     forceNow: true,
     activePrimaryPlan: activePrimaryPlan,
+    purchaseContext: purchaseContext,
   );
 }
 

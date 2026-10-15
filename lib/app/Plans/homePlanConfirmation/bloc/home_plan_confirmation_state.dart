@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
 import '../models/home_plan_confirmation_models.dart';
 import '../models/home_plan_promo_response_model.dart';
 
@@ -22,6 +23,7 @@ class HomePlanConfirmationState extends Equatable {
   /// Stores whether the user checked the terms checkbox.
   final bool isTermsChecked;
   final bool forceNow;
+  final PlanPurchaseContext purchaseContext;
   final DateTime? selectedBeginDate;
 
   /// Captured from the MiFi alt-contact screen ("yes/no" radio).
@@ -53,6 +55,7 @@ class HomePlanConfirmationState extends Equatable {
     required this.promoToastMessage,
     required this.promoToastType,
     this.marketingOptIn = false,
+    this.purchaseContext = PlanPurchaseContext.regular,
   });
 
   factory HomePlanConfirmationState.initial() {
@@ -127,6 +130,7 @@ class HomePlanConfirmationState extends Equatable {
     int? payNowRequestId,
     bool? isTermsChecked,
     bool? forceNow,
+    PlanPurchaseContext? purchaseContext,
     DateTime? selectedBeginDate,
     String? promoCode,
     HomePlanConfirmationPromoStatus? promoStatus,
@@ -145,6 +149,7 @@ class HomePlanConfirmationState extends Equatable {
       payNowRequestId: payNowRequestId ?? this.payNowRequestId,
       isTermsChecked: isTermsChecked ?? this.isTermsChecked,
       forceNow: forceNow ?? this.forceNow,
+      purchaseContext: purchaseContext ?? this.purchaseContext,
       selectedBeginDate: selectedBeginDate ?? this.selectedBeginDate,
       promoCode: promoCode ?? this.promoCode,
       promoStatus: promoStatus ?? this.promoStatus,
@@ -168,6 +173,7 @@ class HomePlanConfirmationState extends Equatable {
     payNowRequestId,
     isTermsChecked,
     forceNow,
+    purchaseContext,
     selectedBeginDate,
     promoCode,
     promoStatus,

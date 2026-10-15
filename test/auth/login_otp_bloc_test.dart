@@ -143,6 +143,11 @@ void main() {
               'errorType',
               LoginOtpErrorType.incompleteCode,
             )
+            .having(
+              (s) => s.errorMessage,
+              'errorMessage',
+              'enter all 6 digits of your verification code',
+            )
             .having((s) => s.codeFieldError, 'codeFieldError', true),
       ],
     );

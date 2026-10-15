@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../PlanScreen/models/plan_purchase_context.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/new_card_details.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_bonus.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/models/plan_purchase_promo_code.dart';
@@ -52,6 +53,11 @@ class HomePlansPaymentMethodState extends Equatable {
   final List<PlanPurchasePromoCode> promoCodes;
   final List<PlanPurchaseBonus> bonuses;
   final bool forceNow;
+  final PlanPurchaseContext purchaseContext;
+
+  /// Suppresses cancellation feedback once 3DS confirms payment, including
+  /// while the existing analytics continuation is pending.
+  final bool hasConfirmed3DSPayment;
   final DateTime? selectedBeginDate;
 
   final HomePlansPaymentMethodNavTarget navTarget;
@@ -66,6 +72,9 @@ class HomePlansPaymentMethodState extends Equatable {
   /// Order ID from the 3DS callback URL. Set after a successful 3DS payment
   /// so the receipt can offer the save-card affordance via /CreditCard/savenew.
   final String? orderId;
+
+  /// Confirmed funding source, independent of later payment-radio changes.
+  final bool walletPaymentSucceeded;
 
   const HomePlansPaymentMethodState({
     required this.status,
@@ -87,6 +96,9 @@ class HomePlansPaymentMethodState extends Equatable {
     required this.walletWarningRequestId,
     this.lastNewCardDetails,
     this.orderId,
+    this.purchaseContext = PlanPurchaseContext.regular,
+    this.hasConfirmed3DSPayment = false,
+    this.walletPaymentSucceeded = false,
   });
 
   factory HomePlansPaymentMethodState.initial() {
@@ -113,8 +125,30 @@ class HomePlansPaymentMethodState extends Equatable {
 
   String get amountText => AppUtils.formatPrice(amount);
 
+  String? get replacementPrimaryPlanTitle {
+    if (purchaseContext !=
+            PlanPurchaseContext.prepaidImmediatePrimaryReplacement ||
+        !isPrepaidUser ||
+        !forceNow) {
+      return null;
+    }
+    for (final item in selectedItems) {
+      if (item.planType == HomePlansPaymentPlanType.primary &&
+          item.title.trim().isNotEmpty) {
+        return item.title;
+      }
+    }
+    return null;
+  }
+
   bool get isPrepaidUser {
     return subscriberType == HomePlansSubscriberType.prepaid;
+  }
+
+  bool hasInsufficientWalletBalance(double walletBalance) {
+    return isPrepaidUser &&
+        paymentMode == HomePlansPaymentMode.payFromWallet &&
+        walletBalance < amount;
   }
 
   bool get isPayNowEnabled {
@@ -143,6 +177,8 @@ class HomePlansPaymentMethodState extends Equatable {
     List<PlanPurchasePromoCode>? promoCodes,
     List<PlanPurchaseBonus>? bonuses,
     bool? forceNow,
+    PlanPurchaseContext? purchaseContext,
+    bool? hasConfirmed3DSPayment,
     DateTime? selectedBeginDate,
     HomePlansPaymentMethodNavTarget? navTarget,
     String? walletWarningMessage,
@@ -151,6 +187,7 @@ class HomePlansPaymentMethodState extends Equatable {
     bool clearLastNewCardDetails = false,
     String? orderId,
     bool clearOrderId = false,
+    bool? walletPaymentSucceeded,
   }) {
     return HomePlansPaymentMethodState(
       status: status ?? this.status,
@@ -166,6 +203,9 @@ class HomePlansPaymentMethodState extends Equatable {
       promoCodes: promoCodes ?? this.promoCodes,
       bonuses: bonuses ?? this.bonuses,
       forceNow: forceNow ?? this.forceNow,
+      purchaseContext: purchaseContext ?? this.purchaseContext,
+      hasConfirmed3DSPayment:
+          hasConfirmed3DSPayment ?? this.hasConfirmed3DSPayment,
       selectedBeginDate: selectedBeginDate ?? this.selectedBeginDate,
       navTarget: navTarget ?? this.navTarget,
       walletWarningMessage: walletWarningMessage ?? this.walletWarningMessage,
@@ -175,6 +215,8 @@ class HomePlansPaymentMethodState extends Equatable {
           ? null
           : (lastNewCardDetails ?? this.lastNewCardDetails),
       orderId: clearOrderId ? null : (orderId ?? this.orderId),
+      walletPaymentSucceeded:
+          walletPaymentSucceeded ?? this.walletPaymentSucceeded,
     );
   }
 
@@ -193,11 +235,14 @@ class HomePlansPaymentMethodState extends Equatable {
     promoCodes,
     bonuses,
     forceNow,
+    purchaseContext,
+    hasConfirmed3DSPayment,
     selectedBeginDate,
     navTarget,
     walletWarningMessage,
     walletWarningRequestId,
     lastNewCardDetails,
     orderId,
+    walletPaymentSucceeded,
   ];
 }

@@ -32,6 +32,7 @@ class HomePlansPaymentMethodScreen extends StatelessWidget {
               selectedItems: args.selectedItems,
               promoCodes: args.promoCodes,
               forceNow: args.forceNow,
+              purchaseContext: args.purchaseContext,
               selectedBeginDate: args.selectedBeginDate,
             ),
           ),

@@ -10,6 +10,7 @@ enum FingerFaceSecurityStatus {
   authenticated,
   setupSuccess,
   failure,
+  cancelled,
 }
 
 class FingerFaceSecurityState extends Equatable {
@@ -32,6 +33,10 @@ class FingerFaceSecurityState extends Equatable {
       status == FingerFaceSecurityStatus.authenticating;
   bool get isAuthenticated => status == FingerFaceSecurityStatus.authenticated;
   bool get isFailure => status == FingerFaceSecurityStatus.failure;
+  String? get informationalMessage =>
+      status == FingerFaceSecurityStatus.cancelled
+      ? 'enter your password to continue'
+      : null;
   bool get isBiometricEnabled => data?.isBiometricEnabled ?? false;
   bool get fingerprintEnabled => data?.fingerprintEnabled ?? false;
   bool get faceIdEnabled => data?.faceIdEnabled ?? false;

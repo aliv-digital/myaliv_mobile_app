@@ -181,6 +181,38 @@ class ReferFriendPrepaidBloc
     try {
       final accountInfo = _readReferralAccountInfo();
 
+      final ownEmail =
+          instance<AccountInfoCubit>().state.accountInfo?.email
+              .trim()
+              .toLowerCase() ??
+          '';
+      if (ownEmail.isNotEmpty &&
+          state.friendEmail.trim().toLowerCase() == ownEmail) {
+        emit(
+          state.copyWith(
+            shareStatus: ReferFriendPrepaidSubmitStatus.idle,
+            errorMessage: 'You cannot reffer your own email address.',
+          ),
+        );
+        return;
+      }
+
+      final ownPhone = phoneNumberHelper.validateAndBuildApiUsername(
+        rawPhoneNumber: accountInfo.phoneNumber,
+        selectedCountry: state.selectedCountry,
+      );
+      if (ownPhone.isValid &&
+          ownPhone.phoneNumberForApi ==
+              phoneValidationResult.phoneNumberForApi) {
+        emit(
+          state.copyWith(
+            shareStatus: ReferFriendPrepaidSubmitStatus.idle,
+            errorMessage: 'You cannot refer your own phone number.',
+          ),
+        );
+        return;
+      }
+
       final isValidToRefer = await repository.isValidReferral(
         userPhoneNumber: phoneValidationResult.phoneNumberForApi!,
       );
@@ -207,7 +239,7 @@ class ReferFriendPrepaidBloc
           shareStatus: ReferFriendPrepaidSubmitStatus.success,
           referralCode: referralCode,
           shareSuccessRequestId: state.shareSuccessRequestId + 1,
-          toastMessage: 'Referral sent!',
+          toastMessage: 'Thank you for your referral!',
         ),
       );
       //REF0304EB30E38
@@ -228,7 +260,13 @@ class ReferFriendPrepaidBloc
     ReferFriendPrepaidRedeemCodeChanged event,
     Emitter<ReferFriendPrepaidState> emit,
   ) {
-    emit(state.copyWith(redeemCode: event.value, errorMessage: null));
+    emit(
+      state.copyWith(
+        redeemCode: event.value,
+        redeemCodeFieldError: false,
+        errorMessage: null,
+      ),
+    );
   }
 
   Future<void> _onRedeemPressed(
@@ -236,6 +274,13 @@ class ReferFriendPrepaidBloc
     Emitter<ReferFriendPrepaidState> emit,
   ) async {
     if (state.redeemStatus == ReferFriendPrepaidSubmitStatus.submitting) {
+      return;
+    }
+
+    // Empty input is caught locally and shown inline; it never reaches the
+    // redeem API or the backend invalid-code messaging.
+    if (state.redeemCode.trim().isEmpty) {
+      emit(state.copyWith(redeemCodeFieldError: true, errorMessage: null));
       return;
     }
 

@@ -111,7 +111,10 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
 
               if (!context.mounted) return;
               final expirationDate =
-                  await SaveNewCardBottomSheet.showForExpiryCapture(context);
+                  await SaveNewCardBottomSheet.showForExpiryCapture(
+                    context,
+                    rejectPastExpiry: true,
+                  );
               if (!context.mounted || expirationDate == null) return;
 
               final orderId = int.tryParse(success.orderId ?? '');
@@ -128,11 +131,8 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
               );
               if (!context.mounted) return;
               if (ok) {
-                final serverMsg = success.queryParams['Message']?.trim();
                 AppToast.show(
-                  message: (serverMsg != null && serverMsg.isNotEmpty)
-                      ? serverMsg
-                      : 'your card has been added successfully',
+                  message: 'Payment method added successfully!',
                   type: ToastType.success,
                 );
               } else {
@@ -262,7 +262,8 @@ class _AddOrEditCardsPrepaidView extends StatelessWidget {
     if (!context.mounted) return;
     if (cubit.state.errorMessage == null) {
       AppToast.show(
-        message: 'your card has been saved successfully removed',
+        // CARD-010: only after the removal call succeeds.
+        message: 'your card has been successfully removed',
         type: ToastType.success,
       );
     }

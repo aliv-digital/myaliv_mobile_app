@@ -16,7 +16,7 @@ class ChangePasswordPrepaidBloc
   static const _minLength = 8;
   static const _maxLength = 64;
   static const _lengthError = 'password does not meet the requirement';
-  static const _matchError = 'password does not match';
+  static const _matchError = 'Passwords do not match. Try again.';
 
   ChangePasswordPrepaidBloc(
     this.repository, {
@@ -108,12 +108,18 @@ class ChangePasswordPrepaidBloc
     final a = state.newPassword.trim();
     final b = state.confirmPassword.trim();
 
-    final newErr = (a.length < _minLength || a.length > _maxLength)
+    final newErr = a.isEmpty
+        ? 'New password is required.'
+        : (a.length < _minLength || a.length > _maxLength)
         ? _lengthError
         : null;
-    final confirmErr = (b.length < _minLength || b.length > _maxLength)
+    final confirmErr = b.isEmpty
+        ? 'Please re-enter your password.'
+        : a != b
+        ? _matchError
+        : (b.length < _minLength || b.length > _maxLength)
         ? _lengthError
-        : (a != b ? _matchError : null);
+        : null;
 
     if (newErr != null || confirmErr != null) {
       emit(

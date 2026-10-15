@@ -427,9 +427,60 @@ void main() {
         },
       );
     }
+    for (final mode in [
+      AutoRenewPaymentMethodType.card,
+      AutoRenewPaymentMethodType.postpaidInvoice,
+    ]) {
+      for (final name in [
+        'John123',
+        '12345',
+        'John@Doe',
+        'John!',
+        'John_Doe',
+        'John#Doe',
+        'John-Doe',
+        "O'Neil",
+        'John١',
+        'John\tDoe',
+        'John\n',
+      ]) {
+        test(
+          '$mode rejects invalid characters in "$name" before OTP',
+          () async {
+            var verifies = 0;
+            await start(mode, (_) async {
+              verifies++;
+              return null;
+            });
+            bloc!.add(AutoRenewAuthNameChanged(name));
+            await flush();
+            bloc!.add(const AutoRenewAuthSubmitPressed());
+            await flush();
+            expect(
+              bloc!.state.errorMessage,
+              'Only alphabetical characheters are allowed. Try again.',
+            );
+            expect(verifies, 0);
+            expect(repository.submissions, isEmpty);
+            expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.none);
+          },
+        );
+      }
+    }
     for (final (mode, name) in [
       for (final mode in AutoRenewPaymentMethodType.values)
-        for (final name in ['', '   ', 'Wrong Name', 'Test Subscriber '])
+        for (final name in [
+          '',
+          '   ',
+          'Wrong Name',
+          'John',
+          'JOHN',
+          'John Doe',
+          'Mary Jane',
+          'José',
+          '李明',
+          'Test Subscriber ',
+        ])
           (mode, name),
     ]) {
       test('$mode existing name validation rejects "$name" before OTP', () async {

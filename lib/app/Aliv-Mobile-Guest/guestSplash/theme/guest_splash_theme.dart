@@ -36,6 +36,7 @@ class GuestSplashTheme {
 
   // Inline phone validation copy shown under fields.
   static const String invalidPhoneMessage = 'invalid phone number';
+  static const String emptyPhoneMessage = 'enter your mobile number';
   static const String phoneMismatchMessage = 'phone numbers do not match';
 
   // Inline validation red used for field border + input text on error.

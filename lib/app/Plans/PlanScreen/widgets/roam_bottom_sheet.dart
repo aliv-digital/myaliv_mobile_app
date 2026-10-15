@@ -8,7 +8,8 @@ class HomePlanRoamBottomSheet extends StatefulWidget {
   const HomePlanRoamBottomSheet({
     super.key,
     this.title = HomePlanTheme.roamBottomSheetTitle,
-    this.warningText = HomePlanTheme.roamBottomSheetWarningText,
+    this.warningText =
+        '${HomePlanTheme.roamBottomSheetTitle} — ${HomePlanTheme.roamBottomSheetWarningText}',
     this.startFromLabel = HomePlanTheme.roamBottomSheetStartFromLabel,
     this.initialDate,
     required this.onBackPressed,
@@ -86,11 +87,12 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                 height: HomePlanTheme.roamBottomSheetTitleToWarningGap,
               ),
 
-              // Warning box.
+              // Product: same reddish colours as the Monthly purchase sheet's
+              // warning box; size, weight and spacing stay this sheet's own.
               Container(
                 padding: HomePlanTheme.bottomSheetWarningPadding,
                 decoration: BoxDecoration(
-                  color: HomePlanTheme.roamBottomSheetWarningBackgroundColor,
+                  color: HomePlanTheme.warningBackground,
                   borderRadius: BorderRadius.circular(
                     HomePlanTheme.bottomSheetWarningRadius,
                   ),
@@ -103,7 +105,8 @@ class _RoamBottomSheetState extends State<HomePlanRoamBottomSheet> {
                   width: HomePlanTheme.roamBottomSheetWarningTextWidth,
                   child: Text(
                     widget.warningText,
-                    style: HomePlanTheme.roamBottomSheetWarningTextStyle,
+                    style: HomePlanTheme.roamBottomSheetWarningTextStyle
+                        .copyWith(color: HomePlanTheme.warningText),
                   ),
                 ),
               ),

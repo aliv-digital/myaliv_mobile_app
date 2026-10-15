@@ -480,7 +480,7 @@ void main() {
         qty > 30 ? findsOneWidget : findsNothing,
       );
       expect(
-        find.text('promo applied'),
+        find.text('promo code applied'),
         qty > 30 ? findsNothing : findsOneWidget,
       );
       await tester.pump(const Duration(seconds: 4));

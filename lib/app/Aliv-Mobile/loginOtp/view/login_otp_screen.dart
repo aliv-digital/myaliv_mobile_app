@@ -40,7 +40,7 @@ class LoginOtpScreen extends StatelessWidget {
   /// Optional override called on success instead of the default home navigation.
   final void Function(BuildContext context)? onSuccess;
 
-  /// Optional toast message shown on success. Defaults to 'Logged in successfully'.
+  /// Optional toast message shown on success. Defaults to 'OTP verified successfully.'.
   final String? successMessage;
 
   /// Clears entered digits on resend for flows that opt in.
@@ -102,7 +102,7 @@ class _LoginOtpViewState extends State<_LoginOtpView> {
           listener: (context, state) {
             if (state.status == LoginOtpStatus.success) {
               AppToast.show(
-                message: widget.successMessage ?? 'Logged in successfully',
+                message: widget.successMessage ?? 'OTP verified successfully.',
                 type: ToastType.success,
               );
               instance<FingerFaceSecurityCubit>().markSessionAuthenticated();
