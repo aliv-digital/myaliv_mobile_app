@@ -50,7 +50,7 @@ class CreatePasswordTheme {
     color: titleColor,
   );
 
-  // Header subtitle: "Set the new password..."
+  // Header subtitle: "set the new password..."
   static TextStyle subtitle = const TextStyle(
     fontSize: 15,
     height: 1.47,
