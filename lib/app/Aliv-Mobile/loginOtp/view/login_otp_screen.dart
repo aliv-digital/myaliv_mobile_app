@@ -49,17 +49,20 @@ class LoginOtpScreen extends StatelessWidget {
   /// Forgot Password clears previous verification errors when requesting a code.
   final bool resetValidationOnResend;
 
+  @protected
+  LoginOtpBloc createBloc(BuildContext context) => LoginOtpBloc(
+    repository: LoginOtpRepository(),
+    appUiConfigCubit: context.read<AppUiConfigCubit>(),
+    initialMfaToken: initialMfaToken,
+    initialPhoneNumber: initialPhoneNumber,
+    initialApiPhoneNumber: initialApiPhoneNumber,
+    resetValidationOnResend: resetValidationOnResend,
+  );
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginOtpBloc(
-        repository: LoginOtpRepository(),
-        appUiConfigCubit: context.read<AppUiConfigCubit>(),
-        initialMfaToken: initialMfaToken,
-        initialPhoneNumber: initialPhoneNumber,
-        initialApiPhoneNumber: initialApiPhoneNumber,
-        resetValidationOnResend: resetValidationOnResend,
-      ),
+      create: createBloc,
       child: _LoginOtpView(
         onSuccess: onSuccess,
         successMessage: successMessage,

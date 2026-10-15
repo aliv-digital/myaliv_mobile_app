@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
 import 'package:myaliv_mobile_app/resources/widgets/defaultButton.dart';
 import 'package:myaliv_mobile_app/resources/widgets/striped_scaffold.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -13,6 +12,7 @@ import '../bloc/forget_password_bloc.dart';
 import '../bloc/forget_password_event.dart';
 import '../bloc/forget_password_state.dart';
 import '../repository/forgetpassword_repository.dart';
+import '../model/password_recovery_otp_challenge.dart';
 import '../theme/forget_password_theme.dart';
 import '../widgets/forgetpass_header.dart';
 import '../widgets/forget_password_keyboard_done_toolbar.dart';
@@ -89,7 +89,7 @@ class _ForgetPasswordScreenView extends StatelessWidget {
               );
               context.push(
                 AppRoutes.forgetPasswordOtp,
-                extra: LoginOtpRouteArgs(
+                extra: PasswordRecoveryOtpChallenge(
                   mfaToken: state.mfaToken,
                   phoneNumber: state.phone,
                   apiPhoneNumber: state.apiPhoneNumber,

@@ -73,6 +73,8 @@ import '../app/Aliv-Mobile/autoRenew/otp/prepaid/view/otp_prepaid_screen.dart';
 import '../app/Aliv-Mobile/createPassword/view/create_password_page.dart';
 import '../core/auth/hard_logout.dart';
 import '../app/Aliv-Mobile/forgetPassword/view/forget_password_screen.dart';
+import '../app/Aliv-Mobile/forgetPassword/view/forget_password_otp_screen.dart';
+import '../app/Aliv-Mobile/forgetPassword/model/password_recovery_otp_challenge.dart';
 import '../app/Aliv-Mobile/login/view/login_page.dart';
 import '../app/Aliv-Mobile/loginOtp/model/login_otp_route_args.dart';
 import '../app/Aliv-Mobile/loginOtp/view/login_otp_screen.dart';
@@ -852,16 +854,14 @@ class AppRouter {
                   phoneNumber: '',
                   apiPhoneNumber: '',
                 );
-          return LoginOtpScreen(
-            initialMfaToken: args.mfaToken,
-            initialPhoneNumber: args.phoneNumber,
-            initialApiPhoneNumber: args.apiPhoneNumber,
-            clearCodeOnResend: true,
-            resetValidationOnResend: true,
-            successMessage: 'Code verified.',
-            onSuccess: (ctx) {
-              ctx.push(AppRoutes.createPassword, extra: true);
-            },
+          return ForgetPasswordOtpScreen(
+            challenge: args is PasswordRecoveryOtpChallenge
+                ? args
+                : PasswordRecoveryOtpChallenge(
+                    mfaToken: args.mfaToken,
+                    phoneNumber: args.phoneNumber,
+                    apiPhoneNumber: args.apiPhoneNumber,
+                  ),
           );
         },
       ),
