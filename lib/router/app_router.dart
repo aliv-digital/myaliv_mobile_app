@@ -512,6 +512,7 @@ class AppRouter {
             initialMfaToken: args.mfaToken,
             apiPhoneNumber: args.apiPhoneNumber,
             destination: args.destination,
+            returnInPlace: args.returnInPlace,
           );
         },
       ),

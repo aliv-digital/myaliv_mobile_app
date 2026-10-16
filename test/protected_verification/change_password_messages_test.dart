@@ -47,7 +47,9 @@ void main() {
               scenario.newValue,
             );
             await tester.enterText(
-                find.byType(TextField).last, scenario.confirm);
+              find.byType(TextField).last,
+              scenario.confirm,
+            );
             await tester.pumpAndSettle();
             tester.testTextInput.hide();
             FocusManager.instance.primaryFocus?.unfocus();

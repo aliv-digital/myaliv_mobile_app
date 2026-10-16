@@ -19,17 +19,23 @@ import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import 'support/change_password_flow_harness.dart';
 
-void flowTest(String name,
-    Future<void> Function(WidgetTester, ChangePasswordFlowHarness) body) {
+void flowTest(
+  String name,
+  Future<void> Function(WidgetTester, ChangePasswordFlowHarness) body,
+) {
   testWidgets(
-      name, (tester) => withChangePasswordFlow(tester, (h) => body(tester, h)));
+    name,
+    (tester) => withChangePasswordFlow(tester, (h) => body(tester, h)),
+  );
 }
 
 void main() {
   setUpAll(loadChangePasswordTestFonts);
   for (final width in [320.0, 800.0]) {
-    flowTest('Profile → fresh OTP → form → one update at $width',
-        (tester, h) async {
+    flowTest('Profile → fresh OTP → form → one update at $width', (
+      tester,
+      h,
+    ) async {
       await h.start(tester, width: width);
       await h.select(tester);
       h.expectLocked();
@@ -49,8 +55,10 @@ void main() {
       expect(h.verifyPayloads.single['mfa_token'], 'synthetic-mfa-1');
       expect(h.verifyPayloads.single['otp_code'], '123456');
       expect(h.access.expiresAt, historyExpiry);
-      expect(find.text('Your password has been changed successfully.'),
-          findsOneWidget);
+      expect(
+        find.text('Your password has been changed successfully.'),
+        findsOneWidget,
+      );
       expect(find.text('home destination'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -63,7 +71,7 @@ void main() {
     'network',
     'offline',
     'storage',
-    'malformed'
+    'malformed',
   ]) {
     flowTest('$failure OTP cannot open the form', (tester, h) async {
       await h.start(tester);
@@ -82,9 +90,8 @@ void main() {
               ? DioExceptionType.connectionError
               : DioExceptionType.badResponse,
           response: h.response(Api.verifyOtpUrl, {
-            'Message': failure == 'expired' ? 'OTP expired' : '$failure OTP'
-          })
-            ..statusCode = failure == 'backend' ? 500 : 401,
+            'Message': failure == 'expired' ? 'OTP expired' : '$failure OTP',
+          })..statusCode = failure == 'backend' ? 500 : 401,
         );
       }
       await h.verify(tester);
@@ -96,14 +103,19 @@ void main() {
   }
 
   for (final back in ['header', 'system']) {
-    flowTest('$back OTP Back grants nothing and re-entry challenges again',
-        (tester, h) async {
+    flowTest('$back OTP Back grants nothing and re-entry challenges again', (
+      tester,
+      h,
+    ) async {
       await h.start(tester);
       await h.select(tester);
       if (back == 'header') {
-        await tester.tap(find.descendant(
+        await tester.tap(
+          find.descendant(
             of: find.byType(DefaultBackButton),
-            matching: find.byType(IconButton)));
+            matching: find.byType(IconButton),
+          ),
+        );
       } else {
         await tester.binding.handlePopRoute();
       }
@@ -116,8 +128,10 @@ void main() {
     });
   }
 
-  flowTest('challenge failure returns to Profile without form access',
-      (tester, h) async {
+  flowTest('challenge failure returns to Profile without form access', (
+    tester,
+    h,
+  ) async {
     h.challengeError = StateError('synthetic challenge failure');
     await h.start(tester);
     await h.select(tester);
@@ -126,29 +140,34 @@ void main() {
     expect(h.verifications, 0);
   });
 
-  flowTest('resend rotates the existing challenge; only latest token verifies',
-      (tester, h) async {
-    await h.start(tester);
-    await h.select(tester);
-    await tester.tap(find.text('resend code'));
-    await tester.pumpAndSettle();
-    h.expectLocked();
-    expect(h.challenges, 2);
-    await h.verify(tester);
-    expect(h.verifyPayloads.single['mfa_token'], 'synthetic-mfa-2');
-    await h.enterPasswords(tester);
-    await h.submit(tester);
-    expect(h.verifications, 1);
-    expect(h.challenges, 2);
-    expect(h.updates, 1);
-  });
+  flowTest(
+    'resend rotates the existing challenge; only latest token verifies',
+    (tester, h) async {
+      await h.start(tester);
+      await h.select(tester);
+      await tester.tap(find.text('resend code'));
+      await tester.pumpAndSettle();
+      h.expectLocked();
+      expect(h.challenges, 2);
+      await h.verify(tester);
+      expect(h.verifyPayloads.single['mfa_token'], 'synthetic-mfa-2');
+      await h.enterPasswords(tester);
+      await h.submit(tester);
+      expect(h.verifications, 1);
+      expect(h.challenges, 2);
+      expect(h.updates, 1);
+    },
+  );
 
-  flowTest('duplicate Profile, OTP and Submit events call each endpoint once',
-      (tester, h) async {
+  flowTest('duplicate Profile, OTP and Submit events call each endpoint once', (
+    tester,
+    h,
+  ) async {
     h.pendingChallenge = Completer();
     await h.start(tester);
-    final profile =
-        tester.element(find.text('my profile')).read<MyProfilePrepaidBloc>();
+    final profile = tester
+        .element(find.text('my profile'))
+        .read<MyProfilePrepaidBloc>();
     for (var i = 0; i < 3; i++) {
       profile.add(const MyProfilePrepaidChangePasswordPressed());
     }
@@ -177,8 +196,9 @@ void main() {
     }
     await tester.pump();
     expect(h.updates, 1);
-    h.pendingUpdate!
-        .complete(h.response(Api.updatePasswordUrl, {'Success': true}));
+    h.pendingUpdate!.complete(
+      h.response(Api.updatePasswordUrl, {'Success': true}),
+    );
     await tester.pumpAndSettle();
     expect(h.updates, 1);
     expect(h.challenges, 1);
@@ -191,10 +211,12 @@ void main() {
       'session replacement',
       'account switch',
       'device switch',
-      'away and back'
+      'away and back',
     ]) {
-      flowTest('$change during $during invalidates authorization',
-          (tester, h) async {
+      flowTest('$change during $during invalidates authorization', (
+        tester,
+        h,
+      ) async {
         if (during == 'OTP') {
           h.pendingVerification = Completer();
         }
@@ -240,8 +262,10 @@ void main() {
     }
   }
 
-  flowTest('abandoned OTP response cannot authorize a later route',
-      (tester, h) async {
+  flowTest('abandoned OTP response cannot authorize a later route', (
+    tester,
+    h,
+  ) async {
     h.pendingVerification = Completer();
     await h.start(tester);
     await h.select(tester);
@@ -260,8 +284,10 @@ void main() {
     expect(h.challenges, 2);
   });
 
-  flowTest('session replacement after OTP persistence cannot expose the form',
-      (tester, h) async {
+  flowTest('session replacement after OTP persistence cannot expose the form', (
+    tester,
+    h,
+  ) async {
     await h.start(tester);
     await h.select(tester);
     final otp = h.otp(tester);
@@ -280,39 +306,46 @@ void main() {
   });
 
   flowTest(
-      'Back from authorized form revokes access; route rebuild retains only its own journey',
-      (tester, h) async {
-    await h.start(tester);
-    await h.select(tester);
-    await h.verify(tester);
-    h.config.showCurrentPlansView();
-    await tester.pumpAndSettle();
-    expect(h.challenges, 1);
-    expect(find.byType(ChangePasswordPrepaidPasswordField), findsNWidgets(2));
-    h.router.pop();
-    await tester.pumpAndSettle();
-    await h.select(tester);
-    h.expectLocked();
-    expect(h.challenges, 2);
-    expect(find.byType(ActionOtpScreen), findsOneWidget);
-  });
+    'Back from authorized form revokes access; route rebuild retains only its own journey',
+    (tester, h) async {
+      await h.start(tester);
+      await h.select(tester);
+      await h.verify(tester);
+      h.config.showCurrentPlansView();
+      await tester.pumpAndSettle();
+      expect(h.challenges, 1);
+      expect(find.byType(ChangePasswordPrepaidPasswordField), findsNWidgets(2));
+      h.router.pop();
+      await tester.pumpAndSettle();
+      await h.select(tester);
+      h.expectLocked();
+      expect(h.challenges, 2);
+      expect(find.byType(ActionOtpScreen), findsOneWidget);
+    },
+  );
 
   for (final alternative in ['deep link', 'forged extras', 'legacy OTP']) {
-    flowTest('$alternative cannot bypass the destination gate',
-        (tester, h) async {
-      await h.start(tester,
-          location: alternative == 'deep link'
-              ? AppRoutes.changePasswordPrepaidScreen
-              : alternative == 'legacy OTP'
-                  ? AppRoutes.otpProfilePrepaidScreen
-                  : AppRoutes.myProfilePrepaidScreen);
+    flowTest('$alternative cannot bypass the destination gate', (
+      tester,
+      h,
+    ) async {
+      await h.start(
+        tester,
+        location: alternative == 'deep link'
+            ? AppRoutes.changePasswordPrepaidScreen
+            : alternative == 'legacy OTP'
+            ? AppRoutes.otpProfilePrepaidScreen
+            : AppRoutes.myProfilePrepaidScreen,
+      );
       if (alternative == 'forged extras') {
-        h.router.push(AppRoutes.changePasswordPrepaidScreen,
-            extra: ActionVerifiedResult<ProtectedAccountAction>(
-              attemptId: Object(),
-              paymentMethod: ProtectedAccountAction.changePassword,
-              canConsume: () => true,
-            ));
+        h.router.push(
+          AppRoutes.changePasswordPrepaidScreen,
+          extra: ActionVerifiedResult<ProtectedAccountAction>(
+            attemptId: Object(),
+            paymentMethod: ProtectedAccountAction.changePassword,
+            canConsume: () => true,
+          ),
+        );
       } else if (alternative == 'legacy OTP') {
         await tester.ensureVisible(find.text('verify'));
         await tester.tap(find.text('verify'));
@@ -334,27 +367,32 @@ void main() {
 
   for (final failure in ['backend', 'network']) {
     flowTest(
-        '$failure update error preserves copy; consumed result cannot update twice',
-        (tester, h) async {
-      h.updateSuccess = false;
-      if (failure == 'network') {
-        h.updateError = StateError('synthetic connection error');
-      }
-      await h.start(tester);
-      await h.select(tester);
-      await h.verify(tester);
-      await h.enterPasswords(tester);
-      await h.submit(tester);
-      expect(find.text('failed to update password. please try again.'),
-          findsOneWidget);
-      expect(find.text('Your password has been changed successfully.'),
-          findsNothing);
-      expect(h.challenges, 1);
-      expect(h.updates, 1);
-      await h.submit(tester);
-      expect(h.updates, 1);
-      expect(h.verifications, 1);
-      expect(find.byType(MyProfilePrepaidScreen), findsOneWidget);
-    });
+      '$failure update error preserves copy; consumed result cannot update twice',
+      (tester, h) async {
+        h.updateSuccess = false;
+        if (failure == 'network') {
+          h.updateError = StateError('synthetic connection error');
+        }
+        await h.start(tester);
+        await h.select(tester);
+        await h.verify(tester);
+        await h.enterPasswords(tester);
+        await h.submit(tester);
+        expect(
+          find.text('failed to update password. please try again.'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('Your password has been changed successfully.'),
+          findsNothing,
+        );
+        expect(h.challenges, 1);
+        expect(h.updates, 1);
+        await h.submit(tester);
+        expect(h.updates, 1);
+        expect(h.verifications, 1);
+        expect(find.byType(MyProfilePrepaidScreen), findsOneWidget);
+      },
+    );
   }
 }

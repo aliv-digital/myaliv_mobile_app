@@ -2,16 +2,20 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/call_log_tab.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/call_logs_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/cubit/transactions_cubit.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/transaction_tab.dart';
-import 'package:myaliv_mobile_app/app/common/verification/protected_access_entry.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_otp_route_args.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_gate_screen.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/history_route_observer.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/widgets/month_selector.dart';
-
-import 'verification/call_logs_otp_route_args.dart';
-import 'verification/call_logs_verification_gate_screen.dart';
-import 'verification/history_route_observer.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_access_entry.dart';
+import 'package:myaliv_mobile_app/app/common/verification/protected_account_access_verification_session.dart';
+import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 enum CallLogsTabType { transactions, callLogs }
 
@@ -29,14 +33,8 @@ class CallLogsScreen extends StatefulWidget {
 
 class _CallLogsScreenState extends State<CallLogsScreen> {
   @override
-  Widget build(BuildContext context) => ProtectedAccessEntry(
-    observer: historyRouteObserver,
-    gate: CallLogsVerificationGateScreen(
-      destination: widget.initialTab == CallLogsTabType.transactions
-          ? HistoryDestination.transactions
-          : HistoryDestination.callLogs,
-    ),
-    child: MultiBlocProvider(
+  Widget build(BuildContext context) {
+    final tree = MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<CallLogsCubit>()..fetchUsages()),
         BlocProvider(
@@ -44,8 +42,22 @@ class _CallLogsScreenState extends State<CallLogsScreen> {
         ),
       ],
       child: _CallLogsView(initialTab: widget.initialTab),
-    ),
-  );
+    );
+    // Only the Call Logs tab is protected. Entering directly on Call Logs
+    // keeps the screen-level gate so no fetches run before OTP success.
+    // Entering on Transactions skips the gate; switching to the Call Logs
+    // tab mid-screen is intercepted inside `_CallLogsView`.
+    if (widget.initialTab == CallLogsTabType.callLogs) {
+      return ProtectedAccessEntry(
+        observer: historyRouteObserver,
+        gate: const CallLogsVerificationGateScreen(
+          destination: HistoryDestination.callLogs,
+        ),
+        child: tree,
+      );
+    }
+    return tree;
+  }
 }
 
 class _CallLogsView extends StatefulWidget {
@@ -61,26 +73,100 @@ class _CallLogsViewState extends State<_CallLogsView>
     with SingleTickerProviderStateMixin {
   static const Color _purple = Color(0xFF645D9C);
   static const Color _bg = Color(0xFFF4F6FB);
+  static const int _transactionsIndex = 0;
+  static const int _callLogsIndex = 1;
 
   late final TabController _tabController;
+  late final ProtectedAccountAccessVerificationSession _session;
+  int _lastHandledIndex = 0;
+  bool _requestingCallLogsChallenge = false;
 
   @override
   void initState() {
     super.initState();
     final initialIndex = widget.initialTab == CallLogsTabType.transactions
-        ? 0
-        : 1;
+        ? _transactionsIndex
+        : _callLogsIndex;
     _tabController = TabController(
       length: 2,
       vsync: this,
       initialIndex: initialIndex,
     );
+    _lastHandledIndex = initialIndex;
+    _session = instance<ProtectedAccountAccessVerificationSession>();
+    _tabController.addListener(_onTabChanged);
+    _session.addListener(_onSessionChanged);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _session.removeListener(_onSessionChanged);
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (_tabController.indexIsChanging) return;
+    if (_tabController.index == _lastHandledIndex) return;
+    _lastHandledIndex = _tabController.index;
+    if (_tabController.index == _callLogsIndex && !_session.isVerified) {
+      _tabController.animateTo(_transactionsIndex);
+      _lastHandledIndex = _transactionsIndex;
+      _requestCallLogsVerification();
+    }
+  }
+
+  void _onSessionChanged() {
+    if (!mounted) return;
+    if (_session.isVerified) return;
+    if (_tabController.index != _callLogsIndex) return;
+    _tabController.animateTo(_transactionsIndex);
+    _lastHandledIndex = _transactionsIndex;
+    AppToast.show(
+      message: 'Session expired. Please re-verify to view call logs.',
+      type: ToastType.error,
+    );
+  }
+
+  Future<void> _requestCallLogsVerification() async {
+    if (_requestingCallLogsChallenge) return;
+    if (_session.isVerified) {
+      _tabController.animateTo(_callLogsIndex);
+      return;
+    }
+    setState(() => _requestingCallLogsChallenge = true);
+    final generation = _session.generation;
+    final ownerRoute = ModalRoute.of(context);
+    try {
+      final challenge = await instance<CallLogsVerificationRepository>()
+          .requestChallenge();
+      if (!mounted) return;
+      if (_session.generation != generation || ownerRoute?.isCurrent != true) {
+        return;
+      }
+      final verified = await context.push<bool>(
+        AppRoutes.callLogsOtp,
+        extra: CallLogsOtpRouteArgs(
+          mfaToken: challenge.mfaToken,
+          apiPhoneNumber: challenge.apiPhoneNumber,
+          destination: HistoryDestination.callLogs,
+          returnInPlace: true,
+        ),
+      );
+      if (!mounted) return;
+      if (verified == true && _session.isVerified) {
+        _tabController.animateTo(_callLogsIndex);
+        _lastHandledIndex = _callLogsIndex;
+      }
+    } catch (error) {
+      if (!mounted) return;
+      AppToast.show(message: error.toString(), type: ToastType.error);
+    } finally {
+      if (mounted) {
+        setState(() => _requestingCallLogsChallenge = false);
+      }
+    }
   }
 
   @override

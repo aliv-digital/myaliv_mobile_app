@@ -37,7 +37,7 @@ class _ChangePasswordPrepaidScreenState
   late final ChangePasswordPrepaidBloc _bloc;
   late final AuthManager _auth;
   late final ActionVerificationCoordinator<ProtectedAccountAction>
-      _verification;
+  _verification;
   final List<StreamSubscription<dynamic>> _subscriptions = [];
   Timer? _sessionCheck;
   TokenSession? _verifiedSession;
@@ -82,17 +82,21 @@ class _ChangePasswordPrepaidScreenState
           ModalRoute.of(context)?.isCurrent == true,
       cancelVerification: _verification.cancel,
     );
-    _subscriptions.add(account.stream.listen((state) {
-      final next = state.accountInfo;
-      if ((next?.idAcc, next?.username) != identity) {
-        _invalidate();
-      }
-    }));
-    _subscriptions.add(devices.stream.listen((state) {
-      if (state.deviceLimits?.deviceId != deviceId) {
-        _invalidate();
-      }
-    }));
+    _subscriptions.add(
+      account.stream.listen((state) {
+        final next = state.accountInfo;
+        if ((next?.idAcc, next?.username) != identity) {
+          _invalidate();
+        }
+      }),
+    );
+    _subscriptions.add(
+      devices.stream.listen((state) {
+        if (state.deviceLimits?.deviceId != deviceId) {
+          _invalidate();
+        }
+      }),
+    );
     // AuthManager has no session stream. Check while this route owns the
     // journey, and synchronously check again before consuming authorization.
     _sessionCheck = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -150,48 +154,41 @@ class _ChangePasswordPrepaidScreenState
 
   @override
   Widget build(BuildContext context) => BlocProvider.value(
-        value: _bloc,
-        child:
-            BlocConsumer<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
-          listener: (context, state) {
-            if (state.status ==
-                ChangePasswordPrepaidStatus.verificationCancelled) {
-              if (state.errorMessage != null) {
-                AppToast.show(
-                    message: state.errorMessage!, type: ToastType.error);
-              }
-              _leaveIfCancelled();
+    value: _bloc,
+    child: BlocConsumer<ChangePasswordPrepaidBloc, ChangePasswordPrepaidState>(
+      listener: (context, state) {
+        if (state.status == ChangePasswordPrepaidStatus.verificationCancelled) {
+          if (state.errorMessage != null) {
+            AppToast.show(message: state.errorMessage!, type: ToastType.error);
+          }
+          _leaveIfCancelled();
+        }
+      },
+      builder: (context, state) {
+        if (state.status != ChangePasswordPrepaidStatus.initial &&
+            state.status != ChangePasswordPrepaidStatus.verifying &&
+            state.status != ChangePasswordPrepaidStatus.verificationCancelled &&
+            !_sessionCurrent) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _invalidate();
             }
-          },
-          builder: (context, state) {
-            if (state.status != ChangePasswordPrepaidStatus.initial &&
-                state.status != ChangePasswordPrepaidStatus.verifying &&
-                state.status !=
-                    ChangePasswordPrepaidStatus.verificationCancelled &&
-                !_sessionCurrent) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _invalidate();
-                }
-              });
-              return const StripedScaffold(
-                body:
-                    SafeArea(child: Center(child: CircularProgressIndicator())),
-              );
-            }
-            if (state.status == ChangePasswordPrepaidStatus.initial ||
-                state.status == ChangePasswordPrepaidStatus.verifying ||
-                state.status ==
-                    ChangePasswordPrepaidStatus.verificationCancelled) {
-              return const StripedScaffold(
-                body:
-                    SafeArea(child: Center(child: CircularProgressIndicator())),
-              );
-            }
-            return const _ChangePasswordPrepaidView();
-          },
-        ),
-      );
+          });
+          return const StripedScaffold(
+            body: SafeArea(child: Center(child: CircularProgressIndicator())),
+          );
+        }
+        if (state.status == ChangePasswordPrepaidStatus.initial ||
+            state.status == ChangePasswordPrepaidStatus.verifying ||
+            state.status == ChangePasswordPrepaidStatus.verificationCancelled) {
+          return const StripedScaffold(
+            body: SafeArea(child: Center(child: CircularProgressIndicator())),
+          );
+        }
+        return const _ChangePasswordPrepaidView();
+      },
+    ),
+  );
 }
 
 class _ChangePasswordPrepaidView extends StatelessWidget {
@@ -308,31 +305,37 @@ class _ChangePasswordPrepaidView extends StatelessWidget {
                           const SizedBox(height: 40),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: BlocBuilder<ChangePasswordPrepaidBloc,
-                                ChangePasswordPrepaidState>(
-                              buildWhen: (p, c) =>
-                                  p.status != c.status ||
-                                  p.isValid != c.isValid,
-                              builder: (context, state) {
-                                final isLoading = state.status ==
-                                        ChangePasswordPrepaidStatus.verifying ||
-                                    state.status ==
-                                        ChangePasswordPrepaidStatus.submitting;
+                            child:
+                                BlocBuilder<
+                                  ChangePasswordPrepaidBloc,
+                                  ChangePasswordPrepaidState
+                                >(
+                                  buildWhen: (p, c) =>
+                                      p.status != c.status ||
+                                      p.isValid != c.isValid,
+                                  builder: (context, state) {
+                                    final isLoading =
+                                        state.status ==
+                                            ChangePasswordPrepaidStatus
+                                                .verifying ||
+                                        state.status ==
+                                            ChangePasswordPrepaidStatus
+                                                .submitting;
 
-                                return ChangePasswordPrepaidSubmitButton(
-                                  label: 'change password',
-                                  enabled: !isLoading,
-                                  isLoading: isLoading,
-                                  onTap: () {
-                                    context
-                                        .read<ChangePasswordPrepaidBloc>()
-                                        .add(
-                                          const ChangePasswordPrepaidSubmitPressed(),
-                                        );
+                                    return ChangePasswordPrepaidSubmitButton(
+                                      label: 'change password',
+                                      enabled: !isLoading,
+                                      isLoading: isLoading,
+                                      onTap: () {
+                                        context
+                                            .read<ChangePasswordPrepaidBloc>()
+                                            .add(
+                                              const ChangePasswordPrepaidSubmitPressed(),
+                                            );
+                                      },
+                                    );
                                   },
-                                );
-                              },
-                            ),
+                                ),
                           ),
                           const SizedBox(height: 260),
                         ],

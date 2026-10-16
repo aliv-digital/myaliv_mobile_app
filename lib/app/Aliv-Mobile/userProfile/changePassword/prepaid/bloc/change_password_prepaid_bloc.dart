@@ -8,7 +8,7 @@ class ChangePasswordPrepaidBloc
     extends Bloc<ChangePasswordPrepaidEvent, ChangePasswordPrepaidState> {
   final ChangePasswordPrepaidRepository repository;
   final Future<ActionVerifiedResult<ProtectedAccountAction>?> Function(Object)
-      verifyAction;
+  verifyAction;
   final void Function() cancelVerification;
   final bool Function() isAuthorizationCurrent;
   ActionVerifiedResult<ProtectedAccountAction>? _authorization;
@@ -57,8 +57,11 @@ class ChangePasswordPrepaidBloc
           verified.purpose != ProtectedAccountAction.changePassword ||
           !verified.isValid ||
           !isAuthorizationCurrent()) {
-        emit(state.copyWith(
-            status: ChangePasswordPrepaidStatus.verificationCancelled));
+        emit(
+          state.copyWith(
+            status: ChangePasswordPrepaidStatus.verificationCancelled,
+          ),
+        );
         return;
       }
       // Retain the coordinator-issued capability privately until valid Submit.
@@ -67,10 +70,12 @@ class ChangePasswordPrepaidBloc
       emit(state.copyWith(status: ChangePasswordPrepaidStatus.ready));
     } catch (error) {
       if (!_closing && !emit.isDone) {
-        emit(state.copyWith(
-          status: ChangePasswordPrepaidStatus.verificationCancelled,
-          errorMessage: error.toString(),
-        ));
+        emit(
+          state.copyWith(
+            status: ChangePasswordPrepaidStatus.verificationCancelled,
+            errorMessage: error.toString(),
+          ),
+        );
       }
     } finally {
       _pending = false;
@@ -83,8 +88,9 @@ class ChangePasswordPrepaidBloc
   ) {
     _authorization = null;
     cancelVerification();
-    emit(state.copyWith(
-        status: ChangePasswordPrepaidStatus.verificationCancelled));
+    emit(
+      state.copyWith(status: ChangePasswordPrepaidStatus.verificationCancelled),
+    );
   }
 
   void _onNewChanged(
@@ -158,8 +164,11 @@ class ChangePasswordPrepaidBloc
     }
     if (_authorization == null || !isAuthorizationCurrent()) {
       _authorization = null;
-      emit(state.copyWith(
-          status: ChangePasswordPrepaidStatus.verificationCancelled));
+      emit(
+        state.copyWith(
+          status: ChangePasswordPrepaidStatus.verificationCancelled,
+        ),
+      );
       return;
     }
     final a = state.newPassword.trim();
@@ -194,8 +203,11 @@ class ChangePasswordPrepaidBloc
       final verified = _authorization;
       _authorization = null;
       if (verified == null || !verified.consume()) {
-        emit(state.copyWith(
-            status: ChangePasswordPrepaidStatus.verificationCancelled));
+        emit(
+          state.copyWith(
+            status: ChangePasswordPrepaidStatus.verificationCancelled,
+          ),
+        );
         return;
       }
       emit(state.copyWith(status: ChangePasswordPrepaidStatus.submitting));

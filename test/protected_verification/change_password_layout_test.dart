@@ -37,8 +37,9 @@ void main() {
 
   for (final type in UserType.values) {
     for (final width in [320.0, 390.0, 430.0, 800.0]) {
-      testWidgets('$type layout follows the reference at $width',
-          (tester) async {
+      testWidgets('$type layout follows the reference at $width', (
+        tester,
+      ) async {
         await withChangePasswordFlow(tester, (h) async {
           configureAccount(h, type);
           await h.start(tester, width: width);
@@ -54,8 +55,10 @@ void main() {
           final buttonRect = tester.getRect(find.byType(ElevatedButton));
           final headerRect = tester.getRect(find.byType(DefaultAppBar));
 
-          expect(tester.widget<Text>(find.text(instruction)).textAlign,
-              TextAlign.left);
+          expect(
+            tester.widget<Text>(find.text(instruction)).textAlign,
+            TextAlign.left,
+          );
           expect(helperRect.top - headerRect.bottom, 32);
           expect(helperRect.left, firstRect.left);
           expect(helperRect.width, firstRect.width);
@@ -93,108 +96,131 @@ void main() {
     }
 
     testWidgets(
-        '$type keeps gradient, focus, visibility and keyboard scrolling',
-        (tester) async {
-      await withChangePasswordFlow(tester, (h) async {
-        configureAccount(h, type);
-        await h.start(tester, width: 320);
-        await h.select(tester);
-        await h.verify(tester);
-        await tester.binding.setSurfaceSize(const Size(320, 640));
-        tester.view.viewInsets =
-            FakeViewPadding(bottom: 260 * tester.view.devicePixelRatio);
-        addTearDown(tester.view.resetViewInsets);
-        await tester.pumpAndSettle();
+      '$type keeps gradient, focus, visibility and keyboard scrolling',
+      (tester) async {
+        await withChangePasswordFlow(tester, (h) async {
+          configureAccount(h, type);
+          await h.start(tester, width: 320);
+          await h.select(tester);
+          await h.verify(tester);
+          await tester.binding.setSurfaceSize(const Size(320, 640));
+          tester.view.viewInsets = FakeViewPadding(
+            bottom: 260 * tester.view.devicePixelRatio,
+          );
+          addTearDown(tester.view.resetViewInsets);
+          await tester.pumpAndSettle();
 
-        final first = find.byType(ChangePasswordPrepaidPasswordField).first;
-        final input = fieldChild(first, TextField);
-        await tester.enterText(input, 'Synthetic123!');
-        await tester.pumpAndSettle();
-        final focus = tester.widget<TextField>(input).focusNode!;
-        final editing =
-            tester.widget<EditableText>(fieldChild(first, EditableText));
-        final beforeToggle = editing.controller.value;
-        final borderFinder = fieldChild(first, FocusedInputBorderWrapper);
-        var border = tester.widget<FocusedInputBorderWrapper>(borderFinder);
-        expect(border.isFocused, isTrue);
-        expect(border.radius, 10);
-        expect(border.borderWidth, 1);
-        final decoration = tester
-            .widget<Container>(
-              find
-                  .descendant(
-                      of: borderFinder, matching: find.byType(Container))
-                  .first,
-            )
-            .decoration! as BoxDecoration;
-        expect(decoration.gradient, AuthModuleGradients.focusedInputBorder);
-        expect(tester.widget<TextField>(input).obscureText, isTrue);
+          final first = find.byType(ChangePasswordPrepaidPasswordField).first;
+          final input = fieldChild(first, TextField);
+          await tester.enterText(input, 'Synthetic123!');
+          await tester.pumpAndSettle();
+          final focus = tester.widget<TextField>(input).focusNode!;
+          final editing = tester.widget<EditableText>(
+            fieldChild(first, EditableText),
+          );
+          final beforeToggle = editing.controller.value;
+          final borderFinder = fieldChild(first, FocusedInputBorderWrapper);
+          var border = tester.widget<FocusedInputBorderWrapper>(borderFinder);
+          expect(border.isFocused, isTrue);
+          expect(border.radius, 10);
+          expect(border.borderWidth, 1);
+          final decoration =
+              tester
+                      .widget<Container>(
+                        find
+                            .descendant(
+                              of: borderFinder,
+                              matching: find.byType(Container),
+                            )
+                            .first,
+                      )
+                      .decoration!
+                  as BoxDecoration;
+          expect(decoration.gradient, AuthModuleGradients.focusedInputBorder);
+          expect(tester.widget<TextField>(input).obscureText, isTrue);
 
-        await tester.tap(fieldChild(first, InkWell));
-        await tester.pumpAndSettle();
-        expect(tester.widget<TextField>(input).obscureText, isFalse);
-        expect(tester.widget<TextField>(input).focusNode, same(focus));
-        expect(focus.hasFocus, isTrue);
-        expect(editing.controller.value, beforeToggle);
-        expect(tester.widget<FocusedInputBorderWrapper>(borderFinder).isFocused,
-            isTrue);
-        await tester.tap(fieldChild(first, InkWell));
-        await tester.pumpAndSettle();
-        expect(tester.widget<TextField>(input).obscureText, isTrue);
+          await tester.tap(fieldChild(first, InkWell));
+          await tester.pumpAndSettle();
+          expect(tester.widget<TextField>(input).obscureText, isFalse);
+          expect(tester.widget<TextField>(input).focusNode, same(focus));
+          expect(focus.hasFocus, isTrue);
+          expect(editing.controller.value, beforeToggle);
+          expect(
+            tester.widget<FocusedInputBorderWrapper>(borderFinder).isFocused,
+            isTrue,
+          );
+          await tester.tap(fieldChild(first, InkWell));
+          await tester.pumpAndSettle();
+          expect(tester.widget<TextField>(input).obscureText, isTrue);
 
-        await tester.enterText(input, 'abc');
-        await tester.pumpAndSettle();
-        expect(find.text('password does not meet the requirement'),
-            findsOneWidget);
-        border = tester.widget<FocusedInputBorderWrapper>(borderFinder);
-        expect(border.isFocused, isFalse);
-        expect(focus.hasFocus, isTrue);
-        await tester.ensureVisible(find.byType(ElevatedButton));
-        await tester.pumpAndSettle();
-        expect(tester.getRect(find.byType(ElevatedButton)).bottom,
-            lessThanOrEqualTo(640 - 260));
-        expect(
+          await tester.enterText(input, 'abc');
+          await tester.pumpAndSettle();
+          expect(
+            find.text('password does not meet the requirement'),
+            findsOneWidget,
+          );
+          border = tester.widget<FocusedInputBorderWrapper>(borderFinder);
+          expect(border.isFocused, isFalse);
+          expect(focus.hasFocus, isTrue);
+          await tester.ensureVisible(find.byType(ElevatedButton));
+          await tester.pumpAndSettle();
+          expect(
+            tester.getRect(find.byType(ElevatedButton)).bottom,
+            lessThanOrEqualTo(640 - 260),
+          );
+          expect(
             tester
                 .widget<ElevatedButton>(find.byType(ElevatedButton))
                 .onPressed,
-            isNotNull);
-        expect(tester.takeException(), isNull);
-      });
-    });
+            isNotNull,
+          );
+          expect(tester.takeException(), isNull);
+        });
+      },
+    );
   }
 
   testWidgets(
-      'button keeps its enabled, loading and single-OTP submit behavior',
-      (tester) async {
-    await withChangePasswordFlow(tester, (h) async {
-      await h.start(tester);
-      await h.select(tester);
-      await h.verify(tester);
-      final button = find.byType(ElevatedButton);
-      expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
-      final style = tester.widget<ElevatedButton>(button).style!;
-      expect(style.backgroundColor!.resolve({}), const Color(0xFF5D5A8B));
-      expect(style.backgroundColor!.resolve({WidgetState.disabled}),
-          const Color(0xFF5D5A8B).withValues(alpha: 0.35));
-      await h.enterPasswords(tester);
-      h.pendingUpdate = Completer();
-      await h.submit(tester);
-      await tester.pump();
-      expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
-      expect(
+    'button keeps its enabled, loading and single-OTP submit behavior',
+    (tester) async {
+      await withChangePasswordFlow(tester, (h) async {
+        await h.start(tester);
+        await h.select(tester);
+        await h.verify(tester);
+        final button = find.byType(ElevatedButton);
+        expect(tester.widget<ElevatedButton>(button).onPressed, isNotNull);
+        final style = tester.widget<ElevatedButton>(button).style!;
+        expect(style.backgroundColor!.resolve({}), const Color(0xFF5D5A8B));
+        expect(
+          style.backgroundColor!.resolve({WidgetState.disabled}),
+          const Color(0xFF5D5A8B).withValues(alpha: 0.35),
+        );
+        await h.enterPasswords(tester);
+        h.pendingUpdate = Completer();
+        await h.submit(tester);
+        await tester.pump();
+        expect(tester.widget<ElevatedButton>(button).onPressed, isNull);
+        expect(
           find.descendant(
-              of: button, matching: find.byType(CircularProgressIndicator)),
-          findsOneWidget);
-      expect(h.challenges, 1);
-      expect(h.verifications, 1);
-      expect(h.updates, 1);
-      expect(h.updatePayloads.single, {'NewPassword': 'Synthetic123!'});
-      h.pendingUpdate!
-          .complete(h.response(Api.updatePasswordUrl, {'Success': true}));
-      await tester.pumpAndSettle();
-      expect(find.text('Your password has been changed successfully.'),
-          findsOneWidget);
-      expect(find.text('home destination'), findsOneWidget);
-    });
-  });
+            of: button,
+            matching: find.byType(CircularProgressIndicator),
+          ),
+          findsOneWidget,
+        );
+        expect(h.challenges, 1);
+        expect(h.verifications, 1);
+        expect(h.updates, 1);
+        expect(h.updatePayloads.single, {'NewPassword': 'Synthetic123!'});
+        h.pendingUpdate!.complete(
+          h.response(Api.updatePasswordUrl, {'Success': true}),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Your password has been changed successfully.'),
+          findsOneWidget,
+        );
+        expect(find.text('home destination'), findsOneWidget);
+      });
+    },
+  );
 }

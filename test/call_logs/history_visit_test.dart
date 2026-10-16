@@ -393,16 +393,10 @@ void main() {
     expect(find.text('No call logs found for this month'), findsOneWidget);
   });
 
-  for (final location in [
-    '/call_logs?tab=transactions',
-    '/call_logs?tab=call_logs',
-    '/call_logs',
-    '/call_logs?tab=',
-    '/call_logs?tab=unknown',
-  ]) {
-    historyTest('production router gates $location before any History fetch', (
-      tester,
-    ) async {
+  historyTest(
+    'production router gates /call_logs?tab=call_logs before any History fetch',
+    (tester) async {
+      const location = '/call_logs?tab=call_logs';
       final h = _Harness();
       await h.pump(tester, initial: location, productionRouter: true);
       expect(h.challenge.requests, 1);
@@ -412,13 +406,28 @@ void main() {
       final screen = tester.widget<CallLogsOtpScreen>(
         find.byType(CallLogsOtpScreen),
       );
-      expect(
-        screen.destination,
-        HistoryDestination.fromTabParameter(
-          Uri.parse(location).queryParameters['tab'],
-        ),
-      );
-    });
+      expect(screen.destination, HistoryDestination.callLogs);
+    },
+  );
+
+  for (final location in [
+    '/call_logs?tab=transactions',
+    '/call_logs',
+    '/call_logs?tab=',
+    '/call_logs?tab=unknown',
+  ]) {
+    historyTest(
+      'production router opens $location on Transactions without OTP',
+      (tester) async {
+        final h = _Harness();
+        await h.pump(tester, initial: location, productionRouter: true);
+        expect(h.challenge.requests, 0);
+        expect(find.byType(CallLogsOtpScreen), findsNothing);
+        expect(find.byType(CallLogsScreen), findsOneWidget);
+        expect(h.transactionApi.requests, greaterThan(0));
+        expect(h.session.isVerified, isFalse);
+      },
+    );
   }
 
   historyTest('saving completes before History authorization and navigation', (
@@ -663,23 +672,23 @@ void main() {
     verify(() => h.auth.clearSession()).called(1);
   });
 
-  for (final target in HistoryDestination.values) {
-    historyTest('production router completes OTP into ${target.name}', (
+  historyTest('production router completes OTP into callLogs', (tester) async {
+    final h = _Harness();
+    await h.pump(
       tester,
-    ) async {
-      final h = _Harness();
-      await h.pump(tester, initial: target.location, productionRouter: true);
-      await h.submit(tester);
-      await h.finish(tester);
-      expect(h.session.isVerified, isTrue);
-      expect(
-        GoRouterState.of(
-          tester.element(find.byType(CallLogsScreen)),
-        ).uri.toString(),
-        target.location,
-      );
-    });
-  }
+      initial: HistoryDestination.callLogs.location,
+      productionRouter: true,
+    );
+    await h.submit(tester);
+    await h.finish(tester);
+    expect(h.session.isVerified, isTrue);
+    expect(
+      GoRouterState.of(
+        tester.element(find.byType(CallLogsScreen)),
+      ).uri.toString(),
+      HistoryDestination.callLogs.location,
+    );
+  });
 
   for (final legacy in [
     '/enter-password?continue=call_logs',
@@ -822,25 +831,20 @@ void main() {
   });
 
   historyTest(
-    'active expired History stays visible, but next entry requires OTP',
+    'active expired Transactions stays visible, tapping Call Logs requires OTP',
     (tester) async {
       final h = _Harness();
       await h.pump(tester);
       await h.authorize(tester, HistoryDestination.transactions);
-      final expiry = h.session.expiresAt;
       h.now = h.now.add(const Duration(minutes: 20));
       tester.element(find.byType(CallLogsScreen)).markNeedsBuild();
       await tester.pumpAndSettle();
       expect(find.byType(TransactionTileNew), findsWidgets);
       await tester.tap(find.text('call logs'));
       await tester.pumpAndSettle();
-      expect(find.byType(CallLogsOtpScreen), findsNothing);
-      expect(h.session.expiresAt, expiry);
-      h.router.pop();
-      await tester.pumpAndSettle();
-      await h.enter(tester, HistoryDestination.transactions);
-      expect(find.byType(CallLogsOtpScreen), findsOneWidget);
+      // Session expired → tapping the Call Logs tab triggers a fresh challenge.
       expect(h.challenge.requests, 2);
+      expect(find.byType(CallLogsOtpScreen), findsOneWidget);
     },
   );
 

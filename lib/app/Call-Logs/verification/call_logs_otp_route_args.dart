@@ -17,9 +17,16 @@ class CallLogsOtpRouteArgs {
     required this.mfaToken,
     required this.apiPhoneNumber,
     this.destination = HistoryDestination.callLogs,
+    this.returnInPlace = false,
   });
 
   final String mfaToken;
   final String apiPhoneNumber;
   final HistoryDestination destination;
+
+  // When true, the OTP screen pops with `true` on success instead of
+  // pushReplacing to [destination]. Used when the caller is already on
+  // the History screen and wants to switch tabs without stacking a new
+  // instance.
+  final bool returnInPlace;
 }

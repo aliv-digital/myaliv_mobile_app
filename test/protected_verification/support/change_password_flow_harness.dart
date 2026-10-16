@@ -40,11 +40,11 @@ class _Devices extends Mock implements DeviceLimitsCubit {}
 class _Internet extends Mock implements InternetConnection {}
 
 TokenSession testSession() => TokenSession(
-      accessToken: 'synthetic-access',
-      refreshToken: 'synthetic-refresh',
-      accessExpiresAt: DateTime.utc(2030),
-      refreshExpiresAt: DateTime.utc(2031),
-    );
+  accessToken: 'synthetic-access',
+  refreshToken: 'synthetic-refresh',
+  accessExpiresAt: DateTime.utc(2030),
+  refreshExpiresAt: DateTime.utc(2031),
+);
 
 Future<void> loadChangePasswordTestFonts() async {
   registerFallbackValue(testSession());
@@ -61,10 +61,12 @@ class ChangePasswordFlowHarness {
   final devices = _Devices();
   final internet = _Internet();
   final config = AppUiConfigCubit();
-  final accountChanges =
-      StreamController<AccountInfoState>.broadcast(sync: true);
-  final deviceChanges =
-      StreamController<DeviceLimitsState>.broadcast(sync: true);
+  final accountChanges = StreamController<AccountInfoState>.broadcast(
+    sync: true,
+  );
+  final deviceChanges = StreamController<DeviceLimitsState>.broadcast(
+    sync: true,
+  );
   final access = ProtectedAccountAccessVerificationSession(
     accountContext: () => (1, 'subscriber'),
   )..markVerified();
@@ -75,7 +77,7 @@ class ChangePasswordFlowHarness {
   DeviceLimitsState deviceState = DeviceLimitsState(
     status: DeviceLimitsStatus.loaded,
     allDeviceLimits: [
-      DeviceLimitsModel.fromJson({'DeviceID': 123})
+      DeviceLimitsModel.fromJson({'DeviceID': 123}),
     ],
   );
   GoRouter? _productionRouter;
@@ -96,16 +98,18 @@ class ChangePasswordFlowHarness {
   final verifyPayloads = <Map<String, dynamic>>[];
   final updatePayloads = <Map<String, dynamic>>[];
 
-  Response<dynamic> response(String path, dynamic data) =>
-      Response<dynamic>(requestOptions: RequestOptions(path: path), data: data);
+  Response<dynamic> response(String path, dynamic data) => Response<dynamic>(
+    requestOptions: RequestOptions(path: path),
+    data: data,
+  );
   Response<dynamic> challengeResponse() =>
       response(Api.challengeOtpUrl, {'mfa_token': 'synthetic-mfa-$challenges'});
   Response<dynamic> verificationResponse() => response(Api.verifyOtpUrl, {
-        'access_token': 'synthetic-verified-$verifications',
-        'refresh_token': 'synthetic-refreshed-$verifications',
-        'expires_in': 3600,
-        'refresh_expires_in': 86400,
-      });
+    'access_token': 'synthetic-verified-$verifications',
+    'refresh_token': 'synthetic-refreshed-$verifications',
+    'expires_in': 3600,
+    'refresh_expires_in': 86400,
+  });
 
   Future<void> start(
     WidgetTester tester, {
@@ -126,55 +130,66 @@ class ChangePasswordFlowHarness {
     when(() => devices.state).thenAnswer((_) => deviceState);
     when(() => devices.stream).thenAnswer((_) => deviceChanges.stream);
     when(() => internet.hasInternetAccess).thenAnswer((_) async => !offline);
-    when(() => network.request<dynamic>(
-          Api.challengeOtpUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-        )).thenAnswer((invocation) async {
+    when(
+      () => network.request<dynamic>(
+        Api.challengeOtpUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+      ),
+    ).thenAnswer((invocation) async {
       challenges++;
-      expect(invocation.namedArguments[#data],
-          {'access_token': current!.accessToken});
+      expect(invocation.namedArguments[#data], {
+        'access_token': current!.accessToken,
+      });
       if (challengeError != null) {
         throw challengeError!;
       }
       return pendingChallenge?.future ?? Future.value(challengeResponse());
     });
-    when(() => network.request<dynamic>(
-          Api.verifyOtpUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-          options: any(named: 'options'),
-        )).thenAnswer((invocation) async {
+    when(
+      () => network.request<dynamic>(
+        Api.verifyOtpUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer((invocation) async {
       verifications++;
       verifyPayloads.add(
-          Map<String, dynamic>.from(invocation.namedArguments[#data] as Map));
+        Map<String, dynamic>.from(invocation.namedArguments[#data] as Map),
+      );
       if (verificationError != null) {
         throw verificationError!;
       }
       return pendingVerification?.future ??
           Future.value(verificationResponse());
     });
-    when(() => network.request<dynamic>(
-          Api.updatePasswordUrl,
-          method: HttpMethod.post,
-          data: any(named: 'data'),
-        )).thenAnswer((invocation) async {
+    when(
+      () => network.request<dynamic>(
+        Api.updatePasswordUrl,
+        method: HttpMethod.post,
+        data: any(named: 'data'),
+      ),
+    ).thenAnswer((invocation) async {
       updates++;
       updatePayloads.add(
-          Map<String, dynamic>.from(invocation.namedArguments[#data] as Map));
+        Map<String, dynamic>.from(invocation.namedArguments[#data] as Map),
+      );
       if (updateError != null) {
         throw updateError!;
       }
       return pendingUpdate?.future ??
           Future.value(
-              response(Api.updatePasswordUrl, {'Success': updateSuccess}));
+            response(Api.updatePasswordUrl, {'Success': updateSuccess}),
+          );
     });
     instance.registerSingleton<AuthManager>(auth);
     instance.registerSingleton<NetworkService>(network);
     instance.registerSingleton<AccountInfoCubit>(account);
     instance.registerSingleton<DeviceLimitsCubit>(devices);
-    instance
-        .registerSingleton<ProtectedAccountAccessVerificationSession>(access);
+    instance.registerSingleton<ProtectedAccountAccessVerificationSession>(
+      access,
+    );
     instance.registerSingleton<CallLogsVerificationRepository>(
       CallLogsVerificationRepository(
         networkService: network,
@@ -195,18 +210,21 @@ class ChangePasswordFlowHarness {
       navigatorKey: rootNavigatorKey,
       initialLocation: location,
       routes: [
-        ..._productionRouter!.configuration.routes
-            .whereType<GoRoute>()
-            .where((r) => paths.contains(r.path)),
+        ..._productionRouter!.configuration.routes.whereType<GoRoute>().where(
+          (r) => paths.contains(r.path),
+        ),
         GoRoute(
-            path: AppRoutes.home,
-            builder: (_, _) => const Scaffold(body: Text('home destination'))),
+          path: AppRoutes.home,
+          builder: (_, _) => const Scaffold(body: Text('home destination')),
+        ),
       ],
     );
-    await tester.pumpWidget(BlocProvider.value(
-      value: config,
-      child: MaterialApp.router(routerConfig: router),
-    ));
+    await tester.pumpWidget(
+      BlocProvider.value(
+        value: config,
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     if (pendingChallenge == null) {
@@ -268,15 +286,18 @@ class ChangePasswordFlowHarness {
 
   void changeAccount(int id) {
     accountState = AccountInfoState(
-        accountInfo: AccountInfoModel(idAcc: id, username: 'subscriber-$id'));
+      accountInfo: AccountInfoModel(idAcc: id, username: 'subscriber-$id'),
+    );
     accountChanges.add(accountState);
   }
 
   void changeDevice(int id) {
-    deviceState =
-        DeviceLimitsState(status: DeviceLimitsStatus.loaded, allDeviceLimits: [
-      DeviceLimitsModel.fromJson({'DeviceID': id})
-    ]);
+    deviceState = DeviceLimitsState(
+      status: DeviceLimitsStatus.loaded,
+      allDeviceLimits: [
+        DeviceLimitsModel.fromJson({'DeviceID': id}),
+      ],
+    );
     deviceChanges.add(deviceState);
   }
 

@@ -24,11 +24,13 @@ class CallLogsOtpScreen extends StatelessWidget {
     required this.initialMfaToken,
     required this.apiPhoneNumber,
     this.destination = HistoryDestination.callLogs,
+    this.returnInPlace = false,
   });
 
   final String initialMfaToken;
   final String apiPhoneNumber;
   final HistoryDestination destination;
+  final bool returnInPlace;
 
   @override
   Widget build(BuildContext context) {
@@ -47,15 +49,22 @@ class CallLogsOtpScreen extends StatelessWidget {
         offlineVerificationMessage:
             "We couldn't verify the OTP due to a network error. Please try again later",
       ),
-      child: _CallLogsOtpView(destination: destination),
+      child: _CallLogsOtpView(
+        destination: destination,
+        returnInPlace: returnInPlace,
+      ),
     );
   }
 }
 
 class _CallLogsOtpView extends StatefulWidget {
-  const _CallLogsOtpView({required this.destination});
+  const _CallLogsOtpView({
+    required this.destination,
+    required this.returnInPlace,
+  });
 
   final HistoryDestination destination;
+  final bool returnInPlace;
 
   @override
   State<_CallLogsOtpView> createState() => _CallLogsOtpViewState();
@@ -95,7 +104,11 @@ class _CallLogsOtpViewState extends State<_CallLogsOtpView> {
                 message: 'Verification successful.',
                 type: ToastType.success,
               );
-              context.pushReplacement(widget.destination.location);
+              if (widget.returnInPlace) {
+                context.pop(true);
+              } else {
+                context.pushReplacement(widget.destination.location);
+              }
             }
 
             if (state.status == LoginOtpStatus.failure &&
