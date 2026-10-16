@@ -4,6 +4,27 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_privacy_po
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/login/widgets/login_privacy_policy_modal.dart';
 
 void main() {
+  testWidgets(
+      'opt-in footer separates the links and leaves gaps around the divider',
+      (tester) async {
+    await tester.pumpWidget(const MaterialApp(
+      home: Scaffold(
+          body: Center(child: LoginPrivacyPolicyLink(separatorGap: 4))),
+    ));
+    final privacy = tester.getRect(find.text('Privacy Policy'));
+    final terms = tester.getRect(find.text('Terms of Use'));
+    final divider = tester.getRect(find.text('|'));
+    expect(divider.left - privacy.right, closeTo(4, 0.01));
+    expect(terms.left - divider.right, closeTo(4, 0.01));
+    for (final label in ['Privacy Policy', 'Terms of Use']) {
+      expect(tester.widget<Text>(find.text(label)).style!.decoration,
+          TextDecoration.underline);
+    }
+    expect(tester.widget<Text>(find.text('|')).style!.decoration,
+        isNot(TextDecoration.underline));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('privacy policy and terms of use are separate links', (
     tester,
   ) async {

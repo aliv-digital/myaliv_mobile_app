@@ -67,6 +67,7 @@ class ForgetPasswordSizes {
   static const double headerToPhoneGap = 9.61;
   static const double phoneToSendGap = 20;
   static const double sendToTermsGap = 147;
+  static const double privacyPolicySeparatorGap = 4;
   static const double termsHorizontalPadding = 32;
   static const double bottomPromptToActionGap = 6;
 

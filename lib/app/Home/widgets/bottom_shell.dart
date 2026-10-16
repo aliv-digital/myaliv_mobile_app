@@ -98,7 +98,9 @@ class BottomShell extends StatelessWidget {
                   ),
                   BottomNavigationBarItem(
                     icon: BottomTabIcon(
-                      asset: 'assets/icons/usage.svg',
+                      asset: currentIndex == 1
+                          ? 'assets/icons/usage_active.svg'
+                          : 'assets/icons/usage.svg',
                       isActive: currentIndex == 1,
                     ),
                     label: 'Usage',

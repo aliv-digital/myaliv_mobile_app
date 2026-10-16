@@ -14,6 +14,10 @@ class UsageRoamingPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final expiryTime = RegExp(r'(?:T|\s)\d{1,2}:\d{2}').hasMatch(plan.endDate)
+        ? plan.endDateTime.formatHmAOrEmpty()
+        : '';
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 13, 16, 28),
@@ -62,6 +66,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _DateColumn(
                 title: 'active',
@@ -71,6 +76,7 @@ class UsageRoamingPlanCard extends StatelessWidget {
               _DateColumn(
                 title: 'expire',
                 value: plan.endDateTime.formatDdMmYyOrDash(),
+                subtitle: expiryTime.isEmpty ? '--/--/--' : expiryTime,
                 alignRight: true,
               ),
             ],
@@ -85,11 +91,13 @@ class _DateColumn extends StatelessWidget {
   final String title;
   final String value;
   final bool alignRight;
+  final String subtitle;
 
   const _DateColumn({
     required this.title,
     required this.value,
     this.alignRight = false,
+    this.subtitle = '',
   });
 
   @override
@@ -118,6 +126,18 @@ class _DateColumn extends StatelessWidget {
             letterSpacing: 2.25,
           ),
         ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }

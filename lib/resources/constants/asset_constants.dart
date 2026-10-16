@@ -51,6 +51,8 @@ class AssetConstant {
 
   static const viewIconSVG = 'assets/icons/view.svg';
   static const hideIconSVG = 'assets/icons/view_not.svg';
+  static const eyeOnSVG = 'assets/icons/eye_on.svg';
+  static const eyeOffSVG = 'assets/icons/eye_off.svg';
 
   static const leftArrowSVG = 'assets/icons/arrow_left.svg';
   static const phoneCallIconSVG = 'assets/icons/phone_call.svg';
