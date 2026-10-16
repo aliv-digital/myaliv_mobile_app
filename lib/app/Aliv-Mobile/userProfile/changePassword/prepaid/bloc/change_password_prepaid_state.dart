@@ -4,6 +4,7 @@ enum ChangePasswordPrepaidStatus {
   initial,
   ready,
   verifying,
+  verificationCancelled,
   submitting,
   success,
   failure,

@@ -28,8 +28,26 @@ class MyProfilePrepaidScreen extends StatelessWidget {
   }
 }
 
-class _MyProfilePrepaidView extends StatelessWidget {
+class _MyProfilePrepaidView extends StatefulWidget {
   const _MyProfilePrepaidView();
+
+  @override
+  State<_MyProfilePrepaidView> createState() => _MyProfilePrepaidViewState();
+}
+
+class _MyProfilePrepaidViewState extends State<_MyProfilePrepaidView> {
+  bool _openingChangePassword = false;
+
+  void _openChangePassword() {
+    if (_openingChangePassword || ModalRoute.of(context)?.isCurrent != true) {
+      return;
+    }
+    _openingChangePassword = true;
+    context.push(AppRoutes.changePasswordPrepaidScreen);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _openingChangePassword = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +74,7 @@ class _MyProfilePrepaidView extends StatelessWidget {
                 });
                 break;
               case MyProfilePrepaidNavAction.changePassword:
-                debugPrint("change password");
-                // context.push(AppRoutes.enterPassWordPrepaidScreen);
-
-                context.push(AppRoutes.changePasswordPrepaidScreen);
-
+                _openChangePassword();
                 break;
               case MyProfilePrepaidNavAction.none:
                 break;

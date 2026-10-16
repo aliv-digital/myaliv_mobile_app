@@ -86,7 +86,7 @@ void main() {
       'challenge failure',
     ]) {
       testWidgets(
-        '$action actual form → OTP → $outcome preserves action ordering',
+        '$action $outcome preserves verification before mutation',
         (tester) async {
           await tester.binding.setSurfaceSize(const Size(800, 1400));
           addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -123,6 +123,7 @@ void main() {
                 accountInfo: AccountInfoModel(idAcc: 1, username: 'subscriber'),
               ),
             );
+            when(() => account.stream).thenAnswer((_) => const Stream.empty());
             when(() => devices.state).thenReturn(
               DeviceLimitsState(
                 status: DeviceLimitsStatus.loaded,
@@ -218,8 +219,8 @@ void main() {
             instance.registerSingleton<ConsumptionLimitCubit>(consumption);
             instance
                 .registerSingleton<ProtectedAccountAccessVerificationSession>(
-                  access,
-                );
+              access,
+            );
             final route = action == ProtectedAccountAction.changePassword
                 ? AppRoutes.changePasswordPrepaidScreen
                 : AppRoutes.upgradeCreditLimit;
@@ -231,15 +232,14 @@ void main() {
                   path: route,
                   builder: (_, _) =>
                       action == ProtectedAccountAction.changePassword
-                      ? const ChangePasswordPrepaidScreen()
-                      : const UpgradeCreditLimitScreen(),
+                          ? const ChangePasswordPrepaidScreen()
+                          : const UpgradeCreditLimitScreen(),
                 ),
                 GoRoute(
                   path: AppRoutes.accountActionOtp,
                   builder: (_, state) {
-                    final args =
-                        state.extra!
-                            as ActionOtpRouteArgs<ProtectedAccountAction>;
+                    final args = state.extra!
+                        as ActionOtpRouteArgs<ProtectedAccountAction>;
                     expect(args.attempt.paymentMethod, action);
                     return ActionOtpScreen(args: args);
                   },
@@ -269,32 +269,23 @@ void main() {
               ),
             );
             await tester.pumpAndSettle();
-            if (action == ProtectedAccountAction.changePassword) {
-              await tester.enterText(
-                find.byType(TextField).at(0),
-                'Synthetic123!',
-              );
-              await tester.enterText(
-                find.byType(TextField).at(1),
-                'Synthetic123!',
-              );
-            } else {
+            if (action != ProtectedAccountAction.changePassword) {
               await tester.enterText(find.byType(TextField).first, '10');
+              await tester.pumpAndSettle();
+              tester.testTextInput.hide();
+              FocusManager.instance.primaryFocus?.unfocus();
+              await tester.pumpAndSettle();
+              final button = find
+                  .text(
+                    action == ProtectedAccountAction.changePassword
+                        ? 'change password'
+                        : 'proceed',
+                  )
+                  .last;
+              await tester.ensureVisible(button);
+              await tester.tap(button);
+              await tester.pumpAndSettle();
             }
-            await tester.pumpAndSettle();
-            tester.testTextInput.hide();
-            FocusManager.instance.primaryFocus?.unfocus();
-            await tester.pumpAndSettle();
-            final button = find
-                .text(
-                  action == ProtectedAccountAction.changePassword
-                      ? 'change password'
-                      : 'proceed',
-                )
-                .last;
-            await tester.ensureVisible(button);
-            await tester.tap(button);
-            await tester.pumpAndSettle();
             expect(challenges, 1);
             expect(mutations, 0);
             expect(
@@ -323,6 +314,21 @@ void main() {
                 await tester.pump(const Duration(seconds: 2));
               }
               if (action == ProtectedAccountAction.changePassword &&
+                  (outcome == 'success' ||
+                      outcome == 'backend failure' ||
+                      outcome == 'network failure')) {
+                await tester.pumpAndSettle();
+                await tester.enterText(
+                    find.byType(TextField).first, 'Synthetic123!');
+                await tester.enterText(
+                    find.byType(TextField).last, 'Synthetic123!');
+                tester.testTextInput.hide();
+                FocusManager.instance.primaryFocus?.unfocus();
+                await tester.pumpAndSettle();
+                await tester.tap(find.text('change password').last);
+                await tester.pump();
+              }
+              if (action == ProtectedAccountAction.changePassword &&
                   outcome == 'success') {
                 expect(mutations, 1);
                 expect(
@@ -342,8 +348,7 @@ void main() {
               }
               await tester.pumpAndSettle();
             }
-            final mutationAttempted =
-                outcome == 'success' ||
+            final mutationAttempted = outcome == 'success' ||
                 outcome == 'backend failure' ||
                 outcome == 'network failure';
             expect(mutations, mutationAttempted ? 1 : 0);
@@ -376,7 +381,11 @@ void main() {
                 find.text('Your password has been changed successfully.'),
                 findsNothing,
               );
-              expect(find.text('home destination'), findsNothing);
+              expect(
+                  find.text('home destination'),
+                  outcome == 'cancel' || outcome == 'challenge failure'
+                      ? findsOneWidget
+                      : findsNothing);
               if (outcome == 'backend failure' ||
                   outcome == 'network failure') {
                 expect(
