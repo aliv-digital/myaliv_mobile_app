@@ -55,6 +55,31 @@ class GuestPurchasePlanConfirmationBloc
     final data = state.data;
     if (data == null) return;
 
+    final itemToRemove = data.items
+        .where((x) => x.id == event.itemId)
+        .firstOrNull;
+    final isPrimaryPlan =
+        itemToRemove?.type == PurchaseLineType.primaryPlan ||
+        event.itemId == 'primary';
+
+    if (isPrimaryPlan) {
+      // Removing the primary plan removes/invalidates all items and dependent add-ons.
+      const totals = PurchaseTotals(subTotal: 0, vat: 0);
+      emit(
+        state.copyWith(
+          data: GuestPurchasePlanConfirmationData(
+            phoneNumber: data.phoneNumber,
+            headerTitle: data.headerTitle,
+            items: const <PurchaseLineItem>[],
+            totals: totals,
+          ),
+          planRemovedRequestId: state.planRemovedRequestId + 1,
+        ),
+      );
+      return;
+    }
+
+    // Removing an add-on only removes that add-on and preserves the primary plan.
     final updatedItems = data.items.where((x) => x.id != event.itemId).toList();
 
     final totals = PurchaseTotals(

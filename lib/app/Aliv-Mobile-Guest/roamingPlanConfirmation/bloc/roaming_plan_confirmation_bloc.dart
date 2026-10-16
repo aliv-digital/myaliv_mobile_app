@@ -74,6 +74,31 @@ class RoamingPlanConfirmationBloc
     final data = state.data;
     if (data == null) return;
 
+    final itemToRemove = data.items
+        .where((x) => x.id == event.itemId)
+        .firstOrNull;
+    final isPrimaryPlan =
+        itemToRemove?.type == PurchaseLineType.primaryPlan ||
+        event.itemId == state.routeArgs?.planId ||
+        event.itemId == 'primary';
+
+    if (isPrimaryPlan) {
+      const totals = PurchaseTotals(subTotal: 0, vat: 0);
+      emit(
+        state.copyWith(
+          data: RoamingPlanConfirmationData(
+            phoneNumber: data.phoneNumber,
+            headerTitle: data.headerTitle,
+            beginsOnDateText: data.beginsOnDateText,
+            items: const <PurchaseLineItem>[],
+            totals: totals,
+          ),
+          planRemovedRequestId: state.planRemovedRequestId + 1,
+        ),
+      );
+      return;
+    }
+
     final updatedItems = data.items.where((x) => x.id != event.itemId).toList();
 
     final totals = PurchaseTotals(

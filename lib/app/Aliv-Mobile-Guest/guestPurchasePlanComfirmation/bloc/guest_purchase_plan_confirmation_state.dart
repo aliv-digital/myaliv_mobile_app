@@ -11,6 +11,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
   /// Navigation signals (UI listens)
   final int openTermsRequestId;
   final int payNowRequestId;
+  final int planRemovedRequestId;
 
   /// Stores whether the user checked the terms checkbox.
   final bool isTermsChecked;
@@ -21,6 +22,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
     required this.errorMessage,
     required this.openTermsRequestId,
     required this.payNowRequestId,
+    required this.planRemovedRequestId,
     required this.isTermsChecked,
   });
 
@@ -31,9 +33,14 @@ class GuestPurchasePlanConfirmationState extends Equatable {
       errorMessage: null,
       openTermsRequestId: 0,
       payNowRequestId: 0,
+      planRemovedRequestId: 0,
       isTermsChecked: false,
     );
   }
+
+  bool get hasPrimaryPlan =>
+      data?.items.any((item) => item.type == PurchaseLineType.primaryPlan) ??
+      false;
 
   GuestPurchasePlanConfirmationState copyWith({
     GuestPurchasePlanConfirmationStatus? status,
@@ -41,6 +48,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
     String? errorMessage,
     int? openTermsRequestId,
     int? payNowRequestId,
+    int? planRemovedRequestId,
     bool? isTermsChecked,
   }) {
     return GuestPurchasePlanConfirmationState(
@@ -49,6 +57,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       openTermsRequestId: openTermsRequestId ?? this.openTermsRequestId,
       payNowRequestId: payNowRequestId ?? this.payNowRequestId,
+      planRemovedRequestId: planRemovedRequestId ?? this.planRemovedRequestId,
       isTermsChecked: isTermsChecked ?? this.isTermsChecked,
     );
   }
@@ -60,6 +69,7 @@ class GuestPurchasePlanConfirmationState extends Equatable {
     errorMessage,
     openTermsRequestId,
     payNowRequestId,
+    planRemovedRequestId,
     isTermsChecked,
   ];
 }
