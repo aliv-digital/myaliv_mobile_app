@@ -26,6 +26,14 @@ class _FakeGuestSplashRepository implements GuestSplashRepository {
   }) {
     return null;
   }
+
+  @override
+  Future<GuestSubscriberInfo> verifySubscriber(String phoneNumber) async {
+    return const GuestSubscriberInfo(
+      accountStatus: 'AC',
+      paymentOption: 'PrePay',
+    );
+  }
 }
 
 void main() {

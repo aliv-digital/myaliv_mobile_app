@@ -45,16 +45,48 @@ class RoamingPlanConfirmationScreen extends StatelessWidget {
         create: (ctx) => RoamingPlanConfirmationBloc(
           repository: ctx.read<RoamingPlanConfirmationRepository>(),
         )..add(RoamingPlanConfirmationStarted(args)),
-        child: _RoamingPlanConfirmationView(showDateField: args.showDateField),
+        child: _RoamingPlanConfirmationView(
+          showDateField: args.showDateField,
+          phoneNumber: args.phoneNumber,
+        ),
       ),
     );
   }
 }
 
-class _RoamingPlanConfirmationView extends StatelessWidget {
-  const _RoamingPlanConfirmationView({required this.showDateField});
+class _RoamingPlanConfirmationView extends StatefulWidget {
+  const _RoamingPlanConfirmationView({
+    required this.showDateField,
+    required this.phoneNumber,
+  });
 
   final bool showDateField;
+  final String phoneNumber;
+
+  @override
+  State<_RoamingPlanConfirmationView> createState() =>
+      _RoamingPlanConfirmationViewState();
+}
+
+class _RoamingPlanConfirmationViewState
+    extends State<_RoamingPlanConfirmationView> {
+  bool _hasNavigatedBack = false;
+  bool _isSubmittingPayment = false;
+
+  void _returnToPlanSelection(BuildContext context) {
+    if (_hasNavigatedBack || !mounted) return;
+    _hasNavigatedBack = true;
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      context.go(
+        AppRoutes.guestPurchasePlan,
+        extra: {'phoneNumber': widget.phoneNumber},
+      );
+    }
+  }
 
   Future<void> _openCalendarPickerSheet(
     BuildContext context,
@@ -80,18 +112,19 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
     >(
       listenWhen: (p, c) =>
           p.openTermsRequestId != c.openTermsRequestId ||
-          p.payNowRequestId != c.payNowRequestId,
+          p.payNowRequestId != c.payNowRequestId ||
+          p.planRemovedRequestId != c.planRemovedRequestId,
       listener: (context, state) {
         if (state.openTermsRequestId > 0) {
-          // Future: open terms page / bottom sheet
-          // ignore: avoid_print
-          print('Open Terms & Conditions');
+          debugPrint('Open Terms & Conditions');
         }
 
         if (state.payNowRequestId > 0) {
-          // Future: start payment flow
-          // ignore: avoid_print
-          print('Pay Now pressed');
+          debugPrint('Pay Now pressed');
+        }
+
+        if (state.planRemovedRequestId > 0) {
+          _returnToPlanSelection(context);
         }
       },
       child: Scaffold(
@@ -109,49 +142,76 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
 
+                final hasPrimaryPlan = state.hasPrimaryPlan;
+                final isEligible =
+                    hasPrimaryPlan &&
+                    state.isTermsChecked &&
+                    (state.data?.totals.total ?? 0) > 0 &&
+                    !_isSubmittingPayment;
+
                 return DefaultBottomPayBar(
                   buttonText: 'continue',
                   isVatExclusive: true,
-                  isButtonEnabled: state.isTermsChecked,
+                  isButtonEnabled: isEligible,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    if (_isSubmittingPayment) return;
+                    if (!hasPrimaryPlan) return;
+                    if (!state.isTermsChecked) return;
+
+                    final data = state.data;
+                    if (data == null ||
+                        data.items.isEmpty ||
+                        data.totals.total <= 0) {
+                      return;
+                    }
+
+                    final primaryPlanName =
+                        data.items
+                            .where(
+                              (item) =>
+                                  item.type == PurchaseLineType.primaryPlan,
+                            )
+                            .firstOrNull
+                            ?.title ??
+                        '';
+                    if (primaryPlanName.isEmpty) return;
+
+                    setState(() => _isSubmittingPayment = true);
+
                     context.read<RoamingPlanConfirmationBloc>().add(
                       const RoamingPlanConfirmationPayNowPressed(),
                     );
-                    final data = state.data!;
-                    final primaryPlanName = data.items
-                        .firstWhere(
-                          (item) => item.type == PurchaseLineType.primaryPlan,
-                          orElse: () => const PurchaseLineItem(
-                            id: '',
-                            type: PurchaseLineType.primaryPlan,
-                            label: '',
-                            title: '',
-                            subtitle: '',
-                            price: 0,
-                          ),
-                        )
-                        .title;
                     final addOnNames = data.items
                         .where((item) => item.type == PurchaseLineType.addOn)
                         .map((item) => item.title)
                         .toList(growable: false);
                     final now = DateTime.now();
-                    context.push(
-                      AppRoutes.guestPurchasePlanReceipt,
-                      extra: <String, Object?>{
-                        'phoneNumber': data.phoneNumber,
-                        'amount': data.totals.total,
-                        'planName': primaryPlanName.isEmpty
-                            ? null
-                            : primaryPlanName,
-                        'addOnNames': addOnNames,
-                        'dateText': DateFormat('MMM d, yyyy').format(now),
-                        'timeText': DateFormat(
-                          'h:mm a',
-                        ).format(now).toLowerCase(),
-                      },
-                    );
+                    try {
+                      context
+                          .push(
+                            AppRoutes.guestPurchasePlanReceipt,
+                            extra: <String, Object?>{
+                              'phoneNumber': data.phoneNumber,
+                              'amount': data.totals.total,
+                              'planName': primaryPlanName,
+                              'addOnNames': addOnNames,
+                              'dateText': DateFormat('MMM d, yyyy').format(now),
+                              'timeText': DateFormat(
+                                'h:mm a',
+                              ).format(now).toLowerCase(),
+                            },
+                          )
+                          .whenComplete(() {
+                            if (mounted) {
+                              setState(() => _isSubmittingPayment = false);
+                            }
+                          });
+                    } catch (_) {
+                      if (mounted) {
+                        setState(() => _isSubmittingPayment = false);
+                      }
+                    }
                   },
                   amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );
@@ -203,7 +263,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         0,
                                       ),
                                       child: PurchaseSummaryCard(
-                                        showDateField: showDateField,
+                                        showDateField: widget.showDateField,
                                         data: data,
                                         onRemoveItem: (id) => context
                                             .read<RoamingPlanConfirmationBloc>()
@@ -216,7 +276,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                     ),
                                   ),
 
-                                  if (showDateField)
+                                  if (widget.showDateField)
                                     /// Begins-on info card (optional via navigation flag)
                                     SliverToBoxAdapter(
                                       child: Padding(
@@ -287,12 +347,7 @@ class _RoamingPlanConfirmationView extends StatelessWidget {
                                         backgroundColor: HexColor.fromHex(
                                           '#645D9C',
                                         ),
-                                        input:
-                                            const CustomPaymentBreakdownInputConfig(
-                                              value: '',
-                                              hintText: 'promo code',
-                                              actionText: 'apply',
-                                            ),
+                                        input: null,
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'sub total',

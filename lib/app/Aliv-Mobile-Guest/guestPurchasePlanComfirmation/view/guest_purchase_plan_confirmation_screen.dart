@@ -57,8 +57,29 @@ class _GuestPurchasePlanConfirmationView extends StatefulWidget {
 class _GuestPurchasePlanConfirmationViewState
     extends State<_GuestPurchasePlanConfirmationView> {
   bool _showTermsValidation = false;
+  bool _hasNavigatedBack = false;
+  bool _isSubmittingPayment = false;
 
   GuestPurchasePlanConfirmationRouteArgs get args => widget.args;
+
+  void _returnToPlanSelection(BuildContext context) {
+    if (_hasNavigatedBack || !mounted) return;
+    _hasNavigatedBack = true;
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      if (args.flow == GuestPurchasePlanConfirmationEntryFlow.proceed &&
+          navigator.canPop()) {
+        navigator.pop();
+      }
+    } else {
+      context.go(
+        AppRoutes.guestPurchasePlan,
+        extra: {'phoneNumber': widget.args.phoneNumber},
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +89,8 @@ class _GuestPurchasePlanConfirmationViewState
     >(
       listenWhen: (previous, current) =>
           previous.openTermsRequestId != current.openTermsRequestId ||
-          previous.payNowRequestId != current.payNowRequestId,
+          previous.payNowRequestId != current.payNowRequestId ||
+          previous.planRemovedRequestId != current.planRemovedRequestId,
       listener: (context, state) {
         if (state.openTermsRequestId > 0) {
           debugPrint('Open Terms & Conditions');
@@ -76,6 +98,10 @@ class _GuestPurchasePlanConfirmationViewState
 
         if (state.payNowRequestId > 0) {
           debugPrint('Pay Now pressed');
+        }
+
+        if (state.planRemovedRequestId > 0) {
+          _returnToPlanSelection(context);
         }
       },
       child: Scaffold(
@@ -91,13 +117,34 @@ class _GuestPurchasePlanConfirmationViewState
                   return const SizedBox.shrink();
                 }
 
+                final hasPrimaryPlan = state.hasPrimaryPlan;
+                final bool isButtonEnabled =
+                    hasPrimaryPlan && !_isSubmittingPayment;
+
                 return DefaultBottomPayBar(
                   isVatExclusive: true,
-                  isButtonEnabled: true,
+                  isButtonEnabled: isButtonEnabled,
                   buttonColor: const Color(0xFF645D9C),
                   onPayNow: () {
+                    if (_isSubmittingPayment) return;
+
+                    // Guard: primary plan must exist to proceed to payment
+                    if (!hasPrimaryPlan) {
+                      return;
+                    }
+
                     if (!state.isTermsChecked) {
                       setState(() => _showTermsValidation = true);
+                      return;
+                    }
+
+                    final data = state.data!;
+                    final primaryItem = data.items
+                        .where(
+                          (item) => item.type == PurchaseLineType.primaryPlan,
+                        )
+                        .firstOrNull;
+                    if (primaryItem == null || data.totals.total <= 0) {
                       return;
                     }
 
@@ -121,20 +168,7 @@ class _GuestPurchasePlanConfirmationViewState
                       }
                     }
 
-                    final data = state.data!;
-                    final primaryPlanName = data.items
-                        .firstWhere(
-                          (item) => item.type == PurchaseLineType.primaryPlan,
-                          orElse: () => const PurchaseLineItem(
-                            id: '',
-                            type: PurchaseLineType.primaryPlan,
-                            label: '',
-                            title: '',
-                            subtitle: '',
-                            price: 0,
-                          ),
-                        )
-                        .title;
+                    final primaryPlanName = primaryItem.title;
                     final addOnNames = data.items
                         .where((item) => item.type == PurchaseLineType.addOn)
                         .map((item) => item.title)
@@ -173,40 +207,56 @@ class _GuestPurchasePlanConfirmationViewState
                     final navigator = Navigator.of(context);
                     final router = GoRouter.of(context);
 
-                    navigator.push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => PaymentIFrameScreen(
-                          request: request,
-                          appBarBgColor: Colors.white,
-                          title: 'payment',
-                          onSuccess: (PaymentSuccess success) {
-                            final orderId = int.tryParse(success.orderId ?? '');
-                            if (orderId == null || orderId <= 0) {
-                              navigator.pop();
-                              AppToast.show(
-                                message:
-                                    'Payment could not be confirmed. Please try again.',
-                                type: ToastType.error,
-                              );
-                              return;
+                    setState(() => _isSubmittingPayment = true);
+
+                    try {
+                      navigator
+                          .push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => PaymentIFrameScreen(
+                                request: request,
+                                appBarBgColor: Colors.white,
+                                title: 'payment',
+                                onSuccess: (PaymentSuccess success) {
+                                  final orderId = int.tryParse(
+                                    success.orderId ?? '',
+                                  );
+                                  if (orderId == null || orderId <= 0) {
+                                    navigator.pop();
+                                    AppToast.show(
+                                      message:
+                                          'Payment could not be confirmed. Please try again.',
+                                      type: ToastType.error,
+                                    );
+                                    return;
+                                  }
+                                  receiptExtra['orderId'] = success.orderId;
+                                  navigator.pop();
+                                  router.push(
+                                    AppRoutes.guestPurchasePlanReceipt,
+                                    extra: receiptExtra,
+                                  );
+                                },
+                                onFailure: (String message) {
+                                  navigator.pop();
+                                  AppToast.show(
+                                    message: message,
+                                    type: ToastType.error,
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                          .whenComplete(() {
+                            if (mounted) {
+                              setState(() => _isSubmittingPayment = false);
                             }
-                            receiptExtra['orderId'] = success.orderId;
-                            navigator.pop();
-                            router.push(
-                              AppRoutes.guestPurchasePlanReceipt,
-                              extra: receiptExtra,
-                            );
-                          },
-                          onFailure: (String message) {
-                            navigator.pop();
-                            AppToast.show(
-                              message: message,
-                              type: ToastType.error,
-                            );
-                          },
-                        ),
-                      ),
-                    );
+                          });
+                    } catch (_) {
+                      if (mounted) {
+                        setState(() => _isSubmittingPayment = false);
+                      }
+                    }
                   },
                   amountText: AppUtils.formatPrice(state.data!.totals.total),
                 );

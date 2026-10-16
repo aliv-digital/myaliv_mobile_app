@@ -32,7 +32,12 @@ class LoginPhoneNumberHelper {
   /// Input can be `(242)-899-9999`, `2428999999`, or `242 899 9999`.
   /// Returns the trimmed original string if it doesn't contain 10 digits.
   static String formatBahamasNumberForDisplay(String rawInput) {
-    final String digits = rawInput.replaceAll(RegExp(r'[^0-9]'), '');
+    String digits = rawInput.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.length == 7) {
+      digits = '242$digits';
+    } else if (digits.length == 11 && digits.startsWith('1')) {
+      digits = digits.substring(1);
+    }
     if (digits.length == 10) {
       return '(${digits.substring(0, 3)})-'
           '${digits.substring(3, 6)}-'

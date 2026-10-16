@@ -77,6 +77,8 @@ class GuestPayBillTheme {
   static const String invalidActivePostpaidErrorMessage =
       'the number entered is not an active postpaid number.. to try again.\n'
       'please enter a active postpaid number';
+  static const String invalidActiveFibrErrorMessage =
+      'please enter an active ALIVFibr account';
 
   // ===== Screen spacing =====
   // Used by: top content padding after app bar in `guest_pay_bill_screen.dart`.
@@ -180,8 +182,8 @@ class GuestPayBillTheme {
   static const Color focusedInputBorderPink = Color(0xFFFF9BB1);
   static const Color focusedInputBorderOrange = Color(0xFFFF6C36);
 
-  // Used by: disabled submit button background.
-  static const Color disabledBtn = Color(0xFFCDCDDD);
+  // Used by: disabled submit button background (#645D9C @ 30% opacity from Figma).
+  static const Color disabledBtn = Color(0x4D645D9C);
 
   // Used by: text/icons shown over primary background.
   static const Color chipTextOnPrimary = Colors.white;

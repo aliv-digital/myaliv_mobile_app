@@ -243,6 +243,24 @@ class GuestPayBillBloc extends Bloc<GuestPayBillEvent, GuestPayBillState> {
       return;
     }
 
+    if (state.isAlivFibr &&
+        !LineStatus.fromCode(accountInfo?.status).isActive) {
+      // Clear a previous rejection so each retry can show the toast again.
+      emit(
+        state.copyWith(
+          submitStatus: GuestPayBillSubmitStatus.idle,
+          errorMessage: null,
+        ),
+      );
+      emit(
+        state.copyWith(
+          submitStatus: GuestPayBillSubmitStatus.failure,
+          errorMessage: GuestPayBillTheme.invalidActiveFibrErrorMessage,
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         submitStatus: GuestPayBillSubmitStatus.loading,

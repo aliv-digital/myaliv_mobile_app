@@ -70,7 +70,7 @@ void main() {
     ).thenAnswer(
       (_) async => Response<dynamic>(
         requestOptions: RequestOptions(path: Api.guestFibrBalanceUrl),
-        data: {'id_acc': 77, 'Balance': 250.0, 'AccountStatus': 'active'},
+        data: {'id_acc': 77, 'Balance': 250.0, 'AccountStatus': 'AC'},
       ),
     );
     when(
