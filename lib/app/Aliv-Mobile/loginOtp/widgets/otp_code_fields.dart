@@ -7,7 +7,13 @@ import '../bloc/login_otp_state.dart';
 import '../bloc/login_otp_event.dart';
 
 class OtpCodeFields extends StatefulWidget {
-  const OtpCodeFields({super.key});
+  const OtpCodeFields({super.key, this.boxHeight, this.gap});
+
+  final double? boxHeight;
+
+  /// When set, fills the available row width with this spacing between cells.
+  /// Other OTP screens retain their existing square cells and distributed gaps.
+  final double? gap;
 
   @override
   State<OtpCodeFields> createState() => OtpCodeFieldsState();
@@ -105,25 +111,26 @@ class OtpCodeFieldsState extends State<OtpCodeFields> {
         final hasFieldError = state.codeFieldError;
         return LayoutBuilder(
           builder: (context, constraints) {
-            // Derive cell size from available width so 6 cells always fit.
-            // Prefer the design target (44) but shrink down to _minBoxSize on
-            // narrow devices instead of overflowing the Row.
+            final gap = widget.gap ?? _minGap;
             final maxWidth = constraints.maxWidth.isFinite
                 ? constraints.maxWidth
                 : LoginOtpSizes.otpBoxSize * _otpLength +
-                      _minGap * (_otpLength - 1);
-            final totalGaps = _minGap * (_otpLength - 1);
+                    gap * (_otpLength - 1);
+            final totalGaps = gap * (_otpLength - 1);
             final rawBox = (maxWidth - totalGaps) / _otpLength;
-            final boxSize = rawBox
-                .clamp(_minBoxSize, LoginOtpSizes.otpBoxSize)
-                .toDouble();
+            final boxSize = widget.gap == null
+                ? rawBox.clamp(_minBoxSize, LoginOtpSizes.otpBoxSize).toDouble()
+                : rawBox.clamp(0.0, maxWidth).toDouble();
 
             return AutofillGroup(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: widget.gap == null
+                    ? MainAxisAlignment.spaceEvenly
+                    : MainAxisAlignment.spaceBetween,
                 children: List.generate(_otpLength, (index) {
                   return _OtpBox(
                     size: boxSize,
+                    height: widget.boxHeight ?? boxSize,
                     controller: _controllers[index],
                     focusNode: _focusNodes[index],
                     showError: hasFieldError,
@@ -147,6 +154,7 @@ class OtpCodeFieldsState extends State<OtpCodeFields> {
 
 class _OtpBox extends StatelessWidget {
   final double size;
+  final double height;
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool showError;
@@ -155,6 +163,7 @@ class _OtpBox extends StatelessWidget {
 
   const _OtpBox({
     required this.size,
+    required this.height,
     required this.controller,
     required this.focusNode,
     required this.showError,
@@ -172,7 +181,7 @@ class _OtpBox extends StatelessWidget {
 
     return SizedBox(
       width: size,
-      height: size,
+      height: height,
       child: AnimatedBuilder(
         animation: focusNode,
         builder: (context, _) {
