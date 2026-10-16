@@ -77,7 +77,9 @@ class _ForgetPasswordScreenView extends StatelessWidget {
     return StripedScaffold(
       backgroundColor: ForgetPasswordColors.pageBackground,
       resizeToAvoidBottomInset: true,
+      stripesReserveSpace: true,
       body: SafeArea(
+        bottom: false,
         child: BlocListener<ForgetPasswordBloc, ForgetPasswordState>(
           listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (context, state) {
@@ -161,24 +163,24 @@ class _ForgetPasswordScreenView extends StatelessWidget {
                           );
                         },
                       ),
-                      const SizedBox(
-                        height: ForgetPasswordSizes.sendToTermsGap,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: ForgetPasswordSizes.phoneToSendGap,
-                          ),
-                          child: Text(
-                            "by pressing the 'send' button you agree to our terms & conditions and privacy policy",
-                            textAlign: TextAlign.center,
-                            style: ForgetPasswordTheme.termsBase,
-                          ),
-                        ),
-                      ),
-                      const Center(child: LoginPrivacyPolicyLink()),
                     ],
                   ),
                 ),
               ),
+              if (MediaQuery.viewInsetsOf(context).bottom == 0)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: [
+                      Spacer(),
+                      LoginPrivacyPolicyLink(
+                        separatorGap:
+                            ForgetPasswordSizes.privacyPolicySeparatorGap,
+                      ),
+                      SizedBox(height: AuthModuleSizes.privacyPolicyBottomGap),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

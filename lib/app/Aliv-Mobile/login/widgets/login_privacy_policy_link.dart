@@ -5,7 +5,11 @@ import 'login_privacy_policy_modal.dart';
 import 'login_terms_of_use_modal.dart';
 
 class LoginPrivacyPolicyLink extends StatelessWidget {
-  const LoginPrivacyPolicyLink({super.key});
+  const LoginPrivacyPolicyLink({super.key, this.separatorGap});
+
+  /// Opts into separately underlined links with spacing around the divider.
+  /// The existing login footer keeps its continuous underline by default.
+  final double? separatorGap;
 
   static final _linkStyle = AuthModuleTextStyles.privacyPolicyFooter.copyWith(
     decoration: TextDecoration.none,
@@ -13,12 +17,16 @@ class LoginPrivacyPolicyLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final linkStyle = separatorGap == null
+        ? _linkStyle
+        : AuthModuleTextStyles.privacyPolicyFooter;
     return DecoratedBox(
-      // A continuous underline matches the reference across both links and gaps.
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AuthModuleColors.managePassword),
-        ),
+      decoration: BoxDecoration(
+        border: separatorGap == null
+            ? const Border(
+                bottom: BorderSide(color: AuthModuleColors.managePassword),
+              )
+            : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -28,16 +36,18 @@ class LoginPrivacyPolicyLink extends StatelessWidget {
           TextButton(
             style: AuthModuleButtonStyles.inlineTextLink,
             onPressed: () => showLoginPrivacyPolicyModal(context),
-            child: Text('Privacy Policy', style: _linkStyle),
+            child: Text('Privacy Policy', style: linkStyle),
           ),
-          const Text(
-            ' | ',
+          if (separatorGap != null) SizedBox(width: separatorGap),
+          Text(
+            separatorGap == null ? ' | ' : '|',
             style: AuthModuleTextStyles.privacyPolicyFooterSeparator,
           ),
+          if (separatorGap != null) SizedBox(width: separatorGap),
           TextButton(
             style: AuthModuleButtonStyles.inlineTextLink,
             onPressed: () => showLoginTermsOfUseModal(context),
-            child: Text('Terms of Use', style: _linkStyle),
+            child: Text('Terms of Use', style: linkStyle),
           ),
         ],
       ),
