@@ -29,11 +29,21 @@ class GuestPurchasePlanRepository {
     NetworkService? networkService,
     PlanParserService? parserService,
     GuestPlanPresentationMapper? presentationMapper,
-  }) : _phoneNumber = phoneNumber.replaceAll(RegExp(r'\D'), ''),
+  }) : _phoneNumber = _normalizePhoneNumber(phoneNumber),
        _networkService = networkService ?? instance<NetworkService>(),
        _parserService = parserService ?? PlanParserService(),
        _presentationMapper =
            presentationMapper ?? const GuestPlanPresentationMapper();
+
+  static String _normalizePhoneNumber(String input) {
+    final digits = input.replaceAll(RegExp(r'\D'), '');
+    if (digits.length == 7) {
+      return '242$digits';
+    } else if (digits.length == 11 && digits.startsWith('1')) {
+      return digits.substring(1);
+    }
+    return digits;
+  }
 
   final String _phoneNumber;
   final NetworkService _networkService;

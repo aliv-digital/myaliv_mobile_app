@@ -128,9 +128,82 @@ class _SheetBody extends StatefulWidget {
 class _SheetBodyState extends State<_SheetBody> {
   static const LoginPhoneNumberHelper _phoneHelper = LoginPhoneNumberHelper();
 
+  late final TextEditingController _phoneController;
+  late final TextEditingController _confirmPhoneController;
+  late final FocusNode _phoneFocusNode;
+  late final FocusNode _confirmPhoneFocusNode;
+
   // Set only by a Continue/Done attempt with an empty mobile number; cleared
   // as soon as the user edits that field.
   bool _showEmptyPhoneError = false;
+  bool _isVerifying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<GuestSplashBloc>();
+    final s = bloc.state;
+    final initialPhone = s is GuestSplashLoadedState ? s.purchasePhone : '';
+    final initialConfirm = s is GuestSplashLoadedState
+        ? s.purchaseConfirmPhone
+        : '';
+
+    _phoneController = TextEditingController(text: initialPhone);
+    _confirmPhoneController = TextEditingController(text: initialConfirm);
+    _phoneFocusNode = FocusNode();
+    _confirmPhoneFocusNode = FocusNode();
+
+    _phoneFocusNode.addListener(_onPhoneFocusChange);
+    _confirmPhoneFocusNode.addListener(_onConfirmPhoneFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _phoneFocusNode.removeListener(_onPhoneFocusChange);
+    _confirmPhoneFocusNode.removeListener(_onConfirmPhoneFocusChange);
+    _phoneFocusNode.dispose();
+    _confirmPhoneFocusNode.dispose();
+    _phoneController.dispose();
+    _confirmPhoneController.dispose();
+    super.dispose();
+  }
+
+  void _onPhoneFocusChange() {
+    if (!_phoneFocusNode.hasFocus) {
+      _normalizeFieldIfSevenDigits(_phoneController, isConfirm: false);
+    }
+  }
+
+  void _onConfirmPhoneFocusChange() {
+    if (!_confirmPhoneFocusNode.hasFocus) {
+      _normalizeFieldIfSevenDigits(_confirmPhoneController, isConfirm: true);
+    }
+  }
+
+  void _normalizeFieldIfSevenDigits(
+    TextEditingController controller, {
+    required bool isConfirm,
+  }) {
+    final digits = _digitsOnly(controller.text);
+    if (digits.length == 7) {
+      final formatted = LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
+        digits,
+      );
+      controller.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+      if (isConfirm) {
+        context.read<GuestSplashBloc>().add(
+          GuestSplashPurchasePlanConfirmPhoneChanged(formatted),
+        );
+      } else {
+        context.read<GuestSplashBloc>().add(
+          GuestSplashPurchasePlanPhoneChanged(formatted),
+        );
+      }
+    }
+  }
 
   LoginCountrySelection _loginCountry(Country? country) {
     if (country == null) return LoginCountrySelection.defaultBahamas;
@@ -166,10 +239,10 @@ class _SheetBodyState extends State<_SheetBody> {
             (state.purchaseCountry?.countryCode ?? '').toUpperCase() == 'BS';
         final bool showPhoneError =
             _showEmptyPhoneError ||
-            _isPhoneInvalid(state.purchasePhone, state.purchaseCountry);
+            _isPhoneInvalid(_phoneController.text, state.purchaseCountry);
         final bool showConfirmError = _isMismatch(
-          state.purchasePhone,
-          state.purchaseConfirmPhone,
+          _phoneController.text,
+          _confirmPhoneController.text,
         );
         final Color phoneBorderColor = showPhoneError
             ? GuestSplashTheme.errorRed
@@ -192,35 +265,68 @@ class _SheetBodyState extends State<_SheetBody> {
             : <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9\- ]')),
               ];
-        void continueAction() {
-          if (state.purchasePhone.isEmpty) {
+        Future<void> continueAction() async {
+          if (_isVerifying) return;
+
+          // Normalize any 7-digit Bahamas input in the UI fields before submitting
+          _normalizeFieldIfSevenDigits(_phoneController, isConfirm: false);
+          _normalizeFieldIfSevenDigits(
+            _confirmPhoneController,
+            isConfirm: true,
+          );
+
+          final phone = _phoneController.text.trim();
+          final confirmPhone = _confirmPhoneController.text.trim();
+
+          if (phone.isEmpty) {
             setState(() => _showEmptyPhoneError = true);
             return;
           }
-          if (_isPhoneInvalid(state.purchasePhone, state.purchaseCountry)) {
+          if (_isPhoneInvalid(phone, state.purchaseCountry)) {
             AppToast.show(
               message: GuestSplashTheme.invalidPhoneMessage,
               type: ToastType.error,
             );
             return;
           }
-          if (state.purchaseConfirmPhone.isEmpty ||
-              _isMismatch(state.purchasePhone, state.purchaseConfirmPhone)) {
+          if (confirmPhone.isEmpty || _isMismatch(phone, confirmPhone)) {
             AppToast.show(
               message: GuestSplashTheme.phoneMismatchMessage,
               type: ToastType.error,
             );
             return;
           }
-          context.push(
-            AppRoutes.guestPurchasePlan,
-            extra: {
-              'phoneNumber':
-                  LoginPhoneNumberHelper.formatBahamasNumberForDisplay(
-                    state.purchasePhone,
-                  ),
-            },
-          );
+
+          final repo = context.read<GuestSplashBloc>().repository;
+          setState(() => _isVerifying = true);
+          try {
+            final subscriber = await repo.verifySubscriber(phone);
+            if (!context.mounted) return;
+            if (!subscriber.isActivePrepaid) {
+              AppToast.show(
+                message: GuestSplashTheme.invalidActivePrepaidErrorMessage,
+                type: ToastType.error,
+              );
+              return;
+            }
+            context.push(
+              AppRoutes.guestPurchasePlan,
+              extra: {
+                'phoneNumber':
+                    LoginPhoneNumberHelper.formatBahamasNumberForDisplay(phone),
+              },
+            );
+          } catch (_) {
+            if (!context.mounted) return;
+            AppToast.show(
+              message: GuestSplashTheme.invalidActivePrepaidErrorMessage,
+              type: ToastType.error,
+            );
+          } finally {
+            if (mounted) {
+              setState(() => _isVerifying = false);
+            }
+          }
         }
 
         return SafeArea(
@@ -250,6 +356,8 @@ class _SheetBodyState extends State<_SheetBody> {
               //   showCountryArrow: true,
               // ),
               CustomCountryPhoneInputRow(
+                controller: _phoneController,
+                focusNode: _phoneFocusNode,
                 hintText: 'eg: (242)-899-9999',
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
@@ -330,6 +438,8 @@ class _SheetBodyState extends State<_SheetBody> {
               //   showCountryArrow: false,
               // ),
               CustomCountryPhoneInputRow(
+                controller: _confirmPhoneController,
+                focusNode: _confirmPhoneFocusNode,
                 hintText: 'eg: (242)-899-9999',
                 flagEmoji: state.purchaseCountry?.flagEmoji ?? '🏳️',
                 dialCode: state.purchaseCountry?.phoneCode ?? '1',
@@ -403,7 +513,7 @@ class _SheetBodyState extends State<_SheetBody> {
                 ),
               DefaultButton(
                 label: 'continue',
-                isLoading: false,
+                isLoading: _isVerifying,
                 height: GuestSplashTheme.purchasePlanContinueButtonHeight,
                 backgroundColor:
                     GuestSplashTheme.purchasePlanContinueButtonColor,

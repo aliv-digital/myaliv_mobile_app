@@ -38,6 +38,9 @@ class GuestSplashTheme {
   static const String invalidPhoneMessage = 'invalid phone number';
   static const String emptyPhoneMessage = 'enter your mobile number';
   static const String phoneMismatchMessage = 'phone numbers do not match';
+  static const String invalidActivePrepaidErrorMessage =
+      'the number entered is not an active prepaid number.to try again\n'
+      'please enter a active prepaid number.';
 
   // Inline validation red used for field border + input text on error.
   static const Color errorRed = Color(0xFFFF3B30);
