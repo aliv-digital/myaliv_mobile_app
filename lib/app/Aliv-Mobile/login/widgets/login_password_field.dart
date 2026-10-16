@@ -115,9 +115,7 @@ class _LoginPasswordFieldState extends State<LoginPasswordField> {
               GestureDetector(
                 onTap: () => setState(() => _obscure = !_obscure),
                 child: SvgPicture.asset(
-                  _obscure
-                      ? AssetConstant.hideIconSVG
-                      : AssetConstant.viewIconSVG,
+                  _obscure ? AssetConstant.eyeOffSVG : AssetConstant.eyeOnSVG,
                   width: AuthModuleSizes.eyeIconSize,
                   height: AuthModuleSizes.eyeIconSize,
                 ),
