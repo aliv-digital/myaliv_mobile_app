@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/utils/guest_plan_phone_formatter.dart';
 import 'package:myaliv_mobile_app/app/common/services/plan_name_formatter_service.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/bloc/guest_purchase_plan_receipt_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/repository/guest_purchase_plan_receipt_repository.dart';
@@ -58,7 +59,10 @@ class GuestPurchasePlanReceiptScreen extends StatelessWidget {
         ),
       ReceiptDetailItem(label: 'date', value: dateText),
       ReceiptDetailItem(label: 'time', value: timeText),
-      ReceiptDetailItem(label: 'phone no.', value: phoneNumber),
+      ReceiptDetailItem(
+        label: 'phone no.',
+        value: GuestPlanPhoneFormatter.format(phoneNumber, isBahamas: true),
+      ),
       ReceiptDetailItem(label: 'email address', value: emailAddress),
       ReceiptDetailItem(label: 'payment method', value: paymentMethod),
     ];

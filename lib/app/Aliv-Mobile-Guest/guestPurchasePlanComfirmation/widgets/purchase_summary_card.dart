@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../guestPurchasePlan/utils/guest_plan_phone_formatter.dart';
 import '../models/guest_purchase_plan_confirmation_models.dart';
 import '../theme/guest_purchase_plan_confirmation_theme.dart';
 import 'purchase_item_row.dart';
@@ -49,7 +50,10 @@ class PurchaseSummaryCard extends StatelessWidget {
                       .purchaseSummaryHeaderTitleToPhoneGap,
                 ),
                 Text(
-                  data.phoneNumber,
+                  GuestPlanPhoneFormatter.format(
+                    data.phoneNumber,
+                    isBahamas: true,
+                  ),
                   style: GuestPurchasePlanConfirmationTheme
                       .purchaseSummaryHeaderPhoneTextStyle,
                 ),

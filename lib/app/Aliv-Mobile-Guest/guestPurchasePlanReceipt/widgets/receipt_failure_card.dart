@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../guestPurchasePlan/utils/guest_plan_phone_formatter.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanReceipt/theme/theme.dart';
 import '../bloc/guest_purchase_plan_receipt_state.dart';
 import 'receipt_ticket_divider.dart';
@@ -129,7 +130,7 @@ class ReceiptFailureCard extends StatelessWidget {
             ),
             const SizedBox(height: 1),
             Text(
-              data.phoneNumber,
+              GuestPlanPhoneFormatter.format(data.phoneNumber, isBahamas: true),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'CircularPro',
