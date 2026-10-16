@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/addOnsConfirmation/view/add_ons_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlan/models/plan_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/bloc/guest_purchase_plan_confirmation_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile-Guest/guestPurchasePlanComfirmation/bloc/guest_purchase_plan_confirmation_event.dart';
@@ -669,5 +670,105 @@ void main() {
         expect(payBarChecked.isButtonEnabled, isTrue);
       },
     );
+
+    testWidgets(
+      'Issue 6: Promo code input row is hidden on roaming plan confirmation',
+      (tester) async {
+        tester.view.physicalSize = const Size(390, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final router = GoRouter(
+          initialLocation: '/roam_confirm',
+          routes: [
+            GoRoute(
+              path: '/roam_confirm',
+              builder: (_, _) => const RoamingPlanConfirmationScreen(
+                phoneNumber: '2428011616',
+                showDateField: false,
+              ),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+        await tester.pumpAndSettle();
+
+        expect(find.text('promo code'), findsNothing);
+        expect(find.text('apply'), findsNothing);
+      },
+    );
   });
+
+  group(
+    'Issue 6: Promo code input hidden across Guest Confirmation screens',
+    () {
+      testWidgets(
+        'Promo code input row is hidden on standard guest confirmation',
+        (tester) async {
+          tester.view.physicalSize = const Size(390, 1000);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          final args = guest_models.GuestPurchasePlanConfirmationRouteArgs(
+            phoneNumber: '2428011616',
+            accountHolderName: 'guest purchase a plan',
+            primaryPlanName: 'liberty daily',
+            primaryPlanPrice: 10.0,
+            flow: guest_models.GuestPurchasePlanConfirmationEntryFlow.skip,
+            selectedPlan: _testPlan(
+              id: 'd1',
+              title: 'liberty daily',
+              price: 10.0,
+            ),
+          );
+
+          final router = GoRouter(
+            initialLocation: '/confirm',
+            routes: [
+              GoRoute(
+                path: '/confirm',
+                builder: (_, _) =>
+                    GuestPurchasePlanConfirmationScreen(args: args),
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+          await tester.pumpAndSettle();
+
+          expect(find.text('promo code'), findsNothing);
+          expect(find.text('apply'), findsNothing);
+        },
+      );
+
+      testWidgets('Promo code input row is hidden on add-ons confirmation', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(390, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final router = GoRouter(
+          initialLocation: '/addons_confirm',
+          routes: [
+            GoRoute(
+              path: '/addons_confirm',
+              builder: (_, _) =>
+                  const AddOnsConfirmationScreen(phoneNumber: '2428011616'),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+        await tester.pumpAndSettle();
+
+        expect(find.text('promo code'), findsNothing);
+        expect(find.text('apply'), findsNothing);
+      });
+    },
+  );
 }

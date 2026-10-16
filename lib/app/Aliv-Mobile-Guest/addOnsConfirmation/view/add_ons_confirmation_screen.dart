@@ -223,12 +223,7 @@ class _AddOnsConfirmationView extends StatelessWidget {
                                         backgroundColor: HexColor.fromHex(
                                           '#645D9C',
                                         ),
-                                        input:
-                                            const CustomPaymentBreakdownInputConfig(
-                                              value: '',
-                                              hintText: 'promo code',
-                                              actionText: 'apply',
-                                            ),
+                                        input: null,
                                         items: <CustomPaymentBreakdownLineItem>[
                                           CustomPaymentBreakdownLineItem(
                                             label: 'subtotal',
