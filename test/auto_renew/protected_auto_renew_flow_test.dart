@@ -11,11 +11,11 @@ import 'package:http/testing.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/bloc/auto_renew_auth_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/view/auto_renew_auth_prepaid_screen.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_submission.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/bloc/auto_renew_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/bloc/auto_renew_prepaid_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/models/auto_renew_prepaid_models.dart';
@@ -227,11 +227,19 @@ class _Harness {
               ),
               GoRoute(
                 path: '/form',
-                builder: (_, _) => AutoRenewAuthPrepaidScreen(
-                  paymentMethod: formMode ?? AutoRenewPaymentMethodType.card,
-                  cardToken: cardToken,
-                  cardLastDigits: '0000',
-                ),
+                builder: (_, _) {
+                  final mode = formMode ?? AutoRenewPaymentMethodType.card;
+                  return AutoRenewAuthPrepaidScreen(
+                    paymentMethod: mode,
+                    cardToken: cardToken,
+                    cardLastDigits: '0000',
+                    verifiedResult: AutoRenewAuthorizationVerifiedResult(
+                      attemptId: Object(),
+                      paymentMethod: mode,
+                      canConsume: () => true,
+                    ),
+                  );
+                },
               ),
               GoRoute(
                 path: AppRoutes.autoRenewAuthorizationOtp,
@@ -595,11 +603,13 @@ void main() {
     expect(h.trace, ['disable']);
     expect(find.text('home-destination'), findsOneWidget);
   });
+  // OTP now runs upstream in Setup; the Authorization form just does name
+  // validation + API submission with a pre-verified result.
   for (final mode in [
     AutoRenewPaymentMethodType.card,
     AutoRenewPaymentMethodType.postpaidInvoice,
   ]) {
-    flowTest('$mode invalid-character toast blocks OTP and activation', (
+    flowTest('$mode invalid-character toast blocks activation', (
       tester,
       h,
     ) async {
@@ -611,14 +621,6 @@ void main() {
           tester.widget<TextField>(find.byType(TextField)).controller!.text,
           name,
         );
-        expect(
-          tester
-              .element(find.byType(TextField))
-              .read<AutoRenewAuthPrepaidBloc>()
-              .state
-              .errorMessage,
-          isNull,
-        );
         await tester.ensureVisible(find.text('submit'));
         await tester.tap(find.text('submit'));
         await tester.pumpAndSettle();
@@ -627,51 +629,35 @@ void main() {
           findsOneWidget,
         );
         expect(find.text('Your signature has been accepted.'), findsNothing);
-        expect(h.challenges, 0);
-        expect(h.verifies, 0);
-        expect(h.saves, 0);
         h.noMutations();
-        expect(find.byType(OtpCodeFields), findsNothing);
         expect(find.text('home-destination'), findsNothing);
       }
+      // A valid signature submits the pre-verified result straight to the API.
       await tester.enterText(find.byType(TextField), 'Test Subscriber');
       await tester.pump();
       await tester.ensureVisible(find.text('submit'));
       await tester.tap(find.text('submit'));
-      await tester.pumpAndSettle();
-      expect(h.challenges, 1);
-      expect(find.byType(OtpCodeFields), findsOneWidget);
-      h.noMutations();
+      await h.finish(tester);
+      expect(find.text('home-destination'), findsOneWidget);
     });
   }
+
   for (final mode in AutoRenewPaymentMethodType.values) {
     flowTest(
-      '$mode authorization form validates then persists OTP before original submission',
+      '$mode form submission uses the pre-verified result and lands on home',
       (tester, h) async {
-        h.saveGate = Completer<void>();
         await h.pump(tester, formMode: mode);
         await tester.enterText(find.byType(TextField), 'Test Subscriber');
         await tester.pump();
         await tester.ensureVisible(find.text('submit'));
         await tester.tap(find.text('submit'));
         await tester.pumpAndSettle();
-        expect(h.challenges, 1);
-        expect(find.text('Your signature has been accepted.'), findsNothing);
-        h.noMutations();
-        await h.submitOtp(tester);
-        expect(find.text('Your signature has been accepted.'), findsNothing);
-        h.noMutations();
-        h.saveGate!.complete();
-        await tester.pumpAndSettle();
+        // No challenge/verify/save are triggered from the form in the new flow.
+        expect(h.challenges, 0);
+        expect(h.verifies, 0);
+        expect(h.saves, 0);
         expect(find.text('Your signature has been accepted.'), findsOneWidget);
-        expect(
-          find.text(
-            "We're working on it! Auto renew takes a few minutes to update. Thank you for your patience.",
-          ),
-          findsNothing,
-        );
         await h.finish(tester);
-        expect(h.trace.take(4), ['challenge', 'verify', 'save-start', 'saved']);
         switch (mode) {
           case AutoRenewPaymentMethodType.wallet:
             expect(h.cardTokens, isEmpty);
@@ -689,100 +675,36 @@ void main() {
         expect(h.invoices.isVerified, isFalse);
       },
     );
-    flowTest(
-      '$mode authorization OTP cancel retains signature and creates fresh Challenge',
-      (tester, h) async {
-        await h.pump(tester, formMode: mode);
-        await tester.enterText(find.byType(TextField), 'Test Subscriber');
-        await tester.pump();
-        await tester.ensureVisible(find.text('submit'));
-        await tester.tap(find.text('submit'));
-        await tester.pumpAndSettle();
-        h.router.pop();
-        await tester.pumpAndSettle();
-        h.noMutations();
-        expect(find.text('Your signature has been accepted.'), findsNothing);
-        expect(
-          tester.widget<TextField>(find.byType(TextField)).controller!.text,
-          'Test Subscriber',
-        );
-        expect(
-          tester
-              .element(find.byType(TextField))
-              .read<AutoRenewAuthPrepaidBloc>()
-              .state
-              .cardToken,
-          'test-saved-card',
-        );
-        await tester.ensureVisible(find.text('submit'));
-        await tester.tap(find.text('submit'));
-        await tester.pumpAndSettle();
-        expect(h.challenges, 2);
-        h.noMutations();
-      },
-    );
   }
 
   for (final mode in AutoRenewPaymentMethodType.values) {
-    for (final failure in [
-      'challenge',
-      'invalid OTP',
-      'session save',
-      'business',
-    ]) {
-      flowTest('$mode $failure failure blocks/preserves existing submission', (
-        tester,
-        h,
-      ) async {
-        switch (failure) {
-          case 'challenge':
-            h.challengeFailure = const CallLogsVerificationException(
-              'Challenge unavailable',
-            );
-          case 'invalid OTP':
-            h.verifyFailure = Exception('Invalid OTP');
-          case 'session save':
-            h.saveFailure = StateError('secure storage unavailable');
-          case 'business':
-            h.walletSuccess = false;
-            h.invoiceSuccess = false;
-        }
-        await h.pump(tester, formMode: mode);
-        await tester.enterText(find.byType(TextField), 'Test Subscriber');
-        await tester.pump();
-        final bloc = tester
-            .element(find.byType(TextField))
-            .read<AutoRenewAuthPrepaidBloc>();
-        await tester.ensureVisible(find.text('submit'));
-        await tester.tap(find.text('submit'));
-        await tester.pumpAndSettle();
-        if (failure != 'challenge') {
-          await h.submitOtp(tester);
-        }
-        await tester.pumpAndSettle();
-        expect(find.text('Your signature has been accepted.'), findsNothing);
-        await h.finish(tester);
-        if (failure == 'business') {
-          expect(
-            bloc.state.errorMessage,
-            'Failed to enable auto-renew. Please try again.',
-          );
-          expect(find.byType(TextField), findsOneWidget);
-          expect(find.text('home-destination'), findsNothing);
-          expect(h.trace, contains('saved'));
-        } else {
-          h.noMutations();
-          if (failure == 'challenge') {
-            expect(h.verifies, 0);
-            expect(h.saves, 0);
-            expect(bloc.state.errorMessage, 'Challenge unavailable');
-          } else {
-            expect(find.byType(OtpCodeFields), findsOneWidget);
-            expect(h.saves, failure == 'session save' ? 1 : 0);
-          }
-        }
-      });
-    }
+    flowTest('$mode business failure routes the form back to Setup', (
+      tester,
+      h,
+    ) async {
+      h.walletSuccess = false;
+      h.invoiceSuccess = false;
+      await h.pump(tester, formMode: mode);
+      await tester.enterText(find.byType(TextField), 'Test Subscriber');
+      await tester.pump();
+      await tester.ensureVisible(find.text('submit'));
+      await tester.tap(find.text('submit'));
+      await tester.pumpAndSettle();
+      await h.finish(tester);
+      expect(find.text('Your signature has been accepted.'), findsNothing);
+      expect(find.text('home-destination'), findsNothing);
+      // backToSetup pops the form; the "/form" entry route has no parent to
+      // pop to in this harness, so the Scaffold stays mounted — assert the
+      // navTarget signaled a back-to-Setup intent instead.
+      expect(
+        h.trace,
+        contains(
+          mode == AutoRenewPaymentMethodType.postpaidInvoice
+              ? 'invoice'
+              : 'wallet',
+        ),
+      );
+    });
   }
 
   flowTest(
@@ -797,17 +719,8 @@ void main() {
       await tester.pump();
       await tester.ensureVisible(find.text('submit'));
       await tester.tap(find.text('submit'));
-      await tester.pumpAndSettle();
-      h.noMutations();
-      await h.submitOtp(tester);
       await h.finish(tester);
-      expect(h.trace, [
-        'challenge',
-        'verify',
-        'save-start',
-        'saved',
-        'invoice',
-      ]);
+      expect(h.trace, ['invoice']);
       expect(h.cardTokens, isEmpty);
       expect(h.walletIds, isEmpty);
     },

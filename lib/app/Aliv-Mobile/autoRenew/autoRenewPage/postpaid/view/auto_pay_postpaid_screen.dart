@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_navigation.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/models/auto_renew_prepaid_models.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/theme/auto_renew_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/widgets/auto_renew_payment_method_section.dart';
@@ -99,13 +100,12 @@ class _AutoPayPostpaidViewState extends State<_AutoPayPostpaidView> {
     }
     final card = _selectedCard;
     if (card == null) return;
-    context.push(
-      AppRoutes.autoRenewAuthPrepaidScreen,
-      extra: AutoRenewAuthArgs(
-        paymentMethod: AutoRenewPaymentMethodType.postpaidInvoice,
-        cardToken: card.token,
-        cardLastDigits: card.lastDigits,
-      ),
+    // OTP runs before the Authorization form.
+    await navigateToAutoRenewAuthWithOtp(
+      context,
+      paymentMethod: AutoRenewPaymentMethodType.postpaidInvoice,
+      cardToken: card.token,
+      cardLastDigits: card.lastDigits,
     );
   }
 

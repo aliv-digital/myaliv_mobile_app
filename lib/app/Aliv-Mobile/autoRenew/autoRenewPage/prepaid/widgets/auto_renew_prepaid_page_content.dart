@@ -11,6 +11,7 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import '../../../autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_navigation.dart';
 import '../../../autoRenewAuth/prepaid/verification/auto_renew_authorization_submission.dart';
 import '../../../autoRenewAuth/prepaid/verification/auto_renew_authorization_verification_coordinator.dart';
 import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
@@ -258,13 +259,14 @@ class _AutoRenewPrepaidPageContentState
               return;
             }
 
-            context.push(
-              AppRoutes.autoRenewAuthPrepaidScreen,
-              extra: AutoRenewAuthArgs(
-                paymentMethod: AutoRenewPaymentMethodType.card,
-                cardToken: card.token,
-                cardLastDigits: card.lastDigits,
-              ),
+            // OTP runs before the Authorization form; shares the page-scoped
+            // coordinator so tests can inject one.
+            await navigateToAutoRenewAuthWithOtp(
+              context,
+              paymentMethod: AutoRenewPaymentMethodType.card,
+              cardToken: card.token,
+              cardLastDigits: card.lastDigits,
+              coordinator: _verification,
             );
           },
         ),

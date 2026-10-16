@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
 import 'package:myaliv_mobile_app/app/common/services/balance_currency_formatter_service.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
-import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 import '../../../autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import '../../../autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_navigation.dart';
 import '../bloc/auto_renew_prepaid_bloc.dart';
 import '../bloc/auto_renew_prepaid_event.dart';
 import '../bloc/auto_renew_prepaid_state.dart';
@@ -134,11 +133,12 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
 
     autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());
 
-    // Navigate to auth screen with wallet payment method if confirmed
+    // Navigate to auth screen with wallet payment method if confirmed.
+    // The OTP step now runs before the Authorization form.
     if (confirmed == true) {
-      context.push(
-        AppRoutes.autoRenewAuthPrepaidScreen,
-        extra: AutoRenewPaymentMethodType.wallet,
+      await navigateToAutoRenewAuthWithOtp(
+        context,
+        paymentMethod: AutoRenewPaymentMethodType.wallet,
       );
     }
   }
@@ -159,14 +159,12 @@ class AutoRenewPrepaidStateListener extends StatelessWidget {
   ) {
     autoRenewPrepaidBloc.add(const AutoRenewNavigationConsumed());
 
-    // Navigate to auth screen with card payment method
-    context.push(
-      AppRoutes.autoRenewAuthPrepaidScreen,
-      extra: AutoRenewAuthArgs(
-        paymentMethod: AutoRenewPaymentMethodType.card,
-        cardToken: state.selectedCard?.token,
-        cardLastDigits: state.selectedCard?.lastDigits,
-      ),
+    // Navigate to auth screen with card payment method; OTP runs first.
+    navigateToAutoRenewAuthWithOtp(
+      context,
+      paymentMethod: AutoRenewPaymentMethodType.card,
+      cardToken: state.selectedCard?.token,
+      cardLastDigits: state.selectedCard?.lastDigits,
     );
   }
 }

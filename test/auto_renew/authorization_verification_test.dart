@@ -365,16 +365,23 @@ void main() {
       bloc = null;
     });
 
+    AutoRenewAuthorizationVerifiedResult verified(
+      AutoRenewPaymentMethodType mode, {
+      Object? attemptId,
+      bool Function()? canConsume,
+    }) => AutoRenewAuthorizationVerifiedResult(
+      attemptId: attemptId ?? Object(),
+      paymentMethod: mode,
+      canConsume: canConsume ?? () => true,
+    );
+
     Future<void> start(
-      AutoRenewPaymentMethodType mode,
-      Future<AutoRenewAuthorizationVerifiedResult?> Function(
-        AutoRenewAuthorizationSubmission,
-      )
-      verify,
-    ) async {
+      AutoRenewPaymentMethodType mode, {
+      AutoRenewAuthorizationVerifiedResult? result,
+    }) async {
       bloc = AutoRenewAuthPrepaidBloc(
         repository: repository,
-        verifyAuthorization: verify,
+        verifiedResult: result ?? verified(mode),
       );
       bloc!.add(
         AutoRenewAuthPrepaidStarted(
@@ -387,46 +394,26 @@ void main() {
       await flush();
     }
 
-    AutoRenewAuthorizationVerifiedResult result(
-      AutoRenewAuthorizationSubmission s,
-    ) => AutoRenewAuthorizationVerifiedResult(
-      attemptId: s.attemptId,
-      paymentMethod: s.paymentMethod,
-      canConsume: () => true,
-    );
-
     for (final mode in AutoRenewPaymentMethodType.values) {
       test(
-        '$mode gates unchanged submitAuthorization arguments, exactly once',
+        '$mode consumes the pre-verified result and submits exactly once',
         () async {
-          final pending = Completer<AutoRenewAuthorizationVerifiedResult?>();
-          AutoRenewAuthorizationSubmission? submitted;
-          var verifies = 0;
-          await start(mode, (s) {
-            verifies++;
-            submitted = s;
-            return pending.future;
-          });
+          await start(mode);
           bloc!.add(const AutoRenewAuthSubmitPressed());
           bloc!.add(const AutoRenewAuthSubmitPressed());
-          await flush();
-          expect(bloc!.state.submitStatus, AutoRenewAuthSubmitStatus.verifying);
-          expect(bloc!.state.canSubmit, isFalse);
-          expect(repository.submissions, isEmpty);
-          expect(verifies, 1);
-          pending.complete(result(submitted!));
           await flush();
           expect(repository.submissions, [
             ('Test Subscriber', mode, 'test-card-token'),
           ]);
           expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.success);
+          // Replay after success: no additional mutation.
           bloc!.add(const AutoRenewAuthSubmitPressed());
           await flush();
           expect(repository.submissions.length, 1);
-          expect(verifies, 1);
         },
       );
     }
+
     for (final mode in [
       AutoRenewPaymentMethodType.card,
       AutoRenewPaymentMethodType.postpaidInvoice,
@@ -445,13 +432,9 @@ void main() {
         'John\n',
       ]) {
         test(
-          '$mode rejects invalid characters in "$name" before OTP',
+          '$mode rejects invalid characters in "$name" before API',
           () async {
-            var verifies = 0;
-            await start(mode, (_) async {
-              verifies++;
-              return null;
-            });
+            await start(mode);
             bloc!.add(AutoRenewAuthNameChanged(name));
             await flush();
             bloc!.add(const AutoRenewAuthSubmitPressed());
@@ -460,13 +443,13 @@ void main() {
               bloc!.state.errorMessage,
               'Only alphabetical characheters are allowed. Try again.',
             );
-            expect(verifies, 0);
             expect(repository.submissions, isEmpty);
             expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.none);
           },
         );
       }
     }
+
     for (final (mode, name) in [
       for (final mode in AutoRenewPaymentMethodType.values)
         for (final name in [
@@ -483,17 +466,12 @@ void main() {
         ])
           (mode, name),
     ]) {
-      test('$mode existing name validation rejects "$name" before OTP', () async {
-        var verifies = 0;
-        await start(mode, (_) async {
-          verifies++;
-          return null;
-        });
+      test('$mode existing name validation rejects "$name" before API', () async {
+        await start(mode);
         bloc!.add(AutoRenewAuthNameChanged(name));
         await flush();
         bloc!.add(const AutoRenewAuthSubmitPressed());
         await flush();
-        expect(verifies, 0);
         expect(repository.submissions, isEmpty);
         expect(
           bloc!.state.errorMessage,
@@ -501,76 +479,24 @@ void main() {
               ? 'Please enter your name.'
               : 'Name does not match. Please enter your name exactly as displayed.',
         );
+        expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.none);
       });
     }
+
     test(
-      'cancel keeps name/token, restores form and permits fresh verification',
+      'already-consumed verified result sends the user back to Setup',
       () async {
-        var verifies = 0;
-        await start(AutoRenewPaymentMethodType.card, (_) async {
-          verifies++;
-          return null;
-        });
+        final result = verified(AutoRenewPaymentMethodType.card);
+        result.consume();
+        await start(AutoRenewPaymentMethodType.card, result: result);
         bloc!.add(const AutoRenewAuthSubmitPressed());
         await flush();
-        expect(bloc!.state.submitStatus, AutoRenewAuthSubmitStatus.idle);
-        expect(bloc!.state.name, 'Test Subscriber');
-        expect(bloc!.state.cardToken, 'test-card-token');
-        expect(bloc!.state.canSubmit, isTrue);
-        bloc!.add(const AutoRenewAuthSubmitPressed());
-        await flush();
-        expect(verifies, 2);
         expect(repository.submissions, isEmpty);
+        expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.backToSetup);
+        expect(bloc!.state.submitStatus, AutoRenewAuthSubmitStatus.failure);
       },
     );
-    test('verification error never submits', () async {
-      await start(
-        AutoRenewPaymentMethodType.postpaidInvoice,
-        (_) async =>
-            throw const CallLogsVerificationException('Challenge unavailable'),
-      );
-      bloc!.add(const AutoRenewAuthSubmitPressed());
-      await flush();
-      expect(bloc!.state.errorMessage, 'Challenge unavailable');
-      expect(repository.submissions, isEmpty);
-    });
-    for (final change in ['name', 'method', 'attempt', 'consumed']) {
-      test('rejects stale $change result', () async {
-        final pending = Completer<AutoRenewAuthorizationVerifiedResult?>();
-        AutoRenewAuthorizationSubmission? submission;
-        await start(AutoRenewPaymentMethodType.card, (s) {
-          submission = s;
-          return pending.future;
-        });
-        bloc!.add(const AutoRenewAuthSubmitPressed());
-        await flush();
-        var verified = result(submission!);
-        if (change == 'name') {
-          bloc!.add(const AutoRenewAuthNameChanged('Other'));
-        }
-        if (change == 'method') {
-          bloc!.add(
-            const AutoRenewAuthPrepaidStarted(
-              paymentMethod: AutoRenewPaymentMethodType.wallet,
-            ),
-          );
-        }
-        if (change == 'attempt') {
-          verified = AutoRenewAuthorizationVerifiedResult(
-            attemptId: Object(),
-            paymentMethod: AutoRenewPaymentMethodType.card,
-            canConsume: () => true,
-          );
-        }
-        if (change == 'consumed') {
-          verified.consume();
-        }
-        await flush();
-        pending.complete(verified);
-        await flush();
-        expect(repository.submissions, isEmpty);
-      });
-    }
+
     for (final (requested, returned) in [
       (
         AutoRenewPaymentMethodType.card,
@@ -584,70 +510,53 @@ void main() {
       test(
         '$returned result cannot complete $requested authorization',
         () async {
-          await start(
-            requested,
-            (s) async => AutoRenewAuthorizationVerifiedResult(
-              attemptId: s.attemptId,
-              paymentMethod: returned,
-              canConsume: () => true,
-            ),
-          );
+          await start(requested, result: verified(returned));
           bloc!.add(const AutoRenewAuthSubmitPressed());
           await flush();
           expect(repository.submissions, isEmpty);
+          expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.backToSetup);
         },
       );
     }
+
     test(
-      'disposed form cancels verification and ignores its late result',
+      'invalid canConsume (owner left, session rotated) routes back to Setup',
       () async {
-        final pending = Completer<AutoRenewAuthorizationVerifiedResult?>();
-        AutoRenewAuthorizationSubmission? submission;
-        var cancels = 0;
-        bloc = AutoRenewAuthPrepaidBloc(
-          repository: repository,
-          verifyAuthorization: (s) {
-            submission = s;
-            return pending.future;
-          },
-          cancelVerification: () {
-            cancels++;
-            pending.complete(result(submission!));
-          },
+        var canConsume = true;
+        final result = verified(
+          AutoRenewPaymentMethodType.card,
+          canConsume: () => canConsume,
         );
-        bloc!.add(
-          const AutoRenewAuthPrepaidStarted(
-            paymentMethod: AutoRenewPaymentMethodType.card,
-          ),
-        );
-        await flush();
-        bloc!.add(const AutoRenewAuthNameChanged('Test Subscriber'));
-        await flush();
+        await start(AutoRenewPaymentMethodType.card, result: result);
+        canConsume = false;
         bloc!.add(const AutoRenewAuthSubmitPressed());
         await flush();
-        await bloc!.close();
-        bloc = null;
-        expect(cancels, 1);
         expect(repository.submissions, isEmpty);
+        expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.backToSetup);
       },
     );
+
     for (final failure in ['false', 'exception']) {
-      test('business $failure preserves existing error handling', () async {
-        repository.success = false;
-        if (failure == 'exception') {
-          repository.failure = StateError('failed');
-        }
-        await start(AutoRenewPaymentMethodType.card, (s) async => result(s));
-        bloc!.add(const AutoRenewAuthSubmitPressed());
-        await flush();
-        expect(repository.submissions.length, 1);
-        expect(
-          bloc!.state.errorMessage,
-          failure == 'false'
-              ? 'Failed to enable auto-renew. Please try again.'
-              : 'Failed to submit. Please try again.',
-        );
-      });
+      test(
+        'business $failure routes back to Setup with the existing copy',
+        () async {
+          repository.success = false;
+          if (failure == 'exception') {
+            repository.failure = StateError('failed');
+          }
+          await start(AutoRenewPaymentMethodType.card);
+          bloc!.add(const AutoRenewAuthSubmitPressed());
+          await flush();
+          expect(repository.submissions.length, 1);
+          expect(
+            bloc!.state.errorMessage,
+            failure == 'false'
+                ? 'Failed to enable auto-renew. Please try again.'
+                : 'Failed to submit. Please try again.',
+          );
+          expect(bloc!.state.navTarget, AutoRenewAuthNavTarget.backToSetup);
+        },
+      );
     }
   });
 }

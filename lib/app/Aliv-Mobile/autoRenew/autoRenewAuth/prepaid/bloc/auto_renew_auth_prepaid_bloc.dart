@@ -2,25 +2,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/auto_renew_auth_prepaid_repository.dart';
 import '../verification/auto_renew_authorization_submission.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'auto_renew_auth_prepaid_event.dart';
 import 'auto_renew_auth_prepaid_state.dart';
 
 class AutoRenewAuthPrepaidBloc
     extends Bloc<AutoRenewAuthPrepaidEvent, AutoRenewAuthPrepaidState> {
   final AutoRenewAuthPrepaidRepository repository;
-  final Future<AutoRenewAuthorizationVerifiedResult?> Function(
-    AutoRenewAuthorizationSubmission submission,
-  )
-  verifyAuthorization;
-  final void Function()? cancelVerification;
+
+  /// The one-use OTP capability obtained upstream in the Setup screen.
+  final AutoRenewAuthorizationVerifiedResult verifiedResult;
+
   bool _submissionInProgress = false;
   bool _closing = false;
 
   AutoRenewAuthPrepaidBloc({
     required this.repository,
-    required this.verifyAuthorization,
-    this.cancelVerification,
+    required this.verifiedResult,
   }) : super(AutoRenewAuthPrepaidState.initial()) {
     on<AutoRenewAuthPrepaidStarted>(_onStarted);
     on<AutoRenewAuthNameChanged>(_onNameChanged);
@@ -115,44 +112,29 @@ class AutoRenewAuthPrepaidBloc
     }
 
     final submission = AutoRenewAuthorizationSubmission(
+      attemptId: verifiedResult.attemptId,
       name: name,
       paymentMethod: state.paymentMethod,
       cardToken: state.cardToken,
     );
-    emit(
-      state.copyWith(
-        submitStatus: AutoRenewAuthSubmitStatus.verifying,
-        clearError: true,
-      ),
-    );
-    AutoRenewAuthorizationVerifiedResult? verified;
-    try {
-      verified = await verifyAuthorization(submission);
-    } catch (error) {
-      if (!_closing && !isClosed && !emit.isDone) {
-        emit(
-          state.copyWith(
-            submitStatus: AutoRenewAuthSubmitStatus.failure,
-            errorMessage: error is CallLogsVerificationException
-                ? error.message
-                : 'Unable to verify your account. Please try again.',
-          ),
-        );
-      }
-      return;
-    }
-    if (_closing || isClosed || emit.isDone) {
-      return;
-    }
-    if (verified == null ||
-        !identical(verified.attemptId, submission.attemptId) ||
-        verified.paymentMethod != submission.paymentMethod ||
+
+    // Guard against snapshot/result drift and consume the one-use capability.
+    // Any failure here means the OTP is stale/consumed; retry needs a fresh
+    // apply from Setup, so route the screen back there.
+    if (!identical(verifiedResult.attemptId, submission.attemptId) ||
+        verifiedResult.paymentMethod != submission.paymentMethod ||
         state.name != submission.name ||
         state.paymentMethod != submission.paymentMethod ||
         state.cardToken != submission.cardToken ||
         !state.isNameValid ||
-        !verified.consume()) {
-      emit(state.copyWith(submitStatus: AutoRenewAuthSubmitStatus.idle));
+        !verifiedResult.consume()) {
+      emit(
+        state.copyWith(
+          submitStatus: AutoRenewAuthSubmitStatus.failure,
+          errorMessage: 'Failed to submit. Please try again.',
+          navTarget: AutoRenewAuthNavTarget.backToSetup,
+        ),
+      );
       return;
     }
 
@@ -182,10 +164,12 @@ class AutoRenewAuthPrepaidBloc
           ),
         );
       } else {
+        // One-use OTP is now consumed; retry needs a fresh apply from Setup.
         emit(
           state.copyWith(
             submitStatus: AutoRenewAuthSubmitStatus.failure,
             errorMessage: 'Failed to enable auto-renew. Please try again.',
+            navTarget: AutoRenewAuthNavTarget.backToSetup,
           ),
         );
       }
@@ -197,6 +181,7 @@ class AutoRenewAuthPrepaidBloc
         state.copyWith(
           submitStatus: AutoRenewAuthSubmitStatus.failure,
           errorMessage: 'Failed to submit. Please try again.',
+          navTarget: AutoRenewAuthNavTarget.backToSetup,
         ),
       );
     }
@@ -205,7 +190,6 @@ class AutoRenewAuthPrepaidBloc
   @override
   Future<void> close() {
     _closing = true;
-    cancelVerification?.call();
     return super.close();
   }
 

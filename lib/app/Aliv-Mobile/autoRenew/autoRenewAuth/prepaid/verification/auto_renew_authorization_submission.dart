@@ -9,14 +9,18 @@ extension AutoRenewAuthorizationOtpRequirement on AutoRenewPaymentMethodType {
 }
 
 /// Lives only with the form; card tokens never enter the OTP route.
+/// The [attemptId] originates in the Setup screen (where the OTP challenge is
+/// issued) and is reused here so the submission can match the one-use
+/// [ActionVerifiedResult] on consume.
 class AutoRenewAuthorizationSubmission {
   AutoRenewAuthorizationSubmission({
+    required this.attemptId,
     required this.name,
     required this.paymentMethod,
     this.cardToken,
   });
 
-  final Object attemptId = Object();
+  final Object attemptId;
   final String name;
   final AutoRenewPaymentMethodType paymentMethod;
   final String? cardToken;

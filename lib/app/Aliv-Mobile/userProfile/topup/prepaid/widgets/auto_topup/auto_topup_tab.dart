@@ -5,8 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
+import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_state.dart';
+import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verification_coordinator.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../logic/auto_top_up_validation.dart';
@@ -40,6 +44,13 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
   String? _thresholdError;
   String? _amountError;
 
+  /// Guards against overlapping taps of "apply" while an OTP request is open.
+  bool _applying = false;
+
+  /// Lazily created on the first "apply" tap so screens that never trigger
+  /// an OTP (e.g. toggle-only tests) don't require OTP-related singletons.
+  ActionVerificationCoordinator<ProtectedAccountAction>? _verification;
+
   bool get _hasCustomAmount => _customAmountController.text.isNotEmpty;
 
   @override
@@ -51,6 +62,7 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
 
   @override
   void dispose() {
+    _verification?.cancel();
     _thresholdController.dispose();
     _customAmountController.dispose();
     super.dispose();
@@ -212,7 +224,8 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
     );
   }
 
-  void _onApply() {
+  Future<void> _onApply() async {
+    if (_applying) return;
     FocusManager.instance.primaryFocus?.unfocus();
 
     final threshold =
@@ -258,13 +271,47 @@ class _AutoTopupTabState extends State<AutoTopupTab> {
       return;
     }
 
-    Navigator.of(context).push(
+    final cardLastDigits = _selectedCard?.lastDigits ?? '';
+    final attemptId = Object();
+
+    _applying = true;
+    final verification = _verification ??=
+        ActionVerificationCoordinator<ProtectedAccountAction>();
+    ActionVerifiedResult<ProtectedAccountAction>? verified;
+    try {
+      verified = await requestAccountActionOtp(
+        context: context,
+        coordinator: verification,
+        purpose: ProtectedAccountAction.autoTopUp,
+        attemptId: attemptId,
+      );
+    } on CallLogsVerificationException catch (error) {
+      if (mounted) {
+        AppToast.show(message: error.message, type: ToastType.error);
+      }
+      return;
+    } catch (_) {
+      if (mounted) {
+        AppToast.show(
+          message: 'Verification failed. Please try again.',
+          type: ToastType.error,
+        );
+      }
+      return;
+    } finally {
+      _applying = false;
+    }
+
+    if (!mounted || verified == null || !verified.isValid) return;
+
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => AutoTopUpAuthorizationScreen(
           balanceThreshold: threshold,
           autoTopUpAmount: amount,
           cardToken: cardToken,
-          cardLastDigits: _selectedCard?.lastDigits ?? '',
+          cardLastDigits: cardLastDigits,
+          verifiedResult: verified!,
         ),
       ),
     );

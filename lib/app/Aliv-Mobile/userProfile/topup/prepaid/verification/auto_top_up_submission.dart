@@ -4,6 +4,7 @@ import 'package:myaliv_mobile_app/app/common/verification/action_verified_result
 /// Form-local data only; never passed through the OTP route or persisted.
 class AutoTopUpSubmissionSnapshot {
   AutoTopUpSubmissionSnapshot({
+    required this.attemptId,
     required this.deviceId,
     required this.balanceThreshold,
     required this.autoTopUpAmount,
@@ -11,7 +12,7 @@ class AutoTopUpSubmissionSnapshot {
     required this.signature,
   });
 
-  final Object attemptId = Object();
+  final Object attemptId;
   final int deviceId;
   final double balanceThreshold;
   final double autoTopUpAmount;
@@ -19,7 +20,8 @@ class AutoTopUpSubmissionSnapshot {
   final String signature;
 }
 
-/// Adds verification without changing the existing configuration operation.
+/// Writes the mutation after a one-use OTP capability has already been
+/// obtained upstream (Setup tab) and handed in via [verifiedResult].
 class AutoTopUpSubmission {
   AutoTopUpSubmission({required this.deviceLimitsCubit});
 
@@ -27,14 +29,11 @@ class AutoTopUpSubmission {
   AutoTopUpSubmissionSnapshot? _pending;
   bool _closed = false;
 
-  /// Null means cancelled/stale; false means the original mutation failed.
+  /// Null means cancelled/stale; false means the mutation failed.
   Future<bool?> submit({
     required AutoTopUpSubmissionSnapshot snapshot,
     required bool Function(AutoTopUpSubmissionSnapshot) isCurrent,
-    required Future<ActionVerifiedResult<ProtectedAccountAction>?> Function(
-      AutoTopUpSubmissionSnapshot,
-    )
-    verifyAction,
+    required ActionVerifiedResult<ProtectedAccountAction> verifiedResult,
   }) async {
     if (_closed || _pending != null || deviceLimitsCubit.state.isUpdating) {
       return null;
@@ -43,17 +42,17 @@ class AutoTopUpSubmission {
         deviceLimitsCubit.state.deviceLimits?.deviceId != snapshot.deviceId) {
       return false;
     }
+    if (!identical(verifiedResult.attemptId, snapshot.attemptId) ||
+        verifiedResult.purpose != ProtectedAccountAction.autoTopUp) {
+      return null;
+    }
     _pending = snapshot;
     try {
-      final verified = await verifyAction(snapshot);
       if (_closed ||
           !identical(_pending, snapshot) ||
           !isCurrent(snapshot) ||
           deviceLimitsCubit.state.deviceLimits?.deviceId != snapshot.deviceId ||
-          verified == null ||
-          !identical(verified.attemptId, snapshot.attemptId) ||
-          verified.purpose != ProtectedAccountAction.autoTopUp ||
-          !verified.consume()) {
+          !verifiedResult.consume()) {
         return null;
       }
       return await deviceLimitsCubit.updateBalanceThresholdSettings(

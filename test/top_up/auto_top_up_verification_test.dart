@@ -49,16 +49,28 @@ DeviceLimitsState _state({bool configured = false, int id = 123}) =>
     );
 
 AutoTopUpSubmissionSnapshot _snapshot({
+  Object? attemptId,
   double threshold = 20,
   double amount = 25,
   String card = 'synthetic-card',
   String signature = 'Test Subscriber',
 }) => AutoTopUpSubmissionSnapshot(
+  attemptId: attemptId ?? Object(),
   deviceId: 123,
   balanceThreshold: threshold,
   autoTopUpAmount: amount,
   cardToken: card,
   signature: signature,
+);
+
+ActionVerifiedResult<ProtectedAccountAction> _verified(
+  Object attemptId, {
+  ProtectedAccountAction purpose = ProtectedAccountAction.autoTopUp,
+  bool Function()? canConsume,
+}) => ActionVerifiedResult<ProtectedAccountAction>(
+  attemptId: attemptId,
+  paymentMethod: purpose,
+  canConsume: canConsume ?? () => true,
 );
 
 class _Harness {
@@ -127,7 +139,10 @@ class _Harness {
   bool mutationSuccess = true;
   final payloads = <Map<Symbol, dynamic>>[];
 
-  Future<void> pump(WidgetTester tester) async {
+  /// Pumps the tab, fills the setup form, and taps "apply". When the OTP
+  /// screen is expected after apply, settles afterwards so the OTP route is
+  /// mounted and ready for [otp.verify].
+  Future<void> pump(WidgetTester tester, {bool tapApply = true}) async {
     await tester.binding.setSurfaceSize(const Size(800, 1400));
     router = GoRouter(
       navigatorKey: rootNavigatorKey,
@@ -168,18 +183,36 @@ class _Harness {
       ),
       amount.toInt().toString(),
     );
+    if (!tapApply) return;
     await tester.ensureVisible(find.text('apply'));
     await tester.tap(find.text('apply'));
     await tester.pumpAndSettle();
-    expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
-    expect(
-      ModalRoute.of(tester.element(find.byType(AutoTopUpAuthorizationScreen))),
-      isA<MaterialPageRoute<dynamic>>(),
+  }
+
+  /// Called from the Setup tab (after [pump]) to re-trigger "apply".
+  Future<void> apply(WidgetTester tester) async {
+    await tester.ensureVisible(find.text('apply'));
+    await tester.tap(find.text('apply'));
+    await tester.pumpAndSettle();
+  }
+
+  /// Enters the signature into the Authorization screen's TextField.
+  Future<void> enterSignature(
+    WidgetTester tester, {
+    String name = 'Test Subscriber',
+  }) async {
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(AutoTopUpAuthorizationScreen),
+        matching: find.byType(TextField),
+      ),
+      name,
     );
-    await tester.enterText(find.byType(TextField), 'Test Subscriber');
+    await tester.pump();
     await tester.ensureVisible(find.text('submit'));
   }
 
+  /// Taps the Authorization screen's "submit" button (does not re-trigger OTP).
   Future<void> submit(WidgetTester tester, {int taps = 1}) async {
     final button = tester.widget<ElevatedButton>(
       find.widgetWithText(ElevatedButton, 'submit'),
@@ -237,31 +270,22 @@ void main() {
 
     for (final type in ['enable', 'threshold', 'amount', 'card']) {
       test(
-        '$type requires its own verification and preserves original arguments',
+        '$type consumes the verified result once and preserves arguments',
         () async {
           final snapshot = _snapshot(
             threshold: type == 'threshold' ? 30 : 20,
             amount: type == 'amount' ? 35 : 25,
             card: type == 'card' ? 'synthetic-other-card' : 'synthetic-card',
           );
-          var requests = 0;
+          final result = _verified(snapshot.attemptId);
           expect(
             await submission.submit(
               snapshot: snapshot,
               isCurrent: (_) => true,
-              verifyAction: (pending) async {
-                requests++;
-                expect(mutations, 0);
-                return ActionVerifiedResult(
-                  attemptId: pending.attemptId,
-                  paymentMethod: ProtectedAccountAction.autoTopUp,
-                  canConsume: () => true,
-                );
-              },
+              verifiedResult: result,
             ),
             isTrue,
           );
-          expect(requests, 1);
           verify(
             () => devices.updateBalanceThresholdSettings(
               balanceThreshold: snapshot.balanceThreshold,
@@ -273,10 +297,10 @@ void main() {
       );
     }
     for (final invalidation in [
-      'cancel',
       'forged attempt',
       'wrong purpose',
       'consumed',
+      'cannot consume',
       'closed',
       'device changed',
       'signature',
@@ -287,75 +311,83 @@ void main() {
       test('$invalidation rejects result before mutation', () async {
         final snapshot = _snapshot();
         var current = true;
-        final result = await submission.submit(
+        var canConsume = true;
+        final result = ActionVerifiedResult<ProtectedAccountAction>(
+          attemptId: invalidation == 'forged attempt'
+              ? Object()
+              : snapshot.attemptId,
+          paymentMethod: invalidation == 'wrong purpose'
+              ? ProtectedAccountAction.changePassword
+              : ProtectedAccountAction.autoTopUp,
+          canConsume: () => canConsume,
+        );
+        if (invalidation == 'consumed') {
+          result.consume();
+        }
+        if (invalidation == 'cannot consume') {
+          canConsume = false;
+        }
+        if (invalidation == 'closed') {
+          submission.close();
+        }
+        if (invalidation == 'device changed') {
+          state = _state(id: 456);
+        }
+        if ([
+          'signature',
+          'threshold',
+          'amount',
+          'card',
+        ].contains(invalidation)) {
+          current = false;
+        }
+        final submitted = await submission.submit(
           snapshot: snapshot,
           isCurrent: (_) => current,
-          verifyAction: (pending) async {
-            if (invalidation == 'cancel') {
-              return null;
-            }
-            if (invalidation == 'closed') {
-              submission.close();
-            }
-            if (invalidation == 'device changed') {
-              state = _state(id: 456);
-            }
-            if ([
-              'signature',
-              'threshold',
-              'amount',
-              'card',
-            ].contains(invalidation)) {
-              current = false;
-            }
-            final result = ActionVerifiedResult(
-              attemptId: invalidation == 'forged attempt'
-                  ? Object()
-                  : pending.attemptId,
-              paymentMethod: invalidation == 'wrong purpose'
-                  ? ProtectedAccountAction.changePassword
-                  : ProtectedAccountAction.autoTopUp,
-              canConsume: () => true,
-            );
-            if (invalidation == 'consumed') {
-              result.consume();
-            }
-            return result;
-          },
+          verifiedResult: result,
         );
-        expect(result, isNull);
+        // "device changed" is detected upfront and returns false (the mutation
+        // target is wrong); the other invalidations return null (cancel/stale).
+        expect(submitted, invalidation == 'device changed' ? isFalse : isNull);
         expect(mutations, 0);
       });
     }
     test('concurrent submit and replay cannot invoke mutation twice', () async {
       final snapshot = _snapshot();
-      final pending =
-          Completer<ActionVerifiedResult<ProtectedAccountAction>?>();
+      final result = _verified(snapshot.attemptId);
+      final mutationCompleter = Completer<bool>();
+      when(
+        () => devices.updateBalanceThresholdSettings(
+          balanceThreshold: any(named: 'balanceThreshold'),
+          autoTopUpAmount: any(named: 'autoTopUpAmount'),
+          cardToken: any(named: 'cardToken'),
+        ),
+      ).thenAnswer((_) {
+        mutations++;
+        return mutationCompleter.future;
+      });
       final first = submission.submit(
         snapshot: snapshot,
         isCurrent: (_) => true,
-        verifyAction: (_) => pending.future,
+        verifiedResult: result,
       );
+      // Concurrent submit while first is still awaiting the mutation.
       expect(
         await submission.submit(
           snapshot: snapshot,
           isCurrent: (_) => true,
-          verifyAction: (_) => throw StateError('duplicate'),
+          verifiedResult: result,
         ),
         isNull,
       );
-      final result = ActionVerifiedResult(
-        attemptId: snapshot.attemptId,
-        paymentMethod: ProtectedAccountAction.autoTopUp,
-        canConsume: () => true,
-      );
-      pending.complete(result);
+      mutationCompleter.complete(true);
       expect(await first, isTrue);
+      // Replay after the first attempt completed: the result is now consumed.
       expect(
         await submission.submit(
           snapshot: snapshot,
           isCurrent: (_) => true,
-          verifyAction: (_) async => result,
+          verifiedResult: result,
         ),
         isNull,
       );
@@ -372,6 +404,7 @@ void main() {
     double amount = 25,
     String card = 'synthetic-card',
     TargetPlatform platform = TargetPlatform.android,
+    bool tapApply = true,
   }) {
     testWidgets(
       name,
@@ -385,7 +418,7 @@ void main() {
           card: card,
         );
         try {
-          await h.pump(tester);
+          await h.pump(tester, tapApply: tapApply);
           await body(tester, h);
         } finally {
           await h.dispose(tester);
@@ -395,25 +428,49 @@ void main() {
     );
   }
 
-  flow('iOS mixed navigation success returns to the authorization owner', (
+  flow('iOS mixed navigation success routes through OTP, then Authorization', (
     tester,
     h,
   ) async {
-    await h.submit(tester);
+    // After pump: OTP is open on top of Setup. Authorization not yet pushed.
+    expect(find.byType(ActionOtpScreen), findsOneWidget);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
     expect(h.mutations, 0);
     await h.otp.verify(tester);
+    await tester.pumpAndSettle();
+    // OTP returned, Setup pushed Authorization. No mutation yet.
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
+    expect(h.mutations, 0);
+    await h.enterSignature(tester);
+    await h.submit(tester);
     await h.finish(tester);
     expect(h.mutations, 1);
     expect(find.text('home destination'), findsOneWidget);
   }, platform: TargetPlatform.iOS);
-  flow('iOS mixed navigation cancel retains the same form', (tester, h) async {
-    await h.submit(tester);
+
+  flow('iOS mixed navigation cancel on OTP returns to Setup with form intact', (
+    tester,
+    h,
+  ) async {
+    expect(find.byType(ActionOtpScreen), findsOneWidget);
     h.router.pop();
     await tester.pumpAndSettle();
-    expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
+    expect(find.byType(ActionOtpScreen), findsNothing);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+    expect(find.byType(AutoTopupTab), findsOneWidget);
+    // Threshold and custom amount fields retained.
     expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
-      'Test Subscriber',
+      tester
+          .widget<TextField>(
+            find.byWidgetPredicate(
+              (w) =>
+                  w is TextField &&
+                  w.decoration?.hintText == 'enter threshold amount',
+            ),
+          )
+          .controller!
+          .text,
+      h.threshold.toInt().toString(),
     );
     expect(h.mutations, 0);
   }, platform: TargetPlatform.iOS);
@@ -422,10 +479,12 @@ void main() {
     flow(
       'existing configuration $change change requests fresh Challenge',
       (tester, h) async {
-        await h.submit(tester);
         expect(h.otp.challenges, 1);
         expect(h.mutations, 0);
         await h.otp.verify(tester);
+        await tester.pumpAndSettle();
+        await h.enterSignature(tester);
+        await h.submit(tester);
         await h.finish(tester);
         expect(h.mutations, 1);
         expect(h.payloads.single, {
@@ -443,18 +502,23 @@ void main() {
 
   for (final policyA in [false, true]) {
     flow(
-      'mixed navigation success awaits persistence; Policy A=$policyA unchanged',
+      'success awaits persistence before Authorization; Policy A=$policyA unchanged',
       (tester, h) async {
         final expiry = h.access.expiresAt;
         h.otp.saveGate = Completer<void>();
-        await h.submit(tester, taps: 3);
         expect(h.otp.challenges, 1);
         expect(h.mutations, 0);
         expect(find.byType(ActionOtpScreen), findsOneWidget);
         await h.otp.verify(tester, taps: 3);
         expect(h.otp.verifies, 1);
         expect(h.mutations, 0);
+        // Authorization is not pushed until the token save completes.
+        expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
         h.otp.saveGate!.complete();
+        await tester.pumpAndSettle();
+        expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
+        await h.enterSignature(tester);
+        await h.submit(tester);
         await h.finish(tester);
         expect(h.otp.trace, [
           'challenge',
@@ -476,68 +540,69 @@ void main() {
       policyA: policyA,
     );
   }
-  flow(
-    'mixed navigation cancel preserves configuration/signature; retry is fresh',
-    (tester, h) async {
-      await h.submit(tester);
-      h.router.pop();
-      await tester.pumpAndSettle();
-      expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
-      expect(
-        tester.widget<TextField>(find.byType(TextField)).controller!.text,
-        'Test Subscriber',
-      );
-      final screen = tester.widget<AutoTopUpAuthorizationScreen>(
-        find.byType(AutoTopUpAuthorizationScreen),
-      );
-      expect(screen.balanceThreshold, 20);
-      expect(screen.autoTopUpAmount, 25);
-      expect(screen.cardToken, 'synthetic-card');
-      expect(h.mutations, 0);
-      await h.submit(tester);
-      expect(h.otp.challenges, 2);
-      await h.otp.verify(tester);
-      await h.finish(tester);
-      expect(h.mutations, 1);
-    },
-  );
+
+  flow('cancel at OTP then retry issues a fresh Challenge', (tester, h) async {
+    expect(h.otp.challenges, 1);
+    h.router.pop();
+    await tester.pumpAndSettle();
+    expect(find.byType(AutoTopupTab), findsOneWidget);
+    expect(h.mutations, 0);
+    // Tap "apply" again from Setup: new OTP challenge, new attemptId.
+    await h.apply(tester);
+    expect(h.otp.challenges, 2);
+    await h.otp.verify(tester);
+    await tester.pumpAndSettle();
+    await h.enterSignature(tester);
+    await h.submit(tester);
+    await h.finish(tester);
+    expect(h.mutations, 1);
+  });
+
+  // Failures need their trigger set before "apply" fires, so these flows
+  // bypass the harness's auto-apply and arm the fixture directly.
   for (final failure in [
     'challenge',
     'invalid OTP',
     'verification transport',
     'save',
   ]) {
-    flow('$failure failure has zero mutations and no false success', (
-      tester,
-      h,
-    ) async {
-      if (failure == 'challenge') {
-        h.otp.challengeFailure = const CallLogsVerificationException(
-          'synthetic failure',
-        );
-      }
-      if (failure == 'invalid OTP') {
-        h.otp.verifyFailure = StateError('synthetic invalid OTP');
-      }
-      if (failure == 'verification transport') {
-        h.otp.verifyFailure = TimeoutException();
-      }
-      if (failure == 'save') {
-        h.otp.saveFailure = StateError('synthetic storage failure');
-      }
-      await h.submit(tester);
-      if (failure != 'challenge') {
-        await h.otp.verify(tester);
-      }
-      await h.finish(tester);
-      expect(h.mutations, 0);
-      expect(find.text('home destination'), findsNothing);
-      expect(find.text('auto top-up successfully started'), findsNothing);
-    });
+    testWidgets(
+      '$failure failure has zero mutations and no false success',
+      (tester) => autoTopUpOnline(() async {
+        final h = _Harness();
+        try {
+          if (failure == 'challenge') {
+            h.otp.challengeFailure = const CallLogsVerificationException(
+              'synthetic failure',
+            );
+          }
+          if (failure == 'invalid OTP') {
+            h.otp.verifyFailure = StateError('synthetic invalid OTP');
+          }
+          if (failure == 'verification transport') {
+            h.otp.verifyFailure = TimeoutException();
+          }
+          if (failure == 'save') {
+            h.otp.saveFailure = StateError('synthetic storage failure');
+          }
+          await h.pump(tester);
+          if (failure != 'challenge') {
+            await h.otp.verify(tester);
+          }
+          await h.finish(tester);
+          expect(h.mutations, 0);
+          expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+          expect(find.text('home destination'), findsNothing);
+          expect(find.text('auto top-up successfully started'), findsNothing);
+        } finally {
+          await h.dispose(tester);
+        }
+      }),
+    );
   }
-  for (final change in ['logout', 'replacement', 'dispose', 'signature']) {
+
+  for (final change in ['logout', 'replacement', 'dispose']) {
     flow('$change during OTP rejects delayed verification', (tester, h) async {
-      await h.submit(tester);
       h.otp.verifyGate = Completer<void>();
       await h.otp.verify(tester);
       if (change == 'logout') {
@@ -550,90 +615,59 @@ void main() {
         h.router.go(AppRoutes.home);
         await tester.pumpAndSettle();
       }
-      if (change == 'signature') {
-        final field = tester.widget<TextField>(
-          find.descendant(
-            of: find.byType(AutoTopUpAuthorizationScreen, skipOffstage: false),
-            matching: find.byType(TextField, skipOffstage: false),
-            skipOffstage: false,
-          ),
-        );
-        field.controller!.text = 'Different Subscriber';
-      }
       h.otp.verifyGate!.complete();
       await h.finish(tester);
       expect(h.mutations, 0);
+      expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
     });
   }
-  flow('backend failure preserves error and permits another fresh attempt', (
+
+  flow('backend failure pops back to Setup so retry starts a fresh challenge', (
     tester,
     h,
   ) async {
     h.mutationSuccess = false;
-    await h.submit(tester);
     await h.otp.verify(tester);
+    await tester.pumpAndSettle();
+    await h.enterSignature(tester);
+    await h.submit(tester);
     await tester.pump(const Duration(milliseconds: 1600));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(
       find.text('Failed to update settings. Please try again.'),
       findsOneWidget,
     );
     expect(h.mutations, 1);
-    await h.submit(tester);
+    // On failure the Authorization screen pops; user is back on Setup.
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+    expect(find.byType(AutoTopupTab), findsOneWidget);
+    await h.apply(tester);
     expect(h.otp.challenges, 2);
   });
 
-  for (final change in ['threshold', 'amount', 'card']) {
-    flow('changed $change snapshot during session save cannot mutate', (
-      tester,
-      h,
-    ) async {
-      await h.submit(tester);
-      h.otp.saveGate = Completer<void>();
-      await h.otp.verify(tester);
-      final element =
-          tester.element(
-                find.byType(AutoTopUpAuthorizationScreen, skipOffstage: false),
-              )
-              as StatefulElement;
-      element.owner!.buildScope(
-        element,
-        () => element.update(
-          AutoTopUpAuthorizationScreen(
-            balanceThreshold: change == 'threshold' ? 30 : 20,
-            autoTopUpAmount: change == 'amount' ? 35 : 25,
-            cardToken: change == 'card'
-                ? 'synthetic-other-card'
-                : 'synthetic-card',
-            cardLastDigits: '1234',
-          ),
-        ),
-      );
-      h.otp.saveGate!.complete();
-      await h.finish(tester);
-      expect(h.mutations, 0);
-      expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
-    });
-  }
   flow('session-save failure can retry without a false prior mutation', (
     tester,
     h,
   ) async {
     h.otp.saveFailure = StateError('synthetic storage failure');
-    await h.submit(tester);
     await h.otp.verify(tester);
     expect(h.mutations, 0);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
     h.otp.saveFailure = null;
     await h.otp.verify(tester);
+    await tester.pumpAndSettle();
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
+    await h.enterSignature(tester);
+    await h.submit(tester);
     await h.finish(tester);
     expect(h.otp.saves, 2);
     expect(h.mutations, 1);
   });
+
   flow('forged route result without persisted OTP is rejected', (
     tester,
     h,
   ) async {
-    await h.submit(tester);
     h.router.pop(
       ActionVerifiedResult(
         attemptId: Object(),
@@ -644,21 +678,36 @@ void main() {
     await h.finish(tester);
     expect(h.otp.saves, 0);
     expect(h.mutations, 0);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
   });
-  flow('disposed authorization ignores a late Challenge', (tester, h) async {
-    h.otp.challengeGate = Completer<CallLogsChallenge>();
-    await h.submit(tester, taps: 3);
-    expect(h.otp.challenges, 1);
-    h.router.go(AppRoutes.home);
-    await tester.pumpAndSettle();
-    h.otp.challengeGate!.complete(
-      const CallLogsChallenge(
-        mfaToken: 'synthetic-late',
-        apiPhoneNumber: '2425550100',
-      ),
-    );
-    await h.finish(tester);
-    expect(h.mutations, 0);
-    expect(find.byType(ActionOtpScreen), findsNothing);
-  });
+
+  testWidgets(
+    'disposed setup ignores a late Challenge',
+    (tester) => autoTopUpOnline(() async {
+      final h = _Harness();
+      try {
+        h.otp.challengeGate = Completer<CallLogsChallenge>();
+        // Pump but do not tap apply yet; we need the challenge gate in place
+        // first so the apply tap pauses on the challenge.
+        await h.pump(tester, tapApply: false);
+        await h.apply(tester);
+        expect(h.otp.challenges, 1);
+        expect(find.byType(ActionOtpScreen), findsNothing);
+        h.router.go(AppRoutes.home);
+        await tester.pumpAndSettle();
+        h.otp.challengeGate!.complete(
+          const CallLogsChallenge(
+            mfaToken: 'synthetic-late',
+            apiPhoneNumber: '2425550100',
+          ),
+        );
+        await h.finish(tester);
+        expect(h.mutations, 0);
+        expect(find.byType(ActionOtpScreen), findsNothing);
+        expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+      } finally {
+        await h.dispose(tester);
+      }
+    }),
+  );
 }

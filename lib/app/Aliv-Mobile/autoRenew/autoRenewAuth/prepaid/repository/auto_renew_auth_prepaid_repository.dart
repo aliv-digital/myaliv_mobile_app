@@ -3,6 +3,8 @@ import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/acco
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 
+import '../verification/auto_renew_authorization_submission.dart';
+
 /// Payment method for auto-renew/auto-pay
 enum AutoRenewPaymentMethodType {
   /// Prepaid: Auto-renew from wallet
@@ -16,14 +18,17 @@ enum AutoRenewPaymentMethodType {
 }
 
 /// Args carried as router `extra` when navigating to the auth screen.
-/// Bundles the payment method with the optional saved-card token.
+/// Bundles the payment method with the optional saved-card token and the
+/// one-use [AutoRenewAuthorizationVerifiedResult] obtained upstream (Setup).
 class AutoRenewAuthArgs {
   final AutoRenewPaymentMethodType paymentMethod;
   final String? cardToken;
   final String? cardLastDigits;
+  final AutoRenewAuthorizationVerifiedResult verifiedResult;
 
   const AutoRenewAuthArgs({
     required this.paymentMethod,
+    required this.verifiedResult,
     this.cardToken,
     this.cardLastDigits,
   });

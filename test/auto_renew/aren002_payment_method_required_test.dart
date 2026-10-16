@@ -8,9 +8,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/repository/auto_renew_auth_prepaid_repository.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewAuth/prepaid/verification/auto_renew_authorization_otp_route_args.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/bloc/auto_renew_prepaid_bloc.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/autoRenew/autoRenewPage/prepaid/view/auto_renew_prepaid_screen.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
@@ -35,6 +39,16 @@ class _Verification extends Mock implements CallLogsVerificationRepository {}
 
 class _Auth extends Mock implements AuthManager {}
 
+class _AccountInfo extends MockCubit<AccountInfoState>
+    implements AccountInfoCubit {}
+
+TokenSession _session() => TokenSession(
+  accessToken: 'test-access',
+  refreshToken: 'test-refresh',
+  accessExpiresAt: DateTime(2030),
+  refreshExpiresAt: DateTime(2031),
+);
+
 const _error = 'select a card or wallet to continue';
 const _continue = 'use for auto renew';
 const _card = SavedCardModel(token: 'tok-1234', number: '************1234');
@@ -44,7 +58,8 @@ void main() {
   late _Devices devices;
   late _Balance balance;
   late StreamController<SavedCardsState> cardStates;
-  AutoRenewAuthArgs? auth;
+  late _Verification challengeRepo;
+  AutoRenewAuthorizationOtpRouteArgs? otpArgs;
   var addCardVisits = 0;
 
   setUpAll(() async {
@@ -62,9 +77,16 @@ void main() {
     cards = _Cards();
     devices = _Devices();
     balance = _Balance();
+    challengeRepo = _Verification();
     cardStates = StreamController<SavedCardsState>.broadcast();
-    auth = null;
+    otpArgs = null;
     addCardVisits = 0;
+    when(() => challengeRepo.requestChallenge()).thenAnswer(
+      (_) async => const CallLogsChallenge(
+        mfaToken: 'test-mfa',
+        apiPhoneNumber: '2425550100',
+      ),
+    );
     when(
       () => cards.fetchSavedCards(
         forceRefresh: any(named: 'forceRefresh'),
@@ -89,9 +111,24 @@ void main() {
     instance.registerSingleton<SavedCardsCubit>(cards);
     instance.registerSingleton<DeviceLimitsCubit>(devices);
     instance.registerSingleton<BalanceCubit>(balance);
-    // Built by the page's existing verification helper; unused here.
-    instance.registerSingleton<CallLogsVerificationRepository>(_Verification());
-    instance.registerSingleton<AuthManager>(_Auth());
+    // The page's "proceed" path now runs OTP before pushing the Auth screen.
+    // These stubs let the challenge resolve so the OTP route opens; the test
+    // asserts on that route rather than driving the OTP to success.
+    instance.registerSingleton<CallLogsVerificationRepository>(challengeRepo);
+    final auth = _Auth();
+    when(() => auth.currentSession).thenReturn(_session());
+    instance.registerSingleton<AuthManager>(auth);
+    final accountInfo = _AccountInfo();
+    when(() => accountInfo.state).thenReturn(
+      const AccountInfoState(
+        accountInfo: AccountInfoModel(
+          idAcc: 42,
+          fName: 'Test',
+          lName: 'Subscriber',
+        ),
+      ),
+    );
+    instance.registerSingleton<AccountInfoCubit>(accountInfo);
   });
 
   tearDown(() async {
@@ -112,10 +149,10 @@ void main() {
       routes: [
         GoRoute(path: '/', builder: (_, _) => const AutoRenewPrepaidScreen()),
         GoRoute(
-          path: AppRoutes.autoRenewAuthPrepaidScreen,
+          path: AppRoutes.autoRenewAuthorizationOtp,
           builder: (_, state) {
-            auth = state.extra! as AutoRenewAuthArgs;
-            return const Scaffold(body: Text('existing auth'));
+            otpArgs = state.extra! as AutoRenewAuthorizationOtpRouteArgs;
+            return const Scaffold(body: Text('existing otp'));
           },
         ),
         GoRoute(
@@ -169,15 +206,13 @@ void main() {
     await pumpScreen(tester);
     await tapContinue(tester);
     expect(find.text(_error), findsOneWidget);
-    expect(auth, isNull);
+    expect(otpArgs, isNull);
     expect(addCardVisits, 0);
     verifyNever(() => devices.enableAutoRenewWallet(any()));
     verifyNever(() => devices.disableAutoRenew(any()));
   });
 
-  testWidgets('selecting a saved card clears it and continues as before', (
-    tester,
-  ) async {
+  testWidgets('selecting a saved card clears it and opens OTP', (tester) async {
     await pumpScreen(tester);
     await tapContinue(tester);
     expect(find.text(_error), findsOneWidget);
@@ -185,9 +220,9 @@ void main() {
     await tapText(tester, find.textContaining('ending in 1234'));
     expect(find.text(_error), findsNothing);
     await tapContinue(tester);
-    expect(find.text('existing auth'), findsOneWidget);
-    expect(auth!.paymentMethod, AutoRenewPaymentMethodType.card);
-    expect(auth!.cardToken, 'tok-1234');
+    // "proceed" now runs OTP before the Authorization form.
+    expect(find.text('existing otp'), findsOneWidget);
+    expect(otpArgs!.attempt.paymentMethod, AutoRenewPaymentMethodType.card);
   });
 
   testWidgets('selecting wallet clears it and runs the existing wallet path', (
@@ -205,7 +240,7 @@ void main() {
     // No device in this test, so the existing wallet guard answers.
     expect(find.text('Device info not available'), findsOneWidget);
     expect(find.text(_error), findsNothing);
-    expect(auth, isNull);
+    expect(otpArgs, isNull);
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
   });

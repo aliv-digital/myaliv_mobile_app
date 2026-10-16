@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_state.dart';
+import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_state.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/models/saved_card_model.dart';
@@ -58,7 +59,15 @@ void main() {
     cards = _Cards();
     devices = _Devices();
     account = _Account();
-    when(() => account.state).thenReturn(const AccountInfoState());
+    when(() => account.state).thenReturn(
+      const AccountInfoState(
+        accountInfo: AccountInfoModel(
+          idAcc: 42,
+          fName: 'Test',
+          lName: 'Subscriber',
+        ),
+      ),
+    );
     cardStates = StreamController<SavedCardsState>.broadcast();
     addCardVisits = 0;
     spinnerVisible = false;
@@ -98,6 +107,7 @@ void main() {
       navigatorKey: rootNavigatorKey,
       routes: [
         GoRoute(path: '/', builder: (_, _) => const AutoTopupTab()),
+        otp.otpRoute,
         GoRoute(
           path: AppRoutes.addOrEditCardsPrepaidScreen,
           builder: (_, _) {
@@ -109,9 +119,11 @@ void main() {
     );
     addTearDown(router.dispose);
     await tester.pumpWidget(
-      BlocProvider<SavedCardsCubit>.value(
-        value: cards,
-        child: MaterialApp.router(routerConfig: router),
+      otp.wrap(
+        BlocProvider<SavedCardsCubit>.value(
+          value: cards,
+          child: MaterialApp.router(routerConfig: router),
+        ),
       ),
     );
     await settle(tester);
@@ -143,6 +155,16 @@ void main() {
     await tester.tap(find.text('apply'));
     await settle(tester);
   }
+
+  /// Runs the OTP step that now sits between "apply" and the Authorization
+  /// screen. Wrapped in [autoTopUpOnline] so OTP-flow dependencies that touch
+  /// `package:http` get the shared mock client.
+  Future<void> applyAndVerifyOtp(WidgetTester tester) =>
+      autoTopUpOnline(() async {
+        await apply(tester);
+        await otp.verify(tester);
+        await tester.pumpAndSettle();
+      });
 
   const noCards = SavedCardsState(status: SavedCardsStatus.success);
 
@@ -211,7 +233,7 @@ void main() {
     expect(find.text(_cardError), findsNothing);
     expect(find.text('card ending in 1234'), findsOneWidget);
 
-    await apply(tester);
+    await applyAndVerifyOtp(tester);
     final screen = tester.widget<AutoTopUpAuthorizationScreen>(
       find.byType(AutoTopUpAuthorizationScreen),
     );
@@ -228,8 +250,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     await enterCustomAmount(tester, '25');
-    await apply(tester);
-    expect(find.text(_cardError), findsNothing);
+    await applyAndVerifyOtp(tester);
     expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
   });
 

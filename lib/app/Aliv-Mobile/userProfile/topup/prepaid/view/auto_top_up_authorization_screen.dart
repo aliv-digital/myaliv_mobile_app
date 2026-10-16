@@ -2,12 +2,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/purchases/prepaid/widgets/currency_amount_input.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/userProfile/topup/prepaid/theme/top_up_prepaid_theme.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/cubit/device_limits_cubit.dart';
-import 'package:myaliv_mobile_app/app/Call-Logs/verification/call_logs_verification_repository.dart';
-import 'package:myaliv_mobile_app/app/common/verification/account_action_otp_navigation.dart';
-import 'package:myaliv_mobile_app/app/common/verification/action_verification_coordinator.dart';
 import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'package:myaliv_mobile_app/core/utils/user_display_name.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
@@ -19,6 +15,7 @@ class AutoTopUpAuthorizationScreen extends StatefulWidget {
   final double autoTopUpAmount;
   final String cardToken;
   final String cardLastDigits;
+  final ActionVerifiedResult<ProtectedAccountAction> verifiedResult;
 
   const AutoTopUpAuthorizationScreen({
     super.key,
@@ -26,6 +23,7 @@ class AutoTopUpAuthorizationScreen extends StatefulWidget {
     required this.autoTopUpAmount,
     required this.cardToken,
     required this.cardLastDigits,
+    required this.verifiedResult,
   });
 
   @override
@@ -37,14 +35,11 @@ class _AutoTopUpAuthorizationScreenState
     extends State<AutoTopUpAuthorizationScreen> {
   final _nameController = TextEditingController();
   bool _isSubmitting = false;
-  late final ActionVerificationCoordinator<ProtectedAccountAction>
-  _verification;
   late final AutoTopUpSubmission _submission;
 
   @override
   void initState() {
     super.initState();
-    _verification = ActionVerificationCoordinator<ProtectedAccountAction>();
     _submission = AutoTopUpSubmission(
       deviceLimitsCubit: instance<DeviceLimitsCubit>(),
     );
@@ -56,7 +51,6 @@ class _AutoTopUpAuthorizationScreenState
 
   @override
   void dispose() {
-    _verification.cancel();
     _submission.close();
     _nameController.dispose();
     super.dispose();
@@ -91,6 +85,7 @@ class _AutoTopUpAuthorizationScreenState
     bool? success;
     try {
       final snapshot = AutoTopUpSubmissionSnapshot(
+        attemptId: widget.verifiedResult.attemptId,
         deviceId:
             instance<DeviceLimitsCubit>().state.deviceLimits?.deviceId ?? 0,
         balanceThreshold: widget.balanceThreshold,
@@ -108,18 +103,8 @@ class _AutoTopUpAuthorizationScreenState
             widget.cardToken == pending.cardToken &&
             _nameController.text == pending.signature &&
             _isNameValid,
-        verifyAction: (pending) => requestAccountActionOtp(
-          context: context,
-          coordinator: _verification,
-          purpose: ProtectedAccountAction.autoTopUp,
-          attemptId: pending.attemptId,
-        ),
+        verifiedResult: widget.verifiedResult,
       );
-    } on CallLogsVerificationException catch (error) {
-      if (mounted) {
-        _showError(error.message);
-      }
-      return;
     } catch (_) {
       if (mounted) {
         _showError('Failed to update settings. Please try again.');
@@ -131,11 +116,9 @@ class _AutoTopUpAuthorizationScreenState
       }
     }
 
-    if (!mounted || success == null) {
-      return;
-    }
+    if (!mounted) return;
 
-    if (success) {
+    if (success == true) {
       AppToast.show(
         // Updates to existing settings keep their current copy.
         message: isNewActivation
@@ -147,13 +130,19 @@ class _AutoTopUpAuthorizationScreenState
         if (mounted) context.go(AppRoutes.home);
       });
     } else {
+      // The one-use OTP capability is now consumed (or the attempt is stale);
+      // retrying requires a fresh apply from the Setup tab, so pop back there
+      // with an error toast.
       _showError('Failed to update settings. Please try again.');
+      final navigator = Navigator.of(context);
+      if (navigator.canPop()) {
+        navigator.pop();
+      }
     }
   }
 
   void _showError(String msg) {
     AppToast.show(message: msg.toString(), type: ToastType.error);
-    //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red));
   }
 
   @override

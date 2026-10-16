@@ -22,7 +22,7 @@ import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/model/account_info_model.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/device-limits/models/device_limits_model.dart';
-import 'package:myaliv_mobile_app/app/Aliv-Mobile/loginOtp/widgets/otp_code_fields.dart';
+import 'package:myaliv_mobile_app/app/common/verification/action_verified_result.dart';
 import 'helpers/auto_top_up_otp_fixture.dart';
 
 class _Cards extends MockCubit<SavedCardsState> implements SavedCardsCubit {}
@@ -142,7 +142,15 @@ void main() {
         initialState: DeviceLimitsState.initial(),
       );
       when(() => devices.loadDeviceLimits()).thenAnswer((_) async {});
-      when(() => account.state).thenReturn(const AccountInfoState());
+      when(() => account.state).thenReturn(
+        const AccountInfoState(
+          accountInfo: AccountInfoModel(
+            idAcc: 42,
+            fName: 'Test',
+            lName: 'Subscriber',
+          ),
+        ),
+      );
       instance.registerSingleton<DeviceLimitsCubit>(devices);
       instance.registerSingleton<AccountInfoCubit>(account);
     });
@@ -170,13 +178,18 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final router = GoRouter(
         navigatorKey: rootNavigatorKey,
-        routes: [GoRoute(path: '/', builder: (_, _) => const AutoTopupTab())],
+        routes: [
+          GoRoute(path: '/', builder: (_, _) => const AutoTopupTab()),
+          otp.otpRoute,
+        ],
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(
-        BlocProvider<SavedCardsCubit>.value(
-          value: cards,
-          child: MaterialApp.router(routerConfig: router),
+        otp.wrap(
+          BlocProvider<SavedCardsCubit>.value(
+            value: cards,
+            child: MaterialApp.router(routerConfig: router),
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -207,6 +220,17 @@ void main() {
       await tester.tap(find.text('apply'));
       await tester.pumpAndSettle();
     }
+
+    /// Runs the OTP step that now sits between "apply" and the Authorization
+    /// screen. Call after [apply] when the test expects to reach Authorization.
+    /// Wrapped in [autoTopUpOnline] so dependencies that touch `package:http`
+    /// get the shared mock client.
+    Future<void> applyAndVerifyOtp(WidgetTester tester) =>
+        autoTopUpOnline(() async {
+          await apply(tester);
+          await otp.verify(tester);
+          await tester.pumpAndSettle();
+        });
 
     Color? helperColor(WidgetTester tester) =>
         tester.widget<Text>(find.text(_threshold)).style?.color;
@@ -249,7 +273,7 @@ void main() {
         await pumpTab(tester);
         await threshold(tester, value);
         await custom(tester, '25');
-        await apply(tester);
+        await applyAndVerifyOtp(tester);
         final screen = submitted(tester);
         expect(screen.balanceThreshold, double.parse(value));
         expect(screen.autoTopUpAmount, 25);
@@ -288,7 +312,7 @@ void main() {
       await tester.tap(find.text(r'$ 15.00'));
       await tester.pumpAndSettle();
       expect(find.text(_noAmount), findsNothing);
-      await apply(tester);
+      await applyAndVerifyOtp(tester);
       expect(submitted(tester).autoTopUpAmount, 15);
     });
 
@@ -298,7 +322,7 @@ void main() {
       await apply(tester);
       await custom(tester, '40');
       expect(find.text(_noAmount), findsNothing);
-      await apply(tester);
+      await applyAndVerifyOtp(tester);
       expect(submitted(tester).autoTopUpAmount, 40);
     });
 
@@ -326,7 +350,7 @@ void main() {
         await pumpTab(tester);
         await threshold(tester, '20');
         await custom(tester, value);
-        await apply(tester);
+        await applyAndVerifyOtp(tester);
         expect(submitted(tester).autoTopUpAmount, double.parse(value));
       });
     }
@@ -341,7 +365,7 @@ void main() {
       expect(find.text(_max), findsOneWidget);
       await custom(tester, '100');
       expect(find.text(_max), findsNothing);
-      await apply(tester);
+      await applyAndVerifyOtp(tester);
       expect(submitted(tester).autoTopUpAmount, 100);
     });
 
@@ -408,16 +432,23 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      final attemptId = Object();
+      final verifiedResult = ActionVerifiedResult<ProtectedAccountAction>(
+        attemptId: attemptId,
+        paymentMethod: ProtectedAccountAction.autoTopUp,
+        canConsume: () => true,
+      );
       final router = GoRouter(
         navigatorKey: rootNavigatorKey,
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const AutoTopUpAuthorizationScreen(
+            builder: (_, _) => AutoTopUpAuthorizationScreen(
               balanceThreshold: 20,
               autoTopUpAmount: 25,
               cardToken: 'tok-1234',
               cardLastDigits: '1234',
+              verifiedResult: verifiedResult,
             ),
           ),
           GoRoute(
@@ -437,11 +468,6 @@ void main() {
       await tester.tap(find.text('submit'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
-      if (find.byType(OtpCodeFields).evaluate().isNotEmpty) {
-        await otp.verify(tester);
-        await tester.pump(const Duration(milliseconds: 1600));
-        await tester.pump();
-      }
     });
 
     Future<void> finish(WidgetTester tester) async {

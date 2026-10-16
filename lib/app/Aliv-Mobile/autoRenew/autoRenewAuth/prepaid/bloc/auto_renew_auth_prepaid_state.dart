@@ -6,7 +6,7 @@ enum AutoRenewAuthLoadStatus { loading, ready, failure }
 
 enum AutoRenewAuthSubmitStatus { idle, verifying, submitting, success, failure }
 
-enum AutoRenewAuthNavTarget { none, home, success }
+enum AutoRenewAuthNavTarget { none, home, success, backToSetup }
 
 class AutoRenewAuthPrepaidState extends Equatable {
   final AutoRenewAuthLoadStatus loadStatus;

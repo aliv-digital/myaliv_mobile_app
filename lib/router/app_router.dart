@@ -300,21 +300,21 @@ class AppRouter {
         path: AppRoutes.autoRenewAuthPrepaidScreen,
         builder: (context, state) {
           final extra = state.extra;
-          AutoRenewPaymentMethodType paymentMethod =
-              AutoRenewPaymentMethodType.wallet;
-          String? cardToken;
-          String? cardLastDigits;
-          if (extra is AutoRenewAuthArgs) {
-            paymentMethod = extra.paymentMethod;
-            cardToken = extra.cardToken;
-            cardLastDigits = extra.cardLastDigits;
-          } else if (extra is AutoRenewPaymentMethodType) {
-            paymentMethod = extra;
+          if (extra is! AutoRenewAuthArgs) {
+            return Scaffold(
+              appBar: AppBar(),
+              body: const Center(
+                child: Text(
+                  'Authorization details unavailable. Please return and try again.',
+                ),
+              ),
+            );
           }
           return AutoRenewAuthPrepaidScreen(
-            paymentMethod: paymentMethod,
-            cardToken: cardToken,
-            cardLastDigits: cardLastDigits,
+            paymentMethod: extra.paymentMethod,
+            cardToken: extra.cardToken,
+            cardLastDigits: extra.cardLastDigits,
+            verifiedResult: extra.verifiedResult,
           );
         },
       ),
