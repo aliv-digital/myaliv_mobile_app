@@ -14,14 +14,12 @@ class MyProfilePrepaidRepository {
       devices: deviceState,
     );
     final deviceLimits = deviceState.deviceLimits;
-    final contract = deviceState.subscriberContract;
 
     return MyProfilePrepaidModel(
       avatarLetter: fullName.isNotEmpty ? fullName[0].toUpperCase() : 'U',
       fullName: fullName,
       statusLabel: _mapStatus(deviceLimits?.deviceStatus),
       phone: _formatPhone(deviceLimits?.tn ?? ''),
-      activeOn: _formatDate(contract?.contractStartDate ?? ''),
       email: accountState.accountInfo?.email ?? '',
       deviceTitle: 'your device',
       deviceModel: deviceLimits?.model ?? '',
@@ -55,16 +53,5 @@ class MyProfilePrepaidRepository {
       return '${digits.substring(1, 4)}-${digits.substring(4, 7)}-${digits.substring(7)}';
     }
     return phone;
-  }
-
-  /// Format date string to MM/DD/YYYY
-  String _formatDate(String dateStr) {
-    if (dateStr.isEmpty) return '';
-    try {
-      final date = DateTime.parse(dateStr);
-      return '${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}/${date.year}';
-    } catch (_) {
-      return dateStr;
-    }
   }
 }

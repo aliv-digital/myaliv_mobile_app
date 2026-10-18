@@ -141,7 +141,6 @@ class _MyProfilePrepaidViewState extends State<_MyProfilePrepaidView> {
 
                               MyProfilePrepaidInfoCard(
                                 phone: data.phone,
-                                activeOn: data.activeOn,
                                 email: data.email,
                               ),
                               //const SizedBox(height: 16),

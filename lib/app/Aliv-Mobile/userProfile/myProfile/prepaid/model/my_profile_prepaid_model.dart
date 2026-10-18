@@ -6,7 +6,6 @@ class MyProfilePrepaidModel extends Equatable {
   final String statusLabel;
 
   final String phone;
-  final String activeOn;
   final String email;
 
   final String deviceTitle;
@@ -17,7 +16,6 @@ class MyProfilePrepaidModel extends Equatable {
     required this.fullName,
     required this.statusLabel,
     required this.phone,
-    required this.activeOn,
     required this.email,
     required this.deviceTitle,
     required this.deviceModel,
@@ -29,7 +27,6 @@ class MyProfilePrepaidModel extends Equatable {
     fullName,
     statusLabel,
     phone,
-    activeOn,
     email,
     deviceTitle,
     deviceModel,

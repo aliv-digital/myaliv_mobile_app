@@ -65,7 +65,7 @@ class MyProfilePrepaidTheme {
     color: textDark,
   );
 
-  // First info card (phone / active on / email) styles from Figma.
+  // First info card (phone / email) styles from Figma.
   static const TextStyle infoCardLabel = TextStyle(
     fontFamily: 'CircularPro',
     fontSize: 14,

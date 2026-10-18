@@ -3,13 +3,11 @@ import '../theme/my_profile_prepaid_theme.dart';
 
 class MyProfilePrepaidInfoCard extends StatelessWidget {
   final String phone;
-  final String activeOn;
   final String email;
 
   const MyProfilePrepaidInfoCard({
     super.key,
     required this.phone,
-    required this.activeOn,
     required this.email,
   });
 
@@ -21,11 +19,6 @@ class MyProfilePrepaidInfoCard extends StatelessWidget {
       child: Column(
         children: [
           _RowItem(label: 'phone:', value: phone),
-          const SizedBox(height: 14),
-          _RowItem(
-            label: 'active on:',
-            value: activeOn.trim().isEmpty ? '--/--/--' : activeOn,
-          ),
           const SizedBox(height: 14),
           _RowItem(label: 'email address:', value: email),
         ],
