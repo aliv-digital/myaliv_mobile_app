@@ -51,6 +51,8 @@ class LoginOtpSizes {
   // OTP single-cell dimensions. Shrunk to 44 to keep the 6-cell row on
   // the smallest supported screen after the 4→6-digit change.
   static const double otpBoxSize = 44;
+  static const double otpBoxHeight = 50;
+  static const double otpBoxGap = 10;
   static const double otpBoxRadius = 6;
   static const double otpBoxBorderWidth = 1;
 

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/app/Home/my-limits/view/my_limits_view.dart';
 import 'package:myaliv_mobile_app/app/Usage/current_plan_tab.dart';
 import 'package:myaliv_mobile_app/app/Usage/future_plan_tab.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/resources/constants/asset_constants.dart';
+import 'package:myaliv_mobile_app/router/app_routes.dart';
 
 class UsageScreen extends StatefulWidget {
   const UsageScreen({super.key});
@@ -155,6 +159,21 @@ class _UsageScreenState extends State<UsageScreen>
               ),
             ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: IconButton(
+                tooltip: 'Home',
+                onPressed: () => context.go(AppRoutes.home),
+                icon: SvgPicture.asset(
+                  AssetConstant.homeIconSVG,
+                  width: 24,
+                  height: 24,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(82),
             child: UsageTabBar(tabs: tabs, controller: controller),

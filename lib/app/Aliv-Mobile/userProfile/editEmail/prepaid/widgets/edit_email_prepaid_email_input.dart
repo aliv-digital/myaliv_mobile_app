@@ -69,12 +69,6 @@ class _EditEmailPrepaidEmailInputState
         gradient: _hasFocus
             ? EditEmailPrepaidTheme.focusedInputBorderGradient
             : null,
-        border: _hasFocus
-            ? null
-            : Border.all(
-                color: EditEmailPrepaidTheme.inputBorder,
-                width: EditEmailPrepaidTheme.inputBorderWidth,
-              ),
         borderRadius: BorderRadius.circular(
           EditEmailPrepaidTheme.editEmailInputRadius,
         ),

@@ -157,7 +157,11 @@ class _LoginOtpViewState extends State<_LoginOtpView> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             SizedBox(height: LoginOtpSizes.contentTopGap),
-                            OtpCodeFields(key: _codeFieldsKey),
+                            OtpCodeFields(
+                              key: _codeFieldsKey,
+                              boxHeight: LoginOtpSizes.otpBoxHeight,
+                              gap: LoginOtpSizes.otpBoxGap,
+                            ),
                             SizedBox(
                               height: LoginOtpSizes.otpToBottomActionsGap,
                             ),

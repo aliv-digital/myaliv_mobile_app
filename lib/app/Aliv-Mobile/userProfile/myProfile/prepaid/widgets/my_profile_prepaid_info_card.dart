@@ -22,7 +22,10 @@ class MyProfilePrepaidInfoCard extends StatelessWidget {
         children: [
           _RowItem(label: 'phone:', value: phone),
           const SizedBox(height: 14),
-          _RowItem(label: 'active on:', value: activeOn),
+          _RowItem(
+            label: 'active on:',
+            value: activeOn.trim().isEmpty ? '--/--/--' : activeOn,
+          ),
           const SizedBox(height: 14),
           _RowItem(label: 'email address:', value: email),
         ],

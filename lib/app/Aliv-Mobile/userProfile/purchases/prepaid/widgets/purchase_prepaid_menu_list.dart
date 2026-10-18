@@ -28,6 +28,8 @@ class PurchasePrepaidMenuList extends StatelessWidget {
               const Divider(
                 height: 1,
                 thickness: 1,
+                indent: PurchasePrepaidTheme.horizontalPad,
+                endIndent: PurchasePrepaidTheme.horizontalPad,
                 color: PurchasePrepaidTheme.divider,
               ),
           ],

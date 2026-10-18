@@ -112,6 +112,12 @@ class _StandAloneFuturePlans extends StatelessWidget {
                       : futurePlans[i].planName,
                   startDate: _formatCardDate(futurePlans[i].startDateTime),
                   endDate: _formatCardDate(futurePlans[i].endDateTime),
+                  endTime:
+                      RegExp(
+                        r'(?:T|\s)\d{1,2}:\d{2}',
+                      ).hasMatch(futurePlans[i].endDate)
+                      ? futurePlans[i].endDateTime.formatHmAOrEmpty()
+                      : '',
                   image: _planImages[i % _planImages.length],
                   isActivePlan: false,
                 ),

@@ -6,6 +6,7 @@ class FuturePlanCard extends StatelessWidget {
   final String endDate;
   final String image;
   final bool isActivePlan;
+  final String endTime;
 
   const FuturePlanCard({
     super.key,
@@ -14,13 +15,14 @@ class FuturePlanCard extends StatelessWidget {
     required this.endDate,
     required this.image,
     this.isActivePlan = false,
+    this.endTime = '',
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 151,
+      constraints: const BoxConstraints(minHeight: 151),
       padding: const EdgeInsets.fromLTRB(16, 13, 16, 16),
       decoration: BoxDecoration(
         image: DecorationImage(image: AssetImage(image), fit: BoxFit.fill),
@@ -59,10 +61,16 @@ class FuturePlanCard extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _DateBlock(title: 'starts', value: startDate),
               const Spacer(),
-              _DateBlock(title: 'expire', value: endDate, alignRight: true),
+              _DateBlock(
+                title: 'expire',
+                value: endDate,
+                subtitle: endTime.trim().isEmpty ? '--/--/--' : endTime,
+                alignRight: true,
+              ),
             ],
           ),
         ],
@@ -75,11 +83,13 @@ class _DateBlock extends StatelessWidget {
   final String title;
   final String value;
   final bool alignRight;
+  final String subtitle;
 
   const _DateBlock({
     required this.title,
     required this.value,
     this.alignRight = false,
+    this.subtitle = '',
   });
 
   @override
@@ -109,6 +119,18 @@ class _DateBlock extends StatelessWidget {
             letterSpacing: 2.25,
           ),
         ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontFamily: 'CircularPro',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }
