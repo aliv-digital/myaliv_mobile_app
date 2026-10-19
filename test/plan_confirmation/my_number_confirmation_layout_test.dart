@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -12,6 +13,8 @@ import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/widgets
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/confirmation/widgets/confirmation_plan_card_my_number_content.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreen/view/purchase_confirmation_screen.dart';
 import 'package:myaliv_mobile_app/app/Plans/PlanScreenPostPaid/models/home_plans_postpaid_plan_model.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 
 class _MockAccountInfoCubit extends Mock implements AccountInfoCubit {}
 
@@ -270,9 +273,13 @@ void main() {
           'VATAmount': 7,
           'PlanType': 'P',
         });
+        final config = AppUiConfigCubit()..setUserType(UserType.postpaid);
+        addTearDown(config.close);
 
         await tester.pumpWidget(
           MaterialApp(
+            builder: (_, child) =>
+                BlocProvider.value(value: config, child: child!),
             home: ConfirmationScreen(topUpAmount: null, plan: postpaidPlan),
           ),
         );
