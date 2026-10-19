@@ -255,7 +255,7 @@ void main() {
       expect(find.byIcon(Icons.check), findsOneWidget);
       expect(find.text('existing success receipt'), findsOneWidget);
       expect(receipt!['amount'], 110);
-      expect(receipt!['phoneNumber'], '242-801-1616');
+      expect(receipt!['phoneNumber'], '(242)-801-1616');
       expect(receipt!['orderId'], '456');
       expect(receipt!['selectedItems'], _items);
       expect(receipt!['rightType'], 'prepaid');

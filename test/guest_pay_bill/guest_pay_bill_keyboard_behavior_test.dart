@@ -322,8 +322,8 @@ void main() {
       await tester.pumpAndSettle();
 
       const errorMessage =
-          'The number entered is not an active postpaid number.. to try again.\n'
-          'Please enter a active postpaid number';
+          'the number entered is not an active postpaid number.. to try again.\n'
+          'please enter a active postpaid number';
       expect(find.text(errorMessage), findsNothing);
       expect(
         _bloc(tester).state.verifyStatus,

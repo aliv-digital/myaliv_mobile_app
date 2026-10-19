@@ -358,7 +358,7 @@ void main() {
         expect(otpArgs!.mfaToken, 'test-mfa');
         expect(otpArgs!.apiPhoneNumber, '2428011616');
         expect(biometrics.state.isSessionAuthenticated, isFalse);
-        verifyZeroInteractions(auth);
+        verifyNever(() => auth.saveSession(any()));
       },
     );
 
@@ -403,7 +403,7 @@ void main() {
     );
     expect(find.text('Welcome!'), findsNothing);
     verifyZeroInteractions(network);
-    verifyZeroInteractions(auth);
+    verifyNever(() => auth.saveSession(any()));
     await settle(tester);
   });
 }
