@@ -3,5 +3,6 @@
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
     "editor.defaultFormatter": "Dart-Code.dart-code"
-  }
+  },
+  "dart.flutterSdkPath": ".fvm/versions/3.41.5"
 }

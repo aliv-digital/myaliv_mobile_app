@@ -131,13 +131,15 @@ void main() {
     expect(result, _mmyy(now.month - 1, now.year + 1));
   });
 
-  testWidgets('without the opt-in flag existing callers are unchanged', (
-    tester,
-  ) async {
-    await openPicker(tester, rejectPastExpiry: false);
-    await pick(tester, currentMonth, previousMonth);
-    await confirm(tester);
-    expect(find.text(_error), findsNothing);
-    expect(result, _mmyy(now.month - 1, now.year));
-  }, skip: !hasEarlierMonth);
+  testWidgets(
+    'without the opt-in flag existing callers are unchanged',
+    (tester) async {
+      await openPicker(tester, rejectPastExpiry: false);
+      await pick(tester, currentMonth, previousMonth);
+      await confirm(tester);
+      expect(find.text(_error), findsNothing);
+      expect(result, _mmyy(now.month - 1, now.year));
+    },
+    skip: !hasEarlierMonth,
+  );
 }
