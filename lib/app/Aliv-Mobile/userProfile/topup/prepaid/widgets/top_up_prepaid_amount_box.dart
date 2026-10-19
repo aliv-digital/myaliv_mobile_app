@@ -61,6 +61,29 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
 
   @override
   Widget build(BuildContext context) {
+    final isEmpty = _controller.text.isEmpty;
+    final amountStyle = TopUpPrepaidTheme.amountText();
+    final hintStyle = TopUpPrepaidTheme.amountHint();
+    const hint = r'$0.00';
+    const cursorWidth = 2.0;
+    // Size the editable value explicitly: intrinsic input/hint widths must
+    // not contribute invisible space to the centered currency/value group.
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: isEmpty ? hint : _controller.text,
+        style: DefaultTextStyle.of(
+          context,
+        ).style.merge(isEmpty ? hintStyle : amountStyle),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final inputWidth = (textPainter.width + cursorWidth).clamp(
+      cursorWidth,
+      TopUpPrepaidTheme.amountFieldMaxInputWidth,
+    );
+    textPainter.dispose();
     final innerRadius =
         (TopUpPrepaidTheme.amountFieldRadius -
                 TopUpPrepaidTheme.amountFieldBorderWidth)
@@ -84,57 +107,53 @@ class _TopUpPrepaidAmountBoxState extends State<TopUpPrepaidAmountBox> {
           child: Center(
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
               children: [
-                if (_controller.text.isNotEmpty) ...[
-                  Text(r'$', style: TopUpPrepaidTheme.amountText()),
+                if (!isEmpty) ...[
+                  Text(r'$', style: amountStyle),
                   const SizedBox(
                     width: TopUpPrepaidTheme.amountFieldCurrencyGap,
                   ),
                 ],
-                ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: TopUpPrepaidTheme.amountFieldMinInputWidth,
-                    maxWidth: TopUpPrepaidTheme.amountFieldMaxInputWidth,
-                  ),
-                  child: IntrinsicWidth(
-                    child: TextField(
-                      focusNode: _focusNode,
-                      controller: _controller,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                      ],
-                      textAlign: TextAlign.left,
-                      style: TopUpPrepaidTheme.amountText(),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                        hintText: r'$0.00',
-                        hintStyle: TopUpPrepaidTheme.amountHint(),
-                      ),
-                      onChanged: (raw) {
-                        final wasEmpty = raw.isEmpty;
-                        final cleaned = _sanitize(raw);
-
-                        if (cleaned != raw) {
-                          _controller.value = TextEditingValue(
-                            text: cleaned,
-                            selection: TextSelection.collapsed(
-                              offset: cleaned.length,
-                            ),
-                          );
-                        }
-
-                        // Rebuild so the leading "$" toggles with emptiness.
-                        if (wasEmpty || cleaned.isEmpty) setState(() {});
-
-                        widget.onChanged(cleaned);
-                      },
+                SizedBox(
+                  width: inputWidth,
+                  child: TextField(
+                    focusNode: _focusNode,
+                    controller: _controller,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                    ],
+                    textAlign: TextAlign.left,
+                    cursorWidth: cursorWidth,
+                    style: amountStyle,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                      hintText: isEmpty ? hint : null,
+                      hintStyle: hintStyle,
+                    ),
+                    onChanged: (raw) {
+                      final cleaned = _sanitize(raw);
+
+                      if (cleaned != raw) {
+                        _controller.value = TextEditingValue(
+                          text: cleaned,
+                          selection: TextSelection.collapsed(
+                            offset: cleaned.length,
+                          ),
+                        );
+                      }
+
+                      // Refit the currency/value group after every edit.
+                      setState(() {});
+
+                      widget.onChanged(cleaned);
+                    },
                   ),
                 ),
               ],
