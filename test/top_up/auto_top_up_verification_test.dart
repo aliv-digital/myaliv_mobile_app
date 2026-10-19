@@ -428,54 +428,52 @@ void main() {
     );
   }
 
-  flow(
-    'iOS mixed navigation success routes through OTP, then Authorization',
-    (tester, h) async {
-      // After pump: OTP is open on top of Setup. Authorization not yet pushed.
-      expect(find.byType(ActionOtpScreen), findsOneWidget);
-      expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
-      expect(h.mutations, 0);
-      await h.otp.verify(tester);
-      await tester.pumpAndSettle();
-      // OTP returned, Setup pushed Authorization. No mutation yet.
-      expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
-      expect(h.mutations, 0);
-      await h.enterSignature(tester);
-      await h.submit(tester);
-      await h.finish(tester);
-      expect(h.mutations, 1);
-      expect(find.text('home destination'), findsOneWidget);
-    },
-    platform: TargetPlatform.iOS,
-  );
+  flow('iOS mixed navigation success routes through OTP, then Authorization', (
+    tester,
+    h,
+  ) async {
+    // After pump: OTP is open on top of Setup. Authorization not yet pushed.
+    expect(find.byType(ActionOtpScreen), findsOneWidget);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+    expect(h.mutations, 0);
+    await h.otp.verify(tester);
+    await tester.pumpAndSettle();
+    // OTP returned, Setup pushed Authorization. No mutation yet.
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsOneWidget);
+    expect(h.mutations, 0);
+    await h.enterSignature(tester);
+    await h.submit(tester);
+    await h.finish(tester);
+    expect(h.mutations, 1);
+    expect(find.text('home destination'), findsOneWidget);
+  }, platform: TargetPlatform.iOS);
 
-  flow(
-    'iOS mixed navigation cancel on OTP returns to Setup with form intact',
-    (tester, h) async {
-      expect(find.byType(ActionOtpScreen), findsOneWidget);
-      h.router.pop();
-      await tester.pumpAndSettle();
-      expect(find.byType(ActionOtpScreen), findsNothing);
-      expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
-      expect(find.byType(AutoTopupTab), findsOneWidget);
-      // Threshold and custom amount fields retained.
-      expect(
-        tester
-            .widget<TextField>(
-              find.byWidgetPredicate(
-                (w) =>
-                    w is TextField &&
-                    w.decoration?.hintText == 'enter threshold amount',
-              ),
-            )
-            .controller!
-            .text,
-        h.threshold.toInt().toString(),
-      );
-      expect(h.mutations, 0);
-    },
-    platform: TargetPlatform.iOS,
-  );
+  flow('iOS mixed navigation cancel on OTP returns to Setup with form intact', (
+    tester,
+    h,
+  ) async {
+    expect(find.byType(ActionOtpScreen), findsOneWidget);
+    h.router.pop();
+    await tester.pumpAndSettle();
+    expect(find.byType(ActionOtpScreen), findsNothing);
+    expect(find.byType(AutoTopUpAuthorizationScreen), findsNothing);
+    expect(find.byType(AutoTopupTab), findsOneWidget);
+    // Threshold and custom amount fields retained.
+    expect(
+      tester
+          .widget<TextField>(
+            find.byWidgetPredicate(
+              (w) =>
+                  w is TextField &&
+                  w.decoration?.hintText == 'enter threshold amount',
+            ),
+          )
+          .controller!
+          .text,
+      h.threshold.toInt().toString(),
+    );
+    expect(h.mutations, 0);
+  }, platform: TargetPlatform.iOS);
 
   for (final change in ['threshold', 'amount', 'card']) {
     flow(
