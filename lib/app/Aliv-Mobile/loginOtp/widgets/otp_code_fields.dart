@@ -115,7 +115,7 @@ class OtpCodeFieldsState extends State<OtpCodeFields> {
             final maxWidth = constraints.maxWidth.isFinite
                 ? constraints.maxWidth
                 : LoginOtpSizes.otpBoxSize * _otpLength +
-                    gap * (_otpLength - 1);
+                      gap * (_otpLength - 1);
             final totalGaps = gap * (_otpLength - 1);
             final rawBox = (maxWidth - totalGaps) / _otpLength;
             final boxSize = widget.gap == null

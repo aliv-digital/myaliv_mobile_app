@@ -55,104 +55,109 @@ void main() {
     const Size(390, 844),
     const Size(430, 932),
   ]) {
-    testWidgets(
-      'Forgot Password hides consent and spaces legal links at $size',
-      (tester) async {
-        tester.view.physicalSize = size;
-        tester.view.devicePixelRatio = 1;
-        tester.view.padding = const FakeViewPadding(top: 24, bottom: 34);
-        tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 34);
-        addTearDown(tester.view.reset);
-        // Measure the existing footer with the app font rather than test Ahem.
-        await (FontLoader('CircularPro')
-              ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
-              ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
-            .load();
-        await _pumpScreen(tester);
-        await tester.pumpAndSettle();
-
-        const message =
-            "by pressing the 'send' button you agree to our terms & conditions and privacy policy";
-        expect(find.text(message), findsNothing);
-        expect(find.byType(Checkbox), findsNothing);
-        expect(
-          tester.widget<DefaultButton>(find.byType(DefaultButton)).onPressed,
-          isNotNull,
-        );
-        await tester.ensureVisible(find.byType(LoginPrivacyPolicyLink));
-        await tester.pumpAndSettle();
-        final footer = tester.getRect(find.byType(LoginPrivacyPolicyLink));
-        final stripes = tester.getRect(find.byType(BottomStripes));
-        expect(stripes.top - footer.bottom, closeTo(28, 0.01));
-        expect(footer.center.dx, closeTo(size.width / 2, 0.01));
-        expect(
-            footer.top,
-            greaterThanOrEqualTo(
-                tester.getRect(find.byType(DefaultButton)).bottom));
-        if (size == const Size(390, 844)) {
-          expect(footer.top - tester.getRect(find.byType(DefaultButton)).bottom,
-              greaterThan(200));
-        }
-        for (final label in ['Privacy Policy', 'Terms of Use']) {
-          final button = find.ancestor(
-            of: find.text(label),
-            matching: find.byType(TextButton),
-          );
-          expect(tester.widget<TextButton>(button).onPressed, isNotNull);
-        }
-
-        await tester.tap(find.text('Terms of Use'));
-        await tester.pumpAndSettle();
-        expect(find.byType(LoginTermsOfUseDialog), findsOneWidget);
-        await tester.tap(find.byTooltip('Close'));
-        await tester.pumpAndSettle();
-        expect(find.byType(LoginTermsOfUseDialog), findsNothing);
-        verifyZeroInteractions(networkService);
-        expect(tester.takeException(), isNull);
-      },
-    );
-  }
-
-  for (final width in [320.0, 390.0]) {
-    testWidgets(
-        'legal footer hides with the keyboard and returns after Done at $width',
-        (tester) async {
-      tester.view.physicalSize = Size(width, 844);
+    testWidgets('Forgot Password hides consent and spaces legal links at $size', (
+      tester,
+    ) async {
+      tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
+      tester.view.padding = const FakeViewPadding(top: 24, bottom: 34);
+      tester.view.viewPadding = const FakeViewPadding(top: 24, bottom: 34);
       addTearDown(tester.view.reset);
+      // Measure the existing footer with the app font rather than test Ahem.
       await (FontLoader('CircularPro')
             ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
             ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
           .load();
       await _pumpScreen(tester);
-      await tester.enterText(_phoneField(), '2425550101');
-      final phone = _phoneText(tester);
-      await tester.showKeyboard(_phoneField());
-      tester.view.viewInsets = const FakeViewPadding(bottom: 250);
       await tester.pumpAndSettle();
-      expect(find.text('Done'), findsOneWidget);
-      expect(find.byType(LoginPrivacyPolicyLink), findsNothing);
-      expect(find.text('Privacy Policy'), findsNothing);
-      expect(find.text('Terms of Use'), findsNothing);
-      await tester.tap(find.text('Done'));
-      await tester.pumpAndSettle();
+
+      const message =
+          "by pressing the 'send' button you agree to our terms & conditions and privacy policy";
+      expect(find.text(message), findsNothing);
+      expect(find.byType(Checkbox), findsNothing);
       expect(
-          tester.widget<TextField>(_phoneField()).focusNode!.hasFocus, isFalse);
-      expect(find.byType(LoginPrivacyPolicyLink), findsNothing);
-      tester.view.viewInsets = const FakeViewPadding();
+        tester.widget<DefaultButton>(find.byType(DefaultButton)).onPressed,
+        isNotNull,
+      );
+      await tester.ensureVisible(find.byType(LoginPrivacyPolicyLink));
       await tester.pumpAndSettle();
-      expect(find.text('Done'), findsNothing);
-      expect(find.byType(LoginPrivacyPolicyLink), findsOneWidget);
-      expect(find.text('Privacy Policy').hitTestable(), findsOneWidget);
-      expect(find.text('Terms of Use').hitTestable(), findsOneWidget);
+      final footer = tester.getRect(find.byType(LoginPrivacyPolicyLink));
+      final stripes = tester.getRect(find.byType(BottomStripes));
+      expect(stripes.top - footer.bottom, closeTo(28, 0.01));
+      expect(footer.center.dx, closeTo(size.width / 2, 0.01));
       expect(
-          tester.getRect(find.byType(BottomStripes)).top -
-              tester.getRect(find.byType(LoginPrivacyPolicyLink)).bottom,
-          closeTo(28, 0.01));
-      expect(_phoneText(tester), phone);
+        footer.top,
+        greaterThanOrEqualTo(tester.getRect(find.byType(DefaultButton)).bottom),
+      );
+      if (size == const Size(390, 844)) {
+        expect(
+          footer.top - tester.getRect(find.byType(DefaultButton)).bottom,
+          greaterThan(200),
+        );
+      }
+      for (final label in ['Privacy Policy', 'Terms of Use']) {
+        final button = find.ancestor(
+          of: find.text(label),
+          matching: find.byType(TextButton),
+        );
+        expect(tester.widget<TextButton>(button).onPressed, isNotNull);
+      }
+
+      await tester.tap(find.text('Terms of Use'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LoginTermsOfUseDialog), findsOneWidget);
+      await tester.tap(find.byTooltip('Close'));
+      await tester.pumpAndSettle();
+      expect(find.byType(LoginTermsOfUseDialog), findsNothing);
       verifyZeroInteractions(networkService);
       expect(tester.takeException(), isNull);
     });
+  }
+
+  for (final width in [320.0, 390.0]) {
+    testWidgets(
+      'legal footer hides with the keyboard and returns after Done at $width',
+      (tester) async {
+        tester.view.physicalSize = Size(width, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        await (FontLoader('CircularPro')
+              ..addFont(rootBundle.load('assets/fonts/CircularPro-Book.otf'))
+              ..addFont(rootBundle.load('assets/fonts/CircularPro-Bold.otf')))
+            .load();
+        await _pumpScreen(tester);
+        await tester.enterText(_phoneField(), '2425550101');
+        final phone = _phoneText(tester);
+        await tester.showKeyboard(_phoneField());
+        tester.view.viewInsets = const FakeViewPadding(bottom: 250);
+        await tester.pumpAndSettle();
+        expect(find.text('Done'), findsOneWidget);
+        expect(find.byType(LoginPrivacyPolicyLink), findsNothing);
+        expect(find.text('Privacy Policy'), findsNothing);
+        expect(find.text('Terms of Use'), findsNothing);
+        await tester.tap(find.text('Done'));
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<TextField>(_phoneField()).focusNode!.hasFocus,
+          isFalse,
+        );
+        expect(find.byType(LoginPrivacyPolicyLink), findsNothing);
+        tester.view.viewInsets = const FakeViewPadding();
+        await tester.pumpAndSettle();
+        expect(find.text('Done'), findsNothing);
+        expect(find.byType(LoginPrivacyPolicyLink), findsOneWidget);
+        expect(find.text('Privacy Policy').hitTestable(), findsOneWidget);
+        expect(find.text('Terms of Use').hitTestable(), findsOneWidget);
+        expect(
+          tester.getRect(find.byType(BottomStripes)).top -
+              tester.getRect(find.byType(LoginPrivacyPolicyLink)).bottom,
+          closeTo(28, 0.01),
+        );
+        expect(_phoneText(tester), phone);
+        verifyZeroInteractions(networkService);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
