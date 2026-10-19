@@ -86,6 +86,7 @@ jobs:
     name: Build Android (Debug APK)
     runs-on: ubuntu-latest
     needs: test
+    if: github.ref != 'refs/heads/main'
 
     steps:
       - name: Checkout
@@ -326,6 +327,7 @@ jobs:
     name: Build iOS (no codesign)
     runs-on: macos-latest
     needs: test
+    if: github.ref != 'refs/heads/main'
 
     steps:
       - name: Checkout
