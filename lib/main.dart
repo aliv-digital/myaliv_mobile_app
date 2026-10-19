@@ -1,20 +1,20 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
+import 'package:finger_face_security/finger_face_security.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:core/core.dart';
-import 'package:finger_face_security/finger_face_security.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/account-information/cubit/account_info_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
-import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
-import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
 import 'package:myaliv_mobile_app/app/Aliv-Mobile/savedCards/cubit/saved_cards_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/balance/cubit/balance_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/best-plans/cubit/best_plan_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/bucket-usage-summary/cubit/bucket_usage_summary_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
+import 'package:myaliv_mobile_app/app/Home/limited-time-offer/cubit/limited_offer_cubit.dart';
+import 'package:myaliv_mobile_app/app/Plans/PlanScreen/cubit/plans_cubit.dart';
 import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/resources/color_manager.dart';
 import 'package:myaliv_mobile_app/router/app_router.dart';
@@ -26,9 +26,6 @@ import 'main_injection_container.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Must run before CoreInjection registers AnalyticsService.
-  // No-ops gracefully until google-services.json / GoogleService-Info.plist
-  // are added to the project (provided by Ethan / Polaris Group).
   try {
     await Firebase.initializeApp();
   } catch (e) {
