@@ -949,13 +949,6 @@ class AppRouter {
             builder: (context, state) => const UsageScreen(),
           ),
 
-          GoRoute(
-            path: AppRoutes.upgradeCreditLimit,
-            builder: (context, state) {
-              return const UpgradeCreditLimitScreen();
-            },
-          ),
-
           // GoRoute(
           //   path: AppRoutes.plans,
           //   builder: (context, state) => const HomePlanScreen(),
@@ -974,6 +967,10 @@ class AppRouter {
             builder: (context, state) => const MenuScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.upgradeCreditLimit,
+        builder: (context, state) => const UpgradeCreditLimitScreen(),
       ),
       GoRoute(
         path: AppRoutes.allBestPlans,
