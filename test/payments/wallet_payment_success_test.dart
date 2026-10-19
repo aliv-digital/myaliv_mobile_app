@@ -39,6 +39,8 @@ import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/repository/ho
 import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/home_plans_payment_method_view.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_success.dart';
 import 'package:myaliv_mobile_app/core/networkService/api_paths.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
@@ -140,6 +142,7 @@ void main() {
   late _Balance balance;
   late _Cards cards;
   late _Plans plans;
+  late AppUiConfigCubit config;
   late _Auth auth;
   late _Observer observer;
   late Completer<int?> planPayment;
@@ -162,6 +165,7 @@ void main() {
   });
 
   setUp(() {
+    config = AppUiConfigCubit();
     repository = _Repository();
     network = _Network();
     analytics = _Analytics();
@@ -303,11 +307,13 @@ void main() {
     await balance.close();
     await cards.close();
     await plans.close();
+    await config.close();
     await instance.reset();
   });
 
   Widget app(Widget child) => MultiBlocProvider(
     providers: [
+      BlocProvider<AppUiConfigCubit>.value(value: config),
       BlocProvider<AccountInfoCubit>.value(value: account),
       BlocProvider<BalanceCubit>.value(value: balance),
       BlocProvider<PlansCubit>.value(value: plans),
@@ -338,6 +344,11 @@ void main() {
     HomePlansSubscriberType subscriberType = HomePlansSubscriberType.prepaid,
   }) async {
     size(tester);
+    config.setUserType(
+      subscriberType == HomePlansSubscriberType.postpaid
+          ? UserType.postpaid
+          : UserType.prepaid,
+    );
     planPayment = Completer<int?>();
     planBloc = _PlanBloc(repository);
     router = GoRouter(
@@ -391,6 +402,7 @@ void main() {
               details:
                   extra['details'] as List<HomePlanPurchaseReceiptDetailItem>,
               walletPaymentSuccess: planSuccess,
+              orderId: extra['orderId'] as String?,
             );
           },
         ),
@@ -660,6 +672,12 @@ void main() {
         expect(planBloc!.state.walletPaymentSucceeded, isFalse);
         expect(planSuccess, isNull);
         expect(find.textContaining(_suffix), findsNothing);
+        if (mode == 'postpaid account') {
+          expect(find.text('save credit card'), findsNothing);
+          expect(find.text('back to home page'), findsOneWidget);
+        } else if (mode == '3DS') {
+          expect(find.text('save credit card'), findsOneWidget);
+        }
         await finish(tester);
       },
     );

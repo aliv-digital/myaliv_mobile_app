@@ -10,6 +10,7 @@ import 'package:myaliv_mobile_app/app/common/services/payments/wallet_payment_su
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/app/common/services/payments/widgets/save_new_card_on_receipt_section.dart';
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
 import '../../../../core/utils/app_session.dart';
 import '../bloc/home_plan_purchase_receipt_event.dart';
@@ -227,13 +228,19 @@ class _HomePlanPurchaseReceiptViewState
                                 context.go(AppRoutes.home);
                               }
                             },
-                            saveCardSection: widget.orderId != null
-                                ? SaveNewCardOnReceiptSection(
-                                    orderId: widget.orderId!,
-                                  )
-                                : SaveCardOnReceiptSection(
-                                    details: widget.cardToSave,
-                                  ),
+                            saveCardSection: Visibility(
+                              visible: !context
+                                  .watch<AppUiConfigCubit>()
+                                  .state
+                                  .isPostpaid,
+                              child: widget.orderId != null
+                                  ? SaveNewCardOnReceiptSection(
+                                      orderId: widget.orderId!,
+                                    )
+                                  : SaveCardOnReceiptSection(
+                                      details: widget.cardToSave,
+                                    ),
+                            ),
                             pageBackground:
                                 HomePlanPurchaseReceiptTheme.circleBackground,
                             statusMessage: widget.statusMessage,

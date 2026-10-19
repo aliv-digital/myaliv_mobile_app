@@ -87,7 +87,7 @@ class _UsageScreenState extends State<UsageScreen>
   // ---------------- CONFIG ----------------
   List<Tab> _tabs(HomeUiConfig config) {
     return [
-      const Tab(text: 'current plans'),
+      const Tab(text: 'current plan'),
       const Tab(text: 'future plans'),
       if (config.isPostpaid) const Tab(text: 'my limits'),
     ];

@@ -32,6 +32,8 @@ import 'package:myaliv_mobile_app/app/Plans/homePlansPaymentMethod/view/services
 import 'package:myaliv_mobile_app/resources/widgets/default_app_bar.dart';
 import 'package:myaliv_mobile_app/resources/widgets/top_toast.dart';
 import 'package:myaliv_mobile_app/router/app_routes.dart';
+import 'package:myaliv_mobile_app/core/appConfig/app_ui_config_cubit.dart';
+import 'package:myaliv_mobile_app/app/Home/home/data/home_ui_config.dart';
 
 class _Repository extends Mock implements HomePlansPaymentMethodRepository {}
 
@@ -58,6 +60,7 @@ void main() {
   late _Devices devices;
   late _Balance balance;
   late _Plans plans;
+  late AppUiConfigCubit config;
   late _Account account;
   late _Cards cards;
   late _Analytics analytics;
@@ -80,6 +83,7 @@ void main() {
   });
 
   setUp(() {
+    config = AppUiConfigCubit();
     repository = _Repository();
     devices = _Devices();
     balance = _Balance();
@@ -151,6 +155,7 @@ void main() {
     await devices.close();
     await balance.close();
     await plans.close();
+    await config.close();
     await account.close();
     await cards.close();
     await instance.reset();
@@ -164,6 +169,11 @@ void main() {
     HomePlansSubscriberType subscriberType = HomePlansSubscriberType.prepaid,
     HomePlansPaymentPlanType planType = HomePlansPaymentPlanType.primary,
   }) async {
+    config.setUserType(
+      subscriberType == HomePlansSubscriberType.postpaid
+          ? UserType.postpaid
+          : UserType.prepaid,
+    );
     items = [
       HomePlansPaymentSelectedItem(
         id: '123',
@@ -232,6 +242,7 @@ void main() {
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
+          BlocProvider<AppUiConfigCubit>.value(value: config),
           BlocProvider<HomePlansPaymentMethodBloc>.value(value: bloc),
           BlocProvider<BalanceCubit>.value(value: balance),
           BlocProvider<PlansCubit>.value(value: plans),
